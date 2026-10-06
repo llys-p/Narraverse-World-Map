@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.log
+*.png
+*.zip
+artifacts/
+evidence/
+profiles/
+.denova/
+.DS_Store
+Thumbs.db

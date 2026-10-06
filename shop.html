@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>交易 · 世界地图原型</title>
+<style>
+:root{--bg:light-dark(#f3f2ec,#202522);--panel:light-dark(#e8e8df,#2b332d);--ink:light-dark(#29362c,#edf0e9);--muted:light-dark(#556458,#b6c2b9);--line:light-dark(#bdc8bc,#526456);--copper:light-dark(#795136,#d5a17d)}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:light-dark(#eceee7,#151a17);color:var(--ink);color-scheme:light dark;font:14px/1.5 "Microsoft YaHei UI",system-ui,sans-serif}
+main{max-width:1000px;margin:auto}
+.window{background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+header{padding:14px 22px;display:flex;gap:14px;align-items:baseline;border-bottom:1px solid var(--line);flex-wrap:wrap}
+h2{font-size:18px;font-weight:500;margin:0}
+.note{font-size:12px;color:var(--muted)}
+a{color:var(--copper);text-decoration:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.col{padding:16px 22px}
+.col+.col{border-left:1px solid var(--line)}
+@media(max-width:860px){.col+.col{border-left:0;border-top:1px solid var(--line)}}
+h3{font-size:13px;font-weight:500;color:var(--muted);margin:10px 0 8px}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.cell{border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;background:var(--bg)}
+.cell:hover{border-color:var(--copper)}
+.cell canvas{width:64px;height:64px}
+.cell .nm{font-size:13px}
+.cell .st{font-size:11px;color:var(--muted);margin-top:2px}
+.cell .pr{font-size:12px;color:var(--copper);margin-top:3px}
+.cell.off{opacity:.5}
+.cell.off:hover{border-color:var(--line)}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px}
+button:hover:not(:disabled){border-color:var(--copper)}
+button:disabled{opacity:.45;cursor:default}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg);border:1px solid var(--copper);border-radius:8px;padding:8px 16px;font-size:13px;display:none}
+.empty{color:var(--muted);font-size:13px;padding:12px 0}
+</style>
+</head>
+<body>
+<main>
+<div class="window">
+ <header>
+  <h2 id="shopTitle">交易</h2>
+  <span class="note" id="purse">铜币 —</span>
+  <span class="note">图标由 SandboxDrawingKit 绘制。铜币此前只有进项没有出口，这里是它的出口。</span>
+  <a href="/">← 返回世界地图</a>
+ </header>
+ <div class="grid">
+  <div class="col">
+   <h3>货架（买入）</h3>
+   <div class="shelf" id="shelf"></div>
+  </div>
+  <div class="col">
+   <h3>背包（卖出）</h3>
+   <div class="shelf" id="bag"></div>
+   <div class="empty" id="bagEmpty" style="display:none">背包空空如也。</div>
+  </div>
+ </div>
+</div>
+</main>
+<div class="toast" id="toast"></div>
+<script src="/world-rpg.js"></script>
+<script src="/world-inv.js"></script>
+<script src="/world-state.js"></script>
+<script src="/kit/core.js"></script>
+<script src="/kit/quad-lib.js"></script>
+<script src="/kit/creatures.js"></script>
+<script src="/kit/items-lib.js"></script>
+<script src="/kit/items.js"></script>
+<script src="/kit/accessories.js"></script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const INV=WorldInv,R=WorldRPG;
+const locName=new URLSearchParams(location.search).get('loc')||'此地';
+const profile=R.load();INV.ensure(profile);
+$('shopTitle').textContent='交易 · '+locName;
+function toast(t){const el=$('toast');el.textContent=t;el.style.display='block';clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',1800);}
+function icon(cv,arch){
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);
+  if(!window.SandboxDrawingKit||!arch||!SandboxDrawingKit.has(arch)){
+    ctx.fillStyle='#888';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText(arch||'?',cv.width/2,cv.height/2);return;
+  }
+  const r=SandboxDrawingKit.drawEntity(ctx,{id:arch,kind:'item',archetype:arch},{x:4,y:4,width:cv.width-8,height:cv.height-8,phase:0});
+  if(!r.supported){ctx.fillStyle='#888';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText(arch,cv.width/2,cv.height/2);}
+}
+function modsText(item){
+  if(!item||!item.mods)return '';
+  return Object.entries(item.mods).map(([k,v])=>({atk:'攻',def:'防',speed:'速',hp:'气血',qi:'真元'}[k]||k)+' +'+v).join('　');
+}
+function render(){
+  $('purse').textContent='铜币 '+profile.gold;
+  const shelf=$('shelf');shelf.innerHTML='';
+  Object.values(INV.CATALOG).filter(i=>i.price).forEach(item=>{
+    const cell=document.createElement('div');cell.className='cell';
+    const needLv=(item.req||1)>profile.level, poor=profile.gold<item.price;
+    if(needLv||poor)cell.className='cell off';
+    const cv=document.createElement('canvas');cv.width=96;cv.height=96;icon(cv,item.icon);cell.appendChild(cv);
+    const nm=document.createElement('div');nm.className='nm';nm.textContent=item.name;cell.appendChild(nm);
+    if(modsText(item)){const st=document.createElement('div');st.className='st';st.textContent=modsText(item);cell.appendChild(st);}
+    const pr=document.createElement('div');pr.className='pr';pr.textContent='售 '+item.price+' 铜';cell.appendChild(pr);
+    const b=document.createElement('button');
+    b.textContent=needLv?('需 Lv'+(item.req||1)):(poor?'铜币不足':'买入');
+    b.disabled=needLv||poor;
+    b.onclick=()=>{const r=INV.buy(profile,item.id);R.save(profile);toast(r.ok?('买入 '+item.name+'，花去 '+r.spent+' 铜'):r.why);render();};
+    cell.appendChild(b);
+    shelf.appendChild(cell);
+  });
+  const bag=$('bag');bag.innerHTML='';
+  $('bagEmpty').style.display=profile.bag.length?'none':'block';
+  profile.bag.forEach(slot=>{
+    const item=INV.CATALOG[slot.id];if(!item)return;
+    const cell=document.createElement('div');cell.className='cell';
+    const cv=document.createElement('canvas');cv.width=96;cv.height=96;icon(cv,item.icon);cell.appendChild(cv);
+    const nm=document.createElement('div');nm.className='nm';nm.textContent=item.name+(item.stack&&slot.count>1?' ×'+slot.count:'');cell.appendChild(nm);
+    if(modsText(item)){const st=document.createElement('div');st.className='st';st.textContent=modsText(item);cell.appendChild(st);}
+    const price=item.sell||Math.max(1,Math.round((item.price||5)*0.5));
+    const pr=document.createElement('div');pr.className='pr';pr.textContent='收 '+price+' 铜';cell.appendChild(pr);
+    const b=document.createElement('button');b.textContent='卖出';
+    b.onclick=()=>{const r=INV.sell(profile,slot.id);R.save(profile);toast(r.ok?('售出，铜币 +'+r.gold):r.why);render();};
+    cell.appendChild(b);
+    bag.appendChild(cell);
+  });
+}
+render();
+window.__shopDebug={profile,render};
+})();
+</script>
+</body>
+</html>

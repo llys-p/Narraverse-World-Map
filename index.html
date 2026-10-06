@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>世界地图 · 骑砍式原型</title>
+<style>
+:root{--bg:light-dark(#f3f2ec,#202522);--panel:light-dark(#e8e8df,#2b332d);--ink:light-dark(#29362c,#edf0e9);--muted:light-dark(#556458,#b6c2b9);--line:light-dark(#bdc8bc,#526456);--copper:light-dark(#795136,#d5a17d)}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:light-dark(#eceee7,#151a17);color:var(--ink);color-scheme:light dark;font:14px/1.5 "Microsoft YaHei UI",system-ui,sans-serif}
+main{max-width:1040px;margin:auto}
+.window{background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+header{padding:16px 22px;display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+h2{font-size:18px;font-weight:500;margin:0}
+.note{font-size:12px;color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.dot.on{background:#5fae7f}.dot.off{background:#b0563e}
+.bar{height:9px;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:#b0563e;transition:width .3s}
+.bar.xp i{background:#7a9e5f}
+.bar.qi{height:6px}
+.bar.qi i{background:#4a7fa5}
+.mapwrap{position:relative}
+canvas{display:block;width:100%;height:560px}
+#minimap{width:140px;height:76px} /* 全局 canvas 规则会把小地图拉满屏，这里钉死尺寸 */
+.hud{position:absolute;top:10px;left:14px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:12px}
+.chips{position:absolute;top:10px;right:14px;display:flex;gap:8px}
+.chip{font-size:11px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:2px 8px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 22px;border-top:1px solid var(--line)}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--copper)}
+button.primary{border-color:var(--copper);box-shadow:inset 0 -2px var(--copper)}
+#enter,#shopBtn{display:none}
+.feedback{padding:0 22px 14px;color:var(--muted);min-height:22px;font-size:13px}
+.signals{display:flex;gap:14px;flex-wrap:wrap;padding:0 22px 16px;font-size:12px;color:var(--muted)}
+.signals b{color:var(--ink);font-weight:500}
+details{padding:10px 22px 16px;border-top:1px solid var(--line)}
+summary{color:var(--copper);cursor:pointer}
+#journal{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.7}
+#journal div{border-left:2px solid var(--line);padding-left:8px;margin-bottom:3px}
+.ctx{position:absolute;z-index:30;display:none;min-width:158px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.ctx .ttl{font-size:12px;color:var(--muted);padding:4px 10px 6px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.ctx button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:5px;padding:6px 10px;font-size:13px}
+.ctx button:hover{background:var(--panel)}
+.mapbubble{position:absolute;z-index:25;max-width:240px;background:var(--bg);border:1px solid var(--copper);border-radius:10px;padding:7px 11px;font-size:12px;line-height:1.6;transform:translate(-50%,-100%);box-shadow:0 3px 10px rgba(0,0,0,.16)}
+.mapbubble b{color:var(--copper);font-weight:500}
+</style>
+</head>
+<body>
+<main>
+<div class="window">
+ <header>
+  <h2>世界地图 · 骑砍式原型</h2>
+  <span class="note">第一层：战略图行走 → 进入地点（第二层为沙盒场景 + Laya 躯干反应）。点击地面移动，点击地点图标旅行。</span>
+ </header>
+ <div class="mapwrap">
+  <canvas id="map" width="990" height="560"></canvas>
+  <div class="hud" id="clock">第 1 天 · 辰时</div>
+  <div class="hud" id="rpg" style="top:44px;min-width:210px">
+   <b id="rpgLevel">…</b> <span id="rpgRealm" class="note"></span>
+   <div class="bar hp" style="margin-top:4px"><i id="rpgHp" style="width:100%"></i></div>
+   <div class="bar qi" style="margin-top:2px"><i id="rpgQi" style="width:100%"></i></div>
+   <div class="note" style="margin-top:2px"><span id="rpgHpText"></span> · <span id="rpgQiText"></span> · 铜<span id="rpgGold">0</span> · <span id="rpgXp"></span></div>
+  </div>
+  <div class="chips">
+   <span class="chip"><span class="dot off" id="bridgeDot"></span>Laya 桥 <b id="bridgeText">检测中</b></span>
+   <span class="chip">位置 <b id="locText">荒野</b></span>
+   <span class="chip">区域 <b id="zoneText">荒野</b></span>
+  </div>
+  <div class="hud" id="encounter" style="display:none;top:110px;border-color:var(--copper,#795136)">
+   <b id="encName"></b> <span class="note" id="encMeta"></span>
+   <div style="margin-top:6px;display:flex;gap:8px">
+    <button class="primary" id="encFight" type="button">迎战</button>
+    <button id="encFlee" type="button">后退脱离</button>
+   </div>
+  </div>
+  <div class="ctx" id="ctxMenu" role="menu" aria-label="对这里做什么"></div>
+  <div class="mapbubble" id="mapBubble" style="display:none"></div>
+   <canvas id="minimap" width="140" height="76" style="position:absolute;right:12px;bottom:10px;border:1px solid var(--line);border-radius:4px;opacity:.92;pointer-events:none"></canvas>  <canvas id="minimap" width="140" height="76" style="position:absolute;right:12px;bottom:10px;border:1px solid var(--line);border-radius:4px;opacity:.92;pointer-events:none"></canvas></div>
+ <div class="actions">
+  <button class="primary" id="enter" type="button">进入</button>
+  <button id="shopBtn" type="button">交易</button>
+  <button id="wait" type="button">原地休整（+4 时辰 · 回血三成）</button>
+  <button id="charBtn" type="button" onclick="location.href='/character'">个人面板 / 背包</button>
+  <span class="note" id="travelNote">点击地点开始旅行；旅行消耗时辰。</span>
+ </div>
+ <div class="feedback" id="feedback">欢迎来到江湖。世界按“时辰”流动；NPC 会在地图上自己走动。</div>
+ <div class="signals" id="sig"><span>Laya 散修读数：<b id="sigText">尚无</b></span></div>
+ <div class="signals" id="memLine" style="display:none"></div>
+ <details>
+  <summary>世界记得什么（世界日志）</summary>
+  <div id="journal"></div>
+  <div style="margin-top:10px"><button id="resetBtn" type="button">重开一局（清档）</button></div>
+ </details>
+</main>
+<script src="/world-rpg.js"></script>
+<script src="/world-inv.js"></script>
+<script src="/world-state.js"></script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const canvas=$('map'),ctx=canvas.getContext('2d');
+const clamp=(v,a,b)=>v<a?a:(v>b?b:v);
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const rand=(a,b)=>a+Math.random()*(b-a);
+const W=1560,H=840;               /* 世界尺寸（扩宽前 990×560，镜头取景） */
+const VW=990,VH=560;              /* 视口：canvas 显示窗口 */
+const cam={x:0,y:0};
+function followCam(){cam.x=clamp(player.x-VW/2,0,W-VW);cam.y=clamp(player.y-VH/2,0,H-VH);}
+
+/* DPR：原先 canvas 固定 990×560 不随设备像素比缩放，高分屏上文字是糊的 */
+(function setupDPR(){
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  canvas.width=Math.round(VW*dpr);canvas.height=Math.round(VH*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+})();
+
+/* 地点：services 决定这里能做什么（此前三个地点只是题材不同、功能完全一样） */
+const LOCS=[
+ {key:'wuxia', name:'山间客栈',    desc:'武侠 · 旅行者与掌柜',   x:300, y:560, services:['rest','shop']},
+ {key:'market',name:'青石集市',    desc:'商旅云集 · 讨价还价',   x:500, y:620, services:['shop']},
+ {key:'city',  name:'雨夜街角',    desc:'都市 · 调查员与店主',   x:1060,y:660, services:['shop']},
+ {key:'space', name:'空间站观测舱',desc:'科幻 · 探索者与站长',   x:880, y:110, services:['rest']},
+ {key:'temple',name:'深山古刹',    desc:'深山 · 庙祝与守山弟子', x:1400,y:400, services:['rest']},
+];
+const locAt=p=>LOCS.find(L=>dist(p,L)<40)||null;
+
+/* ---- 世界状态（刷新不再洗牌） ---- */
+const state=WorldState.load();
+const profile=WorldRPG.load(); WorldInv.ensure(profile);
+let day=state.day,hour=state.hour;
+const player={x:state.pos.x,y:state.pos.y,dest:null,travelTo:null};
+const wanderer={x:820,y:420,dest:{x:480,y:300},mood:'平静',name:'散修·青三',signals:null,busy:false};
+const monsters=state.monsters.map(m=>Object.assign({},m,{dest:null}));
+/* 老存档的怪没有 zoneId：按坐标归区，否则区域补给会把它们当成「三区皆空」而不断增殖 */
+monsters.forEach(m=>{if(!m.zoneId){const z=WorldRPG.zoneAt(m.x,m.y);if(z)m.zoneId=z.id;}});
+let bridgeOK=false,decideCount=0;
+
+function hourName(h){return ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'][Math.floor(((h+1)%24)/2)]+'时';}
+function clock(){return '第 '+day+' 天 · '+hourName(hour);}
+function feedback(t){$('feedback').textContent=t;}
+function note(t){$('travelNote').textContent=t;}
+function addHours(h){hour+=h;while(hour>=24){hour-=24;day++;onNewDay();}$('clock').textContent=clock();saveWorld();}
+function saveWorld(){
+  state.day=day;state.hour=hour;
+  state.pos={x:Math.round(player.x),y:Math.round(player.y)};
+  state.monsters=monsters.map(m=>({id:m.id,tplId:m.tplId,name:m.name,level:m.level,maxHP:m.maxHP,zoneId:m.zoneId||null,x:Math.round(m.x),y:Math.round(m.y),dropBias:m.dropBias||null}));
+  replenish();   // 各区域至少一只（打光了会有新的妖兽游荡过来）
+  WorldState.save(state);
+}
+/* 区域定级：每个区域维持恰好至少一只，等级取自区域固定档位而非玩家等级。
+   按 zone 逐一检查（已有就跳过），不用 while 补总数，否则会越补越多。 */
+function replenish(){
+  (WorldRPG.ZONES||[]).forEach(z=>{
+    if(monsters.some(m=>m.zoneId===z.id))return;
+    const m=WorldState.spawnOne(profile.level,z);
+    if(!m)return;
+    m.dest=null;
+    monsters.push(m);
+  });
+}
+replenish();
+
+/* ---- 主题缓存：原先 draw() 每帧都查一次 prefers-color-scheme ---- */
+let dark=matchMedia('(prefers-color-scheme: dark)').matches;
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{dark=e.matches;});}catch(e){}
+
+/* ---- 地图绘制 ---- */
+function draw(now){
+  ctx.clearRect(0,0,VW,VH);
+  const sky=ctx.createLinearGradient(0,0,0,H);
+  if(dark){sky.addColorStop(0,'#1b2320');sky.addColorStop(1,'#2a3230');}else{sky.addColorStop(0,'#e9e4d2');sky.addColorStop(1,'#cfd6c5');}
+  ctx.fillStyle=sky;ctx.fillRect(0,0,VW,VH);
+  ctx.save();ctx.translate(-cam.x,-cam.y);
+  /* 区域等级带画在地表上：让玩家一眼看出哪里能碾压、哪里会送命 */
+  (WorldRPG.ZONES||[]).forEach(z=>{
+   ctx.beginPath();ctx.arc(z.cx,z.cy,z.r,0,Math.PI*2);
+   ctx.fillStyle=dark?'rgba(120,150,110,0.10)':'rgba(120,150,110,0.14)';ctx.fill();
+   ctx.setLineDash([6,6]);ctx.lineWidth=1;ctx.strokeStyle=dark?'rgba(150,180,140,0.35)':'rgba(90,120,80,0.40)';ctx.stroke();ctx.setLineDash([]);
+   ctx.fillStyle=dark?'#9fb0a5':'#556458';ctx.font='11px "Microsoft YaHei UI",sans-serif';ctx.textAlign='center';
+   ctx.fillText(z.name+' · 妖兽 Lv'+z.minLv+'-'+z.maxLv,z.cx,z.cy-z.r+18);
+  });
+  ctx.fillStyle=dark?'#31423a':'#a8b8a2';
+  [[60,120,90,70],[150,90,120,90],[40,220,70,60],[210,180,100,80],[1180,140,110,80],[1320,200,95,70],[1420,120,85,65],[1250,330,100,75],[1440,520,90,60]].forEach(([x,y,w,h])=>{ctx.beginPath();ctx.moveTo(x,y+h);ctx.lineTo(x+w/2,y);ctx.lineTo(x+w,y+h);ctx.closePath();ctx.fill();});
+  ctx.strokeStyle=dark?'#4a564f':'#b9ad8d';ctx.lineWidth=3;ctx.setLineDash([9,7]);
+  ctx.beginPath();ctx.moveTo(LOCS[0].x,LOCS[0].y);ctx.lineTo(430,600);ctx.lineTo(LOCS[1].x,LOCS[1].y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(LOCS[1].x,LOCS[1].y);ctx.lineTo(900,660);ctx.lineTo(LOCS[2].x,LOCS[2].y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(LOCS[1].x,LOCS[1].y);ctx.lineTo(830,340);ctx.lineTo(LOCS[3].x,LOCS[3].y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(LOCS[1].x,LOCS[1].y);ctx.lineTo(1160,560);ctx.lineTo(LOCS[4].x,LOCS[4].y);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=dark?'#2c3f4a':'#a9c4cc';ctx.beginPath();ctx.ellipse(470,210,90,48,0,0,Math.PI*2);ctx.fill();
+  const t=now||performance.now();
+  LOCS.forEach(L=>{
+   ctx.beginPath();ctx.arc(L.x,L.y,16+Math.sin(t/500)*1.5,0,Math.PI*2);
+   ctx.fillStyle=dark?'#d5a17d':'#795136';ctx.fill();
+   ctx.lineWidth=2;ctx.strokeStyle=dark?'#202522':'#f3f2ec';ctx.stroke();
+   ctx.fillStyle=dark?'#edf0e9':'#29362c';ctx.font='13px "Microsoft YaHei UI",sans-serif';ctx.textAlign='center';
+   ctx.fillText(L.name,L.x,L.y-26);
+   ctx.fillStyle=dark?'#9fb0a5':'#556458';ctx.font='11px "Microsoft YaHei UI",sans-serif';
+   ctx.fillText(L.desc+(L.services.indexOf('shop')>=0?' · 有店':''),L.x,L.y+34);
+  });
+  ctx.beginPath();ctx.moveTo(wanderer.x,wanderer.y-11);ctx.lineTo(wanderer.x-9,wanderer.y+8);ctx.lineTo(wanderer.x+9,wanderer.y+8);ctx.closePath();
+  ctx.fillStyle='#4f7d94';ctx.fill();ctx.strokeStyle=dark?'#202522':'#f3f2ec';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=dark?'#9fb0a5':'#556458';ctx.font='11px "Microsoft YaHei UI",sans-serif';ctx.textAlign='center';
+  ctx.fillText(wanderer.name+'（'+wanderer.mood+'）',wanderer.x,wanderer.y+24);
+  monsters.forEach(m=>{
+   const puls=1+Math.sin(t/300)*0.08;
+   ctx.beginPath();ctx.moveTo(m.x,m.y+11*puls);ctx.lineTo(m.x-9,m.y-8);ctx.lineTo(m.x+9,m.y-8);ctx.closePath();
+   ctx.fillStyle='#8a4a3a';ctx.fill();ctx.strokeStyle=dark?'#202522':'#f3f2ec';ctx.lineWidth=2;ctx.stroke();
+   ctx.fillStyle=dark?'#c9a39a':'#7a4436';ctx.font='11px "Microsoft YaHei UI",sans-serif';ctx.textAlign='center';
+   ctx.fillText(m.name+' Lv'+m.level,m.x,m.y-18);
+  });
+  ctx.beginPath();ctx.arc(player.x,player.y,9,0,Math.PI*2);ctx.fillStyle=dark?'#e8d5b5':'#5e4936';ctx.fill();
+  ctx.strokeStyle=dark?'#202522':'#f3f2ec';ctx.lineWidth=2;ctx.stroke();
+  ctx.strokeStyle=dark?'#d5a17d':'#795136';ctx.beginPath();ctx.moveTo(player.x,player.y-9);ctx.lineTo(player.x,player.y-26);ctx.stroke();
+  ctx.fillStyle=dark?'#d5a17d':'#795136';ctx.beginPath();ctx.moveTo(player.x,player.y-26);ctx.lineTo(player.x+16,player.y-21);ctx.lineTo(player.x,player.y-16);ctx.closePath();ctx.fill();
+  ctx.fillStyle=dark?'#edf0e9':'#29362c';ctx.font='12px "Microsoft YaHei UI",sans-serif';ctx.fillText('旅人（你）',player.x,player.y+24);
+  ctx.restore();
+
+  /* 小地图：世界缩到 140×76，摄像机框红铜色 */
+  const mm=$('minimap');if(mm){
+  const mc=mm.getContext('2d');
+  mc.clearRect(0,0,140,76);
+  mc.fillStyle=dark?'#20282a':'#dcd6c2';mc.fillRect(0,0,140,76);
+  mc.fillStyle='#795136';LOCS.forEach(L=>mc.fillRect(L.x/W*140-2,L.y/H*76-2,4,4));
+  mc.fillStyle='#8a4a3a';monsters.forEach(m=>mc.fillRect(m.x/W*140-1,m.y/H*76-1,2,2));
+  mc.fillStyle='#4f7d94';mc.fillRect(wanderer.x/W*140-2,wanderer.y/H*76-2,3,3);
+  mc.strokeStyle=dark?'#8ab4a0':'#4a6a55';mc.lineWidth=1;
+  (WorldRPG.ZONES||[]).forEach(z=>{mc.beginPath();mc.arc(z.cx/W*140,z.cy/H*76,z.r/W*140,0,Math.PI*2);mc.stroke();});
+  mc.strokeStyle='#d5a17d';mc.strokeRect(cam.x/W*140,cam.y/H*76,VW/W*140,VH/H*76);
+  mc.fillStyle='#e8d5b5';mc.fillRect(player.x/W*140-2,player.y/H*76-2,4,4);
+  }}
+
+/* ---- 单循环：rAF + 真实 delta（原先 setInterval 固定 dt，后台标签页节流后移动会降速） ---- */
+const SPEED=140;
+let lastTs=0,saveTick=0;
+function step(dt){
+  for(const m of [player,wanderer]){
+   if(!m.dest)continue;
+   const d=dist(m,m.dest);
+   if(d<3){m.dest=null;onArrive(m);}
+   else{const v=SPEED*dt*(m===player?1:0.55);m.x+=(m.dest.x-m.x)/d*v;m.y+=(m.dest.y-m.y)/d*v;}
+  }
+  monsters.forEach(m=>{
+   if(!m.dest){const z=WorldRPG.ZONES.find(zz=>zz.id===m.zoneId)||{cx:W/2,cy:H/2,r:200};
+    if(Math.random()<0.4*dt)m.dest={x:clamp(z.cx+rand(-z.r,z.r),40,W-40),y:clamp(z.cy+rand(-z.r,z.r),40,H-40)};return;}
+   const d=dist(m,m.dest);
+   if(d<3)m.dest=null;
+   else{m.x+=(m.dest.x-m.x)/d*45*dt;m.y+=(m.dest.y-m.y)/d*45*dt;}
+  });
+  followCam();
+  updateButtons();
+  monsterAndEncounter();
+}
+function frame(now){
+  const dt=lastTs?Math.min(0.05,(now-lastTs)/1000):1/60;
+  lastTs=now;
+  step(dt);
+  draw(now);
+  saveTick+=dt;
+  if(saveTick>5){saveTick=0;saveWorld();}
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+function onArrive(m){
+  if(m===player){
+   const loc=locAt(player);
+   $('locText').textContent=loc?loc.name:'荒野';
+   if(loc){WorldState.markVisited(state,loc.key,loc.name);saveWorld();renderJournal();}
+   if(player.travelTo){feedback('抵达 '+(loc?loc.name:'目的地')+'。');player.travelTo=null;}
+   saveWorld();
+  }else{
+   wandererTick();
+   setTimeout(()=>{if(!wanderer.dest)wanderer.dest={x:120+Math.random()*1300,y:110+Math.random()*620};},2500+Math.random()*4000);
+  }
+}
+function zoneTextAt(p){
+  const z=WorldRPG.zoneAt(p.x,p.y);
+  return z?(z.name+'（妖兽 Lv'+z.minLv+'-'+z.maxLv+'）'):'荒野';
+}
+function updateButtons(){
+  const loc=locAt(player);
+  const b=$('enter'),s=$('shopBtn');
+  $('zoneText').textContent=zoneTextAt(player);
+  if(loc){
+   b.style.display='inline-block';b.textContent='进入 '+loc.name;b.dataset.theme=loc.key;b.dataset.name=loc.name;
+   if(loc.services.indexOf('shop')>=0){s.style.display='inline-block';s.dataset.loc=loc.name;s.textContent='在'+loc.name+'交易';}
+   else s.style.display='none';
+   $('wait').textContent=loc.services.indexOf('rest')>=0?('在'+loc.name+'歇脚（+4 时辰 · 回血三成 · 气满）'):'原地休整（需干粮 · +4 时辰）';
+  }else{
+   b.style.display='none';s.style.display='none';
+   $('wait').textContent='原地休整（需干粮 · +4 时辰）';
+  }
+}
+
+canvas.addEventListener('click',e=>{
+ const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*VW/r.width+cam.x,y=(e.clientY-r.top)*VH/r.height+cam.y;
+ const loc=LOCS.find(L=>Math.hypot(L.x-x,L.y-y)<30);
+ if(loc){
+  if(dist(player,loc)<40){feedback('你已经在 '+loc.name+' 了。');return;}
+  player.dest={x:loc.x+34,y:loc.y+14};player.travelTo=loc.key;
+  const h=Math.max(2,Math.round(dist(player,loc)/70));
+  addHours(h);note('前往 '+loc.name+'，路上 '+h+' 个时辰……');
+  feedback('启程前往 '+loc.name+'。');
+ }else{player.dest={x:clamp(x,30,W-30),y:clamp(y,40,H-30)};player.travelTo=null;feedback('走向地图上的那一点。');}
+});
+/* ---- 右键：直接对地图上的单位做事（此前只有左键行走与点击地点） ---- */
+const ctxMenu=$('ctxMenu'),mapBubble=$('mapBubble');
+function hideCtx(){ctxMenu.style.display='none';}
+function mapSay(html,at){
+  mapBubble.innerHTML=html;
+  mapBubble.style.left=at.x+'px';mapBubble.style.top=(at.y-20)+'px';
+  mapBubble.style.display='block';
+  clearTimeout(mapBubble._t);mapBubble._t=setTimeout(()=>mapBubble.style.display='none',4600);
+}
+function showCtx(px,py,title,items){
+  ctxMenu.innerHTML='';
+  const ttl=document.createElement('div');ttl.className='ttl';ttl.textContent=title;ctxMenu.appendChild(ttl);
+  items.forEach(([label,fn,disabled])=>{
+    const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=!!disabled;
+    b.onclick=()=>{hideCtx();fn();};ctxMenu.appendChild(b);
+  });
+  ctxMenu.style.display='block';
+  ctxMenu.style.left=Math.max(8,Math.min(VW-176,px))+'px';
+  ctxMenu.style.top=Math.max(8,Math.min(VH-160,py))+'px';
+}
+/* 对散修说话：桥在线时取 Laya 读数再按读数回话，离线时按心境给本地口吻 */
+async function wandererSay(text){
+  const at={x:wanderer.x-cam.x,y:wanderer.y-cam.y};
+  mapSay('<b>你</b>：'+text,at);
+  const reply=sv=>{
+    const h=sv?(sv.hostility||0):null,c=sv?(sv.cooperation||0):null;
+    if(h==null)return wanderer.mood==='警惕'?'他按住刀柄，只冷冷瞥了你一眼，并不搭腔。':(wanderer.mood==='友善'?'他笑了笑，与你攀谈几句，言语间还算热络。':'他淡淡点头，并不多说。');
+    if(h>0.5)return '他眼神一沉，手按在刀柄上：「阁下问这些，是何用意？」（敌意 '+h.toFixed(2)+'）';
+    if(c>0.45)return '他放下戒心，与你多说了几句江湖见闻。（合作 '+c.toFixed(2)+'）';
+    return '他打量你一番，平平淡淡地答了几句。（敌意 '+h.toFixed(2)+'）';
+  };
+  if(!bridgeOK){setTimeout(()=>mapSay('<b>'+wanderer.name+'</b>：'+reply(null)+'<br><span style="color:var(--muted)">桥离线 · 本地口吻</span>',at),700);return;}
+  if(wanderer.busy)return;
+  wanderer.busy=true;
+  try{
+    const res=await fetch('/api/decide',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({player_input:text,session_id:'world-wanderer',actor_id:'wanderer'})});
+    const j=await res.json();
+    if(res.ok&&j.signal_values){
+      decideCount++;
+      const sv=j.signal_values,sh={};for(const d of (j.raw_deltas_all_signals||[]))sh[d.question]=d.raw;
+      wanderer.signals=sv;wanderer.mood=sv.hostility>0.45?'警惕':(sv.cooperation>0.45?'友善':'平静');
+      $('sigText').textContent='敌意 '+sv.hostility.toFixed(2)+' · 合作 '+sv.cooperation.toFixed(2)+' · 危险 '+sv.danger.toFixed(2)+' · 怀疑变化 '+(sh.doubt_shift!=null?sh.doubt_shift.toFixed(1)+'档':'—')+'（共 '+decideCount+' 次 tick）';
+      setTimeout(()=>mapSay('<b>'+wanderer.name+'</b>：'+reply(sv),at),500);
+      return;
+    }
+  }catch(e){/* 桥离线 */}
+  finally{wanderer.busy=false;}
+  setTimeout(()=>mapSay('<b>'+wanderer.name+'</b>：'+reply(null),at),500);
+}
+function battleUrl(kind,lv,name,mid){
+  const z=WorldRPG.zoneAt(player.x,player.y);
+  return '/battle?kind='+kind+'&lv='+lv+'&name='+encodeURIComponent(name||'')+'&mid='+(mid||'')+'&loc='+encodeURIComponent(z?z.name:'荒野')+'&back=%2F';
+}
+canvas.addEventListener('contextmenu',e=>{
+  e.preventDefault();
+  /* 摄像机双轨：sx/sy=屏幕坐标（菜单/气泡定位用），wx/wy=世界坐标（目标判定/寻路用）。
+     旧版单轨用 W 缩放且漏加 cam，右键目标整体偏移（用户实测反馈）。 */
+  const r=canvas.getBoundingClientRect(),sx=(e.clientX-r.left)*VW/r.width,sy=(e.clientY-r.top)*VH/r.height;
+  const wx=sx+cam.x,wy=sy+cam.y;
+  const pt={x:wx,y:wy};
+  const atScreen=p=>({x:p.x-cam.x,y:p.y-cam.y});
+  const mon=monsters.find(m=>dist(pt,m)<20);
+  if(mon){
+    const z=(WorldRPG.ZONES||[]).find(zz=>zz.id===mon.zoneId)||WorldRPG.zoneAt(mon.x,mon.y);
+    showCtx(sx,sy,mon.name+' Lv'+mon.level,[
+      ['迎战',()=>{feedback('你拔剑迎上 '+mon.name+'。');location.href=battleUrl(mon.tplId,mon.level,mon.name,mon.id);}],
+      ['后退脱离',()=>{mon.dest={x:clamp(mon.x<player.x?mon.x-140:mon.x+140,40,W-40),y:clamp(mon.y+(Math.random()*160-80),60,H-60)};feedback('你退开一步，'+mon.name+'没有追来。');}],
+      ['打量',()=>{mapSay('<b>'+mon.name+'</b> Lv'+mon.level+'<br>出没于'+(z?z.name:'荒野')+'（Lv'+z.minLv+'-'+z.maxLv+'）<br><span style="color:var(--muted)">与你相距 '+Math.round(dist(player,mon))+' 步</span>',atScreen(mon));}],
+    ]);
+    return;
+  }
+  if(dist(pt,wanderer)<20){
+    showCtx(sx,sy,wanderer.name+'（'+wanderer.mood+'）',[
+      ['搭话',()=>wandererSay('借问一声，前面的路可还太平？')],
+      ['打探消息',()=>wandererSay('听说这一带近来不太平，你知道些什么？')],
+      ['拔刀相向',()=>{feedback('你亮出兵刃。'+wanderer.name+'神色一变，也握住了刀柄。');WorldState.noteNpc(state,'wanderer',{name:wanderer.name,tag:'attacked',topic:'world'});WorldState.save(state);location.href=battleUrl('human',Math.max(1,profile.level),wanderer.name,'');}],
+      ['打量',()=>{const s=wanderer.signals;mapSay('<b>'+wanderer.name+'</b><br>心境：'+wanderer.mood+(s?('<br>敌意 '+(s.hostility||0).toFixed(2)+' · 合作 '+(s.cooperation||0).toFixed(2)):'<br><span style="color:var(--muted)">尚无 Laya 读数（桥离线）</span>'),atScreen(wanderer));}],
+    ]);
+    return;
+  }
+  const loc=LOCS.find(L=>Math.hypot(L.x-wx,L.y-wy)<30);
+  if(loc){
+    const items=[['进入 '+loc.name,()=>{location.href='/scene?theme='+loc.key;}]];
+    if(loc.services.indexOf('shop')>=0)items.push(['在此交易',()=>{location.href='/shop?loc='+encodeURIComponent(loc.name);}]);
+    if(loc.services.indexOf('rest')>=0)items.push([('在'+loc.name+'歇脚'),()=>{player.x=loc.x+34;player.y=loc.y+14;$('wait').click();}]);
+    items.push(['打量',()=>{mapSay('<b>'+loc.name+'</b><br>'+loc.desc+'<br><span style="color:var(--muted)">可'+(loc.services.map(s=>({rest:'歇脚',shop:'交易'}[s])).join('、'))+'</span>',atScreen(loc));}]);
+    if(dist(player,loc)>=40)items.unshift(['前往此处',()=>{player.dest={x:loc.x+34,y:loc.y+14};player.travelTo=loc.key;const h=Math.max(2,Math.round(dist(player,loc)/70));addHours(h);feedback('启程前往 '+loc.name+'。');}]);
+    showCtx(sx,sy,loc.name,items);
+    return;
+  }
+  const z=WorldRPG.zoneAt(wx,wy);
+  showCtx(sx,sy,z?z.name:'荒野',[
+    ['走向此处',()=>{player.dest={x:clamp(wx,30,W-30),y:clamp(wy,40,H-30)};player.travelTo=null;feedback('走向地图上的那一点。');}],
+    ['原地休整',()=>$('wait').click()],
+    ['打量',()=>{mapSay(z?('<b>'+z.name+'</b><br>此处妖兽 Lv'+z.minLv+'-'+z.maxLv):'<b>荒野</b><br>不属于任何区域，妖兽零散出没。',atScreen({x:wx,y:wy}));}],
+  ]);
+});
+document.addEventListener('pointerdown',e=>{if(!ctxMenu.contains(e.target))hideCtx();});
+window.addEventListener('blur',hideCtx);
+
+$('enter').onclick=()=>{const b=$('enter');if(b.dataset.theme)location.href='/scene?theme='+b.dataset.theme;};
+$('shopBtn').onclick=()=>{const s=$('shopBtn');location.href='/shop?loc='+encodeURIComponent(s.dataset.loc||'');};
+$('charBtn').onclick=()=>location.href='/character';
+
+/* 休整：有 rest 服务的地点免费且回满真元；野地必须消耗干粮，否则只回一成 */
+$('wait').onclick=()=>{
+  const loc=locAt(player);
+  const canRestFree=loc&&loc.services.indexOf('rest')>=0;
+  const t=WorldInv.totals(profile);
+  if(canRestFree){
+    addHours(4);
+    profile.hp=Math.min(t.hp,profile.hp+Math.round(t.hp*0.3));
+    profile.qi=t.qi;
+    WorldRPG.save(profile);renderRpg();
+    feedback('在'+loc.name+'歇了 4 个时辰，气血回复三成，真元已满。');
+  }else if(WorldInv.countOf(profile,'bread')>0){
+    WorldInv.remove(profile,'bread',1);
+    addHours(4);
+    profile.hp=Math.min(t.hp,profile.hp+Math.round(t.hp*0.3));
+    WorldRPG.save(profile);renderRpg();
+    feedback('就着一份干粮在野地歇了 4 个时辰，气血回复三成。');
+  }else{
+    addHours(2);
+    profile.hp=Math.min(t.hp,profile.hp+Math.round(t.hp*0.1));
+    WorldRPG.save(profile);renderRpg();
+    feedback('腹中无粮，只能就地打坐两个时辰，只回了些许气血。（城镇可安心歇脚，干粮可在有店处购买）');
+  }
+};
+$('resetBtn').onclick=()=>{
+  if(!confirm('重开一局会清空角色成长与世界状态，确定？'))return;
+  localStorage.removeItem(WorldRPG.KEY);localStorage.removeItem(WorldState.KEY);
+  location.reload();
+};
+function onNewDay(){feedback('新的一天（第 '+day+' 天）。散修又在江湖上走动了。');wanderer.dest={x:120+Math.random()*760,y:120+Math.random()*330};replenish();}
+
+/* ---- 成长面板 ---- */
+function renderRpg(){
+  const realm=WorldRPG.realmOf(profile.level);
+  const t=WorldInv.totals(profile);
+  $('rpgLevel').textContent='旅人 Lv'+profile.level;
+  $('rpgRealm').textContent=realm.name;
+  $('rpgHp').style.width=(profile.hp/t.hp*100)+'%';
+  $('rpgHpText').textContent='气血 '+Math.ceil(profile.hp)+'/'+t.hp;
+  $('rpgQi').style.width=((profile.qi||0)/Math.max(1,t.qi)*100)+'%';
+  $('rpgQiText').textContent='真元 '+(profile.qi||0)+'/'+t.qi;
+  $('rpgGold').textContent=profile.gold;
+  $('rpgXp').textContent='经验 '+profile.xp+'/'+WorldRPG.xpToNext(profile.level);
+}
+function renderJournal(){
+  const box=$('journal');
+  const list=(state.journal||[]).slice(-6).reverse();
+  box.innerHTML=list.length?list.map(j=>'<div><span style="color:var(--copper)">'+j.t+'</span> '+j.text+'</div>').join(''):'<div>世界还没有记住任何事。</div>';
+}
+/* 场景层写回来的 NPC 记忆，在地图上直接可见——证明世界记得你做过什么 */
+function renderMemory(){
+  const el=$('memLine'),mems=Object.entries(state.npcMemory||{});
+  if(!mems.length){el.style.display='none';return;}
+  el.style.display='flex';
+  el.innerHTML='<span>场景里你接触过：</span>'+mems.slice(-4).map(([,m])=>
+    '<span><b>'+(m.name||'?')+'</b> ×'+m.count+(m.hostility?(' · 敌意 '+m.hostility):'')+((m.tags&&m.tags.length)?(' · '+m.tags.join('/')):'')+'</span>').join('');
+}
+renderRpg();renderJournal();renderMemory();
+$('clock').textContent=clock();
+const loc0=locAt(player);if(loc0)$('locText').textContent=loc0.name;
+updateButtons();
+
+/* ---- 妖兽遭遇（等级与战斗页同源，不再写死 1/2） ---- */
+function monsterAndEncounter(){
+  const enc=monsters.find(m=>dist(player,m)<30);
+  const panel=$('encounter');
+  if(enc){
+   if(panel.dataset.encId!==enc.id||panel.style.display==='none'){
+    panel.dataset.encId=enc.id;panel.style.display='block';
+    $('encName').textContent=enc.name+' Lv'+enc.level;
+    const ez=(WorldRPG.ZONES||[]).find(z=>z.id===enc.zoneId)||WorldRPG.zoneAt(enc.x,enc.y);
+    $('encMeta').textContent='—— 在'+(ez?ez.name:'荒野')+'挡住了去路';
+    const locName=(locAt(player)||{}).name||'荒野';
+    $('encFight').onclick=()=>{location.href='/battle?kind='+enc.tplId+'&lv='+enc.level+'&mid='+enc.id+'&loc='+encodeURIComponent(locName);};
+    $('encFlee').onclick=()=>{enc.dest={x:clamp(enc.x<player.x?enc.x-140:enc.x+140,40,W-40),y:clamp(enc.y+(Math.random()*160-80),60,H-60)};panel.style.display='none';feedback('你退开了。'+enc.name+'退向一旁。');};
+    feedback('遭遇 '+enc.name+'（Lv'+enc.level+'）！迎战或后退脱离。');
+   }
+  }else if(panel.style.display!=='none'){panel.style.display='none';panel.dataset.encId='';}
+}
+
+/* ---- Laya 桥状态 + 散修读数 ---- */
+async function pollBridge(){
+ try{
+  const r=await fetch('/healthz'),j=await r.json();
+  bridgeOK=!!(j.ok&&j.bridge&&j.bridge.ready);
+  $('bridgeDot').className='dot '+(bridgeOK?'on':'off');
+  $('bridgeText').textContent=bridgeOK?(j.bridge.model||'在线'):'离线';
+ }catch(e){bridgeOK=false;$('bridgeDot').className='dot off';$('bridgeText').textContent='离线';}
+}
+pollBridge();setInterval(pollBridge,15000);
+async function wandererTick(){
+ if(!bridgeOK||wanderer.busy)return;
+ wanderer.busy=true;
+ try{
+  /* 输入带上时辰与所处之地，读数才会随情境变化（原先是同一句恒定的话） */
+  const near=(locAt(player)||{}).name||'荒野';
+  const text='他（'+wanderer.name+'）在第 '+day+' 天'+hourName(hour)+'独自漂泊至'+near+'一带，环顾四周，思量着往后的去处。';
+  const res=await fetch('/api/decide',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({player_input:text,session_id:'world-wanderer',actor_id:'wanderer'})});
+  const j=await res.json();
+  if(res.ok&&j.signal_values){
+   decideCount++;
+   const sv=j.signal_values,sh={};for(const d of (j.raw_deltas_all_signals||[]))sh[d.question]=d.raw;
+   wanderer.signals=sv;wanderer.mood=sv.hostility>0.45?'警惕':(sv.cooperation>0.45?'友善':'平静');
+   $('sigText').textContent='敌意 '+sv.hostility.toFixed(2)+' · 合作 '+sv.cooperation.toFixed(2)+' · 危险 '+sv.danger.toFixed(2)+' · 怀疑变化 '+(sh.doubt_shift!=null?sh.doubt_shift.toFixed(1)+'档':'—')+'（共 '+decideCount+' 次 tick）';
+  }
+ }catch(e){/* 桥离线 */ }
+ finally{wanderer.busy=false;}
+}
+/* 调试出口：供端到端脚本只读地取用世界数据（游戏逻辑不依赖它） */
+window.__mapDebug={player,monsters,cam,worldToScreen:(x,y)=>{const r=canvas.getBoundingClientRect();return {x:r.left+(x-cam.x)*r.width/VW,y:r.top+(y-cam.y)*r.height/VH};},wanderer:()=>wanderer,LOCS,profile:()=>profile,state:()=>state,renderRpg,saveWorld,replenish};
+})();
+</script>
+</body>
+</html>

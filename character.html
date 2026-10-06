@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>个人面板 · 世界地图原型</title>
+<style>
+:root{--bg:light-dark(#f3f2ec,#202522);--panel:light-dark(#e8e8df,#2b332d);--ink:light-dark(#29362c,#edf0e9);--muted:light-dark(#556458,#b6c2b9);--line:light-dark(#bdc8bc,#526456);--copper:light-dark(#795136,#d5a17d)}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:light-dark(#eceee7,#151a17);color:var(--ink);color-scheme:light dark;font:14px/1.5 "Microsoft YaHei UI",system-ui,sans-serif}
+main{max-width:1000px;margin:auto}
+.window{background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+header{padding:14px 22px;display:flex;gap:14px;align-items:baseline;border-bottom:1px solid var(--line)}
+h2{font-size:18px;font-weight:500;margin:0}
+a{color:var(--copper);text-decoration:none}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:0}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.col{padding:16px 22px}
+.col+.col{border-left:1px solid var(--line)}
+@media(max-width:860px){.col+.col{border-left:0;border-top:1px solid var(--line)}}
+h3{font-size:13px;font-weight:500;color:var(--muted);margin:10px 0 8px}
+.hpbar{height:12px;background:var(--panel);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.hpbar i{display:block;height:100%;background:#b0563e;transition:width .3s}
+.xpbar{height:7px;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-top:5px}
+.xpbar i{display:block;height:100%;background:#7a9e5f;transition:width .3s}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{padding:3px 0}
+td:nth-child(2){text-align:right;color:var(--muted)}
+td:nth-child(3){text-align:right;font-variant-numeric:tabular-nums}
+.gearrow{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin:6px 0}
+.gearrow canvas{width:64px;height:64px;background:var(--panel);border-radius:6px}
+.gearrow .nm{font-size:13px}
+.gearrow .st{font-size:11px;color:var(--muted)}
+.gearrow button{font-size:12px;padding:4px 10px}
+.bag{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.cell{border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;cursor:pointer;background:var(--bg)}
+.cell:hover{border-color:var(--copper)}
+.cell canvas{width:64px;height:64px}
+.cell .nm{font-size:12px}
+.cell .ct{font-size:11px;color:var(--muted)}
+.cell.empty{opacity:.4;cursor:default}
+.actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px}
+button:hover{border-color:var(--copper)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg);border:1px solid var(--copper);border-radius:8px;padding:8px 16px;font-size:13px;display:none}
+.empty-bag{color:var(--muted);font-size:13px;padding:12px 0}
+</style>
+</head>
+<body>
+<main>
+<div class="window">
+ <header>
+  <h2>个人面板</h2>
+  <span class="note">图标由 SandboxDrawingKit 绘制；装备 schema 采纳 hedra-engine（slot/req/mods）。点击背包格可装备/使用/出售。</span>
+  <a href="/">← 返回世界地图</a>
+ </header>
+ <div class="grid">
+  <div class="col">
+   <h3>角色</h3>
+   <div style="font-size:15px"><b id="cName">旅人</b> <span id="cRealm" style="color:var(--copper)"></span></div>
+   <div class="hpbar" style="margin-top:8px"><i id="cHp"></i></div>
+   <div class="note" id="cHpText"></div>
+   <div class="xpbar"><i id="cXp"></i></div>
+   <div class="note" id="cXpText"></div>
+   <h3>属性（基础 + 装备）</h3>
+   <table id="statTable"></table>
+   <h3>装备栏（点击卸下）</h3>
+   <div id="gearList"></div>
+   <h3>战绩</h3>
+   <div class="note" id="record"></div>
+  </div>
+  <div class="col">
+   <h3>背包（<span id="bagCount">0</span>）</h3>
+   <div class="bag" id="bag"></div>
+   <div class="empty-bag" id="bagEmpty" style="display:none">背包空空如也。去地图上打妖兽，掉落武器、护具和丹药。</div>
+  </div>
+ </div>
+</div>
+</main>
+<div class="toast" id="toast"></div>
+<script src="/world-rpg.js"></script>
+<script src="/world-inv.js"></script>
+<script src="/kit/core.js"></script>
+<script src="/kit/quad-lib.js"></script>
+<script src="/kit/creatures.js"></script>
+<script src="/kit/items-lib.js"></script>
+<script src="/kit/items.js"></script>
+<script src="/kit/accessories.js"></script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const INV=WorldInv, R=WorldRPG;
+const profile=R.load(); INV.ensure(profile);
+function toast(t){const el=$('toast');el.textContent=t;el.style.display='block';clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',1800);}
+function icon(cv,arch,color){
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(!window.SandboxDrawingKit||!SandboxDrawingKit.has(arch)){
+    ctx.fillStyle='#888';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText(arch||'?',cv.width/2,cv.height/2);return;
+  }
+  const r=SandboxDrawingKit.drawEntity(ctx,
+    {id:arch,kind:'item',archetype:arch,appearance:{color:color||undefined}},
+    {x:4,y:4,width:cv.width-8,height:cv.height-8,phase:0});
+  if(!r.supported){ctx.fillStyle='#888';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText(arch,cv.width/2,cv.height/2);}
+}
+function totals(){
+  const t=INV.totals(profile);
+  const realm=R.realmOf(profile.level);
+  t.atkB=Math.round(t.atk*realm.bonus);
+  return t;
+}
+function render(){
+  const realm=R.realmOf(profile.level);
+  const t=totals();
+  $('cName').textContent='旅人 Lv'+profile.level;
+  $('cRealm').textContent=realm.name+'（攻击 ×'+realm.bonus.toFixed(1)+'）';
+  $('cHp').style.width=(profile.hp/t.hp*100)+'%';
+  $('cHpText').textContent='气血 '+Math.ceil(profile.hp)+'/'+t.hp+(t.hp!==profile.maxHP?'（含装备 +'+(t.hp-profile.maxHP)+'）':'');
+  const need=R.xpToNext(profile.level);
+  $('cXp').style.width=(profile.xp/need*100)+'%';
+  $('cXpText').textContent='经验 '+profile.xp+'/'+need+' · 铜币 '+profile.gold;
+  $('statTable').innerHTML=[['攻击',profile.atk,t.atkB],['防御',profile.def,t.def],['速度',profile.speed,t.speed],['气血上限',profile.maxHP,t.hp],['真元上限',profile.maxQi||0,t.qi]]
+    .map(([k,b,f])=>'<tr><td>'+k+'</td><td>'+b+'</td><td>'+(f===b?b:'<b style="color:var(--copper)">'+f+'</b>')+'</td></tr>').join('');
+  // 装备栏
+  const gear=$('gearList');gear.innerHTML='';
+  INV.SLOTS.forEach(slot=>{
+    const id=profile.gear[slot],item=id?INV.CATALOG[id]:null;
+    const row=document.createElement('div');row.className='gearrow';
+    const cv=document.createElement('canvas');cv.width=96;cv.height=96;
+    icon(cv,item?item.icon:null,item?item.color:undefined);
+    row.appendChild(cv);
+    const info=document.createElement('div');info.className='nm';
+    info.innerHTML=item?('【'+INV.SLOT_ZH[slot]+'】'+item.name+'<div class="st">'+
+      (item.mods?Object.entries(item.mods).map(([k,v])=>({atk:'攻',def:'防',speed:'速',hp:'气血',qi:'真元'}[k]||k)+' +'+v).join('　'):'无加成')+
+      (item.req?(' · 需 Lv'+item.req):'')+'</div>'):'<div class="st">【'+INV.SLOT_ZH[slot]+'】空</div>';
+    row.appendChild(info);
+    if(item){
+      const b=document.createElement('button');b.textContent='卸下';
+      b.onclick=()=>{const r=INV.unequip(profile,slot);if(r.ok){R.save(profile);toast('已卸下'+item.name);render();}else toast(r.why);};
+      row.appendChild(b);
+    }
+    gear.appendChild(row);
+  });
+  $('record').textContent='击杀 '+profile.kills+' · 败北 '+profile.losses+' · 击杀途径都算历练。';
+  // 背包
+  const bag=$('bag');bag.innerHTML='';
+  $('bagCount').textContent=profile.bag.reduce((n,s)=>n+s.count,0)+' 件';
+  $('bagEmpty').style.display=profile.bag.length?'none':'block';
+  profile.bag.forEach((slot,bi)=>{
+    const item=INV.CATALOG[slot.id];if(!item)return;
+    const cell=document.createElement('div');cell.className='cell';
+    const cv=document.createElement('canvas');cv.width=96;cv.height=96;
+    icon(cv,item.icon,item.color);cell.appendChild(cv);
+    const nm=document.createElement('div');nm.className='nm';nm.textContent=item.name;cell.appendChild(nm);
+    const ct=document.createElement('div');ct.className='ct';ct.textContent=(item.stack&&slot.count>1?'×'+slot.count:'')+(item.mods?'攻防加成':(item.kind==='consumable'?'使用回血':(item.sell?'可售 '+item.sell:'材料')));
+    cell.appendChild(ct);
+    const acts=document.createElement('div');acts.className='actions';
+    if(item.slot){const b=document.createElement('button');b.textContent='装备';b.onclick=()=>{const r=INV.equip(profile,slot.id);if(r.ok){R.save(profile);toast('已装备'+item.name);render();}else toast(r.why);};acts.appendChild(b);}
+    if(item.kind==='consumable'){const b=document.createElement('button');b.textContent='使用';b.onclick=()=>{const r=INV.use(profile,slot.id);if(r.ok){R.save(profile);toast('使用了'+item.name+'，回血 '+r.healed);render();}else toast(r.why);};acts.appendChild(b);}
+    const b2=document.createElement('button');b2.textContent='出售';
+    b2.onclick=()=>{const r=INV.sell(profile,slot.id);if(r.ok){R.save(profile);toast('售出，铜币 +'+r.gold);render();}else toast(r.why);};
+    acts.appendChild(b2);
+    cell.appendChild(acts);
+    bag.appendChild(cell);
+  });
+}
+render();
+})();
+</script>
+</body>
+</html>

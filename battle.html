@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>战斗 · 世界地图原型</title>
+<style>
+:root{--bg:light-dark(#f3f2ec,#202522);--panel:light-dark(#e8e8df,#2b332d);--ink:light-dark(#29362c,#edf0e9);--muted:light-dark(#556458,#b6c2b9);--line:light-dark(#bdc8bc,#526456);--copper:light-dark(#795136,#d5a17d)}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:light-dark(#eceee7,#151a17);color:var(--ink);color-scheme:light dark;font:14px/1.5 "Microsoft YaHei UI",system-ui,sans-serif}
+main{max-width:1000px;margin:auto}
+.window{background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+header{padding:14px 22px;display:flex;gap:16px;align-items:baseline;border-bottom:1px solid var(--line)}
+h2{font-size:18px;font-weight:500;margin:0}
+.note{font-size:12px;color:var(--muted)}
+.hpwrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 22px 4px}
+.hpbox{border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.hpname{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.bar{height:12px;background:var(--panel);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;transition:width .35s}
+.bar.hp i{background:#b0563e}
+.bar.qi i{background:#4a7fa5}
+.qibar{height:8px;margin-top:5px}
+.qimini{font-size:11px;color:var(--muted);margin-top:3px}
+.xpmini{font-size:11px;color:var(--muted);margin-top:3px}
+.view{position:relative;margin:8px 22px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+canvas{display:block;width:100%;height:300px}
+.dmg{position:absolute;font-weight:700;font-size:26px;pointer-events:none;z-index:5;text-shadow:0 1px 3px rgba(0,0,0,.45);animation:float 1.6s forwards}
+@keyframes float{0%{transform:translateY(0);opacity:1}70%{opacity:1}100%{transform:translateY(-46px);opacity:0}}
+.actions{display:flex;gap:10px;flex-wrap:wrap;padding:12px 22px}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 14px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--copper)}
+button.primary{border-color:var(--copper);box-shadow:inset 0 -2px var(--copper)}
+button:disabled{opacity:.45;cursor:default}
+button .cost{font-size:11px;color:var(--muted);margin-left:4px}
+.log{margin:0 22px 16px;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:10px 14px;height:170px;overflow-y:auto;font-size:13px;line-height:1.7}
+.log div{white-space:pre-wrap}
+.result{margin:0 22px 16px;padding:14px;border-radius:8px;display:none}
+.result.win{display:block;border:1px solid #5fae7f;color:#3d8f63}
+.result.lose{display:block;border:1px solid #b0563e;color:#b0563e}
+/* 日式 RPG 指令区：命令按钮 + 技能面板（2026-10-06 用户要求往 JRPG 方向完善） */
+.commands{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px 22px 6px}
+/* 面板高度取「整两行」：216 会把第二行切在文字中间（看着像坏了），按实测行距 108 调成 230 */
+.skillpanel{margin:0 22px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:10px 12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:8px;max-height:230px;overflow-y:auto;align-content:start;scrollbar-width:thin}
+.skillrow{display:flex;align-items:baseline;gap:8px}
+.skillrow b{font-weight:600}
+.skill{display:grid;gap:3px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);cursor:pointer;font:inherit;color:var(--ink)}
+.skill:hover:not(:disabled){border-color:var(--copper)}
+.skill[disabled]{opacity:.5;cursor:default}
+.skill .meta{font-size:11px;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+/* 描述截两行：卡片等高，滚动边界才会落在行与行之间，而不是一句话的中间 */
+.skill .desc{font-size:11.5px;color:var(--muted);line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.el{font-size:11px;border-radius:99px;padding:0 7px;border:1px solid var(--line);color:var(--muted)}
+.fbnote{grid-column:1/-1;font-size:11.5px;color:#a76b3d;border:1px dashed var(--line);border-radius:6px;padding:6px 8px;line-height:1.5}
+.hitword{font-weight:600}
+.result .learned{display:block;margin-top:6px;font-size:12.5px;color:var(--muted)}
+.turnchip{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<div class="window">
+ <header>
+  <h2 id="battleTitle">战斗</h2>
+  <span class="note">日式 RPG 指令式回合制 · 属性相克有「效果拔群」· 真元即 MP · 技能按等级习得</span>
+ </header>
+ <div class="hpwrap">
+  <div class="hpbox">
+   <div class="hpname"><span id="pName">旅人</span><span id="pHpText"></span></div>
+   <div class="bar hp"><i id="pBar" style="width:100%"></i></div>
+   <div class="bar qi qibar"><i id="pQi" style="width:100%"></i></div>
+   <div class="qimini" id="pMeta"></div>
+  </div>
+  <div class="hpbox">
+   <div class="hpname"><span id="eName">妖兽</span><span id="eHpText"></span></div>
+   <div class="bar hp"><i id="eBar" style="width:100%;background:#7a5a9e"></i></div>
+   <div class="xpmini" id="eMeta"></div>
+  </div>
+ </div>
+ <!-- 特效层覆盖整个战场（原来是两块贴着角色的 220×146 小画布，特效飞不出去，见 world-combat-fx.js 文件头） -->
+ <div class="view"><canvas id="stage"></canvas><canvas id="enemyArt" width="960" height="300" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none"></canvas><canvas id="fx" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none"></canvas></div>
+ <div class="commands">
+  <button class="primary" id="aRegular" type="button">攻击<span class="cost">不耗真元</span></button>
+  <button id="cmdSkill" type="button">技能<span class="cost">JRPG 指令</span></button>
+  <button id="aGuard" type="button">防御<span class="cost">回真元 +4</span></button>
+  <button id="aFlee" type="button">遁走<span class="cost">耗真元 3</span></button>
+  <span class="turnchip" id="turnText">…</span>
+  <!-- 「力斩」现在是技能，这里保留一个隐藏入口，只为兼容并行开发里的旧验证脚本（battle-shot/fix3-e2e 等） -->
+  <button id="aHeavy" type="button" hidden>力斩</button>
+ </div>
+ <div class="skillpanel" id="skillPanel" hidden aria-label="已习得的技能"></div>
+ <div class="result" id="result"></div>
+ <div class="log" id="log"></div>
+</div>
+</main>
+<script src="/stickman-engine.js"></script>
+<script src="/world-rpg.js"></script>
+<script src="/world-inv.js"></script>
+<script src="/world-beasts.js"></script>
+<script src="/stickart/stickart-core.js"></script>
+<script src="/stickart/beasts/quad.js"></script>
+<script src="/stickart/beasts/serpent.js"></script>
+<script src="/stickart/beasts/village.js"></script>
+<script src="/stickart/beasts/mountain.js"></script>
+<script src="/stickart/beasts/deep.js"></script>
+<script src="/world-state.js"></script>
+<script src="/world-fx.js"></script>
+<script src="/world-skill.js"></script>
+<script src="/world-combat-fx.js"></script>
+<script src="/kit/core.js"></script>
+<script src="/kit/quad-lib.js"></script>
+<script src="/kit/creatures.js"></script>
+<script src="/kit/items-lib.js"></script>
+<script src="/kit/items.js"></script>
+<script src="/kit/furniture-lib.js"></script>
+<script src="/kit/structures-lib.js"></script>
+<script src="/kit/fixtures.js"></script>
+<script src="/kit/humanoid.js"></script>
+<script src="/kit/special-animals.js"></script>
+<script src="/kit/fantastic.js"></script>
+<script src="/kit/effects.js"></script>
+<script src="/kit/states.js"></script>
+<script src="/kit/accessories.js"></script>
+<script src="/kit/appearance-modern.js"></script>
+<script src="/kit/scenes.js"></script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const R=WorldRPG, VI=WorldInv;
+const clamp=R.clamp;                       // 原先这里引用了不存在的 clamp，点遁走会整局锁死
+const qs=new URLSearchParams(location.search);
+const kind=qs.get('kind'), lvRaw=parseInt(qs.get('lv')||'',10), mid=qs.get('mid')||'';
+const locName=qs.get('loc')||'荒野';
+/* 谁被打：名字由调用方给出（散修、掌柜、站长…）；打完回哪：back 决定按钮去向 */
+const nameOverride=qs.get('name')||'';
+const backTo=qs.get('back')||'/';
+/* 打的是场景里的谁：foe=人物 id，flag=场景层写 locFlags 用的键（题材）。
+ * 打赢/打输都回写，场景页回来时能接着演（倒地 / 记恨）。 */
+const foeId=qs.get('foe')||'',flagKey=qs.get('flag')||'';
+
+const profile=R.load(); VI.ensure(profile);
+const realm=R.realmOf(profile.level);
+
+/* 怪物：优先用地图传来的模板+等级，保证遭遇面板看到的就是打到的那只 */
+const monster=(kind&&lvRaw)?R.monsterFromTpl(kind,lvRaw):R.monsterFor(profile.level);
+if(nameOverride)monster.name=nameOverride;   // 人形对手的真名（模板名只是兜底）
+
+$('battleTitle').textContent='战斗 · '+monster.name+'（Lv'+monster.level+'）';
+$('pName').textContent='旅人 · Lv'+profile.level+' · '+realm.name;
+$('eName').textContent=monster.name+' · Lv'+monster.level;
+
+/* 战斗属性以「装备聚合后」为准，装备的 +hp / +qi 才真的生效 */
+const t0=VI.totals(profile);
+/* 属性标签（弱点/抗性）由技能模块按模板给，战斗页只负责把它挂到对手身上 */
+const eTags=(window.WorldSkill?WorldSkill.tagsFor(monster.tplId||kind):{elem:'none',weak:[],resist:[]});
+const battle=R.createBattle(
+  {name:'旅人',level:profile.level,hp:Math.min(profile.hp,t0.hp),maxHP:t0.hp,
+   qi:Math.min(profile.qi==null?t0.qi:profile.qi,t0.qi),maxQi:t0.qi,
+   atk:Math.round(t0.atk*realm.bonus),def:t0.def,speed:t0.speed},
+  {name:monster.name,level:monster.level,hp:monster.hp,maxHP:monster.maxHP,atk:monster.atk,def:monster.def,speed:monster.speed,
+   weak:eTags.weak||[],resist:eTags.resist||[],elem:eTags.elem||'none'}
+);
+
+/* ---- 火柴人舞台（玩家）+ 敌人表现层：野兽=WorldBeasts 线条绘制器（与火柴人同笔画语言），
+   人形（黑风寨贼）=引擎火柴人；kit 退回图标与特效（视觉风格统一，用户 2026-10-06 裁决 B 方案） ---- */
+const stage=DemoStickman.createStage($('stage'),{height:300,bg:null,ground:true});
+stage.addActor({id:'player',x:0.3,scale:1.5,color:'#6d4731',action:'idle',prop:'sword'});
+stage.removeActor('hero');
+const HUMANOID={bandit:1,human:1};
+const isHumanoidEnemy=!!HUMANOID[monster.tplId];
+if(isHumanoidEnemy){
+  stage.addActor({id:'enemy',x:0.72,scale:1.5,color:monster.tint,action:'guard',flip:true});
+  $('enemyArt').style.display='none';
+}
+const enemyArt=$('enemyArt');
+const FXC=window.WorldCombatFX?WorldCombatFX.init($('fx')):null;
+let eAction='idle',eActionUntil=0,eDead=false;
+/* 敌人的前冲/退避位移：StickArt 与 WorldBeasts 都画在 enemyArt 上，改这个 x 偏移就能让它动 */
+let enemyOffsetX=0;
+const setEnemyOffset=(px)=>{enemyOffsetX=px;};
+function enemyAct(action){ /* idle|attack|hurt|howl|dodge|dead —— 两种表现层的统一语义接口 */
+  if(isHumanoidEnemy){
+    const map={idle:'guard',attack:'attack',hurt:'hit',howl:'cast',dodge:'dodge',dead:'knockdown'};
+    try{stage.setActor('enemy',{action:map[action]||'idle'});}catch(e){}
+  }else{
+    if(action==='dead'){eDead=true;return;}
+    eAction=action;eActionUntil=action==='idle'?0:performance.now()+650;
+  }
+}
+function drawEnemyArt(now){
+  if(isHumanoidEnemy)return;
+  const ctx=enemyArt.getContext('2d');ctx.clearRect(0,0,enemyArt.width,enemyArt.height);
+  const action=eDead?'dead':(now<eActionUntil?eAction:'idle');
+  const groundY=enemyArt.height-18; /* 引擎地面线 H-18 */
+  const artId=monster.artId;
+  const ox=Math.round(enemyOffsetX);
+  if(artId&&window.StickArt&&StickArt.has(artId)){
+    /* StickArt 交付素材：盒底压地面线（组件内落地=H-4），原生朝左正对玩家 */
+    const sz=(StickArt.get(artId)&&StickArt.get(artId).size)||{width:230,height:165};
+    StickArt.draw(ctx,artId,{action,phase:now/1000,facing:'left',color:monster.tint,
+      x:enemyArt.width-sz.width-40+ox,y:groundY-sz.height+4,scale:1});
+  } else {
+    WorldBeasts.draw(ctx,{species:monster.tplId==='golem'?'golem':'wolf',
+      x:enemyArt.width-170+ox,y:groundY,scale:1.15,facing:'left',phase:now/1000,action,tint:monster.tint});
+  }
+  requestAnimationFrame(drawEnemyArt);
+}
+requestAnimationFrame(drawEnemyArt);
+/* ---- 出手/受击的表现层（前冲 → 投射飞行 → 命中才结算） ----
+ * 原先三件事是同时发生的：按钮一点，伤害数字、受击动作、kit 小贴图一起蹦出来，
+ * 所以看起来「不像打中了」。现在严格按 JRPG 的节奏排：起手式 → 前冲 → 飞出去 → 命中炸。 */
+const P_X=0.30,E_X=0.72;                      // 双方站位（归一化 0..1），投射的 from/to 就按这个来
+const PX=window.WorldCombatFX?WorldCombatFX.anchor:null;
+function tween(ms,fn){
+  return new Promise(res=>{
+    const t0=performance.now();
+    (function loop(now){
+      const t=Math.min(1,(now-t0)/Math.max(1,ms));
+      try{fn(t);}catch(e){}
+      if(t<1)requestAnimationFrame(loop); else res();
+    })(t0);
+  });
+}
+/* 位移谁：玩家走引擎火柴人的 x；线条素材走的 canvas 像素偏移 */
+function setX(who,x){
+  if(who==='p'){try{stage.setActor('player',{x});}catch(e){}}
+  else if(isHumanoidEnemy){try{stage.setActor('enemy',{x});}catch(e){}}
+  else setEnemyOffset(Math.round((x-E_X)*enemyArt.width));
+}
+function baseX(who){return who==='p'?P_X:E_X;}
+/* 前冲：出去再回来（sin(pi*t) 让它在终点顿一下才收） */
+async function lunge(who,dir,dist,ms){
+  const b=baseX(who);
+  await tween(ms||220,t=>setX(who,b+dir*dist*Math.sin(Math.PI*t)));
+  setX(who,b);
+}
+/* 退避：往被推开的方向弹一下再慢慢站回去 */
+async function recoil(who,dir,amp,ms){
+  const b=baseX(who);
+  await tween(ms||300,t=>setX(who,b+dir*amp*(1-t)*Math.sin(Math.PI*t*2.2)));
+  setX(who,b);
+}
+/* 受击表现：动作 + 冲击环火光 + 屏震顿帧 + 被推得后退一步 */
+function hitReact(who,heavy){
+  if(who==='e'){
+    enemyAct('hurt');eAction='hurt';
+    if(FXC)FXC.burst({at:PX(E_X,'chest'),color:'#ffd28a',size:heavy?1.15:.85,dur:heavy?520:380,flash:heavy?.6:.4});
+    if(window.WorldFX){WorldFX.play(heavy?'heavy':'hit');WorldFX.shake(document.querySelector('.view'),heavy?2:1);WorldFX.freeze(heavy?95:65);}
+    recoil('e',1,heavy?.045:.028,heavy?340:260);
+  }else{
+    act('player','hit');
+    if(FXC)FXC.burst({at:PX(P_X,'chest'),color:'#e07a5a',size:heavy?1.05:.8,dur:heavy?500:360,flash:heavy?.5:.3});
+    if(window.WorldFX){WorldFX.play('hurt');WorldFX.shake(document.querySelector('.view'),1);WorldFX.freeze(60);}
+    recoil('p',-1,heavy?.05:.03,heavy?340:260);
+  }
+}
+/* 只有 player 这一个 stage actor：怪物的动作表现走 kit 的 visualState，
+   不再调 stage.setActor('enemy',…)——那个 id 不存在，原实现是静默空转 */
+function act(id,action,hold){stage.setActor(id,{action});if(hold!==false)setTimeout(()=>{try{stage.setActor(id,{action:'idle'});}catch(e){}},650);}
+function dmgFloat(id,text,color){
+  const view=document.querySelector('.view'),el=document.createElement('div');
+  el.className='dmg';el.textContent=text;el.style.color=color||'#d9553f';
+  el.style.left=(id==='player'?30:68)+'%';el.style.top=(30+Math.random()*14)+'%';
+  view.appendChild(el);setTimeout(()=>el.remove(),1000);
+}
+function bars(){
+  $('pBar').style.width=(battle.p.hp/battle.p.maxHP*100)+'%';$('pHpText').textContent=Math.ceil(battle.p.hp)+'/'+battle.p.maxHP;
+  $('pQi').style.width=(battle.p.qi/battle.p.maxQi*100)+'%';
+  $('eBar').style.width=(battle.e.hp/battle.e.maxHP*100)+'%';$('eHpText').textContent=Math.ceil(battle.e.hp)+'/'+battle.e.maxHP;
+  const ps=SK?SK.statusText(battle.p):'',es=SK?SK.statusText(battle.e):'';
+  $('pMeta').innerHTML='真元 '+Math.ceil(battle.p.qi)+'/'+battle.p.maxQi+' · 攻 '+battle.p.atk+'（含境界 ×'+realm.bonus.toFixed(1)+'）/ 防 '+battle.p.def+' / 速 '+battle.effSpeed(battle.p)+
+    (battle.p.staggers>0?'（迟滞中）':'')+(ps?' · '+ps:'')+
+    '　<button onclick="location.href=\'/character\'" style="font-size:11px;padding:1px 6px">面板</button>';
+  $('eMeta').textContent='攻 '+battle.e.atk+' / 防 '+battle.e.def+' / 速 '+battle.effSpeed(battle.e)+
+    (battle.e.staggers>0?'（迟滞中）':'')+(es?' · '+es:'');
+}
+function log(segs){
+  const row=document.createElement('div');
+  row.textContent=segs.map(s=>typeof s==='string'?s:(s.name?'【'+s.name+'】':String(s))).join('');
+  $('log').appendChild(row);$('log').scrollTop=$('log').scrollHeight;
+}
+/* ---- JRPG 指令：攻击 / 技能 / 防御 / 遁走。可用性看「是不是我的回合 + 真元够不够」 ----
+ * 按钮 id 保留 aRegular/aGuard/aFlee，是为了不打断并行开发里已经在跑的验证脚本。 */
+/* WorldSkill 是**可选**模块，页面不能把它当硬依赖。
+ * 2026-10-06 晚用户实机报「战局没有找到技能：zhanji」+「Cannot read properties of null (reading 'speedOf')」：
+ * 正在跑的服务进程用的还是登记白名单之前的 server.cjs，两个新模块取不到 404，SK 就是 null，
+ * 于是 playerAct 一步都走不下去——连普通攻击都被挡在门口，第 554 行的 speedOf 更是直接抛异常。
+ * 结论：可选依赖必须有降级实现。下面这份是最小版，数值照搬 world-skill.js 的前三个技能，
+ * 没有属性克制与异常状态，但战斗必须照常打得动。 */
+const SKILL_FALLBACK=(function(){
+  const ELEMENTS={none:{id:'none',name:'无',color:'#d8dcd4',flow:'jianqi'}};
+  const LIST=[
+    {id:'zhanji',name:'斩击',elem:'none',mp:0,power:1.0,acc:1,hits:1,learnAt:1,flow:'jianqi',desc:'最基础的一记挥砍，不耗真元。'},
+    {id:'fangyu',name:'防御',elem:'none',mp:0,target:'self',heal:3,mpGain:4,mitigate:0.45,learnAt:1,flow:'jianqi',desc:'凝神守势：回一点气血与真元，本回合受到的伤害大减。'},
+    {id:'lizhan',name:'力斩',elem:'none',mp:5,power:1.8,acc:0.8,hits:1,stagger:1,learnAt:1,flow:'jianqi',desc:'聚力一斩，威力大但身法慢，下一轮行动迟缓（迟滞）。'},
+  ];
+  const BY={};LIST.forEach(s=>BY[s.id]=s);
+  const NONE={rate:1,label:''};
+  function hitOnce(attacker,defender,sk){
+    if(Math.random()>=(sk.acc==null?1:sk.acc))return {dmg:0,crit:false,miss:true};
+    const mods=[];
+    if(defender.guarding)mods.push(c=>{c.multiplier*=0.45;});
+    /* 复用既有的 WorldRPG.damage，不在这里另写一套减伤公式 */
+    const r=R.damage({atk:attacker.atk},defender,{multiplier:sk.power||1,modifiers:mods});
+    defender.hp=Math.max(0,(Number(defender.hp)||0)-r.dmg);
+    return {dmg:r.dmg,crit:r.crit,miss:false};
+  }
+  return {
+    fallback:true,ELEMENTS:ELEMENTS,
+    get:id=>BY[id]||null,
+    known:()=>LIST,newLearned:()=>[],
+    tagsFor:()=>({elem:'none',weak:[],resist:[]}),
+    elementRate:()=>NONE,
+    canPay:(p,sk)=>(Number(p&&p.qi)||0)>=(sk&&sk.mp||0),
+    payMp:(p,sk)=>{const c=sk&&sk.mp||0;p.qi=Math.max(0,(Number(p.qi)||0)-c);return c;},
+    speedOf:(b,a)=>b&&b.effSpeed?b.effSpeed(a):(Number(a.speed)||0),
+    willSkip:()=>false,statusText:()=>'',statusTick:()=>[],
+    hasStatus:()=>false,applyStatus:()=>({name:''}),clearStatus:()=>{},
+    takenMultiplier:()=>1,
+    resolveHit:(b,a,d,sk)=>hitOnce(a,d,sk||{}),
+    resolve:(b,attacker,defender,sk)=>{
+      if(sk.target==='self'){
+        let healed=sk.heal||0;
+        if(sk.healRate)healed+=Math.round((Number(attacker.maxHP)||0)*sk.healRate);
+        attacker.qi=Math.min(Number(attacker.maxQi)||0,(Number(attacker.qi)||0)+(sk.mpGain||0));
+        if(sk.mitigate)attacker.guarding=true;
+        attacker.hp=Math.min(Number(attacker.maxHP)||0,(Number(attacker.hp)||0)+healed);
+        return {heal:healed,mpSpent:-(sk.mpGain||0),total:0,crits:0,misses:0,statuses:[]};
+      }
+      const hits=[];for(let i=0;i<Math.max(1,sk.hits||1);i++)hits.push(hitOnce(attacker,defender,sk));
+      const total=hits.reduce((s,h)=>s+(h.miss?0:h.dmg),0);
+      return {total:total,crits:hits.filter(h=>h.crit).length,misses:hits.filter(h=>h.miss).length,
+        heal:0,mpSpent:sk.mp||0,statuses:[]};
+    },
+  };
+})();
+const SK=window.WorldSkill||SKILL_FALLBACK;
+const FLEE_MP=3;                                    // 遁走维持原来的代价，不把这个出口做成免费的
+let panelOpen=false;
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function refreshButtons(){
+  const on=!busy&&!over;
+  $('aRegular').disabled=!on;
+  $('cmdSkill').disabled=!on||!SK;
+  $('aGuard').disabled=!on;
+  $('aFlee').disabled=!on||battle.p.qi<FLEE_MP;
+  $('aHeavy').disabled=!on||!SK||!SK.canPay(battle.p,SK.get('lizhan'));
+  refreshSkillButtons();
+}
+function setButtons(on){busy=!on;refreshButtons();}
+/* 技能面板：名字 + 属性 + 消耗 + 威力 + 弱点提示（日式 RPG 的咒语一览） */
+function buildSkillPanel(){
+  if(!SK)return;
+  const box=$('skillPanel');box.replaceChildren();
+  /* 降级模式要说清楚，别让玩家以为是设计变更 */
+  if(SK.fallback){
+    const tip=document.createElement('div');
+    tip.className='fbnote';tip.id='fallbackNote';
+    tip.textContent='技能模块未加载（/world-skill.js 取不到），当前为基础三式：斩击 / 防御 / 力斩。重启服务即可恢复完整技能表。';
+    box.appendChild(tip);
+  }
+  SK.known(profile.level).forEach(sk=>{
+    const rate=SK.elementRate(sk.elem,battle.e);
+    const el=document.createElement('button');
+    el.type='button';el.className='skill';el.dataset.skill=sk.id;
+    const power=(sk.target==='self')
+      ?(sk.healRate?'回复 '+Math.round(sk.healRate*100)+'% 气血':'本回合减伤 45%')
+      :(sk.hits>1?('威力 '+sk.power+' × '+sk.hits+' 段'):('威力 '+sk.power));
+    el.innerHTML='<span class="skillrow"><b>'+sk.name+'</b><span class="el" style="color:'+SK.ELEMENTS[sk.elem].color+'">'+SK.ELEMENTS[sk.elem].name+'</span></span>'+
+      '<span class="meta">'+(sk.mp?('真元 '+sk.mp):'不耗真元')+' · '+power+(sk.acc<1?(' / 命中 '+Math.round(sk.acc*100)+'%'):'')+
+      (rate.rate>1?' · <b class="hitword" style="color:#3d8f63">'+rate.label+'</b>':(rate.rate<1?' · <span style="opacity:.7">'+rate.label+'</span>':''))+'</span>'+
+      '<span class="desc">'+sk.desc+'</span>';
+    el.onclick=()=>{if(el.disabled)return;hideSkillPanel();playerAct(sk.id);};
+    box.appendChild(el);
+  });
+  refreshSkillButtons();
+}
+function refreshSkillButtons(){
+  if(!SK)return;
+  const box=$('skillPanel');box.hidden=!panelOpen;
+  SK.known(profile.level).forEach(sk=>{
+    const el=box.querySelector('[data-skill="'+sk.id+'"]');
+    if(el)el.disabled=busy||over||!SK.canPay(battle.p,sk);
+  });
+}
+function showSkillPanel(){panelOpen=true;refreshSkillButtons();}
+function hideSkillPanel(){panelOpen=false;$('skillPanel').hidden=true;}
+
+/* ---- 回合循环：先手由速度（含迟滞与冻结）决定，每轮双方各行动一次 ---- */
+let busy=false,over=false;
+async function playerAct(skillId){
+  if(busy||over)return;
+  if(skillId==='__flee')return doFlee();
+  const sk=SK&&SK.get(skillId);
+  if(!sk){log(['战局','没有找到技能：'+skillId]);return;}
+  if(!SK.canPay(battle.p,sk)){log(['旅人','真元不足，「'+sk.name+'」未能施展。']);refreshButtons();return;}
+  busy=true;refreshButtons();
+  try{
+    let enemyActed=false;
+    const first=battle.playerFirst();
+    if(!first){
+      log(['【'+battle.e.name+'】','抢得先手！']);
+      await enemyPhase();enemyActed=true;
+      if(over)return finishRound();
+    }
+    if(SK.willSkip(battle.p)){
+      log(['旅人','麻痹发作，身体一僵，错过了出手的时机。']);act('player','dodge');
+    }else{
+      await doPlayerSkill(sk);
+    }
+    if(over)return finishRound();
+    if(!enemyActed)await enemyPhase();
+    finishRound();
+  }catch(e){
+    /* 任何异常都不能把回合永久锁死（原实现点遁走抛错后四键全废） */
+    log(['战局','出现异常，已恢复行动：'+e.message]);
+    busy=false;refreshButtons();
+  }
+}
+async function doFlee(){
+  if(busy||over)return;
+  if(battle.p.qi<FLEE_MP){log(['旅人','真元不济，连提气都提不起来，没能脱身。']);refreshButtons();return;}
+  busy=true;refreshButtons();
+  try{
+    battle.p.qi-=FLEE_MP;
+    const chance=clamp(0.5+(SK.speedOf(battle,battle.p)-SK.speedOf(battle,battle.e))*0.03,0.25,0.9);
+    if(Math.random()<chance){
+      if(FXC)FXC.particles({at:PX(P_X,'ground'),count:12,color:'#cfd8cf',spread:.1});
+      if(window.WorldFX)WorldFX.play('flee');
+      act('player','sneak');over=true;endBattle('fled');return;
+    }
+    log(['旅人','试图遁走……被缠住了，没能脱身！']);act('player','sneak');
+    if(window.WorldFX)WorldFX.play('miss');
+    await enemyPhase();
+    finishRound();
+  }catch(e){log(['战局','出现异常，已恢复行动：'+e.message]);busy=false;refreshButtons();}
+}
+/* 用技能打出一回合：起手式 → 前冲 → 投射飞到对面 → 命中才结算 */
+async function doPlayerSkill(sk){
+  const EL=SK.ELEMENTS[sk.elem]||SK.ELEMENTS.none;
+  if(sk.target==='self'){
+    act('player',sk.healRate?'cast':'guard');
+    if(FXC)await FXC.charge({at:PX(P_X,'chest'),color:EL.color,dur:220});
+    const out=SK.resolve(battle,battle.p,battle.e,sk);
+    if(FXC){FXC.aura({at:PX(P_X,'ground'),color:EL.color,dur:760});
+      FXC.particles({at:PX(P_X,'ground'),count:14,color:EL.color,spread:.09});}
+    if(window.WorldFX)WorldFX.play(sk.healRate?'guard':'guard');
+    log(['旅人','施展「'+sk.name+'」'+(out.heal?('，回复 '+out.heal+' 点气血'):'')+(out.mpSpent<0?('，回复 '+(-out.mpSpent)+' 点真元'):'')+'。']);
+    bars();return;
+  }
+  if(sk.mp>0&&FXC){act('player','cast');await FXC.charge({at:PX(P_X,'chest'),color:EL.color,dur:220});}
+  const melee=(sk.elem==='zhan'||sk.elem==='none');
+  if(melee){act('player',sk.power>=1.5?'thrust':'attack');lunge('p',1,.085,230);}else act('player','cast');
+  SK.payMp(battle.p,sk);
+  const rate=SK.elementRate(sk.elem,battle.e);
+  const hits=Math.max(1,sk.hits||1);
+  let total=0,crits=0,misses=0,statusGot=[];
+  for(let i=0;i<hits;i++){
+    if(FXC){
+      await FXC.cast({kind:EL.flow,from:PX(P_X,'chest'),to:PX(E_X,'chest'),color:EL.color,
+        dur:EL.flow==='leiji'?240:(hits>1?190:300),size:sk.power>=1.8?1.25:1});
+    }
+    const one=SK.resolveHit(battle,battle.p,battle.e,sk,{rate:rate,apply:true});
+    if(one.miss){misses++;if(window.WorldFX)WorldFX.play('miss');enemyAct('dodge');}
+    else{
+      total+=one.dmg;if(one.crit)crits++;
+      hitReact('e',sk.power>=1.6||one.crit);
+      dmgFloat('enemy','-'+one.dmg,one.crit?'#a03f2e':'#d9553f');
+    }
+    bars();
+    if(battle.e.hp<=0)break;
+    if(hits>1)await sleep(70);
+  }
+  if(rate.rate>1)log([rate.label+SK.ELEMENTS[sk.elem].name+'是【'+battle.e.name+'】的弱点。']);
+  else if(rate.rate<1)log([rate.label+'【'+battle.e.name+'】似乎抗性不错。']);
+  /* 附带异常只在最后一段结算，避免多段技一次挂三回 */
+  if(sk.status&&battle.e.hp>0&&hits>misses&&Math.random()<(sk.status.chance||.35)){
+    const st=SK.applyStatus(battle.e,sk.status.id,sk.status.turns||2);
+    statusGot.push(st.name);
+  }
+  log(['旅人','施展「'+sk.name+'」，对【'+battle.e.name+'】造成 '+total+' 伤害'+
+    (crits?('（会心 '+crits+' 次！）'):'')+(misses?('（'+misses+' 段落空）'):'')+'（剩余 hp '+Math.ceil(battle.e.hp)+'）']);
+  statusGot.forEach(n=>log(['【'+battle.e.name+'】','陷入「'+n+'」。']));
+  if(sk.stagger){battle.addStagger(battle.p,sk.stagger);log(['旅人','招式已老，下一轮行动迟缓（迟滞）。']);}
+  if(window.WorldFX&&window.WorldFX.play&&crits)WorldFX.play('crit');
+  bars();
+}
+async function enemyPhase(){
+  if(over||battle.e.hp<=0)return;
+  await sleep(680);
+  if(over)return;
+  if(SK&&SK.willSkip(battle.e)){log(['【'+battle.e.name+'】','麻痹发作，动作僵住了，错过一次出手。']);return;}
+  const pick=battle.enemyChoose();
+  if(pick==='howl'){
+    battle.e.atkBuffUntil=battle.round+2;
+    log(['【'+battle.e.name+'】','仰首长嚎——攻击提升，持续 2 轮！']);
+    enemyAct('howl');
+    if(FXC){FXC.charge({at:PX(E_X,'chest'),color:'#c9a0e8',dur:340});
+      FXC.aura({at:PX(E_X,'ground'),color:'#c9a0e8',dur:800});
+      await FXC.cast({kind:'leiqiu',from:PX(E_X,'chest'),to:PX(E_X,'high'),color:'#c9a0e8',dur:280});}
+    return;
+  }
+  const heavy=pick==='pounce';
+  enemyAct('attack');lunge('e',-1,.075,220);
+  if(FXC)await FXC.cast({kind:heavy?'moyan':'jianqi',from:PX(E_X,'chest'),to:PX(P_X,'chest'),
+    color:heavy?'#d98a6a':'#ffd0c0',dur:heavy?320:280});
+  if(Math.random()<(heavy?0.25:0)){
+    log(['【'+battle.e.name+'】',heavy?'猛扑过来——':'扑咬过来——','被你闪开了！']);
+    if(window.WorldFX)WorldFX.play('miss');
+    enemyAct('dodge');act('player','dodge');
+    return;
+  }
+  const r=battle.hit(battle.e,battle.p,{multiplier:heavy?1.5:1});
+  log(['【'+battle.e.name+'】',heavy?'猛扑撕咬':'扑咬','【旅人】','造成 '+r.dmg+' 伤害'+(r.crit?'（会心！）':''),'（剩余 hp '+Math.ceil(battle.p.hp)+'）']);
+  hitReact('p',heavy||r.crit);
+  dmgFloat('player','-'+r.dmg);
+  bars();
+}
+function turnChipText(){
+  const st=SK?SK.statusText(battle.p):'';
+  return '第 '+(battle.round+1)+' 轮 · 你的回合'+
+    (battle.p.staggers>0?'（迟滞中，速度 -'+R.STAGGER_SPEED+'）':'')+
+    (st?(' · '+st):'');
+}
+function finishRound(){
+  if(over){busy=false;refreshButtons();return;}
+  if(battle.e.hp<=0){over=true;endBattle('win');return;}
+  if(battle.p.hp<=0){over=true;endBattle('lose');return;}
+  battle.endRound();
+  /* 回合末结算异常状态：毒/灼继续掉血，轮数递减，解除时说一声 */
+  (SK?SK.statusTick(battle):[]).forEach(seg=>log(seg));
+  bars();
+  if(battle.e.hp<=0){over=true;endBattle('win');return;}
+  if(battle.p.hp<=0){over=true;endBattle('lose');return;}
+  busy=false;refreshButtons();
+  $('turnText').textContent=turnChipText();
+}
+function endBattle(outcome){
+  bars();busy=false;refreshButtons();
+  const box=$('result');
+  const st=WorldState.load();
+  const backLabel=backTo==='/'?'回到世界地图':'回到刚才的地方';
+  const backBtn='　<button class="primary" onclick="location.href=\''+backTo.replace(/'/g,"\\'")+'\'">'+backLabel+'</button>';
+  if(outcome==='win'){
+    const xp=R.xpFromKill(battle.e),gold=R.goldFromKill(battle.e);
+    const lvBefore=profile.level;
+    const res=R.grantXp(profile,xp);
+    const learned=SK?SK.newLearned(lvBefore,profile.level):[];
+    profile.gold+=gold;profile.kills+=1;
+    profile.hp=Math.max(1,Math.round(battle.p.hp));
+    profile.qi=Math.max(0,Math.round(battle.p.qi));
+    let dropText='';
+    const drop=VI.dropRoll(profile,monster.dropBias);
+    if(drop){VI.ensure(profile);VI.add(profile,drop.id,drop.count);const dItem=VI.CATALOG[drop.id];dropText='，掉落 <b>'+dItem.name+(drop.count>1?'×'+drop.count:'')+'</b>（已入背包）';}
+    R.save(profile);
+    /* 世界记得你：把这只怪从地图上移除；打的是场景里的人，就把「已倒地」写回场景层 */
+    if(mid)WorldState.removeMonster(st,mid);
+    if(foeId&&flagKey)WorldState.setLocFlag(st,flagKey,'defeated:'+foeId,true);
+    WorldState.journalAdd(st,'斩 '+battle.e.name+'（Lv'+battle.e.level+'）于'+locName+'。');
+    WorldState.save(st);
+    box.className='result win';
+    box.innerHTML='<b>胜利！</b>经验 +'+xp+'，铜币 +'+gold+dropText+(res.levels?('，<b>突破！'+res.gains.join('；')+'</b>'):'')+backBtn+
+      '　<button onclick="location.href=\'/character\'">个人面板</button>'+
+      (learned.length?'<span class="learned">习得新技能：'+learned.map(s=>s.name+'（'+SK.ELEMENTS[s.elem].name+'·真元 '+s.mp+'）').join('、')+'</span>':'');
+    log(['【'+battle.e.name+'】','轰然倒地。','胜利！']);
+    enemyAct('dead');
+    stage.actorAction('player','victory');
+    if(window.WorldFX){WorldFX.play('dead');setTimeout(()=>{WorldFX.play('win');if(res.levels)WorldFX.play('levelup');WorldFX.play('coin');},420);}
+  }else if(outcome==='lose'){
+    /* 败北也要有代价：失三成铜币（原来是零惩罚，战斗没有赌注） */
+    const lost=Math.round((profile.gold||0)*0.3);
+    profile.gold-=lost;
+    profile.hp=Math.ceil(profile.maxHP/2);
+    profile.qi=Math.round(profile.maxQi/2);
+    profile.losses+=1;R.save(profile);
+    if(foeId&&flagKey)WorldState.setLocFlag(st,flagKey,'hostile:'+foeId,true);   // 没打赢，对方记恨
+    WorldState.journalAdd(st,'败于 '+battle.e.name+'（Lv'+battle.e.level+'）之手，失铜 '+lost+'。');
+    WorldState.save(st);
+    box.className='result lose';
+    box.innerHTML='<b>败北……</b>你被路过的商队救回，气血恢复一半（HP '+profile.hp+'/'+profile.maxHP+'），散落铜币 '+lost+' 枚。'+
+      (mid?'妖兽仍在 '+locName+' 一带游荡。':'')+backBtn;
+    log(['旅人','眼前一黑，倒了下去……']);
+    if(window.WorldFX)WorldFX.play('lose');
+    eDead=true;
+    stage.actorAction('player','knockdown');
+  }else{
+    profile.hp=Math.max(1,Math.round(battle.p.hp));
+    profile.qi=Math.max(0,Math.round(battle.p.qi));
+    R.save(profile);
+    if(foeId&&flagKey)WorldState.setLocFlag(st,flagKey,'hostile:'+foeId,true);   // 拔了刀又跑，同样结怨
+    WorldState.journalAdd(st,'从 '+battle.e.name+' 手下遁走。');
+    WorldState.save(st);
+    box.className='result win';
+    box.innerHTML='遁走成功，脱离战斗。'+backBtn;
+  }
+}
+/* 指令接线：攻击=斩击，防御=防御，遁走单独走，力斩留给兼容入口和技能面板 */
+$('aRegular').onclick=()=>playerAct('zhanji');
+$('aGuard').onclick=()=>playerAct('fangyu');
+$('aFlee').onclick=()=>doFlee();
+$('aHeavy').onclick=()=>playerAct('lizhan');
+$('cmdSkill').onclick=()=>{panelOpen?hideSkillPanel():showSkillPanel();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')hideSkillPanel();});
+
+buildSkillPanel();
+bars();refreshButtons();
+/* 特效层尺寸：窗口变化时重算 DPR（这一层是覆盖整块 .view 的，尺寸必须跟着变） */
+if(FXC){
+  const onResize=()=>{try{FXC.resize();}catch(e){}};
+  window.addEventListener('resize',onResize);
+  new ResizeObserver(onResize).observe(document.querySelector('.view'));
+  setTimeout(onResize,120);
+}
+log(['遭遇','【'+battle.e.name+'】','（Lv'+battle.e.level+'）！','你的速度 '+SK.speedOf(battle,battle.p)+'，敌方 '+SK.speedOf(battle,battle.e)+'——'+(battle.playerFirst()?'你抢得先手。':'对方抢得先手。')]);
+if(SK){
+  const rateLabel=(function(){
+    const ws=[];const kinds=Object.keys(SK.ELEMENTS);
+    kinds.forEach(k=>{if(battle.e.weak&&battle.e.weak.indexOf(k)>=0)ws.push(SK.ELEMENTS[k].name);});
+    const rs=[];kinds.forEach(k=>{if(battle.e.resist&&battle.e.resist.indexOf(k)>=0)rs.push(SK.ELEMENTS[k].name);});
+    return (ws.length?'弱点：'+ws.join('、'):'')+(rs.length?(ws.length?' · ':'')+'抗性：'+rs.join('、'):'');
+  })();
+  if(rateLabel)log(['打量',rateLabel+'（打弱点伤害 ×1.6，打抗性 ×0.55）']);
+}
+$('turnText').textContent=turnChipText();
+window.__battleDebug={battle,profile,monster,mid,playerAct,skills:()=>SK.known(profile.level),fxc:FXC};
+})();
+</script>
+</body>
+</html>
