@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 12:20（Asia/Shanghai）。
+更新时间：2026-10-07 12:46（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -43,7 +43,7 @@
 
 ## 下一步
 
-当前阶段 A：A1/A1R已验收；[A2状态/命令/事件任务书](tasks/A2-STATE-COMMAND-EVENT-TASK.md)已发布，待用户转交，尚未开工。代码从已验收`7b4a2db`建立`codex/world-runtime-a2`，不用main当代码基准；交付后由中控独立验收，再发布A3。E1多模型测试仍为独立离线预研，不改变A～D优先级。
+用户已授权本对话自行实施与推进，不再转交外部执行者。A2于任务分支0988707实现并复核，50/50检查通过；当前[A3保存恢复](tasks/A3-CHECKPOINT-TASK.md)开工，源码目录D:\Narraverse-World-Map-a2、分支codex/world-runtime-a3（保留A2原分支保存点）。代码未合并main，阶段A仍未完成；E预研范围不变。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -56,7 +56,7 @@
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
 - 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；当前A2 `PVTI_lAHOEF9IDs4BmADfzg_BwMk`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
-- 中控按架构依赖逐项写任务书，用户转发给执行者；执行者使用任务分支实现、提交并回传证据，中控负责独立验收与发布下一项。
+- 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1已验收；A2待派发；阶段A仍进行中，A3～A4及B～G尚未开始。E卡仍记录三模型benchmark离线预研、保持待开始；不把任务书发布计作实现完成。
+- A1已验收；A2已实现并复核通过；A3进行中，A4及B～G尚未开始，阶段A仍进行中。E卡仍记录三模型benchmark离线预研、保持待开始；不把任务书发布计作实现完成。

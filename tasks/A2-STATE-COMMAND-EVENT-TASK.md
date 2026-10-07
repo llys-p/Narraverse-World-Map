@@ -1,6 +1,6 @@
 # A2 任务书：状态、命令与单 tick 原子提交
 
-发布时间：2026-10-07 12:20（Asia/Shanghai）。待用户转交；发布不代表开工。状态见 [PROJECT_CONTEXT](../PROJECT_CONTEXT.md)。
+发布时间：2026-10-07 12:20（Asia/Shanghai）。用户于本对话授权自行推进；当前已实现并复核通过。状态见 [PROJECT_CONTEXT](../PROJECT_CONTEXT.md)。
 
 ## 1. 目标与执行基准
 
@@ -10,7 +10,7 @@ A1/A1R已验收，代码基准为 `7b4a2db98184078021647e8a59eb9dc0c00f67e5`，�
 
 开工核对AGENTS、README独立项目入口、最新PROJECT_CONTEXT、HEAD/远端/脏改动。建议从上述SHA新建 `D:\Narraverse-World-Map-a2 @ codex/world-runtime-a2` 工作树；已有路径/分支先查归属，禁止覆盖/重置/清理。main目前仅有控制文档，不能从main当代码基准。只读取得最新任务书，不整份覆盖状态文件，不改控制树和E研究文档。
 
-允许新增 `runtime/core/world-state.mjs`、`command-engine.mjs`、`event-log.mjs`，测试 `tests/simulation/world-state.test.mjs`、`command-engine.test.mjs`，fixture/helper放测试内部；更新任务分支PROJECT_CONTEXT交付状态。A1模块只读，必要改动先交中控裁定。
+允许新增共享纯数据边界helper `runtime/core/data-contract.mjs`（避免三模块重复校验或循环依赖），以及 `runtime/core/world-state.mjs`、`command-engine.mjs`、`event-log.mjs`，测试 `tests/simulation/world-state.test.mjs`、`command-engine.test.mjs`，fixture/helper放测试内部；更新任务分支PROJECT_CONTEXT交付状态。A1模块只读，必要改动先交中控裁定。
 
 不得加入第三方依赖、磁盘adapter、runner、服务/页面/网络/模型/Laya桥/旧档迁移；不得开始A3或合并main。
 
@@ -103,3 +103,8 @@ git status --short --branch
 精确提交允许文件并推`origin/codex/world-runtime-a2`，不merge/push main。回执含任务、源码/分支、实际基准/交付完整SHA/远端、脏改动归属、接口、V1/V2/V3命令结果与修复、未验证/偏差、下一步/保护范围；测试数按本次实测。
 
 交付后等中控验收，不执行A3或更新看板。合同冲突先报告具体字段/场景与建议，中控裁定，不自行降低门槛。
+
+
+## 本轮收口
+
+用户改为本对话实施。A2提交0988707，新增17项+原33项共50/50通过；新进程消费者探针验证真实转移/输入隔离/审计破坏/访问器拒绝。系统不得改写输入及身份，发布context隔离。四个core文件及两份测试，无A1改动。下一步[A3](A3-CHECKPOINT-TASK.md)，不再等待外部执行者。
