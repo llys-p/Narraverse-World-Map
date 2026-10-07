@@ -16,7 +16,7 @@
 - 原浏览器E2E脚本仍含旧端口、Windows Edge路径和可能的云调用；运行前逐个核实，不直接全跑。
 - 当前目录的浏览器存档与旧端口按origin隔离；本次没有迁移真实存档。
 
-详见 [独立化与下一步](PROJECT_CONTEXT.md)、[来源记录](SOURCE_ORIGIN.md)。
+详见 [独立化与下一步](PROJECT_CONTEXT.md)、[世界运行时架构与分阶段计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)、[来源记录](SOURCE_ORIGIN.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
