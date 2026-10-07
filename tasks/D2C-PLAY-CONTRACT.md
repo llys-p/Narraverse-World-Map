@@ -43,3 +43,19 @@
 必须验证：村庄↔森林24tick且无跨日两次疲劳各100；Travel→Rest无跨日100→0/不回血；tick143买粮/卖粮同日消费与死亡；旅行途中先死亡完成拒绝但耗时保存；村外买卖/预算/小数/非法字段拒绝；玩家与NPC最后库存/公共币竞争按顺序仅支付一次；Buy/Sell总币、公私粮药及累计生产/消耗/损耗独立BigInt守恒；service重启原ID成功/已耗时拒绝重试不重复；143+1及动作中间checkpoint完整续跑；改价/数量/start/end/位置/核心与HTTP回执/journal顺序重算指纹仍拒绝；森林新观察权限、旧版本/全部已有门槛、非JSON边界保持。保存失败不公开半状态，坏最新不回退。
 
 D2C全部及真消费者通过后才将D2旅行/休整/交易门槛收口；D3战斗与D4完整场景身份/知识连续仍未完成，不能将D标已验收。
+
+## 中控验收收口
+
+2026-10-07 21:46（Asia/Shanghai）：D2C三路已集成并独立验收，D2旅行/休整/交易门槛通过。源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2c，验收代码172ac9f39abed9d6a1091d4f50e341c10d63f681；上接33e8154、共同合同1718a8b。源码未合并main、未部署；本轮在D2C停止，不启动D3/D4。
+
+- 三路交付：核心5f00d16+1f562b5；服务3c28c32+4aaf419；独立测试6aa9acd+568d974。中控按确切SHA纳入，旧测试未修改。核心6/6、服务最终9/9、独立最终17/17，均为真实依赖；中控完整回归`node --test --test-concurrency=2 tests/simulation/*.test.mjs tests/export-boundaries.test.mjs`最终270/270、零失败/跳过，400.7秒。证据`artifacts/world-runtime-d2c-acceptance-20261007/full-tests.txt`。
+- 初版森林观察投影type被payload覆盖已修；中控审查及独立反例发现显式play checkpoint导入误选旧C5规则，服务补丁用有界单次读取、严格envelope与已注册规则/fixture选派，再完整validateBundle审计。新profile没有迁移旧档。页面错误耗时/目的地/商品数量/价款的损坏200回执先红后绿，不能确认错误动作或清原ID。
+- 独立测试误算两处更正并保留旧失败证据：日饥饿为min(1000,1000+100)-200=800；quantity11为413 LIMIT_EXCEEDED，仍拒绝且tick/磁盘不变。没有降低限制/修改生产预期来凑通过。
+- 核心实际成功result精确为`{actorId,type,startTick,endTick,product,quantity,unitPrice,amount,before,after}`；before/after均精确`{location,fatigue,wallet,inventory,publicStock,communalGold}`，两bag均food/herbs。Travel/Rest product=null、quantity/unitPrice/amount=0；拒绝仅`{code:'RULE_REJECTED'}`。服务原样持久化并全重演，新HTTP receipt共10字段。
+- 真实浏览器在隔离CLI服务18314执行买food2、卖herbs1、旅行forest、主动Rest、返回village、推进144tick；最终tick176、wallet105、inventory food4/herbs0、fatigue0，整份bundle等于相同commandId的核心直接执行。双页签旧revision冲突重读、森林交易禁用、键盘买入/旅行与两DTO一致均通过。公开/本人数据不含他人私账。证据browser-dom.json、browser-comparison.json、browser.png、browser-console.json；普通页无warning/error。当前连接使用Codex内置浏览器，未使用Chrome DevTools MCP。
+- 真实play checkpoint tick143启动另一CLI/浏览器：旅行期间144死亡、155完成拒绝；页面明确时间已推进、动作未完成，身份仍村庄、私币100封存，动作禁用，原ID重试不再推进。成功世界CLI重启原ID仍tick176、磁盘字节不变。证据restart-comparison.json、death-browser.png。
+- 真浏览器合成代理测试：纯文本422释放意图，新请求ID变化；HTML502及错耗时200保留同一原DTO，最终原ID成功重试只推进一次176→188、仅一条新命令。证据proxy-requests.json、proxy-comparison.json。代理只转发本轮实验服务，未接旧实例。
+- service3独立子进程在旅行存盘发布后、HTTP回应前硬退出75；重启首先OWNER_BUSY，崩溃锁保留。核对本轮已退出PID/未变化token后，仅手工移除本轮实验锁；恢复原ID旅行仍12tick、forest、疲劳100且无第二次结算。证据crash-comparison.json。首次浏览器CLI启动工具关闭stdin，按精确实验进程/token受控终止后重启；记录browser-stop.json，后续PTY服务和代理均quit正常停止，不声称首次正常退出。
+- 旧C5 personality-health seed42四天checkpoint与20份全部数据导出逐字节等于已验收基准；summary的stateHash/eventHash/tick/eventCount/fixtureId/seed相同。证据legacy-comparison.json。此前A/B/C/D1/D2A/D2B门槛由270项完整回归保留。
+
+证据均在a2树忽略目录`artifacts/world-runtime-d2c-acceptance-20261007/`，未上传真实存档。旧页面、真实数据、正式平台/旧服务、模型/Laya及E研究树未触碰。本轮测试服务/代理已停止，实验树与存档保留用于回滚。D3野兽遭遇/战斗及D4场景连续仍待单独任务合同，D整体未验收。

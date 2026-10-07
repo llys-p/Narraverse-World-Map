@@ -385,6 +385,8 @@ Persistent Actor 身份独立于 simulationLevel。离开视野可降频，不�
 3. D3：一类野兽遭遇的实例化与战斗结算；战斗 ID、参与者、预留资源和结果只应用一次。
 4. D4：场景人物身份与事实记忆连续，验证刷新、返回、多标签页过期请求。
 
+2026-10-07 21:46（Asia/Shanghai）：D2A时间提交、D2B唯一本人状态及D2C旅行/主动休整/公仓真实交易门槛均已验收。D2C代码172ac9f保留在codex/world-runtime-d2c，完整270/270与真实浏览器/重启原ID/硬退出恢复通过，见[D2C收口](tasks/D2C-PLAY-CONTRACT.md)。本轮停在D2C，不自动开始D3；D3/D4及D整体验收仍未完成，不合并runtime main或迁移旧存档。
+
 首版回合战斗期间建议暂停该存档的宏观自动推进，战斗回合按明确耗时由权威入口推进；具体耗时在 D 开工前固定。地图不能另用帧循环推进世界。
 
 旧玩法留作对照；真实存档迁移须单独确认目标/备份/转换/回滚，开发用新 fixture。localStorage 可存 UI 偏好，不作新 Runtime 的第二个权威写入者。
@@ -410,8 +412,6 @@ E 阶段不预定胜出 checkpoint。首轮用同一套 Narraverse 中文 NPC �
 用户提供的 [ModelScope 演示入口](https://modelscope.cn/studios/AI-ModelScope/laya-demo) 一并保留。当前公开读取只得到登录提示，未核实其运行 checkpoint、配置或实际推理结果；不能用该演示代替 benchmark。以上是资料核对，本轮没有下载模型、安装依赖、训练或执行推理。
 
 ### 10.2 E1：Narraverse NPC SocialSignal Benchmark
-
-**2026-10-07 当前预研收口（不改实施顺序）：** A/B在双独立上下文复核、作者外裁定后的30条暂定中文dev诊断中，五信号均未达到预登记继续投入门槛；仅看可执行输入仍无信号优于锁定常量。该轮筛查已收档，正式准入为空，停止400扩样与微调投入，不测C、不提前接E2/Runtime。保留Laya为将来可重新提出的perception候选，不预定胜出或必需依赖；这不是全部Laya能力的结论，也不代表完整final/校准或E阶段验收。[诊断合同与收口证据](tasks/E1-DEV30-SCREENING-TASK.md)。关闭AI的确定性世界与主线D继续独立成立；无可信自由文本信号时返回未知/不改状态，结构化事实仍由规则处理。
 
 E1 先建立一套中文 NPC 社会交互测试集，离线评测，不先写 Runtime Adapter。正式样本规模和逐信号门槛在 E1 任务书中于运行前固定。
 

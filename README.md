@@ -18,9 +18,152 @@
 
 详见 [独立化与下一步](PROJECT_CONTEXT.md)、[世界运行时架构与分阶段计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)、[来源记录](SOURCE_ORIGIN.md)。
 
-## 新世界运行时进度
+## 世界运行时：离线模拟底座
 
-A/B及C1～C3身份/猎人/多人物竞争单项已通过，代码位于 `codex/world-runtime-c3` 任务分支；139/139与真实100日续跑/peer私账通过，C4记忆/关系合同已准备但代码未开始。main目前维护控制文档，没有合并运行时代码。查看[任务分支的运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-c3/README.md)、[C3合同](tasks/C3-SOCIETY-COMPETITION-TASK.md)及[C4后续合同](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)及[B4验收报告](docs/runtime/B4-ACCEPTANCE.md)与[当前状态](PROJECT_CONTEXT.md)。本阶段暂不接页面、NPC、模型或旧存档。
+Runtime目前保留在 `codex/world-runtime-d2c` 任务分支，源码位于`D:\Narraverse-World-Map-a2`，未合并main。离线runner无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+
+D1已新增独立只读世界服务：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-d1/my-world --port 18314
+```
+
+打开`http://127.0.0.1:18314/`；终端输入`quit`后回车正常停止。目录专用于新实验，已有档严格恢复，不覆盖重建。页面显示真实公仓/价格/种群/人物身份；刷新与重启不推进时间，没有旅行/交易/战斗写入口。崩溃锁不自动清理，不能删除其他实例的锁。D1全量184/184与真HTTP/双页签/断连重启通过，见[D1证据](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。共享机全回归建议给`node --test`加`--test-concurrency=2`，测试集保持完整。
+
+D2A提供显式世界时间写入口，使用新的专用目录：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2a/my-world --port 18314 --writable true
+```
+
+页面可选择1小时/2小时/1天推进，生态、经济与NPC会真实结算；刷新仍纯读，过期页签409后重读，同请求重试或重启不会重复推进。世界与回执一起存盘。默认不加--writable仍只读；旧D1目录不隐式升级，可用明确--checkpoint初始化另一个新目录。初始化也占一档，因此每个实验目录最多127次新成功请求；满预算明确失败，不自动清理。正式提交之外的已知临时档保留但不加载，崩溃锁仍需明确处理；不承诺断电恢复。196/196及真实消费者已通过，见[D2A证据](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)。这不是玩家旅行/休整/交易或战斗入口。
+
+D2B的玩家世界使用明确的新profile与新目录：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2b/my-world --profile player-village --port 18314 --writable true
+# 已有这个目录时，恢复命令省略 --profile；不重设seed：
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2b/my-world --port 18314 --writable true
+```
+
+玩家是第四名实名居民，匿名76、总人口仍80；默认本人100金币/3粮/1药有真实分拨账，不借NPC钱包。页面显示本人状态与私货，活着有存粮时日结只吃本人一份；无私粮则增加本人饥饿，不自动拿公粮/用药。玩家死亡后私产与身份封存。公开世界与本人读数必须同revision，失配重读后仍不一致就保留上一份一致显示。`--profile`仅用于新目录，与`--checkpoint`互斥；不自动给旧世界新增玩家。仍默认只读，写需明确`--writable true`。当前238/238与真实双页签、跨档、隐私、资产守恒和恢复通过；丢锁/空档案明确拒绝、同类临时档保留恢复与非JSON错误意图处理已修，见[D2B收口](tasks/D2B-PLAYER-CONTRACT.md)。旅行、主动休整、交易和战斗仍待后续合同。
+
+D2C新增旅行、主动休整和公仓真实买卖，仅新玩法profile开启：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2c/my-world --profile player-play-village --port 18314 --writable true
+# 恢复同目录时省略 --profile：
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2c/my-world --port 18314 --writable true
+```
+
+旅行村庄↔森林耗120分钟、疲劳增加100；主动休整耗60分钟、疲劳减少100，不回血。买卖仅村庄、公仓粮/药，每笔1～10份耗10分钟，按完成时权威价整笔结算，真实转移金币与公私库存。午夜仍按原规则结算；途中死亡时耗时会保存，动作完成拒绝，页面明确区分。过期请求重读、未确认结果重试同一请求，不重复执行。默认及旧profile不隐式开启动作，真实存档不迁移。中控270/270、真实浏览器/CLI重启/硬退出恢复/旧C5字节对照通过，见[D2C收口证据](tasks/D2C-PLAY-CONTRACT.md)。D2门槛通过，战斗与完整场景连续仍待D3/D4；本轮测试服务已停止。
+
+```powershell
+node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
+node simulation-runner.mjs --fixture clock-smoke --days 40 --seed 42 --out artifacts/simulation/run40
+node simulation-runner.mjs --resume artifacts/simulation/run40/checkpoint-r5760.json --days 60 --out artifacts/simulation/resumed60
+$simulationTests = @(Get-ChildItem -LiteralPath tests/simulation -Filter '*.test.mjs' -File | ForEach-Object FullName)
+node --test @simulationTests tests/export-boundaries.test.mjs
+```
+
+输出目录必须是新的，已有目录即使为空也拒绝；需要重跑时另取名字。`--days`是新增天数，整数1～1000；seed默认42，0合法；恢复禁止另传seed/fixture，沿用完整RNG/队列/回执。fixture输入不随days变化。
+
+产物为summary.json、完整有序inputs.json、events.csv和按revision命名的checkpoint。比较summary的stateHash/eventHash以及完整checkpoint状态/日志；耗时、内存、路径不参与哈希。代码SHA、dirty和sourceHash记录实际代码，不能用dirty运行假装精确HEAD。系统错误非零退出，保留最后成功tick；保存失败明确报错，不覆盖旧档或静默重置。
+
+checkpoint采用同目录hard link独占发布，平台不支持时明确SAVE_FAILED；临时档不作为存档加载。clock-smoke仅测试资源和每日随机事实，完成100天不表示生态平衡、NPC智能或页面接入完成。产物放已忽略的artifacts目录，禁止上传用户真实存档。
+
+### B1：离线资源账本
+
+`resource-village` 是版本化资源实验：80人、粮食/药材生产消费与损耗、整数余量、容量损失、显式配置的外部流量。鹿狼为静态初值，价格与付费贸易尚未实现；不同seed的此确定性fixture应得到相同资源轨迹，RNG暂不使用。
+
+```powershell
+node simulation-runner.mjs --fixture resource-village --days 30 --seed 42 --out artifacts/simulation/resources30
+node simulation-runner.mjs --resume artifacts/simulation/resources30/checkpoint-r4320.json --days 10 --out artifacts/simulation/resources40
+```
+
+额外导出 resource-config.json 与 economy.csv，逐日包含期初、生产/流入、需求/实际消费/缺口、流出/缺口、损耗、容量损失、期末和三种余量。金币保持不变。实验流量来自配置的flows，不是交互命令或付费贸易；inputs.json仍只表示Command队列/回执输入。保存与恢复会逐日复算账本并严格验证完整世界；配置指纹用于一致性检查，不是防恶意修改的数字签名。累计10000资源日为保护预算，不是性能承诺。见[B1合同](tasks/B1-RESOURCE-LEDGER-TASK.md)。
+
+### B2：鹿狼、聚合捕猎与治疗
+
+新规则b-ecology-v1保存种群收支、出生/死亡/捕食余量、狼食物压力、农田损失、健康劳动力和伤者。每天固定抽一个RNG样本，种群不自动回填；药实际消耗才能恢复伤者。食物少于5日口粮或有狼压力才捕猎，猎人来自未受伤且未分配给生产的剩余劳动力。这是聚合模型，未实现实名NPC、人口出生死亡、价格或付费贸易。
+
+```powershell
+node simulation-runner.mjs --fixture ecology-village --days 60 --seed 1 --out artifacts/simulation/ecology-base60
+node simulation-runner.mjs --fixture ecology-deer-shock --days 60 --seed 1 --out artifacts/simulation/ecology-shock60
+```
+
+两fixture使用相同配置；shock仅在tick1440（第10天结算前）通过RemovePopulation命令移除90鹿，inputs.json保存该输入，超出当时存量时拒绝。产物新增ecology-config.json、population.csv、ecology.csv，并保留资源配置、资源账CSV与完整checkpoint。续跑沿用fixture、配置、输入回执和RNG，无另传seed/fixture。60天是示例，逐tick历史重算成本会随日志增长，B4长程性能尚未验收；需快速查看时先用--days 3。见[B2合同](tasks/B2-ECOLOGY-HUNTING-TASK.md)。
+
+### B3：价格、付款与两日运输
+
+b-market-v1在原生态/资源账上增加有界库存价格、金币付款、在途运力及路线状态。外部供应无限，采购要有金币和运输空间；出发付款锁价，2日后路线开放才能到货，关闭路线保留已付货物，恢复后只卸一次。没有免费补货、卖出/退款或随机货物损失。
+
+```powershell
+node simulation-runner.mjs --fixture market-shortage --days 4 --seed 0 --out artifacts/simulation/market4
+node simulation-runner.mjs --fixture market-route-pause --days 2 --seed 0 --out artifacts/simulation/market-closed2
+node simulation-runner.mjs --resume artifacts/simulation/market-closed2/checkpoint-r288.json --days 2 --out artifacts/simulation/market-reopened4
+```
+
+market-village使用原生态初值；shortage仅为粮100/药0/金币2000/伤者2，捕猎生产仍实际生效，不能把捕猎粮当成提前到货。route-pause在同配置上加第2日关闭、第4日开启命令，第3日到期货被保留。SetTradeRoute与RemovePopulation均有幂等回执、因果事实和整tick回退。
+
+导出market-config.json、market.csv（逐商品报价）和trade.csv（订单/到货明细），保留原配置、population/ecology/economy.csv与完整checkpoint。trade.csv中cost为锁定订单成本，paidAmount仅ordered行为非零，到货为0，避免重复计付款。事实内生态子账金币行为采购前余额；economy.csv金币行合并当天付款为实际consumption，期末与snapshot余额一致；trade.csv单独记录每单付款。运输风险只加价；伤病只经消费改变价格，没有重复需求加价。见[B3合同](tasks/B3-MARKET-TRADE-TASK.md)。B4长程/多seed尚未验收，逐tick重算历史成本仍待解决。
+
+### B4：私有推进会话与冻结实验
+
+runner使用私有simulation session：入口与保存/加载全历史审计；无命令/调度的tick直接推进时钟，每个活动tick核对完整状态结构，并与规范规则从同一私有前态构造的完整候选一致。历史/私有状态深冻结，外部只能取复制bundle，无跳过校验参数。旧advanceOneTick保留为严格差分参考，不能把validateSnapshotStructure当存档审计。
+
+旧market-village参数1000日pilot鹿狼最终灭绝，旧fixture与规则未修改。新b4-*实验参数依据seed42首次校准冻结，见[B4任务与冻结门槛](tasks/B4-LONG-RUN-ACCEPTANCE-TASK.md)。基线/轻扰动必须存活和恢复，严重扰动允许有账可解释的灭绝；完整阶段仍需矩阵通过。
+
+```powershell
+node simulation-runner.mjs --fixture b4-baseline --days 1000 --seed 42 --out artifacts/simulation/b4-base1000
+node runtime/experiments/b4-experiments.mjs artifacts/simulation/b4-matrix-new
+```
+
+矩阵入口要求干净代码/冻结配置指纹，用固定5seeds及2个holdout执行100日快测/完整断点续跑、500/1000日基线、轻扰动恢复及重鹿扰动/药材短缺/贸易阻断配对，逐行独立核对种群、资源、现金、运力、订单、价格和事件。失败非零，不偷偷调门槛；全部实验输出在新目录，report.json只在全门槛通过时写passed。summary包含idle/activity ticks、实际源码指纹和末尾内存；1000日不是大人口压测。控制文档仍在main、代码保留任务分支。
+
+### C1：实名人物份额与 Needs
+
+actor-village在冻结b4-baseline上分出村长/猎人/商人三个持续身份：80人=匿名77+实名3，并非新增人口。实名者默认休息、不参与匿名劳动/捕猎；从同一笔粮药消费账分配实际份额（匿名优先、实名ID顺序），Needs由饥饿/健康/疲劳派生。没药不恢复，没粮导致饥饿伤害，死亡一次且保留ID墓碑，后续不消费/治疗，不再生成替身。
+
+```powershell
+node simulation-runner.mjs --fixture actor-village --days 100 --seed 42 --out artifacts/simulation/actors100
+node simulation-runner.mjs --fixture actor-needs --days 4 --seed 0 --out artifacts/simulation/actors-needs4
+node simulation-runner.mjs --fixture actor-shortage --days 10 --seed 0 --out artifacts/simulation/actors-shortage10
+```
+
+actor-needs只改变猎人的初始健康500/饥饿500/疲劳600，用真实药粮验证恢复；actor-shortage无粮生产/鹿粮收益/药生产/金币，初始村长濒危，用于验证饥饿死亡。额外导出actor-config.json、actors.csv和人口分层；原市场/资源/生态CSV与完整checkpoint仍保留。日事件保存实名逐人份额，存档/私有session从配置/命令/RNG重放完整身份、消费和墓碑；不猜B旧档升级。
+
+当前C1需求每日一次，尚无Utility/Goal、自主工作或猎人行动、关系/记忆/完整LOD。[C1合同](tasks/C1-ACTOR-POPULATION-NEEDS-TASK.md)定义边界；后续C2再接实际人物行为。
+
+### C2：猎人 Utility / Goal 与实际行动
+
+c-hunter-v1每日评估一个自主猎人：缺粮/伤病/疲劳/钱包改变目标和步骤，实际Rest、WorkForPay、Hunt、BuyFood、BuyMedicine、UseMedicine走command-engine，具有inputSeq/幂等回执/事实。Goal跨日保存，20日截止、3次阻塞终止并冷却；外部不能伪造内部hunter-day-*命令。
+
+```powershell
+node simulation-runner.mjs --fixture hunter-recovery --days 20 --seed 42 --out artifacts/simulation/hunter-heal20
+node simulation-runner.mjs --fixture hunter-hunger --days 10 --seed 1 --out artifacts/simulation/hunter-food10
+node simulation-runner.mjs --fixture hunter-village --days 100 --seed 42 --out artifacts/simulation/hunter100
+```
+
+猎人的私人粮药和钱包有明确归属。初始私粮3从仓库移交；工资将公共金币份额转给钱包，内部购买将货物移到私人、现金归公共，world.gold仍是全聚落货币总量，不重复增减。公共市场不能花个人钱；私人药使用/吃饭不再扣仓库，使用另记私账。内部outflow不是外部出口，资源总账需加私人余量/消费；首版私人库存无损耗。捕猎扣同鹿群1只、私人粮20，风险受伤使用额外1个可恢复RNG样本；匿名猎人不包含该实名者。
+
+hunter-recovery初始猎人health500、私粮20，实际演示缺钱→工作→买药→用药；hunter-hunger初始私粮0/hunger500，演示真正捕猎。额外hunter-config.json、hunter.csv（目标/私账）、actions.csv（命令/价格/工资/捕猎/伤损/回执），原Actor/市场/生态CSV及inputs/checkpoint保留。actors.csv食物是每人实际消费（自主猎人为私人粮）；economy.csv只记公用仓库，完整内部转移/使用事实在events.csv和hunter.csv/actions.csv。
+
+当前只猎人自主；商人/村长仍默认休息，竞争在C3，关系/事实可知记忆在C4。未接UI/模型或旧存档，不能把C2标阶段C全部完成。见[C2合同](tasks/C2-HUNTER-UTILITY-GOAL-TASK.md)。
+
+### C3：三人独立目标与最后一份资源
+
+c-society-v1给村长/猎人/商人独立私账和Goal：先对同一快照规划，再按actorId提交重校验。两人抢最后1公药/20工资时只有首个合法提交成功，失败者不损钱货；系统异常则三人整个tick回退。村长有公共粮目标、猎人沿用真实捕猎链、商人持真实私药并转售给需要药的同村人物，不是换三个人名共用一个目标。
+
+```powershell
+node simulation-runner.mjs --fixture society-village --days 100 --seed 42 --out artifacts/simulation/society100
+node simulation-runner.mjs --fixture society-medicine-race --days 4 --seed 0 --out artifacts/simulation/medicine-race4
+node simulation-runner.mjs --fixture society-peer-sale --days 4 --seed 42 --out artifacts/simulation/peer-sale4
+```
+
+peer出售同时转移双方金币归属与药，公仓不再扣药，買方下一日使用；已拿到药或死者拒绝交易。总gold=公共金+三钱包，外采不能花私钱；资产/墓碑/Goal/阻塞失败都随存档持续。新增society-config.json、society.csv（每人目标/私账/peer账）、actions.csv（成功/拒绝、双方价格/现金），原Actor/市场/生态CSV与全部内部inputs/checkpoint保留。公仓outflow包含内部移交，完整资源总账须加三人私有余量/消费并扣除peer内部重复购买，不能当外部出口。
+
+初始三人私粮各3从公仓移交，商人钱包100是初始聚落金币份额。C3仍每日最多一步、无记忆/关系/复杂寻路/AI；C4可知事实记忆后续，未验完整C阶段。见[C3合同](tasks/C3-SOCIETY-COMPETITION-TASK.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
@@ -271,6 +414,21 @@ ATB 时间条、奥义 / 极限槽、召唤、队伍与人物切换。另外现�
 回地图面板持久。修复过程：战斗实体漏传 level 导致结算 NaN（已修+防御性消毒），步骤函数引用陷阱（setInterval 先捕获原引用，重构为单循环内挂点）。
 截图：`e2e-battle.png`。
 
+## C4：可知事实与关系实验
+
+`memory-village`保存每人最多32条有来源的记忆，仅含本人、直接交易或村内公开事实。`memory-relations`和`memory-relations-control`使用相同资产与伤病，前者两次真实交易后少收2金币；`memory-medicine-race`验证最后一份公药竞争。人物上下文通过`buildActorKnowledge`白名单读取，不返回他人私账或全知日志。新增memory-config.json、memories.csv、relationships.csv；CSV包含每天保留状态，不按重复行累加信任。
+
+```powershell
+node simulation-runner.mjs --fixture memory-relations --days 8 --seed 42 --out artifacts/simulation/memory-relations8
+node simulation-runner.mjs --fixture memory-village --days 100 --seed 42 --out artifacts/simulation/memory100
+```
+
+完整入口/保存/知识读取保持全量审计，私有session只对已验证历史增量推进。C4已验收；见[C4合同与验收](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)。
+
+### C5：持久人格偏好
+
+`personality-neutral/health/food`保持相同资产和伤病，以本人持久需求权重改变新目标的优先级，经真实命令扣款/转移货物，原Goal继续及失败冷却保留。新c-personality-v1/memory-config-v2显式版本，不迁移旧C4；额外输出personality-config.json。C5与C阶段已通过177/177、100日跨档、独立评分/资产消费者及旧C4存档字节兼容；见[C5合同](tasks/C5-PERSONALITY-CHOICE-TASK.md)。仍不代表页面、模型或完整心理网络完成。以下原型描述与历史E2E不代表新Runtime页面接入。
+
 ## 结构（用户提案：骑马与砍杀式两层 + 火柴人）
 
 ```
@@ -316,7 +474,3 @@ ATB 时间条、奥义 / 极限槽、召唤、队伍与人物切换。另外现�
 - 时辰只被旅行/休整消耗，场景内行动不耗时间；
 - 场景状态不回写世界地图（上下层状态桥是下一步）；
 - 想换场景素材：沙盒三题材的 configs 在 scene.html 顶部，加地点即加 LOCS 数组项 + configs 项。
-
-## 世界运行时进度
-
-Runtime保留在codex/world-runtime-d2b任务分支，代码732103d；A/B/C、D1、D2A及D2B已验收，源码未合并main。D2B新增真实独立玩家及私账、四实名+76匿名总80，当前238/238和真实HTTP/双页签/重启与硬退出恢复通过；丢锁/空档案、checkpoint临时档和非JSON错误容错已修。新实验profile入口见任务分支README，验收证据见[D2B收口](tasks/D2B-PLAYER-CONTRACT.md)。旅行/主动休整/交易与战斗尚未接入，D整体未验收。
