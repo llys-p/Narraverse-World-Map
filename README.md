@@ -20,7 +20,7 @@
 
 ## 新世界运行时进度
 
-阶段A底座与阶段B校准实验门槛已通过，代码位于 `codex/world-runtime-b4` 任务分支；98/98及42次长期/多seed/扰动实验通过，下一项C1未开始。main目前维护控制文档，没有合并运行时代码。查看[任务分支的运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-b4/README.md)、[B4合同](tasks/B4-LONG-RUN-ACCEPTANCE-TASK.md)及[验收报告](docs/runtime/B4-ACCEPTANCE.md)与[当前状态](PROJECT_CONTEXT.md)。本阶段暂不接页面、NPC、模型或旧存档。
+A/B及C1实名身份/人口份额/Needs单项已通过，代码位于 `codex/world-runtime-c1` 任务分支；109/109、真实100日续跑与消费核账通过，下一项C2未开始。main目前维护控制文档，没有合并运行时代码。查看[任务分支的运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-c1/README.md)、[C1合同](tasks/C1-ACTOR-POPULATION-NEEDS-TASK.md)及[B4验收报告](docs/runtime/B4-ACCEPTANCE.md)与[当前状态](PROJECT_CONTEXT.md)。本阶段暂不接页面、NPC、模型或旧存档。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

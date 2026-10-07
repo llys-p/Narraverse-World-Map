@@ -302,6 +302,16 @@ B3仍不含卖出/退款/商队寻路、关系折扣、货物随机损失或NPC�
 
 Actor 最小字段：identity、location、health/hunger/fatigue、occupation、inventory/wealth、needs、personality、relationships、memories、currentGoal、执行进度、simulationLevel。只增加会参与规则的心理变量。
 
+### C1 固定身份、份额与需求（2026-10-07）
+
+规则c-actors-v1 / 配置actor-config-v1嵌套冻结b4-baseline市场配置。80人已含村长/猎人/商人3人，匿名77；Actor按配置数组从nextEntityId分配连续actor-1..3，nextEntityId=4，死者保留墓碑/引用且不复用ID。本阶段实名者默认休息，不进入匿名农民/采药者/猎人份额，自主工作/猎人行动在C2移交，不能双结算。[C1完整合同](tasks/C1-ACTOR-POPULATION-NEEDS-TASK.md)。
+
+C1首版每日144tick（未采用建议30分钟，后续变频提升规则版本）。粮需求=匿名存活+实名存活，每人1口粮；药需求=匿名当日伤者+实名health<1000的存活者，每人1治疗单位。资源仍一次结算；匿名群体先分配，余粮/余药依实名ID顺序。实名治疗每实际单位health+100，饥饿每日+100、吃到口粮−200，默认休息疲劳−200，均限制0..1000；未吃且饥饿≥500时health−50，降0则一次死亡，下一日起移出存活消费/治疗份额。需要food=hunger/healing=1000−health/rest=fatigue，死者needs全0。
+
+ActorDaySettled保留市场生态资源日账及实名逐人份额、实际状态变化、死亡和人口开/收账；资源消费=匿名+实名实际分配，不重复扣库存。匿名劳动人数上限是匿名健康人口；初始匿名伤者不能占实名份额。存档从初始名单、命令与每日RNG重放全部身份/份额/Needs/墓碑及计数，session保留规范完整候选对照。实际CSV输出actors与三层存活人口，内核和存档仍为唯一真源。
+
+只有C1身份/份额/需求基础，不含人格/关系/记忆/目标/自主行为。C2接猎人Utility+Goal/行动和资源预留，C3再接竞争，C4事实可知记忆；不能把三个人名/需求字段冒充完整NPC决策。
+
 ### 8.1 Utility AI + Goal
 
 - 先校验候选行为可执行性，再按需求、人格、关系和风险评分；同分走固定顺序或受控 RNG。
@@ -443,6 +453,6 @@ B 的 100 天闭环通过前暂缓大量技能/怪物/装备/Boss、大规模美
 
 `PROJECT_CONTEXT.md` 维护当前进度，本文维护合同和任务；直接修订相关小节，由 Git 保留历史，不追加多份冲突方案。
 
-**当前方向：A底座与阶段B校准实验门槛已通过，下一步C1身份/聚合份额/Needs。** 用户已授权本对话自行推进；A的证据见[A4收口](tasks/A4-RUNNER-TASK.md)。B1已固定版本化参数与资源账，B2/B3已验证局部生态反馈与付费延迟贸易；B4先处理推进/历史校验性能，再跑完整多seed/长程/扰动门槛，不自动进入页面/AI/迁移。
+**当前方向：A/B与C1身份/份额/Needs单项已通过，下一步C2猎人Utility/Goal/独立行动。** 用户已授权本对话自行推进；A的证据见[A4收口](tasks/A4-RUNNER-TASK.md)。B1已固定版本化参数与资源账，B2/B3已验证局部生态反馈与付费延迟贸易；B4先处理推进/历史校验性能，再跑完整多seed/长程/扰动门槛，不自动进入页面/AI/迁移。
 
 B4收口（2026-10-07）：98/98、42次干净CLI实验、固定5seeds及2holdout、重复100/40+60与独立45420行CSV核验通过。旧B3参数1000日基线灭绝，保留旧fixture/结果；新b4-*参数依据seed42校准后冻结再验其余seed，见[B4合同](tasks/B4-LONG-RUN-ACCEPTANCE-TASK.md)与[验收报告](docs/runtime/B4-ACCEPTANCE.md)。基线鹿182/狼13～14，轻扰动第49日恢复，重扰动可灭绝但账与药材付费补给链成立；1000日最长12.9秒。下一项C1以冻结校准baseline为业务基准，仍不接UI/AI或正式平台。
