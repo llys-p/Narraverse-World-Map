@@ -151,7 +151,7 @@ foreach ($sp in "dev","calibration") {
 
 ```text
 任务：E1 多版本 SocialSignal 预研
-仓库目录、分支、基准 SHA、交付 SHA：D:\ModelBench\laya\repo ｜ codex/laya-model-benchmark ｜ 基准 f28ed3e975d345b89375eadda8096e94bfa0c57a ｜ 交付 SHA 见本分支 HEAD 与下一条回执消息
+仓库目录、分支、基准 SHA、交付 SHA：D:\ModelBench\laya\repo ｜ codex/laya-model-benchmark ｜ 基准 f28ed3e975d345b89375eadda8096e94bfa0c57a ｜ 交付 5599c465dbd7511a4f7f31293f0659da49541723（本分支已推送；提交作者按仓库既有约定写成 llys-p <llys-p@users.noreply.github.com>，本机未设置 git 身份，我用的是逐命令覆盖，没有改你的 git config）
 未提交改动及归属：本任务全部改动仅位于新建的 benchmarks/npc-socialsignal/；权重、venv、密封金标签在仓库外 D:\ModelBench\laya\，不提交
 模型版本/文件哈希/许可/SDK/硬件：A 1720e3e3 / 9d628fd971b70038…；B 8fc29dee / 194544a0ff0f05e6…；C 0d5398ca / de30b056fa1540ae…（已下载未运行）；均标 Apache-2.0；laya 0.3.28 + torch 2.14.1(CPU) + transformers 5.18.0；Windows 10.0.26200 x64 / Python 3.11.5 / RTX 4060 未用于推理
 数据集大小、切分哈希、标注复核与争议：125 场景（dev 30 / calibration 33 / final 62，家族互斥切分）；validate_data.py errors=0；final 金标签 sha256 4b245c18a634322550f537f5be46702f4900c7633c69743debb342ccac5efcbc，存放于仓库外；独立复核＝外部全量盲审，尚未回收，故本轮只有一轮自标注
