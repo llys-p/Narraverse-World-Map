@@ -1,5 +1,7 @@
 # E1R：修复评测与盲审隔离，再补样和冻结
 
+最新复验：`b2df7a9` 仍为 NEED REVISION，后续以 [E1R2 四项门槛与小批顺序](E1R2-BENCHMARK-GATES-TASK.md) 为当前修复合同；25条独立AI试审已派出，不能继续沿用本文发布时“尚未派出”的历史状态。
+
 发布时间：2026-10-07 12:57（Asia/Shanghai）。
 中控复核对象：`codex/laya-model-benchmark` 的 `e9196ab`（主交付 `5599c46`，基准 `f28ed3e`）。结论：**NEED REVISION；pilot 结果保留，不通过 M1/M2 或模型选型验收。**
 原合同：[E1 多模型任务书](E1-LAYA-MODEL-SELECTION-BENCHMARK-TASK.md)。本任务只修正离线预研，不推进 E2，不执行 fine-tune，不改变 A～D 的工作顺序。
