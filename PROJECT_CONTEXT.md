@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 13:44（Asia/Shanghai）。
+更新时间：2026-10-07 13:45（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -39,6 +39,9 @@
 
 - B1 `6382ad5`：配置/单位/每日资源收支与整数余量入存档，ResourceDaySettled事实与配置逐日复算；零库存、缺口、容量损失、非法数据、整tick回退及超预算提前拒绝通过。全部simulation+边界70/70（本轮约228秒，含并发运行），原A行为保持；[B1合同与收口](tasks/B1-RESOURCE-LEDGER-TASK.md)。
 - 干净6382ad5实际CLI10天=4天保存+6天续跑，完整checkpoint/配置一致，30行CSV使用BigInt逐行对账；最终f3aff78干净seed0一天烟测通过、源码指纹相同；tick1440、10事实、粮1012/药87/金币20000。源码指纹49bc5f3718a744a75b33069c99c2341bbb7ee1e826c01ae70cc73b3e6612e2b0；证据artifacts/world-runtime-b1-acceptance-20261007-1321/comparison.json与full-tests.txt保持忽略。10天约17秒（并发回归条件），内存为末尾采样；逐tick历史重算开销大，长程实验前需要改进验证策略，不能据此承诺1000天性能。此fixture不使用RNG，鹿狼静态，不宣称生态平衡或贸易完成。
+
+- B2 `dc2d7d7`：鹿狼真实出生/死亡/捕食/饥饿压力、农田损失、聚合捕猎/治疗，RemovePopulation命令与幂等回执、因果事实、RNG/种群/资源完整重放已实现。79/79全回归通过（原70+新增9；约127秒）；死亡/猎杀狼不再产生农田损失反例先红后绿。[B2合同及收口](tasks/B2-ECOLOGY-HUNTING-TASK.md)。
+- 干净dc2d7d7实际CLI扰动12天=8天保存+4天续跑，完整checkpoint、两哈希和三CSV一致；最终efda6f6干净seed0一天烟测通过、源码指纹相同；tick1728、13事实，tick1440移除90鹿一次，之前9天与基线同轨迹。12天约31秒（同期全回归）；另60天配对每日业务规则实验seed1在第32天首次出现额外压力，基线农田损失/伤者/药消耗=0/0/0，扰动=176/28/28，末鹿狼=0/0。严重扰动灭绝有账可解释，但不证明平衡；此60天实验不是CLI/B4长程验收。源码指纹7449385b12384f9d620c60438c999a8c0e7932346d7673fba4d5f3b3b6112520；证据artifacts/world-runtime-b2-acceptance-20261007-1340/comparison.json、paired-daily-rules.json及full-tests.txt保持忽略。价格/付费贸易/人口生死/NPC/页面/AI未实现，历史逐tick重算瓶颈仍待B4前处理。
 ## 尚未完成
 
 - 两个localStorage键非事务、多标签页冲突、战斗中途刷新恢复。
@@ -49,7 +52,7 @@
 
 ## 下一步
 
-阶段A已通过，B1资源账本已实现并验收：源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-b1，代码基准A4 02cecea，实现保存点 `6382ad5fc9945cf9a3cb68ce72cd63e2f61f9d19`；最终交接 `f3aff786fae405f1b9196307a1110a0ccba88f84` 已推origin（末次仅文档同步）。全部simulation+边界70/70、真实磁盘30=12+18、干净CLI10=4+6和CSV逐行对账通过；源码不自动合并main。下一项B2鹿狼与聚合捕猎；B阶段仍进行中，B3价格/付费延迟贸易及B4长期生态门槛未开始。E1离线预研独立按E1R2修工具并回收25条试审，不影响主线顺序。
+A、B1及B2单项已通过；当前源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-b2，基准B1 f3aff78，实现 `dc2d7d79cc3263618b8bd25e11cbf6b1cc64509c`；最终交接 `efda6f656c9300100b1d47a0fa26a365dcc8d132` 已推origin（末次仅文档同步）。全部simulation+边界79/79，真实磁盘/CLI恢复和完整历史重放通过；源码不自动合并main。下一项B3价格/付费延迟贸易，B阶段仍进行中，B4长期/多seed平衡门槛未开始。E1离线预研独立按E1R2修工具/规范并澄清已回收25条试审，不影响主线顺序。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -61,8 +64,8 @@
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
-- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
+- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4与阶段A门槛、B1单项已通过；B阶段进行中，B2～B4未开始，C～G主线未开始。E阶段待开始，E1预研仍需修正：先E1R2五项工具/规范门槛与试审分歧澄清，再经中控确认补24条长dev；完整扩样另发合同，建议400=dev150/calibration90/全新final160。旧125条转开发/诊断、保留旧封存，不训练/装CUDA/启动E2；本轮不启用qoder_cron，按批交回。
+- A1～A4与阶段A门槛、B1/B2单项已通过；B阶段进行中，B3/B4未开始，C～G主线未开始。E阶段待开始，E1预研仍需修正：先E1R2五项工具/规范门槛与试审分歧澄清，再经中控确认补24条长dev；完整扩样另发合同，建议400=dev150/calibration90/全新final160。旧125条转开发/诊断、保留旧封存，不训练/装CUDA/启动E2；本轮不启用qoder_cron，按批交回。

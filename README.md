@@ -20,7 +20,7 @@
 
 ## 新世界运行时进度
 
-阶段A底座已通过；B1资源账本已通过验收，代码位于 `codex/world-runtime-b1` 任务分支。main目前维护控制文档，没有合并运行时代码。查看[任务分支的运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-b1/README.md)、[B1合同](tasks/B1-RESOURCE-LEDGER-TASK.md)与[当前状态](PROJECT_CONTEXT.md)。本阶段暂不接页面、NPC、模型或旧存档。
+阶段A底座、B1资源账本与B2生态/捕猎已通过单项验收，代码位于 `codex/world-runtime-b2` 任务分支。main目前维护控制文档，没有合并运行时代码。查看[任务分支的运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-b2/README.md)、[B2合同](tasks/B2-ECOLOGY-HUNTING-TASK.md)与[当前状态](PROJECT_CONTEXT.md)。本阶段暂不接页面、NPC、模型或旧存档。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
