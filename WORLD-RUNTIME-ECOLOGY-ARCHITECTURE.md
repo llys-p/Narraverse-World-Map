@@ -2,7 +2,7 @@
 
 > 修订：2026-10-07 11:12（Asia/Shanghai）；本次更新 E 阶段 Laya 技术认知。
 > 状态：方向已确定；本文是实施约定，不是实现或验收报告。
-> 本次规划起点：阶段 A / A1，修订时尚未开始编码。后续实际进度唯一记录在 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)。
+> 本次规划起点：阶段 A / A1。实际交付与验收进度唯一记录在 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)。
 > 承接 `9db7035` 的架构方向和 `28b1ebb` 的状态记录；原版本保留在 Git 历史。
 
 ## 1. 目标与使用方式
