@@ -67,8 +67,15 @@ test('D2B independent: abundant public food and medicine cannot feed or heal an 
 test('D2B independent actual wage race: 120 total minus player 100 pays only the first 20 wage',()=>{
   const c=config();c.society.estates.forEach(e=>e.initialWallet=0);c.society.actors.market.ecology.resources.resources.gold.initial=120;
   c.society.actors.initialActors[0].health=500;c.society.actors.initialActors[1].health=500;
-  const b=run(c),w=b.snapshot.world,work=Object.values(b.snapshot.commandReceipts).filter(r=>r.input.payload.action==='WorkForPay');
-  assert.equal(c.society.economics.wage,20);assert.equal(work.length,2);assert.deepEqual(work.map(r=>r.status),['succeeded','rejected']);
+  // Two injured residents need medicine; the empty, penniless merchant also needs stock.
+  // All plan against the same 20 public coins, then each commit rechecks ownership.
+  const b=run(c),w=b.snapshot.world,work=Object.values(b.snapshot.commandReceipts).filter(r=>r.input.payload.action==='WorkForPay')
+    .sort((a,b)=>a.input.payload.actorId.localeCompare(b.input.payload.actorId));
+  assert.equal(c.society.economics.wage,20);assert.equal(work.length,3);
+  assert.deepEqual(work.map(r=>r.input.payload.actorId),['actor-1','actor-2','actor-3']);
+  assert.deepEqual(work.map(r=>r.status),['succeeded','rejected','rejected']);
+  assert.deepEqual(w.societyModel.agents.map(a=>a.state.ledger.wages),[20,0,0]);
+  assert.equal(w.societyModel.agents.reduce((n,a)=>n+a.state.ledger.workDays,0),1);
   assert.deepEqual(w.societyModel.agents.map(a=>a.state.wallet),[20,0,0]);assert.equal(w.playerModel.wallet,100);
   assert.equal(w.resources.gold,120);assert.equal(treasury(w),0n);assert.equal(day(b).communalGold,0);
 });
