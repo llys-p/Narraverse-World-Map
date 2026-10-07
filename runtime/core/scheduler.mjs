@@ -46,11 +46,29 @@
  * 到期与恢复语义与架构一致：初始 tick 0 已完成，推进执行后续 tick；
  * 恢复后从保存的 nextDueTick 继续，不漏执行、不重复执行、不重排周期。
  *
+ * 保护限额（A1R F1；是防失控保护，不是性能承诺）：
+ *   - MAX_SCHEDULED_TASKS = 100000：调度队列任务项上限，与架构任务预算一致，
+ *     create/restore/advance 三个入口都拒绝超限队列。
+ *   - MAX_ADVANCE_DUE_RESULTS = 1000000：单次推进到期结果总量上限。advanceScheduler
+ *     在分配任何结果对象前预检全部任务的触发次数、下一到期点（安全整数精确运算）
+ *     与累计总量，任一超限抛 Error（code='LIMIT_EXCEEDED'）；不截断、不隐式分批、
+ *     不丢任务、不改输入；调用方可显式缩小推进跨度，调度器不暗改请求。
+ *
+ * 输入形态（A1R F2/F3）：
+ *   - 任务数组必须密集：空洞、null、undefined 描述符在 create/restore/advance
+ *     一律抛 Error（code='INVALID_INPUT'），不过滤坏元素后继续；空数组合法。
+ *   - 选项、恢复记录、任务描述符与对象形式注册表必须是普通数据对象
+ *     （原型为 Object.prototype 或 null）；Date/Map/Set/类实例一律拒绝。
+ *     注册集合明确允许 Set 与数组。
+ *
  * 本模块仅引用同目录 simulation-clock 的共享常量，不引入其他模块，
  * 不触墙钟、定时器、DOM、网络与环境变量。
  */
 
 import { MAX_ADVANCE_TICKS } from './simulation-clock.mjs';
+
+export const MAX_SCHEDULED_TASKS = 100000;
+export const MAX_ADVANCE_DUE_RESULTS = 1000000;
 
 const DESCRIPTOR_FIELDS = ['taskId', 'systemId', 'nextDueTick', 'intervalTicks', 'priority'];
 
@@ -87,8 +105,12 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.length >= 1;
 }
 
-function isPlainObject(value) {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
+function isDataRecord(value) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
 }
 
 function compareByTaskId(a, b) {
@@ -97,17 +119,17 @@ function compareByTaskId(a, b) {
 
 function normalizeRegistry(systems) {
   if (systems === null || systems === undefined) {
-    throw invalidInput('系统注册集合必须显式提供（Set、数组或键为系统名的对象）');
+    throw invalidInput('系统注册集合必须显式提供（Set、数组或普通记录对象）');
   }
   let ids;
   if (systems instanceof Set) {
     ids = [...systems];
   } else if (Array.isArray(systems)) {
     ids = [...systems];
-  } else if (typeof systems === 'object') {
+  } else if (isDataRecord(systems)) {
     ids = Object.keys(systems);
   } else {
-    throw invalidInput(`系统注册集合类型非法：${String(systems)}`);
+    throw invalidInput(`系统注册集合必须是 Set、数组或普通记录对象，收到 ${describeValue(systems)}`);
   }
   const registry = new Set();
   for (const id of ids) {
@@ -119,9 +141,31 @@ function normalizeRegistry(systems) {
   return registry;
 }
 
+function describeValue(value) {
+  if (value === null) return 'null';
+  if (typeof value === 'object' && value.constructor && value.constructor.name) {
+    return value.constructor.name + ' 实例';
+  }
+  return typeof value;
+}
+
+function validateTaskArray(tasks) {
+  if (!Array.isArray(tasks)) {
+    throw invalidInput('tasks 必须是数组');
+  }
+  if (tasks.length > MAX_SCHEDULED_TASKS) {
+    throw limitExceeded(`调度队列 ${tasks.length} 项超出保护限额 ${MAX_SCHEDULED_TASKS}`);
+  }
+  for (let i = 0; i < tasks.length; i++) {
+    if (!Object.prototype.hasOwnProperty.call(tasks, i)) {
+      throw invalidInput(`tasks[${i}] 是稀疏空洞：任务数组必须密集，不得含空洞`);
+    }
+  }
+}
+
 function validateDescriptor(raw, currentTick, registry, context) {
-  if (!isPlainObject(raw)) {
-    throw invalidInput(`${context}：任务描述符必须是对象`);
+  if (!isDataRecord(raw)) {
+    throw invalidInput(`${context}：任务描述符必须是普通数据对象（Date/Map/Set/类实例不接受）`);
   }
   const keys = Object.keys(raw).sort();
   const expected = [...DESCRIPTOR_FIELDS].sort();
@@ -166,6 +210,7 @@ function copyDescriptor(task) {
 }
 
 function buildSchedulerState(currentTick, rawTasks, registry) {
+  validateTaskArray(rawTasks);
   const seen = new Set();
   const tasks = rawTasks.map((raw, index) => {
     validateDescriptor(raw, currentTick, registry, `tasks[${index}]`);
@@ -180,8 +225,8 @@ function buildSchedulerState(currentTick, rawTasks, registry) {
 }
 
 function validateSchedulerState(saved) {
-  if (!isPlainObject(saved)) {
-    throw invalidInput('调度器状态必须是 { currentTick, tasks } 对象');
+  if (!isDataRecord(saved)) {
+    throw invalidInput('调度器状态必须是普通数据对象 { currentTick, tasks }（Date/Map/Set/类实例不接受）');
   }
   const keys = Object.keys(saved).sort();
   if (keys.length !== 2 || keys[0] !== 'currentTick' || keys[1] !== 'tasks') {
@@ -190,9 +235,7 @@ function validateSchedulerState(saved) {
   if (!isSafeNonNegativeInt(saved.currentTick)) {
     throw invalidInput(`currentTick 必须是非负安全整数，收到 ${String(saved.currentTick)}`);
   }
-  if (!Array.isArray(saved.tasks)) {
-    throw invalidInput('tasks 必须是数组');
-  }
+  validateTaskArray(saved.tasks);
 }
 
 export function createScheduler(options, systems) {
@@ -200,8 +243,8 @@ export function createScheduler(options, systems) {
   let tick = 0;
   let rawTasks = [];
   if (options !== undefined) {
-    if (!isPlainObject(options)) {
-      throw invalidInput('调度器选项必须是普通对象 { tick, tasks } 或省略');
+    if (!isDataRecord(options)) {
+      throw invalidInput('调度器选项必须是普通数据对象 { tick, tasks } 或省略（Date/Map/Set/类实例不接受）');
     }
     for (const key of Object.keys(options)) {
       if (key === 'tick') {
@@ -253,6 +296,31 @@ export function advanceScheduler(scheduler, targetTick, systems) {
     seen.add(task.taskId);
   }
 
+  // 预检（A1R F1）：在分配任何结果对象之前，精确算出每个任务的触发次数与
+  // 下一到期点，并累计总展开量；任一超限整次拒绝，不截断、不隐式分批、不丢任务。
+  // 下一到期点 = targetTick + (intervalTicks - overdue % intervalTicks)，各量均为
+  // 不超过 MAX_SAFE_INTEGER 的精确整数，先比较后相加，避免浮点误差。
+  let totalDueCount = 0;
+  for (const task of scheduler.tasks) {
+    if (task.nextDueTick > targetTick) {
+      continue;
+    }
+    const overdue = targetTick - task.nextDueTick;
+    const fireCount = Math.floor(overdue / task.intervalTicks) + 1;
+    const overshoot = task.intervalTicks - (overdue % task.intervalTicks);
+    if (overshoot > Number.MAX_SAFE_INTEGER - targetTick) {
+      throw limitExceeded(
+        `任务 "${task.taskId}" 的下一到期点将超出安全整数，整次推进在结果展开前拒绝`,
+      );
+    }
+    if (totalDueCount > MAX_ADVANCE_DUE_RESULTS - fireCount) {
+      throw limitExceeded(
+        `到期结果总量将超过单次保护限额 ${MAX_ADVANCE_DUE_RESULTS}，整次推进在结果展开前拒绝`,
+      );
+    }
+    totalDueCount += fireCount;
+  }
+
   const dueTasks = [];
   const nextTasks = [];
   for (const task of scheduler.tasks) {
@@ -260,7 +328,9 @@ export function advanceScheduler(scheduler, targetTick, systems) {
       nextTasks.push(copyDescriptor(task));
       continue;
     }
-    const fireCount = Math.floor((targetTick - task.nextDueTick) / task.intervalTicks) + 1;
+    const overdue = targetTick - task.nextDueTick;
+    const fireCount = Math.floor(overdue / task.intervalTicks) + 1;
+    const nextDueTick = targetTick + (task.intervalTicks - (overdue % task.intervalTicks));
     for (let j = 0; j < fireCount; j++) {
       dueTasks.push({
         taskId: task.taskId,
@@ -268,10 +338,6 @@ export function advanceScheduler(scheduler, targetTick, systems) {
         dueTick: task.nextDueTick + j * task.intervalTicks,
         priority: task.priority,
       });
-    }
-    const nextDueTick = task.nextDueTick + fireCount * task.intervalTicks;
-    if (nextDueTick > Number.MAX_SAFE_INTEGER) {
-      throw limitExceeded(`任务 "${task.taskId}" 的下一到期点超出安全整数，整次推进不产生结果`);
     }
     nextTasks.push({ ...copyDescriptor(task), nextDueTick });
   }

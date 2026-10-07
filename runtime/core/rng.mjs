@@ -18,9 +18,10 @@
  *     修改返回对象不影响内部。
  *
  * restoreRng(saved)
- *   - saved：必须恰好为 { algorithm: 'mulberry32-v1', seed, state } 三个字段，
+ *   - saved 必须是普通数据对象（原型为 Object.prototype 或 null），
+ *     且恰好为 { algorithm: 'mulberry32-v1', seed, state } 三个字段，
  *     algorithm 精确匹配，seed/state 均为 uint32 整数；缺字段、多字段、未知算法、
- *     非法数值一律抛 Error（code='INVALID_INPUT'），不静默修复。
+ *     非法数值、Date/Map/Set/类实例一律抛 Error（code='INVALID_INPUT'），不静默修复。
  *   - 从 saved.state 位置继续输出，不重新从 seed 开始。
  *
  * uint32 溢出语义：状态累加按 mod 2^32 显式回绕（>>> 0），与 C 参考实现一致。
@@ -47,6 +48,14 @@ function isUint32Value(value) {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= UINT32_MAX;
 }
 
+function isDataRecord(value) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
 function makeRng(seed, initialState) {
   let state = initialState;
   return {
@@ -71,8 +80,8 @@ export function createRng(seed) {
 }
 
 export function restoreRng(saved) {
-  if (saved === null || typeof saved !== 'object' || Array.isArray(saved)) {
-    throw invalidInput('恢复状态必须是 { algorithm, seed, state } 对象');
+  if (!isDataRecord(saved)) {
+    throw invalidInput('恢复状态必须是普通数据对象 { algorithm, seed, state }——Date/Map/Set/类实例不接受');
   }
   const keys = Object.keys(saved).sort();
   const expected = ['algorithm', 'seed', 'state'];

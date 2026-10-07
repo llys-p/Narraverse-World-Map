@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import {
   TICK_MINUTES,
   TICKS_PER_DAY,
@@ -13,6 +15,7 @@ import {
   createScheduler,
   restoreScheduler,
   advanceScheduler,
+  MAX_SCHEDULED_TASKS,
 } from '../../runtime/core/scheduler.mjs';
 
 const SYSTEMS = new Set(['eco', 'market', 'resource']);
@@ -352,16 +355,19 @@ test('S4: 过期队列恢复拒绝；下一到期点溢出整次推进拒绝且�
   );
   assert.deepEqual(sched, snapshot, '溢出时输入 scheduler 保持不变');
 
-  // 批内混合：正常任务不溢出、溢出任务触发 → 整体拒绝，不留部分更新
+  // 批内混合：正常任务本次不溢出、溢出任务在预检被发现 → 整体拒绝，不留部分更新
   const mixed = createScheduler(
     {
-      tick: Number.MAX_SAFE_INTEGER - 3,
-      tasks: [task('ok', 'eco', Number.MAX_SAFE_INTEGER - 2, 2, 10), overflowTask],
+      tick: Number.MAX_SAFE_INTEGER - 5,
+      tasks: [
+        task('ok', 'eco', Number.MAX_SAFE_INTEGER - 4, 2, 10),
+        task('ov', 'eco', Number.MAX_SAFE_INTEGER - 3, 5, 10),
+      ],
     },
     SYSTEMS,
   );
   assert.throws(
-    () => advanceScheduler(mixed, Number.MAX_SAFE_INTEGER, SYSTEMS),
+    () => advanceScheduler(mixed, Number.MAX_SAFE_INTEGER - 2, SYSTEMS),
     (err) => err.code === 'LIMIT_EXCEEDED',
     '批内溢出使整次推进失败，不留部分更新',
   );
@@ -376,6 +382,132 @@ test('S4: 过期队列恢复拒绝；下一到期点溢出整次推进拒绝且�
   assert.throws(() => advanceScheduler(s, 9, SYSTEMS), (err) => err.code === 'INVALID_INPUT', '时间不能倒退');
   assert.throws(() => advanceScheduler(s, 20), (err) => err.code === 'INVALID_INPUT', '注册集合必须显式提供');
   assert.throws(() => advanceScheduler(s, 20, new Set(['other'])), (err) => err.code === 'INVALID_INPUT', '存量任务系统未注册');
+});
+
+// ———————————————— A1R 修正回归（F1/F2/F3） ————————————————
+
+test('F1: 多任务展开总量超预算——展开前预检拒绝，输入不变（8×144000 > 1000000）', () => {
+  const tasks = Array.from({ length: 8 }, (_, i) => task('t' + i, 'eco', 1, 1, 0));
+  const frozen = deepFreeze(createScheduler({ tasks }, SYSTEMS));
+  assert.throws(
+    () => advanceScheduler(frozen, MAX_ADVANCE_TICKS, SYSTEMS),
+    (err) => err.code === 'LIMIT_EXCEEDED',
+    '总展开量超限应在分配结果前拒绝',
+  );
+  assert.equal(frozen.currentTick, 0, '输入 scheduler 保持不变');
+  assert.equal(frozen.tasks.length, 8);
+});
+
+test('F1: 预算内多任务展开完整输出（2×144000 = 288000 项逐项存在，不截断不丢任务）', () => {
+  const tasks = Array.from({ length: 2 }, (_, i) => task('t' + i, 'eco', 1, 1, 0));
+  const sched = createScheduler({ tasks }, SYSTEMS);
+  const { dueTasks, scheduler: next } = advanceScheduler(sched, MAX_ADVANCE_TICKS, SYSTEMS);
+  assert.equal(dueTasks.length, 288000);
+  assert.equal(dueTasks[0].dueTick, 1);
+  assert.equal(dueTasks[dueTasks.length - 1].dueTick, MAX_ADVANCE_TICKS);
+  assert.equal(next.currentTick, MAX_ADVANCE_TICKS);
+  assert.deepEqual(next.tasks.map((t) => t.nextDueTick), [MAX_ADVANCE_TICKS + 1, MAX_ADVANCE_TICKS + 1]);
+});
+
+test('F1: 调度队列任务项上限——100000 允许，100001 在 create 与 restore 双入口拒绝', () => {
+  const atLimit = Array.from({ length: MAX_SCHEDULED_TASKS }, (_, i) =>
+    task('t' + String(i).padStart(6, '0'), 'eco', 1, 1000, 0),
+  );
+  const okSched = createScheduler({ tasks: atLimit }, SYSTEMS);
+  assert.equal(okSched.tasks.length, MAX_SCHEDULED_TASKS);
+
+  const overLimit = atLimit.concat(task('t100000', 'eco', 1, 1000, 0));
+  assert.throws(() => createScheduler({ tasks: overLimit }, SYSTEMS), (err) => err.code === 'LIMIT_EXCEEDED');
+  assert.throws(
+    () => restoreScheduler({ currentTick: 0, tasks: overLimit }, SYSTEMS),
+    (err) => err.code === 'LIMIT_EXCEEDED',
+  );
+});
+
+test('F1: 64 MiB 受限子进程内 32 任务×144000 提前得到 LIMIT_EXCEEDED，不 OOM 不超时', () => {
+  const schedulerPath = fileURLToPath(new URL('../../runtime/core/scheduler.mjs', import.meta.url));
+  const script = [
+    "import { pathToFileURL } from 'node:url';",
+    'const mod = await import(pathToFileURL(process.env.SCHED_PATH));',
+    "const tasks = Array.from({ length: 32 }, (_, i) => ({ taskId: 't' + i, systemId: 's', nextDueTick: 1, intervalTicks: 1, priority: 0 }));",
+    "const sched = mod.createScheduler({ tasks }, new Set(['s']));",
+    'try {',
+    "  mod.advanceScheduler(sched, 144000, new Set(['s']));",
+    "  console.log('RESULT:NO-ERROR');",
+    '} catch (err) {',
+    "  console.log('RESULT:' + (err.code ?? 'UNKNOWN'));",
+    '}',
+  ].join('\n');
+  const result = spawnSync(process.execPath, ['--max-old-space-size=64', '--input-type=module', '-e', script], {
+    env: { ...process.env, SCHED_PATH: schedulerPath },
+    timeout: 60000,
+    encoding: 'utf8',
+  });
+  assert.equal(
+    result.status,
+    0,
+    `子进程应正常结束（status=${result.status} signal=${result.signal}）\nstdout: ${result.stdout}\nstderr: ${result.stderr}`,
+  );
+  assert.match(result.stdout, /RESULT:LIMIT_EXCEEDED/, `应可处理地拒绝：${result.stdout}`);
+  assert.doesNotMatch(`${result.stdout}\n${result.stderr}`, /heap out of memory|FATAL ERROR/, '不得 OOM');
+});
+
+test('F2: 稀疏数组与 null/undefined 描述符在 create/restore/advance 三入口拒绝；空数组与密集数组通过', () => {
+  const good = task('t', 'eco', 6, 6, 10);
+  const badArrays = [Array(1), [good, , good], [good, null], [good, undefined]];
+  for (const tasks of badArrays) {
+    assert.throws(
+      () => createScheduler({ tasks }, SYSTEMS),
+      (err) => err.code === 'INVALID_INPUT',
+      `create 应拒绝：${JSON.stringify(tasks)}`,
+    );
+    assert.throws(
+      () => restoreScheduler({ currentTick: 0, tasks }, SYSTEMS),
+      (err) => err.code === 'INVALID_INPUT',
+      `restore 应拒绝：${JSON.stringify(tasks)}`,
+    );
+    assert.throws(
+      () => advanceScheduler({ currentTick: 0, tasks }, 5, SYSTEMS),
+      (err) => err.code === 'INVALID_INPUT',
+      `advance 应拒绝：${JSON.stringify(tasks)}`,
+    );
+  }
+  assert.deepEqual(advanceScheduler(createScheduler({ tasks: [] }, SYSTEMS), 0, SYSTEMS).dueTasks, [], '空数组仍接受');
+  const dense = createScheduler({ tasks: [good, task('u', 'market', 7, 6, 10)] }, SYSTEMS);
+  assert.equal(dense.tasks.length, 2, '密集数组仍接受');
+});
+
+test('F3: Date/Map/类实例不得作为选项、恢复记录、描述符或注册表；Set 注册与 null 原型记录不受影响', () => {
+  class Custom {}
+  const exotics = [new Date(), new Map(), new Custom()];
+  for (const exotic of exotics) {
+    const name = exotic.constructor?.name ?? 'unknown';
+    assert.throws(() => createClock(exotic), (err) => err.code === 'INVALID_INPUT', `createClock(${name}) 应拒绝`);
+    assert.throws(() => restoreClock(exotic), (err) => err.code === 'INVALID_INPUT', `restoreClock(${name}) 应拒绝`);
+    assert.throws(() => createScheduler(exotic, SYSTEMS), (err) => err.code === 'INVALID_INPUT', `createScheduler 选项(${name}) 应拒绝`);
+    assert.throws(() => restoreScheduler(exotic, SYSTEMS), (err) => err.code === 'INVALID_INPUT', `restoreScheduler(${name}) 应拒绝`);
+    assert.throws(() => advanceScheduler(exotic, 5, SYSTEMS), (err) => err.code === 'INVALID_INPUT', `advanceScheduler(${name}) 应拒绝`);
+    assert.throws(() => createScheduler({ tasks: [exotic] }, SYSTEMS), (err) => err.code === 'INVALID_INPUT', `描述符(${name}) 应拒绝`);
+    assert.throws(() => createScheduler({ tick: 0, tasks: [] }, exotic), (err) => err.code === 'INVALID_INPUT', `注册表(${name}) 应拒绝`);
+  }
+  assert.throws(() => createClock(new Set()), (err) => err.code === 'INVALID_INPUT', 'createClock(Set) 应拒绝');
+
+  // null 原型记录按字段合同正常处理
+  const nullProtoClock = createClock(Object.assign(Object.create(null), { tick: 7 }));
+  assert.equal(nullProtoClock.tick, 7);
+  const nullProtoTask = Object.assign(Object.create(null), task('np', 'eco', 6, 6, 10));
+  const nullProtoSched = createScheduler(
+    Object.assign(Object.create(null), { tick: 0, tasks: [nullProtoTask] }),
+    SYSTEMS,
+  );
+  assert.equal(nullProtoSched.tasks.length, 1);
+  assert.equal(advanceScheduler(nullProtoSched, 10, SYSTEMS).dueTasks.length, 1);
+
+  // 对象形式注册表是普通记录即可；Set 注册不误拒绝
+  const objRegistry = createScheduler({ tick: 0, tasks: [task('t', 'eco', 6, 6, 10)] }, { eco: true });
+  assert.equal(objRegistry.tasks.length, 1);
+  const setRegistry = createScheduler({ tick: 0, tasks: [task('t', 'eco', 6, 6, 10)] }, new Set(['eco']));
+  assert.equal(setRegistry.tasks.length, 1);
 });
 
 // ———————————————— I1: 纯 Node 独立化 ————————————————

@@ -9,8 +9,9 @@
  *   - MAX_ADVANCE_TICKS = 144000：单次推进上限（1000 天，架构保护预算）。
  *
  * createClock(options?)
- *   - options 可省略（等价 { tick: 0 }）；提供时必须是普通对象且字段恰好为
- *     可选的 tick（非负安全整数），未知字段拒绝。
+ *   - options 可省略（等价 { tick: 0 }）；提供时必须是普通数据对象（原型为
+ *     Object.prototype 或 null）且字段恰好为可选的 tick（非负安全整数），
+ *     Date/Map/Set/类实例等异类对象与未知字段一律拒绝（A1R F3）。
  *   - 返回时钟对象 { tick, tickMinutes, advanceTicks(count), getState(), describe() }。
  *
  * clock.advanceTicks(count)
@@ -57,6 +58,14 @@ function limitExceeded(message) {
   const error = new Error(message);
   error.code = 'LIMIT_EXCEEDED';
   return error;
+}
+
+function isDataRecord(value) {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
 }
 
 function isSafeNonNegativeInt(value) {
@@ -125,8 +134,8 @@ function makeClock(tick) {
 export function createClock(options) {
   let tick = 0;
   if (options !== undefined) {
-    if (options === null || typeof options !== 'object' || Array.isArray(options)) {
-      throw invalidInput('时钟选项必须是普通对象 { tick } 或省略');
+    if (!isDataRecord(options)) {
+      throw invalidInput('时钟选项必须是普通数据对象 { tick } 或省略——Date/Map/Set/类实例不接受');
     }
     const keys = Object.keys(options);
     for (const key of keys) {
@@ -145,8 +154,8 @@ export function createClock(options) {
 }
 
 export function restoreClock(saved) {
-  if (saved === null || typeof saved !== 'object' || Array.isArray(saved)) {
-    throw invalidInput('时钟恢复状态必须是 { tick, tickMinutes } 对象');
+  if (!isDataRecord(saved)) {
+    throw invalidInput('时钟恢复状态必须是普通数据对象 { tick, tickMinutes }——Date/Map/Set/类实例不接受');
   }
   const keys = Object.keys(saved).sort();
   if (keys.length !== 2 || keys[0] !== 'tick' || keys[1] !== 'tickMinutes') {

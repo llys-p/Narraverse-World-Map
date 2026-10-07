@@ -119,3 +119,20 @@ test('R3: 非法恢复状态/未知算法/缺字段/多字段一律拒绝，不�
     assert.throws(() => restoreRng(s), (err) => err.code === 'INVALID_INPUT', `${JSON.stringify(s)} 应被拒绝`);
   }
 });
+
+test('R3+: 恢复记录必须是普通数据对象——Date/Map/类实例拒绝，null 原型记录接受', () => {
+  class Custom {}
+  for (const exotic of [new Date(), new Map(), new Custom()]) {
+    assert.throws(
+      () => restoreRng(exotic),
+      (err) => err.code === 'INVALID_INPUT',
+      `restoreRng(${exotic.constructor?.name ?? 'unknown'}) 应被拒绝`,
+    );
+  }
+  const source = createRng(5);
+  source.next();
+  const nullProto = Object.assign(Object.create(null), source.getState());
+  const resumed = restoreRng(nullProto);
+  assert.equal(resumed.getState().seed, 5);
+  assert.equal(resumed.getState().state, closedFormState(5, 1), 'null 原型记录按字段合同恢复');
+});
