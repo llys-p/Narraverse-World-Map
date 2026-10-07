@@ -70,7 +70,7 @@ node simulation-runner.mjs --resume artifacts/simulation/market-closed2/checkpoi
 
 market-village使用原生态初值；shortage仅为粮100/药0/金币2000/伤者2，捕猎生产仍实际生效，不能把捕猎粮当成提前到货。route-pause在同配置上加第2日关闭、第4日开启命令，第3日到期货被保留。SetTradeRoute与RemovePopulation均有幂等回执、因果事实和整tick回退。
 
-导出market-config.json、market.csv（逐商品报价）和trade.csv（订单/到货明细），保留原配置、population/ecology/economy.csv与完整checkpoint。trade.csv中cost为锁定订单成本，paidAmount仅ordered行为非零，到货为0，避免重复计付款。资源账金币行记录采购前余额，日事实付款账和trade.csv记录当日支出。运输风险只加价；伤病只经消费改变价格，没有重复需求加价。见[B3合同](tasks/B3-MARKET-TRADE-TASK.md)。B4长程/多seed尚未验收，逐tick重算历史成本仍待解决。
+导出market-config.json、market.csv（逐商品报价）和trade.csv（订单/到货明细），保留原配置、population/ecology/economy.csv与完整checkpoint。trade.csv中cost为锁定订单成本，paidAmount仅ordered行为非零，到货为0，避免重复计付款。事实内生态子账金币行为采购前余额；economy.csv金币行合并当天付款为实际consumption，期末与snapshot余额一致；trade.csv单独记录每单付款。运输风险只加价；伤病只经消费改变价格，没有重复需求加价。见[B3合同](tasks/B3-MARKET-TRADE-TASK.md)。B4长程/多seed尚未验收，逐tick重算历史成本仍待解决。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

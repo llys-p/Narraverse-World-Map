@@ -39,6 +39,9 @@ test('B3 real CLI exports market/trade ledger and resumes registered market fixt
   const market=await fs.readFile(path.join(first,'market.csv'),'utf8');assert.match(market,/gapPermille/);assert.equal(market.trim().split('\n').length,3);
   const trade=await fs.readFile(path.join(first,'trade.csv'),'utf8');assert.match(trade,/dueDay/);assert.match(trade,/shipment-1/);assert.match(trade,/ordered/);
   const economy=await fs.readFile(path.join(first,'economy.csv'),'utf8');assert.equal(economy.trim().split('\n').length,4);
+  const [economyHeader,...economyLines]=economy.trim().split('\n'),columns=economyHeader.split(',');
+  const money= economyLines.map(line=>Object.fromEntries(columns.map((key,index)=>[key,line.split(',')[index]]))).find(row=>row.resource==='gold');
+  assert.equal(money.opening,'2000');assert.equal(money.consumption,'1980');assert.equal(money.closing,'20');
   const ecology=await fs.readFile(path.join(first,'ecology.csv'),'utf8');assert.equal(ecology.trim().split('\n').length,2);
   const second=cli(['--resume',summary.checkpointPath,'--days','2','--out',resume]);assert.equal(second.status,0,second.stderr);
   const end=JSON.parse(await fs.readFile(path.join(resume,'summary.json'),'utf8'));assert.equal(end.tick,432);assert.equal(end.marketConfigHash,summary.marketConfigHash);

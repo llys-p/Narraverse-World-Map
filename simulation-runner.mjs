@@ -113,6 +113,11 @@ async function writeEconomy(file, events) {
       for (const row of payload.entries) {
         const data = { day: payload.day, ...row, productionRemainder: row.remainders.production,
           consumptionRemainder: row.remainders.consumption, lossRemainder: row.remainders.loss };
+        if (event.type === 'EconomyDaySettled' && row.resource === 'gold') {
+          // The ecology sub-ledger precedes purchases; export the complete day's cash ledger.
+          data.demand = event.payload.goldSpent; data.consumption = event.payload.goldSpent;
+          data.closing = event.payload.goldClosing;
+        }
         await handle.writeFile(columns.map(key => String(data[key])).join(',') + '\n');
       }
     }
