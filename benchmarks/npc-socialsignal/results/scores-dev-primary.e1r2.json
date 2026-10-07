@@ -1,0 +1,1476 @@
+{
+ "schema": "e1r2-scores-v1",
+ "split": "dev",
+ "condition": "primary",
+ "planned_scenarios": 30,
+ "consumed_predictions": {
+  "A": {
+   "path": "results/raw/A-dev-primary.e1r3.jsonl",
+   "sha256": "c61127d77e7b271b97f3165a2a307dc68f4a16305c904fcf8689d49f566cfdad",
+   "run_config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "state_budget": 768,
+    "batch_size": 8,
+    "timeout_s": 120.0,
+    "limit": 0,
+    "option_order": "derived"
+   },
+   "explicit_override": false
+  },
+  "B": {
+   "path": "results/raw/B-dev-primary.e1r3.jsonl",
+   "sha256": "965b9e27486f83a3571a42cc51e889c5c24bedcbfd4a56bf9112d5435e9e1039",
+   "run_config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "state_budget": 768,
+    "batch_size": 8,
+    "timeout_s": 120.0,
+    "limit": 0,
+    "option_order": "derived"
+   },
+   "explicit_override": false
+  }
+ },
+ "calibration_lock": {
+  "sha256": "5bff9e4b369ea7529218f7ad8dd9085d7cab56bea442e770041667d2913a50f7",
+  "fitted_on_split": "calibration",
+  "consumed_predictions": {
+   "A": {
+    "path": "results/raw/A-calibration-primary.jsonl",
+    "sha256": "b590c9f1a7cfbcbada25d4a4cc4ec65cf0ac7a27f7c1528d962f58a2da2473b8",
+    "run_config": {
+     "device": "cpu",
+     "max_len": 1024,
+     "head_max_len": 256,
+     "batch_size": 8,
+     "timeout_s": "not enforced by the producing runner",
+     "limit": 0
+    },
+    "explicit_override": false
+   },
+   "B": {
+    "path": "results/raw/B-calibration-primary.jsonl",
+    "sha256": "7c866747366aa43096425c78344c9329a9533d34f2cf3d157b9c5552e79e9b2c",
+    "run_config": {
+     "device": "cpu",
+     "max_len": 1024,
+     "head_max_len": 256,
+     "batch_size": 8,
+     "timeout_s": "not enforced by the producing runner",
+     "limit": 0
+    },
+    "explicit_override": false
+   }
+  }
+ },
+ "models": {
+  "A": {
+   "social_act": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.1,
+    "macro_f1_over_planned": 0.0833,
+    "macro_f1_class_set": [
+     "威胁",
+     "示好",
+     "求助",
+     "合作",
+     "中性"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
+    ],
+    "per_class": {
+     "威胁": {
+      "support": 2,
+      "tp": 0,
+      "fp": 3,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     },
+     "示好": {
+      "support": 3,
+      "tp": 0,
+      "fp": 12,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     },
+     "求助": {
+      "support": 9,
+      "tp": 0,
+      "fp": 0,
+      "fn": 9,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     },
+     "合作": {
+      "support": 13,
+      "tp": 2,
+      "fp": 1,
+      "fn": 11,
+      "precision": 0.6667,
+      "recall": 0.1538,
+      "f1": 0.25
+     },
+     "中性": {
+      "support": 3,
+      "tp": 1,
+      "fp": 8,
+      "fn": 2,
+      "precision": 0.1111,
+      "recall": 0.3333,
+      "f1": 0.1667
+     }
+    },
+    "accuracy_returned_only": 0.1,
+    "abstain_coverage_over_planned": 0.1,
+    "accepted_subset_error_rate": 0.8889,
+    "confusion": {
+     "威胁": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 2,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "示好": {
+      "威胁": 1,
+      "示好": 0,
+      "求助": 0,
+      "合作": 1,
+      "中性": 1,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "求助": {
+      "威胁": 1,
+      "示好": 4,
+      "求助": 0,
+      "合作": 0,
+      "中性": 3,
+      "不确定": 1,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "合作": {
+      "威胁": 1,
+      "示好": 8,
+      "求助": 0,
+      "合作": 2,
+      "中性": 2,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "中性": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 1,
+      "不确定": 2,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不确定": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "合作": 13,
+     "中性": 3,
+     "威胁": 2,
+     "求助": 9,
+     "示好": 3
+    },
+    "brier_returned_only": 0.1746,
+    "ece_raw_returned_only": 0.3468,
+    "temperature_applied": 20.0,
+    "ece_calibrated_applied": 0.08,
+    "ece_scope_note": "out-of-sample"
+   },
+   "trust_shift": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.6,
+    "macro_f1_over_planned": 0.381,
+    "macro_f1_class_set": [
+     "上升",
+     "不变",
+     "下降"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
+    ],
+    "per_class": {
+     "上升": {
+      "support": 4,
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     },
+     "不变": {
+      "support": 20,
+      "tp": 15,
+      "fp": 7,
+      "fn": 5,
+      "precision": 0.6818,
+      "recall": 0.75,
+      "f1": 0.7143
+     },
+     "下降": {
+      "support": 6,
+      "tp": 3,
+      "fp": 5,
+      "fn": 3,
+      "precision": 0.375,
+      "recall": 0.5,
+      "f1": 0.4286
+     }
+    },
+    "accuracy_returned_only": 0.6,
+    "abstain_coverage_over_planned": 0.0,
+    "accepted_subset_error_rate": 0.4,
+    "confusion": {
+     "上升": {
+      "上升": 0,
+      "不变": 4,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不变": {
+      "上升": 0,
+      "不变": 15,
+      "下降": 5,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "下降": {
+      "上升": 0,
+      "不变": 3,
+      "下降": 3,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "下降": 6,
+     "上升": 4,
+     "不变": 20
+    },
+    "brier_returned_only": 0.1542,
+    "ece_raw_returned_only": 0.2116,
+    "temperature_applied": 1.0917,
+    "ece_calibrated_applied": 0.2469,
+    "ece_scope_note": "out-of-sample"
+   },
+   "fear_shift": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.5,
+    "macro_f1_over_planned": 0.2381,
+    "macro_f1_class_set": [
+     "上升",
+     "不变",
+     "下降"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
+    ],
+    "per_class": {
+     "上升": {
+      "support": 9,
+      "tp": 0,
+      "fp": 1,
+      "fn": 9,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     },
+     "不变": {
+      "support": 20,
+      "tp": 15,
+      "fp": 7,
+      "fn": 5,
+      "precision": 0.6818,
+      "recall": 0.75,
+      "f1": 0.7143
+     },
+     "下降": {
+      "support": 1,
+      "tp": 0,
+      "fp": 4,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     }
+    },
+    "accuracy_returned_only": 0.5,
+    "abstain_coverage_over_planned": 0.1,
+    "accepted_subset_error_rate": 0.4444,
+    "confusion": {
+     "上升": {
+      "上升": 0,
+      "不变": 6,
+      "下降": 2,
+      "不确定": 1,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不变": {
+      "上升": 1,
+      "不变": 15,
+      "下降": 2,
+      "不确定": 2,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "下降": {
+      "上升": 0,
+      "不变": 1,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "不变": 20,
+     "上升": 9,
+     "下降": 1
+    },
+    "brier_returned_only": 0.1717,
+    "ece_raw_returned_only": 0.1293,
+    "temperature_applied": 8.9427,
+    "ece_calibrated_applied": 0.2224,
+    "ece_scope_note": "out-of-sample"
+   },
+   "deception": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.3667,
+    "macro_f1_over_planned": 0.1982,
+    "macro_f1_class_set": [
+     "有线索",
+     "无线索",
+     "信息不足"
+    ],
+    "zero_support_classes_excluded": [],
+    "per_class": {
+     "有线索": {
+      "support": 3,
+      "tp": 0,
+      "fp": 5,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     },
+     "无线索": {
+      "support": 12,
+      "tp": 11,
+      "fp": 14,
+      "fn": 1,
+      "precision": 0.44,
+      "recall": 0.9167,
+      "f1": 0.5946
+     },
+     "信息不足": {
+      "support": 15,
+      "tp": 0,
+      "fp": 0,
+      "fn": 15,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     }
+    },
+    "accuracy_returned_only": 0.3667,
+    "abstain_coverage_over_planned": 0.0,
+    "accepted_subset_error_rate": 0.6333,
+    "confusion": {
+     "有线索": {
+      "有线索": 0,
+      "无线索": 3,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "无线索": {
+      "有线索": 1,
+      "无线索": 11,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "信息不足": {
+      "有线索": 4,
+      "无线索": 11,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "无线索": 12,
+     "信息不足": 15,
+     "有线索": 3
+    },
+    "brier_returned_only": 0.2431,
+    "ece_raw_returned_only": 0.363,
+    "false_positive": {
+     "有线索": 5,
+     "无线索": 14,
+     "信息不足": 0
+    },
+    "false_negative": {
+     "有线索": 3,
+     "无线索": 1,
+     "信息不足": 15
+    },
+    "dangerous_cases": [
+     {
+      "sid": "E1-S003",
+      "gold": "信息不足",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S004",
+      "gold": "信息不足",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S005",
+      "gold": "信息不足",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S006",
+      "gold": "无线索",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S007",
+      "gold": "信息不足",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S010",
+      "gold": "信息不足",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S011",
+      "gold": "信息不足",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S012",
+      "gold": "有线索",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S014",
+      "gold": "有线索",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S015",
+      "gold": "信息不足",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S017",
+      "gold": "信息不足",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S018",
+      "gold": "信息不足",
+      "pred": "无线索"
+     }
+    ],
+    "temperature_applied": 2.2693,
+    "ece_calibrated_applied": 0.2429,
+    "ece_scope_note": "out-of-sample"
+   },
+   "boundary_violation": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.5667,
+    "macro_f1_over_planned": 0.3822,
+    "macro_f1_class_set": [
+     "已越过",
+     "未越过",
+     "信息不足"
+    ],
+    "zero_support_classes_excluded": [],
+    "per_class": {
+     "已越过": {
+      "support": 12,
+      "tp": 6,
+      "fp": 7,
+      "fn": 6,
+      "precision": 0.4615,
+      "recall": 0.5,
+      "f1": 0.48
+     },
+     "未越过": {
+      "support": 16,
+      "tp": 11,
+      "fp": 6,
+      "fn": 5,
+      "precision": 0.6471,
+      "recall": 0.6875,
+      "f1": 0.6667
+     },
+     "信息不足": {
+      "support": 2,
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     }
+    },
+    "accuracy_returned_only": 0.5667,
+    "abstain_coverage_over_planned": 0.0,
+    "accepted_subset_error_rate": 0.4333,
+    "confusion": {
+     "已越过": {
+      "已越过": 6,
+      "未越过": 6,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "未越过": {
+      "已越过": 5,
+      "未越过": 11,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "信息不足": {
+      "已越过": 2,
+      "未越过": 0,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "已越过": 12,
+     "未越过": 16,
+     "信息不足": 2
+    },
+    "brier_returned_only": 0.188,
+    "ece_raw_returned_only": 0.2355,
+    "false_positive": {
+     "已越过": 7,
+     "未越过": 6,
+     "信息不足": 0
+    },
+    "false_negative": {
+     "已越过": 6,
+     "未越过": 5,
+     "信息不足": 2
+    },
+    "dangerous_cases": [
+     {
+      "sid": "E1-S003",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S007",
+      "gold": "未越过",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S008",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S010",
+      "gold": "信息不足",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S013",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S014",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S016",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S017",
+      "gold": "未越过",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S018",
+      "gold": "信息不足",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S022",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S026",
+      "gold": "未越过",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S029",
+      "gold": "未越过",
+      "pred": "已越过"
+     }
+    ],
+    "temperature_applied": 1.7277,
+    "ece_calibrated_applied": 0.164,
+    "ece_scope_note": "out-of-sample"
+   }
+  },
+  "B": {
+   "social_act": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.2,
+    "macro_f1_over_planned": 0.17,
+    "macro_f1_class_set": [
+     "威胁",
+     "示好",
+     "求助",
+     "合作",
+     "中性"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
+    ],
+    "per_class": {
+     "威胁": {
+      "support": 2,
+      "tp": 1,
+      "fp": 5,
+      "fn": 1,
+      "precision": 0.1667,
+      "recall": 0.5,
+      "f1": 0.25
+     },
+     "示好": {
+      "support": 3,
+      "tp": 0,
+      "fp": 5,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     },
+     "求助": {
+      "support": 9,
+      "tp": 0,
+      "fp": 2,
+      "fn": 9,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     },
+     "合作": {
+      "support": 13,
+      "tp": 4,
+      "fp": 3,
+      "fn": 9,
+      "precision": 0.5714,
+      "recall": 0.3077,
+      "f1": 0.4
+     },
+     "中性": {
+      "support": 3,
+      "tp": 1,
+      "fp": 6,
+      "fn": 2,
+      "precision": 0.1429,
+      "recall": 0.3333,
+      "f1": 0.2
+     }
+    },
+    "accuracy_returned_only": 0.2,
+    "abstain_coverage_over_planned": 0.1,
+    "accepted_subset_error_rate": 0.7778,
+    "confusion": {
+     "威胁": {
+      "威胁": 1,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 1,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "示好": {
+      "威胁": 1,
+      "示好": 0,
+      "求助": 1,
+      "合作": 1,
+      "中性": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "求助": {
+      "威胁": 1,
+      "示好": 2,
+      "求助": 0,
+      "合作": 1,
+      "中性": 3,
+      "不确定": 2,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "合作": {
+      "威胁": 3,
+      "示好": 3,
+      "求助": 1,
+      "合作": 4,
+      "中性": 2,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "中性": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 1,
+      "中性": 1,
+      "不确定": 1,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不确定": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "合作": 13,
+     "中性": 3,
+     "威胁": 2,
+     "求助": 9,
+     "示好": 3
+    },
+    "brier_returned_only": 0.146,
+    "ece_raw_returned_only": 0.1317,
+    "temperature_applied": 6.0838,
+    "ece_calibrated_applied": 0.0397,
+    "ece_scope_note": "out-of-sample"
+   },
+   "trust_shift": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.3,
+    "macro_f1_over_planned": 0.3056,
+    "macro_f1_class_set": [
+     "上升",
+     "不变",
+     "下降"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
+    ],
+    "per_class": {
+     "上升": {
+      "support": 4,
+      "tp": 2,
+      "fp": 8,
+      "fn": 2,
+      "precision": 0.2,
+      "recall": 0.5,
+      "f1": 0.2857
+     },
+     "不变": {
+      "support": 20,
+      "tp": 3,
+      "fp": 1,
+      "fn": 17,
+      "precision": 0.75,
+      "recall": 0.15,
+      "f1": 0.25
+     },
+     "下降": {
+      "support": 6,
+      "tp": 4,
+      "fp": 11,
+      "fn": 2,
+      "precision": 0.2667,
+      "recall": 0.6667,
+      "f1": 0.381
+     }
+    },
+    "accuracy_returned_only": 0.3,
+    "abstain_coverage_over_planned": 0.0333,
+    "accepted_subset_error_rate": 0.6897,
+    "confusion": {
+     "上升": {
+      "上升": 2,
+      "不变": 0,
+      "下降": 2,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不变": {
+      "上升": 7,
+      "不变": 3,
+      "下降": 9,
+      "不确定": 1,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "下降": {
+      "上升": 1,
+      "不变": 1,
+      "下降": 4,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "下降": 6,
+     "上升": 4,
+     "不变": 20
+    },
+    "brier_returned_only": 0.1865,
+    "ece_raw_returned_only": 0.066,
+    "temperature_applied": 0.382,
+    "ece_calibrated_applied": 0.1993,
+    "ece_scope_note": "out-of-sample"
+   },
+   "fear_shift": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.1333,
+    "macro_f1_over_planned": 0.1621,
+    "macro_f1_class_set": [
+     "上升",
+     "不变",
+     "下降"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
+    ],
+    "per_class": {
+     "上升": {
+      "support": 9,
+      "tp": 3,
+      "fp": 5,
+      "fn": 6,
+      "precision": 0.375,
+      "recall": 0.3333,
+      "f1": 0.3529
+     },
+     "不变": {
+      "support": 20,
+      "tp": 0,
+      "fp": 0,
+      "fn": 20,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     },
+     "下降": {
+      "support": 1,
+      "tp": 1,
+      "fp": 13,
+      "fn": 0,
+      "precision": 0.0714,
+      "recall": 1.0,
+      "f1": 0.1333
+     }
+    },
+    "accuracy_returned_only": 0.1333,
+    "abstain_coverage_over_planned": 0.2667,
+    "accepted_subset_error_rate": 0.8182,
+    "confusion": {
+     "上升": {
+      "上升": 3,
+      "不变": 0,
+      "下降": 5,
+      "不确定": 1,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不变": {
+      "上升": 5,
+      "不变": 0,
+      "下降": 8,
+      "不确定": 7,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "下降": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 1,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "不变": 20,
+     "上升": 9,
+     "下降": 1
+    },
+    "brier_returned_only": 0.1899,
+    "ece_raw_returned_only": 0.2307,
+    "temperature_applied": 20.0,
+    "ece_calibrated_applied": 0.1227,
+    "ece_scope_note": "out-of-sample"
+   },
+   "deception": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.3333,
+    "macro_f1_over_planned": 0.2794,
+    "macro_f1_class_set": [
+     "有线索",
+     "无线索",
+     "信息不足"
+    ],
+    "zero_support_classes_excluded": [],
+    "per_class": {
+     "有线索": {
+      "support": 3,
+      "tp": 2,
+      "fp": 10,
+      "fn": 1,
+      "precision": 0.1667,
+      "recall": 0.6667,
+      "f1": 0.2667
+     },
+     "无线索": {
+      "support": 12,
+      "tp": 8,
+      "fp": 8,
+      "fn": 4,
+      "precision": 0.5,
+      "recall": 0.6667,
+      "f1": 0.5714
+     },
+     "信息不足": {
+      "support": 15,
+      "tp": 0,
+      "fp": 2,
+      "fn": 15,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     }
+    },
+    "accuracy_returned_only": 0.3333,
+    "abstain_coverage_over_planned": 0.0667,
+    "accepted_subset_error_rate": 0.6429,
+    "confusion": {
+     "有线索": {
+      "有线索": 2,
+      "无线索": 0,
+      "信息不足": 1,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "无线索": {
+      "有线索": 3,
+      "无线索": 8,
+      "信息不足": 1,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "信息不足": {
+      "有线索": 7,
+      "无线索": 8,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "无线索": 12,
+     "信息不足": 15,
+     "有线索": 3
+    },
+    "brier_returned_only": 0.2363,
+    "ece_raw_returned_only": 0.1159,
+    "false_positive": {
+     "有线索": 10,
+     "无线索": 8,
+     "信息不足": 2
+    },
+    "false_negative": {
+     "有线索": 1,
+     "无线索": 4,
+     "信息不足": 15
+    },
+    "dangerous_cases": [
+     {
+      "sid": "E1-S003",
+      "gold": "信息不足",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S004",
+      "gold": "信息不足",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S005",
+      "gold": "信息不足",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S006",
+      "gold": "无线索",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S007",
+      "gold": "信息不足",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S010",
+      "gold": "信息不足",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S011",
+      "gold": "信息不足",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S015",
+      "gold": "信息不足",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S017",
+      "gold": "信息不足",
+      "pred": "无线索"
+     },
+     {
+      "sid": "E1-S018",
+      "gold": "信息不足",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S019",
+      "gold": "无线索",
+      "pred": "有线索"
+     },
+     {
+      "sid": "E1-S020",
+      "gold": "信息不足",
+      "pred": "有线索"
+     }
+    ],
+    "temperature_applied": 0.7718,
+    "ece_calibrated_applied": 0.1781,
+    "ece_scope_note": "out-of-sample"
+   },
+   "boundary_violation": {
+    "planned_items": 30,
+    "n_returned": 30,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 0,
+    "run_success_rate": 1.0,
+    "accuracy_over_planned": 0.4667,
+    "macro_f1_over_planned": 0.3222,
+    "macro_f1_class_set": [
+     "已越过",
+     "未越过",
+     "信息不足"
+    ],
+    "zero_support_classes_excluded": [],
+    "per_class": {
+     "已越过": {
+      "support": 12,
+      "tp": 7,
+      "fp": 9,
+      "fn": 5,
+      "precision": 0.4375,
+      "recall": 0.5833,
+      "f1": 0.5
+     },
+     "未越过": {
+      "support": 16,
+      "tp": 7,
+      "fp": 7,
+      "fn": 9,
+      "precision": 0.5,
+      "recall": 0.4375,
+      "f1": 0.4667
+     },
+     "信息不足": {
+      "support": 2,
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+     }
+    },
+    "accuracy_returned_only": 0.4667,
+    "abstain_coverage_over_planned": 0.0,
+    "accepted_subset_error_rate": 0.5333,
+    "confusion": {
+     "已越过": {
+      "已越过": 7,
+      "未越过": 5,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "未越过": {
+      "已越过": 9,
+      "未越过": 7,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "信息不足": {
+      "已越过": 0,
+      "未越过": 2,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "已越过": 12,
+     "未越过": 16,
+     "信息不足": 2
+    },
+    "brier_returned_only": 0.1964,
+    "ece_raw_returned_only": 0.0411,
+    "false_positive": {
+     "已越过": 9,
+     "未越过": 7,
+     "信息不足": 0
+    },
+    "false_negative": {
+     "已越过": 5,
+     "未越过": 9,
+     "信息不足": 2
+    },
+    "dangerous_cases": [
+     {
+      "sid": "E1-S002",
+      "gold": "未越过",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S003",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S005",
+      "gold": "未越过",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S006",
+      "gold": "未越过",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S007",
+      "gold": "未越过",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S008",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S009",
+      "gold": "未越过",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S010",
+      "gold": "信息不足",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S013",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S015",
+      "gold": "未越过",
+      "pred": "已越过"
+     },
+     {
+      "sid": "E1-S016",
+      "gold": "已越过",
+      "pred": "未越过"
+     },
+     {
+      "sid": "E1-S017",
+      "gold": "未越过",
+      "pred": "已越过"
+     }
+    ],
+    "temperature_applied": 0.8167,
+    "ece_calibrated_applied": 0.119,
+    "ece_scope_note": "out-of-sample"
+   }
+  }
+ },
+ "baselines": {
+  "social_act": {
+   "planned": 30,
+   "chance_level": 0.1667,
+   "oracle_majority_label": "合作",
+   "oracle_majority_accuracy": 0.4333,
+   "random_expected_accuracy": 0.3022,
+   "locked_majority_label": "合作",
+   "locked_majority_accuracy": 0.4333,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 5,
+   "rule_coverage": 0.1667,
+   "rule_accuracy_when_fires": 0.8
+  },
+  "trust_shift": {
+   "planned": 30,
+   "chance_level": 0.25,
+   "oracle_majority_label": "不变",
+   "oracle_majority_accuracy": 0.6667,
+   "random_expected_accuracy": 0.5022,
+   "locked_majority_label": "不变",
+   "locked_majority_accuracy": 0.6667,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 2,
+   "rule_coverage": 0.0667,
+   "rule_accuracy_when_fires": 1.0
+  },
+  "fear_shift": {
+   "planned": 30,
+   "chance_level": 0.25,
+   "oracle_majority_label": "不变",
+   "oracle_majority_accuracy": 0.6667,
+   "random_expected_accuracy": 0.5356,
+   "locked_majority_label": "不变",
+   "locked_majority_accuracy": 0.6667,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 2,
+   "rule_coverage": 0.0667,
+   "rule_accuracy_when_fires": 1.0
+  },
+  "deception": {
+   "planned": 30,
+   "chance_level": 0.3333,
+   "oracle_majority_label": "信息不足",
+   "oracle_majority_accuracy": 0.5,
+   "random_expected_accuracy": 0.42,
+   "locked_majority_label": "信息不足",
+   "locked_majority_accuracy": 0.5,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 1,
+   "rule_coverage": 0.0333,
+   "rule_accuracy_when_fires": 1.0
+  },
+  "boundary_violation": {
+   "planned": 30,
+   "chance_level": 0.3333,
+   "oracle_majority_label": "未越过",
+   "oracle_majority_accuracy": 0.5333,
+   "random_expected_accuracy": 0.4489,
+   "locked_majority_label": "未越过",
+   "locked_majority_accuracy": 0.5333,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 3,
+   "rule_coverage": 0.1,
+   "rule_accuracy_when_fires": 1.0
+  }
+ },
+ "paired": {
+  "A-vs-B": {
+   "social_act": {
+    "point_estimate": -0.1,
+    "ci95": [
+     -0.2333,
+     0.0
+    ],
+    "planned_items": 30,
+    "reps": 2000,
+    "indistinguishable": true
+   },
+   "trust_shift": {
+    "point_estimate": 0.3,
+    "ci95": [
+     0.0667,
+     0.5333
+    ],
+    "planned_items": 30,
+    "reps": 2000,
+    "indistinguishable": false
+   },
+   "fear_shift": {
+    "point_estimate": 0.3667,
+    "ci95": [
+     0.1,
+     0.6333
+    ],
+    "planned_items": 30,
+    "reps": 2000,
+    "indistinguishable": false
+   },
+   "deception": {
+    "point_estimate": 0.0333,
+    "ci95": [
+     -0.1333,
+     0.2
+    ],
+    "planned_items": 30,
+    "reps": 2000,
+    "indistinguishable": true
+   },
+   "boundary_violation": {
+    "point_estimate": 0.1,
+    "ci95": [
+     -0.1,
+     0.3
+    ],
+    "planned_items": 30,
+    "reps": 2000,
+    "indistinguishable": true
+   }
+  }
+ },
+ "integrity_problems": [],
+ "requires_relabel_excluded": [],
+ "unexpected": []
+}

@@ -1,0 +1,635 @@
+{
+ "schema": "e1r2-scores-v1",
+ "split": "dev",
+ "condition": "primary",
+ "planned_scenarios": 30,
+ "consumed_predictions": {
+  "A": {
+   "path": "C:/Users/11/AppData/Local/Temp/e1r2-fixtures/pred-relabel.jsonl",
+   "sha256": "e92d22121de4e0e558f3d37d8da938883825b69357c93d717434387e05c5d523",
+   "run_config": {
+    "max_len": 1024,
+    "head_max_len": 256,
+    "device": "cpu",
+    "batch_size": 8,
+    "timeout_s": 120.0,
+    "limit": 0
+   },
+   "explicit_override": false
+  }
+ },
+ "calibration_lock": {
+  "sha256": "75c4fb3631a9fb5c3a19638399263048424bd7bb7b4f409c0846617eb645ae84",
+  "fitted_on_split": "calibration",
+  "consumed_predictions": null
+ },
+ "models": {
+  "A": {
+   "social_act": {
+    "planned_items": 30,
+    "n_returned": 29,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 1,
+    "run_success_rate": 0.9667,
+    "accuracy_over_planned": 0.9667,
+    "macro_f1_over_planned": 0.992,
+    "macro_f1_class_set": [
+     "威胁",
+     "示好",
+     "求助",
+     "合作",
+     "中性"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
+    ],
+    "per_class": {
+     "威胁": {
+      "support": 2,
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     },
+     "示好": {
+      "support": 3,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     },
+     "求助": {
+      "support": 9,
+      "tp": 9,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     },
+     "合作": {
+      "support": 13,
+      "tp": 12,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.9231,
+      "f1": 0.96
+     },
+     "中性": {
+      "support": 3,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     }
+    },
+    "accuracy_returned_only": 1.0,
+    "abstain_coverage_over_planned": 0.0,
+    "accepted_subset_error_rate": 0.0,
+    "confusion": {
+     "威胁": {
+      "威胁": 2,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "示好": {
+      "威胁": 0,
+      "示好": 3,
+      "求助": 0,
+      "合作": 0,
+      "中性": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "求助": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 9,
+      "合作": 0,
+      "中性": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "合作": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 12,
+      "中性": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 1
+     },
+     "中性": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 3,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不确定": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "合作": 13,
+     "中性": 3,
+     "威胁": 2,
+     "求助": 9,
+     "示好": 3
+    },
+    "brier_returned_only": 0.1389,
+    "ece_raw_returned_only": 0.8333,
+    "temperature_applied": 20.0,
+    "ece_calibrated_applied": 0.1,
+    "ece_scope_note": "out-of-sample"
+   },
+   "trust_shift": {
+    "planned_items": 30,
+    "n_returned": 29,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 1,
+    "run_success_rate": 0.9667,
+    "accuracy_over_planned": 0.9667,
+    "macro_f1_over_planned": 0.9697,
+    "macro_f1_class_set": [
+     "上升",
+     "不变",
+     "下降"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
+    ],
+    "per_class": {
+     "上升": {
+      "support": 4,
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     },
+     "不变": {
+      "support": 20,
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     },
+     "下降": {
+      "support": 6,
+      "tp": 5,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.8333,
+      "f1": 0.9091
+     }
+    },
+    "accuracy_returned_only": 1.0,
+    "abstain_coverage_over_planned": 0.0,
+    "accepted_subset_error_rate": 0.0,
+    "confusion": {
+     "上升": {
+      "上升": 4,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不变": {
+      "上升": 0,
+      "不变": 20,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "下降": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 5,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 1
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "下降": 6,
+     "上升": 4,
+     "不变": 20
+    },
+    "brier_returned_only": 0.1875,
+    "ece_raw_returned_only": 0.75,
+    "temperature_applied": 1.0917,
+    "ece_calibrated_applied": 0.1167,
+    "ece_scope_note": "out-of-sample"
+   },
+   "fear_shift": {
+    "planned_items": 30,
+    "n_returned": 29,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 1,
+    "run_success_rate": 0.9667,
+    "accuracy_over_planned": 0.9667,
+    "macro_f1_over_planned": 0.9915,
+    "macro_f1_class_set": [
+     "上升",
+     "不变",
+     "下降"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
+    ],
+    "per_class": {
+     "上升": {
+      "support": 9,
+      "tp": 9,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     },
+     "不变": {
+      "support": 20,
+      "tp": 19,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.95,
+      "f1": 0.9744
+     },
+     "下降": {
+      "support": 1,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     }
+    },
+    "accuracy_returned_only": 1.0,
+    "abstain_coverage_over_planned": 0.0,
+    "accepted_subset_error_rate": 0.0,
+    "confusion": {
+     "上升": {
+      "上升": 9,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不变": {
+      "上升": 0,
+      "不变": 19,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 1
+     },
+     "下降": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 1,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "不变": 20,
+     "上升": 9,
+     "下降": 1
+    },
+    "brier_returned_only": 0.1875,
+    "ece_raw_returned_only": 0.75,
+    "temperature_applied": 8.9427,
+    "ece_calibrated_applied": 0.05,
+    "ece_scope_note": "out-of-sample"
+   },
+   "deception": {
+    "planned_items": 30,
+    "n_returned": 29,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 1,
+    "run_success_rate": 0.9667,
+    "accuracy_over_planned": 0.9667,
+    "macro_f1_over_planned": 0.9855,
+    "macro_f1_class_set": [
+     "有线索",
+     "无线索",
+     "信息不足"
+    ],
+    "zero_support_classes_excluded": [],
+    "per_class": {
+     "有线索": {
+      "support": 3,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     },
+     "无线索": {
+      "support": 12,
+      "tp": 11,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.9167,
+      "f1": 0.9565
+     },
+     "信息不足": {
+      "support": 15,
+      "tp": 15,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     }
+    },
+    "accuracy_returned_only": 1.0,
+    "abstain_coverage_over_planned": 0.5,
+    "accepted_subset_error_rate": 0.0,
+    "confusion": {
+     "有线索": {
+      "有线索": 3,
+      "无线索": 0,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "无线索": {
+      "有线索": 0,
+      "无线索": 11,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 1
+     },
+     "信息不足": {
+      "有线索": 0,
+      "无线索": 0,
+      "信息不足": 15,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "无线索": 12,
+     "信息不足": 15,
+     "有线索": 3
+    },
+    "brier_returned_only": 0.2222,
+    "ece_raw_returned_only": 0.6667,
+    "false_positive": {
+     "有线索": 0,
+     "无线索": 0,
+     "信息不足": 0
+    },
+    "false_negative": {
+     "有线索": 0,
+     "无线索": 1,
+     "信息不足": 0
+    },
+    "dangerous_cases": [
+     {
+      "sid": "E1-S001",
+      "gold": "无线索",
+      "pred": "__EXCLUDED_RELABEL__"
+     }
+    ],
+    "temperature_applied": 2.2693,
+    "ece_calibrated_applied": 0.2333,
+    "ece_scope_note": "out-of-sample"
+   },
+   "boundary_violation": {
+    "planned_items": 30,
+    "n_returned": 29,
+    "n_missing": 0,
+    "n_illegal": 0,
+    "n_excluded_requires_relabel": 1,
+    "run_success_rate": 0.9667,
+    "accuracy_over_planned": 0.9667,
+    "macro_f1_over_planned": 0.9855,
+    "macro_f1_class_set": [
+     "已越过",
+     "未越过",
+     "信息不足"
+    ],
+    "zero_support_classes_excluded": [],
+    "per_class": {
+     "已越过": {
+      "support": 12,
+      "tp": 11,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.9167,
+      "f1": 0.9565
+     },
+     "未越过": {
+      "support": 16,
+      "tp": 16,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     },
+     "信息不足": {
+      "support": 2,
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+     }
+    },
+    "accuracy_returned_only": 1.0,
+    "abstain_coverage_over_planned": 0.0667,
+    "accepted_subset_error_rate": 0.0,
+    "confusion": {
+     "已越过": {
+      "已越过": 11,
+      "未越过": 0,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 1
+     },
+     "未越过": {
+      "已越过": 0,
+      "未越过": 16,
+      "信息不足": 0,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     },
+     "信息不足": {
+      "已越过": 0,
+      "未越过": 0,
+      "信息不足": 2,
+      "__MISSING__": 0,
+      "__ILLEGAL__": 0
+     }
+    },
+    "gold_distribution": {
+     "已越过": 12,
+     "未越过": 16,
+     "信息不足": 2
+    },
+    "brier_returned_only": 0.2222,
+    "ece_raw_returned_only": 0.6667,
+    "false_positive": {
+     "已越过": 0,
+     "未越过": 0,
+     "信息不足": 0
+    },
+    "false_negative": {
+     "已越过": 1,
+     "未越过": 0,
+     "信息不足": 0
+    },
+    "dangerous_cases": [
+     {
+      "sid": "E1-S001",
+      "gold": "已越过",
+      "pred": "__EXCLUDED_RELABEL__"
+     }
+    ],
+    "temperature_applied": 1.7277,
+    "ece_calibrated_applied": 0.0667,
+    "ece_scope_note": "out-of-sample"
+   }
+  }
+ },
+ "baselines": {
+  "social_act": {
+   "planned": 30,
+   "chance_level": 0.1667,
+   "oracle_majority_label": "合作",
+   "oracle_majority_accuracy": 0.4333,
+   "random_expected_accuracy": 0.3022,
+   "locked_majority_label": "合作",
+   "locked_majority_accuracy": 0.4333,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 5,
+   "rule_coverage": 0.1667,
+   "rule_accuracy_when_fires": 0.8
+  },
+  "trust_shift": {
+   "planned": 30,
+   "chance_level": 0.25,
+   "oracle_majority_label": "不变",
+   "oracle_majority_accuracy": 0.6667,
+   "random_expected_accuracy": 0.5022,
+   "locked_majority_label": "不变",
+   "locked_majority_accuracy": 0.6667,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 2,
+   "rule_coverage": 0.0667,
+   "rule_accuracy_when_fires": 1.0
+  },
+  "fear_shift": {
+   "planned": 30,
+   "chance_level": 0.25,
+   "oracle_majority_label": "不变",
+   "oracle_majority_accuracy": 0.6667,
+   "random_expected_accuracy": 0.5356,
+   "locked_majority_label": "不变",
+   "locked_majority_accuracy": 0.6667,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 2,
+   "rule_coverage": 0.0667,
+   "rule_accuracy_when_fires": 1.0
+  },
+  "deception": {
+   "planned": 30,
+   "chance_level": 0.3333,
+   "oracle_majority_label": "信息不足",
+   "oracle_majority_accuracy": 0.5,
+   "random_expected_accuracy": 0.42,
+   "locked_majority_label": "信息不足",
+   "locked_majority_accuracy": 0.5,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 1,
+   "rule_coverage": 0.0333,
+   "rule_accuracy_when_fires": 1.0
+  },
+  "boundary_violation": {
+   "planned": 30,
+   "chance_level": 0.3333,
+   "oracle_majority_label": "未越过",
+   "oracle_majority_accuracy": 0.5333,
+   "random_expected_accuracy": 0.4489,
+   "locked_majority_label": "未越过",
+   "locked_majority_accuracy": 0.5333,
+   "locked_majority_source": "calibration/majority-lock.json chosen on dev",
+   "rule_fires": 3,
+   "rule_coverage": 0.1,
+   "rule_accuracy_when_fires": 1.0
+  }
+ },
+ "paired": {},
+ "integrity_problems": [],
+ "requires_relabel_excluded": [
+  "A:E1-S001/social_act",
+  "A:E1-S001/trust_shift",
+  "A:E1-S001/fear_shift",
+  "A:E1-S001/deception",
+  "A:E1-S001/boundary_violation"
+ ],
+ "unexpected": []
+}

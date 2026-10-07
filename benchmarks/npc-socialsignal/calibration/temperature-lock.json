@@ -1,13 +1,40 @@
 {
- "schema": "e1r-temperature-lock-v1",
- "fitted_at": "2026-10-07T13:17:27+08:00",
+ "schema": "e1r2-temperature-lock-v1",
+ "fitted_at": "2026-10-07T14:00:59+08:00",
  "fitted_on_split": "calibration",
  "condition": "primary",
- "provenance": {
-  "prediction_files": {
-   "A": "results/raw/A-calibration-primary.jsonl",
-   "B": "results/raw/B-calibration-primary.jsonl"
+ "consumed_predictions": {
+  "A": {
+   "path": "results/raw/A-calibration-primary.jsonl",
+   "sha256": "b590c9f1a7cfbcbada25d4a4cc4ec65cf0ac7a27f7c1528d962f58a2da2473b8",
+   "run_config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "batch_size": 8,
+    "timeout_s": "not enforced by the producing runner",
+    "limit": 0
+   },
+   "explicit_override": false
+  },
+  "B": {
+   "path": "results/raw/B-calibration-primary.jsonl",
+   "sha256": "7c866747366aa43096425c78344c9329a9533d34f2cf3d157b9c5552e79e9b2c",
+   "run_config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "batch_size": 8,
+    "timeout_s": "not enforced by the producing runner",
+    "limit": 0
+   },
+   "explicit_override": false
   }
+ },
+ "run_config": {
+  "max_len": 1024,
+  "head_max_len": 256,
+  "device": "cpu"
  },
  "entries": {
   "A": {
@@ -21,6 +48,9 @@
      "合作",
      "中性",
      "不确定"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
     ]
    },
    "trust_shift": {
@@ -30,6 +60,9 @@
      "上升",
      "不变",
      "下降",
+     "不确定"
+    ],
+    "zero_support_classes_excluded": [
      "不确定"
     ]
    },
@@ -41,6 +74,9 @@
      "不变",
      "下降",
      "不确定"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
     ]
    },
    "deception": {
@@ -50,7 +86,8 @@
      "有线索",
      "无线索",
      "信息不足"
-    ]
+    ],
+    "zero_support_classes_excluded": []
    },
    "boundary_violation": {
     "temperature": 1.7277,
@@ -59,7 +96,8 @@
      "已越过",
      "未越过",
      "信息不足"
-    ]
+    ],
+    "zero_support_classes_excluded": []
    }
   },
   "B": {
@@ -73,6 +111,9 @@
      "合作",
      "中性",
      "不确定"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
     ]
    },
    "trust_shift": {
@@ -82,6 +123,9 @@
      "上升",
      "不变",
      "下降",
+     "不确定"
+    ],
+    "zero_support_classes_excluded": [
      "不确定"
     ]
    },
@@ -93,6 +137,9 @@
      "不变",
      "下降",
      "不确定"
+    ],
+    "zero_support_classes_excluded": [
+     "不确定"
     ]
    },
    "deception": {
@@ -102,7 +149,8 @@
      "有线索",
      "无线索",
      "信息不足"
-    ]
+    ],
+    "zero_support_classes_excluded": []
    },
    "boundary_violation": {
     "temperature": 0.8167,
@@ -111,7 +159,8 @@
      "已越过",
      "未越过",
      "信息不足"
-    ]
+    ],
+    "zero_support_classes_excluded": []
    }
   }
  }

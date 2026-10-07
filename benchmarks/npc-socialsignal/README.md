@@ -30,7 +30,7 @@
 
 ```
 make_lock.py（首次 laya.load 之前）→ validate_data.py → build_dataset.py
-→ score.py --selftest → run_bench.py --split dev|calibration → score.py --calibrate-from <另一切分>
+→ score.py --selftest → run_bench.py --split dev|calibration → score.py --fit-calibration --split calibration → score.py --models A,B --split dev
 ```
 
-完整命令与硬件说明见 `M4-DECISION-REPORT.md` §4。
+正式复跑入口只有一组：`register_runs.py`（登记存量）→ `score.py --selftest` / `--regressions` → `run_bench_v3.py` → `score.py`。`--calibrate-from`、`--allow-unfrozen` 与 `run_bench.py`/`run_bench_v2.py` 已废弃，不得再作为推荐路径。硬件与复现说明见 `M0-SOURCES.md` 与 `E1R2-FIXES.md`。

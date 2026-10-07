@@ -1,0 +1,28 @@
+{
+ "written_at": "2026-10-07T13:56:44+08:00",
+ "split": "dev",
+ "condition": "primary",
+ "models": [
+  "A"
+ ],
+ "consumed": {
+  "A": {
+   "path": "C:/Users/11/AppData/Local/Temp/e1r2-fixtures/pred-relabel.jsonl",
+   "sha256": "e92d22121de4e0e558f3d37d8da938883825b69357c93d717434387e05c5d523",
+   "run_config": {
+    "max_len": 1024,
+    "head_max_len": 256,
+    "device": "cpu",
+    "batch_size": 8,
+    "timeout_s": 120.0,
+    "limit": 0
+   },
+   "explicit_override": false
+  }
+ },
+ "problems": [
+  "5 items flagged requires_relabel are present; formal scoring refuses them. Re-review the truncated text or pass --diagnostic-only for a labelled diagnostic run."
+ ],
+ "scores_published": false,
+ "calibration_lock_written": false
+}

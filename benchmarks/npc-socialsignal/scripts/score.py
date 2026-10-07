@@ -1,27 +1,37 @@
 #!/usr/bin/env python3
-"""E1R metrics (R2 + R3).
+"""E1R2 metrics and gates (v2 scorer). Pilot/E1R scorers stay in the tree as evidence.
 
-Contract this implements:
-  * headline accuracy / macro-F1 denominators are the FULL planned scenario set;
-    a timeout, crash, missing prediction or illegal label counts as NOT correct;
-  * macro-F1 averages over one fixed class set per signal (classes with gold
-    support in the planned set), so a model cannot win or lose by which labels it
-    happens to emit; per-class support is always printed;
-  * confusion matrices carry explicit MISSING and ILLEGAL columns;
-  * the majority baseline is reported twice: oracle-majority (post-hoc on the
-    evaluated gold, descriptive only) and the locked majority chosen on dev and
-    shipped in calibration/majority-lock.json;
-  * temperature/thresholds are FIT ONLY on the calibration split and applied to
-    another split; the calibration split can never be the scored split and the
-    final split can never be a fitting set;
-  * scoring the final split requires --gold plus a verified freeze gate
-    (blind-review receipts + sample/template/model/calibration hashes). There is
-    no flag that bypasses it.
+F1 consumption chain and integrity
+  * prediction files are resolved through results/raw/run-index.json written by the
+    runner, or an explicit --predictions path; nothing is silently matched to an old
+    pilot file, and the consumed file's sha256 is recorded in every output
+  * gold and planned scenario ids must match exactly (same set, unique, five legal
+    signals each); missing / extra / duplicate gold fails instead of shrinking the
+    denominator
+  * duplicate predictions, model/split/condition/signal mismatch, illegal labels,
+    non-finite or malformed probabilities make the run exit non-zero WITHOUT writing
+    scores and WITHOUT touching the calibration lock; they go to a diagnostics file
+  * empty prediction sets and total model failure still produce an explicit
+    all-failed report over the full planned set
+  * items flagged requires_relabel (truncation removed decisive evidence or the
+    boundary) are refused in formal scoring; re-scoring them against the old gold is
+    a contract violation, not a smaller denominator
+
+F2 freeze gate
+  * two distinct, non-empty reviewer identities each with a signed disclosure,
+    answer-file hash and full token coverage; an adjudicator identity, a completed
+    receipt, and an explicit not-the-original-annotator attestation
+  * frozen artifacts bound by hash: LABEL_SPEC, blind samples, templates, model
+    config lock, calibration/threshold lock, external gold hash
+  * the frozen plan binds model set, condition set, option order, max_len,
+    head_max_len, truncation policy and sample scope; changing CLI flags (including
+    --limit) or inventing a condition/model cannot bypass it
+  * final runs are journaled so a second scoring of the same artefact is idempotent
+    while a re-open or an unregistered condition is refused
 
   python scripts/score.py --selftest
   python scripts/score.py --models A,B --split dev --condition primary
-  python scripts/score.py --fit-calibration --models A,B
-  python scripts/score.py --models A,B --split final --gold <sealed jsonl>
+  python scripts/score.py --fit-calibration --split calibration --models A,B
 """
 import argparse
 import datetime
@@ -29,17 +39,17 @@ import hashlib
 import json
 import math
 import os
-import re
 import sys
 from collections import Counter, defaultdict
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
-from body import load_questions, load_split, load_split_assignment  # noqa: E402
+from body import load_questions, load_split_assignment  # noqa: E402
+from inputs import rows_for  # noqa: E402
 
+SIGNALS = ["social_act", "trust_shift", "fear_shift", "deception", "boundary_violation"]
 HIGH_RISK = ("deception", "boundary_violation")
-BOOT_REPS = 2000
-SEED = 20261007
+BOOT_REPS, SEED = 2000, 20261007
 MISSING, ILLEGAL = "__MISSING__", "__ILLEGAL__"
 ABSTAIN = {"social_act": "不确定", "trust_shift": "不确定", "fear_shift": "不确定",
            "deception": "信息不足", "boundary_violation": "信息不足"}
@@ -59,18 +69,12 @@ RULES = {
 }
 
 
-# ---------------------------------------------------------------- primitives
-
+# ------------------------------------------------------------------ metrics
 def accuracy(gold, pred):
-    n = len(gold)
-    if not n:
-        return None
-    return sum(1 for g, p in zip(gold, pred) if g == p) / n
+    return sum(1 for g, p in zip(gold, pred) if g == p) / len(gold) if gold else None
 
 
 def macro_f1(gold, pred, class_set):
-    """Fixed class set: every label listed gets an F1 (0.0 when the model never
-    predicted it and never got it right). Never depends on what the model emitted."""
     f1s, per_class = [], {}
     for lb in class_set:
         tp = sum(1 for g, p in zip(gold, pred) if g == lb and p == lb)
@@ -89,9 +93,8 @@ def confusion(gold, pred, labels):
     cols = list(labels) + [MISSING, ILLEGAL]
     m = {g: {c: 0 for c in cols} for g in labels}
     for g, p in zip(gold, pred):
-        if g not in m:
-            continue
-        m[g][p if p in cols else (ILLEGAL if p is not None else MISSING)] += 1
+        if g in m:
+            m[g][p if p in cols else (ILLEGAL if p is not None else MISSING)] += 1
     return m
 
 
@@ -110,14 +113,14 @@ def brier(probs, gold, labels):
 
 
 def ece(pairs, bins=10):
-    pts = [(c, k) for c, k in pairs if c is not None and math.isfinite(c)]
+    pts = [(c, k) for c, k in pairs if c is not None and isinstance(c, (int, float)) and math.isfinite(c)]
     if not pts:
         return None
     buckets = defaultdict(list)
     for c, k in pts:
         buckets[min(int(c * bins), bins - 1)].append((c, k))
-    total = len(pts)
-    return sum((len(v) / total) * abs(sum(c for c, _ in v) / len(v) - sum(1 for _, k in v if k) / len(v))
+    n = len(pts)
+    return sum((len(v) / n) * abs(sum(c for c, _ in v) / len(v) - sum(1 for _, k in v if k) / len(v))
                for v in buckets.values())
 
 
@@ -133,8 +136,7 @@ def fit_temperature(items, labels):
         for lg, g in lodds:
             z = {k: v / T for k, v in lg.items()}
             mx = max(z.values())
-            den = mx + math.log(sum(math.exp(v - mx) for v in z.values()))
-            s -= (z[g] - den)
+            s -= (z[g] - (mx + math.log(sum(math.exp(v - mx) for v in z.values()))))
         return s / len(lodds)
 
     gr = (math.sqrt(5) - 1) / 2
@@ -161,8 +163,7 @@ _INDEX_CACHE = {}
 
 
 def boot_index_table(n, reps):
-    key = (n, reps)
-    if key not in _INDEX_CACHE:
+    if (n, reps) not in _INDEX_CACHE:
         s, table = SEED, []
         for _ in range(reps):
             row = []
@@ -170,8 +171,8 @@ def boot_index_table(n, reps):
                 s = (1103515245 * s + 12345) & 0x7FFFFFFF
                 row.append((s >> 7) % n)
             table.append(row)
-        _INDEX_CACHE[key] = table
-    return _INDEX_CACHE[key]
+        _INDEX_CACHE[(n, reps)] = table
+    return _INDEX_CACHE[(n, reps)]
 
 
 def rule_predict(signal, turn):
@@ -186,325 +187,522 @@ def load_json(path):
         return json.load(fh)
 
 
-# ---------------------------------------------------------------- prediction loading
+def sha256_file(path):
+    return hashlib.sha256(open(path, "rb").read()).hexdigest()
 
-def load_preds(model, split, condition):
-    path = os.path.join(HERE, "results", "raw", f"{model}-{split}-{condition}.jsonl")
+
+def display_path(path):
+    """Repo-relative when it lives in the repo; absolute as-is otherwise (a temp
+    fixture on another drive has no relative form and must not crash the scorer)."""
+    try:
+        rel = os.path.relpath(path, HERE)
+    except ValueError:
+        return path.replace("\\", "/")
+    return rel.replace("\\", "/") if not rel.startswith("..") else path.replace("\\", "/")
+
+
+# ------------------------------------------------------------------ F1 loading
+def resolve_prediction_file(model, split, condition, index_path=None, override=None):
+    """Return (path, index_entry, problems). Never guesses legacy filenames."""
+    if override:
+        return override, {"explicit_override": True}, []
+    ip = index_path or os.path.join(HERE, "results", "raw", "run-index.json")
+    if not os.path.exists(ip):
+        return None, None, [f"no run index at {ip}: predictions must be registered by the runner"]
+    idx = load_json(ip)
+    hits = [e for k, e in idx.get("runs", {}).items()
+            if e.get("model") == model and e.get("split") == split and e.get("condition") == condition]
+    if not hits:
+        return None, None, [f"run index has no entry for {model}/{split}/{condition}; "
+                            f"run scripts/run_bench_v3.py first (the pilot raw files are not "
+                            f"consumed implicitly)"]
+    latest = hits[-1]
+    path = os.path.join(HERE, latest["path"])
     if not os.path.exists(path):
-        return None, path
+        return None, None, [f"indexed file missing: {latest['path']}"]
+    got = sha256_file(path)
+    if got != latest.get("sha256"):
+        return None, None, [f"indexed file hash changed: {latest['path']} index={latest.get('sha256')} actual={got}"]
+    return path, latest, []
+
+
+def load_preds(path, model, split, condition, planned_ids):
     by, problems = defaultdict(dict), []
-    seen = set()
+    if not os.path.exists(path):
+        return by, [f"prediction file missing: {path}"]
     with open(path, encoding="utf-8") as fh:
         for ln, line in enumerate(fh, 1):
+            if not line.strip():
+                continue
             r = json.loads(line)
+            tag = f"{os.path.basename(path)}:{ln}"
+            for field, want in (("model", model), ("split", split), ("condition", condition)):
+                if r.get(field) != want:
+                    problems.append(f"{tag} {field}={r.get(field)!r} but invoked with {want!r}")
+            if r.get("signal") not in SIGNALS:
+                problems.append(f"{tag} unknown signal {r.get('signal')!r}")
+                continue
+            if r.get("sid") not in planned_ids:
+                problems.append(f"{tag} sid {r['sid']} is not in the planned scenario set")
+                continue
             key = (r["sid"], r["signal"])
-            if key in seen:
-                problems.append(f"DUPLICATE prediction {key} at {path}:{ln}")
-            seen.add(key)
-            pv = r.get("probs")
-            if pv:
-                vals = list(pv.values())
-                if any(not math.isfinite(v) or v < 0 or v > 1 for v in vals):
-                    r["probs_invalid"] = True
-                    problems.append(f"NON-FINITE/OUT-OF-RANGE probs {key} at {path}:{ln}")
-                elif abs(sum(vals) - 1.0) > 0.02:
-                    r["probs_invalid"] = True
-                    problems.append(f"probs do not sum to 1 {key} at {path}:{ln}")
-            by[r["sid"]][r["signal"]] = r
+            if key in by:
+                problems.append(f"{tag} DUPLICATE prediction for {key}")
+                continue
+            by[key[0]][key[1]] = r
+    # absent planned items are expected only if the runner recorded them as failures
+    for sid in planned_ids:
+        for sig in SIGNALS:
+            if sid not in by or sig not in by[sid]:
+                problems.append(f"MISSING prediction row for {sid}/{sig} in {os.path.basename(path)}")
     return by, problems
 
 
+def check_probs(by):
+    problems = []
+    for sid, sigs in by.items():
+        for sig, r in sigs.items():
+            if r.get("predicted") is None and not r.get("predict_error"):
+                problems.append(f"{sid}/{sig} neither a prediction nor a recorded error")
+            if r.get("predicted") is not None and r["predicted"] not in load_questions(
+                    os.path.join(HERE, "question-templates.json"))["signals"][sig]["canonical_order"]:
+                problems.append(f"{sid}/{sig} illegal predicted label {r['predicted']!r}")
+            pv = r.get("probs")
+            if pv is not None:
+                if not isinstance(pv, dict) or not pv:
+                    problems.append(f"{sid}/{sig} probabilities malformed")
+                    continue
+                for k, v in pv.items():
+                    if not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0 or v > 1:
+                        problems.append(f"{sid}/{sig} non-finite or out-of-range probability {k}={v!r}")
+                if abs(sum(pv.values()) - 1.0) > 0.02:
+                    problems.append(f"{sid}/{sig} probabilities do not sum to 1 ({sum(pv.values()):.4f})")
+            c = r.get("answer_confidence")
+            if c is not None and (not isinstance(c, (int, float)) or not math.isfinite(c) or not 0 <= c <= 1):
+                problems.append(f"{sid}/{sig} illegal answer_confidence {c!r}")
+    return problems
+
+
 def gold_map_for(split, gold_path):
-    """dev/calibration read gold from the repository; final only from the sealed file."""
     if split == "final":
         if not gold_path:
-            raise SystemExit("final scoring requires --gold pointing at the sealed answer file")
-        raw = open(gold_path, "rb").read()
-        got = hashlib.sha256(raw).hexdigest()
+            raise ValueError("final scoring requires --gold pointing at the sealed answer file")
         want = load_json(os.path.join(HERE, "seal-record-v2.json"))["gold_final_sha256"]
+        got = sha256_file(gold_path)
         if got != want:
-            raise SystemExit(f"sealed gold sha256 mismatch: got {got} expected {want}")
+            raise ValueError(f"sealed gold sha256 mismatch: got {got} expected {want}")
         out = {}
-        for line in raw.decode("utf-8").splitlines():
+        for line in open(gold_path, encoding="utf-8"):
             if line.strip():
                 r = json.loads(line)
-                out[r["sid"]] = r.get("labels") or r
+                out[r["sid"]] = r["labels"]
         return out
-    return {r["sid"]: r["labels"] for r in load_split(HERE, split)}
+    return {r["sid"]: r["labels"] for r in rows_for(HERE, split)}
 
 
-def verify_freeze_gate(rows, condition, models):
-    """R3: the final split only opens on a fully verified, frozen record."""
-    gate_p = os.path.join(HERE, "freeze-gate.json")
-    if not os.path.exists(gate_p):
-        return ["freeze-gate.json is absent: the final split is not frozen"]
-    gate = load_json(gate_p)
+# ------------------------------------------------------------------ F2 gate
+def verify_freeze_gate(root, rows, model, condition, split, plan, gate_path=None):
+    """Strict, fail-closed gate. Returns a list of refusal reasons."""
     errs = []
+    gp = gate_path or os.path.join(root, "freeze-gate.json")
+    if not os.path.exists(gp):
+        return [f"freeze gate file absent: {os.path.basename(gp)}"]
+    gate = load_json(gp)
+    if gate.get("schema") != "e1r2-freeze-gate-v1":
+        errs.append(f"gate schema {gate.get('schema')!r} is not 'e1r2-freeze-gate-v1'")
     if gate.get("status") != "frozen":
-        errs.append(f"freeze-gate status is {gate.get('status')!r}, not 'frozen'")
-    if gate.get("final_split_opened_before") is True:
-        errs.append("gate says the final split was already opened; a new holdout is required")
-    need = ("blind_review", "adjudication", "samples_sha256", "templates_sha256",
-            "model_config_sha256", "calibration_sha256", "scenario_count")
-    for k in need:
-        if k not in gate:
-            errs.append(f"freeze-gate missing field {k}")
-    br = gate.get("blind_review") or {}
-    if len(br.get("reviewers") or []) < 2:
-        errs.append("freeze-gate records fewer than two independent reviewers")
-    if not br.get("independent") or not br.get("no_gold_exposure_attested"):
-        errs.append("reviewer independence / no-answer-exposure not attested")
-    adj = gate.get("adjudication") or {}
-    if adj.get("adjudicator_is_original_annotator") is True:
-        errs.append("adjudicator may not be the original annotator")
-    if not adj.get("completed"):
-        errs.append("disagreement adjudication not completed")
+        errs.append(f"gate status is {gate.get('status')!r}, not 'frozen'")
+    if gate.get("split") != split:
+        errs.append(f"gate was frozen for split {gate.get('split')!r}, not {split!r}")
 
-    def digest(path):
-        return hashlib.sha256(open(os.path.join(HERE, path), "rb").read()).hexdigest()
+    br = gate.get("blind_review")
+    if not isinstance(br, dict):
+        errs.append("blind_review block missing")
+        br = {}
+    revs = br.get("reviewers")
+    if not isinstance(revs, list) or len(revs) < 2:
+        errs.append("needs at least two reviewer records")
+        revs = []
+    ids = [r.get("id") for r in revs if isinstance(r, dict)]
+    if any(not isinstance(i, str) or not i.strip() for i in ids) or len(set(ids)) != len(ids):
+        errs.append("reviewer ids must be non-empty and distinct")
+    for r in revs:
+        if not isinstance(r, dict):
+            errs.append("reviewer record is not an object")
+            continue
+        for k, why in (("independent", "independence"), ("no_gold_exposure_attested", "no-answer-exposure"),
+                       ("no_cross_reviewer_communication_attested", "no-mutual-visibility")):
+            if r.get(k) is not True:
+                errs.append(f"reviewer {r.get('id')!r} {why} must be exactly true (got {r.get(k)!r})")
+        for k in ("answers_sha256", "disclosure_sha256", "covered_tokens", "planned_tokens"):
+            if k not in r:
+                errs.append(f"reviewer {r.get('id')!r} missing {k}")
+        ct, pt = r.get("covered_tokens"), r.get("planned_tokens")
+        if isinstance(ct, int) and isinstance(pt, int) and ct != pt:
+            errs.append(f"reviewer {r.get('id')!r} covered {ct} of {pt} planned tokens")
 
-    checks = (("samples_sha256", os.path.join("samples", "scenarios-final-blind.jsonl")),
-              ("templates_sha256", "question-templates.json"),
-              ("model_config_sha256", "config.lock.json"),
-              ("calibration_sha256", os.path.join("calibration", "temperature-lock.json")))
-    for field, rel in checks:
-        want = gate.get(field)
-        if not os.path.exists(os.path.join(HERE, rel)):
-            errs.append(f"{field} cannot be verified: {rel} is missing")
-        elif want != digest(rel):
-            errs.append(f"{field} does not match the current {rel} (frozen artifact changed)")
-    count = gate.get("scenario_count")
-    if count is not None and count != len(rows):
-        errs.append(f"gate scenario_count {count} != {len(rows)} in the blind sample file")
-    for m in models:
-        if not load_preds(m, "final", condition)[0]:
-            pass
+    adj = gate.get("adjudication")
+    if not isinstance(adj, dict):
+        errs.append("adjudication block missing")
+        adj = {}
+    if not (isinstance(adj.get("adjudicator"), str) and adj["adjudicator"].strip()):
+        errs.append("adjudicator identity missing")
+    if adj.get("non_original_annotator") is not True:
+        errs.append("adjudicator must attest explicitly they are not the original annotator")
+    if adj.get("completed") is not True:
+        errs.append("adjudication receipt not marked completed")
+    if not adj.get("receipt_sha256"):
+        errs.append("adjudication receipt hash missing")
+    if isinstance(adj.get("adjudicator"), str) and adj["adjudicator"] in ids:
+        errs.append("adjudicator may not also be a reviewer")
+
+    frozen = gate.get("frozen_artifacts") or {}
+    need_art = ("samples_blind", "question_templates", "label_spec", "config_lock",
+                "calibration_lock", "external_gold")
+    for k in need_art:
+        if k not in frozen:
+            errs.append(f"frozen_artifacts missing {k}")
+    live = {"samples_blind": os.path.join(root, "samples", "scenarios-final-blind.jsonl"),
+            "question_templates": os.path.join(root, "question-templates.json"),
+            "label_spec": os.path.join(root, "LABEL_SPEC.md"),
+            "config_lock": os.path.join(root, "config.lock.json"),
+            "calibration_lock": os.path.join(root, "calibration", "temperature-lock.json")}
+    for k, p in live.items():
+        if k in frozen:
+            if not os.path.exists(p):
+                errs.append(f"frozen artifact {k} cannot be verified: {os.path.basename(p)} missing")
+            elif frozen[k] != sha256_file(p):
+                errs.append(f"frozen artifact {k} no longer matches {os.path.basename(p)}")
+    if frozen.get("external_gold") and frozen["external_gold"] != load_json(
+            os.path.join(root, "seal-record-v2.json")).get("gold_final_sha256"):
+        errs.append("frozen external gold hash differs from seal-record-v2.json")
+
+    fp = gate.get("frozen_plan") or {}
+    if not fp:
+        errs.append("frozen_plan missing: the run configuration was never bound")
+    else:
+        if model not in (fp.get("models") or []):
+            errs.append(f"model {model!r} is not in the pre-registered model set {fp.get('models')}")
+        if condition not in (fp.get("conditions") or []):
+            errs.append(f"condition {condition!r} is not in the pre-registered condition set {fp.get('conditions')}")
+        for k, want in (("max_len", plan.get("max_len")), ("head_max_len", plan.get("head_max_len")),
+                        ("truncation_policy", "oldest_history_then_boundary_outside_window"),
+                        ("device", plan.get("device"))):
+            if k in fp and fp[k] != want:
+                errs.append(f"frozen plan {k}={fp[k]!r} but invoked with {want!r}")
+            if k not in fp:
+                errs.append(f"frozen plan missing {k}")
+        scope = fp.get("scenario_count")
+        if isinstance(scope, int) and scope != len(rows):
+            errs.append(f"frozen scenario_count {scope} != {len(rows)} rows in the blind file")
+        if fp.get("limit") != plan.get("limit"):
+            errs.append(f"frozen plan limit={fp.get('limit')!r} but invoked with --limit {plan.get('limit')!r}")
+
+    journal_p = os.path.join(root, "results", "final-run-journal.json")
+    if os.path.exists(journal_p):
+        jr = load_json(journal_p)
+        if jr.get("final_split_opened_before") is True and not any(
+                e.get("model") == model and e.get("condition") == condition for e in jr.get("runs", [])):
+            errs.append("final already opened for a different run; a new holdout is required")
     return errs
 
 
-# ---------------------------------------------------------------- scoring
+def journal_final_run(root, model, condition, pred_hash):
+    p = os.path.join(root, "results", "final-run-journal.json")
+    jr = load_json(p) if os.path.exists(p) else {"final_split_opened_before": False, "runs": []}
+    jr["final_split_opened_before"] = True
+    if not any(e.get("model") == model and e.get("condition") == condition and e.get("predictions_sha256") == pred_hash
+               for e in jr["runs"]):
+        jr["runs"].append({"model": model, "condition": condition, "predictions_sha256": pred_hash,
+                           "at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")})
+    json.dump(jr, open(p, "w", encoding="utf-8", newline="\n"), ensure_ascii=False, indent=1)
 
-def score_signal(model, split, signal, spec, rows, preds, gold_map):
+
+# ------------------------------------------------------------------ scoring
+def score_signal(spec, rows, gold_map, preds, integrity):
     labels = spec["canonical_order"]
-    abstain = ABSTAIN[signal]
-    planned = [r for r in rows if r["sid"] in gold_map]
-    got, errs = [], []
-    for r in planned:
-        rec = preds.get(r["sid"], {}).get(signal)
-        g = gold_map[r["sid"]][signal]
-        if g not in labels:
-            errs.append(f"illegal gold {g!r} for {r['sid']}/{signal}")
+    abstain = ABSTAIN[spec["_name"]]
+    got = []
+    for r in rows:
+        sid = r["sid"]
+        g = gold_map[sid][spec["_name"]]
+        rec = preds.get(sid, {}).get(spec["_name"])
         if rec is None:
-            got.append((r["sid"], g, MISSING, None, None))
-            continue
-        if rec.get("predict_error"):
-            got.append((r["sid"], g, MISSING, None, None))
+            got.append((sid, g, MISSING, None, None))
+            integrity.append(f"{sid}/{spec['_name']} no prediction row at all")
             continue
         p = rec.get("predicted")
-        if p is None or p not in labels:
-            got.append((r["sid"], g, ILLEGAL if p is not None else MISSING, None, rec))
-            continue
-        got.append((r["sid"], g, p, None if rec.get("probs_invalid") else rec.get("probs"), rec))
-    gold_v = [g for _, g, _, _, _ in got]
-    pred_v = [p for _, _, p, _, _ in got]
-    ok_v = [(g == p) for g, p in zip(gold_v, pred_v)]
-    returned = [i for i, (_, _, p, _, _) in enumerate(got) if p not in (MISSING, ILLEGAL)]
+        if rec.get("predict_error") or p is None:
+            got.append((sid, g, MISSING, None, rec))
+        elif p not in labels:
+            got.append((sid, g, ILLEGAL, None, rec))
+        elif rec.get("excluded_from_formal_scoring"):
+            got.append((sid, g, "__EXCLUDED_RELABEL__", None, rec))
+        else:
+            got.append((sid, g, p, rec.get("probs"), rec))
+    gold_v = [x[1] for x in got]
+    pred_v = [x[2] for x in got]
+    planned = len(got)
+    returned = [i for i, x in enumerate(got) if x[2] not in (MISSING, ILLEGAL, "__EXCLUDED_RELABEL__")]
     class_set = [lb for lb in labels if gold_v.count(lb) > 0]
+    zero_support = [lb for lb in labels if gold_v.count(lb) == 0]
     f1, per_class = macro_f1(gold_v, pred_v, class_set)
-    acc_sub = accuracy([gold_v[i] for i in returned], [pred_v[i] for i in returned]) if returned else None
+    ok = [g == p for g, p in zip(gold_v, pred_v)]
     keep = [i for i in returned if pred_v[i] != abstain]
-    acc_accepted = accuracy([gold_v[i] for i in keep], [pred_v[i] for i in keep]) if keep else None
-    probs_only = [(got[i][3], gold_v[i]) for i in returned if got[i][3]]
-    conf_pairs = [(got[i][4].get("answer_confidence"), ok_v[i]) for i in returned if got[i][4]]
+    pairs_conf = [(got[i][4].get("answer_confidence"), ok[i]) for i in returned]
     entry = {
-        "planned_items": len(got),
-        "n_returned": len(returned),
-        "n_missing_or_illegal": len(got) - len(returned),
-        "run_success_rate": round(len(returned) / len(got), 4) if got else None,
-        "accuracy_over_planned": round(accuracy(gold_v, pred_v), 4) if got else None,
+        "planned_items": planned, "n_returned": len(returned),
+        "n_missing": sum(1 for p in pred_v if p == MISSING),
+        "n_illegal": sum(1 for p in pred_v if p == ILLEGAL),
+        "n_excluded_requires_relabel": sum(1 for p in pred_v if p == "__EXCLUDED_RELABEL__"),
+        "run_success_rate": round(len(returned) / planned, 4) if planned else None,
+        "accuracy_over_planned": round(accuracy(gold_v, pred_v), 4) if planned else None,
         "macro_f1_over_planned": round(f1, 4) if f1 is not None else None,
-        "macro_f1_class_set": class_set,
+        "macro_f1_class_set": class_set, "zero_support_classes_excluded": zero_support,
         "per_class": per_class,
-        "accuracy_returned_only": round(acc_sub, 4) if acc_sub is not None else None,
-        "abstain_coverage_over_planned": round(sum(1 for p in pred_v if p == abstain) / len(got), 4) if got else None,
-        "accuracy_accepted_only": round(acc_accepted, 4) if acc_accepted is not None else None,
-        "accepted_subset_error_rate": round(1 - acc_accepted, 4) if acc_accepted is not None else None,
+        "accuracy_returned_only": round(accuracy([gold_v[i] for i in returned], [pred_v[i] for i in returned]), 4) if returned else None,
+        "abstain_coverage_over_planned": round(sum(1 for p in pred_v if p == abstain) / planned, 4) if planned else None,
+        "accepted_subset_error_rate": round(1 - accuracy([gold_v[i] for i in keep], [pred_v[i] for i in keep]), 4) if keep else None,
         "confusion": confusion(gold_v, pred_v, labels),
         "gold_distribution": dict(Counter(gold_v)),
-        "brier_returned_only": round(v, 4) if (v := brier([p for p, _ in probs_only], [g for _, g in probs_only], labels)) is not None else None,
-        "ece_raw_returned_only": round(v, 4) if (v := ece(conf_pairs)) is not None else None,
-        "label_errors": errs,
+        "brier_returned_only": (lambda v: round(v, 4) if v is not None else None)(
+            brier([got[i][3] for i in returned], [gold_v[i] for i in returned], labels)),
+        "ece_raw_returned_only": (lambda v: round(v, 4) if v is not None else None)(ece(pairs_conf)),
     }
-    if signal in HIGH_RISK:
+    if spec["_name"] in HIGH_RISK:
         entry["false_positive"] = {lb: sum(1 for g, p in zip(gold_v, pred_v) if p == lb and g != lb) for lb in labels}
         entry["false_negative"] = {lb: sum(1 for g, p in zip(gold_v, pred_v) if g == lb and p != lb) for lb in labels}
-        entry["dangerous_cases"] = [
-            {"sid": sid, "gold": g, "pred": p}
-            for sid, g, p, _, _ in got if p in (MISSING, ILLEGAL) or p != g][:12]
-    return entry, got, ok_v
+        entry["dangerous_cases"] = [{"sid": s, "gold": g, "pred": p} for s, g, p, _, _ in got if p != g][:12]
+    return entry, ok
+
+
+def integrity_problems(rows, gold_map, qt):
+    """Gold and planned scenario ids must match exactly: missing, extra or duplicate
+    gold, or an illegal label, fails closed instead of shrinking the denominator."""
+    out = []
+    planned_ids = {r["sid"] for r in rows}
+    if planned_ids != set(gold_map):
+        out.append(f"gold/planned id sets differ: only_in_planned="
+                   f"{sorted(planned_ids - set(gold_map))[:5]} only_in_gold="
+                   f"{sorted(set(gold_map) - planned_ids)[:5]} (denominator may not shrink)")
+    if len(rows) != len(planned_ids):
+        out.append("duplicate scenario ids in the planned set")
+    for sid, labels in gold_map.items():
+        if set(labels) != set(SIGNALS):
+            out.append(f"{sid} gold signal set {sorted(labels)} != {SIGNALS}")
+            continue
+        for sig, val in labels.items():
+            if sig not in qt["signals"]:
+                out.append(f"{sid} unknown gold signal {sig}")
+            elif val not in qt["signals"][sig]["canonical_order"]:
+                out.append(f"{sid} illegal gold {sig}={val!r}")
+    return out
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--regressions", action="store_true", help="run the E1R2 synthetic regression suite")
     ap.add_argument("--models", default="A,B")
     ap.add_argument("--split", default="dev")
     ap.add_argument("--condition", default="primary")
     ap.add_argument("--gold", default=None)
-    ap.add_argument("--fit-calibration", action="store_true",
-                    help="fit temperature on the calibration split and write calibration/temperature-lock.json")
-    ap.add_argument("--no-calibration", action="store_true")
+    ap.add_argument("--index", default=None, help="run index path (default results/raw/run-index.json)")
+    ap.add_argument("--predictions", default=None, help="explicit prediction file (single model only)")
+    ap.add_argument("--fit-calibration", action="store_true")
+    ap.add_argument("--gate", default=None)
+    ap.add_argument("--max-len", type=int, default=1024)
+    ap.add_argument("--head-max-len", type=int, default=256)
+    ap.add_argument("--device", default="cpu")
+    ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--diagnostic-only", action="store_true")
     args = ap.parse_args()
 
     if args.selftest:
         return selftest()
+    if args.regressions:
+        import regressions_e1r2
+        return regressions_e1r2.run_all()
 
-    # R3 first gate: the final split can never be a fitting set, regardless of
-    # anything else on the command line.
+    qt = load_questions(os.path.join(HERE, "question-templates.json"))
+    models = args.models.split(",")
+    if args.predictions and len(models) != 1:
+        print("--predictions accepts one model only")
+        return 3
     if args.fit_calibration and args.split != "calibration":
-        print(f"REFUSED: temperatures/thresholds may only be fitted on the calibration split "
-              f"(got --split {args.split}). The final split is never a fitting set.")
+        print(f"REFUSED: temperatures/thresholds may only be fitted on the calibration split (got {args.split})")
         return 3
 
-    qt = load_json(os.path.join(HERE, "question-templates.json"))
-    models = args.models.split(",")
-    rows = load_split(HERE, args.split)
-    gold_map = gold_map_for(args.split, args.gold)
+    rows = rows_for(HERE, args.split)
+    if args.limit:
+        rows = rows[: args.limit]
+    try:
+        gold_map = gold_map_for(args.split, args.gold)
+    except ValueError as exc:
+        print("REFUSED:", exc)
+        return 5
+
+    planned_ids = {r["sid"] for r in rows}
+    integrity = integrity_problems(rows, gold_map, qt)
+
+    preds, consumed = {}, {}
+    for m in models:
+        preds[m] = {}
+        path, entry, probs = resolve_prediction_file(m, args.split, args.condition, args.index, args.predictions)
+        integrity += probs
+        if path is None:
+            continue
+        by, lp = load_preds(path, m, args.split, args.condition, planned_ids)
+        integrity += lp
+        integrity += check_probs(by)
+        preds[m] = by
+        consumed[m] = {"path": display_path(path), "sha256": sha256_file(path),
+                       "run_config": (entry or {}).get("config"),
+                       "explicit_override": bool(entry and entry.get("explicit_override"))}
+    integrity = sorted(set(integrity))
+    relabel = [f"{m}:{sid}/{sig}" for m, d in preds.items() for sid, sgs in d.items() for sig, r in sgs.items()
+               if r.get("excluded_from_formal_scoring")]
+    if relabel and not args.diagnostic_only:
+        integrity.append(f"{len(relabel)} items flagged requires_relabel are present; formal scoring refuses them. "
+                         f"Re-review the truncated text or pass --diagnostic-only for a labelled diagnostic run.")
+
+    if integrity:
+        os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
+        dest = os.path.join(HERE, "results", f"integrity-errors-{args.split}-{args.condition}.json")
+        json.dump({"written_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
+                   "split": args.split, "condition": args.condition, "models": models,
+                   "consumed": consumed, "problems": integrity,
+                   "scores_published": False, "calibration_lock_written": False},
+                  open(dest, "w", encoding="utf-8", newline="\n"), ensure_ascii=False, indent=1)
+        print(f"REFUSED: {len(integrity)} integrity problem(s); no scores published, no lock written.")
+        for p in integrity[:12]:
+            print("  -", p)
+        print("wrote", os.path.relpath(dest, HERE))
+        return 4
 
     if args.split == "final":
-        errs = verify_freeze_gate(rows, args.condition, models)
+        plan = {"max_len": args.max_len, "head_max_len": args.head_max_len,
+                "device": args.device, "limit": args.limit}
+        errs = []
+        for m in models:
+            errs += verify_freeze_gate(HERE, rows, m, args.condition, args.split, plan, args.gate)
         if errs:
-            print("REFUSED final scoring:")
-            for e in errs:
+            print("REFUSED final:")
+            for e in sorted(set(errs)):
                 print("  -", e)
-            return 3
-
-    preds, all_problems = {}, []
-    for m in models:
-        p, probs = load_preds(m, args.split, args.condition)
-        if not p:
-            print(f"no predictions for {m} on {args.split}/{args.condition}")
-            return 1
-        preds[m], all_problems = p, all_problems + probs
+            return 5
 
     if args.fit_calibration:
-        lock = {"schema": "e1r-temperature-lock-v1",
+        lock = {"schema": "e1r2-temperature-lock-v1",
                 "fitted_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
                 "fitted_on_split": "calibration", "condition": args.condition,
-                "provenance": {"prediction_files": {m: f"results/raw/{m}-calibration-{args.condition}.jsonl" for m in models}},
+                "consumed_predictions": consumed, "run_config": {"max_len": args.max_len,
+                                                                  "head_max_len": args.head_max_len,
+                                                                  "device": args.device},
                 "entries": {}}
         for m in models:
             for signal, spec in qt["signals"].items():
-                crows = [r for r in rows if r["sid"] in gold_map]
-                items = []
-                for r in crows:
-                    rec = preds[m].get(r["sid"], {}).get(signal) or {}
-                    if rec.get("probs") and not rec.get("probs_invalid"):
-                        items.append((rec["probs"], gold_map[r["sid"]][signal]))
-                T = fit_temperature(items, spec["canonical_order"])
+                items = [(preds[m][r["sid"]][signal]["probs"], gold_map[r["sid"]][signal])
+                         for r in rows if r["sid"] in preds[m] and signal in preds[m][r["sid"]]
+                         and preds[m][r["sid"]][signal].get("probs")]
                 lock["entries"].setdefault(m, {})[signal] = {
-                    "temperature": T, "n_fit": len(items), "class_set": spec["canonical_order"]}
+                    "temperature": fit_temperature(items, spec["canonical_order"]),
+                    "n_fit": len(items), "class_set": spec["canonical_order"],
+                    "zero_support_classes_excluded": [l for l in spec["canonical_order"]
+                                                      if [g for _, g in items].count(l) == 0]}
         os.makedirs(os.path.join(HERE, "calibration"), exist_ok=True)
         dest = os.path.join(HERE, "calibration", "temperature-lock.json")
         json.dump(lock, open(dest, "w", encoding="utf-8", newline="\n"), ensure_ascii=False, indent=1)
-        print(json.dumps(lock["entries"], ensure_ascii=False, indent=1))
-        print("wrote", os.path.relpath(dest, HERE))
+        print("wrote", os.path.relpath(dest, HERE), "sha256", sha256_file(dest)[:16])
         return 0
 
     cal_lock = None
-    if not args.no_calibration:
-        p = os.path.join(HERE, "calibration", "temperature-lock.json")
-        if os.path.exists(p):
-            cal_lock = load_json(p)
+    cl = os.path.join(HERE, "calibration", "temperature-lock.json")
+    if os.path.exists(cl):
+        cal_lock = load_json(cl)
+    ml = os.path.join(HERE, "calibration", "majority-lock.json")
+    maj_lock = load_json(ml).get("signals") if os.path.exists(ml) else None
 
-    maj_lock = None
-    mp = os.path.join(HERE, "calibration", "majority-lock.json")
-    if os.path.exists(mp):
-        maj_lock = load_json(mp).get("signals")
-
-    out = {"schema": "e1r-scores-v1", "split": args.split, "condition": args.condition,
-          "planned_scenarios": len(rows), "models": {}, "baselines": {}, "paired": {},
-          "prediction_integrity_problems": all_problems,
-          "calibration_source": (None if args.no_calibration or cal_lock is None
-                                 else {"file": "calibration/temperature-lock.json",
-                                       "fitted_on_split": cal_lock.get("fitted_on_split"),
-                                       "sha256": hashlib.sha256(open(mp2 := os.path.join(HERE, "calibration", "temperature-lock.json"), "rb").read()).hexdigest()}),
-          }
-    for signal, spec in qt["signals"].items():
-        scored_vectors = {}
+    out = {"schema": "e1r2-scores-v1", "split": args.split, "condition": args.condition,
+           "planned_scenarios": len(rows), "consumed_predictions": consumed,
+           "calibration_lock": ({"sha256": sha256_file(cl), "fitted_on_split": cal_lock.get("fitted_on_split"),
+                                 "consumed_predictions": cal_lock.get("consumed_predictions")}
+                                if cal_lock else None),
+           "models": {}, "baselines": {}, "paired": {},
+           "integrity_problems": [], "requires_relabel_excluded": relabel}
+    if args.split == "final":
         for m in models:
-            entry, got, ok_v = score_signal(m, args.split, signal, spec, rows, preds[m], gold_map)
+            journal_final_run(HERE, m, args.condition, consumed[m]["sha256"])
+
+    for signal, spec in qt["signals"].items():
+        spec = dict(spec, _name=signal)
+        vectors = {}
+        for m in models:
+            entry, ok = score_signal(spec, rows, gold_map, preds[m], out.setdefault("unexpected", []))
             if cal_lock and m in cal_lock.get("entries", {}):
                 T = cal_lock["entries"][m][signal].get("temperature")
-                if T:
-                    pairs = []
-                    for sid, g, p, pv, _ in got:
-                        if not pv:
-                            continue
-                        q = apply_temperature(pv, T, spec["canonical_order"])
-                        best = max(q, key=q.get)
-                        pairs.append((q[best], best == g))
-                    entry["ece_calibrated_applied"] = round(v, 4) if (v := ece(pairs)) is not None else None
-                    entry["temperature_applied"] = T
+                pairs = []
+                for r in rows:
+                    rec = preds[m].get(r["sid"], {}).get(signal) or {}
+                    if not rec.get("probs"):
+                        continue
+                    q = apply_temperature(rec["probs"], T, spec["canonical_order"])
+                    best = max(q, key=q.get)
+                    pairs.append((q[best], best == gold_map[r["sid"]][signal]))
+                entry["temperature_applied"] = T
+                entry["ece_calibrated_applied"] = (lambda v: round(v, 4) if v is not None else None)(ece(pairs))
+                entry["ece_scope_note"] = ("out-of-sample" if args.split != cal_lock.get("fitted_on_split")
+                                           else "IN-SAMPLE: the scored split is the fitting split, not evidence")
             out["models"].setdefault(m, {})[signal] = entry
-            scored_vectors[m] = ok_v
-        gold_v = [gold_map[r["sid"]][signal] for r in rows if r["sid"] in gold_map]
+            vectors[m] = ok
+        gold_v = [gold_map[r["sid"]][signal] for r in rows]
         maj = Counter(gold_v).most_common(1)[0][0] if gold_v else None
         b = {"planned": len(gold_v), "chance_level": round(1 / len(spec["canonical_order"]), 4),
              "oracle_majority_label": maj,
              "oracle_majority_accuracy": round(accuracy(gold_v, [maj] * len(gold_v)), 4) if maj else None,
              "random_expected_accuracy": round(sum((c / len(gold_v)) ** 2 for c in Counter(gold_v).values()), 4) if gold_v else None}
         if maj_lock and signal in maj_lock:
-            lm = maj_lock[signal]["label"]
-            b["locked_majority_label"] = lm
-            b["locked_majority_accuracy"] = round(accuracy(gold_v, [lm] * len(gold_v)), 4)
-            b["locked_majority_source"] = maj_lock[signal].get("chosen_on")
-        rf, rc = 0, 0
+            b["locked_majority_label"] = maj_lock[signal]["label"]
+            b["locked_majority_accuracy"] = round(accuracy(gold_v, [maj_lock[signal]["label"]] * len(gold_v)), 4)
+            b["locked_majority_source"] = "calibration/majority-lock.json chosen on dev"
+        rf = rc = 0
         for r in rows:
-            if r["sid"] not in gold_map:
-                continue
             p = rule_predict(signal, r["turn"])
-            if p is None:
-                continue
-            rf += 1
-            rc += int(p == gold_map[r["sid"]][signal])
-        b["rule_fires"] = rf
-        b["rule_accuracy_when_fires"] = round(rc / rf, 4) if rf else None
-        b["rule_coverage"] = round(rf / len(gold_v), 4) if gold_v else None
+            if p is not None:
+                rf += 1
+                rc += int(p == gold_map[r["sid"]][signal])
+        b.update(rule_fires=rf, rule_coverage=round(rf / len(gold_v), 4) if gold_v else None,
+                 rule_accuracy_when_fires=round(rc / rf, 4) if rf else None)
         out["baselines"][signal] = b
 
         for i, ma in enumerate(models):
             for mb in models[i + 1:]:
-                ga, gb = scored_vectors[ma], scored_vectors[mb]
-                if len(ga) != len(gb) or not ga:
-                    continue
+                ga, gb = vectors[ma], vectors[mb]
                 n = len(ga)
-                diffs = sorted(sum(ga[j] for j in row) / n - sum(gb[j] for j in row) / n
-                               for row in boot_index_table(n, BOOT_REPS))
-                out["paired"].setdefault(f"{ma}-vs-{mb}", {})[signal] = {
-                    "point_estimate": round(sum(ga) / n - sum(gb) / n, 4),
-                    "ci95": [round(diffs[int(0.025 * BOOT_REPS)], 4), round(diffs[int(0.975 * BOOT_REPS)], 4)],
-                    "planned_items": n, "reps": BOOT_REPS,
-                    "indistinguishable": diffs[int(0.025 * BOOT_REPS)] <= 0 <= diffs[int(0.975 * BOOT_REPS)],
-                }
+                if n and n == len(gb):
+                    diffs = sorted(sum(ga[j] for j in row) / n - sum(gb[j] for j in row) / n
+                                   for row in boot_index_table(n, BOOT_REPS))
+                    out["paired"].setdefault(f"{ma}-vs-{mb}", {})[signal] = {
+                        "point_estimate": round(sum(ga) / n - sum(gb) / n, 4),
+                        "ci95": [round(diffs[int(0.025 * BOOT_REPS)], 4), round(diffs[int(0.975 * BOOT_REPS)], 4)],
+                        "planned_items": n, "reps": BOOT_REPS,
+                        "indistinguishable": diffs[int(0.025 * BOOT_REPS)] <= 0 <= diffs[int(0.975 * BOOT_REPS)]}
 
-    dest = os.path.join(HERE, "results", f"scores-{args.split}-{args.condition}.e1r.json")
+    tag = ".diagnostic" if args.diagnostic_only else ""
+    dest = os.path.join(HERE, "results", f"scores-{args.split}-{args.condition}.e1r2{tag}.json")
     json.dump(out, open(dest, "w", encoding="utf-8", newline="\n"), ensure_ascii=False, indent=1)
-    print(f"wrote {os.path.relpath(dest, HERE)}  problems={len(all_problems)}")
-    for p in all_problems[:10]:
-        print("  PROBLEM", p)
+    print(f"wrote {os.path.relpath(dest, HERE)}")
     for m in models:
         print(f"--- {m}")
         for s, e in out["models"][m].items():
             bl = out["baselines"][s]
             print(f"  {s:20s} acc={e['accuracy_over_planned']} f1={e['macro_f1_over_planned']} "
-                  f"(planned {e['planned_items']}, missing {e['n_missing_or_illegal']}) "
+                  f"(planned {e['planned_items']}, miss {e['n_missing']}, illegal {e['n_illegal']}) "
                   f"oracle-maj={bl['oracle_majority_accuracy']} locked-maj={bl.get('locked_majority_accuracy')}")
     return 0
 
 
-# ---------------------------------------------------------------- selftest
-
+# ------------------------------------------------------------------ selftest
 def selftest():
     fails = []
 
@@ -514,78 +712,48 @@ def selftest():
         if not ok:
             fails.append(name)
 
-    print("R2 denominators and class sets")
-    # the controller's counterexample: two planned items, one right, one timeout
+    spec = dict(load_questions(os.path.join(HERE, "question-templates.json"))["signals"]["social_act"],
+                _name="social_act")
     rows = [{"sid": "x1", "turn": "a"}, {"sid": "x2", "turn": "b"}]
-    gold_map = {"x1": {"social_act": "合作"}, "x2": {"social_act": "威胁"}}
-    spec = load_json(os.path.join(HERE, "question-templates.json"))["signals"]["social_act"]
-    preds = {"x1": {"social_act": {"predicted": "合作", "probs": {"合作": 0.6, "威胁": 0.4},
-                                   "answer_confidence": 0.6}},
-             "x2": {"social_act": {"predict_error": "TimeoutError", "predicted": None, "probs": None}}}
-    e, got, ok = score_signal("A", "dev", "social_act", spec, rows, preds, gold_map)
+    gold = {"x1": {"social_act": "合作"}, "x2": {"social_act": "威胁"}}
+    print("F1 denominators")
+    preds = {"x1": {"social_act": {"predicted": "合作", "probs": {"合作": .6, "威胁": .4}, "answer_confidence": .6}},
+             "x2": {"social_act": {"predict_error": "TIMEOUT", "predicted": None}}}
+    integ = []
+    e, ok = score_signal(spec, rows, gold, preds, integ)
     chk("timeout_counts_wrong_accuracy", e["accuracy_over_planned"], 0.5)
-    chk("timeout_counts_wrong_macro_f1", e["macro_f1_over_planned"], 0.5)
     chk("run_success_rate", e["run_success_rate"], 0.5)
-    chk("returned_only_accuracy_is_separate", e["accuracy_returned_only"], 1.0)
-    chk("confusion_has_missing_column", e["confusion"]["威胁"]["__MISSING__"], 1)
-    chk("macro_f1_class_set_includes_unpredicted", "威胁" in e["macro_f1_class_set"], True)
-    # class set follows the signal's canonical order, filtered to labels with gold
-    # support in the planned set; it must never depend on what the model emitted
-    chk("zero_support_class_excluded", set(e["macro_f1_class_set"]), {"合作", "威胁"})
-    chk("class_set_in_canonical_order", e["macro_f1_class_set"], ["威胁", "合作"])
-
-    # all failed -> zero, never 1.0
-    e2, _, _ = score_signal("A", "dev", "social_act", spec, rows,
-                            {"x1": {"social_act": {"predict_error": "boom"}},
-                             "x2": {"social_act": {"predict_error": "boom"}}}, gold_map)
-    chk("all_failed_accuracy_zero", e2["accuracy_over_planned"], 0.0)
-
-    # illegal label must not be silently accepted
-    e4, _, _ = score_signal("A", "dev", "social_act", spec, rows,
-                            {"x1": {"social_act": {"predicted": "nonsense"}},
-                             "x2": {"social_act": {"predicted": "威胁"}}}, gold_map)
-    chk("illegal_label_not_correct", e4["accuracy_over_planned"], 0.5)
-    chk("illegal_column_present", e4["confusion"]["合作"]["__ILLEGAL__"], 1)
-
-    # same planned set, A fails where B succeeds -> both scored over 2 items
-    a = {"x1": {"social_act": {"predicted": "合作"}}, "x2": {"social_act": {"predict_error": "t"}}}
-    b = {"x1": {"social_act": {"predict_error": "t"}}, "x2": {"social_act": {"predicted": "威胁"}}}
-    ea, _, oka = score_signal("A", "dev", "social_act", spec, rows, a, gold_map)
-    eb, _, okb = score_signal("B", "dev", "social_act", spec, rows, b, gold_map)
-    chk("asymmetric_failures_same_denominator", (ea["planned_items"], eb["planned_items"]), (2, 2))
-    chk("paired_vectors_aligned_length", (len(oka), len(okb)), (2, 2))
-    chk("both_half_correct", (ea["accuracy_over_planned"], eb["accuracy_over_planned"]), (0.5, 0.5))
-
-    print("hand-computable metric values")
+    chk("returned_only_separate", e["accuracy_returned_only"], 1.0)
+    chk("confusion_missing_column", e["confusion"]["威胁"]["__MISSING__"], 1)
+    chk("macro_f1_timeout_half", e["macro_f1_over_planned"], 0.5)
+    e2, _ = score_signal(spec, rows, gold, {"x1": {"social_act": {"predict_error": "boom"}},
+                                            "x2": {"social_act": {"predict_error": "boom"}}}, integ)
+    chk("all_failed_zero", e2["accuracy_over_planned"], 0.0)
+    e3, _ = score_signal(spec, rows, gold, {"x1": {"social_act": {"predicted": "合作", "probs": {"合作": .6, "威胁": .4},
+                                                                 "excluded_from_formal_scoring": True}},
+                                            "x2": {"social_act": {"predicted": "威胁", "probs": {"合作": .1, "威胁": .9},
+                                                                 "answer_confidence": .9}}}, integ)
+    chk("relabel_item_not_scored_correct", e3["accuracy_over_planned"], 0.5)
+    chk("relabel_counted_excluded", e3["n_excluded_requires_relabel"], 1)
+    chk("relabel_not_in_returned", e3["n_returned"], 1)
+    missing_integ = []
+    e4, _ = score_signal(spec, [{"sid": "x1", "turn": "a"}], {"x1": {"social_act": "合作"}}, {}, missing_integ)
+    chk("absent_row_recorded", len(missing_integ) >= 1, True)
+    chk("absent_row_counts_wrong", e4["accuracy_over_planned"], 0.0)
+    print("F1/F2 hand values and guards")
     chk("accuracy", accuracy(["a", "a", "b", "b"], ["a", "b", "b", "b"]), 0.75)
     f1, _ = macro_f1(["a", "a", "b", "b"], ["a", "b", "b", "b"], ["a", "b"])
     chk("macro_f1", f1, (2 / 3 + 0.8) / 2)
-    # Brier convention used here: mean squared error over every (item, class) pair,
-    # i.e. divided by n_items * n_classes (NOT sklearn's per-item sum / n_items).
-    # One wrong binary-style item contributes (0-1)^2 + (1-0)^2 = 2 to the numerator.
     chk("brier_all_correct", brier([{"a": 1.0, "b": 0.0}, {"a": 0.0, "b": 1.0}], ["a", "b"], ["a", "b"]), 0.0)
-    chk("brier_one_misclassified", brier([{"a": 1.0, "b": 0.0}, {"a": 0.0, "b": 1.0}], ["a", "a"], ["a", "b"]), 0.5)
-    chk("ece_overconfident", ece([(1.0, False), (1.0, False)]), 1.0)
-    chk("nan_probs_rejected", brier([{"a": float("nan"), "b": 0.0}], ["a"], ["a", "b"]), None)
-
-    print("R3 temperature behaviour")
-    items = [({"a": 0.99, "b": 0.01}, "a"), ({"a": 0.99, "b": 0.01}, "b"),
-             ({"a": 0.01, "b": 0.99}, "a"), ({"a": 0.9, "b": 0.1}, "b")]
-    T = fit_temperature(items, ["a", "b"])
-    chk("T_above_one_when_confidence_far_exceeds_accuracy", T > 1.0, True)
-    control = [({"a": 0.8, "b": 0.2}, "a")] * 4 + [({"a": 0.8, "b": 0.2}, "b")]
-    chk("T_near_one_when_already_calibrated", 0.7 < fit_temperature(control, ["a", "b"]) < 1.6, True)
-    chk("fit_temperature_returns_None_on_empty", fit_temperature([], ["a", "b"]), None)
-    q = apply_temperature({"a": 0.99, "b": 0.01}, 3.0, ["a", "b"])
-    chk("argmax_preserved_by_temperature", max(q, key=q.get), "a")
-    chk("probabilities_renormalised", round(sum(q.values()), 9), 1.0)
-
-    print("bootstrap table")
+    chk("brier_one_wrong", brier([{"a": 1.0, "b": 0.0}, {"a": 0.0, "b": 1.0}], ["a", "a"], ["a", "b"]), 0.5)
+    chk("nan_rejected", brier([{"a": float("nan"), "b": 0.0}], ["a"], ["a", "b"]), None)
+    items = [({"a": .99, "b": .01}, "a"), ({"a": .99, "b": .01}, "b"), ({"a": .01, "b": .99}, "a"),
+             ({"a": .9, "b": .1}, "b")]
+    chk("T>1_when_overconfident", fit_temperature(items, ["a", "b"]) > 1.0, True)
+    chk("T_none_on_empty", fit_temperature([], ["a", "b"]), None)
     t1 = boot_index_table(10, 5)
     _INDEX_CACHE.clear()
-    chk("table_deterministic", boot_index_table(10, 5), t1)
-    chk("table_in_range", all(0 <= j < 10 for row in t1 for j in row), True)
-
+    chk("bootstrap_deterministic", boot_index_table(10, 5), t1)
     print(f"selftest: {len(fails)} failures")
     return 1 if fails else 0
 

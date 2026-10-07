@@ -1,20 +1,28 @@
 #!/usr/bin/env python3
-"""E1R input construction (R1 + R4).
+"""E1R2 input construction (F4 + shared row loading).
 
-Owns everything the model sees, so that "same input for every candidate" is one
-code path instead of three accidental ones:
+Single source of truth for what the model sees, so runner and scorer cannot drift
+onto different final inputs:
 
-  * body assembly from UNLABELED rows only (final split has no gold in the repo)
-  * real token counting against the checkpoint's own tokenizer
-  * the documented truncation policy, executed and recorded line by line
-  * option ordering by stable semantic id, with a reversible label map
-  * paraphrase only from an authored, human-reviewable table (no character swaps)
+  * `rows_for(split)` is the ONLY way either entry point loads scenarios; the final
+    split always comes from the in-repo blind file (no answer keys anywhere in the
+    repository copies)
+  * boundary rendering distinguishes three cases that must never be conflated:
+    stated / never_declared_by_design / outside_the_visible_window (truncated away)
+  * budget enforcement deletes the OLDEST history lines until the body fits or the
+    history is empty, then handles the boundary, and REFUSES rather than silently
+    exceeding the budget while claiming the input was identical
+  * items whose decisive evidence was deleted are marked requires_relabel and are
+    refused by the formal scorer
 """
 import json
 import os
 
 SECTIONS_ORDER = ["既往", "已知边界"]
 NEVER_REMOVED = ["NPC", "此刻"]
+BOUNDARY_STATED = "stated"
+BOUNDARY_NEVER = "never_declared"
+BOUNDARY_OUTSIDE = "outside_window"
 
 
 def load_json(path):
@@ -22,18 +30,25 @@ def load_json(path):
         return json.load(fh)
 
 
-def rows_from_jsonl(path):
+def read_jsonl(path):
     out = []
     with open(path, encoding="utf-8") as fh:
-        for n, line in enumerate(fh, 1):
-            line = line.strip()
-            if line:
+        for line in fh:
+            if line.strip():
                 out.append(json.loads(line))
     return out
 
 
+def rows_for(root, split):
+    """dev/calibration: authored rows (gold present, working splits).
+    final: the blind file only, so runner and scorer read literally the same rows."""
+    if split == "final":
+        return read_jsonl(os.path.join(root, "samples", "scenarios-final-blind.jsonl"))
+    from body import load_split
+    return load_split(root, split)
+
+
 def find_repo_gold(rows):
-    """R1 guard: the repository copy of the final split must carry no answer key."""
     bad = []
     for r in rows:
         for forbidden in ("labels", "basis", "ambiguous_by_design", "hidden_truth"):
@@ -42,75 +57,116 @@ def find_repo_gold(rows):
     return bad
 
 
-def render_body(persona, boundary, history, turn):
-    lines = [f"【NPC】{persona}",
-             f"【已知边界】{boundary if boundary else '无（该 NPC 从未被告知相关规矩）'}",
-             "【既往】"]
+def render_body(persona, boundary, history, turn, boundary_state=BOUNDARY_STATED):
+    """boundary_state keeps absence from being rewritten into a claimed fact."""
+    if boundary_state == BOUNDARY_STATED and boundary:
+        b = boundary
+    elif boundary_state == BOUNDARY_NEVER:
+        b = "无（该 NPC 从未被告知相关规矩）"
+    elif boundary_state == BOUNDARY_OUTSIDE:
+        b = "（本条件下该条边界不在可见窗口内，未纳入本次输入）"
+    else:
+        b = "无（该 NPC 从未被告知相关规矩）"
+    lines = [f"【NPC】{persona}", f"【已知边界】{b}", "【既往】"]
     lines += [f"- {h}" for h in history] if history else ["- 无"]
     lines.append(f"【此刻】{turn}")
     return "\n".join(lines)
 
 
-def build_body(row, paraphrase_table=None, sid=None):
-    """Primary (short) body. Uses the paraphrase table when the condition asks for it."""
-    sid = sid or row["sid"]
+def authored_boundary_state(row):
+    return BOUNDARY_STATED if row.get("boundary") else BOUNDARY_NEVER
+
+
+def build_body(row, paraphrase_table=None):
+    sid = row["sid"]
     if paraphrase_table is not None:
-        if sid not in paraphrase_table:
+        entry = paraphrase_table.get(sid)
+        if entry is None:
             return None, {"skipped": "no_authored_paraphrase"}
-        entry = paraphrase_table[sid]
-        return render_body(row["persona"], row.get("boundary"),
-                          entry["history"] if "history" in entry else (row.get("history") or []),
-                          entry["turn"]), {"used_paraphrase": True}
-    return render_body(row["persona"], row.get("boundary"), row.get("history") or [], row["turn"]), {}
+        history = entry["history"] if isinstance(entry.get("history"), list) else (row.get("history") or [])
+        return render_body(row["persona"], row.get("boundary"), history, entry["turn"],
+                           authored_boundary_state(row)), {"used_paraphrase": True}
+    return render_body(row["persona"], row.get("boundary"), row.get("history") or [], row["turn"],
+                       authored_boundary_state(row)), {}
 
 
 def count_tokens(tok, text):
     return len(tok(text, add_special_tokens=False)["input_ids"])
 
 
-def assemble_with_budget(tok, row, state_budget_tokens, paraphrase_table=None, extra_history_key="extra_history"):
-    """Build the longest body that fits state_budget_tokens, then truncate per policy:
-    drop the oldest 既往 lines first, then 已知边界. NPC identity and 此刻 are never dropped.
+def decisive_lines_for(row, signal):
+    """Per-signal traceable references. Kept as text substrings / line indices that a
+    reviewer can check; the authoritative copy for the final split stays outside the
+    repository, and none of this is ever passed to the model."""
+    de = row.get("decisive_evidence") or {}
+    v = de.get(signal) if isinstance(de, dict) else None
+    if v is None:
+        return []
+    return v if isinstance(v, list) else [v]
 
-    Returns (body, report). report.removed_lines lists the exact dropped evidence, so a
-    case whose decisive evidence was removed can be re-reviewed instead of scored
-    against a gold label the model can no longer see.
+
+def assemble_with_budget(counter, row, state_budget_tokens, signal, paraphrase_table=None,
+                         extra_history_key="extra_history"):
+    """Longest body that fits the state budget, with an auditable deletion order.
+
+    `counter` maps text -> token count (the runner passes the worker's tokenizer, so
+    budgets are measured by the checkpoint's own tokenizer rather than estimated).
+
+    Never returns a body over budget: if the undeletable core (NPC + 此刻 + the fixed
+    section frames) still exceeds the budget, it returns (None, {refused: ...}) so the
+    caller records an explicit failure instead of comparing a silently truncated input
+    against gold labels written for the full one.
     """
     history = list(row.get("history") or [])
-    if extra_history_key in row:
-        history = history + list(row[extra_history_key])
+    turn = row["turn"]
     if paraphrase_table is not None:
         entry = paraphrase_table.get(row["sid"])
         if entry is None:
             return None, {"skipped": "no_authored_paraphrase"}
-        history = [entry["history"]] if "history" in entry else history
         turn = entry["turn"]
-    else:
-        turn = row["turn"]
+        if isinstance(entry.get("history"), list):
+            history = list(entry["history"])
+    elif row.get(extra_history_key):
+        history = history + list(row[extra_history_key])
 
-    removed = []
-    used_boundary = True
-    body = render_body(row["persona"], row.get("boundary"), history, turn)
-    n = count_tokens(tok, body)
-    while n > state_budget_tokens and len(history) > len(removed):
+    bstate = authored_boundary_state(row)
+    removed, boundary_dropped = [], False
+    body = render_body(row["persona"], row.get("boundary"), history, turn, bstate)
+    tokens_before = counter(body)
+    n = tokens_before
+
+    # 1) oldest 既往 lines go first, and keep going until it fits or history is empty
+    while n > state_budget_tokens and history:
         dropped = history.pop(0)
-        removed.append(dropped)
-        body = render_body(row["persona"], row.get("boundary"), history, turn)
-        n = count_tokens(tok, body)
-    if n > state_budget_tokens and used_boundary:
-        used_boundary = False
-        removed.append("已知边界: " + str(row.get("boundary")))
-        body = render_body(row["persona"], None, history, turn)
-        n = count_tokens(tok, body)
-    decisive = set(row.get("decisive_evidence") or [])
-    lost = [r for r in removed if any(d in r for d in decisive)]
-    return body, {"tokens": n, "budget": state_budget_tokens, "removed_lines": removed,
-                  "boundary_kept": used_boundary, "requires_relabel": bool(lost),
-                  "lost_decisive_evidence": lost, "needs_tokens_no_truncation": None}
+        removed.append({"line": dropped, "reason": "oldest_history_over_budget"})
+        body = render_body(row["persona"], row.get("boundary"), history, turn, bstate)
+        n = counter(body)
+
+    # 2) still over: mark the boundary as outside the window (never as "never informed")
+    if n > state_budget_tokens and bstate == BOUNDARY_STATED:
+        boundary_dropped = True
+        removed.append({"line": "已知边界: " + str(row.get("boundary")),
+                        "reason": "boundary_outside_window"})
+        body = render_body(row["persona"], row.get("boundary"), history, turn, BOUNDARY_OUTSIDE)
+        n = counter(body)
+
+    decisive = decisive_lines_for(row, signal)
+    lost = [d for d in decisive if d and any(d in rm["line"] for rm in removed)] if decisive else []
+    report = {"tokens_before_truncation": tokens_before, "tokens_after": n,
+              "state_budget": state_budget_tokens,
+              "removed_lines": removed, "history_remaining": len(history),
+              "boundary_state": BOUNDARY_OUTSIDE if boundary_dropped else bstate,
+              "boundary_kept": not boundary_dropped,
+              "signal": signal, "decisive_evidence": decisive,
+              "lost_decisive_evidence": lost,
+              "requires_relabel": bool(lost) or boundary_dropped,
+              "state_tokens": n}
+    if n > state_budget_tokens:
+        return None, dict(report, refused="core_over_budget", minimum_possible_tokens=n)
+    return body, report
 
 
 def ordered_criteria(spec, order):
-    """order: canonical | rotated | reversed. Returns (criteria dict, label_map)."""
     canon = list(spec["canonical_order"])
     if order == "rotated":
         seq = canon[1:] + canon[:1]
@@ -120,15 +176,10 @@ def ordered_criteria(spec, order):
         seq = list(canon)
     else:
         raise ValueError(f"unknown option order {order}")
-    criteria = {k: spec["options"][k] for k in seq}
-    return criteria, {"requested_order": seq, "semantic_labels": canon}
+    return {k: spec["options"][k] for k in seq}, {"requested_order": seq, "semantic_labels": canon}
 
 
 def map_choice_back(choice, spec):
-    """Stable semantic id mapping: option keys ARE the semantic labels, so ordering
-    cannot change what a choice means. Guarded so an out-of-set answer is illegal,
-    not silently coerced."""
-    canon = set(spec["canonical_order"])
-    if choice not in canon:
-        return None
-    return choice
+    """Option keys are the semantic labels, so reordering cannot change meaning;
+    anything outside the canonical set is illegal rather than coerced."""
+    return choice if choice in set(spec["canonical_order"]) else None

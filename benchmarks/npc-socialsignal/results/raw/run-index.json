@@ -1,0 +1,192 @@
+{
+ "schema": "e1r2-run-index-v1",
+ "runs": {
+  "A|calibration|primary": {
+   "model": "A",
+   "split": "calibration",
+   "condition": "primary",
+   "path": "results/raw/A-calibration-primary.jsonl",
+   "sha256": "b590c9f1a7cfbcbada25d4a4cc4ec65cf0ac7a27f7c1528d962f58a2da2473b8",
+   "records": 165,
+   "config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "batch_size": 8,
+    "timeout_s": "not enforced by the producing runner",
+    "limit": 0
+   },
+   "provenance": "registered_after_the_fact",
+   "produced_by": "A-calibration-primary.meta.json",
+   "registered_at": "this script"
+  },
+  "A|dev|primary": {
+   "model": "A",
+   "split": "dev",
+   "condition": "primary",
+   "path": "results/raw/A-dev-primary.jsonl",
+   "sha256": "b5c632ece97ec66bddef2cb3d62d595e8afadda8c0a5798f0e0371be746ff5fc",
+   "records": 150,
+   "config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "batch_size": 8,
+    "timeout_s": "not enforced by the producing runner",
+    "limit": 0
+   },
+   "provenance": "registered_after_the_fact",
+   "produced_by": "A-dev-primary.meta.json",
+   "registered_at": "this script"
+  },
+  "B|calibration|primary": {
+   "model": "B",
+   "split": "calibration",
+   "condition": "primary",
+   "path": "results/raw/B-calibration-primary.jsonl",
+   "sha256": "7c866747366aa43096425c78344c9329a9533d34f2cf3d157b9c5552e79e9b2c",
+   "records": 165,
+   "config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "batch_size": 8,
+    "timeout_s": "not enforced by the producing runner",
+    "limit": 0
+   },
+   "provenance": "registered_after_the_fact",
+   "produced_by": "B-calibration-primary.meta.json",
+   "registered_at": "this script"
+  },
+  "B|dev|primary": {
+   "model": "B",
+   "split": "dev",
+   "condition": "primary",
+   "path": "results/raw/B-dev-primary.jsonl",
+   "sha256": "c7afd6ea4c874bde1f93bddd47c75e0fb05e35e7139bd767fe16ff3ed9688376",
+   "records": 150,
+   "config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "batch_size": 8,
+    "timeout_s": "not enforced by the producing runner",
+    "limit": 0
+   },
+   "provenance": "registered_after_the_fact",
+   "produced_by": "B-dev-primary.meta.json",
+   "registered_at": "this script"
+  },
+  "A|dev|primary#2": {
+   "model": "A",
+   "split": "dev",
+   "condition": "primary",
+   "written_at": "2026-10-07T13:57:57+08:00",
+   "path": "results/raw/A-dev-primary.e1r3.jsonl",
+   "sha256": "c61127d77e7b271b97f3165a2a307dc68f4a16305c904fcf8689d49f566cfdad",
+   "records": 150,
+   "skipped": 0,
+   "config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "state_budget": 768,
+    "batch_size": 8,
+    "timeout_s": 120.0,
+    "limit": 0,
+    "option_order": "derived"
+   },
+   "worker": {
+    "restarts": 0,
+    "killed_for_timeouts": 0,
+    "ready_info": {
+     "id": null,
+     "ready": true,
+     "model": "D:/ModelBench/laya\\runtime\\A",
+     "device": "cpu",
+     "dtype": "torch.float32",
+     "backend": "eager",
+     "laya": "0.3.28"
+    },
+    "runtime_dir": "D:/ModelBench/laya/runtime/A",
+    "weights_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204"
+   },
+   "run_failed": false,
+   "failure": null
+  },
+  "B|dev|primary#2": {
+   "model": "B",
+   "split": "dev",
+   "condition": "primary",
+   "written_at": "2026-10-07T13:58:36+08:00",
+   "path": "results/raw/B-dev-primary.e1r3.jsonl",
+   "sha256": "965b9e27486f83a3571a42cc51e889c5c24bedcbfd4a56bf9112d5435e9e1039",
+   "records": 150,
+   "skipped": 0,
+   "config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "state_budget": 768,
+    "batch_size": 8,
+    "timeout_s": 120.0,
+    "limit": 0,
+    "option_order": "derived"
+   },
+   "worker": {
+    "restarts": 0,
+    "killed_for_timeouts": 0,
+    "ready_info": {
+     "id": null,
+     "ready": true,
+     "model": "D:/ModelBench/laya\\runtime\\B",
+     "device": "cpu",
+     "dtype": "torch.float32",
+     "backend": "eager",
+     "laya": "0.3.28"
+    },
+    "runtime_dir": "D:/ModelBench/laya/runtime/B",
+    "weights_sha256": "194544a0ff0f05e681dc637d397a92f5d46c80da00d1d0c7912502b64187c98f"
+   },
+   "run_failed": false,
+   "failure": null
+  },
+  "A|dev|long": {
+   "model": "A",
+   "split": "dev",
+   "condition": "long",
+   "written_at": "2026-10-07T13:59:10+08:00",
+   "path": "results/raw/A-dev-long.e1r3.jsonl",
+   "sha256": "afc488f56e606ce72f5bc77643ac7c7a5717cb30d5cf21a46ba0d9ad8f32cd57",
+   "records": 150,
+   "skipped": 0,
+   "config": {
+    "device": "cpu",
+    "max_len": 1024,
+    "head_max_len": 256,
+    "state_budget": 768,
+    "batch_size": 8,
+    "timeout_s": 120.0,
+    "limit": 0,
+    "option_order": "derived"
+   },
+   "worker": {
+    "restarts": 0,
+    "killed_for_timeouts": 0,
+    "ready_info": {
+     "id": null,
+     "ready": true,
+     "model": "D:/ModelBench/laya\\runtime\\A",
+     "device": "cpu",
+     "dtype": "torch.float32",
+     "backend": "eager",
+     "laya": "0.3.28"
+    },
+    "runtime_dir": "D:/ModelBench/laya/runtime/A",
+    "weights_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204"
+   },
+   "run_failed": false,
+   "failure": null
+  }
+ }
+}
