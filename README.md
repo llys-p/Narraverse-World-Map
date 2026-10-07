@@ -18,6 +18,24 @@
 
 详见 [独立化与下一步](PROJECT_CONTEXT.md)、[世界运行时架构与分阶段计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)、[来源记录](SOURCE_ORIGIN.md)。
 
+## 世界运行时：离线模拟底座
+
+Runtime目前保留在 `codex/world-runtime-a4` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+
+```powershell
+node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
+node simulation-runner.mjs --fixture clock-smoke --days 40 --seed 42 --out artifacts/simulation/run40
+node simulation-runner.mjs --resume artifacts/simulation/run40/checkpoint-r5760.json --days 60 --out artifacts/simulation/resumed60
+$simulationTests = @(Get-ChildItem -LiteralPath tests/simulation -Filter '*.test.mjs' -File | ForEach-Object FullName)
+node --test @simulationTests tests/export-boundaries.test.mjs
+```
+
+输出目录必须是新的，已有目录即使为空也拒绝；需要重跑时另取名字。`--days`是新增天数，整数1～1000；seed默认42，0合法；恢复禁止另传seed/fixture，沿用完整RNG/队列/回执。fixture输入不随days变化。
+
+产物为summary.json、完整有序inputs.json、events.csv和按revision命名的checkpoint。比较summary的stateHash/eventHash以及完整checkpoint状态/日志；耗时、内存、路径不参与哈希。代码SHA、dirty和sourceHash记录实际代码，不能用dirty运行假装精确HEAD。系统错误非零退出，保留最后成功tick；保存失败明确报错，不覆盖旧档或静默重置。
+
+checkpoint采用同目录hard link独占发布，平台不支持时明确SAVE_FAILED；临时档不作为存档加载。clock-smoke仅测试资源和每日随机事实，完成100天不表示生态平衡、NPC智能或页面接入完成。产物放已忽略的artifacts目录，禁止上传用户真实存档。
+
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
 历史文档中的“移植正式版”是当时建议；本仓库现在作为独立项目发展，不自动执行该建议。
