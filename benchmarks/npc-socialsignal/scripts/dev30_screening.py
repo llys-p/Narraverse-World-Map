@@ -116,6 +116,20 @@ def main():
     ap.add_argument("--skip-rotated", action="store_true")
     args = ap.parse_args()
 
+    # This one-shot diagnostic is archived. Never overwrite its lock or raw
+    # evidence by rerunning the command; a new run requires a new bounded plan.
+    protected = [LOCK_PATH, os.path.join(ROOT, "results", "dev30-screening-decision.json"),
+                 os.path.join(ROOT, "results", "raw", "dev30-screening-index.json")]
+    raw_dir = os.path.join(ROOT, "results", "raw")
+    existing = [p for p in protected if os.path.exists(p)]
+    if os.path.isdir(raw_dir):
+        existing += [os.path.join(raw_dir, n) for n in os.listdir(raw_dir)
+                     if "-dev30screening-" in n and n.endswith(".jsonl")]
+    if existing:
+        print("REFUSED: screening artifacts already exist; use the read-only audit. "
+              "No lock/raw overwritten and no model loaded.", file=sys.stderr)
+        return 4
+
     t_start = time.perf_counter()
     qt = SCORE.load_json(os.path.join(ROOT, "question-templates.json"))
     lock_cfg = json.load(open(os.path.join(ROOT, "config.lock.json"), encoding="utf-8"))
