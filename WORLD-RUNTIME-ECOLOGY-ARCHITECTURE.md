@@ -309,9 +309,9 @@ Persistent Actor 身份独立于 simulationLevel。离开视野可降频，不�
 
 ## 10. E 阶段：Laya 与 LLM 边界
 
-### 10.1 首选候选与官方资料核对
+### 10.1 候选模型与资料核对
 
-E 阶段首选 SocialSignal 候选为 `convaiinnovations/laya-multilingual`。这是 NPC perception layer 的选型方向，是否接受具体 signal 仍由 Narraverse 自有 benchmark 决定；不改变 A → B → C → D → E 的顺序，不在 A～D 提前接入 Runtime。
+E 阶段不预定胜出 checkpoint。首轮用同一套 Narraverse 中文 NPC 数据比较官方 `convaiinnovations/laya-multilingual`、`SGK86/laya-multilingual-typed-decisions` 与 `ZLHAOOO/laya-mlx-zh` v0.2；它们都只竞争 NPC perception layer 的 SocialSignal 候选。官方 multilingual 保留为可复现基线及后续自有数据微调的备选底座。模型卡上的分数来自不同任务，不能直接跨模型排名。具体执行合同见 [E1 模型选型对照任务书](tasks/E1-LAYA-MODEL-SELECTION-BENCHMARK-TASK.md)。这项离线预研不改变 A → B → C → D → E 的实施顺序，不在 A～D 接入 Runtime。
 
 2026-10-07 核对的上游事实：
 
@@ -320,6 +320,8 @@ E 阶段首选 SocialSignal 候选为 `convaiinnovations/laya-multilingual`。�
 - 上游承认基础 checkpoint 的零样本 typed-decisions 能力有限，任务 fine-tune 后改善明显。不同页面/版本的基准数值不完全一致，不将它们当作 Narraverse 的成绩。模型卡提示出厂未校准，`score` 有位置偏差，因此小规模 `choice` 为首轮优先形状，概率须在自有数据上校准。[模型卡限制](https://huggingface.co/convaiinnovations/laya-multilingual#limits)、[上游已知限制](https://github.com/NandhaKishorM/laya#honest-limits)
 
 本轮来源锚点：上游 GitHub `a4a8921afebfd852bba0000475cfb6ab737a124c`，HF checkpoint revision `1720e3e3357cfe1e281542e223f8273b0890ca34`。进入 E1 时重新核对并固定实际使用的模型、SDK、tokenizer 与校准版本，不用浮动 latest 混合测试结果。
+
+2026-10-07 增补候选核对：[`SGK86/laya-multilingual-typed-decisions`](https://huggingface.co/SGK86/laya-multilingual-typed-decisions) 报告在其 typed-decisions 测试集上达到 0.786，不能据此推断中文 NPC 准确率；[`ZLHAOOO/laya-mlx-zh`](https://huggingface.co/ZLHAOOO/laya-mlx-zh) v0.2 报告 9 任务头 1116 个 held-out 决策上 0.750 对原版 0.681，但权重/推理主要面向 Apple Silicon MLX。两者模型卡标注 Apache-2.0；实际使用仍要核对各自权重、代码和数据来源。情感三分类的 [`leafiy/mia-laya`](https://huggingface.co/leafiy/mia-laya) 可作窄任务参考，不能与五类社会信号主排名混算；[`ZichenAI/layazh-zh`](https://huggingface.co/ZichenAI/layazh-zh) 标注自定义商业许可及部分研究用途训练数据，暂不进入可部署候选。以上均为上游自报，不是本项目实测。
 
 用户提供的 [ModelScope 演示入口](https://modelscope.cn/studios/AI-ModelScope/laya-demo) 一并保留。当前公开读取只得到登录提示，未核实其运行 checkpoint、配置或实际推理结果；不能用该演示代替 benchmark。以上是资料核对，本轮没有下载模型、安装依赖、训练或执行推理。
 
@@ -337,7 +339,7 @@ E1 先建立一套中文 NPC 社会交互测试集，离线评测，不先写 Ru
 
 测试集必须包含正常例、否定、讽刺/隐喻、礼貌威胁、矛盾线索、多人物指代、中文与混合语言、信息不足和越界要求。输入只包含 Actor 可知上下文、相关事件与玩家行为；全知信息不能泄漏给模型。按场景/模板家族拆分训练、校准和最终测试集，避免同一句换名字跨集合泄漏；标签有定义、依据、分歧处理和“不确定”，不直接用一个模型生成的标签作唯一真值。
 
-显式选择 multilingual checkpoint，冻结问题措辞、choice 选项/顺序、输入预算和截断策略。先测小选项集合，避免 yes/no 等标签诱导；加入选项置换、等义改写与短/长上下文对照，验证顺序/措辞偏差。不直接把连续 score 当可信心理刻度。
+对每个候选固定 checkpoint revision、运行 SDK、问题措辞、choice 选项/顺序、输入预算和截断策略；语义输入、标签和最终测试集保持一致，MLX 的硬件与耗时单独报告。先测小选项集合，避免 yes/no 等标签诱导；加入选项置换、等义改写与短/长上下文对照，验证顺序/措辞偏差。不直接把连续 score 当可信心理刻度。
 
 记录逐信号准确率、macro-F1/混淆矩阵、危险误判与漏判、Brier/ECE、拒答覆盖率和接受子集错误率；校准与阈值拟合只能使用校准集，最终测试不参与调参。原始 confidence 不能被称为正确率；上游的 act/escalate 概率也不能未经自测直接作为信号准入门槛。延迟/内存记录实际硬件与长度，不搬用官方毫秒数作本机承诺。
 
