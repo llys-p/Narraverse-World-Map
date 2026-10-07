@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-d1` 任务分支，未合并main。离线runner无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-d2a` 任务分支，未合并main。离线runner无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 D1已新增独立只读世界服务：
 
@@ -29,6 +29,14 @@ node runtime-server.mjs --data-dir artifacts/world-runtime-d1/my-world --port 18
 ```
 
 打开`http://127.0.0.1:18314/`；终端输入`quit`后回车正常停止。目录专用于新实验，已有档严格恢复，不覆盖重建。页面显示真实公仓/价格/种群/人物身份；刷新与重启不推进时间，没有旅行/交易/战斗写入口。崩溃锁不自动清理，不能删除其他实例的锁。D1全量184/184与真HTTP/双页签/断连重启通过，见[D1证据](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。共享机全回归建议给`node --test`加`--test-concurrency=2`，测试集保持完整。
+
+D2A提供显式世界时间写入口，使用新的专用目录：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2a/my-world --port 18314 --writable true
+```
+
+页面可选择1小时/2小时/1天推进，生态、经济与NPC会真实结算；刷新仍纯读，过期页签409后重读，同请求重试或重启不会重复推进。世界与回执一起存盘。默认不加--writable仍只读；旧D1目录不隐式升级，可用明确--checkpoint初始化另一个新目录。初始化也占一档，因此每个实验目录最多127次新成功请求；满预算明确失败，不自动清理。正式提交之外的已知临时档保留但不加载，崩溃锁仍需明确处理；不承诺断电恢复。196/196及真实消费者已通过，见[D2A证据](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)。这不是玩家旅行/休整/交易或战斗入口。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
