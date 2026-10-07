@@ -177,7 +177,7 @@ test('V1 event sequence, tick, references, payloads and receipt correspondence a
 });
 
 test('I2 core remains pure and A1 dependencies remain local', () => {
-  for (const name of ['world-state', 'command-engine', 'event-log', 'data-contract', 'resource-ledger', 'ecology', 'market','actors']) {
+  for (const name of ['world-state', 'command-engine', 'event-log', 'data-contract', 'resource-ledger', 'ecology', 'market','actors','hunter']) {
     const src = readFileSync(new URL(`../../runtime/core/${name}.mjs`, import.meta.url), 'utf8');
     for (const bad of [/Math\.random\s*\(/, /Date\.now\s*\(/, /performance\./, /setTimeout\s*\(/,
       /setInterval\s*\(/, /\bfetch\s*\(/, /process\.env/, /node:/, /\bdocument\./, /\bwindow\./]) assert.doesNotMatch(src, bad);

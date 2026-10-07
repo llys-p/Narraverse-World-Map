@@ -93,7 +93,10 @@ export function commandInput(raw, strictType = true) {
   identifier(input.commandId); integer(input.targetTick, 1); identifier(input.type);
   record(input.payload); payloadBudget(input.payload);
   if (strictType) {
-    if (input.type === 'SetTradeRoute') {
+    if(input.type==='ActorAction'){
+      fields(input.payload,['actorId','goalId','action']);identifier(input.payload.actorId);integer(input.payload.goalId);
+      requireCondition(['Rest','WorkForPay','Hunt','BuyFood','BuyMedicine','UseMedicine'].includes(input.payload.action),'Unknown Actor action');
+    }else if (input.type === 'SetTradeRoute') {
       fields(input.payload, ['open']); requireCondition(typeof input.payload.open === 'boolean', 'Route state must be boolean');
     } else if (input.type === 'RemovePopulation') {
       fields(input.payload, ['species', 'amount']);

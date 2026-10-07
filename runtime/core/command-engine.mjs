@@ -7,6 +7,7 @@ import { RESOURCE_RULES, settleResourceDay } from './resource-ledger.mjs';
 import { ECOLOGY_RULES, removePopulation, ecologyCauses, settleEcologyDay } from './ecology.mjs';
 import { MARKET_RULES, applyMarketCommand, marketCommandFact, marketCauses, settleMarketDay } from './market.mjs';
 import { ACTOR_RULES,applyActorCommand,settleActorDay } from './actors.mjs';
+import { HUNTER_RULES,applyHunterCommand,planHunterDay,applyHunterAction,hunterActionFact,hunterCauses,settleHunterDay } from './hunter.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, integer, normalizeSystems, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
@@ -52,12 +53,14 @@ function performTick(bundle, systems, mode) {
       candidate.eventLog.push({ ...cloneData(fact), eventSeq, tick: failedTick, schemaVersion: 1 });
       return eventSeq;
     };
-    const remaining = [];
-    for (const input of s.pendingCommands) {
-      if (input.targetTick !== failedTick) { remaining.push(input); continue; }
+    const commitInput=(input)=>{
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
       let success, result, eventSeqs = [];
-      if ([MARKET_RULES,ACTOR_RULES].includes(rulesVersion)) {
+      if(rulesVersion===HUNTER_RULES){
+        const applied=input.type==='ActorAction'?applyHunterAction(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null):applyHunterCommand(s.world,{type:input.type,payload:input.payload});
+        s.world=applied.world;success=applied.success;result=applied.result;
+        if(success)eventSeqs=[append(input.type==='ActorAction'?hunterActionFact(input,result):marketCommandFact(input,result))];
+      }else if ([MARKET_RULES,ACTOR_RULES].includes(rulesVersion)) {
         const applied = (rulesVersion===ACTOR_RULES?applyActorCommand:applyMarketCommand)(s.world, { type: input.type, payload: input.payload });
         s.world = applied.world; success = applied.success; result = applied.result;
         if (success) eventSeqs = [append(marketCommandFact(input, result))];
@@ -79,23 +82,39 @@ function performTick(bundle, systems, mode) {
         input: { type: input.type, payload: cloneData(input.payload), targetTick: input.targetTick },
         fingerprint: inputFingerprint(input), status: success ? 'succeeded' : 'rejected', result, eventSeqs });
       receiptCount++;
+    };
+    const remaining = [];
+    for (const input of s.pendingCommands) {
+      if (input.targetTick !== failedTick) { remaining.push(input); continue; }
+      commitInput(input);
     }
     s.pendingCommands = remaining;
     const plan = advanceScheduler({ currentTick: s.tick, tasks: s.scheduledTasks }, failedTick, Object.keys(systems));
+    if(rulesVersion===HUNTER_RULES && plan.dueTasks.length){
+      const decision=planHunterDay(s.world);s.world=decision.world;
+      if(decision.command){
+        const input=commandInput(decision.command);
+        requireCondition(input.targetTick===failedTick && !own(s.commandReceipts,input.commandId),'Internal command identity/due tick mismatch');
+        requireCondition(s.nextInputSeq<Number.MAX_SAFE_INTEGER,'Internal input counter overflow','LIMIT_EXCEEDED');
+        commitInput({...input,inputSeq:s.nextInputSeq++});
+      }
+    }
     // Rules may change resources and allocate entity IDs, never rewrite the input/identity envelope.
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
       return canonicalJson({ ...protectedFields,
-        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
-        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
-        ...([MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
-        ...(rulesVersion===ACTOR_RULES?{actorConfig:world.actorModel.config}:{}) });
+        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
+        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
+        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
+        ...([ACTOR_RULES,HUNTER_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
+        ...(rulesVersion===HUNTER_RULES?{hunterConfig:world.hunterModel.config}:{}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
       const context = { snapshot: s, rng,
         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
         ...([MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { populationCauses: Object.freeze(marketCauses(candidate.eventLog)) } : {}),
+        ...(rulesVersion===HUNTER_RULES?{populationCauses:Object.freeze(hunterCauses(candidate.eventLog))}:{}),
         emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
@@ -141,6 +160,7 @@ function canonicalSystems(rulesVersion) {
   if (rulesVersion === ECOLOGY_RULES) return define('ecology', 'EcologyDaySettled', settleEcologyDay, true);
   if (rulesVersion === MARKET_RULES) return define('market', 'EconomyDaySettled', settleMarketDay, true);
   if (rulesVersion === ACTOR_RULES) return define('actors', 'ActorDaySettled', settleActorDay, true);
+  if (rulesVersion === HUNTER_RULES) return define('hunter','HunterDaySettled',settleHunterDay,true);
   throw fault('UNSUPPORTED_VERSION', 'No canonical transition for these rules');
 }
 
@@ -157,7 +177,7 @@ export function createSimulationSession(bundle, systems) {
   fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
   const registered = Object.freeze({ ...systems });
   validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
-  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES].includes(bundle.snapshot.rulesVersion),
+  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(bundle.snapshot.rulesVersion),
     'Session rules are not registered', 'UNSUPPORTED_VERSION');
   let current = freezeData(cloneBundle(bundle)), busy = false;
   const stats = { idleTicks: 0, activityTicks: 0 };

@@ -49,8 +49,9 @@ function sharesOf(world){
   const unnamedAlive=world.actorModel.config.market.ecology.resources.settlement.humanCount-registered;
   return {registered,namedAlive,unnamedAlive,totalAlive:unnamedAlive+namedAlive,namedInjured:actors.filter(a=>a.alive && a.health<1000).length,dead:registered-namedAlive};
 }
-export function populationShares(world){validateActorWorld(world);return sharesOf(world);}
-export function validateActorWorld(world){
+export function populationShares(world,privateFoodConsumed=0){validateActorWorld(world,privateFoodConsumed);return sharesOf(world);}
+export function validateActorWorld(world,privateFoodConsumed=0){
+  integer(privateFoodConsumed);
   fields(world,['resources','resourceModel','ecologyModel','marketModel','actorModel']);
   const m=world.actorModel;fields(m,['config','configFingerprint','day','actors','ledger']);
   denseArray(m.actors,MAX_PERSISTENT_ACTORS);validateConfig(m.config);validateMarketWorld(marketPart(world));
@@ -71,14 +72,24 @@ export function validateActorWorld(world){
   }
   fields(m.ledger,['foodConsumed','herbsConsumed','deaths']);for(const value of Object.values(m.ledger))integer(value);
   requireCondition(m.ledger.deaths===dead-m.config.initialActors.filter(a=>a.health===0).length,'Actor death ledger mismatch');
-  requireCondition(m.ledger.foodConsumed<=world.resourceModel.ledger.food.consumption && m.ledger.herbsConsumed<=world.resourceModel.ledger.herbs.consumption,
+  requireCondition(BigInt(m.ledger.foodConsumed)<=BigInt(world.resourceModel.ledger.food.consumption)+BigInt(privateFoodConsumed) && m.ledger.herbsConsumed<=world.resourceModel.ledger.herbs.consumption,
     'Named consumption exceeds actual world consumption');
   requireCondition(world.ecologyModel.injuredCount<=sharesOf(world).unnamedAlive,'Aggregate injuries overlap named residents');
 }
 
-export function settleActorDay(input,sample){
-  validateActorWorld(input);const world=cloneData(input),m=world.actorModel,populationOpening=sharesOf(world);
-  const market=settleMarketDay(marketPart(world),sample,{registered:populationOpening.registered,alive:populationOpening.namedAlive,injured:populationOpening.namedInjured});
+export function settleActorDay(input,sample,management){
+  if(management!==undefined){
+    fields(management,['actorId','privateFood','privateFoodConsumed','resting','reservedGold']);identifier(management.actorId);
+    integer(management.privateFood);integer(management.privateFoodConsumed);integer(management.reservedGold);
+    requireCondition(management.privateFood<=1 && typeof management.resting==='boolean','Invalid managed Actor policy');
+  }
+  validateActorWorld(input,management?.privateFoodConsumed??0);const world=cloneData(input),m=world.actorModel,populationOpening=sharesOf(world);
+  const managed=management?m.actors.find(a=>a.actorId===management.actorId):undefined;
+  requireCondition(!management || managed,'Managed Actor is not registered');
+  requireCondition(!management || managed.alive || management.privateFood===0,'Dead Actor cannot consume private food');
+  const market=settleMarketDay(marketPart(world),sample,{registered:populationOpening.registered,alive:populationOpening.namedAlive,
+    injured:populationOpening.namedInjured-(managed?.alive && managed.health<1000?1:0),
+    ...(management?{managedFood:managed.alive?1:0}:{})},management?.reservedGold??0);
   const foodConsumed=market.payload.ecology.resources.entries[0].consumption;
   const unnamedFood=Math.min(foodConsumed,populationOpening.unnamedAlive),unnamedHerbs=market.payload.ecology.healed;
   let remainingFood=foodConsumed-unnamedFood,remainingHerbs=market.payload.ecology.namedShares.healed;
@@ -87,10 +98,11 @@ export function settleActorDay(input,sample){
     const opening={health:actor.health,hunger:actor.hunger,fatigue:actor.fatigue,alive:actor.alive};
     let food=0,herbs=0,hungerDamage=0,restReduction=0,died=false;
     if(actor.alive){
-      if(remainingFood>0){food=1;remainingFood--;}
-      if(actor.health<1000 && remainingHerbs>0){herbs=1;remainingHerbs--;actor.health=Math.min(1000,actor.health+100);}
+      if(actor===managed)food=management.privateFood;
+      else if(remainingFood>0){food=1;remainingFood--;}
+      if(actor!==managed && actor.health<1000 && remainingHerbs>0){herbs=1;remainingHerbs--;actor.health=Math.min(1000,actor.health+100);}
       actor.hunger=Math.min(1000,actor.hunger+100);if(food)actor.hunger=Math.max(0,actor.hunger-200);
-      restReduction=Math.min(200,actor.fatigue);actor.fatigue-=restReduction;
+      restReduction=actor!==managed || management.resting?Math.min(200,actor.fatigue):0;actor.fatigue-=restReduction;
       if(!food && actor.hunger>=500){hungerDamage=Math.min(50,actor.health);actor.health-=hungerDamage;}
       actor.lastNeedsTick=(m.day+1)*144;
       if(actor.health===0){actor.alive=false;actor.deathTick=actor.lastNeedsTick;died=true;m.ledger.deaths++;}
@@ -100,16 +112,19 @@ export function settleActorDay(input,sample){
     rows.push({actorId:actor.actorId,opening,food,herbs,hungerDamage,restReduction,died,closing:cloneData(actor)});
   }
   requireCondition(remainingFood===0 && remainingHerbs===0,'Actor allocation left unowned resource consumption');
-  Object.assign(world,market.world);m.day++;validateActorWorld(world);
-  return {world,payload:{day:m.day,market:market.payload,populationOpening,populationClosing:sharesOf(world),unnamedFood,unnamedHerbs,rows}};
+  Object.assign(world,market.world);m.day++;validateActorWorld(world,(management?.privateFoodConsumed??0)+(management?.privateFood??0));
+  return {world,payload:{day:m.day,market:market.payload,populationOpening,populationClosing:sharesOf(world),unnamedFood,unnamedHerbs,rows,
+    ...(management?{privateAllocation:{actorId:managed.actorId,food:management.privateFood}}:{})}};
 }
 
-export function applyActorCommand(input,command){
-  validateActorWorld(input);const result=applyMarketCommand(marketPart(input),command);
+export function applyActorCommand(input,command,privateFoodConsumed=0){
+  validateActorWorld(input,privateFoodConsumed);const result=applyMarketCommand(marketPart(input),command);
   return {...result,world:{...result.world,actorModel:cloneData(input.actorModel)}};
 }
 export function validateActorPayload(payload){
-  fields(payload,['day','market','populationOpening','populationClosing','unnamedFood','unnamedHerbs','rows']);integer(payload.day,1);
+  fields(payload,['day','market','populationOpening','populationClosing','unnamedFood','unnamedHerbs','rows',...(Object.hasOwn(payload,'privateAllocation')?['privateAllocation']:[])]);integer(payload.day,1);
+  if(Object.hasOwn(payload,'privateAllocation')){fields(payload.privateAllocation,['actorId','food']);identifier(payload.privateAllocation.actorId);integer(payload.privateAllocation.food);
+    requireCondition(payload.privateAllocation.food<=1,'Invalid privately consumed ration');}
   validateMarketPayload(payload.market);requireCondition(payload.market.day===payload.day,'Actor/market fact day mismatch');
   for(const key of ['populationOpening','populationClosing']){
     fields(payload[key],['registered','namedAlive','unnamedAlive','totalAlive','namedInjured','dead']);
@@ -126,7 +141,7 @@ export function validateActorPayload(payload){
     requireCondition(row.food<=1 && row.herbs<=1 && typeof row.died==='boolean','Invalid named resource allocation');
     food+=row.food;herbs+=row.herbs;
   }
-  requireCondition(food===payload.market.ecology.resources.entries[0].consumption && herbs===payload.market.ecology.resources.entries[1].consumption,
+  requireCondition(food===payload.market.ecology.resources.entries[0].consumption+(payload.privateAllocation?.food??0) && herbs===payload.market.ecology.resources.entries[1].consumption,
     'Named/aggregate portions do not reconcile');
 }
 

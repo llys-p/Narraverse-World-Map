@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-c1` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-c2` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
@@ -98,6 +98,22 @@ node simulation-runner.mjs --fixture actor-shortage --days 10 --seed 0 --out art
 actor-needs只改变猎人的初始健康500/饥饿500/疲劳600，用真实药粮验证恢复；actor-shortage无粮生产/鹿粮收益/药生产/金币，初始村长濒危，用于验证饥饿死亡。额外导出actor-config.json、actors.csv和人口分层；原市场/资源/生态CSV与完整checkpoint仍保留。日事件保存实名逐人份额，存档/私有session从配置/命令/RNG重放完整身份、消费和墓碑；不猜B旧档升级。
 
 当前C1需求每日一次，尚无Utility/Goal、自主工作或猎人行动、关系/记忆/完整LOD。[C1合同](tasks/C1-ACTOR-POPULATION-NEEDS-TASK.md)定义边界；后续C2再接实际人物行为。
+
+### C2：猎人 Utility / Goal 与实际行动
+
+c-hunter-v1每日评估一个自主猎人：缺粮/伤病/疲劳/钱包改变目标和步骤，实际Rest、WorkForPay、Hunt、BuyFood、BuyMedicine、UseMedicine走command-engine，具有inputSeq/幂等回执/事实。Goal跨日保存，20日截止、3次阻塞终止并冷却；外部不能伪造内部hunter-day-*命令。
+
+```powershell
+node simulation-runner.mjs --fixture hunter-recovery --days 20 --seed 42 --out artifacts/simulation/hunter-heal20
+node simulation-runner.mjs --fixture hunter-hunger --days 10 --seed 1 --out artifacts/simulation/hunter-food10
+node simulation-runner.mjs --fixture hunter-village --days 100 --seed 42 --out artifacts/simulation/hunter100
+```
+
+猎人的私人粮药和钱包有明确归属。初始私粮3从仓库移交；工资将公共金币份额转给钱包，内部购买将货物移到私人、现金归公共，world.gold仍是全聚落货币总量，不重复增减。公共市场不能花个人钱；私人药使用/吃饭不再扣仓库，使用另记私账。内部outflow不是外部出口，资源总账需加私人余量/消费；首版私人库存无损耗。捕猎扣同鹿群1只、私人粮20，风险受伤使用额外1个可恢复RNG样本；匿名猎人不包含该实名者。
+
+hunter-recovery初始猎人health500、私粮20，实际演示缺钱→工作→买药→用药；hunter-hunger初始私粮0/hunger500，演示真正捕猎。额外hunter-config.json、hunter.csv（目标/私账）、actions.csv（命令/价格/工资/捕猎/伤损/回执），原Actor/市场/生态CSV及inputs/checkpoint保留。actors.csv食物是每人实际消费（自主猎人为私人粮）；economy.csv只记公用仓库，完整内部转移/使用事实在events.csv和hunter.csv/actions.csv。
+
+当前只猎人自主；商人/村长仍默认休息，竞争在C3，关系/事实可知记忆在C4。未接UI/模型或旧存档，不能把C2标阶段C全部完成。见[C2合同](tasks/C2-HUNTER-UTILITY-GOAL-TASK.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

@@ -91,9 +91,10 @@ export function settleEcologyDay(input,sample,trade,namedShares) {
   validateEcologyWorld(input,currencySpent);requireCondition(typeof sample==='number' && sample>=0 && sample<1,'Invalid ecological random sample');
   const world=cloneData(input),m=world.ecologyModel,c=m.config,v=c.resources.settlement;
   if(namedShares!==undefined){
-    fields(namedShares,['registered','alive','injured']);for(const value of Object.values(namedShares))integer(value);
+    fields(namedShares,Object.hasOwn(namedShares,'managedFood')?['registered','alive','injured','managedFood']:['registered','alive','injured']);for(const value of Object.values(namedShares))integer(value);
     requireCondition(namedShares.registered<=v.humanCount && namedShares.alive<=namedShares.registered && namedShares.injured<=namedShares.alive,
       'Invalid named population shares');
+    requireCondition((namedShares.managedFood??0)<=namedShares.alive,'Managed consumption exceeds living named residents');
     requireCondition(m.injuredCount<=v.humanCount-namedShares.registered,'Aggregate injuries overlap named population');
   }
   const reserved=namedShares?.registered??0, namedInjured=namedShares?.injured??0;
@@ -131,7 +132,8 @@ export function settleEcologyDay(input,sample,trade,namedShares) {
   const farmProduction=safe((BigInt(foodWorkers)*BigInt(foodSpec.production.numerator)+BigInt(world.resourceModel.remainders.food.production))/BigInt(foodSpec.production.denominator));
   const dailyInflow=c.resources.flows.filter(f=>f.day===m.day+1 && f.resource==='food' && f.direction==='in').reduce((sum,f)=>sum+BigInt(f.amount),0n);
   const farmLoss=Math.min(farmLossRequested,safe(BigInt(world.resources.food)+BigInt(farmProduction)+BigInt(foodBonus)+dailyInflow+BigInt(trade?.inflows.food??0)));
-  const result=settleResourceDay(resourcePart(world),{settlement:{humanCount:totalAlive,foodWorkers,herbWorkers,injuredCount:injuredOpening+newInjuries+namedInjured},foodBonus,foodDamage:farmLossRequested},trade,v.humanCount-totalAlive);
+  const servicedPopulation=totalAlive-(namedShares?.managedFood??0);
+  const result=settleResourceDay(resourcePart(world),{settlement:{humanCount:servicedPopulation,foodWorkers,herbWorkers,injuredCount:injuredOpening+newInjuries+namedInjured},foodBonus,foodDamage:farmLossRequested},trade,v.humanCount-servicedPopulation);
   const healed=Math.min(injuredOpening+newInjuries,result.payload.entries[1].consumption);
   world.resources=result.world.resources;world.resourceModel=result.world.resourceModel;
   m.day++;m.injuredCount=injuredOpening+newInjuries-healed;deer.closing=d;wolves.closing=w;
@@ -147,9 +149,10 @@ export function settleEcologyDay(input,sample,trade,namedShares) {
 export function validateEcologyPayload(payload) {
   fields(payload,Object.hasOwn(payload,'namedShares')?[...PAYLOAD_FIELDS,'namedShares']:PAYLOAD_FIELDS);integer(payload.day,1);
   if(Object.hasOwn(payload,'namedShares')){
-    fields(payload.namedShares,['registered','alive','injured','healed']);for(const value of Object.values(payload.namedShares))integer(value);
+    fields(payload.namedShares,Object.hasOwn(payload.namedShares,'managedFood')?['registered','alive','injured','healed','managedFood']:['registered','alive','injured','healed']);for(const value of Object.values(payload.namedShares))integer(value);
     requireCondition(payload.namedShares.alive<=payload.namedShares.registered && payload.namedShares.injured<=payload.namedShares.alive &&
       payload.namedShares.healed<=payload.namedShares.injured,'Invalid named population settlement');
+    requireCondition((payload.namedShares.managedFood??0)<=payload.namedShares.alive,'Invalid autonomous food ownership');
   }
   for(const id of ['deer','wolves']){fields(payload[id],['opening',...ACCOUNTS.filter(k=>k!=='removed'),'closing']);for(const value of Object.values(payload[id]))integer(value);}
   for(const key of PAYLOAD_FIELDS.filter(k=>!['deer','wolves','sample','resources','huntTarget'].includes(k)))integer(payload[key]);

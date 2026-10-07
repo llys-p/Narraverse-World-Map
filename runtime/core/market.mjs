@@ -118,8 +118,9 @@ export function marketCommandFact(command,result) {
 }
 export const marketCauses=events=>events.filter(e=>['PopulationRemoved','TradeRouteSet'].includes(e.type)).map(e=>e.eventSeq);
 
-export function settleMarketDay(input,sample,namedShares) {
+export function settleMarketDay(input,sample,namedShares,reservedGold=0) {
   validateMarketWorld(input); const world=cloneData(input), m=world.marketModel, config=m.config, day=m.day+1;
+  integer(reservedGold);requireCondition(reservedGold<=world.resources.gold,'Reserved wallets exceed total currency');
   requireCondition(day<=MAX_RESOURCE_DAYS,'Market day budget exceeded','LIMIT_EXCEEDED');
   const arrivals=[],pending=[],inflows=units(),goldOpening=world.resources.gold;
   for(const order of m.inTransit){
@@ -138,7 +139,7 @@ export function settleMarketDay(input,sample,namedShares) {
     const transit=m.inTransit.filter(o=>o.resource===id).reduce((total,o)=>safe(BigInt(total)+BigInt(o.amount)),0);
     const deficit=BigInt(product.targetStock)-BigInt(world.resources[id])-BigInt(transit);
     const need=deficit>0n?safe(deficit):0;
-    const amount=Math.min(need,product.maxOrder,config.transportCapacity-used,safe(BigInt(world.resources.gold)/BigInt(quote.current)));
+    const amount=Math.min(need,product.maxOrder,config.transportCapacity-used,safe((BigInt(world.resources.gold)-BigInt(reservedGold))/BigInt(quote.current)));
     if(amount===0)continue;
     requireCondition(m.inTransit.length<MAX_TRANSIT_ORDERS && m.nextShipmentId<Number.MAX_SAFE_INTEGER,'Shipment budget/counter exceeded','LIMIT_EXCEEDED');
     const cost=safe(BigInt(amount)*BigInt(quote.current)),order={shipmentId:'shipment-'+m.nextShipmentId++,resource:id,amount,unitPrice:quote.current,cost,orderDay:day,dueDay:day+config.delayDays};
