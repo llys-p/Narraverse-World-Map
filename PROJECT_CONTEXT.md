@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 19:00（Asia/Shanghai）。
+更新时间：2026-10-07 19:16（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -69,7 +69,7 @@
 
 ## 下一步
 
-A/B及阶段C全部已验收。C5代码04dc222（D:\Narraverse-World-Map-a2 @ codex/world-runtime-c5）：177/177全回归，干净100=40+60完整checkpoint/14导出一致，独立评分/真实现金商品账、偏好跨档/篡改拒绝通过；旧C4 100日完整存档/13导出字节不变。源码指纹d3a2129dddc20dfe168b3b0af7a02c6dda6124f7b05289e35bf27be5c436b2a0，证据artifacts/world-runtime-c5-acceptance-20261007/comparison.json与[C5收口](tasks/C5-PERSONALITY-CHOICE-TASK.md)。D1代码0f86d40（当前codex/world-runtime-d1）已验收：全量184/184，真实HTTP/两个浏览器页签、纯读/断连/重启、锁归属/字节一致通过；首次默认并发系统内存分配失败，保留日志后两路并发原测试全过。证据artifacts/world-runtime-d1-acceptance-20261007，见[D1收口](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。下一项[D2A时间提交](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)已定义未开工；用户要求当前项结束后停止，本轮停在D1，D整体未验收。源码仍不合并main、不部署/接模型/桥/真实旧档，E预研独立。
+A/B及阶段C全部已验收。C5代码04dc222（D:\Narraverse-World-Map-a2 @ codex/world-runtime-c5）：177/177全回归，干净100=40+60完整checkpoint/14导出一致，独立评分/真实现金商品账、偏好跨档/篡改拒绝通过；旧C4 100日完整存档/13导出字节不变。源码指纹d3a2129dddc20dfe168b3b0af7a02c6dda6124f7b05289e35bf27be5c436b2a0，证据artifacts/world-runtime-c5-acceptance-20261007/comparison.json与[C5收口](tasks/C5-PERSONALITY-CHOICE-TASK.md)。D1代码0f86d40（codex/world-runtime-d1）已验收：全量184/184，真实HTTP/两个浏览器页签、纯读/断连/重启、锁归属/字节一致通过；首次默认并发系统内存分配失败，保留日志后两路并发原测试全过。证据artifacts/world-runtime-d1-acceptance-20261007，见[D1收口](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。下一项[D2A时间提交](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)已开工：用户恢复继续指令；源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2a，基准da1155f，定向18/18通过，全回归及真实浏览器待验收。仅世界时间提交，不含玩家旅行/交易，D整体未验收。源码仍不合并main、不部署/接模型/桥/真实旧档，E预研独立。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -85,4 +85,4 @@ A/B及阶段C全部已验收。C5代码04dc222（D:\Narraverse-World-Map-a2 @ co
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4及A/B/C阶段门槛已通过；C1～C5均已验收，D1已验收，D2A已定义未开工，D整体未验收，F/G主线未开始。E阶段待开始；E1双复核/一次裁定完成，136项暂定参考/14项未解决；接着按[小dev投入筛查合同](tasks/E1-DEV30-SCREENING-TASK.md)作有界A/B诊断，当前待派发未开工。无信号值得投入则收口当前预研，正式准入仍为空；400仅条件性计划，不训练/装CUDA/启E2/qoder_cron。
+- A1～A4及A/B/C阶段门槛已通过；C1～C5均已验收，D1已验收，D2A进行中，D整体未验收，F/G主线未开始。E阶段待开始；E1双复核/一次裁定完成，136项暂定参考/14项未解决；接着按[小dev投入筛查合同](tasks/E1-DEV30-SCREENING-TASK.md)作有界A/B诊断，当前待派发未开工。无信号值得投入则收口当前预研，正式准入仍为空；400仅条件性计划，不训练/装CUDA/启E2/qoder_cron。
