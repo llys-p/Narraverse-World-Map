@@ -11,6 +11,7 @@ import { HUNTER_RULES,validateHunterWorld,validateHunterActionResult,validateHun
 import { SOCIETY_RULES,validateSocietyWorld,validateSocietyActionResult,validateSocietyPayload,validateSocietyHistory } from './society.mjs';
 import { MEMORY_RULE_VERSIONS,isMemoryRules,validateMemoryWorld,validateMemoryDayPayload,validateMemoryRuntimeHistory } from './memory-runtime.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
+import { PLAYER_RULES,validatePlayerDayPayload } from './player-state.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
 export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
@@ -94,6 +95,9 @@ export function validateEventLog(eventLog, snapshot, systems) {
     if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type)){
       requireCondition(memoryProfile && event.tick===event.payload.expiresTick,'Invalid announcement profile/clock');
       const {eventSeq,tick,schemaVersion,...fact}=event;validateMedicineAnnouncement(fact);
+    }else if(event.type==='PlayerDaySettled'){
+      requireCondition(state.rulesVersion===PLAYER_RULES && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player daily source');
+      validatePlayerDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Player closing clock mismatch');
     }else if(event.type==='MemoryDaySettled'){
       requireCondition(memoryProfile && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0,'Invalid Memory closing source');
       validateMemoryDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Memory closing clock mismatch');

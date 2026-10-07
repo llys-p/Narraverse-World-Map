@@ -5,21 +5,24 @@ import { createMedicineAnnouncements,validateMedicineAnnouncement,selectPublicMe
 import { createRng } from './rng.mjs';
 import { marketCommandFact } from './market.mjs';
 import { validatePersonalities,neutralPersonalities } from './personality.mjs';
+import { PLAYER_RULES,playerDayFact } from './player-state.mjs';
 
 export const MEMORY_RULES='c-memory-v1';
 export const PERSONALITY_RULES='c-personality-v1';
-export const MEMORY_RULE_VERSIONS=Object.freeze([MEMORY_RULES,PERSONALITY_RULES]);
+export const MEMORY_RULE_VERSIONS=Object.freeze([MEMORY_RULES,PERSONALITY_RULES,PLAYER_RULES]);
 export const isMemoryRules=version=>MEMORY_RULE_VERSIONS.includes(version);
 const SOCIETY_FIELDS=['resources','resourceModel','ecologyModel','marketModel','actorModel','societyModel'];
-const society=w=>Object.fromEntries(SOCIETY_FIELDS.map(k=>[k,w[k]]));
+const society=w=>Object.fromEntries([...SOCIETY_FIELDS,...(w.playerModel?['playerModel']:[])].map(k=>[k,w[k]]));
 const own=(w,id)=>w.societyModel.agents.find(a=>a.state.actorId===id);
 function increment(object,key){requireCondition(object[key]<Number.MAX_SAFE_INTEGER,'Memory goal counter overflow','LIMIT_EXCEEDED');object[key]++;}
 export function defaultMemoryConfig(){return {version:'memory-config-v1',society:defaultSocietyConfig(),discountEnabled:true};}
 export function defaultPersonalityConfig(){return {...defaultMemoryConfig(),version:'memory-config-v2',personalities:neutralPersonalities()};}
 function validateConfig(config){
-  record(config);requireCondition(['memory-config-v1','memory-config-v2'].includes(config.version),'Unknown memory configuration','UNSUPPORTED_VERSION');
-  fields(config,['version','society','discountEnabled',...(config.version==='memory-config-v2'?['personalities']:[])]);
-  if(config.version==='memory-config-v2')validatePersonalities(config.personalities);
+  record(config);requireCondition(['memory-config-v1','memory-config-v2','memory-config-v3'].includes(config.version),'Unknown memory configuration','UNSUPPORTED_VERSION');
+  fields(config,['version','society','discountEnabled',...(config.version!=='memory-config-v1'?['personalities']:[])]);
+  record(config.society);
+  requireCondition(config.society.version===(config.version==='memory-config-v3'?'society-config-v2':'society-config-v1'),'Memory/Society version mismatch','UNSUPPORTED_VERSION');
+  if(config.version!=='memory-config-v1')validatePersonalities(config.personalities);
   requireCondition(typeof config.discountEnabled==='boolean','Invalid memory discount policy');return createSocietyWorld(config.society);}
 export function createMemoryWorld(config=defaultMemoryConfig()){
   const world=validateConfig(config),copy=cloneData(config);
@@ -27,7 +30,8 @@ export function createMemoryWorld(config=defaultMemoryConfig()){
     observer:createMemoryState(world.actorModel.actors.map(a=>({actorId:a.actorId,alive:a.alive}))),announcements:[],waitingActorId:null,waitingOutcome:null}};
 }
 export function validateMemoryWorld(world){
-  fields(world,[...SOCIETY_FIELDS,'memoryModel']);validateSocietyWorld(society(world));const m=world.memoryModel;
+  record(world);record(world.memoryModel);record(world.memoryModel.config);
+  fields(world,[...SOCIETY_FIELDS,'memoryModel',...(world.memoryModel?.config?.version==='memory-config-v3'?['playerModel']:[])]);validateSocietyWorld(society(world));const m=world.memoryModel;
   fields(m,['config','configFingerprint','day','observer','announcements','waitingActorId','waitingOutcome']);const initial=validateConfig(m.config);
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.society)===canonicalJson(world.societyModel.config),'Memory/Society configuration mismatch');
   integer(m.day);requireCondition(m.day===world.societyModel.day,'Memory day mismatch');validateMemoryState(m.observer);
@@ -135,6 +139,7 @@ export function validateMemoryRuntimeHistory(snapshot,events){
       }
       const daily=settleMemorySocietyDay(expected,rng.next());expected=daily.world;
       expectFact({type:'SocietyDaySettled',sourceSystem:'society',commandId:null,entityIds:[],causationEventSeqs:societyCauses(events.slice(0,eventIndex)),payload:daily.payload},op.tick);
+      if(snapshot.rulesVersion===PLAYER_RULES)expectFact(playerDayFact(expected,daily.payload),op.tick);
       const memory=finishMemoryDay(expected,events.slice(0,eventIndex),op.tick);expected=memory.world;expectFact(memory.fact,op.tick);
     }
   }

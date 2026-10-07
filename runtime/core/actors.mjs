@@ -21,10 +21,10 @@ export function defaultActorConfig(market=calibratedMarketConfig()) {
 }
 
 function validateConfig(config){
-  fields(config,['version','market','initialActors']);requireCondition(config.version==='actor-config-v1','Unknown Actor configuration','UNSUPPORTED_VERSION');
+  fields(config,['version','market','initialActors']);requireCondition(['actor-config-v1','actor-config-v2'].includes(config.version),'Unknown Actor configuration','UNSUPPORTED_VERSION');
   denseArray(config.initialActors,MAX_PERSISTENT_ACTORS);
   for(const actor of config.initialActors){fields(actor,INITIAL_FIELDS);identifier(actor.name);
-    requireCondition(['chief','hunter','merchant'].includes(actor.occupation),'Unknown Actor occupation');
+    requireCondition(['chief','hunter','merchant',...(config.version==='actor-config-v2'?['player']:[])].includes(actor.occupation),'Unknown Actor occupation');
     for(const key of ['health','hunger','fatigue'])value1000(actor[key]);}
   const world=createMarketWorld(config.market),settlement=config.market.ecology.resources.settlement;
   requireCondition(config.initialActors.length<=settlement.humanCount && settlement.injuredCount<=settlement.humanCount-config.initialActors.length,
