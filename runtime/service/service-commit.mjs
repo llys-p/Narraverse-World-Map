@@ -3,19 +3,20 @@ import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { fields,denseArray,requireCondition,cloneData,fault } from '../core/data-contract.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
-import { memorySystems } from '../fixtures/memory-village.mjs';
-import { projectPublicSnapshot,validateTimeCommandDto } from './http-contract.mjs';
+import { projectPublicSnapshot,runtimeProfile,validateTimeCommandDto } from './http-contract.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
 export const MAX_SERVICE_COMMANDS=128,MAX_SERVICE_FILES=128,MAX_PENDING_REQUESTS=16;
 export function timeReceipt(dto,toRevision){return {apiVersion:1,commandId:dto.commandId,status:'committed',fromRevision:dto.expectedRevision,toRevision,tick:toRevision};}
 export function validateServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
-  requireCondition(envelope.serviceFormatVersion===1,'Unknown service format','UNSUPPORTED_VERSION');
+  requireCondition([1,2].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
+  const profile=runtimeProfile(envelope.anchor),finalProfile=runtimeProfile(envelope.bundle);
+  requireCondition(envelope.serviceFormatVersion===profile.serviceFormatVersion && envelope.serviceFormatVersion===finalProfile.serviceFormatVersion,
+    'Service format/profile mismatch','UNSUPPORTED_VERSION');
   denseArray(envelope.commands,MAX_SERVICE_COMMANDS);
   projectPublicSnapshot(envelope.anchor);projectPublicSnapshot(envelope.bundle);
-  requireCondition(envelope.anchor.snapshot.fixtureId==='personality-neutral','Unknown service profile','UNSUPPORTED_VERSION');
-  const session=createSimulationSession(envelope.anchor,memorySystems()),seen=new Set();let revision=envelope.anchor.snapshot.revision;
+  const session=createSimulationSession(envelope.anchor,profile.systems),seen=new Set();let revision=envelope.anchor.snapshot.revision;
   for(const entry of envelope.commands){
     fields(entry,['dto','receipt']);const dto=validateTimeCommandDto(entry.dto);fields(entry.receipt,['apiVersion','commandId','status','fromRevision','toRevision','tick']);
     requireCondition(!seen.has(dto.commandId) && dto.expectedRevision===revision,'Invalid service command sequence');seen.add(dto.commandId);

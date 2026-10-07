@@ -2,12 +2,13 @@ import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createPersonalityNeutral } from '../fixtures/personality-village.mjs';
+import { createPlayerVillage } from '../fixtures/player-village.mjs';
 import { memorySystems } from '../fixtures/memory-village.mjs';
 import { PERSONALITY_RULES } from '../core/memory-runtime.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
 import { saveCheckpoint,loadCheckpoint } from '../persistence/checkpoint-store.mjs';
 import { record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
-import { projectPublicSnapshot,validateTimeCommandDto } from './http-contract.mjs';
+import { projectPublicSnapshot,projectPlayerSnapshot,runtimeProfile,validateTimeCommandDto } from './http-contract.mjs';
 import { saveServiceCommit,loadServiceCommit,timeReceipt,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 async function ownsLock(file,token,io){
@@ -38,9 +39,11 @@ async function inspectDirectory(directory,io){
 }
 // IO injection is a library test boundary; HTTP/CLI cannot supply handlers or bypass validation.
 export async function createRuntimeOwner(options,io=fs){
-  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','writable'].includes(k)),'Unknown owner option');
+  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','writable'].includes(k)),'Unknown owner option');
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
+  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
+  requireCondition(options.profile===undefined || options.checkpoint===undefined,'Profile and checkpoint are mutually exclusive');
   if(options.seed!==undefined){integer(options.seed);requireCondition(options.seed<=0xffffffff,'Invalid runtime seed');}
   if(options.checkpoint!==undefined)requireCondition(typeof options.checkpoint==='string' && options.checkpoint.length>0 && options.seed===undefined,'Checkpoint cannot reset seed');
   const directory=path.resolve(options.directory);await io.mkdir(directory,{recursive:true});
@@ -52,25 +55,27 @@ export async function createRuntimeOwner(options,io=fs){
     try{if(await ownsLock(lockPath,token,io))await io.unlink(lockPath);}catch(e){if(e.code!=='ENOENT')throw e;}
   };
   try{
-    await handle.writeFile(token,'utf8');await handle.sync();const states=await inspectDirectory(directory,io),systems=memorySystems();let bundle,state;
+    await handle.writeFile(token,'utf8');await handle.sync();const states=await inspectDirectory(directory,io);let bundle,state;
     if(states.length){
       requireCondition(options.checkpoint===undefined,'Cannot replace existing runtime checkpoint');
+      requireCondition(options.profile===undefined,'Cannot reset existing runtime profile');
       if(states[0].kind==='service-commit'){state=await loadServiceCommit(states[0].file,io);bundle=state.bundle;}
       else{
         requireCondition(!writable,'Use an explicit checkpoint to initialize a new writable directory','UNSUPPORTED_VERSION');
-        bundle=await loadCheckpoint(states[0].file,{rulesVersion:PERSONALITY_RULES,systems},io);
+        bundle=await loadCheckpoint(states[0].file,{rulesVersion:PERSONALITY_RULES,systems:memorySystems()},io);
       }
       requireCondition(bundle.snapshot.revision===states[0].revision,'State filename/revision mismatch',state?'INVALID_SERVICE_COMMIT':'INVALID_CHECKPOINT');
       requireCondition(options.seed===undefined || options.seed===bundle.snapshot.rng.seed,'Cannot reset existing runtime seed');
     }else{
-      bundle=options.checkpoint===undefined?createPersonalityNeutral(options.seed??42).bundle:
-        await loadCheckpoint(options.checkpoint,{rulesVersion:PERSONALITY_RULES,systems},io);
-      if(writable)state={serviceFormatVersion:1,anchor:cloneData(bundle),commands:[],bundle};
+      bundle=options.checkpoint===undefined?(options.profile==='player-village'?createPlayerVillage:createPersonalityNeutral)(options.seed??42).bundle:
+        await loadCheckpoint(options.checkpoint,{rulesVersion:PERSONALITY_RULES,systems:memorySystems()},io);
+      const {serviceFormatVersion}=runtimeProfile(bundle);
+      if(writable || serviceFormatVersion===2)state={serviceFormatVersion,anchor:cloneData(bundle),commands:[],bundle};
     }
-    requireCondition(bundle.snapshot.fixtureId==='personality-neutral','Runtime service profile is not registered','UNSUPPORTED_VERSION');
-    let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(session.getBundle());
+    const {systems,serviceFormatVersion}=runtimeProfile(bundle),playerAvailable=serviceFormatVersion===2;
+    let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(bundle),playerProjection=playerAvailable?projectPlayerSnapshot(bundle):null;
     if(!states.length){
-      if(writable)await saveServiceCommit(state,directory,io);
+      if(state)await saveServiceCommit(state,directory,io);
       else await saveCheckpoint(bundle,{directory,rulesVersion:PERSONALITY_RULES,systems},io);
     }
     let tail=Promise.resolve(),pending=0,closing=false,closePromise;
@@ -89,16 +94,18 @@ export async function createRuntimeOwner(options,io=fs){
           requireCondition(inventory.length<MAX_SERVICE_FILES,'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
           requireCondition(inventory[0].kind==='service-commit' && inventory[0].revision===projection.revision,'Runtime state files changed','INVALID_SERVICE_COMMIT');
           const candidate=createSimulationSession(state.bundle,systems);candidate.advanceTicks(dto.payload.ticks);
-          const nextBundle=candidate.getBundle(),nextProjection=projectPublicSnapshot(nextBundle),receipt=timeReceipt(dto,nextProjection.revision);
-          const next={serviceFormatVersion:1,anchor:state.anchor,commands:[...state.commands,{dto,receipt}],bundle:nextBundle};
+          const nextBundle=candidate.getBundle(),nextProjection=projectPublicSnapshot(nextBundle),nextPlayerProjection=playerAvailable?projectPlayerSnapshot(nextBundle):null,
+            receipt=timeReceipt(dto,nextProjection.revision);
+          const next={serviceFormatVersion,anchor:state.anchor,commands:[...state.commands,{dto,receipt}],bundle:nextBundle};
           await saveServiceCommit(next,directory,io);
           // The complete service file is the commit point. No fallible work precedes publication of the audited DTO.
-          state=next;session=candidate;projection=nextProjection;return cloneData(receipt);
+          state=next;session=candidate;projection=nextProjection;playerProjection=nextPlayerProjection;return cloneData(receipt);
         }).finally(()=>{pending--;});
         tail=operation.catch(()=>{});return operation;
       }catch(error){return Promise.reject(error);}
     };
-    return Object.freeze({getSnapshot(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(projection);},submit,
+    return Object.freeze({playerAvailable,getSnapshot(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(projection);},
+      getPlayer(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(playerAvailable,'Current world has no player','PLAYER_UNAVAILABLE');return cloneData(playerProjection);},submit,
       close(){if(!closePromise){closing=true;closePromise=tail.then(async()=>{session=null;await release();});}return closePromise;}});
   }catch(cause){await release();throw cause;}
 }
