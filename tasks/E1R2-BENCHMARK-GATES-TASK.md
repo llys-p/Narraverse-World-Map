@@ -1,5 +1,7 @@
 # E1R2：关闭评测门槛漏洞，再做长上下文小批补样
 
+最新收口：中控已接管226a09a后的剩余修复，源码保存点fa0550a（codex/laya-benchmark-control）；原回归、稳定性18项、中控8项与存量消费链通过。工具限定范围收尾，E1整体/标签可靠性/final仍未验收；下一项见[E1长dev合同](E1-LONG-DEV-TASK.md)，不再对用户发第四轮工具返修。
+
 日期：2026-10-07（Asia/Shanghai）。
 中控复验对象：`codex/laya-model-benchmark` @ `b2df7a934b11354c1b69979db228e1513bfab0a8`。
 结论：**NEED REVISION；可以独立开展规范试审，不能冻结 final、批准信号或启动训练。**
