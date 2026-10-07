@@ -8,10 +8,23 @@ import { memorySystems } from '../fixtures/memory-village.mjs';
 import { PERSONALITY_RULES } from '../core/memory-runtime.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
 import { saveCheckpoint,loadCheckpoint } from '../persistence/checkpoint-store.mjs';
-import { record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
+import { MAX_STATE_FILE_BYTES,readStateFile } from '../persistence/bounded-json-file.mjs';
+import { validateBundle } from '../core/world-state.mjs';
+import { parseStrictJson } from './strict-json.mjs';
+import { fields,record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
 import { projectPublicSnapshot,projectPlayerSnapshot,runtimeProfile,validateServiceCommandDto } from './http-contract.mjs';
 import { saveServiceCommit,loadServiceCommit,transitionServiceCommand,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
+async function loadExplicitCheckpoint(file,io){
+  requireCondition(!/\.tmp$/i.test(file),'Temporary file is not a checkpoint','INVALID_CHECKPOINT');
+  try{
+    const envelope=parseStrictJson(await readStateFile(file,io),MAX_STATE_FILE_BYTES);fields(envelope,['formatVersion','snapshot','eventLog']);
+    requireCondition(envelope.formatVersion===1,'Unknown checkpoint format','UNSUPPORTED_VERSION');
+    const bundle={snapshot:envelope.snapshot,eventLog:envelope.eventLog},{rulesVersion,systems}=runtimeProfile(bundle);
+    validateBundle(bundle,{rulesVersion,systems});return cloneData(bundle);
+  }catch(cause){if(['UNSUPPORTED_VERSION','LIMIT_EXCEEDED'].includes(cause.code))throw cause;
+    throw Object.assign(fault('INVALID_CHECKPOINT','Checkpoint could not be decoded/validated'),{cause});}
+}
 async function ownsLock(file,token,io){
   let handle;
   try{handle=await io.open(file,'r');}catch(error){if(error.code==='ENOENT')return false;throw error;}
@@ -74,7 +87,7 @@ export async function createRuntimeOwner(options,io=fs){
     }else{
       const create=options.profile==='player-play-village'?createPlayerPlayVillage:options.profile==='player-village'?createPlayerVillage:createPersonalityNeutral;
       bundle=options.checkpoint===undefined?create(options.seed??42).bundle:
-        await loadCheckpoint(options.checkpoint,{rulesVersion:PERSONALITY_RULES,systems:memorySystems()},io);
+        await loadExplicitCheckpoint(options.checkpoint,io);
       const {serviceFormatVersion}=runtimeProfile(bundle);
       if(writable || serviceFormatVersion>=2)state={serviceFormatVersion,anchor:cloneData(bundle),commands:[],bundle};
     }

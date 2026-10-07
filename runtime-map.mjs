@@ -65,6 +65,7 @@ async function refresh(){
   finally{refreshing=false;button.disabled=false;controls();}
 }
 function validReceipt(receipt,dto){
+  if(!receipt || typeof receipt!=='object' || Array.isArray(receipt))return false;
   if(receipt.apiVersion!==1 || receipt.commandId!==dto.commandId || receipt.status!=='committed' || receipt.fromRevision!==dto.expectedRevision ||
     !Number.isSafeInteger(receipt.toRevision) || receipt.toRevision<=receipt.fromRevision || receipt.tick!==receipt.toRevision)return false;
   const fields=dto.version===1?['apiVersion','commandId','status','fromRevision','toRevision','tick']:
@@ -72,12 +73,19 @@ function validReceipt(receipt,dto){
   if(Object.keys(receipt).length!==fields.length || !fields.every(key=>Object.hasOwn(receipt,key)))return false;
   if(dto.version===1)return receipt.toRevision-receipt.fromRevision===dto.payload.ticks;
   if(receipt.receiptVersion!==2 || receipt.type!==dto.type || !['succeeded','rejected'].includes(receipt.outcome) || !receipt.result)return false;
+  const actions=lastPlayer?.actions,duration=actions?.[dto.type==='PlayerTravel'?'travelTicks':dto.type==='PlayerRest'?'restTicks':'tradeTicks'];
+  if(!Number.isSafeInteger(duration) || duration<1 || receipt.toRevision-receipt.fromRevision!==duration)return false;
   if(receipt.outcome==='rejected')return Object.keys(receipt.result).length===1 && receipt.result.code==='RULE_REJECTED';
   const r=receipt.result,resultFields=['actorId','type','startTick','endTick','product','quantity','unitPrice','amount','before','after'];
   if(Object.keys(r).length!==resultFields.length || !resultFields.every(key=>Object.hasOwn(r,key)) || r.actorId!=='actor-4' || r.type!==dto.type ||
     r.startTick!==receipt.fromRevision || r.endTick!==receipt.toRevision || ![null,'food','herbs'].includes(r.product) ||
     ![r.quantity,r.unitPrice,r.amount].every(n=>Number.isSafeInteger(n) && n>=0))return false;
-  return [r.before,r.after].every(row=>row && Object.keys(row).length===6 && ['village','forest'].includes(row.location) &&
+  if(['PlayerBuy','PlayerSell'].includes(dto.type)){
+    if(r.product!==dto.payload.product || r.quantity!==dto.payload.quantity || r.unitPrice<1 ||
+      !Number.isSafeInteger(r.quantity*r.unitPrice) || r.amount!==r.quantity*r.unitPrice)return false;
+  }else if(r.product!==null || r.quantity!==0 || r.unitPrice!==0 || r.amount!==0)return false;
+  if(dto.type==='PlayerTravel' && r.after?.location!==dto.payload.destination)return false;
+  return [r.before,r.after].every(row=>row && Object.keys(row).length===6 && ['location','fatigue','wallet','inventory','publicStock','communalGold'].every(key=>Object.hasOwn(row,key)) && ['village','forest'].includes(row.location) &&
     [row.fatigue,row.wallet,row.communalGold].every(n=>Number.isSafeInteger(n) && n>=0) && [row.inventory,row.publicStock].every(stock=>
       stock && Object.keys(stock).length===2 && [stock.food,stock.herbs].every(n=>Number.isSafeInteger(n) && n>=0)));
 }
