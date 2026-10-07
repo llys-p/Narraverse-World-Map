@@ -42,7 +42,8 @@ export function applyPlayerAction(input,command){
  return {world,success:true,result:{actorId:'actor-4',type:intent.type,startTick,endTick:command.targetTick,product,quantity,unitPrice,amount,before,after:actionView(world)}};
 }
 export function validatePlayerActionResult(r){
- fields(r,['actorId','type','startTick','endTick','product','quantity','unitPrice','amount','before','after']);requireCondition(r.actorId==='actor-4','Foreign player action identity');
+  fields(r,['actorId','type','startTick','endTick','product','quantity','unitPrice','amount','before','after']);requireCondition(r.actorId==='actor-4','Foreign player action identity');
+ record(r.after);
  integer(r.startTick);integer(r.endTick);for(const n of [r.quantity,r.unitPrice,r.amount])integer(n);
  const payload=r.type==='PlayerTravel'?{destination:r.after.location}:r.type==='PlayerRest'?{}:{product:r.product,quantity:r.quantity};
  requireCondition(r.endTick===r.startTick+playerIntentDuration({commandId:'validated',type:r.type,payload}),'Committed action duration mismatch');
