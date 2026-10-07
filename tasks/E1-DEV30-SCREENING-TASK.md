@@ -1,6 +1,16 @@
 # E1 下一步：30条可信dev驱动投入决策
 
-日期：2026-10-07（Asia/Shanghai）。状态：双复核与一次作者外裁定完成，代码/模型诊断任务待派发，未开工。
+日期：2026-10-07（Asia/Shanghai）。状态：本轮诊断与独立结果复算已收口/归档，五信号正式准入为空；不是E1完整正式benchmark或E阶段验收。
+
+作者交付 `codex/laya-dev30-screening` @ `9b7f88c11ea33b1b28a52de896526f4477912b9f`（D:\Narraverse-World-Map-screening）。中控 `codex/laya-screening-closeout` @ `187a2e6c40bc3f57ec02b72046216915cbe86cc1`（D:\Narraverse-World-Map-benchmark-review）已推；[独立收口报告](https://github.com/llys-p/Narraverse-World-Map/blob/codex/laya-screening-closeout/benchmarks/npc-socialsignal/DEV30-SCREENING-CLOSEOUT.md)及同分支audit脚本/JSON是实际复验依据。下文保留已执行原合同，不再作为待开工指令。
+
+## 当前结论与停止点
+
+- A/B各150记录，260返回+40超预算拒绝；136项暂定参考/14项未解决保留，不缩分母。五信号按有效参考计正确数A=4/2/11/5/14、B=5/4/7/3/10；锁定常量=11/9/17/20/17。去除超预算后的同参考集合常量=8/8/14/19/14，A boundary打平、其余九组更差，全部未达继续投入门槛。
+- deception未知判确定A19/20、B18/20；trust两者8/9。未知支持不足的social/fear/boundary只可称覆盖不足。危险误判回执勘误见收口报告，原decision数据正确。实际本次模型墙钟278.1秒，无worker失败，无SDK输入/问题截断；中控仅离线复算未新增模型调用。
+- 输入/spec/sidecar/lock/raw/本地权重/tokenizer hash、精确ID×信号集合、合法有限输出与实际token实算通过，三套原回归临时副本exit0；增加原命令不覆盖保护并验证现存产物下exit4且不加载模型。未接受一次性脚本为通用runner，未来异常/预算/重复与环境完整绑定仍需新合同。
+- 停止当前候选的400扩样/微调投入，rotated不跑，候选C未测；保留数据/回执/环境/原产物，不删worktree、不卸载。结论仅为这批暂定中文dev下“当前候选无继续扩大评测的证据”，不外推Laya全部能力。
+- 当前没有准入信号，不接Runtime/E2。对自由文本缺乏可核证据时返回未知/不改状态；确定性结构化事实仍由世界规则处理。主线D继续独立推进，E阶段与正式final/校准/冻结门尚未验收；重新探索模型、任务定义或fine-tune必须另发定向合同。
 
 ## 给用户看
 
