@@ -1,6 +1,6 @@
 # D2A：时间命令与持久幂等回执
 
-2026-10-07 19:00（Asia/Shanghai）。任务已定义，尚未开工；D1代码0f86d40已验收，按用户要求当前项结束后停止，等待后续继续指令。中控直接实施，不转交外部执行者。源码D:\Narraverse-World-Map-a2，从D1最终干净交接点创建codex/world-runtime-d2a；不合并runtime main，不触碰正式平台、旧页或真实存档。
+2026-10-07 19:00（Asia/Shanghai）。用户恢复继续指令，中控已开工；基准da1155f，定向18/18通过，全回归/真实浏览器待验收。D1代码0f86d40已验收。中控直接实施，不转交外部执行者。源码D:\Narraverse-World-Map-a2，从D1最终干净交接点创建codex/world-runtime-d2a；不合并runtime main，不触碰正式平台、旧页或真实存档。
 
 ## 给用户：本项结果
 
@@ -8,6 +8,7 @@
 
 ## 给AI：冻结实现范围
 
+- 默认仍只读；库选项writable:true或CLI --writable true才开放写入，使用新独立实验目录；旧D1目录不得隐式升级，只能明确指定checkpoint复制为新目录anchor。只读启动仍支持严格读取新service-commit档。
 - 仅开放POST /api/runtime/commands中的AdvanceTime，沿用D1精确DTO：{version:1,commandId,expectedRevision,type:'AdvanceTime',payload:{ticks}}；ticks整数1..1440，JSON最多4096字节，ID为1..64 ASCII字母数字/下划线/连字符，revision非负安全整数。未知/多余字段、重复JSON键、非法UTF-8、异类/getter记录、预算外输入先拒绝，不能调用原型或把未知输入改成默认值。
 - 单owner/单提交队列。首次提交必须expectedRevision===当前revision；不一致409 REVISION_CONFLICT并携带currentRevision。revision沿用世界revision/tick，不增加另一套可混淆的页面计数。HTTP读仍只返回上一份成功发布的DTO，不见候选半状态。
 - 同commandId同完整规范DTO（包括expectedRevision）重试，在过期判定前返回原持久回执；语义键顺序不影响判等。不同完整DTO409 COMMAND_ID_CONFLICT。拒绝请求不占用成功ID、不增加tick或事件；队列失败不得阻塞后续有效请求。输入队列与HTTP回执命名分开，不伪造已有核心commandReceipts。
@@ -15,7 +16,7 @@
 - 世界与HTTP回执必须在同一个不可覆盖的服务commit envelope中原子发布，禁止先保存checkpoint再另写receipt造成两个真源。格式显式版本化；完整bundle仍通过C5严格审核，服务记录含初始化anchor与顺序命令/原回执，恢复需逐项核对唯一ID、DTO、revision连续性并重演到最终bundle；重新算一个摘要不能让篡改回执通过。不能增加skip/trusted开关。
 - 服务commit采用现有同目录临时文件写入+sync+hard link独占发布语义，完整文件发布后才能交换内存候选、响应成功。未完成.tmp不是提交；已发布文件为提交点，模拟“发布后断连/崩溃但未响应”时重启仍能找到回执。只承诺已定义的进程失败恢复，不承诺磁盘断电恢复。
 - 仅专用实验目录。保留D1独占锁、最大revision坏档不回退、异物拒绝、自己的锁才能清理。D1旧实验checkpoint只能作为显式审核anchor；不改其内容，不兼容猜测未知service格式。恢复不重设seed/profile，不自动删除旧commit、临时遗留或崩溃锁。
-- 保护预算在分配前校验：单服务commit最大64MiB，目录最多128个正式状态文件（anchor与commit一起计数），成功HTTP命令总数最多128，排队请求最多16。满预算明确LIMIT_EXCEEDED，不自动清理或放宽。预算是保护限额，不是吞吐/长程性能承诺。先预检再展开/序列化，不构造预算外巨型字符串。
+- 保护预算在分配前校验：单服务commit最大64MiB，目录最多128个正式状态文件（anchor与commit一起计数），成功HTTP命令总数最多128（初始化文件也占目录一项，因此正常目录最多127次成功新命令），排队请求最多16。满预算明确LIMIT_EXCEEDED，不自动清理或放宽。预算是保护限额，不是吞吐/长程性能承诺。先预检再展开/序列化，不构造预算外巨型字符串。
 - HTTP沿用loopback/Host/Origin/白名单/no-store/CSP边界；POST要求application/json，有界读取Content-Length或流式分块累计（不得无界收集），超时/断连不能重复应用；不得读取模型/.env/Laya。错误不回传cause/内部路径。
 - 页面提供可键盘操作的明确时间量选择与提交状态；每次用户意图生成一个ID，超时重试保留同ID/原DTO，不自动换ID或抬高expectedRevision。成功后重新GET公开读数；409显示冲突并重读，重新点击才构成新意图。两个页签共读服务，不把world保存至localStorage。
 - 不增加玩家实体，不代玩家花猎人/村长/商人钱包，不修改旧C4/C5人格或规则。后续D2B需独立定义玩家Persistent Actor、人口/金币/物资唯一归属；D2C才接旅行、休整与真实交易。D3战斗及D4完整身份/并发验收继续单独执行。

@@ -3,8 +3,10 @@ import { validateBundle } from '../core/world-state.mjs';
 import { PERSONALITY_RULES } from '../core/memory-runtime.mjs';
 import { memorySystems } from '../fixtures/memory-village.mjs';
 import { deriveClockReading } from '../core/simulation-clock.mjs';
+import { parseStrictJson } from './strict-json.mjs';
 export const MAX_COMMAND_BYTES=4096;
 export const MAX_SERVICE_ADVANCE_TICKS=1440;
+export function parseCommandBytes(bytes){return validateTimeCommandDto(parseStrictJson(bytes,MAX_COMMAND_BYTES));}
 export function validateTimeCommandDto(dto){
   fields(dto,['version','commandId','expectedRevision','type','payload']);
   requireCondition(dto.version===1,'Unknown command DTO version','UNSUPPORTED_VERSION');
