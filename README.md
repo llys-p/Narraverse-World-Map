@@ -20,7 +20,7 @@
 
 ## 新世界运行时进度
 
-A/B及C1/C2猎人Utility/Goal与真实行动单项已通过，代码位于 `codex/world-runtime-c2` 任务分支；125/125、真实100日续跑/跨档恢复目标与私人账核对通过，下一项C3未开始。main目前维护控制文档，没有合并运行时代码。查看[任务分支的运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-c2/README.md)、[C2合同](tasks/C2-HUNTER-UTILITY-GOAL-TASK.md)及[B4验收报告](docs/runtime/B4-ACCEPTANCE.md)与[当前状态](PROJECT_CONTEXT.md)。本阶段暂不接页面、NPC、模型或旧存档。
+A/B及C1～C3身份/猎人/多人物竞争单项已通过，代码位于 `codex/world-runtime-c3` 任务分支；139/139与真实100日续跑/peer私账通过，C4记忆/关系合同已准备但代码未开始。main目前维护控制文档，没有合并运行时代码。查看[任务分支的运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-c3/README.md)、[C3合同](tasks/C3-SOCIETY-COMPETITION-TASK.md)及[C4后续合同](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)及[B4验收报告](docs/runtime/B4-ACCEPTANCE.md)与[当前状态](PROJECT_CONTEXT.md)。本阶段暂不接页面、NPC、模型或旧存档。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
