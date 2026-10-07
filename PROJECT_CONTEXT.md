@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 14:51（Asia/Shanghai）。
+更新时间：2026-10-07 14:56（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -31,8 +31,8 @@
 - 不宣称原型全部E2E、真实模型、状态恢复或素材许可通过。
 - 2026-10-07 架构文档修订时：只修订计划与状态入口；阶段依赖、文档链接、代码围栏与 diff 格式已检查。不新增运行时代码，未运行模拟、浏览器或模型验收；上述原型测试不代表新模拟内核通过。
 - A1/A1R `7b4a2db` 中控复验 PASS：Node v24.14.0 定向30/30、边界3/3、diff格式通过；受限堆超预算提前拒绝、100万结果边界、advance队列上限、600组BigInt大tick对照通过。F1/F2/F3关闭，详见 [A1R复验记录](tasks/A1R-SCHEDULER-LIMITS-TASK.md)；源码仍在任务分支，未合并main。
-- E1R `b2df7a9` 中控复验 NEED REVISION：当前树final答案字段扫描无泄漏，25条匿名包哈希匹配，评分自检零失败、dev/calibration完整JSON独立重算一致，置换翻转数核对一致；未重跑模型、未打开外部final金标。仍有完整性错误exit=0、金标缺项缩分母、新旧raw文件消费不一致、宽松gate、超时残留线程、截断/重标注漏洞及规范正文冲突；[E1R2合同](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1R2-BENCHMARK-GATES-TASK.md)定义五项修复。C未测、全部信号不准入Runtime，代码未合并main。
-- E1规范试审：两名无对话继承、只读匿名包、互不通信的AI各25条已回收。回执与统计在仓库外 `D:\ModelBench\laya\review-return\sanity-dev\`，原件未改；显式枚举名称映射后，social/trust/fear/deception/boundary一致率96/92/96/84/92%，κ0.9396/0.8744/0.9135/0.5392/0.8792，10个信号项分歧。只属同模型独立上下文规范试审，部分稀有类未覆盖；不冻结final、不准入，规范修订后受影响样本需重审，原作者不单独裁定。
+- E1R2 `226a09a` 中控复跑原回归通过，但单独反例仍发现重复键/概率键、回执实算、token失败估算及稳定性漏项；已内部修复并推 `codex/laya-benchmark-control` @ `fa0550a`（源码D:\Narraverse-World-Map-benchmark-review）。稳定性18项、中控8项、原门槛回归及语法/diff检查通过；临时副本按索引重算dev/calibration准确率不变。新运行不覆盖raw，回归不改研究原件，未重跑真实模型、未开final、未合并源码main。工具限定收尾通过，E1整体未验收。
+- E1新版规范试审：两名全新AI各25条已回收，包规范哈希840f2c74…；social/trust/fear/deception/boundary一致率96/68/88/96/100%，κ0.9427/0.4737/0.7549/0.6528/1.0。回执/支持/混淆矩阵/13项分歧在仓库外D:\ModelBench\laya\review-return\sanity-retrial-v2；仅同模型独立上下文试标。中控随后明确信任“不变/不确定”及历史违约不得重复扣信任，新修订未独立验证，旧κ不能沿用；仍不冻结/准入。
 
 - A2/A3/A4：全部simulation及独立化边界60/60通过；独立消费者/磁盘探针通过。干净796b483上的CLI100天与40天保存加载+60天完整checkpoint/inputs一致，tick14400、103事件，两哈希相同。最终02cecea干净seed0烟测通过，runtime源码指纹与100天验证相同。
 - 证据：源码树artifacts/world-runtime-a-acceptance-20261007-1258/comparison.json及continuous100/prefix40/resumed60；产物保持忽略、不入仓。Node v24.14.0，100天实测约46秒；只是clock-smoke正确性，规模/生态/页面/模型/桥接入未验证。[A4合同与收口](tasks/A4-RUNNER-TASK.md)。
@@ -46,8 +46,11 @@
 - B3主实现2807db2、CSV现金账修正18ae1fe：有界库存价格、锁价付款、在途运力、两日到货与SetTradeRoute命令，关闭保持已付货物，恢复只卸一次；金币/商品/完整事实重放通过。最终simulation+边界90/90（原79+新增11，约124秒）；金币CSV遗漏采购付款反例先红后绿，现逐日现金期末与存档一致。[B3合同及收口](tasks/B3-MARKET-TRADE-TASK.md)。
 - 干净18ae1fe真实CLI路线暂停4天=2天存盘+2天恢复，完整checkpoint、两哈希、五CSV/输入/配置一致；最终ee480ea干净seed0一天烟测与现金CSV通过、源码指纹相同；tick576、6事实，订2单、到2单，共支付1980，金币20；第3天到货0、第4天粮100/药13一次入账，另开放路线3天正常到货。BigInt独立核对商品/金币账、锁价与价格公式/日变幅、CSV付款与期末；到货paidAmount=0。4天约13秒（同期全回归），只测末尾内存非峰值；runtime指纹92674ff27e87cbb28d2888fb0e1392d74909871abc0724cf6ed35f65b3f5ccb8。证据artifacts/world-runtime-b3-acceptance-20261007-1359/final/comparison.json与final-full-tests.txt保持忽略。外部无限供给仍受运力/金币限制，无卖出/退款/货损随机模型；B4长期平衡和历史重算性能尚未验收。
 
-- B4 `8ef4d45`：私有冻结session跳过空tick，活动tick整候选规则对照，入口/持久化全量审计保留；原90+新增8全回归98/98。实际42次干净CLI实验通过；7seeds基线1000日鹿182/狼14、轻扰动均第49日恢复；重扰动完整价格/付款/延迟药补给链、同药材条件贸易阻断缺口显著。1000日最长12.9秒；旧4日轨迹字节一致，采样13.1秒→0.26秒（并发条件不同）。原B3参数基线灭绝，旧fixture不改，新校准参数/门槛先冻结再验剩余seed，不能把旧默认参数称平衡通过。
+- B4 `8ef4d45`：私有冻结session跳过空tick，活动tick整候选规则对照，入口/持久化全量审计保留；原90+新增8全回归98/98；最终28c60d4干净seed42一天烟测、源码指纹复核通过。实际42次干净CLI实验通过；7seeds基线1000日鹿182/狼14、轻扰动均第49日恢复；重扰动完整价格/付款/延迟药补给链、同药材条件贸易阻断缺口显著。1000日最长12.9秒；旧4日轨迹字节一致，采样13.1秒→0.26秒（并发条件不同）。原B3参数基线灭绝，旧fixture不改，新校准参数/门槛先冻结再验剩余seed，不能把旧默认参数称平衡通过。
 - 独立复核42次运行的代码/源码指纹与状态事件哈希、45420行资源CSV、现金/在途订单及累计时钟溢出通过；证据artifacts/world-runtime-b4-acceptance-20261007/independent-verification.json、matrix/report.json、final-full-tests.txt保持忽略。runtime指纹405ee7e0856e7b66f586755dbcf5ad6a799a72f11e15b1f3512df0dea2160cc3；末尾RSS不是峰值、1000日不是规模压测。[B4报告](docs/runtime/B4-ACCEPTANCE.md)。
+
+- C1 `7c59ad0`：实名3人从80人口移交、匿名77，ID/nextEntityId连续，匿名劳动排除实名者；同一粮药账分配实际份额、Needs、饥饿死亡一次并保留墓碑。109/109（原98+新增11）全回归；实名/匿名最后粮药分配、无药不恢复、死亡不消费/治疗/身份重建、非法数据与配置/份额/Needs/墓碑/RNG篡改/整tick回退通过。[C1合同及交接](tasks/C1-ACTOR-POPULATION-NEEDS-TASK.md)。
+- 干净7c59ad0实际CLI100天=40保存+60恢复，完整checkpoint/两哈希/六CSV/inputs/配置一致；825人日独立核对人口/劳动/消费/需求/死亡，100日实名粮300、世界粮消费8000。needs5猎人健康/饥饿/疲劳回1000/0/0；shortage30实名3人死亡（村长tick144，猎人/商人3456），墓碑不再消费。100日约9秒（同期全回归，末尾内存非峰值）；复跑B4 frozen baseline1000日完整checkpoint字节相同。runtime指纹95bfa553e1f619d23f30d07cc4ddbaf5ab05f8351e8cd96de56068a826aeaf57；证据artifacts/world-runtime-c1-acceptance-20261007/comparison.json、full-tests.txt与五组CLI产物保持忽略。只有身份/份额/Needs基础，自主行动/Goal/关系/记忆未实现。
 ## 尚未完成
 
 - 两个localStorage键非事务、多标签页冲突、战斗中途刷新恢复。
@@ -58,7 +61,7 @@
 
 ## 下一步
 
-A/B已通过；用户已恢复推进，当前C1 @ D:\Narraverse-World-Map-a2 / codex/world-runtime-c1，基准B4 28c60d4。实名ID、80=77+3人口份额、匿名劳动排除、真实粮药分配/Needs/墓碑已实现；新增11项定向及实际CLI/磁盘通过，待最终109项回归与干净100日消费者收口。C阶段进行中；C2 Utility/Goal猎人独立行为未开始。原A/B配置/规则保持兼容，不合并源码main、不开UI/模型/旧存档；持续推进至用户实际额度剩10%～15%停点。
+A/B及C1单项已通过；当前代码D:\Narraverse-World-Map-a2 @ codex/world-runtime-c1，基准B4 28c60d4，实现 `7c59ad0b41b6283d6f6eaf82031b37fc0fe367cf`。109/109全回归，干净CLI100=40保存+60恢复/完整CSV一致、825人日分配独立核账；B4冻结1000日存档字节未变。下一项C2猎人Utility/Goal/独立行动未实现，C阶段进行中；用户已恢复推进，持续至实际额度约剩10%～15%保存停下。源码不合并main，不接UI/模型/旧存档；E预研独立。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -70,8 +73,8 @@ A/B已通过；用户已恢复推进，当前C1 @ D:\Narraverse-World-Map-a2 / c
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
-- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
+- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4与阶段A门槛、阶段B校准配置门槛已通过；C～G主线未开始，C～G主线未开始。E阶段待开始，E1预研仍需修正：先E1R2五项工具/规范门槛与试审分歧澄清，再经中控确认补24条长dev；完整扩样另发合同，建议400=dev150/calibration90/全新final160。旧125条转开发/诊断、保留旧封存，不训练/装CUDA/启动E2；本轮不启用qoder_cron，按批交回。
+- A1～A4与阶段A门槛、阶段B校准配置门槛及C1单项已通过，C阶段进行中，C2～C4未开始，D～G主线未开始。E阶段待开始；E1工具收尾完成，下一项[24条长dev合同](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-LONG-DEV-TASK.md)待派发，规范/数据可靠性仍需验证。完整400/final160另发合同，旧125与封存保留；不训练/装CUDA/启E2，不启qoder_cron。

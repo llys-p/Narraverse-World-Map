@@ -25,3 +25,17 @@
 ## 给AI
 
 从B4任务代码取基准，不从仅控制文档的main取运行时代码。精确提交推codex/world-runtime-c1，每项结束更新PROJECT_CONTEXT与Project2；保护其他worktree与同期E1文件。持续推进至五小时/周窗口实际剩约10%～15%时保存停下，不为过测试降合同、自动合并main、部署或调用模型。
+
+## 实施与验收收口：PASS
+
+2026-10-07（Asia/Shanghai）。本对话自行实施及复核，代码基准B4 28c60d4，实现 `7c59ad0b41b6283d6f6eaf82031b37fc0fe367cf`；源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-c1。新增core/actors.mjs、fixtures/actor-village.mjs及两份测试；显式Actor规则接入世界/事件/引擎私有session和runner。resource/ecology/market只增加声明的实名份额/死亡人口扣除接口，旧规则默认行为回归。冻结市场配置抽到calibratedMarketConfig复用，B4参数指纹及真实1000日轨迹未变。
+
+导出ACTOR_RULES、MAX_PERSISTENT_ACTORS，defaultActorConfig/createActorWorld/populationShares/validateActorWorld/settleActorDay/applyActorCommand/validateActorPayload/validateActorHistory；fixture createActorVillage/createActorNeeds/createActorShortage。身份依配置次序分配连续ID，snapshot nextEntityId只允许C1预分配后的计数。匿名劳动/伤者不能挤占实名份额，资源一次结算后分配实际消费明细，不重复扣库存；Need纯派生且持久化，饥饿死亡墓碑不复用。
+
+TDD核心先ERR_MODULE_NOT_FOUND，CLI先Unknown fixture；9项核心+2项真实磁盘/CLI共新增11项，全部simulation+export-boundaries109/109（原98保留），约197秒，diff通过。最后1药的独立分配用例初版被原生态捕猎新伤者消耗，已隔离该用例捕猎、另有匿名优先治疗明确反例，未改真实生态规则。身份/人口/Needs/药粮不足/有限数与预算/死亡一次/不复活/非法数据/配置/墓碑/回执/事件/RNG篡改及整tick回退覆盖。
+
+干净消费者Node v24.14.0：actor-village seed42连续100日 vs40日保存+60日恢复，完整snapshot/EventLog及stateHash/eventHash、actors/population/ecology/economy/market/trade六CSV、inputs/actor-config一致。独立新进程825人日核对匿名77+实名存活、劳动互斥、消费分配、状态变化与墓碑；100日实名粮300，世界总消费8000。actor-needs5通过真实粮药和休息将猎人健康500/饥饿500/疲劳600恢复至1000/0/0；actor-shortage30中村长tick144、猎人/商人tick3456死亡，身份记录持续且无额外消费。真实磁盘4=1+3恢复Needs和墓碑完整相同，坏需求档拒绝。
+
+100日约9秒，条件为同期全回归，summary内存末尾采样不是峰值。B4冻结baseline seed42 1000日复跑完整checkpoint字节与之前相同（19.1秒，同期回归条件）。stateHash=e9ed423355d0f0420e36d034f7fbb7086bff864128fea918b6f3bc5da3075262；eventHash=77c9ae3bfc30571a10a2eb8e27e7f7feb9a6c9dde5ea943544ef6f076fd6c347；actorConfigHash=f9bc2b2021c732fb365b30ad39bb26d48ec93981f219756ef19c92930045dc39；runtime sourceHash=95bfa553e1f619d23f30d07cc4ddbaf5ab05f8351e8cd96de56068a826aeaf57。
+
+证据本地忽略目录artifacts/world-runtime-c1-acceptance-20261007：full-tests.txt、consumer-probe.mjs、comparison.json、continuous100/prefix40/resumed60/needs5/shortage30及b4-compatible1000，不上传运行数据。仅C1单项通过，C2 Utility/Goal/猎人独立工作/捕猎、C3竞争与C4关系/记忆仍未开始；C阶段未验收。
