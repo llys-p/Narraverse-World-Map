@@ -11,7 +11,7 @@ import { HUNTER_RULES,validateHunterWorld,validateHunterActionResult,validateHun
 import { SOCIETY_RULES,validateSocietyWorld,validateSocietyActionResult,validateSocietyPayload,validateSocietyHistory } from './society.mjs';
 import { MEMORY_RULE_VERSIONS,isMemoryRules,validateMemoryWorld,validateMemoryDayPayload,validateMemoryRuntimeHistory } from './memory-runtime.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
-import { PLAYER_RULES,validatePlayerDayPayload } from './player-state.mjs';
+import { PLAYER_RULES,PLAY_RULES,validatePlayerDayPayload,validatePlayerActionResult } from './player-state.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
 export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
@@ -95,8 +95,11 @@ export function validateEventLog(eventLog, snapshot, systems) {
     if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type)){
       requireCondition(memoryProfile && event.tick===event.payload.expiresTick,'Invalid announcement profile/clock');
       const {eventSeq,tick,schemaVersion,...fact}=event;validateMedicineAnnouncement(fact);
+    }else if(event.type==='PlayerActionCommitted'){
+      requireCondition(state.rulesVersion===PLAY_RULES && event.sourceSystem==='command-engine' && event.entityIds.length===1 && event.entityIds[0]==='actor-4' && event.causationEventSeqs.length===0,'Invalid player action source');
+      identifier(event.commandId);validatePlayerActionResult(event.payload);requireCondition(event.tick===event.payload.endTick && !commandEvents.has(event.commandId),'Invalid player action clock/duplicate');commandEvents.set(event.commandId,event);
     }else if(event.type==='PlayerDaySettled'){
-      requireCondition(state.rulesVersion===PLAYER_RULES && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player daily source');
+      requireCondition([PLAYER_RULES,PLAY_RULES].includes(state.rulesVersion) && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player daily source');
       validatePlayerDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Player closing clock mismatch');
     }else if(event.type==='MemoryDaySettled'){
       requireCondition(memoryProfile && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0,'Invalid Memory closing source');
@@ -154,7 +157,9 @@ export function validateEventLog(eventLog, snapshot, systems) {
     if (receipt.status === 'succeeded') {
       const event = commandEvents.get(id);
       requireCondition(event && receipt.eventSeqs.length === 1 && receipt.eventSeqs[0] === event.eventSeq, 'Success receipt missing its fact');
-      if(societyProfile && receipt.input.type==='SocietyAction'){
+      if(state.rulesVersion===PLAY_RULES && receipt.input.type==='PlayerAction'){
+        validatePlayerActionResult(receipt.result);requireCondition(event.tick===receipt.input.targetTick && event.type==='PlayerActionCommitted' && canonicalJson(event.payload)===canonicalJson(receipt.result),'Player input/receipt/fact mismatch');
+      }else if(societyProfile && receipt.input.type==='SocietyAction'){
         validateSocietyActionResult(receipt.result);
         requireCondition(event.tick===receipt.input.targetTick && event.type==='SocietyActionCommitted' &&
           event.payload.actorId===receipt.input.payload.actorId && event.payload.goalId===receipt.input.payload.goalId && event.payload.action===receipt.input.payload.action &&

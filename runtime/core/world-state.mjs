@@ -9,7 +9,7 @@ import { ACTOR_RULES, validateActorWorld } from './actors.mjs';
 import { HUNTER_RULES,validateHunterWorld,validateHunterActionResult } from './hunter.mjs';
 import { SOCIETY_RULES,validateSocietyWorld,validateSocietyActionResult } from './society.mjs';
 import { PERSONALITY_RULES,MEMORY_RULE_VERSIONS,isMemoryRules,validateMemoryWorld } from './memory-runtime.mjs';
-import { PLAYER_RULES } from './player-state.mjs';
+import { PLAYER_RULES,PLAY_RULES,playerIntentDuration,validatePlayerActionResult } from './player-state.mjs';
 import { cloneData, fields, record, identifier, integer, denseArray, normalizeSystems,
   commandInput, inputFingerprint, requireCondition, fault, MAX_EVENTS } from './data-contract.mjs';
 
@@ -105,11 +105,11 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
       s.scheduledTasks.length===1 && task.taskId==='daily-hunter' && task.systemId==='hunter' && task.intervalTicks===144 && task.priority===10 && task.nextDueTick===(day+1)*144,'Invalid Hunter schedule/identity');
   }else if(isMemoryRules(s.rulesVersion)){
     validateMemoryWorld(s.world);
-    const personality=s.rulesVersion===PERSONALITY_RULES,player=s.rulesVersion===PLAYER_RULES;
-    requireCondition(s.world.memoryModel.config.version===(player?'memory-config-v3':personality?'memory-config-v2':'memory-config-v1'),'Memory rules/config mismatch','UNSUPPORTED_VERSION');
-    requireCondition((player?['player-village']:personality?['personality-neutral','personality-health','personality-food']:['memory-village','memory-relations','memory-relations-control','memory-medicine-race']).includes(s.fixtureId) && s.fixtureVersion==='1','Unknown Memory fixture','UNSUPPORTED_VERSION');
+    const personality=s.rulesVersion===PERSONALITY_RULES,player=s.rulesVersion===PLAYER_RULES,play=s.rulesVersion===PLAY_RULES;
+    requireCondition(s.world.memoryModel.config.version===(play?'memory-config-v4':player?'memory-config-v3':personality?'memory-config-v2':'memory-config-v1'),'Memory rules/config mismatch','UNSUPPORTED_VERSION');
+    requireCondition((play?['player-play-village']:player?['player-village']:personality?['personality-neutral','personality-health','personality-food']:['memory-village','memory-relations','memory-relations-control','memory-medicine-race']).includes(s.fixtureId) && s.fixtureVersion==='1','Unknown Memory fixture','UNSUPPORTED_VERSION');
     const day=Math.floor(s.tick/144),task=s.scheduledTasks[0],m=s.world.memoryModel;
-    requireCondition(m.day===day && m.observer.lastObservedTick===day*144 && s.nextEntityId===(player?5:4) &&
+    requireCondition(m.day===day && m.observer.lastObservedTick===day*144 && s.nextEntityId===(player || play?5:4) &&
       m.observer.actors.every(a=>a.alive===s.world.actorModel.actors.find(p=>p.actorId===a.actorId).alive) &&
       m.announcements.every(a=>a.payload.expiresTick===day*144) && s.world.societyModel.agents.every(a=>a.state.lastActionDay<=day) &&
       s.scheduledTasks.length===1 && task.taskId==='daily-memory' && task.systemId==='society' && task.intervalTicks===144 && task.priority===10 && task.nextDueTick===(day+1)*144,'Invalid Memory schedule/identity/observation boundary');
@@ -130,24 +130,26 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
   for (const entry of s.pendingCommands) {
     fields(entry, ['commandId', 'inputSeq', 'targetTick', 'type', 'payload']);
     const { inputSeq, ...input } = entry; commandInput(input);
-    requireCondition([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(input.type) :
+    requireCondition(s.rulesVersion===PLAY_RULES?input.type==='PlayerAction':[MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(input.type) :
       input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Command does not belong to this rules version');
     requireCondition(s.rulesVersion!==HUNTER_RULES || !input.commandId.startsWith('hunter-day-'),'External input claimed internal command namespace');
     requireCondition(![SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion) || !input.commandId.startsWith('society-day-'),'External input claimed Society namespace');
     remember(entry.commandId, inputSeq);
+    if(input.type==='PlayerAction')requireCondition(input.payload.startTick<=s.tick && input.targetTick===input.payload.startTick+playerIntentDuration({commandId:input.commandId,...input.payload.intent}),'Invalid pending player timing');
     requireCondition(inputSeq > previousInput && entry.targetTick > s.tick, 'Out-of-order or expired pending input'); previousInput = inputSeq;
   }
   for (const [id, receipt] of Object.entries(s.commandReceipts)) {
     fields(receipt, ['inputSeq', 'input', 'fingerprint', 'status', 'result', 'eventSeqs']);
     fields(receipt.input, ['type', 'payload', 'targetTick']);
     commandInput({ commandId: id, ...receipt.input }); remember(id, receipt.inputSeq);
-    requireCondition([SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion)?['RemovePopulation','SetTradeRoute','SocietyAction'].includes(receipt.input.type):
+    requireCondition(s.rulesVersion===PLAY_RULES?['PlayerAction','SocietyAction'].includes(receipt.input.type):[SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion)?['RemovePopulation','SetTradeRoute','SocietyAction'].includes(receipt.input.type):
       s.rulesVersion===HUNTER_RULES?['RemovePopulation','SetTradeRoute','ActorAction'].includes(receipt.input.type):
       [MARKET_RULES,ACTOR_RULES].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(receipt.input.type) :
       receipt.input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Receipt does not belong to this rules version');
     requireCondition(receipt.input.targetTick <= s.tick && receipt.fingerprint === inputFingerprint(receipt.input), 'Invalid receipt input/fingerprint');
     if (receipt.status === 'succeeded') {
-      if(receipt.input.type==='SocietyAction')validateSocietyActionResult(receipt.result);
+      if(receipt.input.type==='PlayerAction')validatePlayerActionResult(receipt.result);
+      else if(receipt.input.type==='SocietyAction')validateSocietyActionResult(receipt.result);
       else if(receipt.input.type==='ActorAction')validateHunterActionResult(receipt.result);
       else fields(receipt.result, receipt.input.type === 'SetTradeRoute' ? ['before', 'open'] :
         receipt.input.type === 'RemovePopulation' ? ['species', 'amount', 'before', 'after'] : ['from', 'to', 'amount']);
