@@ -5,11 +5,12 @@ import { createMedicineAnnouncements,validateMedicineAnnouncement,selectPublicMe
 import { createRng } from './rng.mjs';
 import { marketCommandFact } from './market.mjs';
 import { validatePersonalities,neutralPersonalities } from './personality.mjs';
-import { PLAYER_RULES,playerDayFact } from './player-state.mjs';
+import { PLAYER_RULES,PLAY_RULES,playerDayFact } from './player-state.mjs';
+import { validatePlayRuntimeHistory } from './player-intents.mjs';
 
 export const MEMORY_RULES='c-memory-v1';
 export const PERSONALITY_RULES='c-personality-v1';
-export const MEMORY_RULE_VERSIONS=Object.freeze([MEMORY_RULES,PERSONALITY_RULES,PLAYER_RULES]);
+export const MEMORY_RULE_VERSIONS=Object.freeze([MEMORY_RULES,PERSONALITY_RULES,PLAYER_RULES,PLAY_RULES]);
 export const isMemoryRules=version=>MEMORY_RULE_VERSIONS.includes(version);
 const SOCIETY_FIELDS=['resources','resourceModel','ecologyModel','marketModel','actorModel','societyModel'];
 const society=w=>Object.fromEntries([...SOCIETY_FIELDS,...(w.playerModel?['playerModel']:[])].map(k=>[k,w[k]]));
@@ -18,24 +19,25 @@ function increment(object,key){requireCondition(object[key]<Number.MAX_SAFE_INTE
 export function defaultMemoryConfig(){return {version:'memory-config-v1',society:defaultSocietyConfig(),discountEnabled:true};}
 export function defaultPersonalityConfig(){return {...defaultMemoryConfig(),version:'memory-config-v2',personalities:neutralPersonalities()};}
 function validateConfig(config){
-  record(config);requireCondition(['memory-config-v1','memory-config-v2','memory-config-v3'].includes(config.version),'Unknown memory configuration','UNSUPPORTED_VERSION');
+  record(config);requireCondition(['memory-config-v1','memory-config-v2','memory-config-v3','memory-config-v4'].includes(config.version),'Unknown memory configuration','UNSUPPORTED_VERSION');
   fields(config,['version','society','discountEnabled',...(config.version!=='memory-config-v1'?['personalities']:[])]);
   record(config.society);
-  requireCondition(config.society.version===(config.version==='memory-config-v3'?'society-config-v2':'society-config-v1'),'Memory/Society version mismatch','UNSUPPORTED_VERSION');
+  requireCondition(config.society.version===(config.version==='memory-config-v4'?'society-config-v3':config.version==='memory-config-v3'?'society-config-v2':'society-config-v1'),'Memory/Society version mismatch','UNSUPPORTED_VERSION');
   if(config.version!=='memory-config-v1')validatePersonalities(config.personalities);
   requireCondition(typeof config.discountEnabled==='boolean','Invalid memory discount policy');return createSocietyWorld(config.society);}
 export function createMemoryWorld(config=defaultMemoryConfig()){
   const world=validateConfig(config),copy=cloneData(config);
   return {...world,memoryModel:{config:copy,configFingerprint:canonicalJson(copy),day:0,
-    observer:createMemoryState(world.actorModel.actors.map(a=>({actorId:a.actorId,alive:a.alive}))),announcements:[],waitingActorId:null,waitingOutcome:null}};
+    observer:createMemoryState(world.actorModel.actors.map(a=>({actorId:a.actorId,alive:a.alive,...(copy.version==='memory-config-v4'?{location:a.location}:{})})),copy.version==='memory-config-v4'?'memory-observer-v2':'memory-observer-v1'),announcements:[],waitingActorId:null,waitingOutcome:null}};
 }
 export function validateMemoryWorld(world){
   record(world);record(world.memoryModel);record(world.memoryModel.config);
-  fields(world,[...SOCIETY_FIELDS,'memoryModel',...(world.memoryModel?.config?.version==='memory-config-v3'?['playerModel']:[])]);validateSocietyWorld(society(world));const m=world.memoryModel;
+  fields(world,[...SOCIETY_FIELDS,'memoryModel',...(['memory-config-v3','memory-config-v4'].includes(world.memoryModel.config.version)?['playerModel']:[])]);validateSocietyWorld(society(world));const m=world.memoryModel;
   fields(m,['config','configFingerprint','day','observer','announcements','waitingActorId','waitingOutcome']);const initial=validateConfig(m.config);
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.society)===canonicalJson(world.societyModel.config),'Memory/Society configuration mismatch');
   integer(m.day);requireCondition(m.day===world.societyModel.day,'Memory day mismatch');validateMemoryState(m.observer);
-  requireCondition(canonicalJson(m.observer.initialActors)===canonicalJson(createMemoryState(initial.actorModel.actors.map(a=>({actorId:a.actorId,alive:a.alive}))).initialActors),'Memory initial identity mismatch');
+  const play=m.config.version==='memory-config-v4',version=play?'memory-observer-v2':'memory-observer-v1';
+  requireCondition(m.observer.version===version && canonicalJson(m.observer.initialActors)===canonicalJson(createMemoryState(initial.actorModel.actors.map(a=>({actorId:a.actorId,alive:a.alive,...(play?{location:a.location}:{})})),version).initialActors),'Memory initial identity/version mismatch');
   denseArray(m.announcements,6);const seen=new Set();
   for(const f of m.announcements){validateMedicineAnnouncement(f);const key=f.type+'-'+f.payload.actorId;
     requireCondition(!seen.has(key) && world.actorModel.actors.some(a=>a.actorId===f.payload.actorId) &&
@@ -110,6 +112,7 @@ export function validateMemoryDayPayload(payload){
 // Complete C4 rule replay. Snapshot envelope, event schema and receipt references
 // are additionally checked by world-state/event-log at public engine/save entries.
 export function validateMemoryRuntimeHistory(snapshot,events){
+  if(snapshot.rulesVersion===PLAY_RULES)return validatePlayRuntimeHistory(snapshot,events);
   validateMemoryWorld(snapshot.world);denseArray(events,140000);let expected=createMemoryWorld(snapshot.world.memoryModel.config),eventIndex=0;
   const rng=createRng(snapshot.rng.seed),receipts=snapshot.commandReceipts,seen=new Set();
   const external=Object.entries(receipts).filter(([,r])=>r.input.type!=='SocietyAction').map(([commandId,r])=>({commandId,...r}));

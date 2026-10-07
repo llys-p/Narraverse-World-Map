@@ -11,7 +11,7 @@ import { HUNTER_RULES,applyHunterCommand,planHunterDay,applyHunterAction,hunterA
 import { SOCIETY_RULES,applySocietyCommand,planSocietyDay,applySocietyAction,societyActionFact,societyCauses,settleSocietyDay } from './society.mjs';
 import { MEMORY_RULE_VERSIONS,isMemoryRules,prepareMemoryDay,planMemoryDay,applyMemoryAction,applyMemoryCommand,settleMemorySocietyDay,finishMemoryDay,validateMemoryDayPayload } from './memory-runtime.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
-import { PLAYER_RULES,playerDayFact } from './player-state.mjs';
+import { PLAYER_RULES,PLAY_RULES,playerDayFact,applyPlayerAction,playerActionFact } from './player-state.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, integer, normalizeSystems, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
@@ -60,7 +60,10 @@ function performTick(bundle, systems, mode) {
     const commitInput=(input)=>{
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
       let success, result, eventSeqs = [];
-      if([SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion)){
+      if(rulesVersion===PLAY_RULES && input.type==='PlayerAction'){
+        const applied=applyPlayerAction(s.world,input);s.world=applied.world;success=applied.success;result=applied.result;
+        if(success)eventSeqs=[append(playerActionFact(input,result))];
+      }else if([SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion)){
         const action=isMemoryRules(rulesVersion)?applyMemoryAction:applySocietyAction,command=isMemoryRules(rulesVersion)?applyMemoryCommand:applySocietyCommand;
         const applied=input.type==='SocietyAction'?action(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null):command(s.world,{type:input.type,payload:input.payload});
         s.world=applied.world;success=applied.success;result=applied.result;
@@ -145,7 +148,7 @@ function performTick(bundle, systems, mode) {
       }
     }
     requireCondition(envelope() === beforeSystems, 'System changed protected snapshot fields');
-    if(rulesVersion===PLAYER_RULES && plan.dueTasks.length){
+    if([PLAYER_RULES,PLAY_RULES].includes(rulesVersion) && plan.dueTasks.length){
       const daily=candidate.eventLog.findLast(e=>e.type==='SocietyDaySettled' && e.tick===failedTick);
       requireCondition(daily,'Missing player daily source');append(playerDayFact(s.world,daily.payload));
     }
