@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 13:21（Asia/Shanghai）。
+更新时间：2026-10-07 13:26（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -29,10 +29,15 @@
 - 2026-10-06 独立化时：边界回归3项通过，53个JS/MJS/CJS脚本语法检查通过。
 - 同次隔离18313服务：五个页面与三个脚本路由均HTTP200；模型配置configured=false，没有调用模型或桥；测试后停止自己的服务。
 - 不宣称原型全部E2E、真实模型、状态恢复或素材许可通过。
-- 2026-10-07 本次只修订架构计划与状态入口；阶段依赖、文档链接、代码围栏与 diff 格式已检查。不新增运行时代码，未运行模拟、浏览器或模型验收；上述原型测试不代表新模拟内核通过。
-- 2026-10-07 A1 执行者交付（分支 `codex/world-runtime-a1`，基准 14293ba）：`node --test tests/simulation/rng.test.mjs tests/simulation/clock-scheduler.test.mjs` 23 项通过（R1～I1，含 RNG 已知向量/恢复、tick 边界与溢出、调度排序/分块一致/边界一次/非法拒绝、纯 Node 静态扫描）；`node --test tests/export-boundaries.test.mjs` 3 项通过；`git diff --check` 干净。实现前先跑过两份测试并确认失败为 ERR_MODULE_NOT_FOUND。未运行浏览器 E2E、模型或 Laya 桥。以上为执行者自报，待中控独立验收。
-- 2026-10-07 A1 中控验收结论 NEED REVISION（任务 [A1R-SCHEDULER-LIMITS-TASK](tasks/A1R-SCHEDULER-LIMITS-TASK.md)，main f28ed3e）：F1 展开总量无预算、F2 稀疏数组绕过校验、F3 异类对象被当普通记录。A1R 执行者修正交付（同分支，代码基准 eee6cb8）：调度队列上限 100000 项、单次到期结果上限 1000000 项并展开前预检（含安全整数精确溢出判定）；稀疏/null/undefined 描述符 create/restore/advance 三入口拒绝；选项/恢复记录/描述符/对象注册表强制普通数据对象（原型 Object.prototype 或 null）。新增 7 项回归先红后绿，全套 30/30，边界回归 3/3，`git diff --check` 干净；64 MiB 受限子进程 32 任务×144000 提前得到 LIMIT_EXCEEDED，不 OOM。未运行浏览器 E2E、模型或 Laya 桥。待中控复验。
+- 2026-10-07 架构文档修订时：只修订计划与状态入口；阶段依赖、文档链接、代码围栏与 diff 格式已检查。不新增运行时代码，未运行模拟、浏览器或模型验收；上述原型测试不代表新模拟内核通过。
+- A1/A1R `7b4a2db` 中控复验 PASS：Node v24.14.0 定向30/30、边界3/3、diff格式通过；受限堆超预算提前拒绝、100万结果边界、advance队列上限、600组BigInt大tick对照通过。F1/F2/F3关闭，详见 [A1R复验记录](tasks/A1R-SCHEDULER-LIMITS-TASK.md)；源码仍在任务分支，未合并main。
+- E1 离线预研 `e9196ab` 中控复核 NEED REVISION：A/B 各315条、63场景的pilot准确率及完整评分输出可复算；本轮未重跑推理。发现62条final金标仍可从已提交源数据重建、盲审包带提示、失败项漏入分母、F1类别口径不一、final可参与校准及稳定性条件未实现；[E1R修正任务书](tasks/E1R-BENCHMARK-INTEGRITY-TASK.md)已发布。C未测，全部信号暂不准入Runtime，候选代码未合并main。
 
+- A2/A3/A4：全部simulation及独立化边界60/60通过；独立消费者/磁盘探针通过。干净796b483上的CLI100天与40天保存加载+60天完整checkpoint/inputs一致，tick14400、103事件，两哈希相同。最终02cecea干净seed0烟测通过，runtime源码指纹与100天验证相同。
+- 证据：源码树artifacts/world-runtime-a-acceptance-20261007-1258/comparison.json及continuous100/prefix40/resumed60；产物保持忽略、不入仓。Node v24.14.0，100天实测约46秒；只是clock-smoke正确性，规模/生态/页面/模型/桥接入未验证。[A4合同与收口](tasks/A4-RUNNER-TASK.md)。
+
+- B1 `6382ad5`：配置/单位/每日资源收支与整数余量入存档，ResourceDaySettled事实与配置逐日复算；零库存、缺口、容量损失、非法数据、整tick回退及超预算提前拒绝通过。全部simulation+边界70/70（本轮约228秒，含并发运行），原A行为保持；[B1合同与收口](tasks/B1-RESOURCE-LEDGER-TASK.md)。
+- 干净6382ad5实际CLI10天=4天保存+6天续跑，完整checkpoint/配置一致，30行CSV使用BigInt逐行对账；tick1440、10事实、粮1012/药87/金币20000。源码指纹49bc5f3718a744a75b33069c99c2341bbb7ee1e826c01ae70cc73b3e6612e2b0；证据artifacts/world-runtime-b1-acceptance-20261007-1321/comparison.json与full-tests.txt保持忽略。10天约17秒（并发回归条件），内存为末尾采样；逐tick历史重算开销大，长程实验前需要改进验证策略，不能据此承诺1000天性能。此fixture不使用RNG，鹿狼静态，不宣称生态平衡或贸易完成。
 ## 尚未完成
 
 - 两个localStorage键非事务、多标签页冲突、战斗中途刷新恢复。
@@ -43,7 +48,7 @@
 
 ## 下一步
 
-阶段A底座已通过；当前本对话自行推进B1，代码基准A4 02cecea。源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-b1；版本化配置、每日资源账、存档历史复核及CLI已实现，等待最终70项回归及干净提交消费者收口。此前69项全绿；补充提前拒绝配置/事件超预算的反例先红后绿。源码不自动合并main，阶段B仍进行中；通过后下一项B2鹿狼与聚合捕猎，B3交易/B4长期生态实验未开始。
+阶段A已通过，B1资源账本已实现并验收：源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-b1，代码基准A4 02cecea，实现保存点 `6382ad5fc9945cf9a3cb68ce72cd63e2f61f9d19`。全部simulation+边界70/70、真实磁盘30=12+18、干净CLI10=4+6和CSV逐行对账通过；源码不自动合并main。下一项B2鹿狼与聚合捕猎；B阶段仍进行中，B3价格/付费延迟贸易及B4长期生态门槛未开始。E1R预研维持原状态。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -55,8 +60,8 @@
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
-- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；任务 A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
-- 中控按架构依赖逐项写任务书，用户转发给执行者；执行者使用任务分支实现、提交并回传证据，中控负责独立验收与发布下一项。
+- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
+- 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4及阶段A门槛已通过。证据在已忽略artifacts/world-runtime-a-acceptance-20261007-1258/comparison.json及三组输出；Node v24.14.0，验证源码指纹d972e092055782e36dedcbf718d2d9c45c6af452474835f4762c71631009d7b4。B～G未开始；未验证规模性能、生态或页面/模型/桥接入。
+- A1～A4与阶段A门槛、B1单项已通过；B阶段进行中，B2～B4未开始，C～G主线未开始。E阶段保持待开始，E1离线预研需修正：先修工具/隔离及小样本标签试审，再补总量300～500/final≥150与完整盲审；暂不安装CUDA torch、训练或启动E2。
