@@ -14,6 +14,7 @@ import { defaultMemoryConfig,defaultPersonalityConfig } from '../../runtime/core
 import { createMemoryVillage } from '../../runtime/fixtures/memory-village.mjs';
 import { createPersonalityNeutral } from '../../runtime/fixtures/personality-village.mjs';
 import { buildActorKnowledge } from '../../runtime/knowledge/actor-knowledge.mjs';
+import { projectActorEvent } from '../../runtime/core/memory-observer.mjs';
 
 const bad=e=>['INVALID_INPUT','UNSUPPORTED_VERSION','INVALID_CHECKPOINT'].includes(e.code);
 const actor=w=>w.actorModel.actors.find(a=>a.actorId==='actor-4');
@@ -114,10 +115,26 @@ test('D2B independent knowledge: fixed own whitelist, no aliases, NPC privacy, c
   for(const forbidden of ['actor-1','actor-2','actor-3','currentGoal','personalities','initialActors','rng','eventLog','configFingerprint'])assert.equal(JSON.stringify(known).includes(forbidden),false);
   known.self.wallet=999999;known.self.inventory.food=999999;known.self.needs.food=999999;
   for(let i=0;i<10;i++)assert.equal(buildPlayerKnowledge(b).self.wallet,100);assert.deepEqual(b,before);
-  for(const id of ['actor-1','actor-2','actor-3']){
-    const npc=buildActorKnowledge(b,id);assert.equal(JSON.stringify(npc).includes('playerModel'),false);
-    assert.equal(JSON.stringify(npc).includes('"wallet":100,"inventory":{"food":2,"herbs":1}'),false);
+  const playerDay=b.eventLog.find(e=>e.type==='PlayerDaySettled');assert.ok(playerDay,'Real player daily fact must be committed');
+  const playerObserved=b.snapshot.world.memoryModel.observer.actors.find(a=>a.actorId==='actor-4');
+  const own=playerObserved.memories.find(m=>m.sourceEventSeq===playerDay.eventSeq&&m.channel==='self');assert.ok(own);
+  assert.deepEqual(own.observable,{type:'player-day',actorId:'actor-4',privateFood:1,wallet:100,inventory:{food:2,herbs:1}});
+  const market=playerObserved.memories.find(m=>m.channel==='public'&&m.observable.type==='village-market');assert.ok(market);
+  assert.equal(market.observable.alive,80);assert.equal(Object.hasOwn(market.observable,'wallet'),false);
+  for(const observed of b.snapshot.world.memoryModel.observer.actors){
+    for(const memory of observed.memories){
+      if(memory.channel==='self')assert.equal(memory.observable.actorId,observed.actorId);
+      else for(const key of ['wallet','inventory','health','needs','currentGoal','playerModel'])assert.equal(Object.hasOwn(memory.observable,key),false);
+    }
   }
+  for(const id of ['actor-1','actor-2','actor-3']){
+    assert.throws(()=>buildActorKnowledge(b,id),e=>e.code==='UNSUPPORTED_VERSION');
+    assert.deepEqual(projectActorEvent(playerDay,id),[]);
+    const npc=b.snapshot.world.memoryModel.observer.actors.find(a=>a.actorId===id);
+    assert.equal(npc.memories.some(m=>m.sourceEventSeq===playerDay.eventSeq),false);
+  }
+  const projected=projectActorEvent(playerDay,'actor-4');assert.equal(projected.length,1);projected[0].observable.wallet=99999;
+  assert.equal(projectActorEvent(playerDay,'actor-4')[0].observable.wallet,100);assert.deepEqual(b,before);
 });
 
 test('D2B independent true checkpoint: 143+1 and death continuation match uninterrupted complete bundles',async t=>{
@@ -148,6 +165,13 @@ test('D2B independent legacy: C4/C5 remain three persons, new player fields and 
   for(const f of [createMemoryVillage(),createPersonalityNeutral()]){
     const s=createSimulationSession(f.bundle,f.systems);s.advanceTicks(144);const b=s.getBundle();
     assert.equal(b.snapshot.nextEntityId,4);assert.equal(b.snapshot.world.actorModel.actors.length,3);assert.equal(Object.hasOwn(b.snapshot.world,'playerModel'),false);
+    for(const id of ['actor-1','actor-2','actor-3']){
+      const known=buildActorKnowledge(b,id);assert.equal(known.self.identity.actorId,id);
+      assert.equal(JSON.stringify(known.public).includes('wallet'),false);assert.equal(JSON.stringify(known).includes('initialActors'),false);
+      for(const m of known.memories)if(m.channel==='public'||m.channel==='interaction'){
+        for(const key of ['wallet','health','currentGoal','inventory','needs'])assert.equal(Object.hasOwn(m.observable,key),false);
+      }
+    }
     assert.throws(()=>buildPlayerKnowledge(b),bad);
     const corrupt=structuredClone(b);corrupt.snapshot.world.playerModel=createPlayerWorld(defaultPlayerConfig()).playerModel;
     assert.throws(()=>validateBundle(corrupt,{rulesVersion:b.snapshot.rulesVersion,systems:f.systems}),bad);
