@@ -9,6 +9,7 @@ import { ACTOR_RULES, validateActorWorld } from './actors.mjs';
 import { HUNTER_RULES,validateHunterWorld,validateHunterActionResult } from './hunter.mjs';
 import { SOCIETY_RULES,validateSocietyWorld,validateSocietyActionResult } from './society.mjs';
 import { PERSONALITY_RULES,MEMORY_RULE_VERSIONS,isMemoryRules,validateMemoryWorld } from './memory-runtime.mjs';
+import { PLAYER_RULES } from './player-state.mjs';
 import { cloneData, fields, record, identifier, integer, denseArray, normalizeSystems,
   commandInput, inputFingerprint, requireCondition, fault, MAX_EVENTS } from './data-contract.mjs';
 
@@ -102,11 +103,11 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
       s.scheduledTasks.length===1 && task.taskId==='daily-hunter' && task.systemId==='hunter' && task.intervalTicks===144 && task.priority===10 && task.nextDueTick===(day+1)*144,'Invalid Hunter schedule/identity');
   }else if(isMemoryRules(s.rulesVersion)){
     validateMemoryWorld(s.world);
-    const personality=s.rulesVersion===PERSONALITY_RULES;
-    requireCondition(s.world.memoryModel.config.version===(personality?'memory-config-v2':'memory-config-v1'),'Memory rules/config mismatch','UNSUPPORTED_VERSION');
-    requireCondition((personality?['personality-neutral','personality-health','personality-food']:['memory-village','memory-relations','memory-relations-control','memory-medicine-race']).includes(s.fixtureId) && s.fixtureVersion==='1','Unknown Memory fixture','UNSUPPORTED_VERSION');
+    const personality=s.rulesVersion===PERSONALITY_RULES,player=s.rulesVersion===PLAYER_RULES;
+    requireCondition(s.world.memoryModel.config.version===(player?'memory-config-v3':personality?'memory-config-v2':'memory-config-v1'),'Memory rules/config mismatch','UNSUPPORTED_VERSION');
+    requireCondition((player?['player-village']:personality?['personality-neutral','personality-health','personality-food']:['memory-village','memory-relations','memory-relations-control','memory-medicine-race']).includes(s.fixtureId) && s.fixtureVersion==='1','Unknown Memory fixture','UNSUPPORTED_VERSION');
     const day=Math.floor(s.tick/144),task=s.scheduledTasks[0],m=s.world.memoryModel;
-    requireCondition(m.day===day && m.observer.lastObservedTick===day*144 && s.nextEntityId===4 &&
+    requireCondition(m.day===day && m.observer.lastObservedTick===day*144 && s.nextEntityId===(player?5:4) &&
       m.observer.actors.every(a=>a.alive===s.world.actorModel.actors.find(p=>p.actorId===a.actorId).alive) &&
       m.announcements.every(a=>a.payload.expiresTick===day*144) && s.world.societyModel.agents.every(a=>a.state.lastActionDay<=day) &&
       s.scheduledTasks.length===1 && task.taskId==='daily-memory' && task.systemId==='society' && task.intervalTicks===144 && task.priority===10 && task.nextDueTick===(day+1)*144,'Invalid Memory schedule/identity/observation boundary');

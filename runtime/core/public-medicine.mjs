@@ -26,7 +26,7 @@ export function createMedicineAnnouncements(world,tick){
   const quote=world.marketModel.prices.herbs,price=cappedPrice(quote,world.marketModel.config.products.herbs.maxPrice,world.societyModel.config.saleMarkup),facts=[];
   for(const actor of world.actorModel.actors){
     if(!actor.alive)continue;
-    const own=world.societyModel.agents.find(a=>a.state.actorId===actor.actorId).state;
+    const estate=world.societyModel.agents.find(a=>a.state.actorId===actor.actorId);if(!estate)continue;const own=estate.state;
     // Willingness is a posted price, never the person's entire available balance.
     if(actor.health<=700 && own.inventory.herbs===0 && own.wallet>=quote)facts.push(fact(REQUEST,actor.actorId,price,tick));
     if(actor.occupation==='merchant' && own.inventory.herbs>0)facts.push(fact(OFFER,actor.actorId,price,tick));
