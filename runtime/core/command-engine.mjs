@@ -6,6 +6,7 @@ import { validateFact } from './event-log.mjs';
 import { RESOURCE_RULES, settleResourceDay } from './resource-ledger.mjs';
 import { ECOLOGY_RULES, removePopulation, ecologyCauses, settleEcologyDay } from './ecology.mjs';
 import { MARKET_RULES, applyMarketCommand, marketCommandFact, marketCauses, settleMarketDay } from './market.mjs';
+import { ACTOR_RULES,applyActorCommand,settleActorDay } from './actors.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, integer, normalizeSystems, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
@@ -56,8 +57,8 @@ function performTick(bundle, systems, mode) {
       if (input.targetTick !== failedTick) { remaining.push(input); continue; }
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
       let success, result, eventSeqs = [];
-      if (rulesVersion === MARKET_RULES) {
-        const applied = applyMarketCommand(s.world, { type: input.type, payload: input.payload });
+      if ([MARKET_RULES,ACTOR_RULES].includes(rulesVersion)) {
+        const applied = (rulesVersion===ACTOR_RULES?applyActorCommand:applyMarketCommand)(s.world, { type: input.type, payload: input.payload });
         s.world = applied.world; success = applied.success; result = applied.result;
         if (success) eventSeqs = [append(marketCommandFact(input, result))];
       } else if (rulesVersion === ECOLOGY_RULES) {
@@ -85,15 +86,16 @@ function performTick(bundle, systems, mode) {
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
       return canonicalJson({ ...protectedFields,
-        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
-        ...([ECOLOGY_RULES, MARKET_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
-        ...(rulesVersion === MARKET_RULES ? { marketConfig: world.marketModel.config } : {}) });
+        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
+        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
+        ...([MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
+        ...(rulesVersion===ACTOR_RULES?{actorConfig:world.actorModel.config}:{}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
       const context = { snapshot: s, rng,
         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
-        ...(rulesVersion === MARKET_RULES ? { populationCauses: Object.freeze(marketCauses(candidate.eventLog)) } : {}),
+        ...([MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { populationCauses: Object.freeze(marketCauses(candidate.eventLog)) } : {}),
         emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
@@ -138,6 +140,7 @@ function canonicalSystems(rulesVersion) {
   if (rulesVersion === RESOURCE_RULES) return define('resources', 'ResourceDaySettled', settleResourceDay, false);
   if (rulesVersion === ECOLOGY_RULES) return define('ecology', 'EcologyDaySettled', settleEcologyDay, true);
   if (rulesVersion === MARKET_RULES) return define('market', 'EconomyDaySettled', settleMarketDay, true);
+  if (rulesVersion === ACTOR_RULES) return define('actors', 'ActorDaySettled', settleActorDay, true);
   throw fault('UNSUPPORTED_VERSION', 'No canonical transition for these rules');
 }
 
@@ -154,7 +157,7 @@ export function createSimulationSession(bundle, systems) {
   fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
   const registered = Object.freeze({ ...systems });
   validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
-  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES].includes(bundle.snapshot.rulesVersion),
+  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES].includes(bundle.snapshot.rulesVersion),
     'Session rules are not registered', 'UNSUPPORTED_VERSION');
   let current = freezeData(cloneBundle(bundle)), busy = false;
   const stats = { idleTicks: 0, activityTicks: 0 };

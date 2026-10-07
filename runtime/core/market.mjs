@@ -41,6 +41,14 @@ export function shortageMarketConfig() {
   village.resources.food.initial=100; village.resources.herbs.initial=0; village.resources.gold.initial=2000;
   village.settlement.injuredCount=2; return config;
 }
+// Parameters frozen during B4 seed-42 calibration; shared by B4 and subsequent C fixtures.
+export function calibratedMarketConfig() {
+  const config=defaultMarketConfig();
+  config.ecology.deerBirthPermille=40;config.ecology.wolfBirthPermille=3;
+  config.ecology.resources.resources.herbs.initial=8;
+  config.ecology.resources.resources.herbs.production={numerator:1,denominator:8};
+  config.products.herbs.targetStock=12;return config;
+}
 export function createMarketWorld(config=defaultMarketConfig()) {
   const ecology=validateConfig(config), copy=cloneData(config);
   return {...ecology, marketModel:{config:copy, configFingerprint:canonicalJson(copy), day:0, routeOpen:true,
@@ -110,7 +118,7 @@ export function marketCommandFact(command,result) {
 }
 export const marketCauses=events=>events.filter(e=>['PopulationRemoved','TradeRouteSet'].includes(e.type)).map(e=>e.eventSeq);
 
-export function settleMarketDay(input,sample) {
+export function settleMarketDay(input,sample,namedShares) {
   validateMarketWorld(input); const world=cloneData(input), m=world.marketModel, config=m.config, day=m.day+1;
   requireCondition(day<=MAX_RESOURCE_DAYS,'Market day budget exceeded','LIMIT_EXCEEDED');
   const arrivals=[],pending=[],inflows=units(),goldOpening=world.resources.gold;
@@ -121,7 +129,7 @@ export function settleMarketDay(input,sample) {
     }else pending.push(order);
   }
   m.inTransit=pending;
-  const ecology=settleEcologyDay(ecologyPart(world),sample,{currencySpent:m.paid,inflows});
+  const ecology=settleEcologyDay(ecologyPart(world),sample,{currencySpent:m.paid,inflows},namedShares);
   world.resources=ecology.world.resources;world.resourceModel=ecology.world.resourceModel;world.ecologyModel=ecology.world.ecologyModel;
   const prices={},orders=[]; let used=m.inTransit.reduce((total,o)=>safe(BigInt(total)+BigInt(o.amount)),0),goldSpent=0;
   for(const id of IDS){

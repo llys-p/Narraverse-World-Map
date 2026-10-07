@@ -93,22 +93,25 @@ function fractional(quantity, fraction, remainder) {
   return { amount: safe(numerator / denominator), remainder: safe(numerator % denominator) };
 }
 
-export function settleResourceDay(input, modifiers, trade) {
+export function settleResourceDay(input, modifiers, trade, populationLoss = 0) {
+  integer(populationLoss);
   if (trade !== undefined) {
     fields(trade, ['currencySpent', 'inflows']); integer(trade.currencySpent);
     fields(trade.inflows, ['food', 'herbs']); integer(trade.inflows.food); integer(trade.inflows.herbs);
   }
   const currencySpent = trade?.currencySpent ?? 0;
   validateResourceWorld(input, currencySpent);
+  requireCondition(populationLoss <= input.resourceModel.config.settlement.humanCount, 'Invalid declared population loss');
   if (modifiers !== undefined) {
     fields(modifiers, ['settlement', 'foodBonus', 'foodDamage']);
     fields(modifiers.settlement, ['humanCount', 'foodWorkers', 'herbWorkers', 'injuredCount']);
     for (const value of Object.values(modifiers.settlement)) integer(value);
     requireCondition(BigInt(modifiers.settlement.foodWorkers) + BigInt(modifiers.settlement.herbWorkers) + BigInt(modifiers.settlement.injuredCount)
       <= BigInt(modifiers.settlement.humanCount), 'Invalid daily labour allocation');
-    requireCondition(modifiers.settlement.humanCount === input.resourceModel.config.settlement.humanCount, 'Daily population cannot change');
+    requireCondition(modifiers.settlement.humanCount === input.resourceModel.config.settlement.humanCount - populationLoss, 'Daily population does not match declared loss');
     integer(modifiers.foodBonus); integer(modifiers.foodDamage);
   }
+  requireCondition(populationLoss === 0 || modifiers !== undefined, 'Population loss requires explicit settlement');
   const world = cloneData(input);
   const model = world.resourceModel, config = model.config, day = model.day + 1;
   requireCondition(day <= MAX_RESOURCE_DAYS, 'Resource history day budget exceeded', 'LIMIT_EXCEEDED');

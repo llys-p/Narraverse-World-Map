@@ -1,4 +1,4 @@
-import { defaultMarketConfig } from '../core/market.mjs';
+import { calibratedMarketConfig } from '../core/market.mjs';
 import { createMarketVillage } from './market-village.mjs';
 import { requireCondition } from '../core/data-contract.mjs';
 
@@ -16,11 +16,7 @@ export const B4_GATES = Object.freeze({
 });
 export function createB4Config(scenario='baseline') {
   requireCondition(B4_SCENARIOS.includes(scenario),'Unknown B4 scenario');
-  const config=defaultMarketConfig();
-  config.ecology.deerBirthPermille=40;config.ecology.wolfBirthPermille=3;
-  config.ecology.resources.resources.herbs.initial=8;
-  config.ecology.resources.resources.herbs.production={numerator:1,denominator:8};
-  config.products.herbs.targetStock=12;
+  const config=calibratedMarketConfig();
   if(['herb-shortage','trade-blocked'].includes(scenario)) {
     config.ecology.resources.resources.herbs.initial=0;
     config.ecology.resources.resources.herbs.production.numerator=0;

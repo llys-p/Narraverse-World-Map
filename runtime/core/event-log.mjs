@@ -6,6 +6,7 @@ const EVENT_FIELDS = ['eventSeq', 'tick', 'type', 'schemaVersion', 'sourceSystem
 import { RESOURCE_RULES, MAX_RESOURCE_DAYS, validateResourceWorld, validateResourcePayload, validateResourceHistory } from './resource-ledger.mjs';
 import { ECOLOGY_RULES, validateEcologyPayload, validateEcologyWorld, validateEcologyHistory } from './ecology.mjs';
 import { MARKET_RULES, validateMarketPayload, validateMarketWorld, validateMarketHistory } from './market.mjs';
+import { ACTOR_RULES,validateActorPayload,validateActorWorld,validateActorHistory } from './actors.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
 export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
@@ -24,6 +25,8 @@ export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
   } else if (rulesVersion === MARKET_RULES) {
     requireCondition(fact.type === 'EconomyDaySettled' && systemId === 'market', 'Invalid market fact');
     validateMarketPayload(fact.payload);
+  } else if (rulesVersion===ACTOR_RULES) {
+    requireCondition(fact.type==='ActorDaySettled' && systemId==='actors','Invalid Actor fact');validateActorPayload(fact.payload);
   } else {
     requireCondition(fact.type === 'FixturePulse', 'Unknown system fact');
     fields(fact.payload, ['sample']);
@@ -42,13 +45,16 @@ export function validateEventLog(eventLog, snapshot, systems) {
     denseArray(eventLog, MAX_RESOURCE_DAYS + 100000); validateEcologyWorld(snapshot.world);
   } else if (snapshot.rulesVersion === MARKET_RULES) {
     denseArray(eventLog, MAX_RESOURCE_DAYS + 100000); validateMarketWorld(snapshot.world);
+  } else if (snapshot.rulesVersion===ACTOR_RULES) {
+    denseArray(eventLog,MAX_RESOURCE_DAYS+100000);validateActorWorld(snapshot.world);
   }
   // Clone also rejects getters, hidden properties and non-JSON values in this public entry.
   const events = cloneData(eventLog), state = cloneData(snapshot);
   record(state); record(state.commandReceipts); record(state.world); record(state.world.resources);
   const resourceProfile = state.rulesVersion === RESOURCE_RULES;
   const ecologyProfile = state.rulesVersion === ECOLOGY_RULES;
-  const marketProfile = state.rulesVersion === MARKET_RULES;
+  const actorProfile=state.rulesVersion===ACTOR_RULES;
+  const marketProfile = state.rulesVersion === MARKET_RULES || actorProfile;
   if (!resourceProfile && !ecologyProfile && !marketProfile) fields(state.world, ['resources']);
   integer(state.tick); integer(state.nextEventSeq, 1);
   requireCondition(state.nextEventSeq === events.length + 1, 'Event counter mismatch');
@@ -137,5 +143,6 @@ export function validateEventLog(eventLog, snapshot, systems) {
   requireCondition(commandEvents.size === 0, 'Fact references missing receipt');
   if (resourceProfile) validateResourceHistory(state.world, resourcePayloads);
   if (ecologyProfile) validateEcologyHistory(state, events);
-  if (marketProfile) validateMarketHistory(state, events);
+  if (actorProfile) validateActorHistory(state,events);
+  else if (marketProfile) validateMarketHistory(state, events);
 }

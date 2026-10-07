@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-b4` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-c1` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
@@ -84,6 +84,20 @@ node runtime/experiments/b4-experiments.mjs artifacts/simulation/b4-matrix-new
 ```
 
 矩阵入口要求干净代码/冻结配置指纹，用固定5seeds及2个holdout执行100日快测/完整断点续跑、500/1000日基线、轻扰动恢复及重鹿扰动/药材短缺/贸易阻断配对，逐行独立核对种群、资源、现金、运力、订单、价格和事件。失败非零，不偷偷调门槛；全部实验输出在新目录，report.json只在全门槛通过时写passed。summary包含idle/activity ticks、实际源码指纹和末尾内存；1000日不是大人口压测。控制文档仍在main、代码保留任务分支。
+
+### C1：实名人物份额与 Needs
+
+actor-village在冻结b4-baseline上分出村长/猎人/商人三个持续身份：80人=匿名77+实名3，并非新增人口。实名者默认休息、不参与匿名劳动/捕猎；从同一笔粮药消费账分配实际份额（匿名优先、实名ID顺序），Needs由饥饿/健康/疲劳派生。没药不恢复，没粮导致饥饿伤害，死亡一次且保留ID墓碑，后续不消费/治疗，不再生成替身。
+
+```powershell
+node simulation-runner.mjs --fixture actor-village --days 100 --seed 42 --out artifacts/simulation/actors100
+node simulation-runner.mjs --fixture actor-needs --days 4 --seed 0 --out artifacts/simulation/actors-needs4
+node simulation-runner.mjs --fixture actor-shortage --days 10 --seed 0 --out artifacts/simulation/actors-shortage10
+```
+
+actor-needs只改变猎人的初始健康500/饥饿500/疲劳600，用真实药粮验证恢复；actor-shortage无粮生产/鹿粮收益/药生产/金币，初始村长濒危，用于验证饥饿死亡。额外导出actor-config.json、actors.csv和人口分层；原市场/资源/生态CSV与完整checkpoint仍保留。日事件保存实名逐人份额，存档/私有session从配置/命令/RNG重放完整身份、消费和墓碑；不猜B旧档升级。
+
+当前C1需求每日一次，尚无Utility/Goal、自主工作或猎人行动、关系/记忆/完整LOD。[C1合同](tasks/C1-ACTOR-POPULATION-NEEDS-TASK.md)定义边界；后续C2再接实际人物行为。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

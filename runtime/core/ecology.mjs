@@ -84,12 +84,20 @@ export function removePopulation(input,payload,currencySpent=0) {
   validateEcologyWorld(world,currencySpent);return {world,success:true,result:{...cloneData(payload),before,after}};
 }
 
-export function settleEcologyDay(input,sample,trade) {
+export function settleEcologyDay(input,sample,trade,namedShares) {
   if(trade!==undefined){fields(trade,['currencySpent','inflows']);integer(trade.currencySpent);
     fields(trade.inflows,['food','herbs']);integer(trade.inflows.food);integer(trade.inflows.herbs);}
   const currencySpent=trade?.currencySpent??0;
   validateEcologyWorld(input,currencySpent);requireCondition(typeof sample==='number' && sample>=0 && sample<1,'Invalid ecological random sample');
   const world=cloneData(input),m=world.ecologyModel,c=m.config,v=c.resources.settlement;
+  if(namedShares!==undefined){
+    fields(namedShares,['registered','alive','injured']);for(const value of Object.values(namedShares))integer(value);
+    requireCondition(namedShares.registered<=v.humanCount && namedShares.alive<=namedShares.registered && namedShares.injured<=namedShares.alive,
+      'Invalid named population shares');
+    requireCondition(m.injuredCount<=v.humanCount-namedShares.registered,'Aggregate injuries overlap named population');
+  }
+  const reserved=namedShares?.registered??0, namedInjured=namedShares?.injured??0;
+  const totalAlive=v.humanCount-reserved+(namedShares?.alive??0);
   requireCondition(m.day<MAX_RESOURCE_DAYS,'Ecology day budget exceeded','LIMIT_EXCEEDED');
   const fraction=(key,numerator,denominator)=>{
     const total=BigInt(numerator)+BigInt(m.remainders[key]),den=BigInt(denominator);
@@ -107,9 +115,9 @@ export function settleEcologyDay(input,sample,trade) {
   let w=safe(BigInt(wolves.opening)+BigInt(wolves.births));
   wolves.naturalDeaths=Math.min(w,fraction('wolfDeath',mul(w,c.wolfDeathPermille),1000));w-=wolves.naturalDeaths;
   wolves.starvationDeaths=Math.min(w,fraction('wolfStarvation',BigInt(wolves.opening)*BigInt(c.wolfStarvationPermille)*BigInt(pressurePermille),1000000));w-=wolves.starvationDeaths;
-  const injuredOpening=m.injuredCount,healthy=v.humanCount-injuredOpening;
+  const injuredOpening=m.injuredCount,healthy=v.humanCount-reserved-injuredOpening;
   const foodWorkers=Math.min(v.foodWorkers,healthy),herbWorkers=Math.min(v.herbWorkers,healthy-foodWorkers);
-  const lowFood=BigInt(world.resources.food)+BigInt(trade?.inflows.food??0)<BigInt(v.humanCount)*BigInt(c.foodReserveDays);
+  const lowFood=BigInt(world.resources.food)+BigInt(trade?.inflows.food??0)<BigInt(totalAlive)*BigInt(c.foodReserveDays);
   const wantedHunters=lowFood?c.maxHunters:ceil(mul(c.maxHunters,pressurePermille),1000);
   const hunters=Math.min(wantedHunters,healthy-foodWorkers-herbWorkers),huntTarget=hunters===0?'none':lowFood?'deer':'wolves';
   const kills=Math.floor(hunters/c.huntersPerKill);
@@ -123,8 +131,8 @@ export function settleEcologyDay(input,sample,trade) {
   const farmProduction=safe((BigInt(foodWorkers)*BigInt(foodSpec.production.numerator)+BigInt(world.resourceModel.remainders.food.production))/BigInt(foodSpec.production.denominator));
   const dailyInflow=c.resources.flows.filter(f=>f.day===m.day+1 && f.resource==='food' && f.direction==='in').reduce((sum,f)=>sum+BigInt(f.amount),0n);
   const farmLoss=Math.min(farmLossRequested,safe(BigInt(world.resources.food)+BigInt(farmProduction)+BigInt(foodBonus)+dailyInflow+BigInt(trade?.inflows.food??0)));
-  const result=settleResourceDay(resourcePart(world),{settlement:{humanCount:v.humanCount,foodWorkers,herbWorkers,injuredCount:injuredOpening+newInjuries},foodBonus,foodDamage:farmLossRequested},trade);
-  const healed=result.payload.entries[1].consumption;
+  const result=settleResourceDay(resourcePart(world),{settlement:{humanCount:totalAlive,foodWorkers,herbWorkers,injuredCount:injuredOpening+newInjuries+namedInjured},foodBonus,foodDamage:farmLossRequested},trade,v.humanCount-totalAlive);
+  const healed=Math.min(injuredOpening+newInjuries,result.payload.entries[1].consumption);
   world.resources=result.world.resources;world.resourceModel=result.world.resourceModel;
   m.day++;m.injuredCount=injuredOpening+newInjuries-healed;deer.closing=d;wolves.closing=w;
   m.populations={deer:d,wolves:w};
@@ -132,11 +140,17 @@ export function settleEcologyDay(input,sample,trade) {
     m.ledger[id][key]=safe(BigInt(m.ledger[id][key])+BigInt(row[key]));
   validateEcologyWorld(world,currencySpent);
   return {world,payload:{day:m.day,deer,wolves,predationDemand,unmetPredation,pressurePermille,hungryWolves,farmLossRequested,farmLoss,
-    hunters,huntTarget,foodWorkers,herbWorkers,injuredOpening,newInjuries,healed,injuredClosing:m.injuredCount,sample,resources:result.payload}};
+    hunters,huntTarget,foodWorkers,herbWorkers,injuredOpening,newInjuries,healed,injuredClosing:m.injuredCount,sample,resources:result.payload,
+    ...(namedShares!==undefined?{namedShares:{...cloneData(namedShares),healed:result.payload.entries[1].consumption-healed}}:{})}};
 }
 
 export function validateEcologyPayload(payload) {
-  fields(payload,PAYLOAD_FIELDS);integer(payload.day,1);
+  fields(payload,Object.hasOwn(payload,'namedShares')?[...PAYLOAD_FIELDS,'namedShares']:PAYLOAD_FIELDS);integer(payload.day,1);
+  if(Object.hasOwn(payload,'namedShares')){
+    fields(payload.namedShares,['registered','alive','injured','healed']);for(const value of Object.values(payload.namedShares))integer(value);
+    requireCondition(payload.namedShares.alive<=payload.namedShares.registered && payload.namedShares.injured<=payload.namedShares.alive &&
+      payload.namedShares.healed<=payload.namedShares.injured,'Invalid named population settlement');
+  }
   for(const id of ['deer','wolves']){fields(payload[id],['opening',...ACCOUNTS.filter(k=>k!=='removed'),'closing']);for(const value of Object.values(payload[id]))integer(value);}
   for(const key of PAYLOAD_FIELDS.filter(k=>!['deer','wolves','sample','resources','huntTarget'].includes(k)))integer(payload[key]);
   requireCondition(['none','deer','wolves'].includes(payload.huntTarget) && typeof payload.sample==='number' && payload.sample>=0 && payload.sample<1,'Invalid hunt/sample');
