@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-d2a` 任务分支，未合并main。离线runner无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-d2b` 任务分支，未合并main。离线runner无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 D1已新增独立只读世界服务：
 
@@ -37,6 +37,16 @@ node runtime-server.mjs --data-dir artifacts/world-runtime-d2a/my-world --port 1
 ```
 
 页面可选择1小时/2小时/1天推进，生态、经济与NPC会真实结算；刷新仍纯读，过期页签409后重读，同请求重试或重启不会重复推进。世界与回执一起存盘。默认不加--writable仍只读；旧D1目录不隐式升级，可用明确--checkpoint初始化另一个新目录。初始化也占一档，因此每个实验目录最多127次新成功请求；满预算明确失败，不自动清理。正式提交之外的已知临时档保留但不加载，崩溃锁仍需明确处理；不承诺断电恢复。196/196及真实消费者已通过，见[D2A证据](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)。这不是玩家旅行/休整/交易或战斗入口。
+
+D2B的玩家世界使用明确的新profile与新目录：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2b/my-world --profile player-village --port 18314 --writable true
+# 已有这个目录时，恢复命令省略 --profile；不重设seed：
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2b/my-world --port 18314 --writable true
+```
+
+玩家是第四名实名居民，匿名76、总人口仍80；默认本人100金币/3粮/1药有真实分拨账，不借NPC钱包。页面显示本人状态与私货，活着有存粮时日结只吃本人一份；无私粮则增加本人饥饿，不自动拿公粮/用药。玩家死亡后私产与身份封存。公开世界与本人读数必须同revision，失配重读后仍不一致就保留上一份一致显示。`--profile`仅用于新目录，与`--checkpoint`互斥；不自动给旧世界新增玩家。仍默认只读，写需明确`--writable true`。232/232与真实双页签、跨档、隐私、资产守恒和恢复通过，见[D2B收口](tasks/D2B-PLAYER-CONTRACT.md)。旅行、主动休整、交易和战斗仍待后续合同。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
