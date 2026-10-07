@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 19:32（Asia/Shanghai）。
+更新时间：2026-10-07 19:54（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -69,7 +69,7 @@
 
 ## 下一步
 
-A/B及阶段C全部已验收。C5代码04dc222（D:\Narraverse-World-Map-a2 @ codex/world-runtime-c5）：177/177全回归，干净100=40+60完整checkpoint/14导出一致，独立评分/真实现金商品账、偏好跨档/篡改拒绝通过；旧C4 100日完整存档/13导出字节不变。源码指纹d3a2129dddc20dfe168b3b0af7a02c6dda6124f7b05289e35bf27be5c436b2a0，证据artifacts/world-runtime-c5-acceptance-20261007/comparison.json与[C5收口](tasks/C5-PERSONALITY-CHOICE-TASK.md)。D1代码0f86d40（codex/world-runtime-d1）已验收：全量184/184，真实HTTP/两个浏览器页签、纯读/断连/重启、锁归属/字节一致通过；首次默认并发系统内存分配失败，保留日志后两路并发原测试全过。证据artifacts/world-runtime-d1-acceptance-20261007，见[D1收口](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。[D2A时间提交](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)代码d29da21已验收（源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2a，基准da1155f）：最终196/196，真实双页签revision冲突、CLI重启/原ID重试、发布后硬退出恢复、队列/文件预算和键盘操作通过；三请求[144,144,6]完整bundle=C5直接294ticks。证据artifacts/world-runtime-d2a-acceptance-20261007/comparison.json与full-tests-final.txt。下一步D2B先冻结独立玩家身份与资产唯一归属，再发实现合同；当前三NPC不可直接作为玩家钱包。D2B/D2C未开工，D2与D整体未验收。源码仍不合并main、不部署/接模型/桥/真实旧档，E预研独立。
+A/B及阶段C全部已验收。C5代码04dc222（D:\Narraverse-World-Map-a2 @ codex/world-runtime-c5）：177/177全回归，干净100=40+60完整checkpoint/14导出一致，独立评分/真实现金商品账、偏好跨档/篡改拒绝通过；旧C4 100日完整存档/13导出字节不变。源码指纹d3a2129dddc20dfe168b3b0af7a02c6dda6124f7b05289e35bf27be5c436b2a0，证据artifacts/world-runtime-c5-acceptance-20261007/comparison.json与[C5收口](tasks/C5-PERSONALITY-CHOICE-TASK.md)。D1代码0f86d40（codex/world-runtime-d1）已验收：全量184/184，真实HTTP/两个浏览器页签、纯读/断连/重启、锁归属/字节一致通过；首次默认并发系统内存分配失败，保留日志后两路并发原测试全过。证据artifacts/world-runtime-d1-acceptance-20261007，见[D1收口](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。[D2A时间提交](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)代码d29da21已验收（源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2a，基准da1155f）：最终196/196，真实双页签revision冲突、CLI重启/原ID重试、发布后硬退出恢复、队列/文件预算和键盘操作通过；三请求[144,144,6]完整bundle=C5直接294ticks。证据artifacts/world-runtime-d2a-acceptance-20261007/comparison.json与full-tests-final.txt。[D2B共同合同](tasks/D2B-PLAYER-CONTRACT.md)已冻结于2f04ac7；用户批准三路并行，[D2B1核心](tasks/D2B1-PLAYER-CORE-TASK.md)、[D2B2服务页面](tasks/D2B2-PLAYER-SERVICE-TASK.md)、[D2B3独立验收](tasks/D2B3-PLAYER-ACCEPTANCE-TASK.md)已在各自D:\Narraverse-World-Map-d2b-*工作树/codex/world-runtime-d2b-*分支开工。第四玩家+76匿名总80，三NPC代理与私币隔离不放宽旧合同；中控集成树a2 @ codex/world-runtime-d2b。尚无实现交付/阶段验收，D2C未开工，D2与D整体未验收。源码仍不合并main、不部署/接模型/桥/真实旧档，E预研独立。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -85,4 +85,4 @@ A/B及阶段C全部已验收。C5代码04dc222（D:\Narraverse-World-Map-a2 @ co
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4及A/B/C阶段门槛已通过；C1～C5均已验收，D1已验收，D2A已验收，D2B/D2C未开工，D整体未验收，F/G主线未开始。E阶段待开始；E1本轮A/B投入筛查已复验收档，无信号达继续投入门槛、正式准入为空；[合同与保存点](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-DEV30-SCREENING-TASK.md)。停止当前400扩样/微调路线，不开新模型调用/校准/final/CUDA/C/E2/qoder_cron；保留数据环境。D主线不依赖AI，后续模型探索须另发定向合同，不把本轮预研收口当E1正式或E阶段验收。
+- A1～A4及A/B/C阶段门槛已通过；C1～C5均已验收，D1已验收，D2A已验收，D2B三路进行中，D2C未开工，D整体未验收，F/G主线未开始。E阶段待开始；E1本轮A/B投入筛查已复验收档，无信号达继续投入门槛、正式准入为空；[合同与保存点](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-DEV30-SCREENING-TASK.md)。停止当前400扩样/微调路线，不开新模型调用/校准/final/CUDA/C/E2/qoder_cron；保留数据环境。D主线不依赖AI，后续模型探索须另发定向合同，不把本轮预研收口当E1正式或E阶段验收。
