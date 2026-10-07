@@ -8,6 +8,7 @@ import { ECOLOGY_RULES, removePopulation, ecologyCauses, settleEcologyDay } from
 import { MARKET_RULES, applyMarketCommand, marketCommandFact, marketCauses, settleMarketDay } from './market.mjs';
 import { ACTOR_RULES,applyActorCommand,settleActorDay } from './actors.mjs';
 import { HUNTER_RULES,applyHunterCommand,planHunterDay,applyHunterAction,hunterActionFact,hunterCauses,settleHunterDay } from './hunter.mjs';
+import { SOCIETY_RULES,applySocietyCommand,planSocietyDay,applySocietyAction,societyActionFact,societyCauses,settleSocietyDay } from './society.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, integer, normalizeSystems, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
@@ -56,7 +57,11 @@ function performTick(bundle, systems, mode) {
     const commitInput=(input)=>{
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
       let success, result, eventSeqs = [];
-      if(rulesVersion===HUNTER_RULES){
+      if(rulesVersion===SOCIETY_RULES){
+        const applied=input.type==='SocietyAction'?applySocietyAction(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null):applySocietyCommand(s.world,{type:input.type,payload:input.payload});
+        s.world=applied.world;success=applied.success;result=applied.result;
+        if(success)eventSeqs=[append(input.type==='SocietyAction'?societyActionFact(input,result):marketCommandFact(input,result))];
+      }else if(rulesVersion===HUNTER_RULES){
         const applied=input.type==='ActorAction'?applyHunterAction(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null):applyHunterCommand(s.world,{type:input.type,payload:input.payload});
         s.world=applied.world;success=applied.success;result=applied.result;
         if(success)eventSeqs=[append(input.type==='ActorAction'?hunterActionFact(input,result):marketCommandFact(input,result))];
@@ -99,15 +104,23 @@ function performTick(bundle, systems, mode) {
         commitInput({...input,inputSeq:s.nextInputSeq++});
       }
     }
+    if(rulesVersion===SOCIETY_RULES && plan.dueTasks.length){
+      const planned=planSocietyDay(s.world);s.world=planned.world;
+      for(const raw of planned.commands){const input=commandInput(raw);
+        requireCondition(input.targetTick===failedTick && !own(s.commandReceipts,input.commandId),'Society internal due tick/ID mismatch');
+        requireCondition(s.nextInputSeq<Number.MAX_SAFE_INTEGER,'Society input counter overflow','LIMIT_EXCEEDED');
+        commitInput({...input,inputSeq:s.nextInputSeq++});}
+    }
     // Rules may change resources and allocate entity IDs, never rewrite the input/identity envelope.
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
       return canonicalJson({ ...protectedFields,
-        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
-        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
-        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
-        ...([ACTOR_RULES,HUNTER_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
-        ...(rulesVersion===HUNTER_RULES?{hunterConfig:world.hunterModel.config}:{}) });
+        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
+        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
+        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
+        ...([ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
+        ...(rulesVersion===HUNTER_RULES?{hunterConfig:world.hunterModel.config}:{}),
+        ...(rulesVersion===SOCIETY_RULES?{societyConfig:world.societyModel.config}:{}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
@@ -115,6 +128,7 @@ function performTick(bundle, systems, mode) {
         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
         ...([MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { populationCauses: Object.freeze(marketCauses(candidate.eventLog)) } : {}),
         ...(rulesVersion===HUNTER_RULES?{populationCauses:Object.freeze(hunterCauses(candidate.eventLog))}:{}),
+        ...(rulesVersion===SOCIETY_RULES?{populationCauses:Object.freeze(societyCauses(candidate.eventLog))}:{}),
         emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
@@ -161,6 +175,7 @@ function canonicalSystems(rulesVersion) {
   if (rulesVersion === MARKET_RULES) return define('market', 'EconomyDaySettled', settleMarketDay, true);
   if (rulesVersion === ACTOR_RULES) return define('actors', 'ActorDaySettled', settleActorDay, true);
   if (rulesVersion === HUNTER_RULES) return define('hunter','HunterDaySettled',settleHunterDay,true);
+  if (rulesVersion === SOCIETY_RULES) return define('society','SocietyDaySettled',settleSocietyDay,true);
   throw fault('UNSUPPORTED_VERSION', 'No canonical transition for these rules');
 }
 
@@ -177,7 +192,7 @@ export function createSimulationSession(bundle, systems) {
   fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
   const registered = Object.freeze({ ...systems });
   validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
-  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(bundle.snapshot.rulesVersion),
+  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion),
     'Session rules are not registered', 'UNSUPPORTED_VERSION');
   let current = freezeData(cloneBundle(bundle)), busy = false;
   const stats = { idleTicks: 0, activityTicks: 0 };

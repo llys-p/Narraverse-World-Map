@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-c2` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-c3` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
@@ -114,6 +114,20 @@ node simulation-runner.mjs --fixture hunter-village --days 100 --seed 42 --out a
 hunter-recovery初始猎人health500、私粮20，实际演示缺钱→工作→买药→用药；hunter-hunger初始私粮0/hunger500，演示真正捕猎。额外hunter-config.json、hunter.csv（目标/私账）、actions.csv（命令/价格/工资/捕猎/伤损/回执），原Actor/市场/生态CSV及inputs/checkpoint保留。actors.csv食物是每人实际消费（自主猎人为私人粮）；economy.csv只记公用仓库，完整内部转移/使用事实在events.csv和hunter.csv/actions.csv。
 
 当前只猎人自主；商人/村长仍默认休息，竞争在C3，关系/事实可知记忆在C4。未接UI/模型或旧存档，不能把C2标阶段C全部完成。见[C2合同](tasks/C2-HUNTER-UTILITY-GOAL-TASK.md)。
+
+### C3：三人独立目标与最后一份资源
+
+c-society-v1给村长/猎人/商人独立私账和Goal：先对同一快照规划，再按actorId提交重校验。两人抢最后1公药/20工资时只有首个合法提交成功，失败者不损钱货；系统异常则三人整个tick回退。村长有公共粮目标、猎人沿用真实捕猎链、商人持真实私药并转售给需要药的同村人物，不是换三个人名共用一个目标。
+
+```powershell
+node simulation-runner.mjs --fixture society-village --days 100 --seed 42 --out artifacts/simulation/society100
+node simulation-runner.mjs --fixture society-medicine-race --days 4 --seed 0 --out artifacts/simulation/medicine-race4
+node simulation-runner.mjs --fixture society-peer-sale --days 4 --seed 42 --out artifacts/simulation/peer-sale4
+```
+
+peer出售同时转移双方金币归属与药，公仓不再扣药，買方下一日使用；已拿到药或死者拒绝交易。总gold=公共金+三钱包，外采不能花私钱；资产/墓碑/Goal/阻塞失败都随存档持续。新增society-config.json、society.csv（每人目标/私账/peer账）、actions.csv（成功/拒绝、双方价格/现金），原Actor/市场/生态CSV与全部内部inputs/checkpoint保留。公仓outflow包含内部移交，完整资源总账须加三人私有余量/消费并扣除peer内部重复购买，不能当外部出口。
+
+初始三人私粮各3从公仓移交，商人钱包100是初始聚落金币份额。C3仍每日最多一步、无记忆/关系/复杂寻路/AI；C4可知事实记忆后续，未验完整C阶段。见[C3合同](tasks/C3-SOCIETY-COMPETITION-TASK.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

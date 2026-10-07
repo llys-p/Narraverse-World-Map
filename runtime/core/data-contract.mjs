@@ -93,7 +93,11 @@ export function commandInput(raw, strictType = true) {
   identifier(input.commandId); integer(input.targetTick, 1); identifier(input.type);
   record(input.payload); payloadBudget(input.payload);
   if (strictType) {
-    if(input.type==='ActorAction'){
+    if(input.type==='SocietyAction'){
+      fields(input.payload,['actorId','goalId','action','targetActorId']);identifier(input.payload.actorId);integer(input.payload.goalId);
+      requireCondition(['Rest','WorkForPay','Hunt','BuyFood','BuyMedicine','UseMedicine','SellMedicine'].includes(input.payload.action),'Unknown Society action');
+      if(input.payload.action==='SellMedicine')identifier(input.payload.targetActorId);else requireCondition(input.payload.targetActorId===null,'Nontrade action has peer target');
+    }else if(input.type==='ActorAction'){
       fields(input.payload,['actorId','goalId','action']);identifier(input.payload.actorId);integer(input.payload.goalId);
       requireCondition(['Rest','WorkForPay','Hunt','BuyFood','BuyMedicine','UseMedicine'].includes(input.payload.action),'Unknown Actor action');
     }else if (input.type === 'SetTradeRoute') {

@@ -37,57 +37,61 @@ export function createHunterWorld(config=defaultHunterConfig()){
 }
 
 export function communalGold(world){validateHunterWorld(world);return world.resources.gold-world.hunterModel.wallet;}
-export function validateHunterWorld(world){
+export function validateHunterWorld(world,ownership){
+  if(ownership!==undefined){fields(ownership,['actorId','foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived']);identifier(ownership.actorId);
+    for(const key of ['foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived'])integer(ownership[key]);}
   fields(world,['resources','resourceModel','ecologyModel','marketModel','actorModel','hunterModel']);
   const m=world.hunterModel;fields(m,['config','configFingerprint','actorId','day','wallet','inventory','ledger','currentGoal','nextGoalId','cooldownUntilDay','lastActionDay','lastAction','lastDecision']);
   validateConfig(m.config);fields(m.ledger,LEDGER_FIELDS);for(const n of Object.values(m.ledger))integer(n);
-  validateActorWorld(actorPart(world),m.ledger.foodUsed);
+  validateActorWorld(actorPart(world),add(m.ledger.foodUsed,ownership?.foreignFoodUsed??0));
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.actors)===canonicalJson(world.actorModel.config),'Hunter/Actor config mismatch');
   integer(m.day);requireCondition(m.day===world.actorModel.day,'Hunter day mismatch');identifier(m.actorId);
-  const hunter=hunterOf(world);requireCondition(hunter && hunter.occupation==='hunter' && hunter.actorId===world.actorModel.actors.find(a=>a.occupation==='hunter')?.actorId,'Hunter identity mismatch');
-  integer(m.wallet);requireCondition(m.wallet<=world.resources.gold,'Personal wallet spent by public market');
-  requireCondition(BigInt(m.wallet)===BigInt(m.config.initialWallet)+BigInt(m.ledger.wages)-BigInt(m.ledger.spentFood)-BigInt(m.ledger.spentMedicine),'Personal currency does not reconcile');
+  const hunter=hunterOf(world);requireCondition(hunter && (ownership?hunter.actorId===ownership.actorId:hunter.occupation==='hunter' && hunter.actorId===world.actorModel.actors.find(a=>a.occupation==='hunter')?.actorId),'Personal identity mismatch');
+  integer(m.wallet);requireCondition(BigInt(m.wallet)+BigInt(ownership?.foreignWallets??0)<=BigInt(world.resources.gold),'Personal wallets spent by public market');
+  requireCondition(BigInt(m.wallet)===BigInt(m.config.initialWallet)+BigInt(m.ledger.wages)+BigInt(ownership?.saleRevenue??0)-BigInt(m.ledger.spentFood)-BigInt(m.ledger.spentMedicine),'Personal currency does not reconcile');
   requireCondition(BigInt(m.ledger.wages)===BigInt(m.ledger.workDays)*BigInt(m.config.wage) &&
     BigInt(m.ledger.foodProduced)===BigInt(m.ledger.workDays)*BigInt(m.config.workFood)+BigInt(m.ledger.hunts)*BigInt(m.config.huntFood), 'Work/hunt production ledger mismatch');
   fields(m.inventory,['food','herbs']);for(const n of Object.values(m.inventory)){integer(n);requireCondition(n<=1000,'Private inventory limit exceeded','LIMIT_EXCEEDED');}
   requireCondition(BigInt(m.inventory.food)===BigInt(m.config.initialFood)+BigInt(m.ledger.foodBought)+BigInt(m.ledger.hunts)*BigInt(m.config.huntFood)-BigInt(m.ledger.foodUsed),'Private food ledger mismatch');
-  requireCondition(BigInt(m.inventory.herbs)===BigInt(m.config.initialHerbs)+BigInt(m.ledger.herbsBought)-BigInt(m.ledger.herbsUsed),'Private medicine ledger mismatch');
+  requireCondition(BigInt(m.inventory.herbs)===BigInt(m.config.initialHerbs)+BigInt(m.ledger.herbsBought)-BigInt(m.ledger.herbsUsed)-BigInt(ownership?.herbsSold??0),'Private medicine ledger mismatch');
   requireCondition(BigInt(world.resourceModel.ledger.food.outflow)>=BigInt(m.config.initialFood)+BigInt(m.ledger.foodBought)+BigInt(m.ledger.hunts)*BigInt(m.config.huntFood) &&
-    BigInt(world.resourceModel.ledger.herbs.outflow)>=BigInt(m.config.initialHerbs)+BigInt(m.ledger.herbsBought),'Private transfer exceeds actual warehouse outflow');
+    BigInt(world.resourceModel.ledger.herbs.outflow)>=BigInt(m.config.initialHerbs)+BigInt(m.ledger.herbsBought)-BigInt(ownership?.herbsReceived??0),'Private transfer exceeds actual warehouse outflow');
   integer(m.nextGoalId,1);integer(m.cooldownUntilDay);integer(m.lastActionDay);
-  requireCondition(m.lastActionDay<=m.day+1 && ['None',...HUNTER_ACTIONS].includes(m.lastAction),'Invalid last action');
+  requireCondition(m.lastActionDay<=m.day+1 && ['None',...HUNTER_ACTIONS,...(ownership?['SellMedicine']:[])].includes(m.lastAction),'Invalid last action');
   if(m.currentGoal){fields(m.currentGoal,['goalId','kind','step','startDay','deadlineDay','failures','target']);integer(m.currentGoal.goalId,1);
-    requireCondition(m.currentGoal.goalId<m.nextGoalId && ['secure-food','recover-health','recover-rest'].includes(m.currentGoal.kind),'Invalid current goal');
-    requireCondition(['earn','buy','use','hunt','rest','wait'].includes(m.currentGoal.step),'Unknown goal step');
+    requireCondition(m.currentGoal.goalId<m.nextGoalId && ['secure-food','recover-health','recover-rest',...(ownership?['support-village','stock-medicine','sell-medicine']:[])].includes(m.currentGoal.kind),'Invalid current goal');
+    requireCondition(['earn','buy','use','hunt','rest','wait',...(ownership?['sell','produce']:[])].includes(m.currentGoal.step),'Unknown goal step');
     for(const key of ['startDay','deadlineDay','failures','target'])integer(m.currentGoal[key]);
     requireCondition(m.currentGoal.startDay>=1 && m.currentGoal.startDay<=m.day+1 && m.currentGoal.deadlineDay===m.currentGoal.startDay+m.config.deadlineDays && m.currentGoal.target<=1000,'Goal deadline/target mismatch');}
-  if(m.lastDecision){fields(m.lastDecision,['day','goalId','kind','action','scores','blocked']);integer(m.lastDecision.day,1);integer(m.lastDecision.goalId);
-    requireCondition(HUNTER_ACTIONS.includes(m.lastDecision.action) && typeof m.lastDecision.blocked==='boolean','Invalid Utility decision');
+  if(m.lastDecision){fields(m.lastDecision,['day','goalId','kind','action','scores','blocked',...(ownership && Object.hasOwn(m.lastDecision,'roleScore')?['roleScore']:[])]);integer(m.lastDecision.day,1);integer(m.lastDecision.goalId);
+    requireCondition([...HUNTER_ACTIONS,...(ownership?['SellMedicine']:[])].includes(m.lastDecision.action) && typeof m.lastDecision.blocked==='boolean','Invalid Utility decision');
+    if(Object.hasOwn(m.lastDecision,'roleScore'))integer(m.lastDecision.roleScore);
     fields(m.lastDecision.scores,['health','food','rest']);for(const n of Object.values(m.lastDecision.scores))integer(n);}
 }
 
-function feasible(w,action){
+export function canPersonalAction(w,action,ownership){validateHunterWorld(w,ownership);return feasible(w,action,ownership);}
+function feasible(w,action,ownership){
   const m=w.hunterModel,a=hunterOf(w),c=m.config;
   if(!a.alive || m.lastActionDay>=m.day+1)return false;
   if(action==='Rest')return true;
-  if(action==='WorkForPay')return a.health>=300 && a.fatigue<=700 && w.resources.gold-m.wallet>=c.wage;
-  if(action==='Hunt')return a.health>=600 && a.fatigue<=600 && w.ecologyModel.populations.deer>=1 && m.inventory.food<=1000-c.huntFood;
+  if(action==='WorkForPay')return a.health>=300 && a.fatigue<=700 && w.resources.gold-m.wallet-(ownership?.foreignWallets??0)>=c.wage;
+  if(action==='Hunt')return a.occupation==='hunter' && a.health>=600 && a.fatigue<=600 && w.ecologyModel.populations.deer>=1 && m.inventory.food<=1000-c.huntFood;
   if(action==='BuyFood')return w.resources.food>=1 && m.wallet>=w.marketModel.prices.food && m.inventory.food<1000;
   if(action==='BuyMedicine')return w.resources.herbs>=1 && m.wallet>=w.marketModel.prices.herbs && m.inventory.herbs<1000;
   return action==='UseMedicine' && m.inventory.herbs>0 && a.health<1000;
 }
 
-export function applyHunterAction(input,payload,sample=null){
-  validateHunterWorld(input);fields(payload,['actorId','goalId','action']);integer(payload.goalId);identifier(payload.actorId);
+export function applyHunterAction(input,payload,sample=null,ownership){
+  validateHunterWorld(input,ownership);fields(payload,['actorId','goalId','action']);integer(payload.goalId);identifier(payload.actorId);
   requireCondition(payload.actorId===input.hunterModel.actorId && HUNTER_ACTIONS.includes(payload.action),'Invalid Hunter action/identity');
   if(payload.action==='Hunt')requireCondition(typeof sample==='number' && sample>=0 && sample<1,'Invalid hunting sample');
   else requireCondition(sample===null,'Only Hunt consumes an extra random sample');
   const world=cloneData(input),m=world.hunterModel,a=hunterOf(world),c=m.config,action=payload.action;
-  if(!feasible(input,action)){
+  if(!feasible(input,action,ownership)){
     if(a.alive && m.lastActionDay<m.day+1){m.lastActionDay=m.day+1;m.lastAction=action;m.ledger.failedActions=add(m.ledger.failedActions,1);if(m.currentGoal)m.currentGoal.failures++;}
     return {world,success:false,result:{code:'RULE_REJECTED'}};
   }
-  const before={wallet:m.wallet,inventory:cloneData(m.inventory),communalGold:world.resources.gold-m.wallet};
+  const before={wallet:m.wallet,inventory:cloneData(m.inventory),communalGold:world.resources.gold-m.wallet-(ownership?.foreignWallets??0)};
   let foodProduced=0,deerKilled=0,price=0,injuryDamage=0;
   if(action==='WorkForPay'){
     m.wallet=add(m.wallet,c.wage);m.ledger.wages=add(m.ledger.wages,c.wage);m.ledger.workDays++;
@@ -109,33 +113,33 @@ export function applyHunterAction(input,payload,sample=null){
   }else if(action==='UseMedicine'){m.inventory.herbs--;m.ledger.herbsUsed++;a.health=Math.min(1000,a.health+100);}
   else m.ledger.restDays++;
   m.ledger.foodProduced=add(m.ledger.foodProduced,foodProduced);m.lastActionDay=m.day+1;m.lastAction=action;syncNeeds(a);
-  validateHunterWorld(world);
-  return {world,success:true,result:{...cloneData(payload),day:m.day+1,before,after:{wallet:m.wallet,inventory:cloneData(m.inventory),communalGold:world.resources.gold-m.wallet},foodProduced,deerKilled,price,injuryDamage,sample}};
+  validateHunterWorld(world,ownership);
+  return {world,success:true,result:{...cloneData(payload),day:m.day+1,before,after:{wallet:m.wallet,inventory:cloneData(m.inventory),communalGold:world.resources.gold-m.wallet-(ownership?.foreignWallets??0)},foodProduced,deerKilled,price,injuryDamage,sample}};
 }
 
-function nextAction(w,goal){
+function nextAction(w,goal,ownership){
   const m=w.hunterModel,a=hunterOf(w);
   if(a.fatigue>=600)return {action:'Rest',step:goal?.step??'rest',blocked:false};
   const food=()=>{
     if(m.inventory.food>0)return {action:'Rest',step:'wait',blocked:false};
-    if(feasible(w,'BuyFood'))return {action:'BuyFood',step:'buy',blocked:false};
-    if(feasible(w,'Hunt'))return {action:'Hunt',step:'hunt',blocked:false};
-    if(m.wallet<w.marketModel.prices.food && feasible(w,'WorkForPay'))return {action:'WorkForPay',step:'earn',blocked:false};
+    if(feasible(w,'BuyFood',ownership))return {action:'BuyFood',step:'buy',blocked:false};
+    if(feasible(w,'Hunt',ownership))return {action:'Hunt',step:'hunt',blocked:false};
+    if(m.wallet<w.marketModel.prices.food && feasible(w,'WorkForPay',ownership))return {action:'WorkForPay',step:'earn',blocked:false};
     return {action:'Rest',step:'wait',blocked:true};
   };
   if(m.inventory.food===0 && a.hunger>=300)return food();
   if(goal?.kind==='recover-health'){
-    if(feasible(w,'UseMedicine'))return {action:'UseMedicine',step:'use',blocked:false};
-    if(feasible(w,'BuyMedicine'))return {action:'BuyMedicine',step:'buy',blocked:false};
-    if(m.wallet<w.marketModel.prices.herbs && feasible(w,'WorkForPay'))return {action:'WorkForPay',step:'earn',blocked:false};
+    if(feasible(w,'UseMedicine',ownership))return {action:'UseMedicine',step:'use',blocked:false};
+    if(feasible(w,'BuyMedicine',ownership))return {action:'BuyMedicine',step:'buy',blocked:false};
+    if(m.wallet<w.marketModel.prices.herbs && feasible(w,'WorkForPay',ownership))return {action:'WorkForPay',step:'earn',blocked:false};
     return {action:'Rest',step:'wait',blocked:true};
   }
   if(goal?.kind==='secure-food')return food();
   return {action:'Rest',step:'rest',blocked:false};
 }
 
-export function planHunterDay(input){
-  validateHunterWorld(input);const world=cloneData(input),m=world.hunterModel,a=hunterOf(world),day=m.day+1;
+export function planHunterDay(input,ownership){
+  validateHunterWorld(input,ownership);const world=cloneData(input),m=world.hunterModel,a=hunterOf(world),day=m.day+1;
   const scores={health:a.alive && a.health<=700?1500-a.health:0,food:a.alive && m.inventory.food===0?600+a.hunger:0,rest:a.alive && a.fatigue>=600?600+a.fatigue:0};
   if(!a.alive){if(m.currentGoal){m.currentGoal=null;m.ledger.goalsFailed++;}m.lastDecision=null;return {world,command:null,decision:null};}
   if(m.currentGoal && day>m.currentGoal.deadlineDay){m.ledger.goalsFailed++;m.currentGoal=null;m.cooldownUntilDay=day+m.config.cooldownDays;}
@@ -144,7 +148,7 @@ export function planHunterDay(input){
     if(choices[0][1]>0){const [kind,,target]=choices[0];requireCondition(m.nextGoalId<Number.MAX_SAFE_INTEGER,'Goal counter overflow','LIMIT_EXCEEDED');
       m.currentGoal={goalId:m.nextGoalId++,kind,step:'wait',startDay:day,deadlineDay:day+m.config.deadlineDays,failures:0,target};}
   }
-  const choice=nextAction(world,m.currentGoal);
+  const choice=nextAction(world,m.currentGoal,ownership);
   if(m.currentGoal){m.currentGoal.step=choice.step;if(choice.blocked)m.currentGoal.failures++;}
   const decision={day,goalId:m.currentGoal?.goalId??0,kind:m.currentGoal?.kind??'idle',action:choice.action,scores,blocked:choice.blocked};m.lastDecision=cloneData(decision);
   return {world,decision,command:{commandId:'hunter-day-'+day,targetTick:day*144,type:'ActorAction',payload:{actorId:m.actorId,goalId:decision.goalId,action:decision.action}}};

@@ -15,6 +15,8 @@ import { ACTOR_RULES } from './runtime/core/actors.mjs';
 import { createActorVillage,createActorNeeds,createActorShortage } from './runtime/fixtures/actor-village.mjs';
 import { HUNTER_RULES } from './runtime/core/hunter.mjs';
 import { createHunterVillage,createHunterRecovery,createHunterHunger } from './runtime/fixtures/hunter-village.mjs';
+import { SOCIETY_RULES } from './runtime/core/society.mjs';
+import { createSocietyVillage,createSocietyMedicineRace,createSocietyPeerSale } from './runtime/fixtures/society-village.mjs';
 import { createSimulationSession } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
@@ -36,8 +38,11 @@ const profiles = new Map([
   ['hunter-village',{rulesVersion:HUNTER_RULES,create:createHunterVillage}],
   ['hunter-recovery',{rulesVersion:HUNTER_RULES,create:createHunterRecovery}],
   ['hunter-hunger',{rulesVersion:HUNTER_RULES,create:createHunterHunger}],
+  ['society-village',{rulesVersion:SOCIETY_RULES,create:createSocietyVillage}],
+  ['society-medicine-race',{rulesVersion:SOCIETY_RULES,create:createSocietyMedicineRace}],
+  ['society-peer-sale',{rulesVersion:SOCIETY_RULES,create:createSocietyPeerSale}],
 ]);
-const actorPayload=event=>event.type==='HunterDaySettled'?event.payload.actors:event.type==='ActorDaySettled'?event.payload:undefined;
+const actorPayload=event=>['HunterDaySettled','SocietyDaySettled'].includes(event.type)?event.payload.actors:event.type==='ActorDaySettled'?event.payload:undefined;
 const marketPayload=event=>actorPayload(event)?.market??(event.type==='EconomyDaySettled'?event.payload:undefined);
 
 async function selectSimulation(options) {
@@ -121,7 +126,7 @@ async function writeEconomy(file, events) {
   try {
     await handle.writeFile(columns.join(',') + '\n');
     for (const event of events) {
-      if (!['ResourceDaySettled', 'EcologyDaySettled', 'EconomyDaySettled','ActorDaySettled','HunterDaySettled'].includes(event.type)) continue;
+      if (!['ResourceDaySettled', 'EcologyDaySettled', 'EconomyDaySettled','ActorDaySettled','HunterDaySettled','SocietyDaySettled'].includes(event.type)) continue;
       const market=marketPayload(event);
       const payload = market ? market.ecology.resources :
         event.type === 'EcologyDaySettled' ? event.payload.resources : event.payload;
@@ -150,7 +155,7 @@ async function writeEcology(directory, events) {
     const handle = await fs.open(path.join(directory,file),'wx');
     try {
       await handle.writeFile(columns.join(',')+'\n');
-      for (const event of events) if (['EcologyDaySettled', 'EconomyDaySettled','ActorDaySettled','HunterDaySettled'].includes(event.type)) {
+      for (const event of events) if (['EcologyDaySettled', 'EconomyDaySettled','ActorDaySettled','HunterDaySettled','SocietyDaySettled'].includes(event.type)) {
         const p = marketPayload(event)?.ecology??event.payload;
         const row = file === 'population.csv' ? {day:p.day,deer:p.deer.closing,wolves:p.wolves.closing,injuredCount:p.injuredClosing} : {...p};
         if(file==='population.csv' && hasActors)Object.assign(row,actorPayload(event).populationClosing);
@@ -160,6 +165,28 @@ async function writeEcology(directory, events) {
       }
     } finally { await handle.close(); }
   }
+}
+
+async function writeSociety(directory,bundle){
+  const columns=['day','actorId','action','goalId','goalKind','goalStep','goalOutcome','goalFailures','wallet','communalGold','privateFood','privateHerbs','foodUsed','herbsUsed','wages','spentMedicine','salesRevenue','saleSpent','herbsSold','herbsReceived'];
+  const daily=await fs.open(path.join(directory,'society.csv'),'wx');
+  try{await daily.writeFile(columns.join(',')+'\n');
+    for(const event of bundle.eventLog)if(event.type==='SocietyDaySettled')for(const a of event.payload.agents){
+      const row={day:event.payload.day,actorId:a.actorId,action:a.decision?.action??'None',goalId:a.decision?.goalId??0,goalKind:a.decision?.kind??'dead',
+        goalStep:a.currentGoal?.step??'',goalOutcome:a.goalOutcome,goalFailures:a.currentGoal?.failures??0,wallet:a.wallet,communalGold:event.payload.communalGold,
+        privateFood:a.inventory.food,privateHerbs:a.inventory.herbs,foodUsed:a.ledger.foodUsed,herbsUsed:a.ledger.herbsUsed,wages:a.ledger.wages,spentMedicine:a.ledger.spentMedicine,
+        salesRevenue:a.trade.revenue,saleSpent:a.trade.spent,herbsSold:a.trade.herbsSold,herbsReceived:a.trade.herbsReceived};
+      await daily.writeFile(columns.map(key=>String(row[key])).join(',')+'\n');}}
+  finally{await daily.close();}
+  const actionColumns=['inputSeq','day','commandId','actorId','goalId','action','targetActorId','status','price','walletBefore','walletAfter','buyerWalletBefore','buyerWalletAfter','foodProduced','deerKilled','injuryDamage','sample'];
+  const actions=await fs.open(path.join(directory,'actions.csv'),'wx');
+  try{await actions.writeFile(actionColumns.join(',')+'\n');
+    const receipts=Object.entries(bundle.snapshot.commandReceipts).filter(([,r])=>r.input.type==='SocietyAction').sort((a,b)=>a[1].inputSeq-b[1].inputSeq);
+    for(const [commandId,r] of receipts){const p=r.result,row={inputSeq:r.inputSeq,day:r.input.targetTick/144,commandId,...r.input.payload,status:r.status,price:p.price??0,
+      walletBefore:p.before?.wallet??p.before?.sellerWallet??'',walletAfter:p.after?.wallet??p.after?.sellerWallet??'',
+      buyerWalletBefore:p.before?.buyerWallet??'',buyerWalletAfter:p.after?.buyerWallet??'',foodProduced:p.foodProduced??0,deerKilled:p.deerKilled??0,injuryDamage:p.injuryDamage??0,sample:p.sample??''};
+      await actions.writeFile(actionColumns.map(key=>row[key]===null?'':String(row[key])).join(',')+'\n');}}
+  finally{await actions.close();}
 }
 
 async function writeMarket(directory, events) {
@@ -250,11 +277,12 @@ export async function runSimulation(options, hooks = {}) {
     checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
     await fs.writeFile(path.join(directory, 'inputs.json'), JSON.stringify(completeInputs(bundle.snapshot), null, 2), { flag: 'wx' });
     await writeEvents(path.join(directory, 'events.csv'), bundle.eventLog);
-    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
-    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
-    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
-    const actorConfig = [ACTOR_RULES,HUNTER_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
+    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
+    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
+    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
+    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
     const hunterConfig=bundle.snapshot.rulesVersion===HUNTER_RULES?bundle.snapshot.world.hunterModel.config:undefined;
+    const societyConfig=bundle.snapshot.rulesVersion===SOCIETY_RULES?bundle.snapshot.world.societyModel.config:undefined;
     if (resourceConfig) {
       await fs.writeFile(path.join(directory, 'resource-config.json'), JSON.stringify(resourceConfig, null, 2), { flag: 'wx' });
       await writeEconomy(path.join(directory, 'economy.csv'), bundle.eventLog);
@@ -275,6 +303,7 @@ export async function runSimulation(options, hooks = {}) {
       await fs.writeFile(path.join(directory,'hunter-config.json'),JSON.stringify(hunterConfig,null,2),{flag:'wx'});
       await writeHunter(directory,bundle);
     }
+    if(societyConfig){await fs.writeFile(path.join(directory,'society-config.json'),JSON.stringify(societyConfig,null,2),{flag:'wx'});await writeSociety(directory,bundle);}
     const summary = { status: failure ? 'failed' : 'succeeded', ...identity, nodeVersion: process.version,
       fixtureId: bundle.snapshot.fixtureId, fixtureVersion: bundle.snapshot.fixtureVersion,
       rulesVersion: bundle.snapshot.rulesVersion, simulationId: bundle.snapshot.simulationId,
@@ -285,6 +314,7 @@ export async function runSimulation(options, hooks = {}) {
       ...(marketConfig ? { marketConfigHash: hash(marketConfig) } : {}),
       ...(actorConfig ? { actorConfigHash: hash(actorConfig) } : {}),
       ...(hunterConfig?{hunterConfigHash:hash(hunterConfig)}:{}),
+      ...(societyConfig?{societyConfigHash:hash(societyConfig)}:{}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       executionStats: session.getStats(),
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,

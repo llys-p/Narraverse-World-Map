@@ -1,4 +1,4 @@
-import { cloneData,fields,integer,denseArray,canonicalJson,requireCondition,identifier } from './data-contract.mjs';
+import { cloneData,fields,integer,denseArray,canonicalJson,requireCondition,identifier,record } from './data-contract.mjs';
 import { createMarketWorld,validateMarketWorld,settleMarketDay,applyMarketCommand,marketCommandFact,marketCauses,validateMarketPayload,calibratedMarketConfig } from './market.mjs';
 import { createRng } from './rng.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
@@ -78,31 +78,38 @@ export function validateActorWorld(world,privateFoodConsumed=0){
 }
 
 export function settleActorDay(input,sample,management){
+  if(management!==undefined)record(management);
+  const batch=management!==undefined && Object.hasOwn(management,'managedActors');
   if(management!==undefined){
-    fields(management,['actorId','privateFood','privateFoodConsumed','resting','reservedGold']);identifier(management.actorId);
-    integer(management.privateFood);integer(management.privateFoodConsumed);integer(management.reservedGold);
-    requireCondition(management.privateFood<=1 && typeof management.resting==='boolean','Invalid managed Actor policy');
+    fields(management,batch?['managedActors','privateFoodConsumed','reservedGold']:['actorId','privateFood','privateFoodConsumed','resting','reservedGold']);
+    if(batch)denseArray(management.managedActors,MAX_PERSISTENT_ACTORS);
+    integer(management.privateFoodConsumed);integer(management.reservedGold);
   }
   validateActorWorld(input,management?.privateFoodConsumed??0);const world=cloneData(input),m=world.actorModel,populationOpening=sharesOf(world);
-  const managed=management?m.actors.find(a=>a.actorId===management.actorId):undefined;
-  requireCondition(!management || managed,'Managed Actor is not registered');
-  requireCondition(!management || managed.alive || management.privateFood===0,'Dead Actor cannot consume private food');
+  const policies=batch?management.managedActors:management?[{actorId:management.actorId,privateFood:management.privateFood,resting:management.resting}]:[];
+  const managed=new Map();let managedAlive=0,managedInjured=0,privateFood=0;
+  for(const policy of policies){fields(policy,['actorId','privateFood','resting']);identifier(policy.actorId);integer(policy.privateFood);
+    requireCondition(policy.privateFood<=1 && typeof policy.resting==='boolean' && !managed.has(policy.actorId),'Invalid/duplicate managed Actor policy');
+    const actor=m.actors.find(a=>a.actorId===policy.actorId);requireCondition(actor,'Managed Actor not registered');
+    requireCondition(actor.alive || policy.privateFood===0,'Dead Actor cannot consume private food');
+    managed.set(actor.actorId,policy);if(actor.alive)managedAlive++;if(actor.alive && actor.health<1000)managedInjured++;privateFood+=policy.privateFood;}
   const market=settleMarketDay(marketPart(world),sample,{registered:populationOpening.registered,alive:populationOpening.namedAlive,
-    injured:populationOpening.namedInjured-(managed?.alive && managed.health<1000?1:0),
-    ...(management?{managedFood:managed.alive?1:0}:{})},management?.reservedGold??0);
+    injured:populationOpening.namedInjured-managedInjured,
+    ...(management?{managedFood:managedAlive}:{})},management?.reservedGold??0);
   const foodConsumed=market.payload.ecology.resources.entries[0].consumption;
   const unnamedFood=Math.min(foodConsumed,populationOpening.unnamedAlive),unnamedHerbs=market.payload.ecology.healed;
   let remainingFood=foodConsumed-unnamedFood,remainingHerbs=market.payload.ecology.namedShares.healed;
   const rows=[];
   for(const actor of m.actors){
+    const policy=managed.get(actor.actorId);
     const opening={health:actor.health,hunger:actor.hunger,fatigue:actor.fatigue,alive:actor.alive};
     let food=0,herbs=0,hungerDamage=0,restReduction=0,died=false;
     if(actor.alive){
-      if(actor===managed)food=management.privateFood;
+      if(policy)food=policy.privateFood;
       else if(remainingFood>0){food=1;remainingFood--;}
-      if(actor!==managed && actor.health<1000 && remainingHerbs>0){herbs=1;remainingHerbs--;actor.health=Math.min(1000,actor.health+100);}
+      if(!policy && actor.health<1000 && remainingHerbs>0){herbs=1;remainingHerbs--;actor.health=Math.min(1000,actor.health+100);}
       actor.hunger=Math.min(1000,actor.hunger+100);if(food)actor.hunger=Math.max(0,actor.hunger-200);
-      restReduction=actor!==managed || management.resting?Math.min(200,actor.fatigue):0;actor.fatigue-=restReduction;
+      restReduction=!policy || policy.resting?Math.min(200,actor.fatigue):0;actor.fatigue-=restReduction;
       if(!food && actor.hunger>=500){hungerDamage=Math.min(50,actor.health);actor.health-=hungerDamage;}
       actor.lastNeedsTick=(m.day+1)*144;
       if(actor.health===0){actor.alive=false;actor.deathTick=actor.lastNeedsTick;died=true;m.ledger.deaths++;}
@@ -112,9 +119,9 @@ export function settleActorDay(input,sample,management){
     rows.push({actorId:actor.actorId,opening,food,herbs,hungerDamage,restReduction,died,closing:cloneData(actor)});
   }
   requireCondition(remainingFood===0 && remainingHerbs===0,'Actor allocation left unowned resource consumption');
-  Object.assign(world,market.world);m.day++;validateActorWorld(world,(management?.privateFoodConsumed??0)+(management?.privateFood??0));
+  Object.assign(world,market.world);m.day++;validateActorWorld(world,(management?.privateFoodConsumed??0)+privateFood);
   return {world,payload:{day:m.day,market:market.payload,populationOpening,populationClosing:sharesOf(world),unnamedFood,unnamedHerbs,rows,
-    ...(management?{privateAllocation:{actorId:managed.actorId,food:management.privateFood}}:{})}};
+    ...(batch?{privateAllocations:policies.map(p=>({actorId:p.actorId,food:p.privateFood}))}:management?{privateAllocation:{actorId:management.actorId,food:management.privateFood}}:{})}};
 }
 
 export function applyActorCommand(input,command,privateFoodConsumed=0){
@@ -122,7 +129,11 @@ export function applyActorCommand(input,command,privateFoodConsumed=0){
   return {...result,world:{...result.world,actorModel:cloneData(input.actorModel)}};
 }
 export function validateActorPayload(payload){
-  fields(payload,['day','market','populationOpening','populationClosing','unnamedFood','unnamedHerbs','rows',...(Object.hasOwn(payload,'privateAllocation')?['privateAllocation']:[])]);integer(payload.day,1);
+  fields(payload,['day','market','populationOpening','populationClosing','unnamedFood','unnamedHerbs','rows',...(Object.hasOwn(payload,'privateAllocation')?['privateAllocation']:[]),...(Object.hasOwn(payload,'privateAllocations')?['privateAllocations']:[])]);integer(payload.day,1);
+  requireCondition(!(Object.hasOwn(payload,'privateAllocation') && Object.hasOwn(payload,'privateAllocations')),'Ambiguous private allocation shape');
+  if(Object.hasOwn(payload,'privateAllocations')){denseArray(payload.privateAllocations,MAX_PERSISTENT_ACTORS);const ids=new Set();
+    for(const allocation of payload.privateAllocations){fields(allocation,['actorId','food']);identifier(allocation.actorId);integer(allocation.food);
+      requireCondition(allocation.food<=1 && !ids.has(allocation.actorId),'Invalid duplicate private allocation');ids.add(allocation.actorId);}}
   if(Object.hasOwn(payload,'privateAllocation')){fields(payload.privateAllocation,['actorId','food']);identifier(payload.privateAllocation.actorId);integer(payload.privateAllocation.food);
     requireCondition(payload.privateAllocation.food<=1,'Invalid privately consumed ration');}
   validateMarketPayload(payload.market);requireCondition(payload.market.day===payload.day,'Actor/market fact day mismatch');
@@ -141,7 +152,7 @@ export function validateActorPayload(payload){
     requireCondition(row.food<=1 && row.herbs<=1 && typeof row.died==='boolean','Invalid named resource allocation');
     food+=row.food;herbs+=row.herbs;
   }
-  requireCondition(food===payload.market.ecology.resources.entries[0].consumption+(payload.privateAllocation?.food??0) && herbs===payload.market.ecology.resources.entries[1].consumption,
+  requireCondition(food===payload.market.ecology.resources.entries[0].consumption+(payload.privateAllocation?.food??payload.privateAllocations?.reduce((sum,a)=>sum+a.food,0)??0) && herbs===payload.market.ecology.resources.entries[1].consumption,
     'Named/aggregate portions do not reconcile');
 }
 

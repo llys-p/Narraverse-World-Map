@@ -7,6 +7,7 @@ import { ECOLOGY_RULES, validateEcologyWorld } from './ecology.mjs';
 import { MARKET_RULES, validateMarketWorld } from './market.mjs';
 import { ACTOR_RULES, validateActorWorld } from './actors.mjs';
 import { HUNTER_RULES,validateHunterWorld,validateHunterActionResult } from './hunter.mjs';
+import { SOCIETY_RULES,validateSocietyWorld,validateSocietyActionResult } from './society.mjs';
 import { cloneData, fields, record, identifier, integer, denseArray, normalizeSystems,
   commandInput, inputFingerprint, requireCondition, fault, MAX_EVENTS } from './data-contract.mjs';
 
@@ -34,6 +35,8 @@ function checkBudgets(snapshot, events) {
     denseArray(events, MAX_RESOURCE_DAYS + 100000); validateActorWorld(snapshot.world);
   }else if(snapshot.rulesVersion===HUNTER_RULES){
     denseArray(events,MAX_RESOURCE_DAYS*2+100000);validateHunterWorld(snapshot.world);
+  }else if(snapshot.rulesVersion===SOCIETY_RULES){
+    denseArray(events,MAX_RESOURCE_DAYS*4+100000);validateSocietyWorld(snapshot.world);
   }
 }
 
@@ -94,6 +97,12 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
     const day=Math.floor(s.tick/144),task=s.scheduledTasks[0];
     requireCondition(s.world.hunterModel.day===day && s.world.hunterModel.lastActionDay<=day && s.nextEntityId===s.world.actorModel.actors.length+1 &&
       s.scheduledTasks.length===1 && task.taskId==='daily-hunter' && task.systemId==='hunter' && task.intervalTicks===144 && task.priority===10 && task.nextDueTick===(day+1)*144,'Invalid Hunter schedule/identity');
+  }else if(s.rulesVersion===SOCIETY_RULES){
+    validateSocietyWorld(s.world);
+    requireCondition(['society-village','society-medicine-race','society-peer-sale'].includes(s.fixtureId) && s.fixtureVersion==='1','Unknown Society fixture','UNSUPPORTED_VERSION');
+    const day=Math.floor(s.tick/144),task=s.scheduledTasks[0];
+    requireCondition(s.world.societyModel.day===day && s.world.societyModel.agents.every(a=>a.state.lastActionDay<=day) && s.nextEntityId===4 &&
+      s.scheduledTasks.length===1 && task.taskId==='daily-society' && task.systemId==='society' && task.intervalTicks===144 && task.priority===10 && task.nextDueTick===(day+1)*144,'Invalid Society schedule/identity');
   } else fields(s.world, ['resources']);
   for (const [id, balance] of Object.entries(s.world.resources)) { identifier(id); integer(balance); }
   const ids = new Set(), sequences = new Set(); let previousInput = 0;
@@ -105,9 +114,10 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
   for (const entry of s.pendingCommands) {
     fields(entry, ['commandId', 'inputSeq', 'targetTick', 'type', 'payload']);
     const { inputSeq, ...input } = entry; commandInput(input);
-    requireCondition([MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(input.type) :
+    requireCondition([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(input.type) :
       input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Command does not belong to this rules version');
     requireCondition(s.rulesVersion!==HUNTER_RULES || !input.commandId.startsWith('hunter-day-'),'External input claimed internal command namespace');
+    requireCondition(s.rulesVersion!==SOCIETY_RULES || !input.commandId.startsWith('society-day-'),'External input claimed Society namespace');
     remember(entry.commandId, inputSeq);
     requireCondition(inputSeq > previousInput && entry.targetTick > s.tick, 'Out-of-order or expired pending input'); previousInput = inputSeq;
   }
@@ -115,12 +125,14 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
     fields(receipt, ['inputSeq', 'input', 'fingerprint', 'status', 'result', 'eventSeqs']);
     fields(receipt.input, ['type', 'payload', 'targetTick']);
     commandInput({ commandId: id, ...receipt.input }); remember(id, receipt.inputSeq);
-    requireCondition(s.rulesVersion===HUNTER_RULES?['RemovePopulation','SetTradeRoute','ActorAction'].includes(receipt.input.type):
+    requireCondition(s.rulesVersion===SOCIETY_RULES?['RemovePopulation','SetTradeRoute','SocietyAction'].includes(receipt.input.type):
+      s.rulesVersion===HUNTER_RULES?['RemovePopulation','SetTradeRoute','ActorAction'].includes(receipt.input.type):
       [MARKET_RULES,ACTOR_RULES].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(receipt.input.type) :
       receipt.input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Receipt does not belong to this rules version');
     requireCondition(receipt.input.targetTick <= s.tick && receipt.fingerprint === inputFingerprint(receipt.input), 'Invalid receipt input/fingerprint');
     if (receipt.status === 'succeeded') {
-      if(receipt.input.type==='ActorAction')validateHunterActionResult(receipt.result);
+      if(receipt.input.type==='SocietyAction')validateSocietyActionResult(receipt.result);
+      else if(receipt.input.type==='ActorAction')validateHunterActionResult(receipt.result);
       else fields(receipt.result, receipt.input.type === 'SetTradeRoute' ? ['before', 'open'] :
         receipt.input.type === 'RemovePopulation' ? ['species', 'amount', 'before', 'after'] : ['from', 'to', 'amount']);
     } else {
@@ -134,7 +146,7 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
 
 export function createInitialBundle(config, systems) {
   record(config);
-  const worldField = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES].includes(config.rulesVersion) ? 'world' : 'resources';
+  const worldField = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(config.rulesVersion) ? 'world' : 'resources';
   fields(config, ['rulesVersion', 'simulationId', 'fixtureId', 'fixtureVersion', 'seed', worldField, 'scheduledTasks', 'commands']);
   normalizeSystems(systems); denseArray(config.commands); denseArray(config.scheduledTasks); record(config[worldField]);
   const c = cloneData(config);
@@ -151,7 +163,7 @@ export function createInitialBundle(config, systems) {
   const result = { snapshot: {
     schemaVersion: 2, rulesVersion: c.rulesVersion, simulationId: c.simulationId,
     fixtureId: c.fixtureId, fixtureVersion: c.fixtureVersion, tick: 0, tickMinutes: 10, revision: 0,
-    rng: createRng(c.seed).getState(), nextEntityId: [ACTOR_RULES,HUNTER_RULES].includes(c.rulesVersion) ? c.world.actorModel.actors.length+1 : 1, nextEventSeq: 1, nextInputSeq,
+    rng: createRng(c.seed).getState(), nextEntityId: [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(c.rulesVersion) ? c.world.actorModel.actors.length+1 : 1, nextEventSeq: 1, nextInputSeq,
     scheduledTasks: createScheduler({ tasks: c.scheduledTasks }, Object.keys(systems)).tasks,
     pendingCommands: commands, commandReceipts: {}, world: worldField === 'world' ? c.world : { resources: c.resources },
   }, eventLog: [] };

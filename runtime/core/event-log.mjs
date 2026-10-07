@@ -8,6 +8,7 @@ import { ECOLOGY_RULES, validateEcologyPayload, validateEcologyWorld, validateEc
 import { MARKET_RULES, validateMarketPayload, validateMarketWorld, validateMarketHistory } from './market.mjs';
 import { ACTOR_RULES,validateActorPayload,validateActorWorld,validateActorHistory } from './actors.mjs';
 import { HUNTER_RULES,validateHunterWorld,validateHunterActionResult,validateHunterPayload,validateHunterHistory } from './hunter.mjs';
+import { SOCIETY_RULES,validateSocietyWorld,validateSocietyActionResult,validateSocietyPayload,validateSocietyHistory } from './society.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
 export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
@@ -30,6 +31,8 @@ export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
     requireCondition(fact.type==='ActorDaySettled' && systemId==='actors','Invalid Actor fact');validateActorPayload(fact.payload);
   }else if(rulesVersion===HUNTER_RULES){
     requireCondition(fact.type==='HunterDaySettled' && systemId==='hunter','Invalid Hunter daily fact');validateHunterPayload(fact.payload);
+  }else if(rulesVersion===SOCIETY_RULES){
+    requireCondition(fact.type==='SocietyDaySettled' && systemId==='society','Invalid Society daily fact');validateSocietyPayload(fact.payload);
   } else {
     requireCondition(fact.type === 'FixturePulse', 'Unknown system fact');
     fields(fact.payload, ['sample']);
@@ -52,6 +55,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
     denseArray(eventLog,MAX_RESOURCE_DAYS+100000);validateActorWorld(snapshot.world);
   }else if(snapshot.rulesVersion===HUNTER_RULES){
     denseArray(eventLog,MAX_RESOURCE_DAYS*2+100000);validateHunterWorld(snapshot.world);
+  }else if(snapshot.rulesVersion===SOCIETY_RULES){
+    denseArray(eventLog,MAX_RESOURCE_DAYS*4+100000);validateSocietyWorld(snapshot.world);
   }
   // Clone also rejects getters, hidden properties and non-JSON values in this public entry.
   const events = cloneData(eventLog), state = cloneData(snapshot);
@@ -60,7 +65,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
   const ecologyProfile = state.rulesVersion === ECOLOGY_RULES;
   const actorProfile=state.rulesVersion===ACTOR_RULES;
   const hunterProfile=state.rulesVersion===HUNTER_RULES;
-  const marketProfile = state.rulesVersion === MARKET_RULES || actorProfile || hunterProfile;
+  const societyProfile=state.rulesVersion===SOCIETY_RULES;
+  const marketProfile = state.rulesVersion === MARKET_RULES || actorProfile || hunterProfile || societyProfile;
   if (!resourceProfile && !ecologyProfile && !marketProfile) fields(state.world, ['resources']);
   integer(state.tick); integer(state.nextEventSeq, 1);
   requireCondition(state.nextEventSeq === events.length + 1, 'Event counter mismatch');
@@ -80,7 +86,12 @@ export function validateEventLog(eventLog, snapshot, systems) {
       requireCondition(sequence > cause && sequence < event.eventSeq, 'Invalid event causation'); cause = sequence;
     }
     payloadBudget(event.payload);
-    if(event.type==='HunterActionCommitted'){
+    if(event.type==='SocietyActionCommitted'){
+      requireCondition(societyProfile && event.sourceSystem==='command-engine','Invalid Society action source');identifier(event.commandId);validateSocietyActionResult(event.payload);
+      const ids=event.payload.action==='SellMedicine'?[event.payload.actorId,event.payload.buyerId]:[event.payload.actorId];
+      requireCondition(canonicalJson(ids)===canonicalJson(event.entityIds) && event.causationEventSeqs.length===0 && !commandEvents.has(event.commandId),'Invalid Society links/duplicate');
+      commandEvents.set(event.commandId,event);
+    }else if(event.type==='HunterActionCommitted'){
       requireCondition(hunterProfile && event.sourceSystem==='command-engine','Invalid Hunter action fact provenance');identifier(event.commandId);
       validateHunterActionResult(event.payload);
       requireCondition(event.entityIds.length===1 && event.entityIds[0]===event.payload.actorId && event.causationEventSeqs.length===0 && !commandEvents.has(event.commandId),'Invalid Hunter action links/duplicate');
@@ -128,7 +139,12 @@ export function validateEventLog(eventLog, snapshot, systems) {
     if (receipt.status === 'succeeded') {
       const event = commandEvents.get(id);
       requireCondition(event && receipt.eventSeqs.length === 1 && receipt.eventSeqs[0] === event.eventSeq, 'Success receipt missing its fact');
-      if(hunterProfile && receipt.input.type==='ActorAction'){
+      if(societyProfile && receipt.input.type==='SocietyAction'){
+        validateSocietyActionResult(receipt.result);
+        requireCondition(event.tick===receipt.input.targetTick && event.type==='SocietyActionCommitted' &&
+          event.payload.actorId===receipt.input.payload.actorId && event.payload.goalId===receipt.input.payload.goalId && event.payload.action===receipt.input.payload.action &&
+          event.payload.targetActorId===receipt.input.payload.targetActorId && canonicalJson(receipt.result)===canonicalJson(event.payload),'Society input/receipt/fact mismatch');
+      }else if(hunterProfile && receipt.input.type==='ActorAction'){
         validateHunterActionResult(receipt.result);
         requireCondition(event.tick===receipt.input.targetTick && event.type==='HunterActionCommitted' &&
           event.payload.actorId===receipt.input.payload.actorId && event.payload.goalId===receipt.input.payload.goalId && event.payload.action===receipt.input.payload.action &&
@@ -159,7 +175,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
   requireCondition(commandEvents.size === 0, 'Fact references missing receipt');
   if (resourceProfile) validateResourceHistory(state.world, resourcePayloads);
   if (ecologyProfile) validateEcologyHistory(state, events);
-  if(hunterProfile)validateHunterHistory(state,events);
+  if(societyProfile)validateSocietyHistory(state,events);
+  else if(hunterProfile)validateHunterHistory(state,events);
   else if (actorProfile) validateActorHistory(state,events);
   else if (marketProfile) validateMarketHistory(state, events);
 }
