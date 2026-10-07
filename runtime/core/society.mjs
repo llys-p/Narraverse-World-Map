@@ -4,6 +4,7 @@ import { defaultHunterConfig,createHunterWorld,validateHunterWorld,planHunterDay
 import { createRng } from './rng.mjs';
 import { marketCommandFact } from './market.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
+import { validatePersonalities,utilityWeightsFor } from './personality.mjs';
 
 export const SOCIETY_RULES='c-society-v1';
 export const SOCIETY_ACTIONS=Object.freeze([...HUNTER_ACTIONS,'SellMedicine']);
@@ -90,7 +91,8 @@ function buyerFor(w,sellerId,publicTrade=null){
 }
 function beginGoal(m,kind,target,day){requireCondition(m.nextGoalId<Number.MAX_SAFE_INTEGER,'Goal counter overflow','LIMIT_EXCEEDED');
   m.currentGoal={goalId:m.nextGoalId++,kind,step:'wait',startDay:day,deadlineDay:day+m.config.deadlineDays,failures:0,target};}
-export function planSocietyDay(input,publicTrade=null){
+export function planSocietyDay(input,publicTrade=null,personalities){
+  if(personalities!==undefined)validatePersonalities(personalities);
   validateSocietyWorld(input);validatePublicTrade(input,publicTrade);const world=cloneData(input),commands=[],day=world.societyModel.day+1;
   for(const estate of input.societyModel.agents){
     const id=estate.state.actorId,a=person(input,id),m=agent(world,id).state;
@@ -98,7 +100,7 @@ export function planSocietyDay(input,publicTrade=null){
     if(m.currentGoal && !PERSONAL_GOALS.includes(m.currentGoal.kind) && (urgent || day>m.currentGoal.deadlineDay)){
       m.currentGoal=null;m.ledger.goalsFailed++;m.cooldownUntilDay=urgent?0:day+m.config.cooldownDays;}
     if(!m.currentGoal || PERSONAL_GOALS.includes(m.currentGoal.kind)){
-      const planned=planHunterDay(view(world,id),ownership(world,id));agent(world,id).state=planned.world.hunterModel;
+      const planned=planHunterDay(view(world,id),ownership(world,id),personalities===undefined?undefined:utilityWeightsFor(personalities,id));agent(world,id).state=planned.world.hunterModel;
     }
     const current=agent(world,id).state;if(!a.alive){current.lastDecision=null;continue;}
     if(!current.currentGoal && day>=current.cooldownUntilDay){

@@ -3,6 +3,7 @@ import { defaultActorConfig,createActorWorld,validateActorWorld,settleActorDay,p
 import { createRng } from './rng.mjs';
 import { marketCommandFact } from './market.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
+import { weightNeedScores } from './personality.mjs';
 
 export const HUNTER_RULES='c-hunter-v1';
 export const HUNTER_ACTIONS=Object.freeze(['Rest','WorkForPay','Hunt','BuyFood','BuyMedicine','UseMedicine']);
@@ -138,9 +139,10 @@ function nextAction(w,goal,ownership){
   return {action:'Rest',step:'rest',blocked:false};
 }
 
-export function planHunterDay(input,ownership){
+export function planHunterDay(input,ownership,utilityWeights){
   validateHunterWorld(input,ownership);const world=cloneData(input),m=world.hunterModel,a=hunterOf(world),day=m.day+1;
-  const scores={health:a.alive && a.health<=700?1500-a.health:0,food:a.alive && m.inventory.food===0?600+a.hunger:0,rest:a.alive && a.fatigue>=600?600+a.fatigue:0};
+  const baseScores={health:a.alive && a.health<=700?1500-a.health:0,food:a.alive && m.inventory.food===0?600+a.hunger:0,rest:a.alive && a.fatigue>=600?600+a.fatigue:0};
+  const scores=utilityWeights===undefined?baseScores:weightNeedScores(baseScores,utilityWeights);
   if(!a.alive){if(m.currentGoal){m.currentGoal=null;m.ledger.goalsFailed++;}m.lastDecision=null;return {world,command:null,decision:null};}
   if(m.currentGoal && day>m.currentGoal.deadlineDay){m.ledger.goalsFailed++;m.currentGoal=null;m.cooldownUntilDay=day+m.config.cooldownDays;}
   if(!m.currentGoal && day>=m.cooldownUntilDay){

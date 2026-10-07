@@ -1,17 +1,25 @@
-import { fields,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,inputFingerprint } from './data-contract.mjs';
+import { fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,inputFingerprint } from './data-contract.mjs';
 import { defaultSocietyConfig,createSocietyWorld,validateSocietyWorld,planSocietyDay,applySocietyAction,applySocietyCommand,settleSocietyDay,societyActionFact,societyCauses } from './society.mjs';
 import { createMemoryState,validateMemoryState,reduceMemoryFacts } from './memory-observer.mjs';
 import { createMedicineAnnouncements,validateMedicineAnnouncement,selectPublicMedicineBuyer } from './public-medicine.mjs';
 import { createRng } from './rng.mjs';
 import { marketCommandFact } from './market.mjs';
+import { validatePersonalities,neutralPersonalities } from './personality.mjs';
 
 export const MEMORY_RULES='c-memory-v1';
+export const PERSONALITY_RULES='c-personality-v1';
+export const MEMORY_RULE_VERSIONS=Object.freeze([MEMORY_RULES,PERSONALITY_RULES]);
+export const isMemoryRules=version=>MEMORY_RULE_VERSIONS.includes(version);
 const SOCIETY_FIELDS=['resources','resourceModel','ecologyModel','marketModel','actorModel','societyModel'];
 const society=w=>Object.fromEntries(SOCIETY_FIELDS.map(k=>[k,w[k]]));
 const own=(w,id)=>w.societyModel.agents.find(a=>a.state.actorId===id);
 function increment(object,key){requireCondition(object[key]<Number.MAX_SAFE_INTEGER,'Memory goal counter overflow','LIMIT_EXCEEDED');object[key]++;}
 export function defaultMemoryConfig(){return {version:'memory-config-v1',society:defaultSocietyConfig(),discountEnabled:true};}
-function validateConfig(config){fields(config,['version','society','discountEnabled']);requireCondition(config.version==='memory-config-v1','Unknown memory configuration','UNSUPPORTED_VERSION');
+export function defaultPersonalityConfig(){return {...defaultMemoryConfig(),version:'memory-config-v2',personalities:neutralPersonalities()};}
+function validateConfig(config){
+  record(config);requireCondition(['memory-config-v1','memory-config-v2'].includes(config.version),'Unknown memory configuration','UNSUPPORTED_VERSION');
+  fields(config,['version','society','discountEnabled',...(config.version==='memory-config-v2'?['personalities']:[])]);
+  if(config.version==='memory-config-v2')validatePersonalities(config.personalities);
   requireCondition(typeof config.discountEnabled==='boolean','Invalid memory discount policy');return createSocietyWorld(config.society);}
 export function createMemoryWorld(config=defaultMemoryConfig()){
   const world=validateConfig(config),copy=cloneData(config);
@@ -43,7 +51,7 @@ export function prepareMemoryDay(input,tick){
   return {world,facts};
 }
 export function planMemoryDay(input){
-  validateMemoryWorld(input);const selection=publicSelection(input),plan=planSocietyDay(society(input),selection);
+  validateMemoryWorld(input);const selection=publicSelection(input),plan=planSocietyDay(society(input),selection,input.memoryModel.config.personalities);
   const world={...plan.world,memoryModel:cloneData(input.memoryModel)},sale=plan.commands.find(c=>c.payload.action==='SellMedicine');
   if(sale){
     const id=sale.payload.targetActorId,state=own(world,id).state,known=world.memoryModel.observer.actors.find(a=>a.actorId===id);

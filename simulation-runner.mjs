@@ -17,8 +17,9 @@ import { HUNTER_RULES } from './runtime/core/hunter.mjs';
 import { createHunterVillage,createHunterRecovery,createHunterHunger } from './runtime/fixtures/hunter-village.mjs';
 import { SOCIETY_RULES } from './runtime/core/society.mjs';
 import { createSocietyVillage,createSocietyMedicineRace,createSocietyPeerSale } from './runtime/fixtures/society-village.mjs';
-import { MEMORY_RULES } from './runtime/core/memory-runtime.mjs';
+import { MEMORY_RULES,PERSONALITY_RULES,MEMORY_RULE_VERSIONS,isMemoryRules } from './runtime/core/memory-runtime.mjs';
 import { createMemoryVillage,createMemoryRelations,createMemoryRelationsControl,createMemoryMedicineRace } from './runtime/fixtures/memory-village.mjs';
+import { createPersonalityNeutral,createPersonalityHealth,createPersonalityFood } from './runtime/fixtures/personality-village.mjs';
 import { createSimulationSession } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
@@ -47,6 +48,9 @@ const profiles = new Map([
   ['memory-relations',{rulesVersion:MEMORY_RULES,create:createMemoryRelations}],
   ['memory-relations-control',{rulesVersion:MEMORY_RULES,create:createMemoryRelationsControl}],
   ['memory-medicine-race',{rulesVersion:MEMORY_RULES,create:createMemoryMedicineRace}],
+  ['personality-neutral',{rulesVersion:PERSONALITY_RULES,create:createPersonalityNeutral}],
+  ['personality-health',{rulesVersion:PERSONALITY_RULES,create:createPersonalityHealth}],
+  ['personality-food',{rulesVersion:PERSONALITY_RULES,create:createPersonalityFood}],
 ]);
 const actorPayload=event=>['HunterDaySettled','SocietyDaySettled'].includes(event.type)?event.payload.actors:event.type==='ActorDaySettled'?event.payload:undefined;
 const marketPayload=event=>actorPayload(event)?.market??(event.type==='EconomyDaySettled'?event.payload:undefined);
@@ -300,13 +304,14 @@ export async function runSimulation(options, hooks = {}) {
     checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
     await fs.writeFile(path.join(directory, 'inputs.json'), JSON.stringify(completeInputs(bundle.snapshot), null, 2), { flag: 'wx' });
     await writeEvents(path.join(directory, 'events.csv'), bundle.eventLog);
-    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
-    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
-    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
-    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
+    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
+    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
+    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
+    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
     const hunterConfig=bundle.snapshot.rulesVersion===HUNTER_RULES?bundle.snapshot.world.hunterModel.config:undefined;
-    const societyConfig=[SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.societyModel.config:undefined;
-    const memoryConfig=bundle.snapshot.rulesVersion===MEMORY_RULES?bundle.snapshot.world.memoryModel.config:undefined;
+    const societyConfig=[SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.societyModel.config:undefined;
+    const memoryConfig=isMemoryRules(bundle.snapshot.rulesVersion)?bundle.snapshot.world.memoryModel.config:undefined;
+    const personalityConfig=bundle.snapshot.rulesVersion===PERSONALITY_RULES?{version:'personality-config-v1',personalities:memoryConfig.personalities}:undefined;
     if (resourceConfig) {
       await fs.writeFile(path.join(directory, 'resource-config.json'), JSON.stringify(resourceConfig, null, 2), { flag: 'wx' });
       await writeEconomy(path.join(directory, 'economy.csv'), bundle.eventLog);
@@ -329,6 +334,7 @@ export async function runSimulation(options, hooks = {}) {
     }
     if(societyConfig){await fs.writeFile(path.join(directory,'society-config.json'),JSON.stringify(societyConfig,null,2),{flag:'wx'});await writeSociety(directory,bundle);}
     if(memoryConfig){await fs.writeFile(path.join(directory,'memory-config.json'),JSON.stringify(memoryConfig,null,2),{flag:'wx'});await writeMemory(directory,bundle.eventLog);}
+    if(personalityConfig)await fs.writeFile(path.join(directory,'personality-config.json'),JSON.stringify(personalityConfig,null,2),{flag:'wx'});
     const summary = { status: failure ? 'failed' : 'succeeded', ...identity, nodeVersion: process.version,
       fixtureId: bundle.snapshot.fixtureId, fixtureVersion: bundle.snapshot.fixtureVersion,
       rulesVersion: bundle.snapshot.rulesVersion, simulationId: bundle.snapshot.simulationId,
@@ -341,6 +347,7 @@ export async function runSimulation(options, hooks = {}) {
       ...(hunterConfig?{hunterConfigHash:hash(hunterConfig)}:{}),
       ...(societyConfig?{societyConfigHash:hash(societyConfig)}:{}),
       ...(memoryConfig?{memoryConfigHash:hash(memoryConfig)}:{}),
+      ...(personalityConfig?{personalityConfigHash:hash(personalityConfig)}:{}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       executionStats: session.getStats(),
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,
