@@ -47,7 +47,7 @@
 
 ## 当前实现切片（2026-10-07 16:38 Asia/Shanghai）
 
-- 已从13b137c建立codex/world-runtime-c4；新增memory-observer.mjs与memory-observer.test.mjs。基于真实C3事实，输出自己的行动/日状态、双方药交易投影及村庄公开行情，拒绝嵌套私人账；32条稳定淘汰、cursor重扫不刷trust、真实死亡后封存ID。定向9/9、全simulation+边界148/148（原139+新9，132.7秒），将作为观察层切片提交，C4整体仍进行中。
+- 已从13b137c建立codex/world-runtime-c4；新增memory-observer.mjs与memory-observer.test.mjs。基于真实C3事实，输出自己的行动/日状态、双方药交易投影及村庄公开行情，拒绝嵌套私人账；32条稳定淘汰、cursor重扫不刷trust、真实死亡后封存ID。定向9/9、全simulation+边界148/148（原139+新9，132.7秒），观察层切片8a02917已推origin，C4整体仍进行中；干净代码真实磁盘消费者15=6+9完整C3 bundle/独立observer一致，来源/可见性/cashDelta/trust逐项独立核对，证据artifacts/world-runtime-c4-acceptance-20261007/observer-disk15/comparison.json（忽略不上传）。
 - RED：缺模块ERR_MODULE_NOT_FOUND；独立重复commandId但新eventSeq反例先失败，现来源序号/命令去重及日tick校验拒绝。真实初始死亡与运行中死亡均有消费者反例。
 - 当前API为createMemoryState/advanceActorMemory/projectActorEvent/validateMemoryHistory/buildObservedMemory；这是独立观察器，不是完整buildActorKnowledge或c-memory-v1世界规则。validateMemoryHistory核对投影/淘汰/关系来源，但不认证原始世界、初始人物状态或真实观察时机；这些必须由后续整世界命令/公告/MemoryDaySettled全量重放证明。没有skipValidation接口。
 - 下一步继续公告事实及同日可知规划，报价/选客/买方等待必须由真实交易落账；随后集成Snapshot、完整重放、CLI导出和100日/存档消费者。尚未达到阶段C门槛，不进入D。
