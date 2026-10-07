@@ -21,6 +21,7 @@
 ## 三路共同接口
 
 - runtime/core/player-intents.mjs提供PLAY_RULES='d-player-v2'、defaultPlayerPlayConfig()（memory-config-v4）、executePlayerIntent(bundle,{commandId,type,payload}) -> {bundle,durationTicks,outcome,result}，严格只用于新profile。type为PlayerTravel/PlayerRest/PlayerBuy/PlayerSell，payload与下文一致。函数先严格审核bundle/参数、复制隔离、合法入场后在私候选注册真实核心输入并推进规定耗时，完整审核后返回。失败原bundle不动。result是核心自身严格定义/重演的精确动作结果，succeeded含实际相关before/after、start/end、数量价款，rejected为{code:'RULE_REJECTED'}；服务不得复制规则或直接改bundle。
+- 同模块提供enqueuePlayerIntent(bundle,{commandId,type,payload}) -> {bundle,durationTicks}纯入口，完成相同严格入场/登记但不推进、不落效果，用于真实动作途中checkpoint继续与完整重演验证；executePlayerIntent只组合该入口与规范Session推进。直接参数不含start/end/ticks/actorId/price；派生数据只属于已审核核心输入。新动作ID不得使用NPC保留的society-day-前缀，明确INVALID_INPUT，不让客户端碰撞内部命令命名空间；原AdvanceTime合同不变。
 - runtime/fixtures/player-play-village.mjs提供playerPlaySystems()、createPlayerPlayVillage(seed=42,id='player-play-village',config=defaultPlayerPlayConfig()) -> {bundle,systems}。新profile也走公共createSimulationSession/validateBundle/checkpoint严格审核，没有trusted/skip。
 - runtime/knowledge/player-knowledge.mjs的buildPlayerKnowledge显式支持新profile，同样固定本人字段，不含NPC私账/原配置/日志。旧Player1结果逐字段不变。
 - player-intents.mjs另提供describePlayerActions(bundle)，严格审核新profile返回{travelTicks:12,restTicks:6,tradeTicks:1,maxQuantity:10,locations:['village','forest'],prices:{food:{buy,sell},herbs:{buy,sell}},canTrade:boolean}。由当前正式状态派生，死者/forest canTrade=false。服务对新profile的player DTO增加actions字段，旧profile DTO不增加；不让客户端价格变权威。
