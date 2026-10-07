@@ -1,9 +1,10 @@
-// C4 first slice: pure projection/retention over committed C3 facts.
+// C4 pure projection/retention over committed Society and announcement facts.
 // This module does not authenticate a bundle or replace the engine's full replay audit.
 import { fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,payloadBudget } from './data-contract.mjs';
 import { validateSocietyActionResult,validateSocietyPayload } from './society.mjs';
 import { MAX_PERSISTENT_ACTORS } from './actors.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
+import { validateMedicineAnnouncement } from './public-medicine.mjs';
 
 export const MAX_ACTOR_MEMORIES=32;
 export const MEMORY_OBSERVER_VERSION='memory-observer-v1';
@@ -28,11 +29,15 @@ function checkEvent(event){
   }else if(event.type==='SocietyDaySettled'){
     requireCondition(event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0,'Invalid daily source');
     validateSocietyPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Daily source clock mismatch');
+  }else if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type)){
+    const {schemaVersion,eventSeq,tick,...fact}=event;validateMedicineAnnouncement(fact);
+    requireCondition(event.tick<=event.payload.expiresTick,'Announcement already expired at occurrence');
   }
 }
 
 export function projectActorEvent(raw,actorId){
   identifier(actorId);checkEvent(raw);const event=cloneData(raw),p=event.payload;
+  if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type))return [entry(event,actorId,'public',0,{type:event.type,...cloneData(p)})];
   if(event.type==='SocietyActionCommitted'){
     if(!event.entityIds.includes(actorId))return [];
     if(p.action==='SellMedicine')return [entry(event,actorId,'interaction',2,{type:'medicine-trade',sellerId:p.actorId,buyerId:p.buyerId,

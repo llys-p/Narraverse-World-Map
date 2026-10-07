@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 16:43（Asia/Shanghai）。
+更新时间：2026-10-07 17:13（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -67,7 +67,7 @@
 
 ## 下一步
 
-A/B及C1～C3单项已通过，C3最终交接13b137c已推origin；139/139全回归，100=40+60、转售4=1+3完整状态/事件/CSV一致，旧C2 100日字节不变。C4观察层8a02917已推origin；从13b137c在D:\Narraverse-World-Map-a2 @ codex/world-runtime-c4开工：真实C3事实的可见性投影、32条记忆/cursor去重、双向交易trust、死亡封存定向9/9、全simulation+边界148/148（原139+新9，132.7秒）。真实独立观察器15日=6日磁盘存盘+9日续跑、完整C3世界/记忆逐字段一致。尚未接公告/规划优惠/等待、Snapshot与完整存档重放、knowledge及CLI；C4/C阶段未验收。[合同与当前切片](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)。额度窗口刷新后继续已授权实现；源码不合并main、不接UI/模型/旧存档，E预研独立。
+A/B及C1～C3已验收，C3交接13b137c。C4在D:\Narraverse-World-Map-a2 @ codex/world-runtime-c4：c-memory-v1已接通公开医疗公告、可知规划/真实关系优惠与匹配等待、Snapshot/MemoryDaySettled全量重放、人物knowledge白名单、CLI记忆/关系CSV；全simulation+边界164/164（原139+新25，148秒）。8日真实交易优惠、整tick回退、观测时机/来源/信任篡改拒绝、死者封存、真实磁盘与CLI跨档通过。待干净提交100日=40+60完整消费者与阶段C逐项收口；C4/C阶段仍进行中，不进入D。[合同及证据](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)。源码不合并main、不接UI/模型/旧存档，E预研独立。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 

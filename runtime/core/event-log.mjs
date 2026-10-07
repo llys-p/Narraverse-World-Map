@@ -9,6 +9,8 @@ import { MARKET_RULES, validateMarketPayload, validateMarketWorld, validateMarke
 import { ACTOR_RULES,validateActorPayload,validateActorWorld,validateActorHistory } from './actors.mjs';
 import { HUNTER_RULES,validateHunterWorld,validateHunterActionResult,validateHunterPayload,validateHunterHistory } from './hunter.mjs';
 import { SOCIETY_RULES,validateSocietyWorld,validateSocietyActionResult,validateSocietyPayload,validateSocietyHistory } from './society.mjs';
+import { MEMORY_RULES,validateMemoryWorld,validateMemoryDayPayload,validateMemoryRuntimeHistory } from './memory-runtime.mjs';
+import { validateMedicineAnnouncement } from './public-medicine.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
 export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
@@ -31,7 +33,7 @@ export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
     requireCondition(fact.type==='ActorDaySettled' && systemId==='actors','Invalid Actor fact');validateActorPayload(fact.payload);
   }else if(rulesVersion===HUNTER_RULES){
     requireCondition(fact.type==='HunterDaySettled' && systemId==='hunter','Invalid Hunter daily fact');validateHunterPayload(fact.payload);
-  }else if(rulesVersion===SOCIETY_RULES){
+  }else if([SOCIETY_RULES,MEMORY_RULES].includes(rulesVersion)){
     requireCondition(fact.type==='SocietyDaySettled' && systemId==='society','Invalid Society daily fact');validateSocietyPayload(fact.payload);
   } else {
     requireCondition(fact.type === 'FixturePulse', 'Unknown system fact');
@@ -55,6 +57,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
     denseArray(eventLog,MAX_RESOURCE_DAYS+100000);validateActorWorld(snapshot.world);
   }else if(snapshot.rulesVersion===HUNTER_RULES){
     denseArray(eventLog,MAX_RESOURCE_DAYS*2+100000);validateHunterWorld(snapshot.world);
+  }else if(snapshot.rulesVersion===MEMORY_RULES){
+    denseArray(eventLog,MAX_RESOURCE_DAYS*4+100000);validateMemoryWorld(snapshot.world);
   }else if(snapshot.rulesVersion===SOCIETY_RULES){
     denseArray(eventLog,MAX_RESOURCE_DAYS*4+100000);validateSocietyWorld(snapshot.world);
   }
@@ -65,7 +69,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
   const ecologyProfile = state.rulesVersion === ECOLOGY_RULES;
   const actorProfile=state.rulesVersion===ACTOR_RULES;
   const hunterProfile=state.rulesVersion===HUNTER_RULES;
-  const societyProfile=state.rulesVersion===SOCIETY_RULES;
+  const memoryProfile=state.rulesVersion===MEMORY_RULES;
+  const societyProfile=state.rulesVersion===SOCIETY_RULES || memoryProfile;
   const marketProfile = state.rulesVersion === MARKET_RULES || actorProfile || hunterProfile || societyProfile;
   if (!resourceProfile && !ecologyProfile && !marketProfile) fields(state.world, ['resources']);
   integer(state.tick); integer(state.nextEventSeq, 1);
@@ -86,7 +91,13 @@ export function validateEventLog(eventLog, snapshot, systems) {
       requireCondition(sequence > cause && sequence < event.eventSeq, 'Invalid event causation'); cause = sequence;
     }
     payloadBudget(event.payload);
-    if(event.type==='SocietyActionCommitted'){
+    if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type)){
+      requireCondition(memoryProfile && event.tick===event.payload.expiresTick,'Invalid announcement profile/clock');
+      const {eventSeq,tick,schemaVersion,...fact}=event;validateMedicineAnnouncement(fact);
+    }else if(event.type==='MemoryDaySettled'){
+      requireCondition(memoryProfile && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0,'Invalid Memory closing source');
+      validateMemoryDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Memory closing clock mismatch');
+    }else if(event.type==='SocietyActionCommitted'){
       requireCondition(societyProfile && event.sourceSystem==='command-engine','Invalid Society action source');identifier(event.commandId);validateSocietyActionResult(event.payload);
       const ids=event.payload.action==='SellMedicine'?[event.payload.actorId,event.payload.buyerId]:[event.payload.actorId];
       requireCondition(canonicalJson(ids)===canonicalJson(event.entityIds) && event.causationEventSeqs.length===0 && !commandEvents.has(event.commandId),'Invalid Society links/duplicate');
@@ -175,7 +186,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
   requireCondition(commandEvents.size === 0, 'Fact references missing receipt');
   if (resourceProfile) validateResourceHistory(state.world, resourcePayloads);
   if (ecologyProfile) validateEcologyHistory(state, events);
-  if(societyProfile)validateSocietyHistory(state,events);
+  if(memoryProfile)validateMemoryRuntimeHistory(state,events);
+  else if(societyProfile)validateSocietyHistory(state,events);
   else if(hunterProfile)validateHunterHistory(state,events);
   else if (actorProfile) validateActorHistory(state,events);
   else if (marketProfile) validateMarketHistory(state, events);

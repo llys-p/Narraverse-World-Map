@@ -72,15 +72,26 @@ export function validateSocietyWorld(w){
   requireCondition(movedFood<=w.resourceModel.ledger.food.outflow && movedHerbs<=w.resourceModel.ledger.herbs.outflow,'Aggregate estate transfers exceed warehouse outflow');
 }
 
-function buyerFor(w,sellerId){
+function validatePublicTrade(w,publicTrade){
+  if(publicTrade===null)return;
+  fields(publicTrade,['buyerId','price']);
+  if(publicTrade.buyerId===null){requireCondition(publicTrade.price===null,'Empty public selection has a quote');return;}
+  identifier(publicTrade.buyerId);integer(publicTrade.price,1);
+  const regular=Math.min(w.marketModel.config.products.herbs.maxPrice,w.marketModel.prices.herbs+w.societyModel.config.saleMarkup);
+  requireCondition(['actor-1','actor-2'].includes(publicTrade.buyerId) && publicTrade.price>=w.marketModel.prices.herbs && publicTrade.price<=regular,
+    'Public peer selection/quote outside published range');
+}
+function buyerFor(w,sellerId,publicTrade=null){
+  // A C4 selection contains only a public request plus observed relation, not private eligibility.
+  if(publicTrade!==null)return publicTrade.buyerId===null?null:agent(w,publicTrade.buyerId);
   const price=Math.min(w.marketModel.config.products.herbs.maxPrice,w.marketModel.prices.herbs+w.societyModel.config.saleMarkup);
   return w.societyModel.agents.find(a=>a.state.actorId!==sellerId && person(w,a.state.actorId).alive && person(w,a.state.actorId).health<=700 &&
     a.state.inventory.herbs===0 && a.state.wallet>=price);
 }
 function beginGoal(m,kind,target,day){requireCondition(m.nextGoalId<Number.MAX_SAFE_INTEGER,'Goal counter overflow','LIMIT_EXCEEDED');
   m.currentGoal={goalId:m.nextGoalId++,kind,step:'wait',startDay:day,deadlineDay:day+m.config.deadlineDays,failures:0,target};}
-export function planSocietyDay(input){
-  validateSocietyWorld(input);const world=cloneData(input),commands=[],day=world.societyModel.day+1;
+export function planSocietyDay(input,publicTrade=null){
+  validateSocietyWorld(input);validatePublicTrade(input,publicTrade);const world=cloneData(input),commands=[],day=world.societyModel.day+1;
   for(const estate of input.societyModel.agents){
     const id=estate.state.actorId,a=person(input,id),m=agent(world,id).state;
     const urgent=a.alive && (a.health<=700 || a.fatigue>=600 || m.inventory.food===0);
@@ -94,7 +105,7 @@ export function planSocietyDay(input){
       const communalFoodGoal=(80-world.actorModel.actors.filter(a=>!a.alive).length)*world.societyModel.config.reserveFoodDays;
       if(a.occupation==='chief' && input.resources.food<communalFoodGoal)beginGoal(current,'support-village',communalFoodGoal,day);
       if(a.occupation==='merchant'){
-        if(current.inventory.herbs>0 && buyerFor(input,id))beginGoal(current,'sell-medicine',1,day);
+        if(current.inventory.herbs>0 && buyerFor(input,id,publicTrade))beginGoal(current,'sell-medicine',1,day);
         else if(current.inventory.herbs===0)beginGoal(current,'stock-medicine',1,day);
       }
     }
@@ -108,7 +119,7 @@ export function planSocietyDay(input){
         else if(current.wallet<world.marketModel.prices.herbs && canPersonalAction(view(world,id),'WorkForPay',ownership(world,id))){action='WorkForPay';step='earn';}
         else blocked=true;
       }else{
-        const buyer=buyerFor(input,id);if(buyer){action='SellMedicine';step='sell';targetActorId=buyer.state.actorId;}else blocked=true;
+        const buyer=buyerFor(input,id,publicTrade);if(buyer){action='SellMedicine';step='sell';targetActorId=buyer.state.actorId;}else blocked=true;
       }
       goal.step=step;if(blocked)goal.failures++;
       current.lastDecision={day,goalId:goal.goalId,kind:goal.kind,action,scores:{health:0,food:0,rest:0},blocked,roleScore:500};
@@ -119,8 +130,8 @@ export function planSocietyDay(input){
   validateSocietyWorld(world);return {world,commands};
 }
 
-export function applySocietyAction(input,payload,sample=null){
-  validateSocietyWorld(input);fields(payload,['actorId','goalId','action','targetActorId']);identifier(payload.actorId);integer(payload.goalId);
+export function applySocietyAction(input,payload,sample=null,publicTrade=null){
+  validateSocietyWorld(input);validatePublicTrade(input,publicTrade);fields(payload,['actorId','goalId','action','targetActorId']);identifier(payload.actorId);integer(payload.goalId);
   requireCondition(agent(input,payload.actorId) && SOCIETY_ACTIONS.includes(payload.action),'Unknown Society action/estate');
   requireCondition(payload.action==='SellMedicine'?typeof payload.targetActorId==='string':payload.targetActorId===null,'Invalid Society action target');
   if(payload.action==='SellMedicine')identifier(payload.targetActorId);
@@ -131,7 +142,8 @@ export function applySocietyAction(input,payload,sample=null){
     return {world,success:result.success,result:result.success?{...result.result,targetActorId:null}:result.result};
   }
   requireCondition(sample===null,'Trade does not consume RNG');const buyer=agent(world,payload.targetActorId),p=buyer?person(world,payload.targetActorId):null;
-  const price=Math.min(world.marketModel.config.products.herbs.maxPrice,world.marketModel.prices.herbs+world.societyModel.config.saleMarkup);
+  if(publicTrade!==null)requireCondition(publicTrade.buyerId===payload.targetActorId,'Committed trade target differs from public selection');
+  const price=publicTrade===null?Math.min(world.marketModel.config.products.herbs.maxPrice,world.marketModel.prices.herbs+world.societyModel.config.saleMarkup):publicTrade.price;
   const valid=a.alive && a.occupation==='merchant' && m.lastActionDay<day && m.inventory.herbs>0 && buyer && p.alive && p.actorId!==a.actorId &&
     p.location===a.location && p.health<=700 && buyer.state.inventory.herbs===0 && buyer.state.wallet>=price;
   if(!valid){if(a.alive && m.lastActionDay<day){m.lastActionDay=day;m.lastAction='SellMedicine';m.ledger.failedActions++;if(m.currentGoal)m.currentGoal.failures++;}

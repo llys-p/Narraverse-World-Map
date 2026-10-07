@@ -17,6 +17,8 @@ import { HUNTER_RULES } from './runtime/core/hunter.mjs';
 import { createHunterVillage,createHunterRecovery,createHunterHunger } from './runtime/fixtures/hunter-village.mjs';
 import { SOCIETY_RULES } from './runtime/core/society.mjs';
 import { createSocietyVillage,createSocietyMedicineRace,createSocietyPeerSale } from './runtime/fixtures/society-village.mjs';
+import { MEMORY_RULES } from './runtime/core/memory-runtime.mjs';
+import { createMemoryVillage,createMemoryRelations,createMemoryRelationsControl,createMemoryMedicineRace } from './runtime/fixtures/memory-village.mjs';
 import { createSimulationSession } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
@@ -41,6 +43,10 @@ const profiles = new Map([
   ['society-village',{rulesVersion:SOCIETY_RULES,create:createSocietyVillage}],
   ['society-medicine-race',{rulesVersion:SOCIETY_RULES,create:createSocietyMedicineRace}],
   ['society-peer-sale',{rulesVersion:SOCIETY_RULES,create:createSocietyPeerSale}],
+  ['memory-village',{rulesVersion:MEMORY_RULES,create:createMemoryVillage}],
+  ['memory-relations',{rulesVersion:MEMORY_RULES,create:createMemoryRelations}],
+  ['memory-relations-control',{rulesVersion:MEMORY_RULES,create:createMemoryRelationsControl}],
+  ['memory-medicine-race',{rulesVersion:MEMORY_RULES,create:createMemoryMedicineRace}],
 ]);
 const actorPayload=event=>['HunterDaySettled','SocietyDaySettled'].includes(event.type)?event.payload.actors:event.type==='ActorDaySettled'?event.payload:undefined;
 const marketPayload=event=>actorPayload(event)?.market??(event.type==='EconomyDaySettled'?event.payload:undefined);
@@ -96,7 +102,7 @@ async function codeIdentity() {
     codeMetadataStatus = 'available';
   } catch { codeSha = null; codeDirty = null; }
   const files = { 'simulation-runner.mjs': createHash('sha256').update(await fs.readFile(path.join(root, 'simulation-runner.mjs'))).digest('hex') };
-  for (const directory of ['runtime/core', 'runtime/persistence', 'runtime/fixtures', 'runtime/experiments']) {
+  for (const directory of ['runtime/core', 'runtime/persistence', 'runtime/fixtures', 'runtime/experiments','runtime/knowledge']) {
     for (const name of (await fs.readdir(path.join(root, directory))).filter((name) => name.endsWith('.mjs')).sort()) {
       files[directory + '/' + name] = createHash('sha256').update(await fs.readFile(path.join(root, directory, name))).digest('hex');
     }
@@ -249,6 +255,23 @@ async function writeHunter(directory,bundle) {
   }finally{await actions.close();}
 }
 
+async function writeMemory(directory,events){
+  const memoryColumns=['day','actorId','memoryId','sourceEventSeq','occurrenceTick','observedTick','channel','importance','observableJson'];
+  const relationColumns=['day','actorId','targetActorId','trust','lastSourceEventSeq'];
+  const cell=value=>{const text=String(value);return /[",\r\n]/.test(text)?'"'+text.replaceAll('"','""')+'"':text;};
+  for(const [file,columns] of [['memories.csv',memoryColumns],['relationships.csv',relationColumns]]){
+    const handle=await fs.open(path.join(directory,file),'wx');
+    try{
+      await handle.writeFile(columns.join(',')+'\n');
+      for(const e of events)if(e.type==='MemoryDaySettled')for(const actor of e.payload.observer.actors){
+        const rows=file==='memories.csv'?actor.memories.map(m=>({day:e.payload.day,actorId:actor.actorId,...m,observableJson:canonicalJson(m.observable)})):
+          actor.relationships.map(r=>({day:e.payload.day,actorId:actor.actorId,targetActorId:r.actorId,trust:r.trust,lastSourceEventSeq:r.lastSourceEventSeq}));
+        for(const row of rows)await handle.writeFile(columns.map(k=>cell(row[k])).join(',')+'\n');
+      }
+    }finally{await handle.close();}
+  }
+}
+
 export async function runSimulation(options, hooks = {}) {
   fields(options, ['fixture', 'resume', 'days', 'ticks', 'seed', 'out']);
   record(hooks); requireCondition(Object.keys(hooks).every((key) => key === 'transformSystems'), 'Unknown test hook');
@@ -277,12 +300,13 @@ export async function runSimulation(options, hooks = {}) {
     checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
     await fs.writeFile(path.join(directory, 'inputs.json'), JSON.stringify(completeInputs(bundle.snapshot), null, 2), { flag: 'wx' });
     await writeEvents(path.join(directory, 'events.csv'), bundle.eventLog);
-    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
-    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
-    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
-    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
+    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
+    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
+    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
+    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
     const hunterConfig=bundle.snapshot.rulesVersion===HUNTER_RULES?bundle.snapshot.world.hunterModel.config:undefined;
-    const societyConfig=bundle.snapshot.rulesVersion===SOCIETY_RULES?bundle.snapshot.world.societyModel.config:undefined;
+    const societyConfig=[SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.societyModel.config:undefined;
+    const memoryConfig=bundle.snapshot.rulesVersion===MEMORY_RULES?bundle.snapshot.world.memoryModel.config:undefined;
     if (resourceConfig) {
       await fs.writeFile(path.join(directory, 'resource-config.json'), JSON.stringify(resourceConfig, null, 2), { flag: 'wx' });
       await writeEconomy(path.join(directory, 'economy.csv'), bundle.eventLog);
@@ -304,6 +328,7 @@ export async function runSimulation(options, hooks = {}) {
       await writeHunter(directory,bundle);
     }
     if(societyConfig){await fs.writeFile(path.join(directory,'society-config.json'),JSON.stringify(societyConfig,null,2),{flag:'wx'});await writeSociety(directory,bundle);}
+    if(memoryConfig){await fs.writeFile(path.join(directory,'memory-config.json'),JSON.stringify(memoryConfig,null,2),{flag:'wx'});await writeMemory(directory,bundle.eventLog);}
     const summary = { status: failure ? 'failed' : 'succeeded', ...identity, nodeVersion: process.version,
       fixtureId: bundle.snapshot.fixtureId, fixtureVersion: bundle.snapshot.fixtureVersion,
       rulesVersion: bundle.snapshot.rulesVersion, simulationId: bundle.snapshot.simulationId,
@@ -315,6 +340,7 @@ export async function runSimulation(options, hooks = {}) {
       ...(actorConfig ? { actorConfigHash: hash(actorConfig) } : {}),
       ...(hunterConfig?{hunterConfigHash:hash(hunterConfig)}:{}),
       ...(societyConfig?{societyConfigHash:hash(societyConfig)}:{}),
+      ...(memoryConfig?{memoryConfigHash:hash(memoryConfig)}:{}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       executionStats: session.getStats(),
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,

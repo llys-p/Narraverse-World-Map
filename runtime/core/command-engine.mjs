@@ -9,6 +9,8 @@ import { MARKET_RULES, applyMarketCommand, marketCommandFact, marketCauses, sett
 import { ACTOR_RULES,applyActorCommand,settleActorDay } from './actors.mjs';
 import { HUNTER_RULES,applyHunterCommand,planHunterDay,applyHunterAction,hunterActionFact,hunterCauses,settleHunterDay } from './hunter.mjs';
 import { SOCIETY_RULES,applySocietyCommand,planSocietyDay,applySocietyAction,societyActionFact,societyCauses,settleSocietyDay } from './society.mjs';
+import { MEMORY_RULES,prepareMemoryDay,planMemoryDay,applyMemoryAction,applyMemoryCommand,settleMemorySocietyDay,finishMemoryDay,validateMemoryDayPayload } from './memory-runtime.mjs';
+import { validateMedicineAnnouncement } from './public-medicine.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, integer, normalizeSystems, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
@@ -57,8 +59,9 @@ function performTick(bundle, systems, mode) {
     const commitInput=(input)=>{
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
       let success, result, eventSeqs = [];
-      if(rulesVersion===SOCIETY_RULES){
-        const applied=input.type==='SocietyAction'?applySocietyAction(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null):applySocietyCommand(s.world,{type:input.type,payload:input.payload});
+      if([SOCIETY_RULES,MEMORY_RULES].includes(rulesVersion)){
+        const action=rulesVersion===MEMORY_RULES?applyMemoryAction:applySocietyAction,command=rulesVersion===MEMORY_RULES?applyMemoryCommand:applySocietyCommand;
+        const applied=input.type==='SocietyAction'?action(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null):command(s.world,{type:input.type,payload:input.payload});
         s.world=applied.world;success=applied.success;result=applied.result;
         if(success)eventSeqs=[append(input.type==='SocietyAction'?societyActionFact(input,result):marketCommandFact(input,result))];
       }else if(rulesVersion===HUNTER_RULES){
@@ -104,8 +107,10 @@ function performTick(bundle, systems, mode) {
         commitInput({...input,inputSeq:s.nextInputSeq++});
       }
     }
-    if(rulesVersion===SOCIETY_RULES && plan.dueTasks.length){
-      const planned=planSocietyDay(s.world);s.world=planned.world;
+    if([SOCIETY_RULES,MEMORY_RULES].includes(rulesVersion) && plan.dueTasks.length){
+      if(rulesVersion===MEMORY_RULES){const prepared=prepareMemoryDay(s.world,failedTick);s.world=prepared.world;
+        for(const fact of prepared.facts){validateMedicineAnnouncement(fact);append(fact);}}
+      const planned=(rulesVersion===MEMORY_RULES?planMemoryDay:planSocietyDay)(s.world);s.world=planned.world;
       for(const raw of planned.commands){const input=commandInput(raw);
         requireCondition(input.targetTick===failedTick && !own(s.commandReceipts,input.commandId),'Society internal due tick/ID mismatch');
         requireCondition(s.nextInputSeq<Number.MAX_SAFE_INTEGER,'Society input counter overflow','LIMIT_EXCEEDED');
@@ -115,12 +120,13 @@ function performTick(bundle, systems, mode) {
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
       return canonicalJson({ ...protectedFields,
-        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
-        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
-        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
-        ...([ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
+        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
+        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
+        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
+        ...([ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
         ...(rulesVersion===HUNTER_RULES?{hunterConfig:world.hunterModel.config}:{}),
-        ...(rulesVersion===SOCIETY_RULES?{societyConfig:world.societyModel.config}:{}) });
+        ...([SOCIETY_RULES,MEMORY_RULES].includes(rulesVersion)?{societyConfig:world.societyModel.config}:{}),
+        ...(rulesVersion===MEMORY_RULES?{memoryConfig:world.memoryModel.config}:{}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
@@ -128,7 +134,7 @@ function performTick(bundle, systems, mode) {
         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
         ...([MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { populationCauses: Object.freeze(marketCauses(candidate.eventLog)) } : {}),
         ...(rulesVersion===HUNTER_RULES?{populationCauses:Object.freeze(hunterCauses(candidate.eventLog))}:{}),
-        ...(rulesVersion===SOCIETY_RULES?{populationCauses:Object.freeze(societyCauses(candidate.eventLog))}:{}),
+        ...([SOCIETY_RULES,MEMORY_RULES].includes(rulesVersion)?{populationCauses:Object.freeze(societyCauses(candidate.eventLog))}:{}),
         emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
@@ -138,6 +144,9 @@ function performTick(bundle, systems, mode) {
       }
     }
     requireCondition(envelope() === beforeSystems, 'System changed protected snapshot fields');
+    if(rulesVersion===MEMORY_RULES && plan.dueTasks.length){
+      const memory=finishMemoryDay(s.world,candidate.eventLog,failedTick);s.world=memory.world;validateMemoryDayPayload(memory.fact.payload);append(memory.fact);
+    }
     requireCondition(s.nextEventSeq === nextEventSeq, 'System rewrote event counter');
     requireCondition(s.nextEntityId <= Number.MAX_SAFE_INTEGER, 'Entity ID overflow', 'LIMIT_EXCEEDED');
     requireCondition(Number.isSafeInteger(s.nextEntityId) && s.nextEntityId >= previousEntityId, 'System reduced/invalidated entity ID counter');
@@ -176,6 +185,7 @@ function canonicalSystems(rulesVersion) {
   if (rulesVersion === ACTOR_RULES) return define('actors', 'ActorDaySettled', settleActorDay, true);
   if (rulesVersion === HUNTER_RULES) return define('hunter','HunterDaySettled',settleHunterDay,true);
   if (rulesVersion === SOCIETY_RULES) return define('society','SocietyDaySettled',settleSocietyDay,true);
+  if (rulesVersion === MEMORY_RULES) return define('society','SocietyDaySettled',settleMemorySocietyDay,true);
   throw fault('UNSUPPORTED_VERSION', 'No canonical transition for these rules');
 }
 
@@ -192,7 +202,7 @@ export function createSimulationSession(bundle, systems) {
   fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
   const registered = Object.freeze({ ...systems });
   validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
-  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES].includes(bundle.snapshot.rulesVersion),
+  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,MEMORY_RULES].includes(bundle.snapshot.rulesVersion),
     'Session rules are not registered', 'UNSUPPORTED_VERSION');
   let current = freezeData(cloneBundle(bundle)), busy = false;
   const stats = { idleTicks: 0, activityTicks: 0 };
