@@ -7,10 +7,11 @@ import vm from 'node:vm';
 import { createRuntimeOwner } from '../../runtime/service/runtime-owner.mjs';
 import { startRuntimeServer } from '../../runtime-server.mjs';
 import { parseCommandBytes,validateTimeCommandDto,validateServiceCommandDto,projectPlayerSnapshot,projectPublicSnapshot } from '../../runtime/service/http-contract.mjs';
-import { validateServiceCommit,saveServiceCommit } from '../../runtime/service/service-commit.mjs';
+import { validateServiceCommit,transitionServiceCommand } from '../../runtime/service/service-commit.mjs';
 import { createSimulationSession } from '../../runtime/core/command-engine.mjs';
 import { createPlayerVillage } from '../../runtime/fixtures/player-village.mjs';
 import { createPersonalityNeutral } from '../../runtime/fixtures/personality-village.mjs';
+import { saveCheckpoint } from '../../runtime/persistence/checkpoint-store.mjs';
 
 const intent=(commandId,expectedRevision,type,payload)=>({version:2,commandId,expectedRevision,type,payload});
 const bytes=dto=>Buffer.from(JSON.stringify(dto));
@@ -103,10 +104,79 @@ test('D2C consumed-time rejection is committed once and its exact original recei
   const {defaultPlayerPlayConfig}=await import('../../runtime/core/player-intents.mjs'),config=defaultPlayerPlayConfig();
   config.society.actors.initialActors[3].health=50;config.society.actors.initialActors[3].hunger=400;config.society.player.initialFood=0;
   const f=await fixture(config),session=createSimulationSession(f.bundle,f.systems);session.advanceTicks(143);const anchor=session.getBundle();
-  const directory=path.join(await temporary(t),'world');await saveServiceCommit({serviceFormatVersion:3,anchor,commands:[],bundle:anchor},directory);
-  const owner=await createRuntimeOwner({directory,writable:true});t.after(()=>owner.close());const dto=intent('death-travel',143,'PlayerTravel',{destination:'forest'}),receipt=await owner.submit(dto);
+  const base=await temporary(t),directory=path.join(base,'world'),checkpoint=await saveCheckpoint(anchor,{directory:path.join(base,'source'),rulesVersion:anchor.snapshot.rulesVersion,systems:f.systems});
+  let server=await startRuntimeServer({directory,checkpoint,writable:true,port:0});t.after(()=>server.close());
+  const post=async dto=>{const reply=await fetch(server.url+'/api/runtime/commands',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dto)});assert.equal(reply.status,200);return reply.json();};
+  const player=async()=>{const reply=await fetch(server.url+'/api/runtime/player');assert.equal(reply.status,200);return reply.json();};
+  const dto=intent('death-travel',143,'PlayerTravel',{destination:'forest'}),receipt=await post(dto);
   assert.equal(receipt.status,'committed');assert.equal(receipt.outcome,'rejected');assert.equal(receipt.toRevision,155);assert.deepEqual(receipt.result,{code:'RULE_REJECTED'});
-  assert.equal(owner.getPlayer().self.identity.alive,false);assert.equal(owner.getPlayer().self.identity.location,'village');assert.deepEqual(await owner.submit(dto),receipt);
-  await owner.close();const restored=await createRuntimeOwner({directory,writable:true});t.after(()=>restored.close());assert.deepEqual(await restored.submit(dto),receipt);
-  assert.equal(restored.getSnapshot().revision,155);await restored.close();const readOnly=await createRuntimeOwner({directory});t.after(()=>readOnly.close());assert.equal(readOnly.getPlayer().revision,155);
+  const dead=await player();assert.equal(dead.self.identity.alive,false);assert.equal(dead.self.identity.location,'village');assert.deepEqual(await post(dto),receipt);
+  const disk=await fs.readFile(path.join(directory,'service-commit-r155.json'));
+  await server.close();server=await startRuntimeServer({directory,writable:true,port:0});assert.deepEqual(await post(dto),receipt);
+  assert.deepEqual(await fs.readFile(path.join(directory,'service-commit-r155.json')),disk);
+  await server.close();server=await startRuntimeServer({directory,port:0});assert.equal((await player()).revision,155);
+  const page=await pageHarness(anchor);assert.equal(page.valid(receipt,dto),true);
+  page.setTransport(async(route)=>({ok:true,status:200,json:async()=>route.endsWith('commands')?receipt:route.endsWith('capabilities')?
+    {apiVersion:1,writes:true,playerAvailable:true,playerActionsAvailable:true}:route.endsWith('player')?dead:projectPublicSnapshot(JSON.parse(disk).bundle)}));
+  await page.submit(dto);assert.equal(page.pending(),null);assert.match(page.elements.get('command-status').textContent,/时间已推进，动作未完成/);
+});
+
+async function pageHarness(bundle){
+  const elements=new Map(),make=()=>({textContent:'',hidden:false,disabled:false,value:'1',dataset:{},handlers:{},
+    append(){},replaceChildren(){},addEventListener(type,fn){this.handlers[type]=fn;}});
+  const document={documentElement:{dataset:{}},getElementById(id){if(!elements.has(id))elements.set(id,make());return elements.get(id);},createElement:make};
+  let transport=async()=>{throw new Error('offline');};
+  const context=vm.createContext({document,AbortSignal,crypto:{randomUUID:()=> 'same-intent'},fetch:(...args)=>transport(...args)});
+  vm.runInContext(await fs.readFile(new URL('../../runtime-map.mjs',import.meta.url),'utf8'),context);await new Promise(resolve=>setImmediate(resolve));
+  context.world=projectPublicSnapshot(bundle);context.player=projectPlayerSnapshot(bundle);
+  vm.runInContext('last=world;lastPlayer=player;writable=true;actionsAvailable=true',context);
+  return {context,elements,setTransport(fn){transport=fn;},valid(receipt,dto){context.receipt=receipt;context.dto=dto;return vm.runInContext('validReceipt(receipt,dto)',context);},
+    async submit(dto){context.dto=dto;await vm.runInContext('submitIntent(dto)',context);},pending(){return vm.runInContext('pending',context);}};
+}
+
+test('D2C page validates real action receipts against the original intent and rejects damaged 200 confirmations',async()=>{
+  const f=await fixture(),page=await pageHarness(f.bundle);
+  for(const dto of [intent('travel',0,'PlayerTravel',{destination:'forest'}),intent('rest',0,'PlayerRest',{}),
+    intent('buy',0,'PlayerBuy',{product:'food',quantity:1}),intent('sell',0,'PlayerSell',{product:'herbs',quantity:1})]){
+    const {receipt}=transitionServiceCommand(f.bundle,dto);assert.equal(page.valid(receipt,dto),true);
+    const wrongDuration=structuredClone(receipt);wrongDuration.toRevision++;wrongDuration.tick++;wrongDuration.result.endTick++;
+    assert.equal(page.valid(wrongDuration,dto),false,'wrong duration cannot confirm an intent');
+    if(dto.type==='PlayerTravel'){const bad=structuredClone(receipt);bad.result.after.location='village';assert.equal(page.valid(bad,dto),false);}
+    if(['PlayerBuy','PlayerSell'].includes(dto.type))for(const mutate of [r=>r.result.product=r.result.product==='food'?'herbs':'food',
+      r=>{r.result.quantity++;r.result.amount=r.result.quantity*r.result.unitPrice;},r=>r.result.amount++]){
+      const bad=structuredClone(receipt);mutate(bad);assert.equal(page.valid(bad,dto),false);
+    }
+    else for(const key of ['quantity','unitPrice','amount']){const bad=structuredClone(receipt);bad.result[key]=1;assert.equal(page.valid(bad,dto),false);}
+  }
+  const travel=intent('lost',0,'PlayerTravel',{destination:'forest'}),valid=transitionServiceCommand(f.bundle,travel).receipt;
+  for(const malformed of [null,[],{...valid,type:'PlayerRest'}, {...valid,toRevision:13,tick:13}])assert.equal(page.valid(malformed,travel),false);
+  const rejected={...valid,outcome:'rejected',result:{code:'RULE_REJECTED'}};assert.equal(page.valid(rejected,travel),true);
+  assert.equal(page.valid({...rejected,toRevision:13,tick:13},travel),false);
+  page.setTransport(async()=>({ok:true,status:200,json:async()=>({...valid,toRevision:13,tick:13})}));await page.submit(travel);
+  assert.deepEqual(JSON.parse(JSON.stringify(page.pending())),travel);assert.match(page.elements.get('command-status').textContent,/尚未确认/);
+});
+
+test('D2C page preserves original IDs on uncertain responses and releases non-JSON permanent rejection including422',async()=>{
+  const f=await fixture(),page=await pageHarness(f.bundle),dto=intent('unknown',0,'PlayerRest',{}),sent=[];
+  page.setTransport(async(route,options)=>{sent.push(JSON.parse(options.body));return {ok:false,status:502,json:async()=>{throw new Error('non-JSON');}};});
+  await page.submit(dto);await page.submit(intent('new-id',0,'PlayerTravel',{destination:'forest'}));assert.deepEqual(sent,[dto,dto]);
+  for(const status of [422,400,405,413,415]){
+    page.setTransport(async()=>({ok:false,status,json:async()=>{throw new Error('non-JSON');}}));await page.submit(dto);assert.equal(page.pending(),null);
+  }
+});
+
+test('D2C explicit audited play checkpoint initializes a fresh service3 without altering the source',async t=>{
+  const base=await temporary(t),f=await fixture(),session=createSimulationSession(f.bundle,f.systems);session.advanceTicks(143);const anchor=session.getBundle();
+  const file=await saveCheckpoint(anchor,{directory:path.join(base,'source'),rulesVersion:anchor.snapshot.rulesVersion,systems:f.systems}),before=await fs.readFile(file);
+  const directory=path.join(base,'runtime'),owner=await createRuntimeOwner({directory,checkpoint:file,writable:true});t.after(()=>owner.close());
+  assert.equal(owner.getSnapshot().revision,143);assert.equal(owner.playerActionsAvailable,true);
+  assert.equal(JSON.parse(await fs.readFile(path.join(directory,'service-commit-r143.json'))).serviceFormatVersion,3);
+  assert.deepEqual(owner.getPlayer(),projectPlayerSnapshot(anchor));assert.deepEqual(await fs.readFile(file),before);
+  await assert.rejects(createRuntimeOwner({directory:path.join(base,'mutually-exclusive'),checkpoint:file,profile:'player-play-village'}),e=>e.code==='INVALID_INPUT');
+  for(const [name,mutate,code] of [['unknown',e=>e.snapshot.fixtureId='not-registered','UNSUPPORTED_VERSION'],
+    ['format',e=>e.formatVersion=2,'UNSUPPORTED_VERSION'],['extra',e=>e.extra=true,'INVALID_CHECKPOINT'],
+    ['asset',e=>e.snapshot.world.playerModel.wallet++,'INVALID_CHECKPOINT']]){
+    const bad=JSON.parse(before);mutate(bad);const source=path.join(base,name+'.json');await fs.writeFile(source,JSON.stringify(bad));
+    await assert.rejects(createRuntimeOwner({directory:path.join(base,'bad-'+name),checkpoint:source}),e=>e.code===code);
+  }
 });
