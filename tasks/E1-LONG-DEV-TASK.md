@@ -2,6 +2,8 @@
 
 日期：2026-10-07（Asia/Shanghai）。
 
+中控收口：作者 `7ee4a91` 的v1原件保留；中控内部修订v2并推 `codex/laya-long-dev-control` @ `0c8fc100d5b3bdf4753640de2259bd092ff24684`。四类各6条、8家族，输入路径/信任反例限定验收通过；六条新cat2独立匿名信任复核6/6一致，三套回归/两次重建通过。五信号仍未冻结、未推理、未扩400；[复验报告](https://github.com/llys-p/Narraverse-World-Map/blob/codex/laya-long-dev-control/benchmarks/npc-socialsignal/LONG-DEV24-CONTROL-REVIEW.md)。下一项按[新语料首批30条合同](E1-CORPUS400-TASK.md)待派发，以下保留原合同。
+
 ## 给用户看
 
 评测工具现在按登记的预测文件评分，错误/漏题不能抬高成绩；超时计算会被回收，截断丢掉依据不能继续按原答案评分。中控已接管剩余修复，稳定性统计也已改为保留计划分母，研究原件与旧报告保留。
