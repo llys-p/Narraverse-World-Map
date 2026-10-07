@@ -20,15 +20,20 @@ async function ownsLock(file,token,io){
   }finally{await handle.close();}
 }
 async function inspectDirectory(directory,io){
-  const states=[],entries=await io.opendir(directory);let count=0;
+  const states=[],entries=await io.opendir(directory);let count=0,temporaries=0;
   for await(const entry of entries){
     if(entry.name===LOCK)continue;
+    if(/^\.service-commit-r(0|[1-9][0-9]*)\.json\.[1-9][0-9]*\.[1-9][0-9]*\.tmp$/.test(entry.name)){
+      requireCondition(entry.isFile(),'Runtime temporary is not a regular file');
+      requireCondition(++temporaries<=MAX_SERVICE_FILES,'Runtime temporary file budget exceeded','LIMIT_EXCEEDED');continue;
+    }
     requireCondition(++count<=MAX_SERVICE_FILES,'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
     const match=/^(checkpoint|service-commit)-r(0|[1-9][0-9]*)\.json$/.exec(entry.name);
     requireCondition(match && entry.isFile(),'Runtime directory contains foreign files');
     const revision=Number(match[2]);integer(revision);states.push({kind:match[1],file:path.join(directory,entry.name),revision});
   }
   requireCondition(new Set(states.map(s=>s.kind)).size<=1,'Mixed runtime storage formats');
+  requireCondition(temporaries===0 || (states.length>0 && states[0].kind==='service-commit'),'Incomplete service initialization');
   return states.sort((a,b)=>b.revision-a.revision);
 }
 // IO injection is a library test boundary; HTTP/CLI cannot supply handlers or bypass validation.

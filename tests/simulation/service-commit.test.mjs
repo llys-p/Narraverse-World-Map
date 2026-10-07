@@ -84,3 +84,12 @@ test('D2A budgets and format boundary reject before replay or publication; no im
   const oversized=path.join(base,'oversized.json'),handle=await fs.open(oversized,'w');await handle.truncate(MAX_STATE_FILE_BYTES+1);await handle.close();
   await assert.rejects(loadServiceCommit(oversized),e=>e.code==='LIMIT_EXCEEDED');
 });
+test('D2A interrupted cleanup keeps bounded service temporaries but loads only audited published commits; temporary-only genesis fails',async t=>{
+  const base=await temporary(t),directory=path.join(base,'world'),owner=await createRuntimeOwner({directory,writable:true});await owner.submit(command('orphan',0,1));await owner.close();
+  const orphan=path.join(directory,'.service-commit-r1.json.999.1.tmp'),partial=path.join(directory,'.service-commit-r2.json.999.2.tmp');
+  await fs.link(path.join(directory,'service-commit-r1.json'),orphan);await fs.writeFile(partial,'unfinished');
+  const restored=await createRuntimeOwner({directory,writable:true});t.after(()=>restored.close());assert.equal(restored.getSnapshot().tick,1);
+  assert.equal(await fs.readFile(partial,'utf8'),'unfinished');assert.equal((await fs.stat(orphan)).isFile(),true);await restored.close();
+  const incomplete=path.join(base,'incomplete');await fs.mkdir(incomplete);await fs.writeFile(path.join(incomplete,'.service-commit-r0.json.999.1.tmp'),'unfinished');
+  await assert.rejects(createRuntimeOwner({directory:incomplete,writable:true}),e=>e.code==='INVALID_INPUT');
+});
