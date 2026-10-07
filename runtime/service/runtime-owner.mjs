@@ -12,7 +12,8 @@ import { projectPublicSnapshot,projectPlayerSnapshot,runtimeProfile,validateTime
 import { saveServiceCommit,loadServiceCommit,timeReceipt,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 async function ownsLock(file,token,io){
-  const handle=await io.open(file,'r');
+  let handle;
+  try{handle=await io.open(file,'r');}catch(error){if(error.code==='ENOENT')return false;throw error;}
   try{
     const expected=Buffer.from(token),stat=await handle.stat();if(!stat.isFile() || stat.size!==expected.length)return false;
     const bytes=Buffer.alloc(expected.length+1);let offset=0;
@@ -21,11 +22,13 @@ async function ownsLock(file,token,io){
   }finally{await handle.close();}
 }
 async function inspectDirectory(directory,io){
-  const states=[],entries=await io.opendir(directory);let count=0,temporaries=0;
+  const states=[],temporaryKinds=new Set(),entries=await io.opendir(directory);let count=0,temporaries=0;
   for await(const entry of entries){
     if(entry.name===LOCK)continue;
-    if(/^\.service-commit-r(0|[1-9][0-9]*)\.json\.[1-9][0-9]*\.[1-9][0-9]*\.tmp$/.test(entry.name)){
+    const temporary=/^\.(service-commit|checkpoint)-r(0|[1-9][0-9]*)\.json\.[1-9][0-9]*\.[1-9][0-9]*\.tmp$/.exec(entry.name);
+    if(temporary){
       requireCondition(entry.isFile(),'Runtime temporary is not a regular file');
+      temporaryKinds.add(temporary[1]);
       requireCondition(++temporaries<=MAX_SERVICE_FILES,'Runtime temporary file budget exceeded','LIMIT_EXCEEDED');continue;
     }
     requireCondition(++count<=MAX_SERVICE_FILES,'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
@@ -34,7 +37,8 @@ async function inspectDirectory(directory,io){
     const revision=Number(match[2]);integer(revision);states.push({kind:match[1],file:path.join(directory,entry.name),revision});
   }
   requireCondition(new Set(states.map(s=>s.kind)).size<=1,'Mixed runtime storage formats');
-  requireCondition(temporaries===0 || (states.length>0 && states[0].kind==='service-commit'),'Incomplete service initialization');
+  requireCondition(temporaries===0 || (states.length>0 && temporaryKinds.size===1 && temporaryKinds.has(states[0].kind)),
+    'Incomplete or mixed runtime initialization');
   return states.sort((a,b)=>b.revision-a.revision);
 }
 // IO injection is a library test boundary; HTTP/CLI cannot supply handlers or bypass validation.
@@ -92,7 +96,7 @@ export async function createRuntimeOwner(options,io=fs){
           requireCondition(await ownsLock(lockPath,token,io),'Runtime ownership changed','OWNER_BUSY');
           const inventory=await inspectDirectory(directory,io);
           requireCondition(inventory.length<MAX_SERVICE_FILES,'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
-          requireCondition(inventory[0].kind==='service-commit' && inventory[0].revision===projection.revision,'Runtime state files changed','INVALID_SERVICE_COMMIT');
+          requireCondition(inventory.length>0 && inventory[0].kind==='service-commit' && inventory[0].revision===projection.revision,'Runtime state files changed','INVALID_SERVICE_COMMIT');
           const candidate=createSimulationSession(state.bundle,systems);candidate.advanceTicks(dto.payload.ticks);
           const nextBundle=candidate.getBundle(),nextProjection=projectPublicSnapshot(nextBundle),nextPlayerProjection=playerAvailable?projectPlayerSnapshot(nextBundle):null,
             receipt=timeReceipt(dto,nextProjection.revision);

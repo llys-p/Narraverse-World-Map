@@ -55,10 +55,10 @@ async function submitTime(){
   submitting=true;controls();commandStatus.dataset.state='loading';commandStatus.textContent='正在提交时间请求…';
   try{
     const response=await fetch('/api/runtime/commands',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pending),signal:AbortSignal.timeout(15000)});
-    const receipt=await response.json();
     if(response.status===409){pending=null;commandStatus.dataset.state='error';commandStatus.textContent='世界已变化或请求冲突，已重新读取。请确认读数后再次操作。';await refresh();return;}
     if(!response.ok){if([400,405,413,415].includes(response.status))pending=null;
       commandStatus.dataset.state='error';commandStatus.textContent=pending?'请求未能完成，可重试同一请求。':'请求被拒绝，请检查输入或重新读取世界。';return;}
+    const receipt=await response.json();
     if(receipt.commandId!==pending.commandId || receipt.status!=='committed')throw new Error('Invalid receipt');
     pending=null;commandStatus.dataset.state='ready';commandStatus.textContent='时间已提交，正在读取新的世界读数。';await refresh();
   }catch{commandStatus.dataset.state='error';commandStatus.textContent='连接中断，结果尚未确认。重试同一请求不会重复推进。';}

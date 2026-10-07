@@ -65,7 +65,7 @@ export async function startRuntimeServer(options){
       else if(route==='/healthz')send(200,{apiVersion:1,status:'ready',revision:owner.getSnapshot().revision});
       else{const asset=assets.get(route);send(200,asset.bytes,asset.type);}
     }catch(error){
-      const codes={INVALID_INPUT:400,UNSUPPORTED_VERSION:400,LIMIT_EXCEEDED:413,REVISION_CONFLICT:409,COMMAND_ID_CONFLICT:409,SAVE_FAILED:503,OWNER_BUSY:503};
+      const codes={INVALID_INPUT:400,UNSUPPORTED_VERSION:400,LIMIT_EXCEEDED:413,REVISION_CONFLICT:409,COMMAND_ID_CONFLICT:409,SAVE_FAILED:503,OWNER_BUSY:503,INVALID_SERVICE_COMMIT:503};
       const status=codes[error.code]??500,body=envelope(status===500?'RUNTIME_UNAVAILABLE':error.code,status===409?'读数或请求已发生冲突，请重新读取。':'世界请求未能完成。');
       if(error.code==='REVISION_CONFLICT')body.currentRevision=error.currentRevision;
       send(status,body,undefined,{Connection:'close'});
