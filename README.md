@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-d2b` 任务分支，未合并main。离线runner无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-d2c` 任务分支，源码位于`D:\Narraverse-World-Map-a2`，未合并main。离线runner无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 D1已新增独立只读世界服务：
 
@@ -47,6 +47,16 @@ node runtime-server.mjs --data-dir artifacts/world-runtime-d2b/my-world --port 1
 ```
 
 玩家是第四名实名居民，匿名76、总人口仍80；默认本人100金币/3粮/1药有真实分拨账，不借NPC钱包。页面显示本人状态与私货，活着有存粮时日结只吃本人一份；无私粮则增加本人饥饿，不自动拿公粮/用药。玩家死亡后私产与身份封存。公开世界与本人读数必须同revision，失配重读后仍不一致就保留上一份一致显示。`--profile`仅用于新目录，与`--checkpoint`互斥；不自动给旧世界新增玩家。仍默认只读，写需明确`--writable true`。当前238/238与真实双页签、跨档、隐私、资产守恒和恢复通过；丢锁/空档案明确拒绝、同类临时档保留恢复与非JSON错误意图处理已修，见[D2B收口](tasks/D2B-PLAYER-CONTRACT.md)。旅行、主动休整、交易和战斗仍待后续合同。
+
+D2C新增旅行、主动休整和公仓真实买卖，仅新玩法profile开启：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2c/my-world --profile player-play-village --port 18314 --writable true
+# 恢复同目录时省略 --profile：
+node runtime-server.mjs --data-dir artifacts/world-runtime-d2c/my-world --port 18314 --writable true
+```
+
+旅行村庄↔森林耗120分钟、疲劳增加100；主动休整耗60分钟、疲劳减少100，不回血。买卖仅村庄、公仓粮/药，每笔1～10份耗10分钟，按完成时权威价整笔结算，真实转移金币与公私库存。午夜仍按原规则结算；途中死亡时耗时会保存，动作完成拒绝，页面明确区分。过期请求重读、未确认结果重试同一请求，不重复执行。默认及旧profile不隐式开启动作，真实存档不迁移。中控270/270、真实浏览器/CLI重启/硬退出恢复/旧C5字节对照通过，见[D2C收口证据](tasks/D2C-PLAY-CONTRACT.md)。D2门槛通过，战斗与完整场景连续仍待D3/D4；本轮测试服务已停止。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
