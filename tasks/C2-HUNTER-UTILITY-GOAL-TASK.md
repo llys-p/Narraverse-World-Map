@@ -28,3 +28,19 @@ TDD：真实私有归属与粮/药/现金守恒、公共资金不足不发薪/�
 ## 给AI
 
 从C1任务分支代码取基准，复用现有资源/生态/市场/Actor内核。先把归属账和行动接口验证/提交，再接规划与command-engine；不得把私有钱包当新增金币、把库存外移当真实消费或让公用市场花掉个人钱。按合同保留未完成事项，精确提交/推任务分支与同步唯一状态/Project2；持续推进到用户额度停点再保存，不自动合并main、部署/启停旧服务或用模型。
+
+## 实施与验收收口：PASS
+
+2026-10-07（Asia/Shanghai）。本对话自行实施/复核，基准C1 13ed16c，实现 `d3f3d39f67caa53b59dd75f82562641739dd9e02`，源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-c2。新增core/hunter.mjs、fixtures/hunter-village.mjs、3份猎人测试；现有Actor/生态/市场只增加显式私人消费份额与公共金币保留接口，默认A/B/C1行为保持。command-engine抽取原commitInput共用路径，并在规范每日点生成内部ActorAction/连续inputSeq/回执；公用系统仍不能写protected input。session规范候选/入口与存档完整重放保留。
+
+接口：HUNTER_RULES/HUNTER_ACTIONS、defaultHunterConfig/createHunterWorld/validateHunterWorld/communalGold、applyHunterAction/planHunterDay/settleHunterDay/applyHunterCommand、hunterActionFact/hunterCauses、validateHunterActionResult/validateHunterPayload/validateHunterHistory。fixture createHunterVillage/createHunterRecovery/createHunterHunger。工资/内部购买只改公共与钱包归属，总gold不变；外采才扣总gold且不能花个人份额。私粮/药从真实仓库outflow移出，私人使用只扣私人库存并单独记账；Hunt扣同鹿群1只并产私粮20，匿名劳动不含此人。
+
+TDD：新业务与fixture分别先ERR_MODULE_NOT_FOUND，CLI先Unknown fixture；新增16项定向+原109项全部125/125，約196秒，Node v24.14.0，diff通过。新增反例先红后绿：有钱无药时规划不再无谓赚工资；买1份并当日吃到目标饥饿值即可完成食物Goal，不能要求必有剩余库存而无限重复购买。容量损失/购买不足无部分转移、死亡财产保留/不规划、复活/新身份拒绝、对照旧公开逐tick与private session、同tick外部干预→内部行动→日结顺序、内部来源/Goal/私账/回执/RNG篡改、整tick规划与工资/RNG回退覆盖。
+
+干净d3f3d39真实CLI：baseline100=40日checkpoint+60日恢复，recovery20=2日checkpoint+18日恢复，完整snapshot/EventLog、两哈希、hunter/actions/actors/population/ecology/economy/market/trade八CSV、inputs与hunter-config一致。新进程独立核对每单工资/内部付款的现金归属、私人粮药转移与真实使用、公共市场paid、同鹿群扣除、人口/劳动份额与输入回执。
+
+recovery20保留同一个recover-health Goal（跨档ID1）：7次工作获工资140，3次买药/使用付125，钱包15，健康500→800；期间疲劳休息插入但目标/工资/药未丢。baseline100实名猎鹿5次，真实私粮消费100，目标完成5次；hunger30猎鹿2次并改善饥饿。参数没有脚本预写结果，所有步骤由Needs/资源/执行条件决定。100日约15秒，为同期全回归条件，内存为末尾采样非峰值。旧C1 actor-village100日与B4 frozen baseline1000日复跑完整checkpoint字节与旧验收相同，不因C2份额策略改变旧规则。
+
+stateHash=4619593cb90ce756c4d9d26b999fe15a7a14d3214dee0e6b047762a94b3d1c51；eventHash=f307662326e11be1a8d602e484a68cf17eb12c61c348125d5b8de4a123abf5bb；hunterConfigHash=60aa4e3df2f3073719031ba232115d91cbd9e049b262f9f970309ba42126029e；runtime sourceHash=3e1cf858c838910be0a01da6ec47e6cc7f05f7b90930f7f12c77cd3b0a69c759。证据本地忽略目录artifacts/world-runtime-c2-acceptance-20261007保存full-tests.txt、consumer-probe.mjs、comparison.json、continuous100/prefix40/resumed60、recovery20/recovery2/recovery-resumed18/hunger30及旧规则对照，不上传运行产物。
+
+仅C2单项通过，C阶段未验收。私人库存不自然损耗、猎人仍每日最多一步、村长/商人仍默认休息，C3竞争/独立目标和C4可知记忆后续。持续推进至用户额度停点；源码不合并main、不接UI/模型/桥或旧存档。

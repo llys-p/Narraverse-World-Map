@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 15:25（Asia/Shanghai）。
+更新时间：2026-10-07 15:32（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -50,7 +50,10 @@
 - 独立复核42次运行的代码/源码指纹与状态事件哈希、45420行资源CSV、现金/在途订单及累计时钟溢出通过；证据artifacts/world-runtime-b4-acceptance-20261007/independent-verification.json、matrix/report.json、final-full-tests.txt保持忽略。runtime指纹405ee7e0856e7b66f586755dbcf5ad6a799a72f11e15b1f3512df0dea2160cc3；末尾RSS不是峰值、1000日不是规模压测。[B4报告](docs/runtime/B4-ACCEPTANCE.md)。
 
 - C1 `7c59ad0`：实名3人从80人口移交、匿名77，ID/nextEntityId连续，匿名劳动排除实名者；同一粮药账分配实际份额、Needs、饥饿死亡一次并保留墓碑。109/109（原98+新增11）全回归；实名/匿名最后粮药分配、无药不恢复、死亡不消费/治疗/身份重建、非法数据与配置/份额/Needs/墓碑/RNG篡改/整tick回退通过。[C1合同及交接](tasks/C1-ACTOR-POPULATION-NEEDS-TASK.md)。
-- 干净7c59ad0实际CLI100天=40保存+60恢复，完整checkpoint/两哈希/六CSV/inputs/配置一致；825人日独立核对人口/劳动/消费/需求/死亡，100日实名粮300、世界粮消费8000。needs5猎人健康/饥饿/疲劳回1000/0/0；shortage30实名3人死亡（村长tick144，猎人/商人3456），墓碑不再消费。100日约9秒（同期全回归，末尾内存非峰值）；复跑B4 frozen baseline1000日完整checkpoint字节相同。runtime指纹95bfa553e1f619d23f30d07cc4ddbaf5ab05f8351e8cd96de56068a826aeaf57；证据artifacts/world-runtime-c1-acceptance-20261007/comparison.json、full-tests.txt与五组CLI产物保持忽略。只有身份/份额/Needs基础，自主行动/Goal/关系/记忆未实现。
+- 干净7c59ad0实际CLI100天=40保存+60恢复，完整checkpoint/两哈希/六CSV/inputs/配置一致；825人日独立核对人口/劳动/消费/需求/死亡，100日实名粮300、世界粮消费8000。needs5猎人健康/饥饿/疲劳回1000/0/0；shortage30实名3人死亡（村长tick144，猎人/商人3456），墓碑不再消费。100日约9秒（同期全回归，末尾内存非峰值）；复跑B4 frozen baseline1000日完整checkpoint字节相同。runtime指纹95bfa553e1f619d23f30d07cc4ddbaf5ab05f8351e8cd96de56068a826aeaf57；证据artifacts/world-runtime-c1-acceptance-20261007/comparison.json、full-tests.txt与五组CLI产物保持忽略。最终13ed16c干净seed0一天烟测及源码指纹通过。只有身份/份额/Needs基础，自主行动/Goal/关系/记忆未实现。
+
+- C2 `d3f3d39`：猎人私人粮药/钱包实际归属、工作工资/捕猎/锁价购买/私药使用，经规范Utility/持久Goal生成内部ActorAction输入→engine回执/事实→日规则。公共市场不能花钱包，实名消费/劳动不双算，死者不行动/消费/复活；125/125（原109+新增16）全回归，真实CLI/磁盘目标/部分工资/库存恢复、失败整tick回退、输入/Goal/资产/回执/RNG篡改拒绝通过。[C2合同](tasks/C2-HUNTER-UTILITY-GOAL-TASK.md)。
+- 干净d3f3d39实际CLI baseline100=40保存+60恢复，恢复目标20=2保存+18恢复，完整checkpoint/两哈希/八CSV/inputs/配置一致；独立核对公共+私人粮药、现金归属、实际工资/锁价/私药使用/同鹿群扣除与inputSeq。recovery20同一Goal完成7次工作、3次买药/使用：工资140/药费125/钱包15，health到800；基线100含5次实名猎鹿、个人真实吃100份粮、Goal完成5次。100日约15秒（并发全回归，末尾内存非峰值）；旧C1 100日与B4 frozen 1000日完整checkpoint字节未变。runtime指纹3e1cf858c838910be0a01da6ec47e6cc7f05f7b90930f7f12c77cd3b0a69c759；证据artifacts/world-runtime-c2-acceptance-20261007/comparison.json、full-tests.txt与消费者输出保持忽略。仅猎人自主，C3多人物竞争/C4关系记忆未实现；world.gold为聚落总量、钱包是归属份额，内部outflow不是外部出口。
 ## 尚未完成
 
 - 两个localStorage键非事务、多标签页冲突、战斗中途刷新恢复。
@@ -61,7 +64,7 @@
 
 ## 下一步
 
-A/B与C1已通过；当前本对话自行推进C2 @ D:\Narraverse-World-Map-a2 / codex/world-runtime-c2，基准C1 13ed16c。私人粮药/钱包归属、真实工资/购买/捕猎/使用、Utility/持久Goal、内核ActorAction输入/回执/事实与严格重放已接通；16项新增定向（含真实CLI/磁盘）通过，待最终125项回归和干净消费者收口。C3竞争/C4记忆未开始，C阶段未验收；不合并源码main、不开页面/模型/旧存档，持续至用户实际额度停点。
+A/B及C1/C2单项已通过；当前代码D:\Narraverse-World-Map-a2 @ codex/world-runtime-c2，基准C1 13ed16c，实现 `d3f3d39f67caa53b59dd75f82562641739dd9e02`。125/125全回归、干净100=40+60与恢复目标20=2+18完整状态/事件/CSV一致，工资/私账/工作→买药→使用及同鹿群捕猎核账通过。下一项C3商人/村长竞争未开始，C阶段仍进行中，C4记忆后续；用户持续推进至实际额度约剩10%～15%停点。源码不合并main、不接UI/模型/旧存档，E预研独立。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -73,8 +76,8 @@ A/B与C1已通过；当前本对话自行推进C2 @ D:\Narraverse-World-Map-a2 /
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
-- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
+- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`、C2 `PVTI_lAHOEF9IDs4BmADfzg_EnoU`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4与阶段A门槛、阶段B校准配置门槛及C1单项已通过，C阶段进行中，C2～C4未开始，D～G主线未开始。E阶段待开始；E1工具收尾完成，下一项[24条长dev合同](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-LONG-DEV-TASK.md)待派发，规范/数据可靠性仍需验证。完整400/final160另发合同，旧125与封存保留；不训练/装CUDA/启E2，不启qoder_cron。
+- A1～A4与阶段A门槛、阶段B校准配置门槛及C1/C2单项已通过，C阶段进行中，C3/C4未开始，D～G主线未开始。E阶段待开始；E1工具收尾完成，下一项[24条长dev合同](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-LONG-DEV-TASK.md)待派发，规范/数据可靠性仍需验证。完整400/final160另发合同，旧125与封存保留；不训练/装CUDA/启E2，不启qoder_cron。
