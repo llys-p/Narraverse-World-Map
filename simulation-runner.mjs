@@ -8,6 +8,8 @@ import { createResourceVillage } from './runtime/fixtures/resource-village.mjs';
 import { RESOURCE_RULES } from './runtime/core/resource-ledger.mjs';
 import { createEcologyVillage, createDeerShock } from './runtime/fixtures/ecology-village.mjs';
 import { ECOLOGY_RULES } from './runtime/core/ecology.mjs';
+import { MARKET_RULES } from './runtime/core/market.mjs';
+import { createMarketVillage, createMarketShortage, createMarketRoutePause } from './runtime/fixtures/market-village.mjs';
 import { advanceOneTick } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
@@ -19,6 +21,9 @@ const profiles = new Map([
   ['resource-village', { rulesVersion: RESOURCE_RULES, create: createResourceVillage }],
   ['ecology-village', { rulesVersion: ECOLOGY_RULES, create: createEcologyVillage }],
   ['ecology-deer-shock', { rulesVersion: ECOLOGY_RULES, create: createDeerShock }],
+  ['market-village', { rulesVersion: MARKET_RULES, create: createMarketVillage }],
+  ['market-shortage', { rulesVersion: MARKET_RULES, create: createMarketShortage }],
+  ['market-route-pause', { rulesVersion: MARKET_RULES, create: createMarketRoutePause }],
 ]);
 
 async function selectSimulation(options) {
@@ -102,8 +107,9 @@ async function writeEconomy(file, events) {
   try {
     await handle.writeFile(columns.join(',') + '\n');
     for (const event of events) {
-      if (!['ResourceDaySettled', 'EcologyDaySettled'].includes(event.type)) continue;
-      const payload = event.type === 'EcologyDaySettled' ? event.payload.resources : event.payload;
+      if (!['ResourceDaySettled', 'EcologyDaySettled', 'EconomyDaySettled'].includes(event.type)) continue;
+      const payload = event.type === 'EconomyDaySettled' ? event.payload.ecology.resources :
+        event.type === 'EcologyDaySettled' ? event.payload.resources : event.payload;
       for (const row of payload.entries) {
         const data = { day: payload.day, ...row, productionRemainder: row.remainders.production,
           consumptionRemainder: row.remainders.consumption, lossRemainder: row.remainders.loss };
@@ -123,12 +129,33 @@ async function writeEcology(directory, events) {
     const handle = await fs.open(path.join(directory,file),'wx');
     try {
       await handle.writeFile(columns.join(',')+'\n');
-      for (const event of events) if (event.type === 'EcologyDaySettled') {
-        const p = event.payload;
+      for (const event of events) if (['EcologyDaySettled', 'EconomyDaySettled'].includes(event.type)) {
+        const p = event.type === 'EconomyDaySettled' ? event.payload.ecology : event.payload;
         const row = file === 'population.csv' ? {day:p.day,deer:p.deer.closing,wolves:p.wolves.closing,injuredCount:p.injuredClosing} : {...p};
         if (file === 'ecology.csv') for (const id of ['deer','wolves']) for (const [key,value] of Object.entries(p[id]))
           row[id+key[0].toUpperCase()+key.slice(1)] = value;
         await handle.writeFile(columns.map(key=>String(row[key])).join(',')+'\n');
+      }
+    } finally { await handle.close(); }
+  }
+}
+
+async function writeMarket(directory, events) {
+  const marketColumns = ['day','resource','previous','gapPermille','target','current','routeOpen','inTransitUnits'];
+  const tradeColumns = ['day','action','shipmentId','resource','amount','unitPrice','cost','paidAmount','orderDay','dueDay'];
+  for (const [file,columns] of [['market.csv',marketColumns],['trade.csv',tradeColumns]]) {
+    const handle = await fs.open(path.join(directory,file),'wx');
+    try {
+      await handle.writeFile(columns.join(',')+'\n');
+      for (const event of events) if (event.type === 'EconomyDaySettled') {
+        const p = event.payload;
+        if (file === 'market.csv') for (const resource of ['food','herbs']) {
+          const row = {day:p.day,resource,...p.prices[resource],routeOpen:p.routeOpen,inTransitUnits:p.inTransitUnits};
+          await handle.writeFile(columns.map(key=>String(row[key])).join(',')+'\n');
+        } else for (const [action,orders] of [['ordered',p.orders],['arrived',p.arrivals]]) for (const order of orders) {
+          const row = {day:p.day,action,...order,paidAmount:action==='ordered'?order.cost:0};
+          await handle.writeFile(columns.map(key=>String(row[key])).join(',')+'\n');
+        }
       }
     } finally { await handle.close(); }
   }
@@ -162,8 +189,9 @@ export async function runSimulation(options, hooks = {}) {
     checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
     await fs.writeFile(path.join(directory, 'inputs.json'), JSON.stringify(completeInputs(bundle.snapshot), null, 2), { flag: 'wx' });
     await writeEvents(path.join(directory, 'events.csv'), bundle.eventLog);
-    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
-    const ecologyConfig = bundle.snapshot.rulesVersion === ECOLOGY_RULES ? bundle.snapshot.world.ecologyModel.config : undefined;
+    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
+    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
+    const marketConfig = bundle.snapshot.rulesVersion === MARKET_RULES ? bundle.snapshot.world.marketModel.config : undefined;
     if (resourceConfig) {
       await fs.writeFile(path.join(directory, 'resource-config.json'), JSON.stringify(resourceConfig, null, 2), { flag: 'wx' });
       await writeEconomy(path.join(directory, 'economy.csv'), bundle.eventLog);
@@ -172,6 +200,10 @@ export async function runSimulation(options, hooks = {}) {
       await fs.writeFile(path.join(directory,'ecology-config.json'),JSON.stringify(ecologyConfig,null,2),{flag:'wx'});
       await writeEcology(directory,bundle.eventLog);
     }
+    if (marketConfig) {
+      await fs.writeFile(path.join(directory,'market-config.json'),JSON.stringify(marketConfig,null,2),{flag:'wx'});
+      await writeMarket(directory,bundle.eventLog);
+    }
     const summary = { status: failure ? 'failed' : 'succeeded', ...identity, nodeVersion: process.version,
       fixtureId: bundle.snapshot.fixtureId, fixtureVersion: bundle.snapshot.fixtureVersion,
       rulesVersion: bundle.snapshot.rulesVersion, simulationId: bundle.snapshot.simulationId,
@@ -179,6 +211,7 @@ export async function runSimulation(options, hooks = {}) {
       eventCount: bundle.eventLog.length, stateHash: hash(bundle.snapshot), eventHash: hash(bundle.eventLog),
       ...(resourceConfig ? { resourceConfigHash: hash(resourceConfig) } : {}),
       ...(ecologyConfig ? { ecologyConfigHash: hash(ecologyConfig) } : {}),
+      ...(marketConfig ? { marketConfigHash: hash(marketConfig) } : {}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,
       elapsedMs: performance.now() - started, memoryUsage: process.memoryUsage(), checkpointPath };

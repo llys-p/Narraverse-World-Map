@@ -4,6 +4,7 @@ import { createScheduler, restoreScheduler } from './scheduler.mjs';
 import { validateEventLog } from './event-log.mjs';
 import { RESOURCE_RULES, MAX_RESOURCE_DAYS, validateResourceWorld } from './resource-ledger.mjs';
 import { ECOLOGY_RULES, validateEcologyWorld } from './ecology.mjs';
+import { MARKET_RULES, validateMarketWorld } from './market.mjs';
 import { cloneData, fields, record, identifier, integer, denseArray, normalizeSystems,
   commandInput, inputFingerprint, requireCondition, fault, MAX_EVENTS } from './data-contract.mjs';
 
@@ -25,6 +26,8 @@ function checkBudgets(snapshot, events) {
     denseArray(events, MAX_RESOURCE_DAYS); validateResourceWorld(snapshot.world);
   } else if (snapshot.rulesVersion === ECOLOGY_RULES) {
     denseArray(events, MAX_RESOURCE_DAYS + 100000); validateEcologyWorld(snapshot.world);
+  } else if (snapshot.rulesVersion === MARKET_RULES) {
+    denseArray(events, MAX_RESOURCE_DAYS + 100000); validateMarketWorld(snapshot.world);
   }
 }
 
@@ -56,6 +59,12 @@ export function validateBundle(bundle, options) {
     const day = Math.floor(s.tick / 144), task = s.scheduledTasks[0];
     requireCondition(s.world.ecologyModel.day === day && s.scheduledTasks.length === 1 && task.taskId === 'daily-ecology' &&
       task.systemId === 'ecology' && task.intervalTicks === 144 && task.priority === 10 && task.nextDueTick === (day + 1) * 144, 'Invalid ecology settlement schedule');
+  } else if (s.rulesVersion === MARKET_RULES) {
+    validateMarketWorld(s.world);
+    requireCondition(['market-village', 'market-shortage', 'market-route-pause'].includes(s.fixtureId) && s.fixtureVersion === '1', 'Unknown market fixture', 'UNSUPPORTED_VERSION');
+    const day = Math.floor(s.tick / 144), task = s.scheduledTasks[0];
+    requireCondition(s.world.marketModel.day === day && s.scheduledTasks.length === 1 && task.taskId === 'daily-market' &&
+      task.systemId === 'market' && task.intervalTicks === 144 && task.priority === 10 && task.nextDueTick === (day + 1) * 144, 'Invalid market settlement schedule');
   } else fields(s.world, ['resources']);
   for (const [id, balance] of Object.entries(s.world.resources)) { identifier(id); integer(balance); }
   const ids = new Set(), sequences = new Set(); let previousInput = 0;
@@ -67,7 +76,8 @@ export function validateBundle(bundle, options) {
   for (const entry of s.pendingCommands) {
     fields(entry, ['commandId', 'inputSeq', 'targetTick', 'type', 'payload']);
     const { inputSeq, ...input } = entry; commandInput(input);
-    requireCondition(input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Command does not belong to this rules version');
+    requireCondition(s.rulesVersion === MARKET_RULES ? ['RemovePopulation', 'SetTradeRoute'].includes(input.type) :
+      input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Command does not belong to this rules version');
     remember(entry.commandId, inputSeq);
     requireCondition(inputSeq > previousInput && entry.targetTick > s.tick, 'Out-of-order or expired pending input'); previousInput = inputSeq;
   }
@@ -75,10 +85,12 @@ export function validateBundle(bundle, options) {
     fields(receipt, ['inputSeq', 'input', 'fingerprint', 'status', 'result', 'eventSeqs']);
     fields(receipt.input, ['type', 'payload', 'targetTick']);
     commandInput({ commandId: id, ...receipt.input }); remember(id, receipt.inputSeq);
-    requireCondition(receipt.input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Receipt does not belong to this rules version');
+    requireCondition(s.rulesVersion === MARKET_RULES ? ['RemovePopulation', 'SetTradeRoute'].includes(receipt.input.type) :
+      receipt.input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Receipt does not belong to this rules version');
     requireCondition(receipt.input.targetTick <= s.tick && receipt.fingerprint === inputFingerprint(receipt.input), 'Invalid receipt input/fingerprint');
     if (receipt.status === 'succeeded') {
-      fields(receipt.result, s.rulesVersion === ECOLOGY_RULES ? ['species', 'amount', 'before', 'after'] : ['from', 'to', 'amount']);
+      fields(receipt.result, receipt.input.type === 'SetTradeRoute' ? ['before', 'open'] :
+        receipt.input.type === 'RemovePopulation' ? ['species', 'amount', 'before', 'after'] : ['from', 'to', 'amount']);
     } else {
       requireCondition(receipt.status === 'rejected', 'Unknown receipt status');
       fields(receipt.result, ['code']); requireCondition(receipt.result.code === 'RULE_REJECTED', 'Unknown rejection code');
@@ -91,7 +103,7 @@ export function validateBundle(bundle, options) {
 
 export function createInitialBundle(config, systems) {
   record(config);
-  const worldField = [RESOURCE_RULES, ECOLOGY_RULES].includes(config.rulesVersion) ? 'world' : 'resources';
+  const worldField = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES].includes(config.rulesVersion) ? 'world' : 'resources';
   fields(config, ['rulesVersion', 'simulationId', 'fixtureId', 'fixtureVersion', 'seed', worldField, 'scheduledTasks', 'commands']);
   normalizeSystems(systems); denseArray(config.commands); denseArray(config.scheduledTasks); record(config[worldField]);
   const c = cloneData(config);

@@ -52,8 +52,8 @@ export function createEcologyWorld(config = defaultEcologyConfig()) {
     ledger:Object.fromEntries(['deer','wolves'].map(id=>[id,Object.fromEntries(ACCOUNTS.map(key=>[key,0]))])) } };
 }
 
-export function validateEcologyWorld(world) {
-  fields(world,['resources','resourceModel','ecologyModel']); validateResourceWorld(resourcePart(world));
+export function validateEcologyWorld(world, currencySpent = 0) {
+  fields(world,['resources','resourceModel','ecologyModel']); validateResourceWorld(resourcePart(world), currencySpent);
   const m=world.ecologyModel;fields(m,['config','configFingerprint','day','populations','injuredCount','remainders','ledger']);
   validateConfig(m.config);requireCondition(m.configFingerprint===canonicalJson(m.config) &&
     canonicalJson(m.config.resources)===canonicalJson(world.resourceModel.config),'Ecology/resource configuration mismatch');
@@ -74,18 +74,21 @@ export function validateEcologyWorld(world) {
   for(const key of REMAINDERS){integer(m.remainders[key]);requireCondition(m.remainders[key]<denominators[key],'Invalid ecology remainder');}
 }
 
-export function removePopulation(input,payload) {
-  validateEcologyWorld(input);fields(payload,['species','amount']);integer(payload.amount,1);
+export function removePopulation(input,payload,currencySpent=0) {
+  validateEcologyWorld(input,currencySpent);fields(payload,['species','amount']);integer(payload.amount,1);
   requireCondition(['deer','wolves'].includes(payload.species),'Unknown population species');
   const world=cloneData(input),m=world.ecologyModel,before=m.populations[payload.species];
   if(before<payload.amount)return {world,success:false,result:{code:'RULE_REJECTED'}};
   const after=before-payload.amount;m.populations[payload.species]=after;
   m.ledger[payload.species].removed=safe(BigInt(m.ledger[payload.species].removed)+BigInt(payload.amount));
-  validateEcologyWorld(world);return {world,success:true,result:{...cloneData(payload),before,after}};
+  validateEcologyWorld(world,currencySpent);return {world,success:true,result:{...cloneData(payload),before,after}};
 }
 
-export function settleEcologyDay(input,sample) {
-  validateEcologyWorld(input);requireCondition(typeof sample==='number' && sample>=0 && sample<1,'Invalid ecological random sample');
+export function settleEcologyDay(input,sample,trade) {
+  if(trade!==undefined){fields(trade,['currencySpent','inflows']);integer(trade.currencySpent);
+    fields(trade.inflows,['food','herbs']);integer(trade.inflows.food);integer(trade.inflows.herbs);}
+  const currencySpent=trade?.currencySpent??0;
+  validateEcologyWorld(input,currencySpent);requireCondition(typeof sample==='number' && sample>=0 && sample<1,'Invalid ecological random sample');
   const world=cloneData(input),m=world.ecologyModel,c=m.config,v=c.resources.settlement;
   requireCondition(m.day<MAX_RESOURCE_DAYS,'Ecology day budget exceeded','LIMIT_EXCEEDED');
   const fraction=(key,numerator,denominator)=>{
@@ -106,7 +109,7 @@ export function settleEcologyDay(input,sample) {
   wolves.starvationDeaths=Math.min(w,fraction('wolfStarvation',BigInt(wolves.opening)*BigInt(c.wolfStarvationPermille)*BigInt(pressurePermille),1000000));w-=wolves.starvationDeaths;
   const injuredOpening=m.injuredCount,healthy=v.humanCount-injuredOpening;
   const foodWorkers=Math.min(v.foodWorkers,healthy),herbWorkers=Math.min(v.herbWorkers,healthy-foodWorkers);
-  const lowFood=BigInt(world.resources.food)<BigInt(v.humanCount)*BigInt(c.foodReserveDays);
+  const lowFood=BigInt(world.resources.food)+BigInt(trade?.inflows.food??0)<BigInt(v.humanCount)*BigInt(c.foodReserveDays);
   const wantedHunters=lowFood?c.maxHunters:ceil(mul(c.maxHunters,pressurePermille),1000);
   const hunters=Math.min(wantedHunters,healthy-foodWorkers-herbWorkers),huntTarget=hunters===0?'none':lowFood?'deer':'wolves';
   const kills=Math.floor(hunters/c.huntersPerKill);
@@ -119,15 +122,15 @@ export function settleEcologyDay(input,sample) {
   const foodSpec=c.resources.resources.food;
   const farmProduction=safe((BigInt(foodWorkers)*BigInt(foodSpec.production.numerator)+BigInt(world.resourceModel.remainders.food.production))/BigInt(foodSpec.production.denominator));
   const dailyInflow=c.resources.flows.filter(f=>f.day===m.day+1 && f.resource==='food' && f.direction==='in').reduce((sum,f)=>sum+BigInt(f.amount),0n);
-  const farmLoss=Math.min(farmLossRequested,safe(BigInt(world.resources.food)+BigInt(farmProduction)+BigInt(foodBonus)+dailyInflow));
-  const result=settleResourceDay(resourcePart(world),{settlement:{humanCount:v.humanCount,foodWorkers,herbWorkers,injuredCount:injuredOpening+newInjuries},foodBonus,foodDamage:farmLossRequested});
+  const farmLoss=Math.min(farmLossRequested,safe(BigInt(world.resources.food)+BigInt(farmProduction)+BigInt(foodBonus)+dailyInflow+BigInt(trade?.inflows.food??0)));
+  const result=settleResourceDay(resourcePart(world),{settlement:{humanCount:v.humanCount,foodWorkers,herbWorkers,injuredCount:injuredOpening+newInjuries},foodBonus,foodDamage:farmLossRequested},trade);
   const healed=result.payload.entries[1].consumption;
   world.resources=result.world.resources;world.resourceModel=result.world.resourceModel;
   m.day++;m.injuredCount=injuredOpening+newInjuries-healed;deer.closing=d;wolves.closing=w;
   m.populations={deer:d,wolves:w};
   for(const [id,row] of [['deer',deer],['wolves',wolves]]) for(const key of ACCOUNTS.filter(k=>k!=='removed'))
     m.ledger[id][key]=safe(BigInt(m.ledger[id][key])+BigInt(row[key]));
-  validateEcologyWorld(world);
+  validateEcologyWorld(world,currencySpent);
   return {world,payload:{day:m.day,deer,wolves,predationDemand,unmetPredation,pressurePermille,hungryWolves,farmLossRequested,farmLoss,
     hunters,huntTarget,foodWorkers,herbWorkers,injuredOpening,newInjuries,healed,injuredClosing:m.injuredCount,sample,resources:result.payload}};
 }

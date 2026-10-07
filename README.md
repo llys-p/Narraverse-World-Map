@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-b2` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-b3` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
@@ -57,6 +57,20 @@ node simulation-runner.mjs --fixture ecology-deer-shock --days 60 --seed 1 --out
 ```
 
 两fixture使用相同配置；shock仅在tick1440（第10天结算前）通过RemovePopulation命令移除90鹿，inputs.json保存该输入，超出当时存量时拒绝。产物新增ecology-config.json、population.csv、ecology.csv，并保留资源配置、资源账CSV与完整checkpoint。续跑沿用fixture、配置、输入回执和RNG，无另传seed/fixture。60天是示例，逐tick历史重算成本会随日志增长，B4长程性能尚未验收；需快速查看时先用--days 3。见[B2合同](tasks/B2-ECOLOGY-HUNTING-TASK.md)。
+
+### B3：价格、付款与两日运输
+
+b-market-v1在原生态/资源账上增加有界库存价格、金币付款、在途运力及路线状态。外部供应无限，采购要有金币和运输空间；出发付款锁价，2日后路线开放才能到货，关闭路线保留已付货物，恢复后只卸一次。没有免费补货、卖出/退款或随机货物损失。
+
+```powershell
+node simulation-runner.mjs --fixture market-shortage --days 4 --seed 0 --out artifacts/simulation/market4
+node simulation-runner.mjs --fixture market-route-pause --days 2 --seed 0 --out artifacts/simulation/market-closed2
+node simulation-runner.mjs --resume artifacts/simulation/market-closed2/checkpoint-r288.json --days 2 --out artifacts/simulation/market-reopened4
+```
+
+market-village使用原生态初值；shortage仅为粮100/药0/金币2000/伤者2，捕猎生产仍实际生效，不能把捕猎粮当成提前到货。route-pause在同配置上加第2日关闭、第4日开启命令，第3日到期货被保留。SetTradeRoute与RemovePopulation均有幂等回执、因果事实和整tick回退。
+
+导出market-config.json、market.csv（逐商品报价）和trade.csv（订单/到货明细），保留原配置、population/ecology/economy.csv与完整checkpoint。trade.csv中cost为锁定订单成本，paidAmount仅ordered行为非零，到货为0，避免重复计付款。资源账金币行记录采购前余额，日事实付款账和trade.csv记录当日支出。运输风险只加价；伤病只经消费改变价格，没有重复需求加价。见[B3合同](tasks/B3-MARKET-TRADE-TASK.md)。B4长程/多seed尚未验收，逐tick重算历史成本仍待解决。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

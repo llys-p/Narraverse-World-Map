@@ -64,7 +64,8 @@ export function createResourceWorld(config = defaultResourceConfig()) {
       remainders: { food: carry(), herbs: carry() }, ledger: Object.fromEntries(IDS.map(id => [id, totals()])) } };
 }
 
-export function validateResourceWorld(world) {
+export function validateResourceWorld(world, currencySpent = 0) {
+  integer(currencySpent);
   fields(world, ['resources', 'resourceModel']); fields(world.resources, IDS);
   const model = world.resourceModel; fields(model, ['config', 'configFingerprint', 'day', 'remainders', 'ledger']); validateConfig(model.config);
   requireCondition(model.configFingerprint === canonicalJson(model.config), 'Resource configuration fingerprint mismatch');
@@ -77,7 +78,7 @@ export function validateResourceWorld(world) {
       - BigInt(ledger.consumption) - BigInt(ledger.outflow) - BigInt(ledger.loss) - BigInt(ledger.capacityLoss);
     requireCondition(expected === BigInt(balance), 'Cumulative resource ledger does not reconcile');
     if (id === 'gold') {
-      requireCondition(TOTALS.every(key => ledger[key] === 0), 'B1 currency is unchanged'); continue;
+      requireCondition(TOTALS.every(key => ledger[key] === (key === 'consumption' ? currencySpent : 0)), 'Currency payment ledger mismatch'); continue;
     }
     const spec = model.config.resources[id], remainder = model.remainders[id];
     fields(remainder, ['production', 'consumption', 'loss']); for (const value of Object.values(remainder)) integer(value);
@@ -92,8 +93,13 @@ function fractional(quantity, fraction, remainder) {
   return { amount: safe(numerator / denominator), remainder: safe(numerator % denominator) };
 }
 
-export function settleResourceDay(input, modifiers) {
-  validateResourceWorld(input);
+export function settleResourceDay(input, modifiers, trade) {
+  if (trade !== undefined) {
+    fields(trade, ['currencySpent', 'inflows']); integer(trade.currencySpent);
+    fields(trade.inflows, ['food', 'herbs']); integer(trade.inflows.food); integer(trade.inflows.herbs);
+  }
+  const currencySpent = trade?.currencySpent ?? 0;
+  validateResourceWorld(input, currencySpent);
   if (modifiers !== undefined) {
     fields(modifiers, ['settlement', 'foodBonus', 'foodDamage']);
     fields(modifiers.settlement, ['humanCount', 'foodWorkers', 'herbWorkers', 'injuredCount']);
@@ -122,6 +128,7 @@ export function settleResourceDay(input, modifiers) {
         const key = flow.direction === 'in' ? 'inflow' : 'requestedOutflow';
         row[key] = safe(BigInt(row[key]) + BigInt(flow.amount));
       }
+      if (trade) row.inflow = safe(BigInt(row.inflow) + BigInt(trade.inflows[id]));
       let stock = safe(BigInt(opening) + BigInt(row.production) + BigInt(row.inflow));
       const farmLoss = id === 'food' && modifiers ? Math.min(stock, modifiers.foodDamage) : 0;
       stock -= farmLoss;
@@ -136,7 +143,7 @@ export function settleResourceDay(input, modifiers) {
     for (const key of TOTALS) model.ledger[id][key] = safe(BigInt(model.ledger[id][key]) + BigInt(row[key]));
     world.resources[id] = row.closing; entries.push(row);
   }
-  model.day = day; validateResourceWorld(world);
+  model.day = day; validateResourceWorld(world, currencySpent);
   return { world, payload: { day, entries } };
 }
 

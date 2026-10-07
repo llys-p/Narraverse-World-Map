@@ -93,7 +93,9 @@ export function commandInput(raw, strictType = true) {
   identifier(input.commandId); integer(input.targetTick, 1); identifier(input.type);
   record(input.payload); payloadBudget(input.payload);
   if (strictType) {
-    if (input.type === 'RemovePopulation') {
+    if (input.type === 'SetTradeRoute') {
+      fields(input.payload, ['open']); requireCondition(typeof input.payload.open === 'boolean', 'Route state must be boolean');
+    } else if (input.type === 'RemovePopulation') {
       fields(input.payload, ['species', 'amount']);
       requireCondition(['deer', 'wolves'].includes(input.payload.species), 'Unknown population species');
       integer(input.payload.amount, 1);

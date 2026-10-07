@@ -5,6 +5,7 @@ import { advanceScheduler } from './scheduler.mjs';
 import { validateFact } from './event-log.mjs';
 import { RESOURCE_RULES } from './resource-ledger.mjs';
 import { ECOLOGY_RULES, removePopulation, ecologyCauses } from './ecology.mjs';
+import { MARKET_RULES, applyMarketCommand, marketCommandFact, marketCauses } from './market.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
@@ -49,7 +50,11 @@ export function advanceOneTick(bundle, systems) {
       if (input.targetTick !== failedTick) { remaining.push(input); continue; }
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
       let success, result, eventSeqs = [];
-      if (rulesVersion === ECOLOGY_RULES) {
+      if (rulesVersion === MARKET_RULES) {
+        const applied = applyMarketCommand(s.world, { type: input.type, payload: input.payload });
+        s.world = applied.world; success = applied.success; result = applied.result;
+        if (success) eventSeqs = [append(marketCommandFact(input, result))];
+      } else if (rulesVersion === ECOLOGY_RULES) {
         const removal = removePopulation(s.world, input.payload);
         s.world = removal.world; success = removal.success; result = removal.result;
         if (success) eventSeqs = [append({ type: 'PopulationRemoved', sourceSystem: 'command-engine', commandId: input.commandId,
@@ -74,13 +79,15 @@ export function advanceOneTick(bundle, systems) {
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
       return canonicalJson({ ...protectedFields,
-        ...([RESOURCE_RULES, ECOLOGY_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
-        ...(rulesVersion === ECOLOGY_RULES ? { ecologyConfig: world.ecologyModel.config } : {}) });
+        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
+        ...([ECOLOGY_RULES, MARKET_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
+        ...(rulesVersion === MARKET_RULES ? { marketConfig: world.marketModel.config } : {}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
       const context = { snapshot: s, rng,
         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
+        ...(rulesVersion === MARKET_RULES ? { populationCauses: Object.freeze(marketCauses(candidate.eventLog)) } : {}),
         emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
