@@ -35,12 +35,23 @@ export function validateBundle(bundle, options) {
   fields(options, ['rulesVersion', 'systems']); identifier(options.rulesVersion);
   normalizeSystems(options.systems); fields(bundle, ['snapshot', 'eventLog']);
   checkBudgets(bundle.snapshot, bundle.eventLog);
-  const { snapshot: s, eventLog } = cloneBundle(bundle); fields(s, SNAPSHOT_FIELDS);
+  const { snapshot: s, eventLog } = cloneBundle(bundle);
+  validateSnapshotStructure(s, options, eventLog.length);
+  validateEventLog(eventLog, s, options.systems);
+}
+
+// Structure only. Complete history/receipt/fact correspondence still requires validateBundle.
+export function validateSnapshotStructure(snapshot, options, eventCount) {
+  fields(options, ['rulesVersion', 'systems']); identifier(options.rulesVersion); normalizeSystems(options.systems);
+  checkBudgets(snapshot, []); integer(eventCount);
+  requireCondition(eventCount <= MAX_EVENTS, 'Event budget exceeded', 'LIMIT_EXCEEDED');
+  const s = cloneData(snapshot); fields(s, SNAPSHOT_FIELDS);
   requireCondition(s.schemaVersion === 2 && s.rulesVersion === options.rulesVersion, 'Unsupported snapshot/rules version', 'UNSUPPORTED_VERSION');
   for (const key of ['rulesVersion', 'simulationId', 'fixtureId', 'fixtureVersion']) identifier(s[key]);
   restoreClock({ tick: s.tick, tickMinutes: s.tickMinutes }); restoreRng(s.rng);
   integer(s.revision); requireCondition(s.revision === s.tick, 'Revision does not match committed tick');
   for (const key of ['nextEntityId', 'nextEventSeq', 'nextInputSeq']) integer(s[key], 1);
+  requireCondition(s.nextEventSeq === eventCount + 1, 'Event counter mismatch');
   restoreScheduler({ currentTick: s.tick, tasks: s.scheduledTasks }, Object.keys(options.systems));
   if (s.rulesVersion === RESOURCE_RULES) {
     validateResourceWorld(s.world);
@@ -61,7 +72,7 @@ export function validateBundle(bundle, options) {
       task.systemId === 'ecology' && task.intervalTicks === 144 && task.priority === 10 && task.nextDueTick === (day + 1) * 144, 'Invalid ecology settlement schedule');
   } else if (s.rulesVersion === MARKET_RULES) {
     validateMarketWorld(s.world);
-    requireCondition(['market-village', 'market-shortage', 'market-route-pause'].includes(s.fixtureId) && s.fixtureVersion === '1', 'Unknown market fixture', 'UNSUPPORTED_VERSION');
+    requireCondition(['market-village', 'market-shortage', 'market-route-pause', 'b4-baseline', 'b4-mild', 'b4-severe', 'b4-herb-shortage', 'b4-trade-blocked'].includes(s.fixtureId) && s.fixtureVersion === '1', 'Unknown market fixture', 'UNSUPPORTED_VERSION');
     const day = Math.floor(s.tick / 144), task = s.scheduledTasks[0];
     requireCondition(s.world.marketModel.day === day && s.scheduledTasks.length === 1 && task.taskId === 'daily-market' &&
       task.systemId === 'market' && task.intervalTicks === 144 && task.priority === 10 && task.nextDueTick === (day + 1) * 144, 'Invalid market settlement schedule');
@@ -98,7 +109,6 @@ export function validateBundle(bundle, options) {
   }
   // Cardinality + unique positive values below nextInputSeq proves a contiguous range.
   requireCondition(sequences.size === s.nextInputSeq - 1, 'Input sequence gap/counter mismatch');
-  validateEventLog(eventLog, s, options.systems);
 }
 
 export function createInitialBundle(config, systems) {

@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-b3` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-b4` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
@@ -71,6 +71,19 @@ node simulation-runner.mjs --resume artifacts/simulation/market-closed2/checkpoi
 market-village使用原生态初值；shortage仅为粮100/药0/金币2000/伤者2，捕猎生产仍实际生效，不能把捕猎粮当成提前到货。route-pause在同配置上加第2日关闭、第4日开启命令，第3日到期货被保留。SetTradeRoute与RemovePopulation均有幂等回执、因果事实和整tick回退。
 
 导出market-config.json、market.csv（逐商品报价）和trade.csv（订单/到货明细），保留原配置、population/ecology/economy.csv与完整checkpoint。trade.csv中cost为锁定订单成本，paidAmount仅ordered行为非零，到货为0，避免重复计付款。事实内生态子账金币行为采购前余额；economy.csv金币行合并当天付款为实际consumption，期末与snapshot余额一致；trade.csv单独记录每单付款。运输风险只加价；伤病只经消费改变价格，没有重复需求加价。见[B3合同](tasks/B3-MARKET-TRADE-TASK.md)。B4长程/多seed尚未验收，逐tick重算历史成本仍待解决。
+
+### B4：私有推进会话与冻结实验
+
+runner使用私有simulation session：入口与保存/加载全历史审计；无命令/调度的tick直接推进时钟，每个活动tick核对完整状态结构，并与规范规则从同一私有前态构造的完整候选一致。历史/私有状态深冻结，外部只能取复制bundle，无跳过校验参数。旧advanceOneTick保留为严格差分参考，不能把validateSnapshotStructure当存档审计。
+
+旧market-village参数1000日pilot鹿狼最终灭绝，旧fixture与规则未修改。新b4-*实验参数依据seed42首次校准冻结，见[B4任务与冻结门槛](tasks/B4-LONG-RUN-ACCEPTANCE-TASK.md)。基线/轻扰动必须存活和恢复，严重扰动允许有账可解释的灭绝；完整阶段仍需矩阵通过。
+
+```powershell
+node simulation-runner.mjs --fixture b4-baseline --days 1000 --seed 42 --out artifacts/simulation/b4-base1000
+node runtime/experiments/b4-experiments.mjs artifacts/simulation/b4-matrix-new
+```
+
+矩阵入口要求干净代码/冻结配置指纹，用固定5seeds及2个holdout执行100日快测/完整断点续跑、500/1000日基线、轻扰动恢复及重鹿扰动/药材短缺/贸易阻断配对，逐行独立核对种群、资源、现金、运力、订单、价格和事件。失败非零，不偷偷调门槛；全部实验输出在新目录，report.json只在全门槛通过时写passed。summary包含idle/activity ticks、实际源码指纹和末尾内存；1000日不是大人口压测。控制文档仍在main、代码保留任务分支。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

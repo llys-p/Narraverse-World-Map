@@ -10,7 +10,8 @@ import { createEcologyVillage, createDeerShock } from './runtime/fixtures/ecolog
 import { ECOLOGY_RULES } from './runtime/core/ecology.mjs';
 import { MARKET_RULES } from './runtime/core/market.mjs';
 import { createMarketVillage, createMarketShortage, createMarketRoutePause } from './runtime/fixtures/market-village.mjs';
-import { advanceOneTick } from './runtime/core/command-engine.mjs';
+import { B4_SCENARIOS, createB4Fixture } from './runtime/fixtures/b4-calibrated.mjs';
+import { createSimulationSession } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
 
@@ -24,6 +25,7 @@ const profiles = new Map([
   ['market-village', { rulesVersion: MARKET_RULES, create: createMarketVillage }],
   ['market-shortage', { rulesVersion: MARKET_RULES, create: createMarketShortage }],
   ['market-route-pause', { rulesVersion: MARKET_RULES, create: createMarketRoutePause }],
+  ...B4_SCENARIOS.map(scenario=>['b4-'+scenario,{rulesVersion:MARKET_RULES,create:(seed,id)=>createB4Fixture(scenario,seed,id)}]),
 ]);
 
 async function selectSimulation(options) {
@@ -77,7 +79,7 @@ async function codeIdentity() {
     codeMetadataStatus = 'available';
   } catch { codeSha = null; codeDirty = null; }
   const files = { 'simulation-runner.mjs': createHash('sha256').update(await fs.readFile(path.join(root, 'simulation-runner.mjs'))).digest('hex') };
-  for (const directory of ['runtime/core', 'runtime/persistence', 'runtime/fixtures']) {
+  for (const directory of ['runtime/core', 'runtime/persistence', 'runtime/fixtures', 'runtime/experiments']) {
     for (const name of (await fs.readdir(path.join(root, directory))).filter((name) => name.endsWith('.mjs')).sort()) {
       files[directory + '/' + name] = createHash('sha256').update(await fs.readFile(path.join(root, directory, name))).digest('hex');
     }
@@ -185,10 +187,10 @@ export async function runSimulation(options, hooks = {}) {
     await fs.mkdir(directory); // Exclusive creation: even an existing empty directory is refused.
   } catch (cause) { throw Object.assign(fault('SAVE_FAILED', 'Output directory must be new'), { cause }); }
   let failure;
-  for (let i = 0; i < options.ticks; i++) {
-    try { bundle = advanceOneTick(bundle, systems); }
-    catch (cause) { failure = cause; break; }
-  }
+  const session = createSimulationSession(bundle, systems);
+  try { session.advanceTicks(options.ticks); }
+  catch (cause) { failure = cause; }
+  bundle = session.getBundle();
   let checkpointPath;
   try {
     checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
@@ -218,6 +220,7 @@ export async function runSimulation(options, hooks = {}) {
       ...(ecologyConfig ? { ecologyConfigHash: hash(ecologyConfig) } : {}),
       ...(marketConfig ? { marketConfigHash: hash(marketConfig) } : {}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
+      executionStats: session.getStats(),
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,
       elapsedMs: performance.now() - started, memoryUsage: process.memoryUsage(), checkpointPath };
     await fs.writeFile(path.join(directory, 'summary.json'), JSON.stringify(summary, null, 2), { flag: 'wx' });

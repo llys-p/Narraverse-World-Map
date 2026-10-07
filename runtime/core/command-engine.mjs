@@ -1,13 +1,13 @@
-import { cloneBundle, validateBundle } from './world-state.mjs';
+import { cloneBundle, validateBundle, validateSnapshotStructure } from './world-state.mjs';
 import { restoreRng } from './rng.mjs';
-import { restoreClock } from './simulation-clock.mjs';
+import { restoreClock, MAX_ADVANCE_TICKS } from './simulation-clock.mjs';
 import { advanceScheduler } from './scheduler.mjs';
 import { validateFact } from './event-log.mjs';
-import { RESOURCE_RULES } from './resource-ledger.mjs';
-import { ECOLOGY_RULES, removePopulation, ecologyCauses } from './ecology.mjs';
-import { MARKET_RULES, applyMarketCommand, marketCommandFact, marketCauses } from './market.mjs';
+import { RESOURCE_RULES, settleResourceDay } from './resource-ledger.mjs';
+import { ECOLOGY_RULES, removePopulation, ecologyCauses, settleEcologyDay } from './ecology.mjs';
+import { MARKET_RULES, applyMarketCommand, marketCommandFact, marketCauses, settleMarketDay } from './market.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
-  requireCondition, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
+  requireCondition, integer, normalizeSystems, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
 export function lookupCommand(bundle, raw) {
   const input = commandInput(raw, false), fingerprint = inputFingerprint(input);
@@ -23,12 +23,18 @@ export function lookupCommand(bundle, raw) {
 }
 
 export function advanceOneTick(bundle, systems) {
+  return performTick(bundle, systems, 'full');
+}
+
+function performTick(bundle, systems, mode) {
   let failedTick;
   let active = true;
   try {
     fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
-    validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems });
-    const candidate = cloneBundle(bundle), s = candidate.snapshot;
+    if (mode === 'full') validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems });
+    const candidate = mode === 'full' ? cloneBundle(bundle) :
+      { snapshot: cloneData(bundle.snapshot), eventLog: bundle.eventLog.slice() };
+    const s = candidate.snapshot;
     const rulesVersion = s.rulesVersion;
     const clock = restoreClock({ tick: s.tick, tickMinutes: s.tickMinutes });
     clock.advanceTicks(1); failedTick = clock.tick;
@@ -102,8 +108,17 @@ export function advanceOneTick(bundle, systems) {
     requireCondition(Number.isSafeInteger(s.nextEntityId) && s.nextEntityId >= previousEntityId, 'System reduced/invalidated entity ID counter');
     s.nextEventSeq = nextEventSeq;
     s.scheduledTasks = plan.scheduler.tasks; s.rng = rng.getState(); s.tick = failedTick; s.revision++;
-    validateBundle(candidate, { rulesVersion, systems });
-    return cloneBundle(candidate);
+    if (mode === 'full') {
+      validateBundle(candidate, { rulesVersion, systems }); return cloneBundle(candidate);
+    }
+    if (mode === 'session') {
+      validateSnapshotStructure(s, { rulesVersion, systems }, candidate.eventLog.length);
+      const expected = performTick(bundle, canonicalSystems(rulesVersion), 'proof');
+      requireCondition(canonicalJson(s) === canonicalJson(expected.snapshot) &&
+        canonicalJson(candidate.eventLog.slice(bundle.eventLog.length)) === canonicalJson(expected.eventLog.slice(bundle.eventLog.length)),
+        'Session transition differs from registered rules');
+    }
+    return candidate;
   } catch (cause) {
     const error = new Error(`Tick ${failedTick ?? 'input'} was not committed`, { cause });
     if (cause.code) error.code = cause.code;
@@ -112,4 +127,68 @@ export function advanceOneTick(bundle, systems) {
   } finally {
     active = false;
   }
+}
+
+function canonicalSystems(rulesVersion) {
+  const define = (id, type, settle, usesRng) => ({ [id](ctx) {
+    const result = usesRng ? settle(ctx.snapshot.world, ctx.rng.next()) : settle(ctx.snapshot.world);
+    ctx.snapshot.world = result.world;
+    ctx.emitFact({ type, sourceSystem: id, commandId: null, causationEventSeqs: ctx.populationCauses ?? [], entityIds: [], payload: result.payload });
+  } });
+  if (rulesVersion === RESOURCE_RULES) return define('resources', 'ResourceDaySettled', settleResourceDay, false);
+  if (rulesVersion === ECOLOGY_RULES) return define('ecology', 'EcologyDaySettled', settleEcologyDay, true);
+  if (rulesVersion === MARKET_RULES) return define('market', 'EconomyDaySettled', settleMarketDay, true);
+  throw fault('UNSUPPORTED_VERSION', 'No canonical transition for these rules');
+}
+
+function freezeData(value) {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    for (const child of Object.values(value)) freezeData(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+export function createSimulationSession(bundle, systems) {
+  normalizeSystems(systems);
+  fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
+  const registered = Object.freeze({ ...systems });
+  validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
+  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES].includes(bundle.snapshot.rulesVersion),
+    'Session rules are not registered', 'UNSUPPORTED_VERSION');
+  let current = freezeData(cloneBundle(bundle)), busy = false;
+  const stats = { idleTicks: 0, activityTicks: 0 };
+  return Object.freeze({
+    advanceTicks(amount) {
+      requireCondition(!busy, 'Session cannot be reentered'); integer(amount);
+      requireCondition(amount <= MAX_ADVANCE_TICKS, 'Advance budget exceeded', 'LIMIT_EXCEEDED');
+      const clock = restoreClock({ tick: current.snapshot.tick, tickMinutes: current.snapshot.tickMinutes });
+      clock.advanceTicks(amount); const target = clock.tick;
+      busy = true;
+      try {
+        while (current.snapshot.tick < target) {
+          let nextActivity = Infinity;
+          for (const command of current.snapshot.pendingCommands) nextActivity = Math.min(nextActivity, command.targetTick);
+          for (const task of current.snapshot.scheduledTasks) nextActivity = Math.min(nextActivity, task.nextDueTick);
+          const idleTarget = Math.min(target, nextActivity - 1);
+          if (idleTarget > current.snapshot.tick) {
+            const advanced = idleTarget - current.snapshot.tick;
+            // Private unchanged history/world remain deeply frozen; no provider receives them.
+            const snapshot = freezeData({ ...current.snapshot, tick: idleTarget, revision: idleTarget });
+            current = Object.freeze({ snapshot, eventLog: current.eventLog }); stats.idleTicks += advanced;
+          }
+          if (current.snapshot.tick < target) {
+            const mode = current.snapshot.rulesVersion === 'a-smoke-v1' ? 'full' : 'session';
+            current = freezeData(performTick(current, registered, mode)); stats.activityTicks++;
+          }
+        }
+        return { tick: current.snapshot.tick };
+      } finally { busy = false; }
+    },
+    getBundle() {
+      validateBundle(current, { rulesVersion: current.snapshot.rulesVersion, systems: registered });
+      return cloneBundle(current);
+    },
+    getStats() { return { ...stats }; },
+  });
 }
