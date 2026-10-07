@@ -20,3 +20,19 @@ market-village使用B2基础初值。market-shortage仅初值改为粮100、药0
 TDD：库存0/目标0/富余价格有界、每日最大变化；金币为0不采购；整笔锁价与在途运力受限；到货日前不消费、准时一次到货、关闭/恢复不重复付/收货；药材消费→库存/价格→付费运输闭环；收支/在途账、命令幂等、失败tick全回退；事件/配置/价格/费用/dueDay/RNG篡改拒绝。真实磁盘跨在途/关闭保存恢复，CLI导出market-config.json、market.csv、trade.csv以及原生态/资源CSV；连续与分块完整状态/事件一致；原79项全回归。
 
 只验收B3，阶段B门槛在B4执行100/500/1000天、多seed与扰动。逐tick历史重算性能瓶颈后续须独立解决且保留严校验，不在本轮悄悄放宽。
+
+## 实施与验收收口：PASS
+
+2026-10-07（Asia/Shanghai）。本对话自行实施及复核，未派外部执行者。基准B2 efda6f6，主实现 `2807db2be23e6f317e27607be2516f6243d96eb3`，最终代码修正 `18ae1fe41a8984aa94d5d0b3a21e6532ac878e98`；源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-b3。新增core/market.mjs、fixtures/market-village.mjs、两份测试；显式市场版本接入world-state/command-engine/event-log/runner。生态与资源结算仅增加精确的已付货币/实际到货参数，旧默认行为和fixture保持兼容；A1与磁盘checkpoint实现未改。
+
+接口：defaultMarketConfig/shortageMarketConfig/createMarketWorld/quotePrice/validateMarketWorld/settleMarketDay/applyMarketCommand/marketCommandFact/marketCauses/validateMarketPayload/validateMarketHistory；MARKET_RULES、MAX_TRANSIT_ORDERS；fixture导出createMarketVillage/createMarketShortage/createMarketRoutePause。资源/生态结算不读取外部模型或宿主服务，市场纯日规则，engine负责原子tick/ID去重及因果序号。
+
+TDD：核心先ERR_MODULE_NOT_FOUND，CLI先Unknown fixture；初版预期库存遗漏原B2捕猎产2鹿×20口粮，已按真实生产账核实并纠正测试，没有改生态规则。额外输出反例发现economy.csv金币消费为0而日付款1980；修正合并当天付款后，现金行2000−1980=20，与snapshot一致，贸易到货paidAmount=0。修正前后相同场景stateHash/eventHash不变，只修输出账。
+
+Node v24.14.0，最终干净18ae1fe全部simulation+export-boundaries90/90（原79+新增11），约124秒，diff检查通过。覆盖0库存/0资金/目标0/有界价格、运输容量/待到货占位、锁价付款、准时一次到货、闭路暂停/恢复、药材缺口→价格/付费货→治疗、花钱后人口干预、非法数据/预算、配置/价格/费用/dueDay/RNG/回执篡改拒绝、系统失败整tick回退。真实磁盘4=2+2包含关闭中带已付订单存盘、未来重开命令、完整RNG/事件/价格/在途账；坏货物日期档拒绝。旧A/B1/B2全回归，未降门槛。
+
+干净新消费者18ae1fe，实际CLI market-route-pause seed0连续4天 vs 2天保存+2天恢复，完整snapshot/EventLog、两哈希、population/ecology/economy/market/trade五CSV、inputs与市场配置一致。tick576、6事实，2订单/2到货，共支付1980、剩余金币20；第3天闭路到货0，第4天粮100/药13一次入账。另market-shortage开放路线3天，第3天正常到同两单。BigInt独立核对每单成本/锁价/ID/运输日期、商品收支、价格公式和日变幅、CSV付款总额与金币期末。4天约13秒为同期全回归条件，内存仅末尾采样未测峰值。
+
+stateHash=05fdf0dac8617e4b81aa61245d869172d5939235db58f947d19486dc567c2f6f；eventHash=c7e4d181dcd3fe266dff6be38568a6ec95a414d949ea026e8c8193870d09070d；marketConfigHash=8b7d8ad30a96f27f1fb5d03295550244440eb62fdf766bb0999d2e9f8cd499dc。runtime sourceHash=92674ff27e87cbb28d2888fb0e1392d74909871abc0724cf6ed35f65b3f5ccb8。本地忽略目录artifacts/world-runtime-b3-acceptance-20261007-1359保留修正前证据与最终final-full-tests.txt、consumer-probe.mjs、final/comparison.json及closed4/closed2/resumed2/shortage3产物，不上传。
+
+只验收B3，B阶段仍进行中；B4先优化逐tick历史重算开销并保留严格恢复/篡改/回退验证，再进行100/500/1000天、多seed与扰动门槛。外部无限供应是明确模型边界，实际采购受运力/金币约束；未实现卖出/退款/随机货物损失/商队寻路/NPC/页面/AI。源码不合并main，不启停服务，不迁移真实存档；E1预研独立状态保留。
