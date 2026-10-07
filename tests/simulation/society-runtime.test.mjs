@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createSocietyVillage,createSocietyMedicineRace,createSocietyPeerSale } from '../../runtime/fixtures/society-village.mjs';
-import { SOCIETY_RULES } from '../../runtime/core/society.mjs';
+import { SOCIETY_RULES,defaultSocietyConfig } from '../../runtime/core/society.mjs';
 import { createSimulationSession,advanceOneTick } from '../../runtime/core/command-engine.mjs';
 import { validateBundle } from '../../runtime/core/world-state.mjs';
 const run=(b,s,n)=>{const session=createSimulationSession(b,s);session.advanceTicks(n);return session.getBundle();};
@@ -41,4 +41,15 @@ test('C3 all three commands, peer trade and planning rewind on system failure; f
   const injected=structuredClone(bundle);injected.snapshot.nextInputSeq=2;injected.snapshot.pendingCommands=[{commandId:'society-day-1-actor-1',inputSeq:1,targetTick:144,
     type:'SocietyAction',payload:{actorId:'actor-1',goalId:0,action:'WorkForPay',targetActorId:null}}];
   assert.throws(()=>validateBundle(injected,{rulesVersion:SOCIETY_RULES,systems}),bad);
+});
+
+test('C3 actual registered chief public-food goal commits paid production and ends or changes after progress',()=>{
+  const config=defaultSocietyConfig();config.actors.market.ecology.resources.resources.food.initial=100;
+  const {bundle,systems}=createSocietyVillage(42,'chief-support',config),after=run(bundle,systems,4*144);
+  const first=after.eventLog.find(e=>e.type==='SocietyDaySettled');
+  assert.equal(first.payload.agents[0].decision.kind,'support-village');
+  const work=after.eventLog.find(e=>e.type==='SocietyActionCommitted' && e.payload.actorId==='actor-1' && e.payload.action==='WorkForPay');
+  assert.ok(work);assert.equal(work.payload.foodProduced,8);assert.equal(work.payload.after.wallet-work.payload.before.wallet,20);
+  assert.ok(after.snapshot.world.societyModel.agents[0].state.ledger.workDays>=1);
+  validateBundle(after,{rulesVersion:SOCIETY_RULES,systems});
 });
