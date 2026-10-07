@@ -14,6 +14,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import shutil
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
@@ -271,9 +272,16 @@ def _live_hashes():
 
 
 def _reviewer(i, covered, planned):
-    return {"id": i, "independent": True, "no_gold_exposure_attested": True,
+    os.makedirs(FIX, exist_ok=True)
+    paths = {}
+    for field, data in (("answers", "".join(json.dumps({"token": str(n)}) + "\n" for n in range(planned))), ("disclosure", "synthetic fixture disclosure")):
+        path = os.path.join(FIX, i + "-" + field + ".jsonl")
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write(data)
+        paths[field + "_path"] = path
+        paths[field + "_sha256"] = SCORE.sha256_file(path)
+    return {**paths,"id": i, "independent": True, "no_gold_exposure_attested": True,
             "no_cross_reviewer_communication_attested": True,
-            "answers_sha256": "a" * 64, "disclosure_sha256": "b" * 64,
             "covered_tokens": covered, "planned_tokens": planned}
 
 
@@ -285,10 +293,13 @@ def test_freeze_gate():
     plan = {"max_len": 1024, "head_max_len": 256, "device": "cpu", "limit": 0}
 
     def gate(**over):
+        receipt = os.path.join(FIX, "adjudication.txt")
+        with open(receipt, "w", encoding="utf-8") as fh:
+            fh.write("synthetic fixture adjudication")
         g = {"schema": "e1r2-freeze-gate-v1", "status": "frozen", "split": "final",
              "blind_review": {"reviewers": [_reviewer("rev-a", planned, planned), _reviewer("rev-b", planned, planned)]},
              "adjudication": {"adjudicator": "ctr-x", "non_original_annotator": True,
-                              "completed": True, "receipt_sha256": "c" * 64},
+                              "completed": True, "receipt_path": receipt, "receipt_sha256": SCORE.sha256_file(receipt)},
              "frozen_artifacts": _live_hashes(),
              "frozen_plan": {"models": ["A", "B"], "conditions": ["primary", "long"],
                              "max_len": 1024, "head_max_len": 256, "device": "cpu", "limit": 0,
@@ -349,7 +360,7 @@ def test_freeze_gate():
                                                         gate_path=p_missing) != [], "no gate -> must refuse")
 
 
-def run_all():
+def _run_all_isolated():
     global FAILS
     FAILS = []
     test_truncation()
@@ -359,6 +370,20 @@ def run_all():
     test_freeze_gate()
     print(f"\nregressions: {len(FAILS)} failure(s)" + (f" -> {FAILS}" if FAILS else ""))
     return 1 if FAILS else 0
+
+
+def run_all():
+    global HERE, FIX
+    original_here, original_fix, score_here = HERE, FIX, SCORE.HERE
+    with tempfile.TemporaryDirectory(prefix="e1r2-regressions-") as tmp:
+        try:
+            HERE = os.path.join(tmp, "benchmark")
+            shutil.copytree(original_here, HERE, ignore=shutil.ignore_patterns("__pycache__"))
+            FIX = os.path.join(tmp, "fixtures")
+            SCORE.HERE = HERE
+            return _run_all_isolated()
+        finally:
+            HERE, FIX, SCORE.HERE = original_here, original_fix, score_here
 
 
 if __name__ == "__main__":

@@ -188,7 +188,8 @@ def load_json(path):
 
 
 def sha256_file(path):
-    return hashlib.sha256(open(path, "rb").read()).hexdigest()
+    with open(path, "rb") as fh:
+        return hashlib.sha256(fh.read()).hexdigest()
 
 
 def display_path(path):
@@ -234,8 +235,15 @@ def load_preds(path, model, split, condition, planned_ids):
         for ln, line in enumerate(fh, 1):
             if not line.strip():
                 continue
-            r = json.loads(line)
             tag = f"{os.path.basename(path)}:{ln}"
+            try:
+                r = json.loads(line)
+            except (ValueError, TypeError):
+                problems.append(f"{tag} malformed prediction JSON")
+                continue
+            if not isinstance(r, dict) or not isinstance(r.get("sid"), str):
+                problems.append(f"{tag} prediction must be an object with a string sid")
+                continue
             for field, want in (("model", model), ("split", split), ("condition", condition)):
                 if r.get(field) != want:
                     problems.append(f"{tag} {field}={r.get(field)!r} but invoked with {want!r}")
@@ -246,7 +254,7 @@ def load_preds(path, model, split, condition, planned_ids):
                 problems.append(f"{tag} sid {r['sid']} is not in the planned scenario set")
                 continue
             key = (r["sid"], r["signal"])
-            if key in by:
+            if key[1] in by.get(key[0], {}):
                 problems.append(f"{tag} DUPLICATE prediction for {key}")
                 continue
             by[key[0]][key[1]] = r
@@ -260,26 +268,31 @@ def load_preds(path, model, split, condition, planned_ids):
 
 def check_probs(by):
     problems = []
+    specs = load_questions(os.path.join(HERE, "question-templates.json"))["signals"]
     for sid, sigs in by.items():
         for sig, r in sigs.items():
             if r.get("predicted") is None and not r.get("predict_error"):
                 problems.append(f"{sid}/{sig} neither a prediction nor a recorded error")
-            if r.get("predicted") is not None and r["predicted"] not in load_questions(
-                    os.path.join(HERE, "question-templates.json"))["signals"][sig]["canonical_order"]:
+            if r.get("predicted") is not None and r["predicted"] not in specs[sig]["canonical_order"]:
                 problems.append(f"{sid}/{sig} illegal predicted label {r['predicted']!r}")
             pv = r.get("probs")
             if pv is not None:
                 if not isinstance(pv, dict) or not pv:
                     problems.append(f"{sid}/{sig} probabilities malformed")
                     continue
+                if set(pv) != set(specs[sig]["canonical_order"]):
+                    problems.append(f"{sid}/{sig} probability label keys differ from the canonical set")
+                invalid = False
                 for k, v in pv.items():
-                    if not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0 or v > 1:
+                    if type(v) not in (int, float) or not math.isfinite(v) or v < 0 or v > 1:
+                        invalid = True
                         problems.append(f"{sid}/{sig} non-finite or out-of-range probability {k}={v!r}")
-                if abs(sum(pv.values()) - 1.0) > 0.02:
+                if not invalid and abs(sum(pv.values()) - 1.0) > 0.02:
                     problems.append(f"{sid}/{sig} probabilities do not sum to 1 ({sum(pv.values()):.4f})")
-            c = r.get("answer_confidence")
-            if c is not None and (not isinstance(c, (int, float)) or not math.isfinite(c) or not 0 <= c <= 1):
-                problems.append(f"{sid}/{sig} illegal answer_confidence {c!r}")
+            for field in ("confidence", "answer_confidence"):
+                c = r.get(field)
+                if c is not None and (type(c) not in (int, float) or not math.isfinite(c) or not 0 <= c <= 1):
+                    problems.append(f"{sid}/{sig} illegal {field} {c!r}")
     return problems
 
 
@@ -295,6 +308,8 @@ def gold_map_for(split, gold_path):
         for line in open(gold_path, encoding="utf-8"):
             if line.strip():
                 r = json.loads(line)
+                if r["sid"] in out:
+                    raise ValueError(f"duplicate gold sid {r['sid']}")
                 out[r["sid"]] = r["labels"]
         return out
     return {r["sid"]: r["labels"] for r in rows_for(HERE, split)}
@@ -326,6 +341,17 @@ def verify_freeze_gate(root, rows, model, condition, split, plan, gate_path=None
     ids = [r.get("id") for r in revs if isinstance(r, dict)]
     if any(not isinstance(i, str) or not i.strip() for i in ids) or len(set(ids)) != len(ids):
         errs.append("reviewer ids must be non-empty and distinct")
+    def check_receipt(record, field):
+        path = record.get(field + "_path")
+        expected = record.get(field + "_sha256")
+        if not isinstance(path, str) or not path:
+            errs.append(f"{field} receipt path missing")
+            return None
+        path = os.path.join(root, path)
+        if not os.path.isfile(path) or sha256_file(path) != expected:
+            errs.append(f"{field} receipt is missing or its actual hash differs")
+            return None
+        return path
     for r in revs:
         if not isinstance(r, dict):
             errs.append("reviewer record is not an object")
@@ -338,8 +364,19 @@ def verify_freeze_gate(root, rows, model, condition, split, plan, gate_path=None
             if k not in r:
                 errs.append(f"reviewer {r.get('id')!r} missing {k}")
         ct, pt = r.get("covered_tokens"), r.get("planned_tokens")
-        if isinstance(ct, int) and isinstance(pt, int) and ct != pt:
+        if type(ct) is not int or type(pt) is not int or ct != pt or pt != len(rows):
             errs.append(f"reviewer {r.get('id')!r} covered {ct} of {pt} planned tokens")
+        answers = check_receipt(r, "answers")
+        check_receipt(r, "disclosure")
+        if answers:
+            try:
+                with open(answers, encoding="utf-8") as fh:
+                    records = [json.loads(line) for line in fh if line.strip()]
+                tokens = [x["token"] for x in records]
+                if len(tokens) != len(rows) or len(set(tokens)) != len(tokens):
+                    errs.append("reviewer actual answer coverage differs from the planned samples")
+            except (ValueError, KeyError, TypeError):
+                errs.append("reviewer answers cannot verify unique sample coverage")
 
     adj = gate.get("adjudication")
     if not isinstance(adj, dict):
@@ -353,6 +390,7 @@ def verify_freeze_gate(root, rows, model, condition, split, plan, gate_path=None
         errs.append("adjudication receipt not marked completed")
     if not adj.get("receipt_sha256"):
         errs.append("adjudication receipt hash missing")
+    check_receipt(adj, "receipt")
     if isinstance(adj.get("adjudicator"), str) and adj["adjudicator"] in ids:
         errs.append("adjudicator may not also be a reviewer")
 
@@ -373,7 +411,7 @@ def verify_freeze_gate(root, rows, model, condition, split, plan, gate_path=None
                 errs.append(f"frozen artifact {k} cannot be verified: {os.path.basename(p)} missing")
             elif frozen[k] != sha256_file(p):
                 errs.append(f"frozen artifact {k} no longer matches {os.path.basename(p)}")
-    if frozen.get("external_gold") and frozen["external_gold"] != load_json(
+    if frozen.get("external_gold") != load_json(
             os.path.join(root, "seal-record-v2.json")).get("gold_final_sha256"):
         errs.append("frozen external gold hash differs from seal-record-v2.json")
 
@@ -381,6 +419,10 @@ def verify_freeze_gate(root, rows, model, condition, split, plan, gate_path=None
     if not fp:
         errs.append("frozen_plan missing: the run configuration was never bound")
     else:
+        for field in ("models", "conditions"):
+            values = fp.get(field)
+            if not isinstance(values, list) or not values or any(not isinstance(x, str) or not x for x in values) or len(values) != len(set(values)):
+                errs.append(f"frozen plan {field} must be a non-empty unique string list")
         if model not in (fp.get("models") or []):
             errs.append(f"model {model!r} is not in the pre-registered model set {fp.get('models')}")
         if condition not in (fp.get("conditions") or []):
@@ -393,17 +435,19 @@ def verify_freeze_gate(root, rows, model, condition, split, plan, gate_path=None
             if k not in fp:
                 errs.append(f"frozen plan missing {k}")
         scope = fp.get("scenario_count")
-        if isinstance(scope, int) and scope != len(rows):
+        if type(scope) is not int or scope != len(rows):
             errs.append(f"frozen scenario_count {scope} != {len(rows)} rows in the blind file")
-        if fp.get("limit") != plan.get("limit"):
+        if "limit" not in fp or type(fp["limit"]) is not int or fp.get("limit") != plan.get("limit"):
             errs.append(f"frozen plan limit={fp.get('limit')!r} but invoked with --limit {plan.get('limit')!r}")
 
     journal_p = os.path.join(root, "results", "final-run-journal.json")
     if os.path.exists(journal_p):
         jr = load_json(journal_p)
-        if jr.get("final_split_opened_before") is True and not any(
-                e.get("model") == model and e.get("condition") == condition for e in jr.get("runs", [])):
-            errs.append("final already opened for a different run; a new holdout is required")
+        for entry in jr.get("runs", []):
+            if entry.get("model") == model and entry.get("condition") == condition:
+                expected = plan.get("predictions_sha256")
+                if not expected or entry.get("predictions_sha256") != expected:
+                    errs.append("final run already opened: only identical prediction scoring is allowed")
     return errs
 
 
@@ -411,11 +455,17 @@ def journal_final_run(root, model, condition, pred_hash):
     p = os.path.join(root, "results", "final-run-journal.json")
     jr = load_json(p) if os.path.exists(p) else {"final_split_opened_before": False, "runs": []}
     jr["final_split_opened_before"] = True
-    if not any(e.get("model") == model and e.get("condition") == condition and e.get("predictions_sha256") == pred_hash
-               for e in jr["runs"]):
+    existing = next((e for e in jr["runs"] if e.get("model") == model and e.get("condition") == condition), None)
+    if existing:
+        if existing.get("predictions_sha256") is None and pred_hash is not None:
+            existing["predictions_sha256"] = pred_hash
+        elif existing.get("predictions_sha256") != pred_hash:
+            raise ValueError("final prediction artifact cannot be replaced for an opened run")
+    else:
         jr["runs"].append({"model": model, "condition": condition, "predictions_sha256": pred_hash,
                            "at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")})
-    json.dump(jr, open(p, "w", encoding="utf-8", newline="\n"), ensure_ascii=False, indent=1)
+    with open(p, "w", encoding="utf-8", newline="\n") as fh:
+        json.dump(jr, fh, ensure_ascii=False, indent=1)
 
 
 # ------------------------------------------------------------------ scoring
@@ -436,7 +486,7 @@ def score_signal(spec, rows, gold_map, preds, integrity):
             got.append((sid, g, MISSING, None, rec))
         elif p not in labels:
             got.append((sid, g, ILLEGAL, None, rec))
-        elif rec.get("excluded_from_formal_scoring"):
+        elif rec.get("excluded_from_formal_scoring") or rec.get("requires_relabel") or (rec.get("input_report") or {}).get("requires_relabel"):
             got.append((sid, g, "__EXCLUDED_RELABEL__", None, rec))
         else:
             got.append((sid, g, p, rec.get("probs"), rec))
@@ -529,6 +579,9 @@ def main():
     if args.predictions and len(models) != 1:
         print("--predictions accepts one model only")
         return 3
+    if args.predictions and not args.diagnostic_only:
+        print("REFUSED: formal scoring requires the run index; --predictions is diagnostic only")
+        return 4
     if args.fit_calibration and args.split != "calibration":
         print(f"REFUSED: temperatures/thresholds may only be fitted on the calibration split (got {args.split})")
         return 3
@@ -561,8 +614,9 @@ def main():
                        "explicit_override": bool(entry and entry.get("explicit_override"))}
     integrity = sorted(set(integrity))
     relabel = [f"{m}:{sid}/{sig}" for m, d in preds.items() for sid, sgs in d.items() for sig, r in sgs.items()
-               if r.get("excluded_from_formal_scoring")]
-    if relabel and not args.diagnostic_only:
+               if r.get("excluded_from_formal_scoring") or r.get("requires_relabel")
+               or (r.get("input_report") or {}).get("requires_relabel")]
+    if relabel and (not args.diagnostic_only or args.fit_calibration or args.split == "final"):
         integrity.append(f"{len(relabel)} items flagged requires_relabel are present; formal scoring refuses them. "
                          f"Re-review the truncated text or pass --diagnostic-only for a labelled diagnostic run.")
 
@@ -585,7 +639,12 @@ def main():
                 "device": args.device, "limit": args.limit}
         errs = []
         for m in models:
-            errs += verify_freeze_gate(HERE, rows, m, args.condition, args.split, plan, args.gate)
+            config = consumed[m].get("run_config") or {}
+            for field in ("max_len", "head_max_len", "device", "limit"):
+                if config.get(field) != plan[field]:
+                    errs.append(f"indexed run {m} configuration {field} differs from the invoked frozen plan")
+            errs += verify_freeze_gate(HERE, rows, m, args.condition, args.split,
+                                       dict(plan, predictions_sha256=consumed[m]["sha256"]), args.gate)
         if errs:
             print("REFUSED final:")
             for e in sorted(set(errs)):
