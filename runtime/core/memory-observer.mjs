@@ -5,7 +5,7 @@ import { validateSocietyActionResult,validateSocietyPayload } from './society.mj
 import { MAX_PERSISTENT_ACTORS } from './actors.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
-import { validatePlayerDayPayload } from './player-state.mjs';
+import { validatePlayerDayPayload,validatePlayerActionResult } from './player-state.mjs';
 
 export const MAX_ACTOR_MEMORIES=32;
 export const MEMORY_OBSERVER_VERSION='memory-observer-v1';
@@ -33,15 +33,19 @@ function checkEvent(event){
   }else if(event.type==='PlayerDaySettled'){
     requireCondition(event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player source');
     validatePlayerDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Player daily clock mismatch');
+  }else if(event.type==='PlayerActionCommitted'){
+    requireCondition(event.sourceSystem==='command-engine' && event.commandId!==null && event.entityIds.length===1 && event.entityIds[0]==='actor-4' && event.causationEventSeqs.length===0,'Invalid player action source');
+    validatePlayerActionResult(event.payload);requireCondition(event.tick===event.payload.endTick,'Player action source clock mismatch');
   }else if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type)){
     const {schemaVersion,eventSeq,tick,...fact}=event;validateMedicineAnnouncement(fact);
     requireCondition(event.tick<=event.payload.expiresTick,'Announcement already expired at occurrence');
   }
 }
 
-export function projectActorEvent(raw,actorId){
+export function projectActorEvent(raw,actorId,location='village'){
   identifier(actorId);checkEvent(raw);const event=cloneData(raw),p=event.payload;
-  if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type))return [entry(event,actorId,'public',0,{type:event.type,...cloneData(p)})];
+  if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type))return location==='forest'?[]:[entry(event,actorId,'public',0,{type:event.type,...cloneData(p)})];
+  if(event.type==='PlayerActionCommitted')return actorId==='actor-4'?[entry(event,actorId,'self',1,{type:'player-action',...cloneData(p)})]:[];
   if(event.type==='SocietyActionCommitted'){
     if(!event.entityIds.includes(actorId))return [];
     if(p.action==='SellMedicine')return [entry(event,actorId,'interaction',2,{type:'medicine-trade',sellerId:p.actorId,buyerId:p.buyerId,
@@ -54,30 +58,32 @@ export function projectActorEvent(raw,actorId){
   const row=p.actors.rows.find(a=>a.actorId===actorId),account=p.agents.find(a=>a.actorId===actorId);
   if(!row)return [];
   const market=p.actors.market,resources=market.ecology.resources.entries;
-  return [entry(event,actorId,'public',0,{type:'village-market',food:resources.find(e=>e.resource==='food').closing,
+  return [...(location==='forest'?[]:[entry(event,actorId,'public',0,{type:'village-market',food:resources.find(e=>e.resource==='food').closing,
     herbs:resources.find(e=>e.resource==='herbs').closing,prices:{food:market.prices.food.current,herbs:market.prices.herbs.current},
-    routeOpen:market.routeOpen,alive:p.actors.populationClosing.totalAlive}),
+    routeOpen:market.routeOpen,alive:p.actors.populationClosing.totalAlive})]),
   ...(account?[entry(event,actorId,'self',1,{type:'own-day',actorId,alive:row.closing.alive,health:row.closing.health,hunger:row.closing.hunger,
     fatigue:row.closing.fatigue,privateFood:account.privateFood,wallet:account.wallet,inventory:cloneData(account.inventory),
     currentGoal:cloneData(account.currentGoal),goalOutcome:account.goalOutcome})]:[])];
 }
 
-export function createMemoryState(initialActors){
+export function createMemoryState(initialActors,version=MEMORY_OBSERVER_VERSION){
+  requireCondition([MEMORY_OBSERVER_VERSION,'memory-observer-v2'].includes(version),'Unknown observer version','UNSUPPORTED_VERSION');const play=version==='memory-observer-v2';
   denseArray(initialActors,MAX_PERSISTENT_ACTORS);requireCondition(initialActors.length>0,'Empty memory roster');const ids=new Set();
-  for(const a of initialActors){fields(a,['actorId','alive']);identifier(a.actorId);requireCondition(typeof a.alive==='boolean' && !ids.has(a.actorId),'Invalid/duplicate memory identity');ids.add(a.actorId);}
+  for(const a of initialActors){fields(a,['actorId','alive',...(play?['location']:[])]);identifier(a.actorId);requireCondition(typeof a.alive==='boolean' && !ids.has(a.actorId),'Invalid/duplicate memory identity');if(play)requireCondition(a.location==='village','Unknown initial observer location');ids.add(a.actorId);}
   const actors=cloneData(initialActors).sort((a,b)=>byId(a.actorId,b.actorId));
-  return {version:MEMORY_OBSERVER_VERSION,initialActors:actors,cursor:0,lastObservedTick:0,
+  return {version,initialActors:actors,cursor:0,lastObservedTick:0,
     actors:actors.map(a=>({...a,memories:[],relationships:[]}))};
 }
 
 export function validateMemoryState(state){
   fields(state,['version','initialActors','cursor','lastObservedTick','actors']);
-  requireCondition(state.version===MEMORY_OBSERVER_VERSION,'Unknown memory observer version','UNSUPPORTED_VERSION');integer(state.cursor);integer(state.lastObservedTick);
+  requireCondition([MEMORY_OBSERVER_VERSION,'memory-observer-v2'].includes(state.version),'Unknown memory observer version','UNSUPPORTED_VERSION');const play=state.version==='memory-observer-v2';integer(state.cursor);integer(state.lastObservedTick);
   requireCondition(state.cursor<=EVENT_LIMIT,'Memory cursor exceeds event budget','LIMIT_EXCEEDED');
-  const initial=createMemoryState(state.initialActors);requireCondition(canonicalJson(initial.initialActors)===canonicalJson(state.initialActors),'Unordered memory roster');
+  const initial=createMemoryState(state.initialActors,state.version);requireCondition(canonicalJson(initial.initialActors)===canonicalJson(state.initialActors),'Unordered memory roster');
   denseArray(state.actors,MAX_PERSISTENT_ACTORS);requireCondition(state.actors.length===initial.actors.length,'Missing memory identity');
   for(const [i,a] of state.actors.entries()){
-    fields(a,['actorId','alive','memories','relationships']);requireCondition(a.actorId===initial.actors[i].actorId && typeof a.alive==='boolean','Memory identity mismatch');
+    fields(a,['actorId','alive','memories','relationships',...(play?['location']:[])]);requireCondition(a.actorId===initial.actors[i].actorId && typeof a.alive==='boolean','Memory identity mismatch');
+    if(play)requireCondition(a.actorId==='actor-4'?['village','forest'].includes(a.location):a.location==='village','Memory location mismatch');
     denseArray(a.memories,MAX_ACTOR_MEMORIES);let previous=null;
     for(const m of a.memories){
       fields(m,['memoryId','sourceEventSeq','occurrenceTick','observedTick','channel','importance','observable']);identifier(m.memoryId);
@@ -93,11 +99,12 @@ export function validateMemoryState(state){
   }
 }
 
-function sourceLog(events,observedTick,offset=0,initialActors=[]){
+function sourceLog(events,observedTick,offset=0,initialActors=[],version=MEMORY_OBSERVER_VERSION){
   denseArray(events,EVENT_LIMIT);let tick=0;const commands=new Set();
   for(const [i,e] of events.entries()){
     checkEvent(e);requireCondition(e.eventSeq===offset+i+1 && e.tick>=tick && e.tick<=observedTick,'Disordered/future memory source');tick=e.tick;
     if(e.type==='PlayerDaySettled')requireCondition(initialActors.some(a=>a.actorId===e.payload.actorId),'Player daily fact references unregistered observer identity');
+    if(e.type==='PlayerActionCommitted')requireCondition(version==='memory-observer-v2' && initialActors.some(a=>a.actorId==='actor-4'),'Player action outside observer version/roster');
     if(e.type==='SocietyActionCommitted'){
       requireCondition(!commands.has(e.commandId) && e.tick===e.payload.day*144,'Repeated/off-clock personal source');commands.add(e.commandId);
     }
@@ -108,7 +115,7 @@ function consume(state,events,observedTick,startIndex=state.cursor){
     const event=events[i];
     for(const a of state.actors){
       if(!a.alive)continue;
-      const projections=projectActorEvent(event,a.actorId);
+      const projections=projectActorEvent(event,a.actorId,a.location??'village');
       for(const p of projections){
         a.memories.push({...p,observedTick});
         if(p.channel==='interaction'){
@@ -124,6 +131,9 @@ function consume(state,events,observedTick,startIndex=state.cursor){
         a.memories.splice(a.memories.indexOf(discard),1);
       }
       a.memories.sort(chronological);
+      if(state.version==='memory-observer-v2' && event.type==='PlayerActionCommitted' && a.actorId==='actor-4'){
+        requireCondition(a.location===event.payload.before.location,'Travel observer source location mismatch');a.location=event.payload.after.location;
+      }
       if(event.type==='SocietyDaySettled'){
         const row=event.payload.actors.rows.find(r=>r.actorId===a.actorId);if(row)a.alive=row.closing.alive;
       }
@@ -137,15 +147,15 @@ function consume(state,events,observedTick,startIndex=state.cursor){
 // must additionally replay the original roster and observation ticks from the engine.
 export function validateMemoryHistory(state,events){
   validateMemoryState(state);denseArray(events,EVENT_LIMIT);requireCondition(state.cursor<=events.length,'Memory cursor lacks source');
-  const prefix=events.slice(0,state.cursor);sourceLog(prefix,state.lastObservedTick,0,state.initialActors);
-  const expected=consume(createMemoryState(state.initialActors),prefix,state.lastObservedTick);
+  const prefix=events.slice(0,state.cursor);sourceLog(prefix,state.lastObservedTick,0,state.initialActors,state.version);
+  const expected=consume(createMemoryState(state.initialActors,state.version),prefix,state.lastObservedTick);
   const withoutTimes=s=>s.actors.map(a=>({...a,memories:a.memories.map(({observedTick,...m})=>m)}));
   requireCondition(canonicalJson(withoutTimes(state))===canonicalJson(withoutTimes(expected)),'Memory projection/retention/relation source mismatch');
 }
 
 export function advanceActorMemory(state,events,observedTick){
   integer(observedTick);validateMemoryHistory(state,events);requireCondition(observedTick>=state.lastObservedTick,'Observation time moved backward');
-  sourceLog(events,observedTick,0,state.initialActors);
+  sourceLog(events,observedTick,0,state.initialActors,state.version);
   if(events.length===state.cursor)return cloneData(state);
   const result=consume(cloneData(state),events,observedTick);validateMemoryState(result);return result;
 }
@@ -157,7 +167,7 @@ export function advanceActorMemory(state,events,observedTick){
 export function reduceMemoryFacts(state,newFacts,observedTick){
   integer(observedTick);validateMemoryState(state);denseArray(newFacts,EVENT_LIMIT-state.cursor);
   requireCondition(observedTick>=state.lastObservedTick,'Observation time moved backward');
-  sourceLog(newFacts,observedTick,state.cursor,state.initialActors);
+  sourceLog(newFacts,observedTick,state.cursor,state.initialActors,state.version);
   if(newFacts.length===0)return cloneData(state);
   const result=consume(cloneData(state),newFacts,observedTick,0);validateMemoryState(result);return result;
 }
