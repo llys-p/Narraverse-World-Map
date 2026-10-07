@@ -31,3 +31,13 @@ test('C4 real engine: full entry audit rejects forged viewpoint, cursor, still-p
     const bad=structuredClone(good);mutate(bad);assert.throws(()=>validateBundle(bad,{rulesVersion:MEMORY_RULES,systems:f.systems}),e=>e.code==='INVALID_INPUT');
   }
 });
+
+test('C4 real engine: suffix optimization cannot authorize a handler rewriting prior memories',()=>{
+  const f=createMemoryVillage(42),session=createSimulationSession(f.bundle,{society(ctx,due){
+    f.systems.society(ctx,due);
+    if(ctx.snapshot.world.memoryModel.day===2)ctx.snapshot.world.memoryModel.observer.actors[0].memories[0].observable.wallet=7777;
+  }});
+  assert.throws(()=>session.advanceTicks(288),e=>e.failedTick===288);
+  const clean=createSimulationSession(f.bundle,f.systems);clean.advanceTicks(287);
+  assert.deepEqual(session.getBundle(),clean.getBundle());
+});

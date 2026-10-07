@@ -60,3 +60,16 @@ test('C4 full rule replay: every public request, quote, original observation tim
     const corrupt=structuredClone(result);mutate(corrupt);assert.throws(()=>validateMemoryRuntimeHistory(corrupt.snapshot,corrupt.events),e=>e.code==='INVALID_INPUT');
   }
 });
+
+test('C4 waiting without physical delivery cannot invent medicine or success; its existing goal fails and enters cooldown',()=>{
+  const before=run(recoveryConfig(),4).world,prepared=prepareMemoryDay(before,5*144),plan=planMemoryDay(prepared.world);
+  assert.equal(plan.world.memoryModel.waitingActorId,'actor-2');
+  const wait=plan.commands.find(c=>c.payload.actorId==='actor-2');assert.equal(wait.payload.action,'Rest');
+  // Domain settlement must handle an unfulfilled offer even when no seller action
+  // was committed. Such a partial command history cannot pass the full engine audit.
+  const resting=applyMemoryAction(plan.world,wait.payload),settled=settleMemorySocietyDay(resting.world,0.5).world;
+  const buyer=settled.societyModel.agents[1].state;
+  assert.equal(settled.memoryModel.waitingOutcome,'failed');assert.equal(buyer.inventory.herbs,0);
+  assert.equal(buyer.wallet,before.societyModel.agents[1].state.wallet);assert.equal(buyer.currentGoal,null);
+  assert.equal(buyer.cooldownUntilDay,7);assert.equal(buyer.ledger.goalsFailed,before.societyModel.agents[1].state.ledger.goalsFailed+1);
+});

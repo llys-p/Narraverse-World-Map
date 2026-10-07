@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createMemoryState,advanceActorMemory,validateMemoryHistory,projectActorEvent,buildObservedMemory,MAX_ACTOR_MEMORIES } from '../../runtime/core/memory-observer.mjs';
+import { createMemoryState,advanceActorMemory,reduceMemoryFacts,validateMemoryHistory,projectActorEvent,buildObservedMemory,MAX_ACTOR_MEMORIES } from '../../runtime/core/memory-observer.mjs';
 import { createSocietyPeerSale,createSocietyVillage } from '../../runtime/fixtures/society-village.mjs';
 import { createSimulationSession } from '../../runtime/core/command-engine.mjs';
 const bad=e=>['INVALID_INPUT','LIMIT_EXCEEDED','UNSUPPORTED_VERSION'].includes(e.code);
@@ -97,4 +97,28 @@ test('C4 observer: actual later death seals existing memories at death tick with
 test('C4 observer: a forged repeated command cannot inflate a relation with another event sequence',()=>{
   const prefix=bundle.eventLog.filter(e=>e.tick<=144),duplicate=structuredClone(sale);duplicate.eventSeq=prefix.length+1;
   assert.throws(()=>advanceActorMemory(initial(),[...prefix,duplicate],144),bad);
+});
+
+test('C4 suffix reducer: actual new facts match audited advancement, including delayed observations and immutable input',()=>{
+  const prefix=bundle.eventLog.filter(e=>e.tick<=144),first=advanceActorMemory(initial(),prefix,300);
+  const before=structuredClone(first),suffix=bundle.eventLog.slice(first.cursor);
+  const next=reduceMemoryFacts(first,suffix,400);
+  assert.deepEqual(next,advanceActorMemory(first,bundle.eventLog,400));
+  assert.deepEqual(first,before);validateMemoryHistory(next,bundle.eventLog);
+  assert.deepEqual(reduceMemoryFacts(next,[],500),next);
+  next.actors[1].relationships[0].trust=999;
+  assert.deepEqual(first,before);
+});
+
+test('C4 suffix reducer: invalid suffix boundaries reject before mutation without reading accessors',()=>{
+  const state=initial(),before=structuredClone(state);
+  const wrong=structuredClone(bundle.eventLog);wrong[0].eventSeq++;
+  let reads=0;const accessor=[];Object.defineProperty(accessor,'0',{enumerable:true,get(){reads++;return bundle.eventLog[0];}});
+  for(const suffix of [Array(1),accessor,wrong,[...bundle.eventLog].reverse()])assert.throws(()=>reduceMemoryFacts(state,suffix,400),bad);
+  assert.equal(reads,0);assert.deepEqual(state,before);
+  assert.throws(()=>reduceMemoryFacts(state,bundle.eventLog,100),bad);
+  const prefix=bundle.eventLog.filter(e=>e.tick<=144),duplicate=structuredClone(sale);duplicate.eventSeq=prefix.length+1;
+  assert.throws(()=>reduceMemoryFacts(state,[...prefix,duplicate],144),bad);
+  const later=advanceActorMemory(state,prefix,300);
+  assert.throws(()=>reduceMemoryFacts(later,bundle.eventLog.slice(prefix.length),299),bad);
 });

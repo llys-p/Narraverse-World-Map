@@ -88,17 +88,17 @@ export function validateMemoryState(state){
   }
 }
 
-function sourceLog(events,observedTick){
+function sourceLog(events,observedTick,offset=0){
   denseArray(events,EVENT_LIMIT);let tick=0;const commands=new Set();
   for(const [i,e] of events.entries()){
-    checkEvent(e);requireCondition(e.eventSeq===i+1 && e.tick>=tick && e.tick<=observedTick,'Disordered/future memory source');tick=e.tick;
+    checkEvent(e);requireCondition(e.eventSeq===offset+i+1 && e.tick>=tick && e.tick<=observedTick,'Disordered/future memory source');tick=e.tick;
     if(e.type==='SocietyActionCommitted'){
       requireCondition(!commands.has(e.commandId) && e.tick===e.payload.day*144,'Repeated/off-clock personal source');commands.add(e.commandId);
     }
   }
 }
-function consume(state,events,observedTick){
-  for(let i=state.cursor;i<events.length;i++){
+function consume(state,events,observedTick,startIndex=state.cursor){
+  for(let i=startIndex;i<events.length;i++){
     const event=events[i];
     for(const a of state.actors){
       if(!a.alive)continue;
@@ -142,6 +142,18 @@ export function advanceActorMemory(state,events,observedTick){
   sourceLog(events,observedTick);
   if(events.length===state.cursor)return cloneData(state);
   const result=consume(cloneData(state),events,observedTick);validateMemoryState(result);return result;
+}
+
+// Pure domain transition over new facts only. It validates the suffix and bounded
+// state, but does not authenticate their past. Runtime entry/save audits replay
+// from the original roster; the engine verifies each complete candidate state.
+// Call advanceActorMemory for an independent observer supplied with a full log.
+export function reduceMemoryFacts(state,newFacts,observedTick){
+  integer(observedTick);validateMemoryState(state);denseArray(newFacts,EVENT_LIMIT-state.cursor);
+  requireCondition(observedTick>=state.lastObservedTick,'Observation time moved backward');
+  sourceLog(newFacts,observedTick,state.cursor);
+  if(newFacts.length===0)return cloneData(state);
+  const result=consume(cloneData(state),newFacts,observedTick,0);validateMemoryState(result);return result;
 }
 
 // Read-only observer result, not the complete C4 buildActorKnowledge interface.

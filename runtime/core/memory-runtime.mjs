@@ -1,6 +1,6 @@
 import { fields,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,inputFingerprint } from './data-contract.mjs';
 import { defaultSocietyConfig,createSocietyWorld,validateSocietyWorld,planSocietyDay,applySocietyAction,applySocietyCommand,settleSocietyDay,societyActionFact,societyCauses } from './society.mjs';
-import { createMemoryState,validateMemoryState,advanceActorMemory } from './memory-observer.mjs';
+import { createMemoryState,validateMemoryState,reduceMemoryFacts } from './memory-observer.mjs';
 import { createMedicineAnnouncements,validateMedicineAnnouncement,selectPublicMedicineBuyer } from './public-medicine.mjs';
 import { createRng } from './rng.mjs';
 import { marketCommandFact } from './market.mjs';
@@ -81,8 +81,9 @@ export function settleMemorySocietyDay(input,sample){
 export function finishMemoryDay(input,events,tick){
   validateMemoryWorld(input);integer(tick,1);requireCondition(tick===input.memoryModel.day*144,'Memory closing clock mismatch');
   const world=cloneData(input),m=world.memoryModel,oldCursor=m.observer.cursor;
-  m.observer=advanceActorMemory(m.observer,events,tick);
-  const causes=events.filter(e=>e.eventSeq>oldCursor && ['MedicalRequestAnnounced','MedicineOfferAnnounced','SocietyActionCommitted','SocietyDaySettled'].includes(e.type)).map(e=>e.eventSeq);
+  const newFacts=events.slice(oldCursor);
+  m.observer=reduceMemoryFacts(m.observer,newFacts,tick);
+  const causes=newFacts.filter(e=>['MedicalRequestAnnounced','MedicineOfferAnnounced','SocietyActionCommitted','SocietyDaySettled'].includes(e.type)).map(e=>e.eventSeq);
   validateMemoryWorld(world);
   return {world,fact:{type:'MemoryDaySettled',sourceSystem:'society',commandId:null,entityIds:[],causationEventSeqs:causes,
     payload:{day:m.day,observer:cloneData(m.observer),waitingActorId:m.waitingActorId,waitingOutcome:m.waitingOutcome}}};
