@@ -1,6 +1,6 @@
 # C5：持久人格偏好与阶段C最后门槛
 
-2026-10-07 18:15（Asia/Shanghai）。中控直接实施，尚未交付。依赖C4代码2793dad，源码D:\Narraverse-World-Map-a2；独立分支codex/world-runtime-c5。架构C验收要求人格影响选择，当前C1～C4只有需求、职业及关系，补本项再收口C。
+2026-10-07 18:33（Asia/Shanghai）。**C5与阶段C已验收**。中控直接实施，代码04dc222d7480a878b561767ff391ea1c37402e68已推origin/codex/world-runtime-c5，源码D:\Narraverse-World-Map-a2。旧C4代码2793dad轨迹保持，下一项D1单独合同。
 
 ## 给用户：完成后能看到什么
 
@@ -24,3 +24,11 @@
 4. C1身份/需求/死亡、C2缺钱→收入→药→恢复及有限Goal、C3多人竞争、C4可知记忆/真实关系/保存连续、C5人格同条件选择全部有证据，才阶段C已验收并启动D1。失败保留待验收/需修正，不降低门槛。
 
 精确暂存、任务分支推送；产物留忽略artifacts，不提交真实存档或运行目录。保护main并行E文档、旧实例/页面/正式平台；不合并runtime main、不部署。
+
+## 最终验收与两类交接（2026-10-07 18:33 Asia/Shanghai）
+
+- 给用户：相同初值，健康优先买药，备粮优先买粮并当天完成口粮目标；4日健康750/650，100日中立配置最终健康850。偏好真实改变选择，没有强制按日期写剧情；治病目标仍可因缺钱先工作，权重不跳过失败/截止/冷却或死亡规则。C阶段基础闭环通过，仍只是三人、同村公告，非完整心理/社会网络或可玩页面。
+- 给AI：D:\Narraverse-World-Map-a2 @ codex/world-runtime-c5，代码04dc222，干净且已推；新增personality纯模块/fixture/三份测试、memory-config-v2及新显式profile，旧配置不猜测迁移。full-tests.txt为177/177（原168+新9），275.5秒，含磁盘/CLI、旧规则、配置指纹重算后仍拒绝伪造、完整候选回退及本人知识隔离。
+- 干净代码100日=40存盘+60恢复，完整checkpoint与14类导出一致；独立消费者复算每个猎人日的基础Needs×本人权重、实际购买现金/商品与BigInt所有权账。旧C4完整100日checkpoint和13导出字节相同。stateHash 80b61e1ee4930dedbbd8c20a84422bea52ec386e9bf16b9aaedafa30440ff990，eventHash 05d62ea08c6e953a22247ac82410c561aec53284011e9a5f988839158f105993；runtime指纹d3a2129dddc20dfe168b3b0af7a02c6dda6124f7b05289e35bf27be5c436b2a0。
+- 证据artifacts/world-runtime-c5-acceptance-20261007/comparison.json、full-tests.txt及五组CLI产物，保持忽略。100日235.6秒（同期全回归与其他长程实验），末尾RSS258600960非峰值，不能与单次/不同并发条件比较性能或承诺大规模。
+- C1～C5所需身份/需求/死亡、缺钱多步Goal、真实竞争、公私资源所有权、可知记忆/关系、人格及跨档连续均有消费者/反例证据，阶段C已验收。下一项D1；D整体仍未开始验收，不改旧页面/真实存档，不合并runtime main。
