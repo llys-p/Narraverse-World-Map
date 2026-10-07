@@ -1,12 +1,12 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 21:48（Asia/Shanghai）。
+更新时间：2026-10-08 07:25（Asia/Shanghai）。
 
 ## 项目定位
 
 地图 → 场景 → 战斗 → 成长的独立可玩原型；先单独保存和迭代，不自动替换Narraverse模块四。
 代码保持现有纯JS/HTML结构；本轮没有TS化、没有改战斗/地图玩法、没有引入依赖。
-后续方向已确定为世界运行时 / 生态模拟；按 [架构与分阶段实施计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md) 逐步推进。
+后续方向为世界运行时 / 生态模拟与人物心智（Character Mind Runtime）；按 [架构与分阶段实施计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md) 逐步推进。
 
 ## 已有资产
 
@@ -69,18 +69,17 @@
 
 ## 下一步
 
-A/B及阶段C全部已验收。C5代码04dc222（D:\Narraverse-World-Map-a2 @ codex/world-runtime-c5）：177/177全回归，干净100=40+60完整checkpoint/14导出一致，独立评分/真实现金商品账、偏好跨档/篡改拒绝通过；旧C4 100日完整存档/13导出字节不变。源码指纹d3a2129dddc20dfe168b3b0af7a02c6dda6124f7b05289e35bf27be5c436b2a0，证据artifacts/world-runtime-c5-acceptance-20261007/comparison.json与[C5收口](tasks/C5-PERSONALITY-CHOICE-TASK.md)。D1代码0f86d40（codex/world-runtime-d1）已验收：全量184/184，真实HTTP/两个浏览器页签、纯读/断连/重启、锁归属/字节一致通过；首次默认并发系统内存分配失败，保留日志后两路并发原测试全过。证据artifacts/world-runtime-d1-acceptance-20261007，见[D1收口](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。[D2A时间提交](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)代码d29da21已验收（源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2a，基准da1155f）：最终196/196，真实双页签revision冲突、CLI重启/原ID重试、发布后硬退出恢复、队列/文件预算和键盘操作通过；三请求[144,144,6]完整bundle=C5直接294ticks。证据artifacts/world-runtime-d2a-acceptance-20261007/comparison.json与full-tests-final.txt。三路D2B已集成验收：初次8e596a3（a2 @ codex/world-runtime-d2b），全量232/232；真实双页签/CLI重启原ID/断连重试/键盘/玩家service2硬退出恢复、私币与人口守恒通过，[共同合同收口](tasks/D2B-PLAYER-CONTRACT.md)列真实证据。第四玩家+76匿名总80，私账独立；三请求[144,144,6]完整bundle=核心直接294ticks。旧C5四天完整存档与全部数据导出逐字节不变。首轮工资测试漏商人反例已强化，旧C1/C2及三人观察器新版本边界先红后绿。证据artifacts/world-runtime-d2b-acceptance-20261007/comparison.json和full-tests.txt。本次边界返修732103d全量238/238，丢锁/空档案明确503、同类checkpoint临时档崩溃恢复及非JSON拒绝/不确定重试通过；真实浏览器与只读子进程崩溃探针见artifacts/world-runtime-boundary-fix-20261007。[D2C合同](tasks/D2C-PLAY-CONTRACT.md)已冻结1718a8b（基准33e8154），三路已在D:\Narraverse-World-Map-d2c-core/service/acceptance @ codex/world-runtime-d2c-*独立树开工，中控集成树a2 @ codex/world-runtime-d2c。新profile旅行/主动休整/真实公仓买卖统一耗时，动态核心输入与完整重演；核心/服务/反例白名单分离、旧版本不迁移。D2C三路已集成独立验收，代码172ac9f（a2 @ codex/world-runtime-d2c）：全量270/270，真实页面6次动作/时间提交完整bundle=核心直接执行；双页签冲突/键盘/森林限制/途中死亡155拒绝/CLI重启原ID/非JSON422与502及坏200重试/service3发布后硬退出恢复通过，旧C5四天checkpoint与20份导出逐字节相同。证据artifacts/world-runtime-d2c-acceptance-20261007与[D2C收口](tasks/D2C-PLAY-CONTRACT.md)。本轮三代理/测试服务已停止，D2旅行休整交易门槛通过，D3/D4未开始、D整体未验收；先停在本阶段。源码仍不合并main、不部署/接模型/桥/真实旧档，E预研独立。
-
-阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
-
-- A1～A4：时间与随机数 → 状态/命令/事实事件 → 保存恢复 → Node runner。连续100天与40天存档后再跑60天必须一致；通过只代表底座通过。
-- B 才验证100天生态经济因果闭环，并进行500/1000天、多seed与扰动对照；聚合捕猎和简化贸易不能宣称实名NPC决策完成。
-- A～C 使用新建实验数据，隔离旧页面与真实浏览器存档；不改正式平台、不启停旧实例、不调用付费模型或Laya桥。
-- 后续按用户指定的任务/阶段范围推进；每项验收后更新本文件的当前任务和下一步，不把方向文档当作实现证据。
+- 当前运行时：`D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2c`，已验收代码 `172ac9f` / 交接 `feb2856`；控制文档：`D:\Narraverse-World-Map-control @ codex/world-runtime-control`。main 未合并 runtime 源码，开工不能把原 A1 目录当最新源码。
+- A/B/C 与 D1～D2C 均已验收。C5 177/177、D1 184/184、D2A 196/196、D2B 及边界修正 238/238、D2C 270/270 为各提交已归档证据，非本次复跑；详见 [C5](tasks/C5-PERSONALITY-CHOICE-TASK.md)、[D1](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)、[D2A](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)、[D2B](tasks/D2B-PLAYER-CONTRACT.md)、[D2C 收口](tasks/D2C-PLAY-CONTRACT.md)。D2C 真实浏览器/重启原 ID/硬退出恢复、旧 C5 四天完整存档与 20 份导出字节对照通过；本地证据 `artifacts/world-runtime-d2c-acceptance-20261007`。D3/D4 未开始，D 整体未验收。
+- 本次完整阅读 [NPC Brain 灵感笔记 v0.2](docs/character-mind/NPC_Brain_Character_Mind_Runtime_灵感笔记_v0.2.md)（原分支 docs/npc-brain-v0.2-20261008，原提交 8c187a2），原文保留；依据真实源码将后续重点改为 Character Mind Runtime。旧人格只有三项需求权重，NPC knowledge 尚未适配 D2C；完整信念/动机/学习不是已有能力。
+- 下一项 [M0 合同与场景冻结](tasks/M0-CHARACTER-MIND-CONTRACT-TASK.md)待派发；本轮完成路线及 M0 任务书，未完成 M0、未开工 M1。顺序为已完成 A/B/C/D2 → M0 → M1 最小规则心智闭环与检查器 → M2 动机冲突/有限计划 → M3 经验/认知 LOD → D3/D4。详见[架构](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)；M0 冻结接口/文件归属后，再按额度启动核心、服务检查器、独立验收三路。
+- E 调整为可选 Provider 支线，正式准入仍为空；M 不依赖 Laya/LLM，旧 E1 不重开，未来按真实消费缺口另发窄合同。F/G 尚未开工；不接正式平台、模型/桥或真实旧存档，不启停旧实例，不自动合并 runtime main。
+- 验证按用户约定：只查改动及直接影响；相同提交已过且代码未变不重复；公共时间/重演/存档底座变更才扩大，较大阶段收口集中全量一次。本轮只查文档差异/链接/合同一致性，不跑模拟或浏览器。
 
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
+- M 主线已同步：阶段卡 `PVTI_lAHOEF9IDs4BmADfzg_Q8JY`；M0 `PVTI_lAHOEF9IDs4BmADfzg_Q8LE`（待派发）；M1 `PVTI_lAHOEF9IDs4BmADfzg_Q8NI`、M2 `PVTI_lAHOEF9IDs4BmADfzg_Q8Pk`、M3 `PVTI_lAHOEF9IDs4BmADfzg_Q8Sg`（待开始）。均为 Todo，未开工；新增阶段 M 选项并保留原八项 ID，D/E 卡已注明后排/可选支线，旧验收状态未回退。
 - 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`、C2 `PVTI_lAHOEF9IDs4BmADfzg_EnoU`、C3 `PVTI_lAHOEF9IDs4BmADfzg_FGww`、C4 `PVTI_lAHOEF9IDs4BmADfzg_Fov0`（已验收）、C5 `PVTI_lAHOEF9IDs4BmADfzg_G6Gg`（已验收）；D阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwCU`（进行中）、D1 `PVTI_lAHOEF9IDs4BmADfzg_HMTc`、D2A `PVTI_lAHOEF9IDs4BmADfzg_Hq7Y`（已验收）；D2B `PVTI_lAHOEF9IDs4BmADfzg_IGm4`、三路 `PVTI_lAHOEF9IDs4BmADfzg_IGrM` / `PVTI_lAHOEF9IDs4BmADfzg_IGuY` / `PVTI_lAHOEF9IDs4BmADfzg_IG0Q`（已验收）。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
