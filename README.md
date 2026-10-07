@@ -46,7 +46,7 @@ node runtime-server.mjs --data-dir artifacts/world-runtime-d2b/my-world --profil
 node runtime-server.mjs --data-dir artifacts/world-runtime-d2b/my-world --port 18314 --writable true
 ```
 
-玩家是第四名实名居民，匿名76、总人口仍80；默认本人100金币/3粮/1药有真实分拨账，不借NPC钱包。页面显示本人状态与私货，活着有存粮时日结只吃本人一份；无私粮则增加本人饥饿，不自动拿公粮/用药。玩家死亡后私产与身份封存。公开世界与本人读数必须同revision，失配重读后仍不一致就保留上一份一致显示。`--profile`仅用于新目录，与`--checkpoint`互斥；不自动给旧世界新增玩家。仍默认只读，写需明确`--writable true`。232/232与真实双页签、跨档、隐私、资产守恒和恢复通过，见[D2B收口](tasks/D2B-PLAYER-CONTRACT.md)。旅行、主动休整、交易和战斗仍待后续合同。
+玩家是第四名实名居民，匿名76、总人口仍80；默认本人100金币/3粮/1药有真实分拨账，不借NPC钱包。页面显示本人状态与私货，活着有存粮时日结只吃本人一份；无私粮则增加本人饥饿，不自动拿公粮/用药。玩家死亡后私产与身份封存。公开世界与本人读数必须同revision，失配重读后仍不一致就保留上一份一致显示。`--profile`仅用于新目录，与`--checkpoint`互斥；不自动给旧世界新增玩家。仍默认只读，写需明确`--writable true`。当前238/238与真实双页签、跨档、隐私、资产守恒和恢复通过；丢锁/空档案明确拒绝、同类临时档保留恢复与非JSON错误意图处理已修，见[D2B收口](tasks/D2B-PLAYER-CONTRACT.md)。旅行、主动休整、交易和战斗仍待后续合同。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
