@@ -11,6 +11,7 @@ import { HUNTER_RULES,applyHunterCommand,planHunterDay,applyHunterAction,hunterA
 import { SOCIETY_RULES,applySocietyCommand,planSocietyDay,applySocietyAction,societyActionFact,societyCauses,settleSocietyDay } from './society.mjs';
 import { MEMORY_RULE_VERSIONS,isMemoryRules,prepareMemoryDay,planMemoryDay,applyMemoryAction,applyMemoryCommand,settleMemorySocietyDay,finishMemoryDay,validateMemoryDayPayload } from './memory-runtime.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
+import { PLAYER_RULES,playerDayFact } from './player-state.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, integer, normalizeSystems, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
@@ -144,6 +145,10 @@ function performTick(bundle, systems, mode) {
       }
     }
     requireCondition(envelope() === beforeSystems, 'System changed protected snapshot fields');
+    if(rulesVersion===PLAYER_RULES && plan.dueTasks.length){
+      const daily=candidate.eventLog.findLast(e=>e.type==='SocietyDaySettled' && e.tick===failedTick);
+      requireCondition(daily,'Missing player daily source');append(playerDayFact(s.world,daily.payload));
+    }
     if(isMemoryRules(rulesVersion) && plan.dueTasks.length){
       const memory=finishMemoryDay(s.world,candidate.eventLog,failedTick);s.world=memory.world;validateMemoryDayPayload(memory.fact.payload);append(memory.fact);
     }

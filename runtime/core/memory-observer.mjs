@@ -5,6 +5,7 @@ import { validateSocietyActionResult,validateSocietyPayload } from './society.mj
 import { MAX_PERSISTENT_ACTORS } from './actors.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
+import { validatePlayerDayPayload } from './player-state.mjs';
 
 export const MAX_ACTOR_MEMORIES=32;
 export const MEMORY_OBSERVER_VERSION='memory-observer-v1';
@@ -29,6 +30,9 @@ function checkEvent(event){
   }else if(event.type==='SocietyDaySettled'){
     requireCondition(event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0,'Invalid daily source');
     validateSocietyPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Daily source clock mismatch');
+  }else if(event.type==='PlayerDaySettled'){
+    requireCondition(event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player source');
+    validatePlayerDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Player daily clock mismatch');
   }else if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type)){
     const {schemaVersion,eventSeq,tick,...fact}=event;validateMedicineAnnouncement(fact);
     requireCondition(event.tick<=event.payload.expiresTick,'Announcement already expired at occurrence');
@@ -45,16 +49,17 @@ export function projectActorEvent(raw,actorId){
     // Deliberately omit before/after balances and any nested action receipt.
     return [entry(event,actorId,'self',1,{type:'own-action',actorId,action:p.action,goalId:p.goalId})];
   }
+  if(event.type==='PlayerDaySettled')return actorId===p.actorId?[entry(event,actorId,'self',1,{type:'player-day',actorId,privateFood:p.privateFood,wallet:p.wallet,inventory:cloneData(p.inventory)})]:[];
   if(event.type!=='SocietyDaySettled')return [];
   const row=p.actors.rows.find(a=>a.actorId===actorId),account=p.agents.find(a=>a.actorId===actorId);
-  if(!row || !account)return [];
+  if(!row)return [];
   const market=p.actors.market,resources=market.ecology.resources.entries;
   return [entry(event,actorId,'public',0,{type:'village-market',food:resources.find(e=>e.resource==='food').closing,
     herbs:resources.find(e=>e.resource==='herbs').closing,prices:{food:market.prices.food.current,herbs:market.prices.herbs.current},
     routeOpen:market.routeOpen,alive:p.actors.populationClosing.totalAlive}),
-  entry(event,actorId,'self',1,{type:'own-day',actorId,alive:row.closing.alive,health:row.closing.health,hunger:row.closing.hunger,
+  ...(account?[entry(event,actorId,'self',1,{type:'own-day',actorId,alive:row.closing.alive,health:row.closing.health,hunger:row.closing.hunger,
     fatigue:row.closing.fatigue,privateFood:account.privateFood,wallet:account.wallet,inventory:cloneData(account.inventory),
-    currentGoal:cloneData(account.currentGoal),goalOutcome:account.goalOutcome})];
+    currentGoal:cloneData(account.currentGoal),goalOutcome:account.goalOutcome})]:[])];
 }
 
 export function createMemoryState(initialActors){
