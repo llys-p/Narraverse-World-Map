@@ -1,6 +1,6 @@
 # E1 下一步：30条可信dev驱动投入决策
 
-日期：2026-10-07（Asia/Shanghai）。状态：规划完成；前置为本批双复核与作者外裁定，尚未派发代码/模型任务。
+日期：2026-10-07（Asia/Shanghai）。状态：双复核与一次作者外裁定完成，代码/模型诊断任务待派发，未开工。
 
 ## 给用户看
 
@@ -18,6 +18,14 @@
 - 代码在 `benchmarks/npc-socialsignal/`；当前runner/scorer/stability仍消费旧125条。本批新增数据/计划/构建器，不是新corpus评测消费链实现。
 - 匿名包与双复核回执在仓库外 `D:\ModelBench\laya\review-return\corpus400-dev30-v1\`；只按完整可见persona/boundary/history+extra_history/turn复核，规范hash为bb7058b4…；作者不可裁定。同模型独立上下文的限制明确披露，不能把一致率当模型准确率。
 - 中控收齐后登记150项逐信号支持量/一致率/κ/分歧，裁定本次可见动作/约定/真假对撞。小bug内部直接修，不新增外部返修循环；无法唯一裁定的项登记“参考标签未解决”，不强凑类别、不删难题来提升模型分数。
+
+### 本轮已完成的参考件（接手执行必须先核对）
+
+- 两复核者均30条×5信号，同模型不同上下文、未读作者金标；social/trust/fear/deception/boundary一致26/27/27/28/27条，κ0.8089/0.8663/0.8204/0.8595/0.8276。这是规范可复核性数据，不是Laya成绩或正式金标准证明。
+- 作者与复核者/两复核者之间共有31项不同。中控一次裁定18项，其余13项未解决；另外一项虽三方一致，仍存在撤刀与持续请求越界的规范优先级冲突，额外列为未解决。合计136项暂定参考、14项未解决；按五信号分别26/27/26/29/28项有暂定参考，不要求改写整个30条。
+- 作者样本/脚本原件不覆盖。裁定sidecar在仓库外 `D:\ModelBench\laya\review-return\corpus400-dev30-v1\control-only\adjudication-v1.jsonl`，150行，`reference_label=null`且`status=reference_unresolved`的项不可当金标；hash `3a6af316008ac7aecdf001b3a7c245200f82509e3d93f4f68066ffdfb4020807`。
+- `review-summary.json`含逐类支持/κ，`disagreements.jsonl`含31项，`adjudication-summary.json`含范围与hash，两个`reviewer-r*/`保留完整回执与披露。读取这些参考文件是诊断执行者的工作，不再充当盲审者。
+- 接手另起 `codex/laya-dev30-screening` 从71825aa开工；在第一次模型调用前将输入/hash、sidecar/hash、有效参考集合与全部30条覆盖计划登记为一个诊断lock。裁定件只支持暂定投入筛查，不是正式freeze-gate，不新造正式gate、不打开外部final。
 
 ### 下一项最小闭环（待中控发起）
 
