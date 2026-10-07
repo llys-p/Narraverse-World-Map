@@ -1,0 +1,61 @@
+{
+ "schema": "e1-corpus400-plan-v1",
+ "plan_id": "corpus400-plan-v1",
+ "created": "2026-10-07",
+ "created_by": "codex/laya-corpus400-dev30 per tasks/E1-CORPUS400-TASK.md",
+ "status": "registered; M01-M10 authored in batch corpus400-dev30-v1, all other slots pending future contracts",
+ "totals": {"dev": 150, "calibration": 90, "final": 160, "sum": 400},
+ "split_policy": "family-exclusive",
+ "family_definition": {
+   "unit": "one plot family = one NPC persona + its relationship(s) to the player + the visible facts of its setting + one set of wording templates",
+   "isolation_rule": "every authored item of a family goes to exactly ONE split; a family is never split across dev/calibration/final, never reused across the old 125-item corpus or the long-dev v1/v2 diagnostic batches, and its wording templates (persona phrases, boundary phrasing, turn idioms) are not recycled into other families",
+   "no_rename_rule": "a new family must differ in plot, visible facts and relationship structure, not merely in names or line order"
+ },
+ "excluded_from_corpus": {
+   "old_125": "src-batch1..4 (F01-F14), split-assignment, split-manifest-v2 — historical, untouched",
+   "exposed_final_62": "the already-exposed final items — can never serve as new final",
+   "long_dev_v1": "samples/long-dev24.jsonl (plan long-dev24-v1) — diagnostic original, preserved",
+   "long_dev_v2": "samples/long-dev24-v2.jsonl (plan long-dev24-v2) — control-corrected diagnostic, preserved"
+ },
+ "family_roster": {
+   "dev_authored": {
+     "families": ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10"],
+     "items_each": 3, "items_total": 30,
+     "batch": "corpus400-dev30-v1"
+   },
+   "dev_planned": {
+     "families": ["M11-M25 (15 families)"],
+     "items_each": 8, "items_total": 120,
+     "note": "to be authored in later batches under separate contracts; dev total 30+120=150"
+   },
+   "calibration_planned": {
+     "families": ["M26-M36 (11 families)"],
+     "items_each": 8, "items_total": 88,
+     "note": "plus one small family M37 with 2 items; calibration total 90; temperature fitting happens only on calibration after dev gate passes"
+   },
+   "final_planned": {
+     "families": ["M38-M57 (20 families)"],
+     "items_each": 8, "items_total": 160,
+     "note": "final families must be never-exposed: authored only after dev/calibration acceptance, gold kept outside the repository, blind file admitted to the repo only after seal"
+   }
+ },
+ "per_split_rules": {
+   "dev": "gold labels and per-signal basis may live in the repository; still requires independent non-author review before any gate",
+   "calibration": "used for temperature/threshold fitting only; families disjoint from dev and final",
+   "final": "score-only; no fitting, no repeated condition shopping; author gold outside the repository; blind file may enter the repository only after seal; two independent non-author reviews plus non-author adjudication precede any formal scoring"
+ },
+ "label_coverage_policy": {
+   "note": "each split's final set must cover every enum class of all five signals per LABEL_SPEC §0.4; classes that cannot be honestly authored are reported as gaps instead of being manufactured",
+   "special_rule_cases": [
+     "R-8.1 only collision-capable statements count as deception evidence; irony and public re-wordings do not",
+     "R-8.2 no-evidence requires a comparable visible fact, never as a default",
+     "R-8.3 conditional boundaries need observable trigger criteria; ambiguous criteria map to 信息不足",
+     "R-8.4 a request that touches a known boundary already crosses it; request vs accomplished act kept distinct",
+     "R-8.5 trust moves only on current, NPC-visible fulfillment/breach; deadlines must be observable, otherwise 不确定",
+     "R-8.6 asking for secrecy is not a boundary violation by itself",
+     "R-8.7 direction-asking in three grades"
+   ]
+ },
+ "consumer_note": "runner/scorer/stability currently load the old 125-item corpus; no corpus400 consumer entry exists yet and none is claimed by this plan. New-corpus consumption will be bounded, separately contracted work.",
+ "immutability": "this plan file is append-only through version bumps; control freezes the plan when the 400-route is accepted; no retro-editing of family assignments"
+}

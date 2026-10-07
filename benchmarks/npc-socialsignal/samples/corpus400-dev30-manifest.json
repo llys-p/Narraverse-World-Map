@@ -1,0 +1,1914 @@
+{
+ "anon_pack": {
+  "note": "reviewer files carry visible text only; mapping/author answers under control-only/",
+  "path": "D:/ModelBench/laya/review-return/corpus400-dev30-v1",
+  "tokens": "C400-001..030 (deterministic rotation, no ordering info)"
+ },
+ "batch_file": {
+  "items": 30,
+  "path": "samples/corpus400-dev30-v1.jsonl",
+  "sha256": "8b66e43f29ca3a75298dcbede786e717885e967f525543159bdfdc3b71954140"
+ },
+ "budgets": {
+  "head_max_len": 256,
+  "max_len": 1024,
+  "source": "run_bench_v3.py defaults from question-templates.json hard_constraints",
+  "state_budget": 768
+ },
+ "corpus_plan": {
+  "file": "corpus400-plan-v1.json",
+  "note": "family-exclusive split policy; M01-M10 authored here, other slots pending",
+  "sha256": "20906fcc760f538394b4a59191db5e67d20f52f0b9dc731fee7a15410b08c96d",
+  "totals": {
+   "calibration": 90,
+   "dev": 150,
+   "final": 160
+  }
+ },
+ "coverage": {
+  "actual_authored": {
+   "boundary_violation": {
+    "信息不足": 2,
+    "已越过": 10,
+    "未越过": 18
+   },
+   "deception": {
+    "信息不足": 18,
+    "无线索": 9,
+    "有线索": 3
+   },
+   "fear_shift": {
+    "上升": 6,
+    "下降": 2,
+    "不变": 20,
+    "不确定": 2
+   },
+   "social_act": {
+    "不确定": 1,
+    "中性": 5,
+    "合作": 12,
+    "威胁": 2,
+    "求助": 8,
+    "示好": 2
+   },
+   "trust_shift": {
+    "上升": 5,
+    "下降": 4,
+    "不变": 13,
+    "不确定": 8
+   }
+  },
+  "families": [
+   "M01",
+   "M02",
+   "M03",
+   "M04",
+   "M05",
+   "M06",
+   "M07",
+   "M08",
+   "M09",
+   "M10"
+  ],
+  "gaps_note": "actual counts below plan for any class are reported, never manufactured; cat3 (refused) and cat2 relabel rows can never contribute to formal scoring",
+  "planned": {
+   "boundary_violation": {
+    "信息不足": 4,
+    "已越过": 8,
+    "未越过": 18
+   },
+   "contrast_cases": [
+    "request-crosses-boundary (R-8.4) vs accomplished crossing",
+    "observable deadline passed (下降) vs ambiguous deadline (信息不足) vs future promise (不确定)",
+    "collision-capable claim (有线索) vs matching comparable fact (无线索) vs unverifiable (信息不足)",
+    "secrecy request is not a violation (R-8.6)",
+    "never-declared boundary maps to 信息不足",
+    "irony is not a deception clue",
+    "direction-asking grade one: information question (R-8.7)",
+    "visible danger withdrawal (fear 下降)",
+    "current fulfillment only, old fulfillments never re-counted (R-8.5)"
+   ],
+   "deception": {
+    "信息不足": 22,
+    "无线索": 5,
+    "有线索": 3
+   },
+   "fear_shift": {
+    "上升": 5,
+    "下降": 3,
+    "不变": 18,
+    "不确定": 4
+   },
+   "social_act": {
+    "不确定": 2,
+    "中性": 7,
+    "合作": 9,
+    "威胁": 2,
+    "求助": 7,
+    "示好": 3
+   },
+   "trust_shift": {
+    "上升": 5,
+    "下降": 4,
+    "不变": 11,
+    "不确定": 10
+   }
+  }
+ },
+ "history_semantics": {
+  "combined_order": "history (older block) then extra_history (more recent block); front = oldest",
+  "deletion": "inputs.assemble_with_budget pops from the FRONT (oldest); boundary only marked outside_window after history is exhausted; undeletable core overflow is refused"
+ },
+ "old_corpus_integrity": {
+  "files": [
+   "long-dev24.jsonl",
+   "long-dev24-v2.jsonl",
+   "scenarios-final-blind.jsonl"
+  ],
+  "note": "old 125, exposed final 62 and long-dev v1/v2 stay untouched; none of them serve as new corpus",
+  "sha256": {
+   "long-dev24-v2.jsonl": "529be9ee02c7383fa043c14c7ddb0d3c19bd7f26d7f8943138dbe35f9513069d",
+   "long-dev24.jsonl": "d96c67ee8490a416eda3f5f7d5eee31b3655142876d5e3072ffa4c59d8ea4c8b",
+   "scenarios-final-blind.jsonl": "bafb177afb19d47e30fae06a09d35087b5b4d206e627a14d201823bcbd11b662"
+  }
+ },
+ "plan_consistency": {
+  "note": "primary and long plan the same 30 ids x 5 signals; inputs.build_body (primary) renders only the base history field while long renders history+extra_history under the state budget — existing consumer behaviour, unchanged by this batch; same id does NOT mean identical primary/long gold semantics for truncated items",
+  "planned_ids": [
+   "E1-C400-001",
+   "E1-C400-002",
+   "E1-C400-003",
+   "E1-C400-004",
+   "E1-C400-005",
+   "E1-C400-006",
+   "E1-C400-007",
+   "E1-C400-008",
+   "E1-C400-009",
+   "E1-C400-010",
+   "E1-C400-011",
+   "E1-C400-012",
+   "E1-C400-013",
+   "E1-C400-014",
+   "E1-C400-015",
+   "E1-C400-016",
+   "E1-C400-017",
+   "E1-C400-018",
+   "E1-C400-019",
+   "E1-C400-020",
+   "E1-C400-021",
+   "E1-C400-022",
+   "E1-C400-023",
+   "E1-C400-024",
+   "E1-C400-025",
+   "E1-C400-026",
+   "E1-C400-027",
+   "E1-C400-028",
+   "E1-C400-029",
+   "E1-C400-030"
+  ],
+  "signals": [
+   "social_act",
+   "trust_shift",
+   "fear_shift",
+   "deception",
+   "boundary_violation"
+  ]
+ },
+ "plan_id": "corpus400-dev30-v1",
+ "schema": "e1-corpus400-dev30-manifest-v1",
+ "spec": {
+  "file": "LABEL_SPEC.md",
+  "note": "current spec; matches the hash registered in the task book and long-dev24-v2 acceptance",
+  "sha256": "bb7058b4df6b1eae14564b241ff07c9105df3ee93385992af58e8d7a01a05268"
+ },
+ "token_records": [
+  {
+   "category": "cat0_within_budget",
+   "family": "M01",
+   "long_tokens_after": 676,
+   "long_tokens_before": 676,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "灶房火道三步之内不近人",
+      "把三车柴拉到灶房外的空场"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "三车斤两与讲定的一样"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "把柴码进棚里"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "柴照订数送到",
+      "钱也两讫了"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "讲定今晨送到",
+      "三车斤两与讲定的一样",
+      "当面数清放在秤旁"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 598,
+   "removed_lines": [],
+   "sid": "E1-C400-001"
+  },
+  {
+   "category": "short",
+   "family": "M01",
+   "long_tokens_after": 209,
+   "long_tokens_before": 209,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "灶房火道三步之内不近人",
+      "又到灶前"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "家里盐罐见底了"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "又到灶前"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "再赊两斤盐吧"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "讲定半个月内用柴抵清",
+      "一个多月了，柴没见着",
+      "棚里还是空的"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 177,
+   "removed_lines": [],
+   "sid": "E1-C400-002"
+  },
+  {
+   "category": "short",
+   "family": "M01",
+   "long_tokens_after": 190,
+   "long_tokens_before": 190,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "灶房火道三步之内不近人",
+      "我进去两刻钟就给你装好"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "一灶省三成柴"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "往灶房里迈了半步",
+      "我进去两刻钟就给你装好"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "一灶省三成柴",
+      "我进去两刻钟就给你装好"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "我进去两刻钟就给你装好"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 154,
+   "removed_lines": [],
+   "sid": "E1-C400-003"
+  },
+  {
+   "category": "cat1_irrelevant_only_trimmed",
+   "family": "M02",
+   "long_tokens_after": 761,
+   "long_tokens_before": 782,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "蒸酒的时辰生人不进坊",
+      "今早玩家到坊里"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "照吊板核了数目",
+      "一笔不差"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "灌了一小壶浆水"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "曲钱如数奉还"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "讲定正月十五前还曲钱六十文",
+      "今日已是正月十二",
+      "当面点给阿糯"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 729,
+   "removed_lines": [
+    {
+     "line": "大前年阿糯的亡父在时，坊里一年只蒸八甑。",
+     "reason": "oldest_history_over_budget"
+    }
+   ],
+   "sid": "E1-C400-004"
+  },
+  {
+   "category": "short",
+   "family": "M02",
+   "long_tokens_after": 184,
+   "long_tokens_before": 184,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "酒头酒尾是奉官的，一滴不卖",
+      "笑了笑没再缠"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "都传说酒头最香"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "在坊前站定"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "新酒怎么卖"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "问起新酒的价"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 149,
+   "removed_lines": [],
+   "sid": "E1-C400-005"
+  },
+  {
+   "category": "short",
+   "family": "M02",
+   "long_tokens_after": 171,
+   "long_tokens_before": 171,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "在坊门槛上",
+      "把铜哨往里推了推"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "字条上的字阿糯不认得"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "字条上的字阿糯不认得"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "搁下一只铜哨",
+      "一言不发地走了"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "搁下一只铜哨"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 136,
+   "removed_lines": [],
+   "sid": "E1-C400-006"
+  },
+  {
+   "category": "cat0_within_budget",
+   "family": "M03",
+   "long_tokens_after": 598,
+   "long_tokens_before": 598,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "白事不糊红灯笼",
+      "两对喜灯"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "尾款一百文",
+      "当面点清"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "挂在梁下等取"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "尾款你点收"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "讲定今晨来取付尾款",
+      "当面点清"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 548,
+   "removed_lines": [],
+   "sid": "E1-C400-007"
+  },
+  {
+   "category": "short",
+   "family": "M03",
+   "long_tokens_after": 176,
+   "long_tokens_before": 176,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "白事不糊红灯笼",
+      "白事用的白灯笼"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "我家里还有长辈"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "压低声音"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "订一盏白事用的白灯笼",
+      "付了定钱二十文"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "付了定钱二十文"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 134,
+   "removed_lines": [],
+   "sid": "E1-C400-008"
+  },
+  {
+   "category": "short",
+   "family": "M03",
+   "long_tokens_after": 167,
+   "long_tokens_before": 167,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "赶工不过三更，三更一过就熄灯",
+      "赶一盏急灯"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "有一盏灯明日一早要用"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "三更的梆子刚敲过",
+      "铺门被叩响"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "赶一盏急灯",
+      "我出三倍工钱"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "我出三倍工钱",
+      "天亮前我拿走"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 131,
+   "removed_lines": [],
+   "sid": "E1-C400-009"
+  },
+  {
+   "category": "short",
+   "family": "M04",
+   "long_tokens_after": 202,
+   "long_tokens_before": 202,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "不与活人量寿材",
+      "给我爹量一口"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "家里老人病重"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "他在县衙当班",
+      "话里带着硬气"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "我让我舅爷来跟您叙叙",
+      "他在县衙当班"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "价钱您开"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 148,
+   "removed_lines": [],
+   "sid": "E1-C400-010"
+  },
+  {
+   "category": "short",
+   "family": "M04",
+   "long_tokens_after": 171,
+   "long_tokens_before": 171,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "铺里的墨斗尺不外借",
+      "把您那把尺借我用半天"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "我家打张桌子"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "把尺往怀里收了收"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "借我用半天"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "晚晌就还您"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 137,
+   "removed_lines": [],
+   "sid": "E1-C400-011"
+  },
+  {
+   "category": "short",
+   "family": "M04",
+   "long_tokens_after": 168,
+   "long_tokens_before": 168,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "不与活人量寿材",
+      "老仆上月底过身"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "讲定今日付定钱五十文",
+      "付定钱五十文"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "开了收票"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "定钱五十文你点点"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "讲定今日付定钱五十文",
+      "付定钱五十文"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 138,
+   "removed_lines": [],
+   "sid": "E1-C400-012"
+  },
+  {
+   "category": "cat2_decisive_evidence_lost",
+   "family": "M05",
+   "long_tokens_after": 762,
+   "long_tokens_before": 816,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "晒场的布不许生人近前翻动",
+      "罗大娘把20匹布逐匹搭上竹架晾着"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "布我送来了，就这些，你点点",
+      "罗大娘刚刚当面逐一验收靛蓝土布"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "罗大娘把20匹布逐匹搭上竹架晾着"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "这次到场点收时全部交清",
+      "布我送来了，就这些，你点点"
+     ],
+     "lost_decisive_evidence": [
+      "这次到场点收时全部交清"
+     ],
+     "refused": null,
+     "requires_relabel": true
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "双方此前当面立下这份待结供货约：玩家承诺本次交靛蓝土布24匹，这次到场点收时全部交清，罗大娘把原约压在晒场的石磙下。",
+      "实际交到手的合计20匹"
+     ],
+     "lost_decisive_evidence": [
+      "双方此前当面立下这份待结供货约：玩家承诺本次交靛蓝土布24匹，这次到场点收时全部交清，罗大娘把原约压在晒场的石磙下。"
+     ],
+     "refused": null,
+     "requires_relabel": true
+    }
+   },
+   "primary_tokens": 758,
+   "removed_lines": [
+    {
+     "line": "双方此前当面立下这份待结供货约：玩家承诺本次交靛蓝土布24匹，这次到场点收时全部交清，罗大娘把原约压在晒场的石磙下。",
+     "reason": "oldest_history_over_budget"
+    }
+   ],
+   "sid": "E1-C400-013"
+  },
+  {
+   "category": "short",
+   "family": "M05",
+   "long_tokens_after": 266,
+   "long_tokens_before": 266,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "花样本子不外借",
+      "借我拿回去描两天"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "描完原样送回，一页不缺"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "在竹架外站了半晌",
+      "花色看得比命重"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "借我拿回去描两天"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "描完原样送回"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 207,
+   "removed_lines": [],
+   "sid": "E1-C400-014"
+  },
+  {
+   "category": "short",
+   "family": "M05",
+   "long_tokens_after": 254,
+   "long_tokens_before": 254,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "晒场的布不许生人近前翻动",
+      "站在订板跟前开口讨布"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "前日讲好给我留三丈靛蓝",
+      "没写旁人名字"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "罗大娘的手还搭在订板边上"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "你给我称了吧"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "前日讲好给我留三丈靛蓝",
+      "前日订板上新添的订家只有东街布行一家"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 196,
+   "removed_lines": [],
+   "sid": "E1-C400-015"
+  },
+  {
+   "category": "cat0_within_budget",
+   "family": "M06",
+   "long_tokens_after": 713,
+   "long_tokens_before": 713,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "夜里不开栈门",
+      "今晨日头刚上来"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "一件不差",
+      "货目与第二节架上的存货一一相符"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "今晨日头刚上来，玩家到栈门口",
+      "先把背上的猎弓卸下来挂在拴马桩上"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "货我点过了，一件不差",
+      "力钱三十文，玩家当面数清"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "今晨提货，付力钱三十文",
+      "力钱三十文，玩家当面数清"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 648,
+   "removed_lines": [],
+   "sid": "E1-C400-016"
+  },
+  {
+   "category": "short",
+   "family": "M06",
+   "long_tokens_after": 274,
+   "long_tokens_before": 274,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "夜里不开栈门",
+      "没有动门闩"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "夜里赶岔了道"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "今夜二更，栈外传来轻叩栈门的声音",
+      "叩得很轻，两下便停"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "北去的官道该走哪边",
+      "这壶酒您暖暖手",
+      "递进来一小壶热酒"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "跟您问一声",
+      "这壶酒您暖暖手"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 201,
+   "removed_lines": [],
+   "sid": "E1-C400-017"
+  },
+  {
+   "category": "short",
+   "family": "M06",
+   "long_tokens_after": 261,
+   "long_tokens_before": 261,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "有人翻墙落进了栈院",
+      "夜里不开栈门"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "我拿的是我自己的货",
+      "看不出是栈里存的哪一号货"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "有人翻墙落进了栈院",
+      "聋伯提灯出来"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "按票聋伯赔了失主",
+      "正撞见玩家把一担货往墙外递",
+      "聋伯别喊"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "正撞见玩家把一担货往墙外递",
+      "按票聋伯赔了失主"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 191,
+   "removed_lines": [],
+   "sid": "E1-C400-018"
+  },
+  {
+   "category": "cat3_core_over_budget_refused",
+   "family": "M07",
+   "long_tokens_after": 875,
+   "long_tokens_before": 874,
+   "minimum_possible_tokens": 875,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "弹好的棉胎不给生人存",
+      "二是我这两床旧的先寄在您铺里"
+     ],
+     "lost_decisive_evidence": [
+      "弹好的棉胎不给生人存"
+     ],
+     "refused": "core_over_budget",
+     "requires_relabel": true
+    },
+    "deception": {
+     "decisive_refs": [
+      "铺盖钱只凑出一半",
+      "里头絮套没换过"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": "core_over_budget",
+     "requires_relabel": true
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "您行行好，这两床胎的寄存，今日就应了我吧"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": "core_over_budget",
+     "requires_relabel": true
+    },
+    "social_act": {
+     "decisive_refs": [
+      "我求您两件事",
+      "您行行好"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": "core_over_budget",
+     "requires_relabel": true
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "剩下两床等入了冬我补钱再弹",
+      "我回头一定看住他"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": "core_over_budget",
+     "requires_relabel": true
+    }
+   },
+   "primary_tokens": 874,
+   "removed_lines": [
+    {
+     "line": "已知边界: 弹好的棉胎不给生人存；弓弦不借人拉。",
+     "reason": "boundary_outside_window"
+    }
+   ],
+   "sid": "E1-C400-019"
+  },
+  {
+   "category": "short",
+   "family": "M07",
+   "long_tokens_after": 218,
+   "long_tokens_before": 218,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "弹好的棉胎不给生人存",
+      "今早玩家又来取新弹的棉胎"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "上回那床也弹得足斤两",
+      "成胎过秤，短了半斤",
+      "把短半斤、让二十文一笔一笔记上账牌"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "翁师傅把新胎用布裹好递过去"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "今早玩家又来取新弹的棉胎",
+      "过秤足数"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "过秤足数",
+      "让了二十文工钱"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 164,
+   "removed_lines": [],
+   "sid": "E1-C400-020"
+  },
+  {
+   "category": "short",
+   "family": "M07",
+   "long_tokens_after": 188,
+   "long_tokens_before": 188,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "弓弦不借人拉",
+      "让我拉两下您的弦"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "弄坏了我赔"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "一只手已经伸向那张弓",
+      "上个月有个后生想上手试弦"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "让我拉两下您的弦"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "弄坏了我赔"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 145,
+   "removed_lines": [],
+   "sid": "E1-C400-021"
+  },
+  {
+   "category": "short",
+   "family": "M08",
+   "long_tokens_after": 166,
+   "long_tokens_before": 166,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "散场后不接私活",
+      "底本不出茶棚",
+      "搁下三文听资"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "先生这书比县衙的告示还长",
+      "常来茶棚听书",
+      "瞎先生听声便知是熟客"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "插了一句玩笑"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "先生这书比县衙的告示还长"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "搁下三文听资"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 122,
+   "removed_lines": [],
+   "sid": "E1-C400-022"
+  },
+  {
+   "category": "short",
+   "family": "M08",
+   "long_tokens_after": 178,
+   "long_tokens_before": 178,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "散场后不接私活",
+      "底本不出茶棚",
+      "书场歇茶的空当"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "在家天天拿着笤帚当醒木学说书"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "走到瞎先生桌前"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "拜在您门下学评书",
+      "求瞎先生收自家儿子学评书"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "拜在您门下",
+      "束脩您开口"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 140,
+   "removed_lines": [],
+   "sid": "E1-C400-023"
+  },
+  {
+   "category": "short",
+   "family": "M08",
+   "long_tokens_after": 198,
+   "long_tokens_before": 198,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "底本不出茶棚",
+      "不是底本",
+      "今日晌午"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "八十文过两日一定送上",
+      "过两日再给"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "说要把册子先拿走"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "抄本我先拿走",
+      "过两日再给"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "昨日来取册子并付抄费八十文",
+      "等到收棚也没见人",
+      "今日晌午",
+      "过两日再给"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 159,
+   "removed_lines": [],
+   "sid": "E1-C400-024"
+  },
+  {
+   "category": "cat1_irrelevant_only_trimmed",
+   "family": "M09",
+   "long_tokens_after": 756,
+   "long_tokens_before": 949,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "生人不许碰织机",
+      "今晨玩家到坊门口",
+      "布下了机"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "两丈布钱九十文一并付清",
+      "付布钱九十文",
+      "九十文一分不少"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "把布包好"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "布我取了，钱你点点"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "讲定今晨来取",
+      "两丈布钱九十文一并付清",
+      "付布钱九十文"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 891,
+   "removed_lines": [
+    {
+     "line": "大前年细妹的娘过身，这台织机留给了细妹。",
+     "reason": "oldest_history_over_budget"
+    },
+    {
+     "line": "大前年开春坊里把一房旧布翻晒了一遍，霉点刚冒头就治住了。",
+     "reason": "oldest_history_over_budget"
+    },
+    {
+     "line": "大前年夏天河水浅得见底，浆纱的水是细妹天不亮一担担挑的。",
+     "reason": "oldest_history_over_budget"
+    },
+    {
+     "line": "大前年冬细妹头一回独自开机，布织得偏了些。",
+     "reason": "oldest_history_over_budget"
+    },
+    {
+     "line": "大前年腊月坊里赶过一批年下用的粗布桌围，腊八一早就交了活。",
+     "reason": "oldest_history_over_budget"
+    },
+    {
+     "line": "前年春天坊里给织机换过一回综片，照娘的老样式。",
+     "reason": "oldest_history_over_budget"
+    },
+    {
+     "line": "前年三月坊里的桑木梭磨秃了尖，寻镇上的木匠换过一回新的。",
+     "reason": "oldest_history_over_budget"
+    },
+    {
+     "line": "前年夏天县里庙会订过一回幡布，赶了十来天工。",
+     "reason": "oldest_history_over_budget"
+    }
+   ],
+   "sid": "E1-C400-025"
+  },
+  {
+   "category": "short",
+   "family": "M09",
+   "long_tokens_after": 176,
+   "long_tokens_before": 176,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "搁下一幅旧织花样子和一张字条",
+      "拿起样子看了看"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "这花样子的织法我娘就会"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "搁下一幅旧织花样子和一张字条"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "照着给我织两尺",
+      "工钱照付"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "改日来取，工钱照付"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 133,
+   "removed_lines": [],
+   "sid": "E1-C400-026"
+  },
+  {
+   "category": "short",
+   "family": "M09",
+   "long_tokens_after": 208,
+   "long_tokens_before": 208,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "机上布不预售",
+      "求买机上织到一半的布",
+      "把这机上布匀给我"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "家里真等着用"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "把背上的柴刀解下来",
+      "搁在门外石阶上",
+      "退到门槛外",
+      "刀我搁门外了"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "出加两成的价",
+      "就求你把这机上布匀给我"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "出加两成的价"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 139,
+   "removed_lines": [],
+   "sid": "E1-C400-027"
+  },
+  {
+   "category": "short",
+   "family": "M10",
+   "long_tokens_after": 198,
+   "long_tokens_before": 198,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "白事孝子不动刀",
+      "天黑不剃头",
+      "今日晌午"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "先头说的光头您别当准",
+      "赶明儿要见个长辈"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "打好一盆热水"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "还是给我修短些"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "坐上剃头凳"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 134,
+   "removed_lines": [],
+   "sid": "E1-C400-028"
+  },
+  {
+   "category": "short",
+   "family": "M10",
+   "long_tokens_after": 174,
+   "long_tokens_before": 174,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "天黑不剃头",
+      "天擦黑时玩家走到挑子前",
+      "天还没黑透呢"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "明早我出远门"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "走到挑子前"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "劳驾给我剃个头",
+      "开口就求剃个头"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "今夜非剃不可"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 136,
+   "removed_lines": [],
+   "sid": "E1-C400-029"
+  },
+  {
+   "category": "short",
+   "family": "M10",
+   "long_tokens_after": 169,
+   "long_tokens_before": 169,
+   "minimum_possible_tokens": null,
+   "per_signal": {
+    "boundary_violation": {
+     "decisive_refs": [
+      "白事孝子不动刀",
+      "帽檐上缀的麻看得分明",
+      "给我剃个头讨个利索"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "deception": {
+     "decisive_refs": [
+      "一身孝服近前",
+      "帽檐上缀的麻看得分明",
+      "我爹身子硬朗着呢"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "fear_shift": {
+     "decisive_refs": [
+      "照旧在十字街口摆挑"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "social_act": {
+     "decisive_refs": [
+      "给我剃个头讨个利索"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    },
+    "trust_shift": {
+     "decisive_refs": [
+      "在凳上坐下"
+     ],
+     "lost_decisive_evidence": [],
+     "refused": null,
+     "requires_relabel": false
+    }
+   },
+   "primary_tokens": 130,
+   "removed_lines": [],
+   "sid": "E1-C400-030"
+  }
+ ],
+ "tokenizer": {
+  "model": "A",
+  "note": "offline checkpoint tokenizer; real token counts, no character estimates",
+  "path": "runtime/A/tokenizer",
+  "sha256_tokenizer_json": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f"
+ }
+}

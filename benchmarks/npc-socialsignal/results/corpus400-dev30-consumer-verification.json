@@ -1,0 +1,165 @@
+{
+ "budget": {
+  "state_budget": 768
+ },
+ "category_outcomes": {
+  "E1-C400-001": {
+   "category": "cat0_within_budget",
+   "outcome_matches_design": true
+  },
+  "E1-C400-004": {
+   "category": "cat1_irrelevant_only_trimmed",
+   "outcome_matches_design": true
+  },
+  "E1-C400-007": {
+   "category": "cat0_within_budget",
+   "outcome_matches_design": true
+  },
+  "E1-C400-013": {
+   "category": "cat2_decisive_evidence_lost",
+   "outcome_matches_design": true
+  },
+  "E1-C400-016": {
+   "category": "cat0_within_budget",
+   "outcome_matches_design": true
+  },
+  "E1-C400-019": {
+   "category": "cat3_core_over_budget_refused",
+   "outcome_matches_design": true
+  },
+  "E1-C400-025": {
+   "category": "cat1_irrelevant_only_trimmed",
+   "outcome_matches_design": true
+  }
+ },
+ "coverage": {
+  "actual_authored": {
+   "boundary_violation": {
+    "信息不足": 2,
+    "已越过": 10,
+    "未越过": 18
+   },
+   "deception": {
+    "信息不足": 18,
+    "无线索": 9,
+    "有线索": 3
+   },
+   "fear_shift": {
+    "上升": 6,
+    "下降": 2,
+    "不变": 20,
+    "不确定": 2
+   },
+   "social_act": {
+    "不确定": 1,
+    "中性": 5,
+    "合作": 12,
+    "威胁": 2,
+    "求助": 8,
+    "示好": 2
+   },
+   "trust_shift": {
+    "上升": 5,
+    "下降": 4,
+    "不变": 13,
+    "不确定": 8
+   }
+  },
+  "families": 10,
+  "items": 30,
+  "planned": {
+   "boundary_violation": {
+    "信息不足": 4,
+    "已越过": 8,
+    "未越过": 18
+   },
+   "contrast_cases": [
+    "request-crosses-boundary (R-8.4) vs accomplished crossing",
+    "observable deadline passed (下降) vs ambiguous deadline (信息不足) vs future promise (不确定)",
+    "collision-capable claim (有线索) vs matching comparable fact (无线索) vs unverifiable (信息不足)",
+    "secrecy request is not a violation (R-8.6)",
+    "never-declared boundary maps to 信息不足",
+    "irony is not a deception clue",
+    "direction-asking grade one: information question (R-8.7)",
+    "visible danger withdrawal (fear 下降)",
+    "current fulfillment only, old fulfillments never re-counted (R-8.5)"
+   ],
+   "deception": {
+    "信息不足": 22,
+    "无线索": 5,
+    "有线索": 3
+   },
+   "fear_shift": {
+    "上升": 5,
+    "下降": 3,
+    "不变": 18,
+    "不确定": 4
+   },
+   "social_act": {
+    "不确定": 2,
+    "中性": 7,
+    "合作": 9,
+    "威胁": 2,
+    "求助": 7,
+    "示好": 3
+   },
+   "trust_shift": {
+    "上升": 5,
+    "下降": 4,
+    "不变": 11,
+    "不确定": 10
+   }
+  }
+ },
+ "four_paths": {
+  "path1_within_budget_keeps_full_text": {
+   "body_produced": true,
+   "removed": 0,
+   "requires_relabel": false,
+   "sid": "E1-C400-016",
+   "tokens_after": 713,
+   "tokens_before": 713
+  },
+  "path2_irrelevant_history_trimmed_without_evidence_loss": {
+   "lost_decisive_evidence": [],
+   "removed": 8,
+   "requires_relabel": false,
+   "sid": "E1-C400-025",
+   "tokens_after": 756,
+   "tokens_before": 949
+  },
+  "path3_evidence_loss_blocks_formal_scoring": {
+   "lost_decisive_evidence": [
+    "双方此前当面立下这份待结供货约：玩家承诺本次交靛蓝土布24匹，这次到场点收时全部交清，罗大娘把原约压在晒场的石磙下。"
+   ],
+   "requires_relabel": true,
+   "scorer_result": {
+    "accuracy_over_planned": 0.5,
+    "excluded_value": "__EXCLUDED_RELABEL__",
+    "n_excluded_requires_relabel": 1,
+    "planned_items": 2
+   },
+   "sid": "E1-C400-013",
+   "tokens_after": 762,
+   "tokens_before": 816
+  },
+  "path4_core_over_budget_refused": {
+   "body_is_none": true,
+   "minimum_possible_tokens": 875,
+   "refused": "core_over_budget",
+   "sid": "E1-C400-019"
+  }
+ },
+ "plan_id": "corpus400-dev30-v1",
+ "schema": "e1-corpus400-dev30-consumer-verification-v1",
+ "tokenizer": {
+  "model": "A",
+  "path": "D:/ModelBench/laya\\runtime\\A\\tokenizer"
+ },
+ "unexecuted": {
+  "calibration_final": "no calibration/final generation, no freeze gate",
+  "consumer_entry": "no corpus400 runner/scorer/stability entry exists yet; not claimed or built here",
+  "independent_review": "two independent non-author reviews + non-author adjudication are arranged by control; not started in this delivery",
+  "model_inference": "none; token counting only, per the task book"
+ }
+}
