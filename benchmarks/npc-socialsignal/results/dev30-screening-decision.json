@@ -1,0 +1,812 @@
+{
+ "lock_sha256": "d234e2e2b5298d953a79c3fec05c830f587a608c7706efbb56eafee53ebea6f1",
+ "models": {
+  "A": {
+   "gate_passing_signals": [],
+   "rotated": null,
+   "signals": {
+    "boundary_violation": {
+     "accuracy_on_valid": 0.5,
+     "baseline_constant_class": "未越过",
+     "baseline_support": 17,
+     "confidence_raw": {
+      "max": 0.8728,
+      "mean": 0.6002,
+      "min": 0.4117,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "信息不足": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "信息不足": 0,
+       "已越过": 1,
+       "未越过": 1
+      },
+      "已越过": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "信息不足": 0,
+       "已越过": 3,
+       "未越过": 5
+      },
+      "未越过": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 3,
+       "信息不足": 0,
+       "已越过": 3,
+       "未越过": 11
+      }
+     },
+     "correct_on_valid": 14,
+     "dangerous": {
+      "false_negative": [
+       "E1-C400-010",
+       "E1-C400-011",
+       "E1-C400-014",
+       "E1-C400-027",
+       "E1-C400-030"
+      ],
+      "false_positive": [
+       "E1-C400-002",
+       "E1-C400-020",
+       "E1-C400-023",
+       "E1-C400-026"
+      ]
+     },
+     "delta_vs_baseline": -3,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.0,
+     "unknown_as_definite": [
+      "E1-C400-026",
+      "E1-C400-029"
+     ],
+     "unknown_class": "信息不足",
+     "unknown_support": 3,
+     "unresolved": 2,
+     "valid_reference": 28
+    },
+    "deception": {
+     "accuracy_on_valid": 0.1724,
+     "baseline_constant_class": "信息不足",
+     "baseline_support": 20,
+     "confidence_raw": {
+      "max": 0.8766,
+      "mean": 0.6925,
+      "min": 0.437,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "信息不足": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "信息不足": 0,
+       "无线索": 19,
+       "有线索": 0
+      },
+      "无线索": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 3,
+       "信息不足": 0,
+       "无线索": 5,
+       "有线索": 0
+      },
+      "有线索": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "信息不足": 0,
+       "无线索": 1,
+       "有线索": 0
+      }
+     },
+     "correct_on_valid": 5,
+     "dangerous": {
+      "false_negative": [
+       "E1-C400-020"
+      ],
+      "false_positive": []
+     },
+     "delta_vs_baseline": -15,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.0,
+     "unknown_as_definite": [
+      "E1-C400-002",
+      "E1-C400-003",
+      "E1-C400-005",
+      "E1-C400-006",
+      "E1-C400-009",
+      "E1-C400-010",
+      "E1-C400-011",
+      "E1-C400-014",
+      "E1-C400-015",
+      "E1-C400-017",
+      "E1-C400-018",
+      "E1-C400-021",
+      "E1-C400-023",
+      "E1-C400-024",
+      "E1-C400-026",
+      "E1-C400-027",
+      "E1-C400-028",
+      "E1-C400-029",
+      "E1-C400-030"
+     ],
+     "unknown_class": "信息不足",
+     "unknown_support": 20,
+     "unresolved": 1,
+     "valid_reference": 29
+    },
+    "fear_shift": {
+     "accuracy_on_valid": 0.4231,
+     "baseline_constant_class": "不变",
+     "baseline_support": 17,
+     "confidence_raw": {
+      "max": 0.7753,
+      "mean": 0.5416,
+      "min": 0.4099,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "上升": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "上升": 0,
+       "下降": 1,
+       "不变": 5,
+       "不确定": 0
+      },
+      "下降": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "上升": 0,
+       "下降": 0,
+       "不变": 1,
+       "不确定": 0
+      },
+      "不变": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 3,
+       "上升": 0,
+       "下降": 2,
+       "不变": 11,
+       "不确定": 1
+      },
+      "不确定": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "上升": 0,
+       "下降": 0,
+       "不变": 1,
+       "不确定": 0
+      }
+     },
+     "correct_on_valid": 11,
+     "dangerous": {},
+     "delta_vs_baseline": -6,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.0,
+     "unknown_as_definite": [
+      "E1-C400-006"
+     ],
+     "unknown_class": "不确定",
+     "unknown_support": 1,
+     "unresolved": 4,
+     "valid_reference": 26
+    },
+    "social_act": {
+     "accuracy_on_valid": 0.1538,
+     "baseline_constant_class": "合作",
+     "baseline_support": 11,
+     "confidence_raw": {
+      "max": 0.6677,
+      "mean": 0.4362,
+      "min": 0.2585,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "不确定": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 0,
+       "中性": 1,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 0,
+       "示好": 0
+      },
+      "中性": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 0,
+       "中性": 3,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 0,
+       "示好": 0
+      },
+      "合作": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 3,
+       "不确定": 1,
+       "中性": 5,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 1,
+       "示好": 1
+      },
+      "威胁": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 1,
+       "中性": 0,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 0,
+       "示好": 0
+      },
+      "求助": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 1,
+       "中性": 6,
+       "合作": 0,
+       "威胁": 1,
+       "求助": 1,
+       "示好": 1
+      },
+      "示好": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 0,
+       "中性": 0,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 0,
+       "示好": 0
+      }
+     },
+     "correct_on_valid": 4,
+     "dangerous": {},
+     "delta_vs_baseline": -7,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.0,
+     "unknown_as_definite": [
+      "E1-C400-006"
+     ],
+     "unknown_class": "不确定",
+     "unknown_support": 1,
+     "unresolved": 4,
+     "valid_reference": 26
+    },
+    "trust_shift": {
+     "accuracy_on_valid": 0.0741,
+     "baseline_constant_class": "不确定",
+     "baseline_support": 9,
+     "confidence_raw": {
+      "max": 0.8436,
+      "mean": 0.566,
+      "min": 0.3333,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "上升": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 2,
+       "上升": 0,
+       "下降": 0,
+       "不变": 5,
+       "不确定": 0
+      },
+      "下降": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "上升": 0,
+       "下降": 0,
+       "不变": 4,
+       "不确定": 0
+      },
+      "不变": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "上升": 0,
+       "下降": 4,
+       "不变": 2,
+       "不确定": 0
+      },
+      "不确定": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "上升": 0,
+       "下降": 4,
+       "不变": 4,
+       "不确定": 0
+      }
+     },
+     "correct_on_valid": 2,
+     "dangerous": {},
+     "delta_vs_baseline": -7,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.0,
+     "unknown_as_definite": [
+      "E1-C400-003",
+      "E1-C400-009",
+      "E1-C400-011",
+      "E1-C400-014",
+      "E1-C400-015",
+      "E1-C400-021",
+      "E1-C400-023",
+      "E1-C400-026"
+     ],
+     "unknown_class": "不确定",
+     "unknown_support": 9,
+     "unresolved": 3,
+     "valid_reference": 27
+    }
+   }
+  },
+  "B": {
+   "gate_passing_signals": [],
+   "rotated": null,
+   "signals": {
+    "boundary_violation": {
+     "accuracy_on_valid": 0.3571,
+     "baseline_constant_class": "未越过",
+     "baseline_support": 17,
+     "confidence_raw": {
+      "max": 0.6893,
+      "mean": 0.523,
+      "min": 0.3632,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "信息不足": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "信息不足": 0,
+       "已越过": 1,
+       "未越过": 1
+      },
+      "已越过": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "信息不足": 0,
+       "已越过": 6,
+       "未越过": 2
+      },
+      "未越过": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 3,
+       "信息不足": 0,
+       "已越过": 10,
+       "未越过": 4
+      }
+     },
+     "correct_on_valid": 10,
+     "dangerous": {
+      "false_negative": [
+       "E1-C400-014",
+       "E1-C400-030"
+      ],
+      "false_positive": [
+       "E1-C400-002",
+       "E1-C400-006",
+       "E1-C400-015",
+       "E1-C400-016",
+       "E1-C400-017",
+       "E1-C400-020",
+       "E1-C400-022",
+       "E1-C400-023",
+       "E1-C400-024",
+       "E1-C400-026",
+       "E1-C400-028"
+      ]
+     },
+     "delta_vs_baseline": -7,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.0,
+     "unknown_as_definite": [
+      "E1-C400-026",
+      "E1-C400-029"
+     ],
+     "unknown_class": "信息不足",
+     "unknown_support": 3,
+     "unresolved": 2,
+     "valid_reference": 28
+    },
+    "deception": {
+     "accuracy_on_valid": 0.1034,
+     "baseline_constant_class": "信息不足",
+     "baseline_support": 20,
+     "confidence_raw": {
+      "max": 0.6182,
+      "mean": 0.4154,
+      "min": 0.3489,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "信息不足": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "信息不足": 1,
+       "无线索": 8,
+       "有线索": 10
+      },
+      "无线索": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 3,
+       "信息不足": 0,
+       "无线索": 2,
+       "有线索": 3
+      },
+      "有线索": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "信息不足": 0,
+       "无线索": 1,
+       "有线索": 0
+      }
+     },
+     "correct_on_valid": 3,
+     "dangerous": {
+      "false_negative": [
+       "E1-C400-020"
+      ],
+      "false_positive": [
+       "E1-C400-001",
+       "E1-C400-002",
+       "E1-C400-005",
+       "E1-C400-006",
+       "E1-C400-010",
+       "E1-C400-011",
+       "E1-C400-016",
+       "E1-C400-017",
+       "E1-C400-018",
+       "E1-C400-021",
+       "E1-C400-022",
+       "E1-C400-027",
+       "E1-C400-029"
+      ]
+     },
+     "delta_vs_baseline": -17,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.05,
+     "unknown_as_definite": [
+      "E1-C400-002",
+      "E1-C400-003",
+      "E1-C400-005",
+      "E1-C400-006",
+      "E1-C400-009",
+      "E1-C400-010",
+      "E1-C400-011",
+      "E1-C400-014",
+      "E1-C400-015",
+      "E1-C400-017",
+      "E1-C400-018",
+      "E1-C400-021",
+      "E1-C400-023",
+      "E1-C400-024",
+      "E1-C400-027",
+      "E1-C400-028",
+      "E1-C400-029",
+      "E1-C400-030"
+     ],
+     "unknown_class": "信息不足",
+     "unknown_support": 20,
+     "unresolved": 1,
+     "valid_reference": 29
+    },
+    "fear_shift": {
+     "accuracy_on_valid": 0.2692,
+     "baseline_constant_class": "不变",
+     "baseline_support": 17,
+     "confidence_raw": {
+      "max": 0.4726,
+      "mean": 0.365,
+      "min": 0.2932,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "上升": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "上升": 2,
+       "下降": 2,
+       "不变": 2,
+       "不确定": 0
+      },
+      "下降": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "上升": 0,
+       "下降": 1,
+       "不变": 0,
+       "不确定": 0
+      },
+      "不变": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 3,
+       "上升": 2,
+       "下降": 5,
+       "不变": 4,
+       "不确定": 3
+      },
+      "不确定": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "上升": 0,
+       "下降": 0,
+       "不变": 1,
+       "不确定": 0
+      }
+     },
+     "correct_on_valid": 7,
+     "dangerous": {},
+     "delta_vs_baseline": -10,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.0,
+     "unknown_as_definite": [
+      "E1-C400-006"
+     ],
+     "unknown_class": "不确定",
+     "unknown_support": 1,
+     "unresolved": 4,
+     "valid_reference": 26
+    },
+    "social_act": {
+     "accuracy_on_valid": 0.1923,
+     "baseline_constant_class": "合作",
+     "baseline_support": 11,
+     "confidence_raw": {
+      "max": 0.465,
+      "mean": 0.3134,
+      "min": 0.2167,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "不确定": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 0,
+       "中性": 1,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 0,
+       "示好": 0
+      },
+      "中性": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 1,
+       "中性": 2,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 0,
+       "示好": 0
+      },
+      "合作": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 3,
+       "不确定": 1,
+       "中性": 4,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 2,
+       "示好": 1
+      },
+      "威胁": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 0,
+       "中性": 1,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 0,
+       "示好": 0
+      },
+      "求助": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 1,
+       "中性": 4,
+       "合作": 0,
+       "威胁": 2,
+       "求助": 3,
+       "示好": 0
+      },
+      "示好": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "不确定": 0,
+       "中性": 0,
+       "合作": 0,
+       "威胁": 0,
+       "求助": 0,
+       "示好": 0
+      }
+     },
+     "correct_on_valid": 5,
+     "dangerous": {},
+     "delta_vs_baseline": -6,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.0,
+     "unknown_as_definite": [
+      "E1-C400-006"
+     ],
+     "unknown_class": "不确定",
+     "unknown_support": 1,
+     "unresolved": 4,
+     "valid_reference": 26
+    },
+    "trust_shift": {
+     "accuracy_on_valid": 0.1481,
+     "baseline_constant_class": "不确定",
+     "baseline_support": 9,
+     "confidence_raw": {
+      "max": 0.4908,
+      "mean": 0.3949,
+      "min": 0.307,
+      "note": "raw confidence is NOT accuracy; no calibration fitted"
+     },
+     "confusion_vs_reference": {
+      "上升": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 2,
+       "上升": 1,
+       "下降": 4,
+       "不变": 0,
+       "不确定": 0
+      },
+      "下降": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "上升": 0,
+       "下降": 3,
+       "不变": 1,
+       "不确定": 0
+      },
+      "不变": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 0,
+       "上升": 0,
+       "下降": 5,
+       "不变": 0,
+       "不确定": 1
+      },
+      "不确定": {
+       "__ILLEGAL__": 0,
+       "__MISSING__": 1,
+       "上升": 2,
+       "下降": 5,
+       "不变": 1,
+       "不确定": 0
+      }
+     },
+     "correct_on_valid": 4,
+     "dangerous": {},
+     "delta_vs_baseline": -5,
+     "failed": [],
+     "gate_note": "delta>=3 AND unknown-gate AND no unexplained worker failures",
+     "gate_pass": false,
+     "planned": 30,
+     "refused_over_budget": [
+      "E1-C400-004",
+      "E1-C400-013",
+      "E1-C400-019",
+      "E1-C400-025"
+     ],
+     "returned": 26,
+     "unknown_accuracy": 0.0,
+     "unknown_as_definite": [
+      "E1-C400-003",
+      "E1-C400-009",
+      "E1-C400-011",
+      "E1-C400-014",
+      "E1-C400-015",
+      "E1-C400-021",
+      "E1-C400-023",
+      "E1-C400-026"
+     ],
+     "unknown_class": "不确定",
+     "unknown_support": 9,
+     "unresolved": 3,
+     "valid_reference": 27
+    }
+   }
+  }
+ },
+ "schema": "e1-dev30-screening-decision-v1",
+ "timing": {
+  "A_cold_start_s": 24.33,
+  "B_cold_start_s": 23.06
+ },
+ "wall_clock_s": 278.1
+}

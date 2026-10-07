@@ -1,0 +1,339 @@
+{
+ "batch_file": {
+  "path": "samples/corpus400-dev30-v1.jsonl",
+  "sha256": "8b66e43f29ca3a75298dcbede786e717885e967f525543159bdfdc3b71954140"
+ },
+ "constant_baselines": {
+  "boundary_violation": {
+   "constant_class": "未越过",
+   "counts": {
+    "信息不足": 3,
+    "已越过": 8,
+    "未越过": 17
+   },
+   "support": 17
+  },
+  "deception": {
+   "constant_class": "信息不足",
+   "counts": {
+    "信息不足": 20,
+    "无线索": 8,
+    "有线索": 1
+   },
+   "support": 20
+  },
+  "fear_shift": {
+   "constant_class": "不变",
+   "counts": {
+    "上升": 7,
+    "下降": 1,
+    "不变": 17,
+    "不确定": 1
+   },
+   "support": 17
+  },
+  "social_act": {
+   "constant_class": "合作",
+   "counts": {
+    "不确定": 1,
+    "中性": 3,
+    "合作": 11,
+    "威胁": 1,
+    "求助": 10
+   },
+   "support": 11
+  },
+  "trust_shift": {
+   "constant_class": "不确定",
+   "counts": {
+    "上升": 7,
+    "下降": 5,
+    "不变": 6,
+    "不确定": 9
+   },
+   "support": 9
+  }
+ },
+ "denominators": {
+  "boundary_violation": {
+   "planned": 30,
+   "unresolved": 2,
+   "valid_reference": 28
+  },
+  "deception": {
+   "planned": 30,
+   "unresolved": 1,
+   "valid_reference": 29
+  },
+  "fear_shift": {
+   "planned": 30,
+   "unresolved": 4,
+   "valid_reference": 26
+  },
+  "social_act": {
+   "planned": 30,
+   "unresolved": 4,
+   "valid_reference": 26
+  },
+  "trust_shift": {
+   "planned": 30,
+   "unresolved": 3,
+   "valid_reference": 27
+  }
+ },
+ "gates": {
+  "beat_constant_baseline_by": 3,
+  "note": "gates registered before the first model call; passing is a screening step only",
+  "unexplained_worker_failures_block": true,
+  "unknown_class": {
+   "min_accuracy": 0.8,
+   "support_threshold": 5
+  }
+ },
+ "models": {
+  "A": {
+   "device": "cpu",
+   "revision_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+   "tokenizer_json_sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f"
+  },
+  "B": {
+   "device": "cpu",
+   "revision_sha256": "194544a0ff0f05e681dc637d397a92f5d46c80da00d1d0c7912502b64187c98f",
+   "tokenizer_json_sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f"
+  }
+ },
+ "planned_ids": [
+  "E1-C400-001",
+  "E1-C400-002",
+  "E1-C400-003",
+  "E1-C400-004",
+  "E1-C400-005",
+  "E1-C400-006",
+  "E1-C400-007",
+  "E1-C400-008",
+  "E1-C400-009",
+  "E1-C400-010",
+  "E1-C400-011",
+  "E1-C400-012",
+  "E1-C400-013",
+  "E1-C400-014",
+  "E1-C400-015",
+  "E1-C400-016",
+  "E1-C400-017",
+  "E1-C400-018",
+  "E1-C400-019",
+  "E1-C400-020",
+  "E1-C400-021",
+  "E1-C400-022",
+  "E1-C400-023",
+  "E1-C400-024",
+  "E1-C400-025",
+  "E1-C400-026",
+  "E1-C400-027",
+  "E1-C400-028",
+  "E1-C400-029",
+  "E1-C400-030"
+ ],
+ "rendering": "full-visible: render_body(persona, boundary, history+extra_history, turn); no truncation; state over 768 tokens is refused and stays in the plan",
+ "run_plan": {
+  "batch_size": 8,
+  "max_items_canonical": 300,
+  "max_items_rotated": 150,
+  "models": [
+   "A",
+   "B"
+  ],
+  "option_order": "canonical",
+  "signals": [
+   "social_act",
+   "trust_shift",
+   "fear_shift",
+   "deception",
+   "boundary_violation"
+  ],
+  "timeout_s": 120.0,
+  "wall_budget_min": 30.0
+ },
+ "schema": "e1-dev30-screening-lock-v1",
+ "sidecar": {
+  "path": "D:/ModelBench/laya/review-return/corpus400-dev30-v1/control-only/adjudication-v1.jsonl",
+  "sha256": "3a6af316008ac7aecdf001b3a7c245200f82509e3d93f4f68066ffdfb4020807"
+ },
+ "spec_sha256": "bb7058b4df6b1eae14564b241ff07c9105df3ee93385992af58e8d7a01a05268",
+ "unresolved": {
+  "boundary_violation": [
+   "E1-C400-018",
+   "E1-C400-005"
+  ],
+  "deception": [
+   "E1-C400-008"
+  ],
+  "fear_shift": [
+   "E1-C400-011",
+   "E1-C400-015",
+   "E1-C400-017",
+   "E1-C400-027"
+  ],
+  "social_act": [
+   "E1-C400-017",
+   "E1-C400-018",
+   "E1-C400-019",
+   "E1-C400-003"
+  ],
+  "trust_shift": [
+   "E1-C400-010",
+   "E1-C400-027",
+   "E1-C400-030"
+  ]
+ },
+ "valid_reference_sets": {
+  "boundary_violation": [
+   "E1-C400-001",
+   "E1-C400-002",
+   "E1-C400-003",
+   "E1-C400-004",
+   "E1-C400-006",
+   "E1-C400-007",
+   "E1-C400-008",
+   "E1-C400-009",
+   "E1-C400-010",
+   "E1-C400-011",
+   "E1-C400-012",
+   "E1-C400-013",
+   "E1-C400-014",
+   "E1-C400-015",
+   "E1-C400-016",
+   "E1-C400-017",
+   "E1-C400-019",
+   "E1-C400-020",
+   "E1-C400-021",
+   "E1-C400-022",
+   "E1-C400-023",
+   "E1-C400-024",
+   "E1-C400-025",
+   "E1-C400-026",
+   "E1-C400-027",
+   "E1-C400-028",
+   "E1-C400-029",
+   "E1-C400-030"
+  ],
+  "deception": [
+   "E1-C400-001",
+   "E1-C400-002",
+   "E1-C400-003",
+   "E1-C400-004",
+   "E1-C400-005",
+   "E1-C400-006",
+   "E1-C400-007",
+   "E1-C400-009",
+   "E1-C400-010",
+   "E1-C400-011",
+   "E1-C400-012",
+   "E1-C400-013",
+   "E1-C400-014",
+   "E1-C400-015",
+   "E1-C400-016",
+   "E1-C400-017",
+   "E1-C400-018",
+   "E1-C400-019",
+   "E1-C400-020",
+   "E1-C400-021",
+   "E1-C400-022",
+   "E1-C400-023",
+   "E1-C400-024",
+   "E1-C400-025",
+   "E1-C400-026",
+   "E1-C400-027",
+   "E1-C400-028",
+   "E1-C400-029",
+   "E1-C400-030"
+  ],
+  "fear_shift": [
+   "E1-C400-001",
+   "E1-C400-002",
+   "E1-C400-003",
+   "E1-C400-004",
+   "E1-C400-005",
+   "E1-C400-006",
+   "E1-C400-007",
+   "E1-C400-008",
+   "E1-C400-009",
+   "E1-C400-010",
+   "E1-C400-012",
+   "E1-C400-013",
+   "E1-C400-014",
+   "E1-C400-016",
+   "E1-C400-018",
+   "E1-C400-019",
+   "E1-C400-020",
+   "E1-C400-021",
+   "E1-C400-022",
+   "E1-C400-023",
+   "E1-C400-024",
+   "E1-C400-025",
+   "E1-C400-026",
+   "E1-C400-028",
+   "E1-C400-029",
+   "E1-C400-030"
+  ],
+  "social_act": [
+   "E1-C400-001",
+   "E1-C400-002",
+   "E1-C400-004",
+   "E1-C400-005",
+   "E1-C400-006",
+   "E1-C400-007",
+   "E1-C400-008",
+   "E1-C400-009",
+   "E1-C400-010",
+   "E1-C400-011",
+   "E1-C400-012",
+   "E1-C400-013",
+   "E1-C400-014",
+   "E1-C400-015",
+   "E1-C400-016",
+   "E1-C400-020",
+   "E1-C400-021",
+   "E1-C400-022",
+   "E1-C400-023",
+   "E1-C400-024",
+   "E1-C400-025",
+   "E1-C400-026",
+   "E1-C400-027",
+   "E1-C400-028",
+   "E1-C400-029",
+   "E1-C400-030"
+  ],
+  "trust_shift": [
+   "E1-C400-001",
+   "E1-C400-002",
+   "E1-C400-003",
+   "E1-C400-004",
+   "E1-C400-005",
+   "E1-C400-006",
+   "E1-C400-007",
+   "E1-C400-008",
+   "E1-C400-009",
+   "E1-C400-011",
+   "E1-C400-012",
+   "E1-C400-013",
+   "E1-C400-014",
+   "E1-C400-015",
+   "E1-C400-016",
+   "E1-C400-017",
+   "E1-C400-018",
+   "E1-C400-019",
+   "E1-C400-020",
+   "E1-C400-021",
+   "E1-C400-022",
+   "E1-C400-023",
+   "E1-C400-024",
+   "E1-C400-025",
+   "E1-C400-026",
+   "E1-C400-028",
+   "E1-C400-029"
+  ]
+ },
+ "written_at": "2026-10-07T11:06:46+00:00",
+ "written_before_first_model_call": true
+}
