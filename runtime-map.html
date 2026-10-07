@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>叙界 · 世界观察</title><link rel="stylesheet" href="/runtime-map.css"><script type="module" src="/runtime-map.mjs"></script></head>
+<body>
+<main>
+  <header><div><p class="eyebrow">NARRAVERSE · 世界观察</p><h1>村庄与山林</h1><p class="intro">同一个世界里的生计、物资与居民。</p></div><div class="toolbar"><p id="world-time">正在读取时间…</p><button id="refresh" type="button">刷新世界读数</button></div></header>
+  <p id="connection" role="status" aria-live="polite">正在连接世界…</p>
+  <section class="landscape" aria-label="村庄与山林示意图">
+    <svg viewBox="0 0 1000 300" role="img" aria-labelledby="map-title map-desc"><title id="map-title">村庄与山林</title><desc id="map-desc">居民所在村落与周围山林的地理示意，不表示野生动物的具体位置。</desc>
+      <path class="ridge" d="M0 190 90 115 145 157 260 65 340 154 405 94 510 182 620 82 720 143 830 58 920 125 1000 105V300H0Z"/>
+      <path class="hill" d="M0 250Q230 170 430 235T1000 220V300H0Z"/>
+      <path class="river" d="M20 294Q240 260 420 282T970 235"/>
+      <g class="trees"><path d="m655 230 17-58 17 58zm80-18 15-48 15 48zm111 11 18-66 18 66zm73-29 13-44 13 44z"/></g>
+      <g class="village"><path d="m235 240 23-30 23 30v29h-46zm57 7 20-24 20 24v22h-40zm-95 7 16-20 16 20v15h-32z"/></g>
+      <text x="245" y="195" class="map-label">村庄</text><text x="755" y="150" class="map-label">山林</text>
+    </svg><p class="map-note">只读观察 · 世界时间不会自动流逝</p>
+  </section>
+  <section class="readings" aria-label="世界公开读数">
+    <article><h2>村庄粮仓</h2><p><strong id="stock-food">—</strong> <span>份口粮</span></p><small id="price-food">正在读取粮价…</small></article>
+    <article><h2>村庄药材</h2><p><strong id="stock-herbs">—</strong> <span>份药材</span></p><small id="price-herbs">正在读取药价…</small></article>
+    <article><h2>聚落居民</h2><p><strong id="human-count">—</strong> <span>人</span></p><small id="named-count">正在读取身份…</small></article>
+    <article><h2>山林种群</h2><p><strong id="deer-count">—</strong> <span>鹿</span><strong id="wolf-count">—</strong> <span>狼</span></p><small>当前种群合计</small></article>
+  </section>
+  <section class="people"><div class="section-title"><h2>村中人物</h2><span id="route-state">正在读取贸易路线…</span></div><ul id="actor-list" aria-label="已登记人物"><li>正在读取居民…</li></ul></section>
+</main>
+</body></html>
