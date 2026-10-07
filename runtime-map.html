@@ -21,6 +21,15 @@
       <div><dt>我的药材</dt><dd id="player-herbs">—</dd></div>
     </dl>
     <p id="player-needs"></p><p class="player-note">存活时，每天消耗一份本人存粮。这里可以观察状态与库存。</p>
+    <div id="action-panel" hidden>
+      <div class="player-actions"><form id="travel-form"><label for="travel-destination">前往</label><select id="travel-destination"></select><button id="travel-submit" type="submit">旅行</button></form>
+      <button id="rest-submit" type="button">休整</button></div>
+      <p id="trade-prices"></p>
+      <form id="trade-form" class="player-actions"><label for="trade-product">公仓商品</label><select id="trade-product"><option value="food">粮食</option><option value="herbs">药材</option></select>
+        <label for="trade-quantity">数量</label><input id="trade-quantity" type="number" min="1" step="1" value="1" required>
+        <button id="buy-submit" type="submit">买入</button><button id="sell-submit" type="submit">卖出</button></form>
+      <p id="trade-note"></p>
+    </div>
   </section>
   <section class="landscape" aria-label="村庄与山林示意图">
     <svg viewBox="0 0 1000 300" role="img" aria-labelledby="map-title map-desc"><title id="map-title">村庄与山林</title><desc id="map-desc">居民所在村落与周围山林的地理示意，不表示野生动物的具体位置。</desc>

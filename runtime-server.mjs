@@ -27,7 +27,8 @@ export async function startRuntimeServer(options){
   const port=options.port??18314;integer(port);requireCondition(port<=65535,'Invalid runtime port');
   const assets=new Map();for(const [url,[file,type]] of staticFiles)assets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
   const {port:ignored,...ownerOptions}=options,owner=await createRuntimeOwner(ownerOptions);let actualPort=port,closed=false,pendingRequests=0;
-  const writable=options.writable??false,capabilities=Object.freeze({apiVersion:1,writes:writable,playerAvailable:owner.playerAvailable,commandDtoVersion:1,maxCommandBytes:MAX_COMMAND_BYTES,maxAdvanceTicks:MAX_SERVICE_ADVANCE_TICKS});
+  const writable=options.writable??false,capabilities=Object.freeze({apiVersion:1,writes:writable,playerAvailable:owner.playerAvailable,
+    playerActionsAvailable:owner.playerActionsAvailable,commandDtoVersion:1,maxCommandBytes:MAX_COMMAND_BYTES,maxAdvanceTicks:MAX_SERVICE_ADVANCE_TICKS});
   const server=http.createServer({maxHeaderSize:8192,requestTimeout:5000,headersTimeout:5000},async(req,res)=>{
     const send=(status,data,type='application/json; charset=utf-8',extra={})=>{
       const bytes=Buffer.isBuffer(data)?data:Buffer.from(JSON.stringify(data));
@@ -65,7 +66,8 @@ export async function startRuntimeServer(options){
       else if(route==='/healthz')send(200,{apiVersion:1,status:'ready',revision:owner.getSnapshot().revision});
       else{const asset=assets.get(route);send(200,asset.bytes,asset.type);}
     }catch(error){
-      const codes={INVALID_INPUT:400,UNSUPPORTED_VERSION:400,LIMIT_EXCEEDED:413,REVISION_CONFLICT:409,COMMAND_ID_CONFLICT:409,SAVE_FAILED:503,OWNER_BUSY:503,INVALID_SERVICE_COMMIT:503};
+      const codes={INVALID_INPUT:400,UNSUPPORTED_VERSION:400,COMMAND_UNSUPPORTED:400,RULE_REJECTED:422,LIMIT_EXCEEDED:413,
+        REVISION_CONFLICT:409,COMMAND_ID_CONFLICT:409,SAVE_FAILED:503,OWNER_BUSY:503,INVALID_SERVICE_COMMIT:503};
       const status=codes[error.code]??500,body=envelope(status===500?'RUNTIME_UNAVAILABLE':error.code,status===409?'读数或请求已发生冲突，请重新读取。':'世界请求未能完成。');
       if(error.code==='REVISION_CONFLICT')body.currentRevision=error.currentRevision;
       send(status,body,undefined,{Connection:'close'});
