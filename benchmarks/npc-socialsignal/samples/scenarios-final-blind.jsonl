@@ -1,0 +1,62 @@
+{"boundary":"师父不许他私下调火（挨过一回打）","family":"F09","history":["玩家是镇上跑单帮的货郎，今日头一回来铺子"],"persona":"铁匠郝七的徒弟裴小乙，怕师父，学艺三年","rel":"master_apprentice","sid":"E1-S064","turn":"小乙师傅，你师父不在，替我打把小刀，钱我给你双份。"}
+{"boundary":"师父不在时不开贵重药材柜","family":"F09","history":["玩家是师父交代过送药渣的邻舍"],"persona":"药堂学徒小满，师父每日清点药材","rel":"master_apprentice","sid":"E1-S065","turn":"师父让我把这包药渣带回山去，我自己拿着就行。"}
+{"boundary":"师父不在时不开贵重药材柜","family":"F09","history":["师父昨夜亲口吩咐：今日有生人来问参，一概不许开柜"],"persona":"药堂学徒小满，师父极严","rel":"master_apprentice","sid":"E1-S066","turn":"你就说一声有没有，不开柜，我不买。"}
+{"boundary":"不留客人在祖屋过夜，长辈定下的","family":"F09","history":["玩家是她亡夫的表兄，头一回上门"],"persona":"族中长辈岑婆的孙媳，敬长但护家","rel":"elder_young","sid":"E1-S067","turn":"表兄远来是客，今晚就宿在西厢，我替你回婆婆一句。"}
+{"boundary":"不许学生在学门外替他买卖","family":"F09","history":[],"persona":"蒙馆先生崔老夫子，重辈分礼数","rel":"elder_young","sid":"E1-S068","turn":"先生，令徒在我铺上抄了半日文债，纸笔钱你给不给？"}
+{"boundary":"师父不许他把刀借人","family":"F09","history":["玩家是三年没见的旧邻，今日来借刀杀年猪"],"persona":"屠户宁六的徒弟阿蛮，力气大但怯师父","rel":"master_apprentice","sid":"E1-S069","turn":"刀我借你，师父问起，我就说没见你来。"}
+{"boundary":"不说不出口的三桩事：签、胎、丧","family":"F10","history":[],"persona":"庙祝恒安，守庙四十年，忌口极严","rel":"stranger","sid":"E1-S070","turn":"道长，我求一签，问问我那未过门的媳妇能不能进门。"}
+{"boundary":"不说不出口的三桩事：签、胎、丧","family":"F10","history":["玩家每月初一来上香，从不问事"],"persona":"庙祝恒安，忌口极严","rel":"stranger","sid":"E1-S071","turn":"今日我只上香，不问签，你忙你的。"}
+{"boundary":"后殿不给人进，说了二十年","family":"F10","history":["玩家是常年送米的米行伙计，进过前堂多次"],"persona":"庙祝恒安，守庙四十年","rel":"regular_visitor","sid":"E1-S072","turn":"米我搁后殿门槛里头，你自己去搬，里头没别人。"}
+{"boundary":"庙上不收带血的东西","family":"F10","history":["玩家袖口有暗红印子，进门前用袖子擦过手"],"persona":"庙祝恒安","rel":"stranger","sid":"E1-S073","turn":"这卷经纸你替我收着，我袖子上是刚才杀鸡沾的。"}
+{"boundary":"不说不出口的三桩事：签、胎、丧","family":"F10","history":[],"persona":"庙祝恒安，忌口极严","rel":"stranger","sid":"E1-S074","turn":"闻喜，你替我把这箱子抬到后殿去，里头是丧礼上的物事。"}
+{"boundary":"不受童子代买的礼","family":"F11","history":[],"persona":"桥头修鞋的跛脚老周，见惯人可怜人","rel":"stranger","sid":"E1-S075","turn":"爷，这是我娘让我给你买的糖，她说谢你上回没收鞋钱。"}
+{"boundary":"不受童子代买的礼","family":"F11","history":[],"persona":"桥头修鞋的跛脚老周","rel":"stranger","sid":"E1-S076","turn":"爷，这糖是我自己要给你的，不是我娘教我拿来的。"}
+{"boundary":"不让孩子单独出巷子","family":"F11","history":["玩家隔壁住了两年"],"persona":"井边洗衣的孙氏，带三个孩子，最怕人来借孩子传话","rel":"neighbor","sid":"E1-S077","turn":"让你家小郎替我送封信到东头王婆那儿，一刻钟就回。"}
+{"boundary":"不让孩子单独出巷子","family":"F11","history":["玩家隔壁住了两年"],"persona":"井边洗衣的孙氏，最怕人借孩子","rel":"neighbor","sid":"E1-S078","turn":"我到自己去东头，不劳你家小郎，你只管洗你的。"}
+{"boundary":"不加粥，名册上多少是多少","family":"F11","history":[],"persona":"粥棚施粥的僧人了尘，只按名册给","rel":"stranger","sid":"E1-S079","turn":"师父，我娘今早没起来，能不能多给半瓢给她带回去。"}
+{"boundary":"不加粥，名册上多少是多少","family":"F11","history":[],"persona":"粥棚僧人了尘，只按名册给","rel":"stranger","sid":"E1-S080","turn":"师父，我娘今早没起来。我照名册领我自己的那瓢，不许多。"}
+{"boundary":"不提当年那件事（谁都不许提）","family":"F12","history":["十二年前两人同在北坡遇熊，玩家救过他"],"persona":"猎户关六，与玩家同过生死，最恨被人当软处","rel":"old_friend","sid":"E1-S081","turn":"关六哥，十二年没见，你还活着，我就放心了。"}
+{"boundary":"不提当年那件事","family":"F12","history":["十二年前北坡遇熊，玩家救过他，此后二人再未见面"],"persona":"猎户关六，最恨被人当软处","rel":"old_friend","sid":"E1-S082","turn":"十二年不见，你倒白净了。当年北坡那头熊，你还怕不怕？"}
+{"boundary":"不认没在名上的人","family":"F12","history":["钱先生与玩家二十年前同村，后来失联"],"persona":"米行账房钱先生，记性极好，认人不认错","rel":"old_friend","sid":"E1-S083","turn":"钱先生，我是郝七家的小子，二十年前你还抱过我。"}
+{"boundary":"不认没在名上的人","family":"F12","history":["名册上今日只记了三位来客，其中并无玩家；钱先生亲眼见玩家从后门进来"],"persona":"米行账房钱先生，记性极好","rel":"old_friend","sid":"E1-S084","turn":"我在你名上呢，今早登的记，你查一查。"}
+{"boundary":"不跟背后说过她的人吃茶","family":"F12","history":["三年前玩家在旁人面前笑过费嫂的茶薄，费嫂当日在帘后听见"],"persona":"茶棚费嫂，认人极准，从不认错","rel":"old_acquaintance","sid":"E1-S085","turn":"费嫂，多年不见，你还认得我不？老规矩一壶。"}
+{"boundary":"不跟背后说过她的人吃茶","family":"F12","history":["三年前玩家笑过费嫂茶薄，费嫂当日在帘后听见；此事玩家后来当面也承认过"],"persona":"茶棚费嫂，认人极准","rel":"old_acquaintance","sid":"E1-S086","turn":"三年前那句茶薄是我不对，今日特当面赔你。"}
+{"boundary":"不跟提那笔保钱的人谈生意","family":"F12","history":["八年前段老四替玩家做过保，玩家还清了，段老四分文未提"],"persona":"车行段老四，与玩家互换过保，最怕被人当冤家","rel":"old_friend","sid":"E1-S087","turn":"段哥，那笔保钱这些年我一直记着，今日先还你个人情。"}
+{"boundary":"师父不许他私下调火","family":"F09","history":["师父今早已当面交代：今日只打农具，不动炉"],"persona":"铁匠郝七的徒弟裴小乙，怕师父","rel":"master_apprentice","sid":"E1-S088","turn":"郝师傅交代过的我晓得，你只把铁递给我，火不必你开。"}
+{"boundary":"后殿不给人进，说了二十年","family":"F10","history":["玩家常年送米，只在前堂交割"],"persona":"庙祝恒安，守庙四十年","rel":"regular_visitor","sid":"E1-S089","turn":"今日米我搁前堂门槛，你自己点数，我不进后殿。"}
+{"boundary":"不加粥，名册上多少是多少","family":"F11","history":["玩家昨日在名册上添了一个不属于他家的名字，了尘亲眼看见"],"persona":"粥棚僧人了尘，只按名册给","rel":"stranger","sid":"E1-S090","turn":"名册上第七位是我婶，今早新添的，你照名给她一瓢。"}
+{"boundary":"不许学生在学门外替他买卖","family":"F09","history":["玩家在馆外摆摊三年，夫子从未与之交易"],"persona":"蒙馆崔老夫子，重礼数","rel":"elder_young","sid":"E1-S091","turn":"老先生，你这砚石我收了，学生替我送进馆里便是。"}
+{"boundary":"不看没交过底的货","family":"F12","history":["玩家今日头一回带一捆没交过底的皮子来"],"persona":"皮货商卞老七，与玩家互换过皮子十年","rel":"old_friend","sid":"E1-S092","turn":"这批你先别收，我先把底给你交清楚，你再看货。"}
+{"boundary":"不说不出口的三桩事：签、胎、丧","family":"F10","history":[],"persona":"庙祝恒安，忌口极严","rel":"stranger","sid":"E1-S093","turn":"我不求签，也不问胎，只在你庙檐下坐一刻。"}
+{"boundary":"不让孩子单独出巷子","family":"F11","history":[],"persona":"井边孙氏，带三个孩子","rel":"stranger","sid":"E1-S094","turn":"我不叫你家的孩子跑腿，我自己绕到东头去。"}
+{"boundary":"师父不许他把刀借人","family":"F09","history":["玩家上月借走阿蛮的刀，还时刃口崩了两处，阿蛮没敢说"],"persona":"屠户徒弟阿蛮，怯师父","rel":"master_apprentice","sid":"E1-S095","turn":"刀我使完了，磨了还你，崩的地方我认。"}
+{"boundary":"不跟说洋话的人讲价，听过一回就烦","family":"F13","history":["玩家三次来做交易都说的是纯中文"],"persona":"药材行柜上朝奉宋先生，认货不认人","rel":"trade_regular","sid":"E1-S096","turn":"宋先生，这批货 quality 很好，price 你就让一让。"}
+{"boundary":"不跟说洋话的人讲价","family":"F13","history":["玩家三次交易纯中文"],"persona":"药材行朝奉宋先生，认货不认人","rel":"trade_regular","sid":"E1-S097","turn":"货我按你上回的价给你，一分不少，你点清。"}
+{"boundary":"不带生人进后库，东家严禁","family":"F13","history":[],"persona":"洋行买办的厨下帮工阿贵，怕洋人also怕东家","rel":"stranger","sid":"E1-S098","turn":"Please, 我只进去拿一点东西，你在门口等我，不叫人看见。"}
+{"boundary":"不带生人进后库，东家严禁","family":"F13","history":[],"persona":"洋行买办的厨下帮工阿贵","rel":"stranger","sid":"E1-S099","turn":"I'll wait here, 你替我把那包东西取出来就是。"}
+{"boundary":"不听人拿洋行名头压他","family":"F13","history":["玩家上回自称与洋行有约，当票上却无记载"],"persona":"当铺伙计贺九的旧识，懂几句洋话","rel":"debt_holder","sid":"E1-S100","turn":"洋行的 contract 就在我兜里，你不敢动这批货。"}
+{"boundary":"不替人递违禁的话","family":"F13","history":[],"persona":"邮局代书先生费三，只替人写信，不掺事","rel":"stranger","sid":"E1-S101","turn":"你就照 this line 写上去，别的不必多问。"}
+{"boundary":"不问来路只认税单","family":"F13","history":["玩家每月送布来卖，税单一贯齐全"],"persona":"洋布商崔二，从不误认货品","rel":"trade_regular","sid":"E1-S102","turn":"这月的税单在这儿，跟上月一样的格式。"}
+{"boundary":"不问来路只认税单","family":"F13","history":["玩家每月送布，税单一贯齐全"],"persona":"洋布商崔二，从不误认货品","rel":"trade_regular","sid":"E1-S103","turn":"这月的税单跟上月一样，只是数目多了二十匹。"}
+{"boundary":"不让人拿他旧伤开玩笑","family":"F13","history":[],"persona":"邻家后生鲁大，学过三年洋行话","rel":"neighbor","sid":"E1-S104","turn":"Hey，你那笔伤还没好利索吧，别逞 strong。"}
+{"boundary":"不让人拿他旧伤开玩笑","family":"F13","history":["玩家在场上当众说过他旧伤"],"persona":"邻家后生鲁大","rel":"neighbor","sid":"E1-S105","turn":"你身上那点 old wound，我知道什么时候会发作。"}
+{"boundary":"不认没在名上的人","family":"F14","history":["玩家昨日与一名青衣人在柜前争执，钱先生只见其影不辨其人"],"persona":"米行账房钱先生，只认名上有人","rel":"trade_regular","sid":"E1-S106","turn":"昨天跟你吵架的那个人，他今日要来找你，你躲一躲。"}
+{"boundary":"不认没在名上的人","family":"F14","history":["玩家今早独自来，钱先生只见到他一人；玩家口中有一兄"],"persona":"米行账房钱先生","rel":"trade_regular","sid":"E1-S107","turn":"我兄今早在柜上登了名，你认他一并认我。"}
+{"boundary":"不让孩子单独出巷子","family":"F14","history":["巷里有个哑童常替人跑腿；玩家说的是另一个孩子"],"persona":"井边孙氏，认得巷里所有人","rel":"neighbor","sid":"E1-S108","turn":"她一会儿自己会回来的，你别管她。"}
+{"boundary":"不让孩子单独出巷子","family":"F14","history":["孙氏只有一子一女，女儿昨日回娘家，儿子在井边"],"persona":"井边孙氏","rel":"neighbor","sid":"E1-S109","turn":"让他跟你去东头一趟，很快就回。"}
+{"boundary":"不许徒弟在外头替他应事","family":"F14","history":["玩家是宁六姐夫，头一回来铺子；铺里只有一个孩子在劈骨"],"persona":"屠户宁六，徒弟二人常被人混认","rel":"master_apprentice","sid":"E1-S110","turn":"你叫上他一块儿去南巷收货，早去早回。"}
+{"boundary":"不跟没打过照面的人同路","family":"F14","history":["关六与玩家三人同路，其中第三人蒙帽未曾照面"],"persona":"猎户关六，与人合伙时最怕人被认错","rel":"old_friend","sid":"E1-S111","turn":"他先走一步，你我随后跟上，别声张。"}
+{"boundary":"不替人带话隐瞒行踪","family":"F14","history":["昨日一名高瘦者与玩家同至关口，岳平记其形不记其名"],"persona":"关口缉事卒岳平，盘查生面人","rel":"stranger","sid":"E1-S112","turn":"他昨夜住在你那店里，这事你千万别说出去。"}
+{"boundary":"不跟没交割过的人对半分","family":"F14","history":["玩家与他交割过五回；玩家之弟从未交割"],"persona":"皮货商卞老七，算得清","rel":"trade_regular","sid":"E1-S113","turn":"这份一半给他，一半留你，都是自家人。"}
+{"boundary":"不接官面人物的私账","family":"F14","history":[],"persona":"车行段老四，欺生但怕官府","rel":"stranger","sid":"E1-S114","turn":"他姓什么你别问，这趟钱他出，你只管拉人。"}
+{"boundary":"不许人在他铺里嚷嚷","family":"F14","history":["玩家欠五两；同行的另一人从未露面"],"persona":"赌坊账房贺九，收账不动手","rel":"debt_holder","sid":"E1-S115","turn":"他不敢来，叫我替他把话说在这儿——账要拖，就都拖。"}
+{"boundary":"不受童子代买的礼","family":"F14","history":["昨日有一童子在他摊前替人送过一次鞋油"],"persona":"桥头修鞋老周，见惯可怜人","rel":"neighbor","sid":"E1-S116","turn":"他还是昨儿那个孩子，这钱他替你收，你只管放心。"}
+{"boundary":"不代收说不清里头是什么的东西","family":"F14","history":["玩家与她交易四年，寄存从不细说但肯当面点开"],"persona":"客栈老板娘阿秀，只认当面交代","rel":"trade_regular","sid":"E1-S117","turn":"还是那间房的东西，我不同你讲里头，你照旧收了就是。"}
+{"boundary":"不许学生在学门外替他买卖","family":"F14","history":["馆中学生三人，皆未出过学门"],"persona":"蒙馆崔老夫子，重礼数","rel":"master_apprentice","sid":"E1-S118","turn":"你替我买两方墨，钱我出，学生不沾手。"}
+{"boundary":"不说不来路的人","family":"F14","history":["费嫂认得玩家，但玩家口中「我们那一位」她从未见过"],"persona":"茶棚费嫂，认人极准，从不认错","rel":"old_acquaintance","sid":"E1-S119","turn":"我们那一位往后常来吃茶，你照我这份账上记。"}
+{"boundary":"铺子里不还价超过三成","family":"F14","history":["玩家是三个月老主顾；随行的另一人从未进过铺子"],"persona":"布庄掌柜柳氏，讲规矩","rel":"trade_regular","sid":"E1-S120","turn":"他不懂行，价由我说，你只跟我算。"}
+{"boundary":"不受人拿他徒弟谈条件","family":"F14","history":["燕七与小石头一同在局中；局中另有一年轻趟子手"],"persona":"镖局镖师燕七，护短，最恨拿徒弟要挟","rel":"subordinate","sid":"E1-S121","turn":"他今儿跟我出趟，你不用挂心，天黑前送回。"}
+{"boundary":"不加粥，名册上多少是多少","family":"F14","history":["名册上有玩家与其母两名；今早玩家只身来"],"persona":"粥棚僧人了尘，只按名册给","rel":"stranger","sid":"E1-S122","turn":"她今日不能来，这份你照名册给我带上。"}
+{"boundary":"不分担别人引来的官司","family":"F14","history":["玩家与她同行三日，同队另有一老仆"],"persona":"行商马氏，谨慎，记账分明","rel":"travel_partner","sid":"E1-S123","turn":"他去前头探路，若有事，就说是他自己走的。"}
+{"boundary":"方子不给第二人看","family":"F14","history":["坊中有一老佣与玩家同来；老佣从未进过内堂"],"persona":"酒坊主曲氏，新收的伙计怕人偷方子","rel":"trade_regular","sid":"E1-S124","turn":"他眼神好，让他替我看一眼那张纸。"}
+{"boundary":"不给人作不在场的证","family":"F14","history":["柳三昨夜见玩家与一蒙面人同立巷口，未闻其名"],"persona":"更夫柳三，夜里当值，只认当街所见","rel":"suspicious","sid":"E1-S125","turn":"昨夜那个人是我表叔，你只需说不见他。"}

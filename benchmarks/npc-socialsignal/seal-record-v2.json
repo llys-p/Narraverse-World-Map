@@ -1,0 +1,43 @@
+{
+ "schema": "e1r-seal-v2",
+ "created": "2026-10-07T13:07:59+08:00",
+ "final_scenarios": 62,
+ "dev_calibration_scenarios": 63,
+ "gold_final_path_outside_repo": "D:/ModelBench/laya/sealed/v2/gold-final.jsonl",
+ "gold_final_sha256": "e85c67912de649a264e2a65afb130ef633078857b74a0d6849b8b7dbe189617c",
+ "review_packages_outside_repo": {
+  "blind": "D:/ModelBench/laya/review-pack/blind",
+  "sanity-dev": "D:/ModelBench/laya/review-pack/sanity-dev"
+ },
+ "package_hashes": {
+  "blind": {
+   "review-inputs.jsonl": "859f028039e16b7ee806168c330bc0d257b3b597a9bb904bac1bfabf5d45872a",
+   "answer-sheet.jsonl": "7338c485ca5255d065a1a8c2fabbc9ef5319a614546be60d32b5a2da10352bf6",
+   "LABEL_SPEC.md": "ae3b98be83278b6c1797baecd740104889c64b0d11369517579dfc61898595ac",
+   "n": 125
+  },
+  "sanity-dev": {
+   "review-inputs.jsonl": "b610139560d9fc48c6f619e37fe02a2445fbd572b38af1021535bce9c04b07c9",
+   "answer-sheet.jsonl": "bd16b3e966e4149a3aa7a77c6ba820ac39e962d3817d7479b926f37ad4d64c5d",
+   "LABEL_SPEC.md": "ae3b98be83278b6c1797baecd740104889c64b0d11369517579dfc61898595ac",
+   "n": 25
+  }
+ },
+ "id_maps_outside_repo": {
+  "blind": "D:/ModelBench/laya/sealed/v2/id-map-blind.json",
+  "sanity-dev": "D:/ModelBench/laya/sealed/v2/id-map-sanity-dev.json"
+ },
+ "sources_rewritten": [
+  "src-batch3.jsonl",
+  "src-batch4.jsonl"
+ ],
+ "repo_final_gold_scan": {
+  "leaks_found": [],
+  "status": "clean"
+ },
+ "history_exposure": "Git commits 5599c46 / 6adb2bd / e9196ab contain samples/src-batch*.jsonl with the final split's gold labels and basis. That answer key is recoverable from history and was NOT rewritten or deleted, per E1R instruction not to erase history. Consequence: no reviewer who has read those commits, the pilot reports, or the working chat may blind-review the current 62 final scenarios. The reviewer packages produced here live outside the repository for the same reason.",
+ "old_seal_v1": {
+  "gold_final_sha256": "4b245c18a634322550f537f5be46702f4900c7633c69743debb342ccac5efcbc",
+  "note": "v1 seal retained for historical reference only; it was computed from an answer key that was simultaneously present in the repository, so it cannot support a blind-review claim."
+ }
+}

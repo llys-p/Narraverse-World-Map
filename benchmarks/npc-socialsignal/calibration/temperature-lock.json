@@ -1,0 +1,118 @@
+{
+ "schema": "e1r-temperature-lock-v1",
+ "fitted_at": "2026-10-07T13:17:27+08:00",
+ "fitted_on_split": "calibration",
+ "condition": "primary",
+ "provenance": {
+  "prediction_files": {
+   "A": "results/raw/A-calibration-primary.jsonl",
+   "B": "results/raw/B-calibration-primary.jsonl"
+  }
+ },
+ "entries": {
+  "A": {
+   "social_act": {
+    "temperature": 20.0,
+    "n_fit": 33,
+    "class_set": [
+     "威胁",
+     "示好",
+     "求助",
+     "合作",
+     "中性",
+     "不确定"
+    ]
+   },
+   "trust_shift": {
+    "temperature": 1.0917,
+    "n_fit": 33,
+    "class_set": [
+     "上升",
+     "不变",
+     "下降",
+     "不确定"
+    ]
+   },
+   "fear_shift": {
+    "temperature": 8.9427,
+    "n_fit": 33,
+    "class_set": [
+     "上升",
+     "不变",
+     "下降",
+     "不确定"
+    ]
+   },
+   "deception": {
+    "temperature": 2.2693,
+    "n_fit": 33,
+    "class_set": [
+     "有线索",
+     "无线索",
+     "信息不足"
+    ]
+   },
+   "boundary_violation": {
+    "temperature": 1.7277,
+    "n_fit": 33,
+    "class_set": [
+     "已越过",
+     "未越过",
+     "信息不足"
+    ]
+   }
+  },
+  "B": {
+   "social_act": {
+    "temperature": 6.0838,
+    "n_fit": 33,
+    "class_set": [
+     "威胁",
+     "示好",
+     "求助",
+     "合作",
+     "中性",
+     "不确定"
+    ]
+   },
+   "trust_shift": {
+    "temperature": 0.382,
+    "n_fit": 33,
+    "class_set": [
+     "上升",
+     "不变",
+     "下降",
+     "不确定"
+    ]
+   },
+   "fear_shift": {
+    "temperature": 20.0,
+    "n_fit": 33,
+    "class_set": [
+     "上升",
+     "不变",
+     "下降",
+     "不确定"
+    ]
+   },
+   "deception": {
+    "temperature": 0.7718,
+    "n_fit": 33,
+    "class_set": [
+     "有线索",
+     "无线索",
+     "信息不足"
+    ]
+   },
+   "boundary_violation": {
+    "temperature": 0.8167,
+    "n_fit": 33,
+    "class_set": [
+     "已越过",
+     "未越过",
+     "信息不足"
+    ]
+   }
+  }
+ }
+}

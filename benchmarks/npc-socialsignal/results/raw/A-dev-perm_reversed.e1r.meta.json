@@ -1,0 +1,36 @@
+{
+ "model": "A",
+ "split": "dev",
+ "condition": "perm_reversed",
+ "written_at": "2026-10-07T13:17:18+08:00",
+ "records": 150,
+ "skipped_no_paraphrase": 0,
+ "load_seconds": 18.3,
+ "device": "cpu",
+ "max_len": 1024,
+ "head_max_len": 256,
+ "state_budget_tokens": 700,
+ "batch_size": 8,
+ "timeout_s": 120.0,
+ "laya": "0.3.28",
+ "runtime_dir": "D:/ModelBench/laya/runtime/A",
+ "runtime_copy": {
+  "created": "2026-10-07T13:13:34+08:00",
+  "source_dir": "D:/ModelBench/laya/weights/A",
+  "runtime_dir": "D:/ModelBench/laya/runtime/A",
+  "purpose": "laya.load() rewrites tokenizer/tokenizer_config.json in place; the download directory keeps the pristine, revision-verified bytes and this copy absorbs the SDK edit",
+  "source_sha256": {
+   ".gitattributes": "caf3ca02d5e883f643e939cbed54f94237f94c171797f0dfea5e25c7e33315b3",
+   "config.json": "7add7c041b53f7091e65908553af79ab3f077946e5f2312d510ae13b17c7c134",
+   "model.safetensors": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+   "README.md": "e85d16c3fe35fe7094ef51a7cfa81144a5cc07558e5faddcff753a8153e38a0b",
+   "rl_agent_config.json": "25061739243b617ad88d1219ba6f8a9c86c5881ca28df024fa2d9b3b2fcc30c6",
+   "encoder/config.json": "83f6916d13ef0f556ac461f28308dc2bffa7ebeadee8ec9e2db5812020ea5bb4",
+   "tokenizer/tokenizer.json": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+   "tokenizer/tokenizer_config.json": "2c0c4d82d4b4bc6b4ac40b2375e067a1645f78b381a9774248d47915f33d751f"
+  },
+  "post_run_note": "compare runtime hashes against source_sha256 after a run to see exactly what the SDK changed"
+ },
+ "weights_sha256_verified_at_load": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+ "out": "results\\raw\\A-dev-perm_reversed.e1r.jsonl"
+}

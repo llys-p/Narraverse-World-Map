@@ -1,0 +1,250 @@
+{
+  "files": [
+    "src-batch1.jsonl",
+    "src-batch2.jsonl",
+    "src-batch3.jsonl",
+    "src-batch4.jsonl"
+  ],
+  "generated_by": "scripts/validate_data_v2.py",
+  "schema": "e1r-manifest-v2",
+  "sealed_gold_file": "D:/ModelBench/laya/sealed/v2/gold-final.jsonl",
+  "sealed_gold_sha256": "e85c67912de649a264e2a65afb130ef633078857b74a0d6849b8b7dbe189617c",
+  "signal_option_sets": {
+    "boundary_violation": [
+      "已越过",
+      "未越过",
+      "信息不足"
+    ],
+    "deception": [
+      "有线索",
+      "无线索",
+      "信息不足"
+    ],
+    "fear_shift": [
+      "上升",
+      "不变",
+      "下降",
+      "不确定"
+    ],
+    "social_act": [
+      "威胁",
+      "示好",
+      "求助",
+      "合作",
+      "中性",
+      "不确定"
+    ],
+    "trust_shift": [
+      "上升",
+      "不变",
+      "下降",
+      "不确定"
+    ]
+  },
+  "split_policy": "family-exclusive",
+  "splits": {
+    "calibration": {
+      "classes_under_20": [
+        "boundary_violation:信息不足",
+        "boundary_violation:已越过",
+        "boundary_violation:未越过",
+        "deception:信息不足",
+        "deception:有线索",
+        "fear_shift:上升",
+        "fear_shift:下降",
+        "fear_shift:不确定",
+        "social_act:不确定",
+        "social_act:中性",
+        "social_act:合作",
+        "social_act:威胁",
+        "social_act:求助",
+        "social_act:示好",
+        "trust_shift:上升",
+        "trust_shift:下降",
+        "trust_shift:不变",
+        "trust_shift:不确定"
+      ],
+      "families": [
+        "F04",
+        "F05",
+        "F06",
+        "F07",
+        "F08"
+      ],
+      "gold_in_repository": true,
+      "gold_sha256": "935364cbdb5b06fbbbab48029e9c6ae65f560ac09f11ea3d156a46eb5be93f75",
+      "input_sha256": "7fe021ef3ee98a7515cc3044c2e070698298c93d0e75c51fca262baa537654b0",
+      "items": 165,
+      "label_distribution": {
+        "boundary_violation": {
+          "信息不足": 2,
+          "已越过": 14,
+          "未越过": 17
+        },
+        "deception": {
+          "信息不足": 7,
+          "无线索": 22,
+          "有线索": 4
+        },
+        "fear_shift": {
+          "上升": 9,
+          "下降": 3,
+          "不变": 21,
+          "不确定": 0
+        },
+        "social_act": {
+          "不确定": 0,
+          "中性": 4,
+          "合作": 10,
+          "威胁": 5,
+          "求助": 9,
+          "示好": 5
+        },
+        "trust_shift": {
+          "上升": 7,
+          "下降": 11,
+          "不变": 15,
+          "不确定": 0
+        }
+      },
+      "scenarios": 33
+    },
+    "dev": {
+      "classes_under_20": [
+        "boundary_violation:信息不足",
+        "boundary_violation:已越过",
+        "boundary_violation:未越过",
+        "deception:信息不足",
+        "deception:无线索",
+        "deception:有线索",
+        "fear_shift:上升",
+        "fear_shift:下降",
+        "fear_shift:不确定",
+        "social_act:不确定",
+        "social_act:中性",
+        "social_act:合作",
+        "social_act:威胁",
+        "social_act:求助",
+        "social_act:示好",
+        "trust_shift:上升",
+        "trust_shift:下降",
+        "trust_shift:不确定"
+      ],
+      "families": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "gold_in_repository": true,
+      "gold_sha256": "ee38aa8bc94abaca645f3182235d8bd39f13a522849db0a068d6ba881f0dbc55",
+      "input_sha256": "de9e32e5231470220288b3d4dd34c24f498126bcec31feb7f9fe9e1e05004e6a",
+      "items": 150,
+      "label_distribution": {
+        "boundary_violation": {
+          "信息不足": 2,
+          "已越过": 12,
+          "未越过": 16
+        },
+        "deception": {
+          "信息不足": 15,
+          "无线索": 12,
+          "有线索": 3
+        },
+        "fear_shift": {
+          "上升": 9,
+          "下降": 1,
+          "不变": 20,
+          "不确定": 0
+        },
+        "social_act": {
+          "不确定": 0,
+          "中性": 3,
+          "合作": 13,
+          "威胁": 2,
+          "求助": 9,
+          "示好": 3
+        },
+        "trust_shift": {
+          "上升": 4,
+          "下降": 6,
+          "不变": 20,
+          "不确定": 0
+        }
+      },
+      "scenarios": 30
+    },
+    "final": {
+      "classes_under_20": [
+        "boundary_violation:信息不足",
+        "deception:有线索",
+        "fear_shift:下降",
+        "fear_shift:不确定",
+        "social_act:不确定",
+        "social_act:中性",
+        "social_act:威胁",
+        "social_act:求助",
+        "social_act:示好",
+        "trust_shift:上升",
+        "trust_shift:下降",
+        "trust_shift:不确定"
+      ],
+      "families": [
+        "F09",
+        "F10",
+        "F11",
+        "F12",
+        "F13",
+        "F14"
+      ],
+      "gold_in_repository": false,
+      "gold_sha256": "1b69c26b1423e2962665603a9d55952b9a80f57df4f81893f497a8d254903309",
+      "input_sha256": "afec06d54ff4c78d7204c9bca580fe834071f167fa5cff71a073a36d14caca86",
+      "items": 310,
+      "label_distribution": {
+        "boundary_violation": {
+          "信息不足": 12,
+          "已越过": 25,
+          "未越过": 25
+        },
+        "deception": {
+          "信息不足": 26,
+          "无线索": 30,
+          "有线索": 6
+        },
+        "fear_shift": {
+          "上升": 20,
+          "下降": 0,
+          "不变": 40,
+          "不确定": 2
+        },
+        "social_act": {
+          "不确定": 0,
+          "中性": 16,
+          "合作": 25,
+          "威胁": 4,
+          "求助": 9,
+          "示好": 8
+        },
+        "trust_shift": {
+          "上升": 6,
+          "下降": 15,
+          "不变": 41,
+          "不确定": 0
+        }
+      },
+      "scenarios": 62
+    }
+  },
+  "total_scenarios": 125,
+  "warnings": [
+    "dev: social_act:不确定 has 0 samples",
+    "dev: trust_shift:不确定 has 0 samples",
+    "dev: fear_shift:不确定 has 0 samples",
+    "calibration: social_act:不确定 has 0 samples",
+    "calibration: trust_shift:不确定 has 0 samples",
+    "calibration: fear_shift:不确定 has 0 samples",
+    "final: social_act:不确定 has 0 samples",
+    "final: trust_shift:不确定 has 0 samples",
+    "final: fear_shift:下降 has 0 samples"
+  ]
+}

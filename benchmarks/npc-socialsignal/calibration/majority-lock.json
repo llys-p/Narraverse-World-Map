@@ -1,0 +1,60 @@
+{
+ "schema": "e1r-majority-lock-v1",
+ "chosen_on_split": "dev",
+ "n_dev_scenarios": 30,
+ "note": "A deployable constant baseline must be chosen before the scored split is seen. oracle-majority (post-hoc on the evaluated set) is reported separately and is descriptive only.",
+ "signals": {
+  "social_act": {
+   "label": "合作",
+   "dev_support": 13,
+   "dev_share": 2.6,
+   "dev_distribution": {
+    "合作": 13,
+    "中性": 3,
+    "威胁": 2,
+    "求助": 9,
+    "示好": 3
+   }
+  },
+  "trust_shift": {
+   "label": "不变",
+   "dev_support": 20,
+   "dev_share": 6.6667,
+   "dev_distribution": {
+    "下降": 6,
+    "上升": 4,
+    "不变": 20
+   }
+  },
+  "fear_shift": {
+   "label": "不变",
+   "dev_support": 20,
+   "dev_share": 6.6667,
+   "dev_distribution": {
+    "不变": 20,
+    "上升": 9,
+    "下降": 1
+   }
+  },
+  "deception": {
+   "label": "信息不足",
+   "dev_support": 15,
+   "dev_share": 5.0,
+   "dev_distribution": {
+    "无线索": 12,
+    "信息不足": 15,
+    "有线索": 3
+   }
+  },
+  "boundary_violation": {
+   "label": "未越过",
+   "dev_support": 16,
+   "dev_share": 5.3333,
+   "dev_distribution": {
+    "已越过": 12,
+    "未越过": 16,
+    "信息不足": 2
+   }
+  }
+ }
+}

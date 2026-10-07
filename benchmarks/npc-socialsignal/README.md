@@ -1,7 +1,7 @@
 # benchmarks/npc-socialsignal — E1 多版本 Laya SocialSignal 对照预研
 
 执行合同见 [`tasks/E1-LAYA-MODEL-SELECTION-BENCHMARK-TASK.md`](../../tasks/E1-LAYA-MODEL-SELECTION-BENCHMARK-TASK.md)，信号定义出处见 [`WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md` §10.2](../../WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)。
-状态：**M0/M1/M2 完成，M3 只跑了 dev+calibration（pilot），最终测试集封存待盲审；结论级别＝暂定预研排序，未验收。**
+状态：**pilot 版被 E1R 判 NEED REVISION，M1/M2 与选型验收未通过。** 修正件见 [`E1R-FIXES.md`](E1R-FIXES.md)，其 R1–R5 小节按问题列出了新脚本与新产物（`seal_final.py` / `validate_data_v2.py` / `build_review_artifacts.py` / `inputs.py` / `run_bench_v2.py` / `stability.py` / `make_runtime_copy.py`、`score.py` 已重写、`seal-record-v2.json`、`split-manifest-v2.json`、`calibration/*-lock.json`、`samples/scenarios-final-blind.jsonl`）。下表描述的是 pilot 版，其中盲审包已作废（见 `reviews/README.md`），pilot 原始预测与旧 manifest 全部保留未覆盖。
 
 | 文件 | 内容 |
 |---|---|

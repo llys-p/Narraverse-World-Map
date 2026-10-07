@@ -1,0 +1,1055 @@
+{
+ "split": "dev",
+ "models": {
+  "A": {
+   "primary_items": 150,
+   "primary_latency": {
+    "n": 150,
+    "median_ms": 225.8,
+    "p95_ms": 387.1,
+    "max_ms": 387.1
+   },
+   "conditions": {
+    "perm_rotated": {
+     "status": "ran",
+     "compared_items": 150,
+     "answer_same_rate": 0.62,
+     "flips": 57,
+     "flip_examples": [
+      {
+       "sid": "E1-S001",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.8206,
+       "condition_conf": 0.8566,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S002",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.7879,
+       "condition_conf": 0.6875,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S004",
+       "signal": "social_act",
+       "primary": "不确定",
+       "condition": "中性",
+       "primary_conf": 0.3947,
+       "condition_conf": 0.5182,
+       "gold": "中性"
+      },
+      {
+       "sid": "E1-S005",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "合作",
+       "primary_conf": 0.2823,
+       "condition_conf": 0.3582,
+       "gold": "威胁"
+      },
+      {
+       "sid": "E1-S006",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "威胁",
+       "primary_conf": 0.4717,
+       "condition_conf": 0.7203,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S008",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "示好",
+       "primary_conf": 0.2745,
+       "condition_conf": 0.3492,
+       "gold": "威胁"
+      },
+      {
+       "sid": "E1-S010",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "中性",
+       "primary_conf": 0.2757,
+       "condition_conf": 0.2801,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S011",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.4909,
+       "condition_conf": 0.5215,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S012",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.4401,
+       "condition_conf": 0.6036,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S013",
+       "signal": "social_act",
+       "primary": "不确定",
+       "condition": "合作",
+       "primary_conf": 0.3606,
+       "condition_conf": 0.2756,
+       "gold": "求助"
+      }
+     ],
+     "latency": {
+      "n": 150,
+      "median_ms": 262.5,
+      "p95_ms": 378.9,
+      "max_ms": 378.9
+     }
+    },
+    "perm_reversed": {
+     "status": "ran",
+     "compared_items": 150,
+     "answer_same_rate": 0.6733,
+     "flips": 49,
+     "flip_examples": [
+      {
+       "sid": "E1-S001",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.8206,
+       "condition_conf": 0.8735,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S002",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.7879,
+       "condition_conf": 0.8752,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S004",
+       "signal": "social_act",
+       "primary": "不确定",
+       "condition": "中性",
+       "primary_conf": 0.3947,
+       "condition_conf": 0.4021,
+       "gold": "中性"
+      },
+      {
+       "sid": "E1-S005",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "合作",
+       "primary_conf": 0.2823,
+       "condition_conf": 0.4104,
+       "gold": "威胁"
+      },
+      {
+       "sid": "E1-S006",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "威胁",
+       "primary_conf": 0.4717,
+       "condition_conf": 0.4326,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S010",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "中性",
+       "primary_conf": 0.2757,
+       "condition_conf": 0.4366,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S012",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.4401,
+       "condition_conf": 0.4852,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S014",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "中性",
+       "primary_conf": 0.369,
+       "condition_conf": 0.6503,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S016",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "不确定",
+       "primary_conf": 0.3259,
+       "condition_conf": 0.4029,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S017",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "示好",
+       "primary_conf": 0.354,
+       "condition_conf": 0.6725,
+       "gold": "示好"
+      }
+     ],
+     "latency": {
+      "n": 150,
+      "median_ms": 214.2,
+      "p95_ms": 311.4,
+      "max_ms": 311.4
+     }
+    },
+    "paraphrase": {
+     "status": "ran",
+     "compared_items": 60,
+     "answer_same_rate": 0.6833,
+     "flips": 19,
+     "flip_examples": [
+      {
+       "sid": "E1-S005",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "示好",
+       "primary_conf": 0.2823,
+       "condition_conf": 0.316,
+       "gold": "威胁"
+      },
+      {
+       "sid": "E1-S011",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "威胁",
+       "primary_conf": 0.4909,
+       "condition_conf": 0.8016,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S014",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "中性",
+       "primary_conf": 0.369,
+       "condition_conf": 0.7539,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S016",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "示好",
+       "primary_conf": 0.3259,
+       "condition_conf": 0.4592,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S021",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "威胁",
+       "primary_conf": 0.2881,
+       "condition_conf": 0.4989,
+       "gold": "示好"
+      },
+      {
+       "sid": "E1-S005",
+       "signal": "trust_shift",
+       "primary": "不变",
+       "condition": "上升",
+       "primary_conf": 0.3124,
+       "condition_conf": 0.3117,
+       "gold": "不变"
+      },
+      {
+       "sid": "E1-S008",
+       "signal": "trust_shift",
+       "primary": "下降",
+       "condition": "不变",
+       "primary_conf": 0.5812,
+       "condition_conf": 0.5771,
+       "gold": "下降"
+      },
+      {
+       "sid": "E1-S014",
+       "signal": "trust_shift",
+       "primary": "下降",
+       "condition": "不变",
+       "primary_conf": 0.5092,
+       "condition_conf": 0.3802,
+       "gold": "下降"
+      },
+      {
+       "sid": "E1-S021",
+       "signal": "trust_shift",
+       "primary": "不变",
+       "condition": "不确定",
+       "primary_conf": 0.4011,
+       "condition_conf": 0.318,
+       "gold": "不变"
+      },
+      {
+       "sid": "E1-S001",
+       "signal": "fear_shift",
+       "primary": "不变",
+       "condition": "下降",
+       "primary_conf": 0.4862,
+       "condition_conf": 0.4987,
+       "gold": "不变"
+      }
+     ],
+     "latency": {
+      "n": 60,
+      "median_ms": 200.5,
+      "p95_ms": 282.5,
+      "max_ms": 282.5
+     }
+    },
+    "long": {
+     "status": "ran",
+     "compared_items": 150,
+     "answer_same_rate": 1.0,
+     "flips": 0,
+     "flip_examples": [],
+     "latency": {
+      "n": 150,
+      "median_ms": 256.9,
+      "p95_ms": 322.1,
+      "max_ms": 334.4
+     },
+     "truncation": {
+      "items_with_removed_lines": 0,
+      "items_losing_decisive_evidence": 0,
+      "token_median": 68.0,
+      "head_tokens_measured_median": 46.0,
+      "state_budget": 768
+     }
+    },
+    "probe_malformed": {
+     "status": "ran",
+     "items": 25,
+     "outcomes": {
+      "answered_definitely": 15,
+      "abstained": 10
+     },
+     "per_probe": {
+      "empty": [
+       {
+        "signal": "social_act",
+        "outcome": "answered_definitely",
+        "predicted": "中性",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "answered_definitely",
+        "predicted": "不变",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "无线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "answered_definitely",
+        "predicted": "未越过",
+        "error": null
+       }
+      ],
+      "address_only": [
+       {
+        "signal": "social_act",
+        "outcome": "answered_definitely",
+        "predicted": "中性",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "answered_definitely",
+        "predicted": "不变",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "answered_definitely",
+        "predicted": "不变",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "无线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "answered_definitely",
+        "predicted": "已越过",
+        "error": null
+       }
+      ],
+      "oversized": [
+       {
+        "signal": "social_act",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "有线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "answered_definitely",
+        "predicted": "已越过",
+        "error": null
+       }
+      ],
+      "latin_only": [
+       {
+        "signal": "social_act",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "无线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "answered_definitely",
+        "predicted": "未越过",
+        "error": null
+       }
+      ],
+      "control_chars": [
+       {
+        "signal": "social_act",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "无线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "answered_definitely",
+        "predicted": "未越过",
+        "error": null
+       }
+      ]
+     }
+    }
+   },
+   "truncation_mechanism_proof": {
+    "note": "max_len 320 forces the documented removal order so the code path is exercised",
+    "items_with_removed_lines": 90,
+    "items_losing_decisive_evidence": 0,
+    "boundary_dropped": 35,
+    "example_removed": [
+     "上一回玩家赊了三十钱，隔了半月才还上",
+     "已知边界: 当场银货两讫，不收欠条（他挂在嘴边）"
+    ]
+   }
+  },
+  "B": {
+   "primary_items": 150,
+   "primary_latency": {
+    "n": 150,
+    "median_ms": 162.8,
+    "p95_ms": 275.7,
+    "max_ms": 275.7
+   },
+   "conditions": {
+    "perm_rotated": {
+     "status": "ran",
+     "compared_items": 150,
+     "answer_same_rate": 0.6067,
+     "flips": 59,
+     "flip_examples": [
+      {
+       "sid": "E1-S001",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.4606,
+       "condition_conf": 0.4544,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S004",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "中性",
+       "primary_conf": 0.2351,
+       "condition_conf": 0.2745,
+       "gold": "中性"
+      },
+      {
+       "sid": "E1-S007",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "不确定",
+       "primary_conf": 0.2414,
+       "condition_conf": 0.2199,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S009",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "中性",
+       "primary_conf": 0.241,
+       "condition_conf": 0.2645,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S011",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.2867,
+       "condition_conf": 0.3493,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S015",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "求助",
+       "primary_conf": 0.2821,
+       "condition_conf": 0.3176,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S017",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "示好",
+       "primary_conf": 0.3708,
+       "condition_conf": 0.2332,
+       "gold": "示好"
+      },
+      {
+       "sid": "E1-S021",
+       "signal": "social_act",
+       "primary": "求助",
+       "condition": "威胁",
+       "primary_conf": 0.2631,
+       "condition_conf": 0.212,
+       "gold": "示好"
+      },
+      {
+       "sid": "E1-S023",
+       "signal": "social_act",
+       "primary": "威胁",
+       "condition": "中性",
+       "primary_conf": 0.2688,
+       "condition_conf": 0.2387,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S024",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "不确定",
+       "primary_conf": 0.2831,
+       "condition_conf": 0.2499,
+       "gold": "求助"
+      }
+     ],
+     "latency": {
+      "n": 150,
+      "median_ms": 159.0,
+      "p95_ms": 217.7,
+      "max_ms": 217.7
+     }
+    },
+    "perm_reversed": {
+     "status": "ran",
+     "compared_items": 150,
+     "answer_same_rate": 0.6467,
+     "flips": 53,
+     "flip_examples": [
+      {
+       "sid": "E1-S001",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.4606,
+       "condition_conf": 0.5387,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S002",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.468,
+       "condition_conf": 0.5561,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S004",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "中性",
+       "primary_conf": 0.2351,
+       "condition_conf": 0.2906,
+       "gold": "中性"
+      },
+      {
+       "sid": "E1-S008",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "合作",
+       "primary_conf": 0.2584,
+       "condition_conf": 0.2398,
+       "gold": "威胁"
+      },
+      {
+       "sid": "E1-S011",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "合作",
+       "primary_conf": 0.2867,
+       "condition_conf": 0.3246,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S017",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "示好",
+       "primary_conf": 0.3708,
+       "condition_conf": 0.3659,
+       "gold": "示好"
+      },
+      {
+       "sid": "E1-S023",
+       "signal": "social_act",
+       "primary": "威胁",
+       "condition": "不确定",
+       "primary_conf": 0.2688,
+       "condition_conf": 0.2425,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S025",
+       "signal": "social_act",
+       "primary": "求助",
+       "condition": "合作",
+       "primary_conf": 0.2366,
+       "condition_conf": 0.2245,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S026",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "中性",
+       "primary_conf": 0.2416,
+       "condition_conf": 0.315,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S027",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "示好",
+       "primary_conf": 0.3295,
+       "condition_conf": 0.3683,
+       "gold": "合作"
+      }
+     ],
+     "latency": {
+      "n": 150,
+      "median_ms": 195.5,
+      "p95_ms": 266.2,
+      "max_ms": 327.7
+     }
+    },
+    "paraphrase": {
+     "status": "ran",
+     "compared_items": 60,
+     "answer_same_rate": 0.7167,
+     "flips": 17,
+     "flip_examples": [
+      {
+       "sid": "E1-S008",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "求助",
+       "primary_conf": 0.2584,
+       "condition_conf": 0.2796,
+       "gold": "威胁"
+      },
+      {
+       "sid": "E1-S011",
+       "signal": "social_act",
+       "primary": "示好",
+       "condition": "威胁",
+       "primary_conf": 0.2867,
+       "condition_conf": 0.4006,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S012",
+       "signal": "social_act",
+       "primary": "合作",
+       "condition": "示好",
+       "primary_conf": 0.2643,
+       "condition_conf": 0.3445,
+       "gold": "求助"
+      },
+      {
+       "sid": "E1-S016",
+       "signal": "social_act",
+       "primary": "中性",
+       "condition": "合作",
+       "primary_conf": 0.3538,
+       "condition_conf": 0.3302,
+       "gold": "合作"
+      },
+      {
+       "sid": "E1-S021",
+       "signal": "social_act",
+       "primary": "求助",
+       "condition": "中性",
+       "primary_conf": 0.2631,
+       "condition_conf": 0.2138,
+       "gold": "示好"
+      },
+      {
+       "sid": "E1-S008",
+       "signal": "trust_shift",
+       "primary": "下降",
+       "condition": "不变",
+       "primary_conf": 0.3367,
+       "condition_conf": 0.3156,
+       "gold": "下降"
+      },
+      {
+       "sid": "E1-S014",
+       "signal": "trust_shift",
+       "primary": "下降",
+       "condition": "上升",
+       "primary_conf": 0.3682,
+       "condition_conf": 0.3177,
+       "gold": "下降"
+      },
+      {
+       "sid": "E1-S008",
+       "signal": "fear_shift",
+       "primary": "下降",
+       "condition": "不变",
+       "primary_conf": 0.3518,
+       "condition_conf": 0.3475,
+       "gold": "上升"
+      },
+      {
+       "sid": "E1-S014",
+       "signal": "fear_shift",
+       "primary": "上升",
+       "condition": "下降",
+       "primary_conf": 0.3106,
+       "condition_conf": 0.3617,
+       "gold": "不变"
+      },
+      {
+       "sid": "E1-S016",
+       "signal": "fear_shift",
+       "primary": "下降",
+       "condition": "不确定",
+       "primary_conf": 0.3544,
+       "condition_conf": 0.3505,
+       "gold": "上升"
+      }
+     ],
+     "latency": {
+      "n": 60,
+      "median_ms": 194.9,
+      "p95_ms": 262.7,
+      "max_ms": 262.7
+     }
+    },
+    "long": {
+     "status": "ran",
+     "compared_items": 150,
+     "answer_same_rate": 1.0,
+     "flips": 0,
+     "flip_examples": [],
+     "latency": {
+      "n": 150,
+      "median_ms": 206.1,
+      "p95_ms": 307.4,
+      "max_ms": 307.4
+     },
+     "truncation": {
+      "items_with_removed_lines": 0,
+      "items_losing_decisive_evidence": 0,
+      "token_median": 68.0,
+      "head_tokens_measured_median": 46.0,
+      "state_budget": 768
+     }
+    },
+    "probe_malformed": {
+     "status": "ran",
+     "items": 25,
+     "outcomes": {
+      "abstained": 12,
+      "answered_definitely": 13
+     },
+     "per_probe": {
+      "empty": [
+       {
+        "signal": "social_act",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "answered_definitely",
+        "predicted": "不变",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "无线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "answered_definitely",
+        "predicted": "未越过",
+        "error": null
+       }
+      ],
+      "address_only": [
+       {
+        "signal": "social_act",
+        "outcome": "answered_definitely",
+        "predicted": "中性",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "answered_definitely",
+        "predicted": "下降",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "无线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "answered_definitely",
+        "predicted": "已越过",
+        "error": null
+       }
+      ],
+      "oversized": [
+       {
+        "signal": "social_act",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "有线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "abstained",
+        "predicted": "信息不足",
+        "error": null
+       }
+      ],
+      "latin_only": [
+       {
+        "signal": "social_act",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "有线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "answered_definitely",
+        "predicted": "未越过",
+        "error": null
+       }
+      ],
+      "control_chars": [
+       {
+        "signal": "social_act",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "trust_shift",
+        "outcome": "answered_definitely",
+        "predicted": "下降",
+        "error": null
+       },
+       {
+        "signal": "fear_shift",
+        "outcome": "abstained",
+        "predicted": "不确定",
+        "error": null
+       },
+       {
+        "signal": "deception",
+        "outcome": "answered_definitely",
+        "predicted": "有线索",
+        "error": null
+       },
+       {
+        "signal": "boundary_violation",
+        "outcome": "answered_definitely",
+        "predicted": "已越过",
+        "error": null
+       }
+      ]
+     }
+    }
+   },
+   "truncation_mechanism_proof": {
+    "note": "max_len 320 forces the documented removal order so the code path is exercised",
+    "items_with_removed_lines": 90,
+    "items_losing_decisive_evidence": 0,
+    "boundary_dropped": 35,
+    "example_removed": [
+     "上一回玩家赊了三十钱，隔了半月才还上",
+     "已知边界: 当场银货两讫，不收欠条（他挂在嘴边）"
+    ]
+   }
+  }
+ },
+ "notes": [
+  "paraphrase is author-written and not yet independently confirmed; a flip here may be the rewrite changing meaning, not model instability",
+  "probe_malformed rows carry a placeholder gold and are never counted in any accuracy figure"
+ ]
+}
