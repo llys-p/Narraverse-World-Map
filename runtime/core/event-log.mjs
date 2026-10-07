@@ -3,27 +3,42 @@ import { cloneData, denseArray, fields, identifier, integer, normalizeSystems,
 
 const EVENT_FIELDS = ['eventSeq', 'tick', 'type', 'schemaVersion', 'sourceSystem',
   'commandId', 'causationEventSeqs', 'entityIds', 'payload'];
+import { RESOURCE_RULES, MAX_RESOURCE_DAYS, validateResourceWorld, validateResourcePayload, validateResourceHistory } from './resource-ledger.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
-export function validateFact(raw, systemId) {
+export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
   const fact = cloneData(raw);
   fields(fact, ['type', 'sourceSystem', 'commandId', 'causationEventSeqs', 'entityIds', 'payload']);
-  requireCondition(fact.type === 'FixturePulse' && fact.sourceSystem === systemId && fact.commandId === null, 'System fact identity mismatch');
+  requireCondition(fact.sourceSystem === systemId && fact.commandId === null, 'System fact identity mismatch');
   denseArray(fact.entityIds); requireCondition(fact.entityIds.length === 0, 'Pulse has no entity IDs');
-  fields(fact.payload, ['sample']);
-  requireCondition(typeof fact.payload.sample === 'number' && fact.payload.sample >= 0 && fact.payload.sample < 1, 'Invalid decided sample');
-  denseArray(fact.causationEventSeqs, MAX_EVENTS); payloadBudget(fact.payload);
+  denseArray(fact.causationEventSeqs, MAX_EVENTS);
+  if (rulesVersion === RESOURCE_RULES) {
+    requireCondition(fact.type === 'ResourceDaySettled' && systemId === 'resources', 'Invalid resource fact');
+    validateResourcePayload(fact.payload);
+    requireCondition(fact.causationEventSeqs.length === 0, 'B1 resource fact has no causal references');
+  } else {
+    requireCondition(fact.type === 'FixturePulse', 'Unknown system fact');
+    fields(fact.payload, ['sample']);
+    requireCondition(typeof fact.payload.sample === 'number' && fact.payload.sample >= 0 && fact.payload.sample < 1, 'Invalid decided sample');
+  }
+  payloadBudget(fact.payload);
   return fact;
 }
 
 export function validateEventLog(eventLog, snapshot, systems) {
   normalizeSystems(systems); denseArray(eventLog, MAX_EVENTS);
+  record(snapshot);
+  if (snapshot.rulesVersion === RESOURCE_RULES) {
+    denseArray(eventLog, MAX_RESOURCE_DAYS); validateResourceWorld(snapshot.world);
+  }
   // Clone also rejects getters, hidden properties and non-JSON values in this public entry.
   const events = cloneData(eventLog), state = cloneData(snapshot);
-  record(state); record(state.commandReceipts); fields(state.world, ['resources']); record(state.world.resources);
+  record(state); record(state.commandReceipts); record(state.world); record(state.world.resources);
+  const resourceProfile = state.rulesVersion === RESOURCE_RULES;
+  if (!resourceProfile) fields(state.world, ['resources']);
   integer(state.tick); integer(state.nextEventSeq, 1);
   requireCondition(state.nextEventSeq === events.length + 1, 'Event counter mismatch');
-  const commandEvents = new Map(); let previousTick = 0;
+  const commandEvents = new Map(), resourcePayloads = []; let previousTick = 0;
   for (let index = 0; index < events.length; index++) {
     const event = events[index]; fields(event, EVENT_FIELDS);
     requireCondition(event.eventSeq === index + 1, 'Event sequence gap');
@@ -40,6 +55,7 @@ export function validateEventLog(eventLog, snapshot, systems) {
     }
     payloadBudget(event.payload);
     if (event.type === 'ResourceTransferred') {
+      requireCondition(!resourceProfile, 'B1 forbids cross-unit transfer facts');
       fields(event.payload, ['from', 'to', 'amount']);
       const { from, to, amount } = event.payload;
       identifier(from); identifier(to); integer(amount, 1); identifier(event.commandId);
@@ -49,9 +65,13 @@ export function validateEventLog(eventLog, snapshot, systems) {
       requireCondition(!commandEvents.has(event.commandId), 'Repeated transfer fact');
       commandEvents.set(event.commandId, event);
     } else {
-      requireCondition(event.type === 'FixturePulse' && own(systems, event.sourceSystem), 'Unknown fact type/system');
+      requireCondition(own(systems, event.sourceSystem), 'Unknown fact system');
       const { eventSeq, tick, schemaVersion, ...fact } = event;
-      validateFact(fact, event.sourceSystem);
+      validateFact(fact, event.sourceSystem, state.rulesVersion);
+      if (resourceProfile) {
+        requireCondition(event.tick === event.payload.day * 144, 'Resource fact is not on its daily boundary');
+        resourcePayloads.push(event.payload);
+      }
     }
   }
   for (const [id, receipt] of Object.entries(state.commandReceipts)) {
@@ -76,4 +96,5 @@ export function validateEventLog(eventLog, snapshot, systems) {
     }
   }
   requireCondition(commandEvents.size === 0, 'Fact references missing receipt');
+  if (resourceProfile) validateResourceHistory(state.world, resourcePayloads);
 }

@@ -2,6 +2,7 @@ import { createRng, restoreRng } from './rng.mjs';
 import { restoreClock } from './simulation-clock.mjs';
 import { createScheduler, restoreScheduler } from './scheduler.mjs';
 import { validateEventLog } from './event-log.mjs';
+import { RESOURCE_RULES, MAX_RESOURCE_DAYS, validateResourceWorld } from './resource-ledger.mjs';
 import { cloneData, fields, record, identifier, integer, denseArray, normalizeSystems,
   commandInput, inputFingerprint, requireCondition, fault, MAX_EVENTS } from './data-contract.mjs';
 
@@ -18,7 +19,10 @@ function checkBudgets(snapshot, events) {
   record(snapshot);
   denseArray(events, MAX_EVENTS);
   denseArray(snapshot.scheduledTasks); denseArray(snapshot.pendingCommands);
-  record(snapshot.commandReceipts); fields(snapshot.world, ['resources']); record(snapshot.world.resources);
+  record(snapshot.commandReceipts); record(snapshot.world); record(snapshot.world.resources);
+  if (snapshot.rulesVersion === RESOURCE_RULES) {
+    denseArray(events, MAX_RESOURCE_DAYS); validateResourceWorld(snapshot.world);
+  }
 }
 
 export function validateBundle(bundle, options) {
@@ -32,6 +36,18 @@ export function validateBundle(bundle, options) {
   integer(s.revision); requireCondition(s.revision === s.tick, 'Revision does not match committed tick');
   for (const key of ['nextEntityId', 'nextEventSeq', 'nextInputSeq']) integer(s[key], 1);
   restoreScheduler({ currentTick: s.tick, tasks: s.scheduledTasks }, Object.keys(options.systems));
+  if (s.rulesVersion === RESOURCE_RULES) {
+    validateResourceWorld(s.world);
+    requireCondition(s.fixtureId === 'resource-village' && s.fixtureVersion === '1', 'Unknown resource fixture', 'UNSUPPORTED_VERSION');
+    requireCondition(s.pendingCommands.length === 0 && Object.keys(s.commandReceipts).length === 0 && s.nextInputSeq === 1,
+      'B1 does not accept cross-unit transfer commands');
+    const day = Math.floor(s.tick / 144);
+    requireCondition(s.world.resourceModel.day === day, 'Resource settlement clock mismatch');
+    requireCondition(s.scheduledTasks.length === 1, 'B1 requires one daily resource task');
+    const task = s.scheduledTasks[0];
+    requireCondition(task.taskId === 'daily-resources' && task.systemId === 'resources' && task.intervalTicks === 144 &&
+      task.priority === 10 && task.nextDueTick === (day + 1) * 144, 'Invalid B1 resource schedule');
+  } else fields(s.world, ['resources']);
   for (const [id, balance] of Object.entries(s.world.resources)) { identifier(id); integer(balance); }
   const ids = new Set(), sequences = new Set(); let previousInput = 0;
   const remember = (id, sequence) => {
@@ -63,8 +79,10 @@ export function validateBundle(bundle, options) {
 }
 
 export function createInitialBundle(config, systems) {
-  fields(config, ['rulesVersion', 'simulationId', 'fixtureId', 'fixtureVersion', 'seed', 'resources', 'scheduledTasks', 'commands']);
-  normalizeSystems(systems); denseArray(config.commands); denseArray(config.scheduledTasks); record(config.resources);
+  record(config);
+  const worldField = config.rulesVersion === RESOURCE_RULES ? 'world' : 'resources';
+  fields(config, ['rulesVersion', 'simulationId', 'fixtureId', 'fixtureVersion', 'seed', worldField, 'scheduledTasks', 'commands']);
+  normalizeSystems(systems); denseArray(config.commands); denseArray(config.scheduledTasks); record(config[worldField]);
   const c = cloneData(config);
   for (const key of ['rulesVersion', 'simulationId', 'fixtureId', 'fixtureVersion']) identifier(c[key]);
   const commands = [], seen = new Map(); let nextInputSeq = 1;
@@ -81,7 +99,7 @@ export function createInitialBundle(config, systems) {
     fixtureId: c.fixtureId, fixtureVersion: c.fixtureVersion, tick: 0, tickMinutes: 10, revision: 0,
     rng: createRng(c.seed).getState(), nextEntityId: 1, nextEventSeq: 1, nextInputSeq,
     scheduledTasks: createScheduler({ tasks: c.scheduledTasks }, Object.keys(systems)).tasks,
-    pendingCommands: commands, commandReceipts: {}, world: { resources: c.resources },
+    pendingCommands: commands, commandReceipts: {}, world: worldField === 'world' ? c.world : { resources: c.resources },
   }, eventLog: [] };
   validateBundle(result, { rulesVersion: c.rulesVersion, systems });
   return result;

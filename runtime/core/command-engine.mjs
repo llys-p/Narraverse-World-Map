@@ -3,6 +3,7 @@ import { restoreRng } from './rng.mjs';
 import { restoreClock } from './simulation-clock.mjs';
 import { advanceScheduler } from './scheduler.mjs';
 import { validateFact } from './event-log.mjs';
+import { RESOURCE_RULES } from './resource-ledger.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
@@ -65,11 +66,12 @@ export function advanceOneTick(bundle, systems) {
     // Rules may change resources and allocate entity IDs, never rewrite the input/identity envelope.
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
-      return canonicalJson(protectedFields);
+      return canonicalJson({ ...protectedFields,
+        ...(rulesVersion === RESOURCE_RULES ? { resourceConfig: world.resourceModel.config } : {}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
-      const context = { snapshot: s, rng, emitFact(fact) { return append(validateFact(fact, due.systemId)); } };
+      const context = { snapshot: s, rng, emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
         // Observe rejection so a rejected Promise does not escape as an unhandled host error.

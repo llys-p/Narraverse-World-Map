@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-a4` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-b1` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
@@ -35,6 +35,17 @@ node --test @simulationTests tests/export-boundaries.test.mjs
 产物为summary.json、完整有序inputs.json、events.csv和按revision命名的checkpoint。比较summary的stateHash/eventHash以及完整checkpoint状态/日志；耗时、内存、路径不参与哈希。代码SHA、dirty和sourceHash记录实际代码，不能用dirty运行假装精确HEAD。系统错误非零退出，保留最后成功tick；保存失败明确报错，不覆盖旧档或静默重置。
 
 checkpoint采用同目录hard link独占发布，平台不支持时明确SAVE_FAILED；临时档不作为存档加载。clock-smoke仅测试资源和每日随机事实，完成100天不表示生态平衡、NPC智能或页面接入完成。产物放已忽略的artifacts目录，禁止上传用户真实存档。
+
+### B1：离线资源账本
+
+`resource-village` 是版本化资源实验：80人、粮食/药材生产消费与损耗、整数余量、容量损失、显式配置的外部流量。鹿狼为静态初值，价格与付费贸易尚未实现；不同seed的此确定性fixture应得到相同资源轨迹，RNG暂不使用。
+
+```powershell
+node simulation-runner.mjs --fixture resource-village --days 30 --seed 42 --out artifacts/simulation/resources30
+node simulation-runner.mjs --resume artifacts/simulation/resources30/checkpoint-r4320.json --days 10 --out artifacts/simulation/resources40
+```
+
+额外导出 resource-config.json 与 economy.csv，逐日包含期初、生产/流入、需求/实际消费/缺口、流出/缺口、损耗、容量损失、期末和三种余量。金币保持不变。实验流量来自配置的flows，不是交互命令或付费贸易；inputs.json仍只表示Command队列/回执输入。保存与恢复会逐日复算账本并严格验证完整世界；配置指纹用于一致性检查，不是防恶意修改的数字签名。累计10000资源日为保护预算，不是性能承诺。见[B1合同](tasks/B1-RESOURCE-LEDGER-TASK.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

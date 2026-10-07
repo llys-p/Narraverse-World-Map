@@ -4,12 +4,37 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createClockSmoke, CLOCK_SMOKE_RULES } from './runtime/fixtures/clock-smoke.mjs';
+import { createResourceVillage } from './runtime/fixtures/resource-village.mjs';
+import { RESOURCE_RULES } from './runtime/core/resource-ledger.mjs';
 import { advanceOneTick } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
 
 const root = fileURLToPath(new URL('./', import.meta.url));
 const hash = (value) => createHash('sha256').update(canonicalJson(value), 'utf8').digest('hex');
+const profiles = new Map([
+  ['clock-smoke', { rulesVersion: CLOCK_SMOKE_RULES, create: createClockSmoke }],
+  ['resource-village', { rulesVersion: RESOURCE_RULES, create: createResourceVillage }],
+]);
+
+async function selectSimulation(options) {
+  if (!options.resume) {
+    const profile = profiles.get(options.fixture);
+    requireCondition(profile, 'Unknown fixture');
+    return profile.create(options.seed, `${options.fixture}-seed-${options.seed}`);
+  }
+  // Explicit registered-version dispatch. Only a version mismatch permits the next profile;
+  // corruption, I/O errors and budget failures stop immediately. No legacy shape inference.
+  for (const [fixtureId, profile] of profiles) {
+    const { systems } = profile.create();
+    let bundle;
+    try { bundle = await loadCheckpoint(options.resume, { rulesVersion: profile.rulesVersion, systems }); }
+    catch (error) { if (error.code === 'UNSUPPORTED_VERSION') continue; throw error; }
+    requireCondition(bundle.snapshot.fixtureId === fixtureId && bundle.snapshot.fixtureVersion === '1', 'Unknown fixture version', 'UNSUPPORTED_VERSION');
+    return { bundle, systems };
+  }
+  throw fault('UNSUPPORTED_VERSION', 'Checkpoint does not match a registered fixture/rules version');
+}
 
 export function parseArguments(argv) {
   requireCondition(Array.isArray(argv) && argv.every((value) => typeof value === 'string'), 'Expected argument strings');
@@ -65,6 +90,21 @@ async function writeEvents(file, events) {
   } finally { await handle.close(); }
 }
 
+async function writeEconomy(file, events) {
+  const columns = ['day', 'resource', 'opening', 'production', 'inflow', 'demand', 'consumption', 'unmetConsumption',
+    'requestedOutflow', 'outflow', 'unmetOutflow', 'loss', 'capacityLoss', 'closing',
+    'productionRemainder', 'consumptionRemainder', 'lossRemainder'];
+  const handle = await fs.open(file, 'wx');
+  try {
+    await handle.writeFile(columns.join(',') + '\n');
+    for (const event of events) for (const row of event.payload.entries) {
+      const data = { day: event.payload.day, ...row, productionRemainder: row.remainders.production,
+        consumptionRemainder: row.remainders.consumption, lossRemainder: row.remainders.loss };
+      await handle.writeFile(columns.map(key => String(data[key])).join(',') + '\n');
+    }
+  } finally { await handle.close(); }
+}
+
 export async function runSimulation(options, hooks = {}) {
   fields(options, ['fixture', 'resume', 'days', 'ticks', 'seed', 'out']);
   record(hooks); requireCondition(Object.keys(hooks).every((key) => key === 'transformSystems'), 'Unknown test hook');
@@ -76,11 +116,7 @@ export async function runSimulation(options, hooks = {}) {
   if (options.resume) requireCondition(options.seed === undefined, 'Resume cannot supply seed');
   else { integer(options.seed); requireCondition(options.seed <= 0xffffffff, 'Seed must be uint32'); }
   const started = performance.now(), identity = await codeIdentity();
-  let { bundle, systems } = createClockSmoke(options.seed ?? 42, `clock-smoke-seed-${options.seed ?? 42}`);
-  if (options.resume) {
-    bundle = await loadCheckpoint(options.resume, { rulesVersion: CLOCK_SMOKE_RULES, systems });
-    requireCondition(bundle.snapshot.fixtureId === 'clock-smoke' && bundle.snapshot.fixtureVersion === '1', 'Unknown fixture version', 'UNSUPPORTED_VERSION');
-  } else requireCondition(options.fixture === 'clock-smoke', 'Unknown fixture');
+  let { bundle, systems } = await selectSimulation(options);
   if (hooks.transformSystems) systems = hooks.transformSystems(systems);
   const startTick = bundle.snapshot.tick, directory = path.resolve(options.out);
   try {
@@ -94,14 +130,20 @@ export async function runSimulation(options, hooks = {}) {
   }
   let checkpointPath;
   try {
-    checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: CLOCK_SMOKE_RULES, systems });
+    checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
     await fs.writeFile(path.join(directory, 'inputs.json'), JSON.stringify(completeInputs(bundle.snapshot), null, 2), { flag: 'wx' });
     await writeEvents(path.join(directory, 'events.csv'), bundle.eventLog);
+    const resourceConfig = bundle.snapshot.rulesVersion === RESOURCE_RULES ? bundle.snapshot.world.resourceModel.config : undefined;
+    if (resourceConfig) {
+      await fs.writeFile(path.join(directory, 'resource-config.json'), JSON.stringify(resourceConfig, null, 2), { flag: 'wx' });
+      await writeEconomy(path.join(directory, 'economy.csv'), bundle.eventLog);
+    }
     const summary = { status: failure ? 'failed' : 'succeeded', ...identity, nodeVersion: process.version,
       fixtureId: bundle.snapshot.fixtureId, fixtureVersion: bundle.snapshot.fixtureVersion,
       rulesVersion: bundle.snapshot.rulesVersion, simulationId: bundle.snapshot.simulationId,
       seed: bundle.snapshot.rng.seed, startTick, tick: bundle.snapshot.tick, revision: bundle.snapshot.revision,
       eventCount: bundle.eventLog.length, stateHash: hash(bundle.snapshot), eventHash: hash(bundle.eventLog),
+      ...(resourceConfig ? { resourceConfigHash: hash(resourceConfig) } : {}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,
       elapsedMs: performance.now() - started, memoryUsage: process.memoryUsage(), checkpointPath };
