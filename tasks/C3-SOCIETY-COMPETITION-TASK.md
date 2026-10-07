@@ -25,3 +25,17 @@ TDD：最后1药只有1人成功、最后20工资只有1人领到、钱/库存/�
 ## 给AI
 
 复用C2私账/行动/个人目标，新增多Actor所有权上下文必须从同一世界推导；不得做假快照或虚增余额以骗过旧校验。先规划后按ID提交，提交时资源会被前人改变，失败保留目标状态但无部分经济更新。精确提交推任务分支，更新PROJECT_CONTEXT/Project2；持续推进至用户额度停点，保护其他worktree/同期E预研，不自动合并main或部署/启桥/用模型。
+
+## 实施与验收收口：PASS
+
+2026-10-07（Asia/Shanghai）。本对话直接实施/复核，基准C2 31c4690，实现3756071c05f681e9667d9074c765acdbdbc0f4e1；测试保存点a3fbde653228731e21379817796b93bc0a7fb1b3仅补真实村长public-food引擎用例，runtime未变。新增society模块/fixture/三份测试，复用C2个人账/动作并显式传入同一世界的其他钱包、私人消费和peer收支；没有假余额或skipValidation。批量Actor管理只一次结算公用资源，3人私粮和目标分别更新。内部SocietyAction由规范规划器生成，engine按ID/来源/inputSeq记录成功及拒绝回执；私有session完整规范候选和保存完整重放保留。
+
+Node v24.14.0，最终所有simulation+export-boundaries139/139（原125+新增14），约195秒，diff通过。最后1药/20工资、村长真实paid产8粮/角色目标、转售一药/52金币、下一日买方使用、死者/已有药拒绝、Goal/钱货/来源/顺序/回执/RNG篡改、所有行动整tick回退、磁盘中间失败Goal/持药续跑通过。公开事实访问器和null/异类批策略反例先红后绿，拒绝前不调用getter。
+
+干净3756071实际CLI society-village seed42 100天=40天保存+60天续跑，society-peer-sale4=1天保存+3天续跑，完整snapshot/EventLog、两哈希、society/actions/actors/population/ecology/economy/market/trade八CSV、inputs/配置一致。独立新进程逐步核对3个钱包/私仓合计、所有权移交/真实消费、公共市场资金、每次交易双方现金与药、inputSeq/拒绝回执。首单转售52金币、买方下一日UseMedicine，不能再从公仓扣药；race4第1日村长公药购买成功、猎人拒绝，保留全部资金。
+
+基线100天实测5次实名猎鹿、三人私粮实际消费245、工资680、目标完成145；部分工作日未吃私粮由饥饿规则如实记账，不声称私人需求零缺口。100天约90.7秒，条件为同期全回归，末尾内存不是峰值；三人验证开销明显增加，规模/长程C性能未验收。旧C2 hunter-village100天真实复跑完整checkpoint字节与C2验收相同。
+
+stateHash=3621d0f29b3390f34e21bf2c67b94ababb2350a8c67716caa85c68277f43de30；eventHash=a7857a3a68e465b5ef5fb2376f38aed6f946eb94af246cb8325d9fd125f573f3；societyConfigHash=76d7563a8eedf8cccc3a47b346c4a4e6fde3bc8424aafeae0dbf15eaf6375409；runtime sourceHash=fff194b770da08242808da46d53f7919f9b50ff428d6588d4986398c7261213c。本地忽略artifacts/world-runtime-c3-acceptance-20261007保存comparison.json、consumer-probe.mjs、full-tests/final-full-tests、continuous100/prefix40/resumed60/race4/sale4/sale1/sale-resumed3及c2-compatible100，不上传运行产物。
+
+仅C3通过，C阶段尚缺C4。额度检查剩12%进入用户停点，本轮保存暂停，不开启C4代码。[C4合同](C4-KNOWABLE-MEMORY-RELATION-TASK.md)已准备：可知公告/事实投影、有界记忆/关系实际作用/完整隐私与恢复门槛，未实施。下轮从C3最终分支保存点核对状态/额度继续，不从main控制文档猜运行时代码。不合并源码main、不接页面/模型/桥或旧存档，E预研独立保留。
