@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-06（Asia/Shanghai）。
+更新时间：2026-10-07（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -40,3 +40,8 @@
 ## 下一步
 
 先由用户确定本项目体验目标，再分派一项有界开发；不自行增加大型世界模拟、正式平台迁移或付费验收。
+
+
+## 2026-10-07：世界运行时 / 生态模拟方向已确定
+
+用户已确认下一阶段按“持续运行的世界模拟器”方向推进。核心架构决策见 `WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md`：确定性 SimulationClock + WorldSnapshot/EventLog + World Event Engine + 生态/经济系统 + Population/Persistent Actor + Utility AI/Goal + L0/L1/L2 Simulation LOD；Laya 定位为社会信号/状态解释器，LLM 定位为表达层。第一实现目标不是扩地图 UI，而是 `simulation-runner`：在无玩家、无 UI、无 Laya、无 LLM 条件下让最小村庄运行 100 天并验证因果传播与可复现性。
