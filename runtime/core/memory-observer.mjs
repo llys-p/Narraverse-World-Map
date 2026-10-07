@@ -93,10 +93,11 @@ export function validateMemoryState(state){
   }
 }
 
-function sourceLog(events,observedTick,offset=0){
+function sourceLog(events,observedTick,offset=0,initialActors=[]){
   denseArray(events,EVENT_LIMIT);let tick=0;const commands=new Set();
   for(const [i,e] of events.entries()){
     checkEvent(e);requireCondition(e.eventSeq===offset+i+1 && e.tick>=tick && e.tick<=observedTick,'Disordered/future memory source');tick=e.tick;
+    if(e.type==='PlayerDaySettled')requireCondition(initialActors.some(a=>a.actorId===e.payload.actorId),'Player daily fact references unregistered observer identity');
     if(e.type==='SocietyActionCommitted'){
       requireCondition(!commands.has(e.commandId) && e.tick===e.payload.day*144,'Repeated/off-clock personal source');commands.add(e.commandId);
     }
@@ -136,7 +137,7 @@ function consume(state,events,observedTick,startIndex=state.cursor){
 // must additionally replay the original roster and observation ticks from the engine.
 export function validateMemoryHistory(state,events){
   validateMemoryState(state);denseArray(events,EVENT_LIMIT);requireCondition(state.cursor<=events.length,'Memory cursor lacks source');
-  const prefix=events.slice(0,state.cursor);sourceLog(prefix,state.lastObservedTick);
+  const prefix=events.slice(0,state.cursor);sourceLog(prefix,state.lastObservedTick,0,state.initialActors);
   const expected=consume(createMemoryState(state.initialActors),prefix,state.lastObservedTick);
   const withoutTimes=s=>s.actors.map(a=>({...a,memories:a.memories.map(({observedTick,...m})=>m)}));
   requireCondition(canonicalJson(withoutTimes(state))===canonicalJson(withoutTimes(expected)),'Memory projection/retention/relation source mismatch');
@@ -144,7 +145,7 @@ export function validateMemoryHistory(state,events){
 
 export function advanceActorMemory(state,events,observedTick){
   integer(observedTick);validateMemoryHistory(state,events);requireCondition(observedTick>=state.lastObservedTick,'Observation time moved backward');
-  sourceLog(events,observedTick);
+  sourceLog(events,observedTick,0,state.initialActors);
   if(events.length===state.cursor)return cloneData(state);
   const result=consume(cloneData(state),events,observedTick);validateMemoryState(result);return result;
 }
@@ -156,7 +157,7 @@ export function advanceActorMemory(state,events,observedTick){
 export function reduceMemoryFacts(state,newFacts,observedTick){
   integer(observedTick);validateMemoryState(state);denseArray(newFacts,EVENT_LIMIT-state.cursor);
   requireCondition(observedTick>=state.lastObservedTick,'Observation time moved backward');
-  sourceLog(newFacts,observedTick,state.cursor);
+  sourceLog(newFacts,observedTick,state.cursor,state.initialActors);
   if(newFacts.length===0)return cloneData(state);
   const result=consume(cloneData(state),newFacts,observedTick,0);validateMemoryState(result);return result;
 }

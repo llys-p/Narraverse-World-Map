@@ -91,12 +91,14 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
       task.systemId === 'market' && task.intervalTicks === 144 && task.priority === 10 && task.nextDueTick === (day + 1) * 144, 'Invalid market settlement schedule');
   } else if (s.rulesVersion === ACTOR_RULES) {
     validateActorWorld(s.world);
+    requireCondition(s.world.actorModel.config.version==='actor-config-v1','Actor rules/config mismatch','UNSUPPORTED_VERSION');
     requireCondition(['actor-village','actor-needs','actor-shortage'].includes(s.fixtureId) && s.fixtureVersion==='1', 'Unknown Actor fixture', 'UNSUPPORTED_VERSION');
     const day=Math.floor(s.tick/144),task=s.scheduledTasks[0];
     requireCondition(s.world.actorModel.day===day && s.nextEntityId===s.world.actorModel.actors.length+1 && s.scheduledTasks.length===1 &&
       task.taskId==='daily-actors' && task.systemId==='actors' && task.intervalTicks===144 && task.priority===10 && task.nextDueTick===(day+1)*144,'Invalid Actor schedule/identity counter');
   }else if(s.rulesVersion===HUNTER_RULES){
     validateHunterWorld(s.world);
+    requireCondition(s.world.actorModel.config.version==='actor-config-v1','Hunter rules/Actor config mismatch','UNSUPPORTED_VERSION');
     requireCondition(['hunter-village','hunter-recovery','hunter-hunger'].includes(s.fixtureId) && s.fixtureVersion==='1','Unknown Hunter fixture','UNSUPPORTED_VERSION');
     const day=Math.floor(s.tick/144),task=s.scheduledTasks[0];
     requireCondition(s.world.hunterModel.day===day && s.world.hunterModel.lastActionDay<=day && s.nextEntityId===s.world.actorModel.actors.length+1 &&
