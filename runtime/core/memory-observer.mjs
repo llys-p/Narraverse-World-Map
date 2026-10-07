@@ -45,7 +45,7 @@ function checkEvent(event){
 export function projectActorEvent(raw,actorId,location='village'){
   identifier(actorId);checkEvent(raw);const event=cloneData(raw),p=event.payload;
   if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type))return location==='forest'?[]:[entry(event,actorId,'public',0,{type:event.type,...cloneData(p)})];
-  if(event.type==='PlayerActionCommitted')return actorId==='actor-4'?[entry(event,actorId,'self',1,{type:'player-action',...cloneData(p)})]:[];
+  if(event.type==='PlayerActionCommitted')return actorId==='actor-4'?[entry(event,actorId,'self',1,{...cloneData(p),action:p.type,type:'player-action'})]:[];
   if(event.type==='SocietyActionCommitted'){
     if(!event.entityIds.includes(actorId))return [];
     if(p.action==='SellMedicine')return [entry(event,actorId,'interaction',2,{type:'medicine-trade',sellerId:p.actorId,buyerId:p.buyerId,
