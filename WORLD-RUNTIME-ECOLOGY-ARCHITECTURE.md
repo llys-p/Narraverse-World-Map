@@ -161,6 +161,8 @@ Node 文件 adapter 一次保存完整 bundle：`{ formatVersion: 1, snapshot, e
 
 初始保护预算：单次推进最多 144000 tick，单文件 64 MiB，累计事实事件 1000000 条；任务/待处理命令/回执集合各最多 100000 项；单条命令/事件 payload 最多 64 KiB（UTF-8 JSON）。入队和提交前检查，触限显式失败，不截断历史后继续。这些是保护上限，不是性能能力证明；B 实测不足时先调整并记录依据。
 
+A1 独立验收补充（2026-10-07）：调度器单次到期结果最多1000000项，在展开前预检总次数及下一到期点溢出；跨度预算不能代替结果量预算。任务数组必须密集，普通数据对象不能接受Date等异类对象并静默缺省。修正验收见 [A1R任务书](tasks/A1R-SCHEDULER-LIMITS-TASK.md)。
+
 ## 6. A 阶段任务与验收
 
 新模块使用 `.mjs` 和 Node 内置模块，不更改根目录模块解析方式、不引入第三方依赖。路径建议为 `runtime/core/`、`runtime/persistence/`、`tests/simulation/` 和根目录 `simulation-runner.mjs`。后续按需增加 systems/actors，不先建空系统。
