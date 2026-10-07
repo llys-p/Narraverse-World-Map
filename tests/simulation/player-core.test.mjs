@@ -13,6 +13,11 @@ import { buildPlayerKnowledge } from '../../runtime/knowledge/player-knowledge.m
 import { createPersonalityNeutral } from '../../runtime/fixtures/personality-village.mjs';
 import { createMemoryVillage } from '../../runtime/fixtures/memory-village.mjs';
 import { applyMemoryAction } from '../../runtime/core/memory-runtime.mjs';
+import { createActorVillage } from '../../runtime/fixtures/actor-village.mjs';
+import { createHunterVillage } from '../../runtime/fixtures/hunter-village.mjs';
+import { defaultActorConfig } from '../../runtime/core/actors.mjs';
+import { defaultHunterConfig } from '../../runtime/core/hunter.mjs';
+import { createMemoryState,reduceMemoryFacts } from '../../runtime/core/memory-observer.mjs';
 const run=(config,days=1)=>{const f=createPlayerVillage(42,'player-village',config),s=createSimulationSession(f.bundle,f.systems);s.advanceTicks(days*144);return s.getBundle();};
 test('D2B four residents replace anonymous share; initial assets transfer once from public stock',()=>{
  const c=defaultPlayerConfig(),w=createPlayerWorld(c),p=w.playerModel;
@@ -93,4 +98,26 @@ test('D2B public validation rejects nested version getters and checks event budg
  const b=createPlayerVillage().bundle;b.eventLog=Array(140001).fill(null);
  Object.defineProperty(b.snapshot.world.actorModel.actors[3],'health',{enumerable:true,get(){reads++;return 1000;}});
  assert.throws(()=>buildPlayerKnowledge(b),e=>e.code==='LIMIT_EXCEEDED');assert.equal(reads,0);
+});
+test('D2B new Actor schema is forbidden by old C1 and C2 envelopes',()=>{
+ const c=defaultActorConfig();c.version='actor-config-v2';c.initialActors.push(defaultPlayerConfig().society.actors.initialActors[3]);
+ assert.throws(()=>createActorVillage(42,'old-actor2',c),e=>e.code==='UNSUPPORTED_VERSION');
+ const h=defaultHunterConfig();h.actors=c;assert.throws(()=>createHunterVillage(42,'old-hunter2',h),e=>e.code==='UNSUPPORTED_VERSION');
+});
+test('D2B standalone observer rejects PlayerDay outside its registered roster',()=>{
+ const event={eventSeq:1,schemaVersion:1,tick:144,type:'PlayerDaySettled',sourceSystem:'society',commandId:null,entityIds:[],causationEventSeqs:[],
+  payload:{day:1,actorId:'actor-4',privateFood:1,wallet:100,inventory:{food:2,herbs:1},ledger:{foodUsed:1}}};
+ const old=createMemoryState([1,2,3].map(i=>({actorId:'actor-'+i,alive:true})));
+ assert.throws(()=>reduceMemoryFacts(old,[event],144));assert.equal(old.cursor,0);
+ const player=createMemoryState([...old.initialActors,{actorId:'actor-4',alive:true}]),observed=reduceMemoryFacts(player,[event],144);
+ assert.equal(observed.cursor,1);assert.equal(observed.actors[3].memories[0].observable.type,'player-day');
+});
+test('D2B initially dead player retains assets and has no new observations; tombstone edits fail full replay',()=>{
+ const c=defaultPlayerConfig();c.society.actors.initialActors[3].health=0;const b=run(c,2),w=b.snapshot.world;
+ assert.equal(w.actorModel.actors[3].deathTick,0);assert.deepEqual(w.playerModel.inventory,{food:3,herbs:1});assert.equal(w.playerModel.wallet,100);
+ assert.equal(w.playerModel.ledger.foodUsed,0);assert.deepEqual(w.memoryModel.observer.actors[3].memories,[]);
+ const k=buildPlayerKnowledge(b);assert.equal(k.self.identity.alive,false);assert.equal(k.self.identity.deathTick,0);
+ for(const mutate of [b=>{b.snapshot.world.actorModel.actors[3].deathTick=144;},b=>{b.snapshot.world.memoryModel.observer.actors[3].alive=true;}]){
+  const corrupt=structuredClone(b);mutate(corrupt);assert.throws(()=>validateBundle(corrupt,{rulesVersion:PLAYER_RULES,systems:playerSystems()}));
+ }
 });
