@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 16:39（Asia/Shanghai）。
+更新时间：2026-10-07 16:43（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -68,7 +68,7 @@
 
 ## 下一步
 
-A/B及C1～C3单项已通过；源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-c3，基准C2 31c4690，实现3756071，最终测试保存点 `a3fbde653228731e21379817796b93bc0a7fb1b3`（仅补真实村长消费者测试，runtime指纹不变）；最终交接 `13b137c798fca9a9534e3d6daf83786b47562250` 已推origin（末次仅文档同步）。139/139全回归，干净100=40+60/转售4=1+3完整状态事件CSV一致、三私账/竞争/peer现金药账核对通过，旧C2 100日字节未变。下一项[C4可知记忆/关系合同](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)已准备但代码未开始，C阶段未验收。2026-10-07五小时额度检查剩12%，本轮保存暂停，不再开新代码；源码不合并main，不接UI/模型/旧存档，E预研独立。
+A/B及C1～C3单项已通过，C3最终交接13b137c已推origin；139/139全回归，100=40+60、转售4=1+3完整状态/事件/CSV一致，旧C2 100日字节不变。C4观察层8a02917已推origin；从13b137c在D:\Narraverse-World-Map-a2 @ codex/world-runtime-c4开工：真实C3事实的可见性投影、32条记忆/cursor去重、双向交易trust、死亡封存定向9/9、全simulation+边界148/148（原139+新9，132.7秒）。真实独立观察器15日=6日磁盘存盘+9日续跑、完整C3世界/记忆逐字段一致。尚未接公告/规划优惠/等待、Snapshot与完整存档重放、knowledge及CLI；C4/C阶段未验收。[合同与当前切片](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)。额度窗口刷新后继续已授权实现；源码不合并main、不接UI/模型/旧存档，E预研独立。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -80,8 +80,8 @@ A/B及C1～C3单项已通过；源码D:\Narraverse-World-Map-a2 @ codex/world-ru
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
-- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`、C2 `PVTI_lAHOEF9IDs4BmADfzg_EnoU`、C3 `PVTI_lAHOEF9IDs4BmADfzg_FGww`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
+- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`、C2 `PVTI_lAHOEF9IDs4BmADfzg_EnoU`、C3 `PVTI_lAHOEF9IDs4BmADfzg_FGww`、C4 `PVTI_lAHOEF9IDs4BmADfzg_Fov0`（进行中）。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4与阶段A门槛、阶段B校准配置门槛及C1～C3单项已通过，C阶段进行中，C4合同已准备但未实现，D～G主线未开始。E阶段待开始；E1工具及长dev输入/信任反例限定收口，下一项[新400条路线/首批30条dev合同](tasks/E1-CORPUS400-TASK.md)待派发，五信号规范/数据质量仍需双复核。首次仅30条，不直接扩满400或开final160；旧125/小批/封存保留，不训练/装CUDA/启E2或qoder_cron。
+- A1～A4与阶段A门槛、阶段B校准配置门槛及C1～C3单项已通过，C阶段进行中，C4观察层已实现，完整C4进行中，D～G主线未开始。E阶段待开始；E1工具及长dev输入/信任反例限定收口，下一项[新400条路线/首批30条dev合同](tasks/E1-CORPUS400-TASK.md)待派发，五信号规范/数据质量仍需双复核。首次仅30条，不直接扩满400或开final160；旧125/小批/封存保留，不训练/装CUDA/启E2或qoder_cron。
