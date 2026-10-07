@@ -1,0 +1,7 @@
+# 本目录的数据与结果文件必须按 LF 存储与检出。
+# 原因：split-manifest.json 里记录的是按 LF 计算的 sha256，而本机 git 默认 core.autocrlf=true；
+# 若检出成 CRLF，中控复跑时的内容哈希校验会全部假阳性失配。
+*.jsonl text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.py    text eol=lf

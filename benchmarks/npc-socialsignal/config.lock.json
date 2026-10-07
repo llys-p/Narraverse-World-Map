@@ -1,0 +1,237 @@
+{
+ "candidates": {
+  "A": {
+   "card_self_report": null,
+   "files": {
+    "README.md": {
+     "bytes": 9346,
+     "git_blob_sha1": "7f1ed25382d64b84a31c7a4f509325ddaa4aacb7",
+     "sha256": "e85d16c3fe35fe7094ef51a7cfa81144a5cc07558e5faddcff753a8153e38a0b"
+    },
+    "config.json": {
+     "bytes": 160,
+     "git_blob_sha1": "7b4305a11f6d6936882e99492abe8e34d8ae6e3a",
+     "sha256": "7add7c041b53f7091e65908553af79ab3f077946e5f2312d510ae13b17c7c134"
+    },
+    "encoder/config.json": {
+     "bytes": 1938,
+     "git_blob_sha1": "0de0e2d30638873790cf962def52e2acf4db3eef",
+     "sha256": "83f6916d13ef0f556ac461f28308dc2bffa7ebeadee8ec9e2db5812020ea5bb4"
+    },
+    "model.safetensors": {
+     "bytes": 643835514,
+     "git_blob_sha1": "412fd5f4e5c35b1f8ebb115d7a336e0ee9e10204",
+     "sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204"
+    },
+    "rl_agent_config.json": {
+     "bytes": 472,
+     "git_blob_sha1": "00e35f88bb731bb9126a914666ab1cdac8a204c8",
+     "sha256": "25061739243b617ad88d1219ba6f8a9c86c5881ca28df024fa2d9b3b2fcc30c6"
+    },
+    "tokenizer/tokenizer.json": {
+     "bytes": 34363188,
+     "git_blob_sha1": "3dffedf14362af4e5c18fb74ce9a64a83417f529",
+     "sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f"
+    },
+    "tokenizer/tokenizer_config.json": {
+     "bytes": 502,
+     "git_blob_sha1": "eea1ed61121530d74c1722dc2aab6ec917a75909",
+     "sha256": "424b69444bf7b5809dc2cd2e36d0bd71b8055124dd24274d6db3c655d38205e7"
+    }
+   },
+   "license_claim": "apache-2.0",
+   "local_dir": "D:/ModelBench/laya/weights/A",
+   "model_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+   "repo": "convaiinnovations/laya-multilingual",
+   "rev": "1720e3e3357cfe1e281542e223f8273b0890ca34",
+   "status": "runnable",
+   "verify": {
+    "mismatch": [],
+    "not_in_official_tree": [],
+    "official_hash_source": "GET https://huggingface.co/api/models/{repo}/tree/{rev}?recursive=1&blobs=1 -> lfs.oid",
+    "verified_against_official_revision": [
+     "README.md",
+     "config.json",
+     "encoder/config.json",
+     "model.safetensors",
+     "rl_agent_config.json",
+     "tokenizer/tokenizer.json",
+     "tokenizer/tokenizer_config.json"
+    ]
+   }
+  },
+  "B": {
+   "card_self_report": "0.786 on the author's own typed-decisions test set - NOT a Narraverse result",
+   "files": {
+    "README.md": {
+     "bytes": 931,
+     "git_blob_sha1": "7a860ce3d31fc71c3eddc2f283eb89caf6062e06",
+     "sha256": "4647cfd5d28521d02083721216bad198c4300edaa34993da9eac2e829f3ef233"
+    },
+    "benchmark_report.json": {
+     "bytes": 718,
+     "git_blob_sha1": "ad3f45efbfe7479fb8952b3d89398eefe394b791",
+     "sha256": "7b7f0b3c3e1dd1fadb0c69427c05310d52733dfd1a7b4e8d703bc5f6ec042669"
+    },
+    "encoder/config.json": {
+     "bytes": 1939,
+     "git_blob_sha1": "8d3f43bcb8123f53f9ecb0742f08ce112c43c4b2",
+     "sha256": "fad4076bcae03044a509e35a2d36c1cdff482fd4c2d6e7c5d187bbc7d8b91590"
+    },
+    "model.safetensors": {
+     "bytes": 643835524,
+     "git_blob_sha1": "4591fb33469eb120f8985ea0fc33e8907f8ce8ed",
+     "sha256": "194544a0ff0f05e681dc637d397a92f5d46c80da00d1d0c7912502b64187c98f"
+    },
+    "rl_agent_config.json": {
+     "bytes": 630,
+     "git_blob_sha1": "adb88601068c360060fc8c605af96922f1db421d",
+     "sha256": "adb5a6704aa93a6ec84e008efb08c47172428482ce57525a0fbaf9cfdc5a3442"
+    },
+    "tokenizer/tokenizer.json": {
+     "bytes": 34363188,
+     "git_blob_sha1": "3dffedf14362af4e5c18fb74ce9a64a83417f529",
+     "sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f"
+    },
+    "tokenizer/tokenizer_config.json": {
+     "bytes": 624,
+     "git_blob_sha1": "0580b8d3f34967bb1a0e5e7c62da561ed787d51d",
+     "sha256": "f2ff584a8f78ac9f3b6fd0afcf9ab310e41c2d445ef628f9ab4b0d594e992b7a"
+    },
+    "train_laya.py": {
+     "bytes": 21714,
+     "git_blob_sha1": "56bd01bd1abfb649ffd47aff71c83095ba2b7cc1",
+     "sha256": "dbdf32ebdc7778dec814f4954620d2a503875248365b88cccf59dffe298a98fb"
+    }
+   },
+   "license_claim": "apache-2.0",
+   "local_dir": "D:/ModelBench/laya/weights/B",
+   "model_sha256": "194544a0ff0f05e681dc637d397a92f5d46c80da00d1d0c7912502b64187c98f",
+   "repo": "SGK86/laya-multilingual-typed-decisions",
+   "rev": "8fc29deeba77c74004756dfd64217287b1e52e47",
+   "status": "runnable",
+   "verify": {
+    "mismatch": [],
+    "not_in_official_tree": [],
+    "official_hash_source": "GET https://huggingface.co/api/models/{repo}/tree/{rev}?recursive=1&blobs=1 -> lfs.oid",
+    "verified_against_official_revision": [
+     "README.md",
+     "benchmark_report.json",
+     "encoder/config.json",
+     "model.safetensors",
+     "rl_agent_config.json",
+     "tokenizer/tokenizer.json",
+     "tokenizer/tokenizer_config.json",
+     "train_laya.py"
+    ]
+   }
+  },
+  "C": {
+   "blocker": "laya_mlx -> import mlx.core fails on this host: ImportError: DLL load failed while importing core: 找不到指定的模块。 | PyPI win_amd64 wheels for mlx exist only for 0.32.0-0.32.3 (no older version to bisect); `pip install mlx[cpu]` adds no runtime package on Windows; all directly referenced DLLs (MSVCP140/VCRUNTIME140(_1)/ucrt/api-ms) resolve individually. Per task book: candidate C is reported as NOT TESTED on this environment; its model-card numbers are not used as a substitute.",
+   "card_self_report": "0.750 vs 0.681 on 1116 held-out decisions over 9 task heads - NOT a Narraverse result",
+   "files": {
+    "README.md": {
+     "bytes": 3213,
+     "git_blob_sha1": "999395193d917e571c913cda5b41f77ecce572ee",
+     "sha256": "2f9059efdee8fc8db9be37804eb1542334a90ac9514ab86fd30a3fe7b4442b02"
+    },
+    "encoder/config.json": {
+     "bytes": 1938,
+     "git_blob_sha1": "0de0e2d30638873790cf962def52e2acf4db3eef",
+     "sha256": "83f6916d13ef0f556ac461f28308dc2bffa7ebeadee8ec9e2db5812020ea5bb4"
+    },
+    "mlx_config.json": {
+     "bytes": 185,
+     "git_blob_sha1": "9c92457cb91698d28414ba68f53b9f9400a645b0",
+     "sha256": "f6efc95a4fb004a37c86cdf8d24153ddad9f86348abb56e7f04b9681418c3776"
+    },
+    "model.safetensors": {
+     "bytes": 643835426,
+     "git_blob_sha1": "fa30205e835d439a42f7f4e96a17e66bde6f78c5",
+     "sha256": "de30b056fa1540ae8aca4c7f45fbd8344f6687d2726111eaf5bb246e1c3fd887"
+    },
+    "rl_agent_config.json": {
+     "bytes": 473,
+     "git_blob_sha1": "68c59e63298a03b7c9ce44a80211d3d446cb92ca",
+     "sha256": "9a669a70961064c3c6cc76d2afb8bc5fb10dcd8349bb66e5f7b9b1afb74440d5"
+    },
+    "tokenizer/tokenizer.json": {
+     "bytes": 34363188,
+     "git_blob_sha1": "3dffedf14362af4e5c18fb74ce9a64a83417f529",
+     "sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f"
+    },
+    "tokenizer/tokenizer_config.json": {
+     "bytes": 524,
+     "git_blob_sha1": "c255ac0c8cb34a37d066cd0dafe313fd769d27ae",
+     "sha256": "6c6b2d8e3c84ce0e671c129cd6b374b235d6f9863042a5836358d00a89bbb5a1"
+    }
+   },
+   "license_claim": "apache-2.0",
+   "local_dir": "D:/ModelBench/laya/weights/C",
+   "model_sha256": "de30b056fa1540ae8aca4c7f45fbd8344f6687d2726111eaf5bb246e1c3fd887",
+   "repo": "ZLHAOOO/laya-mlx-zh",
+   "rev": "0d5398ca9f41d5a7823e536eb6ad58e53c86872b",
+   "status": "blocked",
+   "verify": {
+    "mismatch": [],
+    "not_in_official_tree": [],
+    "official_hash_source": "GET https://huggingface.co/api/models/{repo}/tree/{rev}?recursive=1&blobs=1 -> lfs.oid",
+    "verified_against_official_revision": [
+     "README.md",
+     "encoder/config.json",
+     "mlx_config.json",
+     "model.safetensors",
+     "rl_agent_config.json",
+     "tokenizer/tokenizer.json",
+     "tokenizer/tokenizer_config.json"
+    ]
+   },
+   "weights_acquired": true
+  }
+ },
+ "generated_at": "2026-10-07T12:28:36+08:00",
+ "generated_by": "scripts/make_lock.py",
+ "host": {
+  "arch": "AMD64",
+  "gpu_advertised": "NVIDIA GeForce RTX 4060 Laptop GPU 8GB (driver 595.71)",
+  "platform": "Windows 10",
+  "python": "3.11.5",
+  "torch_backend_note": "installed torch is the CPU wheel, so inference runs on CPU; the CUDA deployment path is measured separately or left untested, never inferred from vendor millisecond claims"
+ },
+ "known_side_effects": {
+  "laya.load_mutates_checkpoint_dir": {
+   "evidence": "pristine blob_sha1 eea1ed61121530d74c1722dc2aab6ec917a75909 (502 B, fetched raw from the pinned revision) became blob_sha1 1c711b65c36726ca864b67cb63be425b2de2b55d (545 B) after laya.load(...); transformers rewrites extra_special_tokens from a list into a dict. Weights and tokenizer.json are untouched (sha256 re-verified identical), so predictions are not affected, but any hash check done after a load will report a false mismatch.",
+   "file": "tokenizer/tokenizer_config.json",
+   "handling": "config.lock.json is generated from a pristine snapshot taken before any load; small config files are also copied to <base>/pristine/<ID>/ for restore-and-recheck. Restore with cp pristine/<ID>/tokenizer_tokenizer_config.json <weights>/<ID>/tokenizer/tokenizer_config.json",
+   "observed": true
+  }
+ },
+ "packages": {
+  "huggingface_hub": "1.33.0",
+  "laya": "0.3.28",
+  "laya-mlx": "0.3.0",
+  "mlx": "0.32.3",
+  "numpy": "2.4.6",
+  "safetensors": "0.8.0",
+  "tokenizers": "0.23.2",
+  "torch": "2.14.1",
+  "transformers": "5.18.0"
+ },
+ "revision_discrepancy_note": "Upstream `laya` SDK pins convaiinnovations/laya-multilingual at revision e4e9ddf21a7b1903b7acffd8814ad4307bf63a67, while this task book pinned 1720e3e3357cfe1e281542e223f8273b0890ca34. Local files were fetched at the pinned revision and verified byte-for-byte against HF's published hash for that revision, so the benchmark runs on the pinned weights, not the SDK default. Any later claim of equivalence with the SDK default revision needs its own diff.",
+ "schema": "e1-lock-v1",
+ "sdk_probes": {
+  "laya": {
+   "has_load": true,
+   "import_ok": true,
+   "sdk_pinned_revisions": {
+    "convaiinnovations/laya": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+    "convaiinnovations/laya-multilingual": "e4e9ddf21a7b1903b7acffd8814ad4307bf63a67",
+    "convaiinnovations/laya-typed-decisions": "1a793eb568e6718f15941d08f85432581df534e3"
+   }
+  },
+  "mlx": {
+   "error": "ImportError: DLL load failed while importing core: 找不到指定的模块。",
+   "import_ok": false
+  }
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "A": {
+  "repo": "convaiinnovations/laya-multilingual",
+  "rev": "1720e3e3357cfe1e281542e223f8273b0890ca34",
+  "files": {
+   ".gitattributes": [
+    "f1ca65ce6a5b0774360fde1ec05157d9f937aaa2",
+    1580
+   ],
+   "README.md": [
+    "7f1ed25382d64b84a31c7a4f509325ddaa4aacb7",
+    9346
+   ],
+   "config.json": [
+    "7b4305a11f6d6936882e99492abe8e34d8ae6e3a",
+    160
+   ],
+   "encoder/config.json": [
+    "0de0e2d30638873790cf962def52e2acf4db3eef",
+    1938
+   ],
+   "model.safetensors": [
+    "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+    643835514
+   ],
+   "rl_agent_config.json": [
+    "00e35f88bb731bb9126a914666ab1cdac8a204c8",
+    472
+   ],
+   "tokenizer/tokenizer.json": [
+    "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+    34363188
+   ],
+   "tokenizer/tokenizer_config.json": [
+    "eea1ed61121530d74c1722dc2aab6ec917a75909",
+    502
+   ]
+  }
+ },
+ "B": {
+  "repo": "SGK86/laya-multilingual-typed-decisions",
+  "rev": "8fc29deeba77c74004756dfd64217287b1e52e47",
+  "files": {
+   ".gitattributes": [
+    "7c484af5c24da0172d1b29eaa9e9f6a56fa9a785",
+    1659
+   ],
+   "README.md": [
+    "7a860ce3d31fc71c3eddc2f283eb89caf6062e06",
+    931
+   ],
+   "benchmark_report.json": [
+    "ad3f45efbfe7479fb8952b3d89398eefe394b791",
+    718
+   ],
+   "checkpoint_latest/checkpoint_meta.json": [
+    "779a1ca26612dd5257016da7b853505738b97317",
+    71
+   ],
+   "checkpoint_latest/encoder/config.json": [
+    "8d3f43bcb8123f53f9ecb0742f08ce112c43c4b2",
+    1939
+   ],
+   "checkpoint_latest/model.safetensors": [
+    "194544a0ff0f05e681dc637d397a92f5d46c80da00d1d0c7912502b64187c98f",
+    643835524
+   ],
+   "checkpoint_latest/tokenizer/tokenizer.json": [
+    "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+    34363188
+   ],
+   "checkpoint_latest/tokenizer/tokenizer_config.json": [
+    "63bdcaffa28113cdad1b353ae7ed75af2a6e50d2",
+    666
+   ],
+   "encoder/config.json": [
+    "8d3f43bcb8123f53f9ecb0742f08ce112c43c4b2",
+    1939
+   ],
+   "model.safetensors": [
+    "194544a0ff0f05e681dc637d397a92f5d46c80da00d1d0c7912502b64187c98f",
+    643835524
+   ],
+   "rl_agent_config.json": [
+    "adb88601068c360060fc8c605af96922f1db421d",
+    630
+   ],
+   "tokenizer/tokenizer.json": [
+    "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+    34363188
+   ],
+   "tokenizer/tokenizer_config.json": [
+    "0580b8d3f34967bb1a0e5e7c62da561ed787d51d",
+    624
+   ],
+   "train_laya.py": [
+    "56bd01bd1abfb649ffd47aff71c83095ba2b7cc1",
+    21714
+   ]
+  }
+ },
+ "C": {
+  "repo": "ZLHAOOO/laya-mlx-zh",
+  "rev": "0d5398ca9f41d5a7823e536eb6ad58e53c86872b",
+  "files": {
+   ".gitattributes": [
+    "f1ca65ce6a5b0774360fde1ec05157d9f937aaa2",
+    1580
+   ],
+   "README.md": [
+    "999395193d917e571c913cda5b41f77ecce572ee",
+    3213
+   ],
+   "encoder/config.json": [
+    "0de0e2d30638873790cf962def52e2acf4db3eef",
+    1938
+   ],
+   "mlx_config.json": [
+    "9c92457cb91698d28414ba68f53b9f9400a645b0",
+    185
+   ],
+   "model.safetensors": [
+    "de30b056fa1540ae8aca4c7f45fbd8344f6687d2726111eaf5bb246e1c3fd887",
+    643835426
+   ],
+   "rl_agent_config.json": [
+    "68c59e63298a03b7c9ce44a80211d3d446cb92ca",
+    473
+   ],
+   "tokenizer/tokenizer.json": [
+    "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+    34363188
+   ],
+   "tokenizer/tokenizer_config.json": [
+    "c255ac0c8cb34a37d066cd0dafe313fd769d27ae",
+    524
+   ]
+  }
+ }
+}

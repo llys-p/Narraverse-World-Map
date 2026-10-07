@@ -1,0 +1,978 @@
+{
+ "split": "dev",
+ "condition": "primary",
+ "models": {
+  "A": {
+   "social_act": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.1,
+    "macro_f1": 0.0694,
+    "classes_present": [
+     "威胁",
+     "示好",
+     "求助",
+     "合作",
+     "中性",
+     "不确定"
+    ],
+    "confusion": {
+     "威胁": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 2,
+      "不确定": 0
+     },
+     "示好": {
+      "威胁": 1,
+      "示好": 0,
+      "求助": 0,
+      "合作": 1,
+      "中性": 1,
+      "不确定": 0
+     },
+     "求助": {
+      "威胁": 1,
+      "示好": 4,
+      "求助": 0,
+      "合作": 0,
+      "中性": 3,
+      "不确定": 1
+     },
+     "合作": {
+      "威胁": 1,
+      "示好": 8,
+      "求助": 0,
+      "合作": 2,
+      "中性": 2,
+      "不确定": 0
+     },
+     "中性": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 1,
+      "不确定": 2
+     },
+     "不确定": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 0,
+      "不确定": 0
+     }
+    },
+    "gold_distribution": {
+     "合作": 13,
+     "中性": 3,
+     "威胁": 2,
+     "求助": 9,
+     "示好": 3
+    },
+    "abstain_coverage": 0.1,
+    "accepted_subset_error_rate": 0.8889,
+    "brier": 0.1746,
+    "ece_raw": 0.3468,
+    "temperature": 20.0,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.08,
+    "ece_calibrated_in_sample": 0.0009
+   },
+   "trust_shift": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.6,
+    "macro_f1": 0.381,
+    "classes_present": [
+     "上升",
+     "不变",
+     "下降"
+    ],
+    "confusion": {
+     "上升": {
+      "上升": 0,
+      "不变": 4,
+      "下降": 0,
+      "不确定": 0
+     },
+     "不变": {
+      "上升": 0,
+      "不变": 15,
+      "下降": 5,
+      "不确定": 0
+     },
+     "下降": {
+      "上升": 0,
+      "不变": 3,
+      "下降": 3,
+      "不确定": 0
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0
+     }
+    },
+    "gold_distribution": {
+     "下降": 6,
+     "上升": 4,
+     "不变": 20
+    },
+    "abstain_coverage": 0.0,
+    "accepted_subset_error_rate": 0.4,
+    "brier": 0.1542,
+    "ece_raw": 0.2116,
+    "temperature": 1.0917,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.2469,
+    "ece_calibrated_in_sample": 0.076
+   },
+   "fear_shift": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.5,
+    "macro_f1": 0.1786,
+    "classes_present": [
+     "上升",
+     "不变",
+     "下降",
+     "不确定"
+    ],
+    "confusion": {
+     "上升": {
+      "上升": 0,
+      "不变": 6,
+      "下降": 2,
+      "不确定": 1
+     },
+     "不变": {
+      "上升": 1,
+      "不变": 15,
+      "下降": 2,
+      "不确定": 2
+     },
+     "下降": {
+      "上升": 0,
+      "不变": 1,
+      "下降": 0,
+      "不确定": 0
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0
+     }
+    },
+    "gold_distribution": {
+     "不变": 20,
+     "上升": 9,
+     "下降": 1
+    },
+    "abstain_coverage": 0.1,
+    "accepted_subset_error_rate": 0.4444,
+    "brier": 0.1717,
+    "ece_raw": 0.1293,
+    "temperature": 8.9427,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.2224,
+    "ece_calibrated_in_sample": 0.1313
+   },
+   "deception": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.3667,
+    "macro_f1": 0.1982,
+    "classes_present": [
+     "有线索",
+     "无线索",
+     "信息不足"
+    ],
+    "confusion": {
+     "有线索": {
+      "有线索": 0,
+      "无线索": 3,
+      "信息不足": 0
+     },
+     "无线索": {
+      "有线索": 1,
+      "无线索": 11,
+      "信息不足": 0
+     },
+     "信息不足": {
+      "有线索": 4,
+      "无线索": 11,
+      "信息不足": 0
+     }
+    },
+    "gold_distribution": {
+     "无线索": 12,
+     "信息不足": 15,
+     "有线索": 3
+    },
+    "abstain_coverage": 0.0,
+    "accepted_subset_error_rate": 0.6333,
+    "brier": 0.2431,
+    "ece_raw": 0.363,
+    "temperature": 2.2693,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.2429,
+    "ece_calibrated_in_sample": 0.3177,
+    "false_positive": {
+     "有线索": 5,
+     "无线索": 14,
+     "信息不足": 0
+    },
+    "false_negative": {
+     "有线索": 3,
+     "无线索": 1,
+     "信息不足": 15
+    },
+    "worst_cases": [
+     {
+      "sid": "E1-S003",
+      "gold": "信息不足",
+      "pred": "无线索",
+      "turn": "你这秤怕是不准吧，我用手掂掂就知道。",
+      "tags": [
+       "first_meeting"
+      ]
+     },
+     {
+      "sid": "E1-S004",
+      "gold": "信息不足",
+      "pred": "无线索",
+      "turn": "这三成的价我不还，我只把上一旬的行情说给你听。",
+      "tags": [
+       "negation"
+      ]
+     },
+     {
+      "sid": "E1-S005",
+      "gold": "信息不足",
+      "pred": "无线索",
+      "turn": "田掌柜，你那二十钱的账，我今天要是拿不到，可就不好说了。",
+      "tags": [
+       "role_reversal",
+       "polite_pressure"
+      ]
+     },
+     {
+      "sid": "E1-S006",
+      "gold": "无线索",
+      "pred": "有线索",
+      "turn": "麻五哥，价照上回讲定的走，我不改口，你把那口骡验给我。",
+      "tags": []
+     },
+     {
+      "sid": "E1-S007",
+      "gold": "信息不足",
+      "pred": "有线索",
+      "turn": "this 是我祖传的方子，十钱一味，包你好用。",
+      "tags": [
+       "code_switch"
+      ]
+     },
+     {
+      "sid": "E1-S010",
+      "gold": "信息不足",
+      "pred": "有线索",
+      "turn": "我手里有字据，你照着办就是。",
+      "tags": [
+       "unverifiable_claim"
+      ]
+     },
+     {
+      "sid": "E1-S011",
+      "gold": "信息不足",
+      "pred": "有线索",
+      "turn": "求你开柜拿一支参，我娘烧了一天，钱我明日送来。",
+      "tags": [
+       "sympathy_pressure"
+      ]
+     },
+     {
+      "sid": "E1-S012",
+      "gold": "有线索",
+      "pred": "无线索",
+      "turn": "其实我还是想要那支参，你就当没听见我刚才的话。",
+      "tags": [
+       "contradiction"
+      ]
+     }
+    ]
+   },
+   "boundary_violation": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.5667,
+    "macro_f1": 0.3822,
+    "classes_present": [
+     "已越过",
+     "未越过",
+     "信息不足"
+    ],
+    "confusion": {
+     "已越过": {
+      "已越过": 6,
+      "未越过": 6,
+      "信息不足": 0
+     },
+     "未越过": {
+      "已越过": 5,
+      "未越过": 11,
+      "信息不足": 0
+     },
+     "信息不足": {
+      "已越过": 2,
+      "未越过": 0,
+      "信息不足": 0
+     }
+    },
+    "gold_distribution": {
+     "已越过": 12,
+     "未越过": 16,
+     "信息不足": 2
+    },
+    "abstain_coverage": 0.0,
+    "accepted_subset_error_rate": 0.4333,
+    "brier": 0.188,
+    "ece_raw": 0.2355,
+    "temperature": 1.7277,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.164,
+    "ece_calibrated_in_sample": 0.1077,
+    "false_positive": {
+     "已越过": 7,
+     "未越过": 6,
+     "信息不足": 0
+    },
+    "false_negative": {
+     "已越过": 6,
+     "未越过": 5,
+     "信息不足": 2
+    },
+    "worst_cases": [
+     {
+      "sid": "E1-S003",
+      "gold": "已越过",
+      "pred": "未越过",
+      "turn": "你这秤怕是不准吧，我用手掂掂就知道。",
+      "tags": [
+       "first_meeting"
+      ]
+     },
+     {
+      "sid": "E1-S007",
+      "gold": "未越过",
+      "pred": "已越过",
+      "turn": "this 是我祖传的方子，十钱一味，包你好用。",
+      "tags": [
+       "code_switch"
+      ]
+     },
+     {
+      "sid": "E1-S008",
+      "gold": "已越过",
+      "pred": "未越过",
+      "turn": "你就当我什么都没说——把这把短刀收起来就行。",
+      "tags": [
+       "irony",
+       "negation",
+       "long_trust"
+      ]
+     },
+     {
+      "sid": "E1-S010",
+      "gold": "信息不足",
+      "pred": "已越过",
+      "turn": "我手里有字据，你照着办就是。",
+      "tags": [
+       "unverifiable_claim"
+      ]
+     },
+     {
+      "sid": "E1-S013",
+      "gold": "已越过",
+      "pred": "未越过",
+      "turn": "就一晚，我天亮就走，谁也不告诉。",
+      "tags": [
+       "prior_kindness"
+      ]
+     },
+     {
+      "sid": "E1-S014",
+      "gold": "已越过",
+      "pred": "未越过",
+      "turn": "我这胸口又疼起来了，跟上月一样，你给我开方子。",
+      "tags": [
+       "prior_visit",
+       "contradiction"
+      ]
+     },
+     {
+      "sid": "E1-S016",
+      "gold": "已越过",
+      "pred": "未越过",
+      "turn": "岑婆婆，官仓那批药您要不要？便宜三成。",
+      "tags": [
+       "risky_offer"
+      ]
+     },
+     {
+      "sid": "E1-S017",
+      "gold": "未越过",
+      "pred": "已越过",
+      "turn": "这是我从坡上采的野菊，跟上次一样，您收下。",
+      "tags": []
+     }
+    ]
+   }
+  },
+  "B": {
+   "social_act": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.2,
+    "macro_f1": 0.1417,
+    "classes_present": [
+     "威胁",
+     "示好",
+     "求助",
+     "合作",
+     "中性",
+     "不确定"
+    ],
+    "confusion": {
+     "威胁": {
+      "威胁": 1,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 1,
+      "不确定": 0
+     },
+     "示好": {
+      "威胁": 1,
+      "示好": 0,
+      "求助": 1,
+      "合作": 1,
+      "中性": 0,
+      "不确定": 0
+     },
+     "求助": {
+      "威胁": 1,
+      "示好": 2,
+      "求助": 0,
+      "合作": 1,
+      "中性": 3,
+      "不确定": 2
+     },
+     "合作": {
+      "威胁": 3,
+      "示好": 3,
+      "求助": 1,
+      "合作": 4,
+      "中性": 2,
+      "不确定": 0
+     },
+     "中性": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 1,
+      "中性": 1,
+      "不确定": 1
+     },
+     "不确定": {
+      "威胁": 0,
+      "示好": 0,
+      "求助": 0,
+      "合作": 0,
+      "中性": 0,
+      "不确定": 0
+     }
+    },
+    "gold_distribution": {
+     "合作": 13,
+     "中性": 3,
+     "威胁": 2,
+     "求助": 9,
+     "示好": 3
+    },
+    "abstain_coverage": 0.1,
+    "accepted_subset_error_rate": 0.7778,
+    "brier": 0.146,
+    "ece_raw": 0.1317,
+    "temperature": 6.0838,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.0397,
+    "ece_calibrated_in_sample": 0.0801
+   },
+   "trust_shift": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.3,
+    "macro_f1": 0.2292,
+    "classes_present": [
+     "上升",
+     "不变",
+     "下降",
+     "不确定"
+    ],
+    "confusion": {
+     "上升": {
+      "上升": 2,
+      "不变": 0,
+      "下降": 2,
+      "不确定": 0
+     },
+     "不变": {
+      "上升": 7,
+      "不变": 3,
+      "下降": 9,
+      "不确定": 1
+     },
+     "下降": {
+      "上升": 1,
+      "不变": 1,
+      "下降": 4,
+      "不确定": 0
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0
+     }
+    },
+    "gold_distribution": {
+     "下降": 6,
+     "上升": 4,
+     "不变": 20
+    },
+    "abstain_coverage": 0.0333,
+    "accepted_subset_error_rate": 0.6897,
+    "brier": 0.1865,
+    "ece_raw": 0.066,
+    "temperature": 0.382,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.1993,
+    "ece_calibrated_in_sample": 0.1095
+   },
+   "fear_shift": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.1333,
+    "macro_f1": 0.1216,
+    "classes_present": [
+     "上升",
+     "不变",
+     "下降",
+     "不确定"
+    ],
+    "confusion": {
+     "上升": {
+      "上升": 3,
+      "不变": 0,
+      "下降": 5,
+      "不确定": 1
+     },
+     "不变": {
+      "上升": 5,
+      "不变": 0,
+      "下降": 8,
+      "不确定": 7
+     },
+     "下降": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 1,
+      "不确定": 0
+     },
+     "不确定": {
+      "上升": 0,
+      "不变": 0,
+      "下降": 0,
+      "不确定": 0
+     }
+    },
+    "gold_distribution": {
+     "不变": 20,
+     "上升": 9,
+     "下降": 1
+    },
+    "abstain_coverage": 0.2667,
+    "accepted_subset_error_rate": 0.8182,
+    "brier": 0.1899,
+    "ece_raw": 0.2307,
+    "temperature": 20.0,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.1227,
+    "ece_calibrated_in_sample": 0.0743
+   },
+   "deception": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.3333,
+    "macro_f1": 0.2794,
+    "classes_present": [
+     "有线索",
+     "无线索",
+     "信息不足"
+    ],
+    "confusion": {
+     "有线索": {
+      "有线索": 2,
+      "无线索": 0,
+      "信息不足": 1
+     },
+     "无线索": {
+      "有线索": 3,
+      "无线索": 8,
+      "信息不足": 1
+     },
+     "信息不足": {
+      "有线索": 7,
+      "无线索": 8,
+      "信息不足": 0
+     }
+    },
+    "gold_distribution": {
+     "无线索": 12,
+     "信息不足": 15,
+     "有线索": 3
+    },
+    "abstain_coverage": 0.0667,
+    "accepted_subset_error_rate": 0.6429,
+    "brier": 0.2363,
+    "ece_raw": 0.1159,
+    "temperature": 0.7718,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.1781,
+    "ece_calibrated_in_sample": 0.119,
+    "false_positive": {
+     "有线索": 10,
+     "无线索": 8,
+     "信息不足": 2
+    },
+    "false_negative": {
+     "有线索": 1,
+     "无线索": 4,
+     "信息不足": 15
+    },
+    "worst_cases": [
+     {
+      "sid": "E1-S003",
+      "gold": "信息不足",
+      "pred": "无线索",
+      "turn": "你这秤怕是不准吧，我用手掂掂就知道。",
+      "tags": [
+       "first_meeting"
+      ]
+     },
+     {
+      "sid": "E1-S004",
+      "gold": "信息不足",
+      "pred": "有线索",
+      "turn": "这三成的价我不还，我只把上一旬的行情说给你听。",
+      "tags": [
+       "negation"
+      ]
+     },
+     {
+      "sid": "E1-S005",
+      "gold": "信息不足",
+      "pred": "有线索",
+      "turn": "田掌柜，你那二十钱的账，我今天要是拿不到，可就不好说了。",
+      "tags": [
+       "role_reversal",
+       "polite_pressure"
+      ]
+     },
+     {
+      "sid": "E1-S006",
+      "gold": "无线索",
+      "pred": "有线索",
+      "turn": "麻五哥，价照上回讲定的走，我不改口，你把那口骡验给我。",
+      "tags": []
+     },
+     {
+      "sid": "E1-S007",
+      "gold": "信息不足",
+      "pred": "有线索",
+      "turn": "this 是我祖传的方子，十钱一味，包你好用。",
+      "tags": [
+       "code_switch"
+      ]
+     },
+     {
+      "sid": "E1-S010",
+      "gold": "信息不足",
+      "pred": "无线索",
+      "turn": "我手里有字据，你照着办就是。",
+      "tags": [
+       "unverifiable_claim"
+      ]
+     },
+     {
+      "sid": "E1-S011",
+      "gold": "信息不足",
+      "pred": "有线索",
+      "turn": "求你开柜拿一支参，我娘烧了一天，钱我明日送来。",
+      "tags": [
+       "sympathy_pressure"
+      ]
+     },
+     {
+      "sid": "E1-S015",
+      "gold": "信息不足",
+      "pred": "有线索",
+      "turn": "上月那副药没吃好，我还照旧来求你，你再看一回。",
+      "tags": [
+       "ambiguity"
+      ]
+     }
+    ]
+   },
+   "boundary_violation": {
+    "n_scored": 30,
+    "n_missing": 0,
+    "n_error": 0,
+    "accuracy": 0.4667,
+    "macro_f1": 0.3222,
+    "classes_present": [
+     "已越过",
+     "未越过",
+     "信息不足"
+    ],
+    "confusion": {
+     "已越过": {
+      "已越过": 7,
+      "未越过": 5,
+      "信息不足": 0
+     },
+     "未越过": {
+      "已越过": 9,
+      "未越过": 7,
+      "信息不足": 0
+     },
+     "信息不足": {
+      "已越过": 0,
+      "未越过": 2,
+      "信息不足": 0
+     }
+    },
+    "gold_distribution": {
+     "已越过": 12,
+     "未越过": 16,
+     "信息不足": 2
+    },
+    "abstain_coverage": 0.0,
+    "accepted_subset_error_rate": 0.5333,
+    "brier": 0.1964,
+    "ece_raw": 0.0411,
+    "temperature": 0.8167,
+    "temperature_fit_on": "calibration (n=33)",
+    "ece_calibrated": 0.119,
+    "ece_calibrated_in_sample": 0.1055,
+    "false_positive": {
+     "已越过": 9,
+     "未越过": 7,
+     "信息不足": 0
+    },
+    "false_negative": {
+     "已越过": 5,
+     "未越过": 9,
+     "信息不足": 2
+    },
+    "worst_cases": [
+     {
+      "sid": "E1-S002",
+      "gold": "未越过",
+      "pred": "已越过",
+      "turn": "这次我带够了钱，您把两袋米给我，一袋都不缺。",
+      "tags": []
+     },
+     {
+      "sid": "E1-S003",
+      "gold": "已越过",
+      "pred": "未越过",
+      "turn": "你这秤怕是不准吧，我用手掂掂就知道。",
+      "tags": [
+       "first_meeting"
+      ]
+     },
+     {
+      "sid": "E1-S005",
+      "gold": "未越过",
+      "pred": "已越过",
+      "turn": "田掌柜，你那二十钱的账，我今天要是拿不到，可就不好说了。",
+      "tags": [
+       "role_reversal",
+       "polite_pressure"
+      ]
+     },
+     {
+      "sid": "E1-S006",
+      "gold": "未越过",
+      "pred": "已越过",
+      "turn": "麻五哥，价照上回讲定的走，我不改口，你把那口骡验给我。",
+      "tags": []
+     },
+     {
+      "sid": "E1-S007",
+      "gold": "未越过",
+      "pred": "已越过",
+      "turn": "this 是我祖传的方子，十钱一味，包你好用。",
+      "tags": [
+       "code_switch"
+      ]
+     },
+     {
+      "sid": "E1-S008",
+      "gold": "已越过",
+      "pred": "未越过",
+      "turn": "你就当我什么都没说——把这把短刀收起来就行。",
+      "tags": [
+       "irony",
+       "negation",
+       "long_trust"
+      ]
+     },
+     {
+      "sid": "E1-S009",
+      "gold": "未越过",
+      "pred": "已越过",
+      "turn": "收条在这儿，字据我带了，你先给我二十斤。",
+      "tags": []
+     },
+     {
+      "sid": "E1-S010",
+      "gold": "信息不足",
+      "pred": "未越过",
+      "turn": "我手里有字据，你照着办就是。",
+      "tags": [
+       "unverifiable_claim"
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "baselines": {
+  "social_act": {
+   "n": 30,
+   "majority_label": "合作",
+   "majority_accuracy": 0.4333,
+   "random_expected_accuracy": 0.3022,
+   "rule_fires": 5,
+   "rule_accuracy_when_fires": 0.8,
+   "chance_level": 0.1667
+  },
+  "trust_shift": {
+   "n": 30,
+   "majority_label": "不变",
+   "majority_accuracy": 0.6667,
+   "random_expected_accuracy": 0.5022,
+   "rule_fires": 2,
+   "rule_accuracy_when_fires": 1.0,
+   "chance_level": 0.25
+  },
+  "fear_shift": {
+   "n": 30,
+   "majority_label": "不变",
+   "majority_accuracy": 0.6667,
+   "random_expected_accuracy": 0.5356,
+   "rule_fires": 2,
+   "rule_accuracy_when_fires": 1.0,
+   "chance_level": 0.25
+  },
+  "deception": {
+   "n": 30,
+   "majority_label": "信息不足",
+   "majority_accuracy": 0.5,
+   "random_expected_accuracy": 0.42,
+   "rule_fires": 1,
+   "rule_accuracy_when_fires": 1.0,
+   "chance_level": 0.3333
+  },
+  "boundary_violation": {
+   "n": 30,
+   "majority_label": "未越过",
+   "majority_accuracy": 0.5333,
+   "random_expected_accuracy": 0.4489,
+   "rule_fires": 3,
+   "rule_accuracy_when_fires": 1.0,
+   "chance_level": 0.3333
+  }
+ },
+ "paired": {
+  "A-vs-B": {
+   "social_act": {
+    "acc_diff_mean": -0.0987,
+    "ci95": [
+     -0.2333,
+     0.0
+    ],
+    "point_estimate": -0.1,
+    "indistinguishable": true,
+    "reps": 2000
+   },
+   "trust_shift": {
+    "acc_diff_mean": 0.2952,
+    "ci95": [
+     0.0667,
+     0.5333
+    ],
+    "point_estimate": 0.3,
+    "indistinguishable": false,
+    "reps": 2000
+   },
+   "fear_shift": {
+    "acc_diff_mean": 0.3678,
+    "ci95": [
+     0.1,
+     0.6333
+    ],
+    "point_estimate": 0.3667,
+    "indistinguishable": false,
+    "reps": 2000
+   },
+   "deception": {
+    "acc_diff_mean": 0.0328,
+    "ci95": [
+     -0.1333,
+     0.2
+    ],
+    "point_estimate": 0.0333,
+    "indistinguishable": true,
+    "reps": 2000
+   },
+   "boundary_violation": {
+    "acc_diff_mean": 0.1004,
+    "ci95": [
+     -0.1,
+     0.3
+    ],
+    "point_estimate": 0.1,
+    "indistinguishable": true,
+    "reps": 2000
+   }
+  }
+ }
+}

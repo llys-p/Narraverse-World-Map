@@ -1,0 +1,104 @@
+{
+  "schema_version": "e1-q-v1",
+  "status": "pending-freeze",
+  "frozen_at": null,
+  "notes": "A/B/C 三款模型收到完全相同的 field 名、body 文本、instructions、option key 与描述。实现差异只限 SDK 调用形式。选项键为中文，须与结果里的标签一一对应；置换测试后按键映射回同一标签再算指标。",
+  "hard_constraints": {
+    "max_len_default": 1024,
+    "head_budget_tokens": 256,
+    "body_budget_tokens": 700,
+    "source": "https://huggingface.co/convaiinnovations/laya-multilingual README, Architecture/Budget 与 Limits 节；2026-10-07 核对",
+    "implications": [
+      "instructions 与 criteria 描述共用 256 token，措辞必须短且三款一致",
+      "出厂未校准，raw score 不得当作正确率；温度按 (signal, option_count) 在校准集上拟合",
+      "score 原语最弱且有首选项位置偏差，本 benchmark 全部使用 choice，不使用 score",
+      "noul 在本 checkpoint 会低估 true，本 benchmark 不使用 noul",
+      "choice 选项数控制在 20 个以内；本 benchmark 为 3/4/6"
+    ]
+  },
+  "state_field": "body",
+  "body_layout": [
+    {"section": "NPC", "rule": "persona 一行：身份 + 与玩家的既往关系 + 人格警觉基线"},
+    {"section": "已知边界", "rule": "该 NPC 明确知道或声明过的边界一行；若样本设定为边界未告知，此行必须写：无（该 NPC 从未被告知相关规矩）"},
+    {"section": "既往", "rule": "该 NPC 亲历或被告知的事件，按时间顺序，每行一条，可空"},
+    {"section": "此刻", "rule": "玩家当前的话语或当场可见行为，永不被截断"}
+  ],
+  "truncation_policy": {
+    "order_of_removal": ["既往(从最旧一条开始)", "已知边界(仅当仍超预算，并在原始预测里记 truncated_boundary=1)"],
+    "never_removed": ["此刻", "NPC"],
+    "record_per_item": ["body_tokens", "truncated", "removed_lines"]
+  },
+  "excluded_from_model_input": ["hidden_truth", "gold labels", "basis", "tags", "split"],
+  "signals": {
+    "social_act": {
+      "type": "choice",
+      "instructions": "从 NPC 的视角，玩家这次交互在做什么？只选一项。",
+      "options": {
+        "威胁": "对 NPC 的人身、财物、声誉或处境有损害线索",
+        "示好": "无偿给予、致意或道歉",
+        "求助": "请求 NPC 帮忙或庇护",
+        "合作": "对等交换或一起做事",
+        "中性": "只是问询、寒暄或陈述",
+        "不确定": "线索不足或互相矛盾"
+      },
+      "canonical_order": ["威胁", "示好", "求助", "合作", "中性", "不确定"],
+      "abstain_keys": ["不确定"]
+    },
+    "trust_shift": {
+      "type": "choice",
+      "instructions": "这次交互之后，NPC 对玩家的信任往哪边变？只选方向。",
+      "options": {
+        "上升": "更信得过玩家",
+        "不变": "信任没有新信息",
+        "下降": "更不信玩家",
+        "不确定": "缺少可比对的约定或结果"
+      },
+      "canonical_order": ["上升", "不变", "下降", "不确定"],
+      "abstain_keys": ["不确定"]
+    },
+    "fear_shift": {
+      "type": "choice",
+      "instructions": "这次交互之后，NPC 感到的自身危险往哪边变？只选方向。",
+      "options": {
+        "上升": "更觉危险",
+        "不变": "危险感没有变化",
+        "下降": "更觉安全",
+        "不确定": "看不出对方来意"
+      },
+      "canonical_order": ["上升", "不变", "下降", "不确定"],
+      "abstain_keys": ["不确定"]
+    },
+    "deception": {
+      "type": "choice",
+      "instructions": "就 NPC 当场可观察的范围，玩家的话里有欺骗线索吗？",
+      "options": {
+        "有线索": "与可见事实或行为当场矛盾",
+        "无线索": "可见信息足够，且不含这类矛盾",
+        "信息不足": "NPC 没有可比对的事实"
+      },
+      "canonical_order": ["有线索", "无线索", "信息不足"],
+      "abstain_keys": ["信息不足"],
+      "risk_direction": "假阳=把诚实玩家判成骗子；假阴=把当场矛盾判成无线索。两者单列反例。"
+    },
+    "boundary_violation": {
+      "type": "choice",
+      "instructions": "以该 NPC 明确可知的边界为准，玩家越过了吗？",
+      "options": {
+        "已越过": "触到了它已声明或已知的边界",
+        "未越过": "在它已知的边界之内",
+        "信息不足": "这条边界没被告知该 NPC"
+      },
+      "canonical_order": ["已越过", "未越过", "信息不足"],
+      "abstain_keys": ["信息不足"],
+      "risk_direction": "假阳=在 NPC 不知情的情况下被判越界；假阴=明显触线未被识别。"
+    }
+  },
+  "conditions": {
+    "primary": {"split": "final", "input_len": "short<=420 tokens", "order": "canonical"},
+    "long_sensitivity": {"split": "final_sample60", "input_len": "long<=700 tokens", "max_len": 1024, "note": "超出预算按 truncation_policy，记录被删行"},
+    "max_len_8192": {"split": "final_sample40", "max_len": 8192, "note": "上游可显式设 8192，另测，不并入主结果"},
+    "order_permutation": {"split": "final_sample60", "orders": ["canonical", "rotated", "reversed"], "note": "映射回同一标签后比较"},
+    "paraphrase": {"split": "final_sample60", "note": "等义改写，标签不变"},
+    "empty_or_malformed": {"split": "probe", "note": "空 body、只有称呼、超长、纯英文，记录错误与超时，不计为正确"}
+  }
+}

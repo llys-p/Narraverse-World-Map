@@ -1,0 +1,15 @@
+{
+ "model": "A",
+ "split": "calibration",
+ "condition": "primary",
+ "load_seconds": 17.7,
+ "items": 165,
+ "device": "cpu",
+ "max_len": 1024,
+ "head_max_len": 256,
+ "batch_size": 8,
+ "sdk": {
+  "laya": "0.3.28"
+ },
+ "out": "results\\raw\\A-calibration-primary.jsonl"
+}

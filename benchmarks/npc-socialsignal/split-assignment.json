@@ -1,0 +1,25 @@
+{
+  "policy": "family-exclusive: 每个场景家族整体只落一个切分，家族内样本永不跨集合，近似改名样本不可能泄漏。问题模板只在 dev 调整；calibration 仅用于拟合温度与拒答阈值；final 在盲审裁定完成前不打开。",
+  "families": {
+    "F01": {"split": "dev", "name": "集市交易：讨价、赊账、字据、碰秤"},
+    "F02": {"split": "dev", "name": "求医问药：病症、复诊、贵重药材柜"},
+    "F03": {"split": "dev", "name": "借道带路：夜路、北坡、关卡、危险告知"},
+    "F04": {"split": "calibration", "name": "代收寄存：包袱、信物、来路不明"},
+    "F05": {"split": "calibration", "name": "招工合伙：分成、分工、先付后付"},
+    "F06": {"split": "calibration", "name": "问路情报：第三人下落、官兵盘查、口供"},
+    "F07": {"split": "calibration", "name": "道歉修好：前嫌、失礼、补偿"},
+    "F08": {"split": "calibration", "name": "威逼讨债：礼貌外壳、暗示、连带威胁"},
+    "F09": {"split": "final", "name": "师徒与长幼：身份差、辈分边界"},
+    "F10": {"split": "final", "name": "庙祝禁忌：规矩、祭祀、不可说"},
+    "F11": {"split": "final", "name": "弱者求助外壳：孩童、病弱、被利用"},
+    "F12": {"split": "final", "name": "旧识重逢：误会、认错人、多年交情"},
+    "F13": {"split": "final", "name": "中英夹杂与外来语"},
+    "F14": {"split": "final", "name": "多人物指代：他/她/第三人不清"},
+    "F15": {"split": "final", "name": "讽刺反话：字面与情境相反"},
+    "F16": {"split": "final", "name": "矛盾线索：既往与此刻相反"},
+    "F17": {"split": "final", "name": "长上下文：多事件累积与截断"},
+    "F18": {"split": "final", "name": "感知缺失：不在场、看不见、听不清"},
+    "F19": {"split": "final", "name": "边界未告知：踩中 NPC 不可能知道的规矩"},
+    "F20": {"split": "final", "name": "否定与反预期：我不是要……"}
+  }
+}

@@ -1,0 +1,482 @@
+[
+ {
+  "probe_shape": "zh_full",
+  "id": "P1",
+  "signal": "social_act",
+  "gold": "威胁",
+  "predicted": "中性",
+  "answer_confidence": 0.5629,
+  "top3": [
+   [
+    "中性",
+    0.563
+   ],
+   [
+    "不确定",
+    0.198
+   ],
+   [
+    "合作",
+    0.127
+   ]
+  ],
+  "input_tokens": 180,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_full",
+  "id": "P2",
+  "signal": "social_act",
+  "gold": "合作",
+  "predicted": "合作",
+  "answer_confidence": 0.6391,
+  "top3": [
+   [
+    "合作",
+    0.639
+   ],
+   [
+    "不确定",
+    0.145
+   ],
+   [
+    "示好",
+    0.104
+   ]
+  ],
+  "input_tokens": 173,
+  "correct": true
+ },
+ {
+  "probe_shape": "zh_full",
+  "id": "P3",
+  "signal": "social_act",
+  "gold": "示好",
+  "predicted": "示好",
+  "answer_confidence": 0.3905,
+  "top3": [
+   [
+    "示好",
+    0.391
+   ],
+   [
+    "合作",
+    0.272
+   ],
+   [
+    "中性",
+    0.149
+   ]
+  ],
+  "input_tokens": 149,
+  "correct": true
+ },
+ {
+  "probe_shape": "zh_full",
+  "id": "P4",
+  "signal": "social_act",
+  "gold": "求助",
+  "predicted": "示好",
+  "answer_confidence": 0.6098,
+  "top3": [
+   [
+    "示好",
+    0.61
+   ],
+   [
+    "中性",
+    0.122
+   ],
+   [
+    "合作",
+    0.109
+   ]
+  ],
+  "input_tokens": 158,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_full",
+  "id": "P5",
+  "signal": "deception",
+  "gold": "有线索",
+  "predicted": "无线索",
+  "answer_confidence": 0.8704,
+  "top3": [
+   [
+    "无线索",
+    0.87
+   ],
+   [
+    "信息不足",
+    0.098
+   ],
+   [
+    "有线索",
+    0.031
+   ]
+  ],
+  "input_tokens": 129,
+  "correct": false
+ },
+ {
+  "probe_shape": "en_full",
+  "id": "P1",
+  "signal": "social_act",
+  "gold": "威胁",
+  "predicted": "中性",
+  "answer_confidence": 0.3321,
+  "top3": [
+   [
+    "中性",
+    0.332
+   ],
+   [
+    "不确定",
+    0.246
+   ],
+   [
+    "合作",
+    0.168
+   ]
+  ],
+  "input_tokens": 181,
+  "correct": false
+ },
+ {
+  "probe_shape": "en_full",
+  "id": "P2",
+  "signal": "social_act",
+  "gold": "合作",
+  "predicted": "合作",
+  "answer_confidence": 0.7367,
+  "top3": [
+   [
+    "合作",
+    0.737
+   ],
+   [
+    "中性",
+    0.089
+   ],
+   [
+    "示好",
+    0.08
+   ]
+  ],
+  "input_tokens": 174,
+  "correct": true
+ },
+ {
+  "probe_shape": "en_full",
+  "id": "P3",
+  "signal": "social_act",
+  "gold": "示好",
+  "predicted": "示好",
+  "answer_confidence": 0.5649,
+  "top3": [
+   [
+    "示好",
+    0.565
+   ],
+   [
+    "中性",
+    0.189
+   ],
+   [
+    "合作",
+    0.087
+   ]
+  ],
+  "input_tokens": 153,
+  "correct": true
+ },
+ {
+  "probe_shape": "en_full",
+  "id": "P4",
+  "signal": "social_act",
+  "gold": "求助",
+  "predicted": "示好",
+  "answer_confidence": 0.4935,
+  "top3": [
+   [
+    "示好",
+    0.493
+   ],
+   [
+    "求助",
+    0.233
+   ],
+   [
+    "中性",
+    0.113
+   ]
+  ],
+  "input_tokens": 165,
+  "correct": false
+ },
+ {
+  "probe_shape": "en_full",
+  "id": "P5",
+  "signal": "deception",
+  "gold": "有线索",
+  "predicted": "无线索",
+  "answer_confidence": 0.6433,
+  "top3": [
+   [
+    "无线索",
+    0.643
+   ],
+   [
+    "有线索",
+    0.197
+   ],
+   [
+    "信息不足",
+    0.16
+   ]
+  ],
+  "input_tokens": 128,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_plain",
+  "id": "P1",
+  "signal": "social_act",
+  "gold": "威胁",
+  "predicted": "中性",
+  "answer_confidence": 0.3628,
+  "top3": [
+   [
+    "中性",
+    0.363
+   ],
+   [
+    "示好",
+    0.336
+   ],
+   [
+    "不确定",
+    0.103
+   ]
+  ],
+  "input_tokens": 119,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_plain",
+  "id": "P2",
+  "signal": "social_act",
+  "gold": "合作",
+  "predicted": "合作",
+  "answer_confidence": 0.9607,
+  "top3": [
+   [
+    "合作",
+    0.961
+   ],
+   [
+    "示好",
+    0.028
+   ],
+   [
+    "不确定",
+    0.008
+   ]
+  ],
+  "input_tokens": 121,
+  "correct": true
+ },
+ {
+  "probe_shape": "zh_plain",
+  "id": "P3",
+  "signal": "social_act",
+  "gold": "示好",
+  "predicted": "示好",
+  "answer_confidence": 0.9377,
+  "top3": [
+   [
+    "示好",
+    0.938
+   ],
+   [
+    "合作",
+    0.029
+   ],
+   [
+    "中性",
+    0.01
+   ]
+  ],
+  "input_tokens": 115,
+  "correct": true
+ },
+ {
+  "probe_shape": "zh_plain",
+  "id": "P4",
+  "signal": "social_act",
+  "gold": "求助",
+  "predicted": "示好",
+  "answer_confidence": 0.9594,
+  "top3": [
+   [
+    "示好",
+    0.959
+   ],
+   [
+    "求助",
+    0.024
+   ],
+   [
+    "不确定",
+    0.008
+   ]
+  ],
+  "input_tokens": 118,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_plain",
+  "id": "P5",
+  "signal": "deception",
+  "gold": "有线索",
+  "predicted": "无线索",
+  "answer_confidence": 0.746,
+  "top3": [
+   [
+    "无线索",
+    0.746
+   ],
+   [
+    "信息不足",
+    0.13
+   ],
+   [
+    "有线索",
+    0.124
+   ]
+  ],
+  "input_tokens": 74,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_nodesc",
+  "id": "P1",
+  "signal": "social_act",
+  "gold": "威胁",
+  "predicted": "合作",
+  "answer_confidence": 0.4468,
+  "top3": [
+   [
+    "合作",
+    0.447
+   ],
+   [
+    "不确定",
+    0.24
+   ],
+   [
+    "中性",
+    0.238
+   ]
+  ],
+  "input_tokens": 119,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_nodesc",
+  "id": "P2",
+  "signal": "social_act",
+  "gold": "合作",
+  "predicted": "不确定",
+  "answer_confidence": 0.5676,
+  "top3": [
+   [
+    "不确定",
+    0.568
+   ],
+   [
+    "求助",
+    0.199
+   ],
+   [
+    "合作",
+    0.092
+   ]
+  ],
+  "input_tokens": 112,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_nodesc",
+  "id": "P3",
+  "signal": "social_act",
+  "gold": "示好",
+  "predicted": "合作",
+  "answer_confidence": 0.378,
+  "top3": [
+   [
+    "合作",
+    0.378
+   ],
+   [
+    "求助",
+    0.247
+   ],
+   [
+    "示好",
+    0.184
+   ]
+  ],
+  "input_tokens": 88,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_nodesc",
+  "id": "P4",
+  "signal": "social_act",
+  "gold": "求助",
+  "predicted": "合作",
+  "answer_confidence": 0.4772,
+  "top3": [
+   [
+    "合作",
+    0.477
+   ],
+   [
+    "中性",
+    0.17
+   ],
+   [
+    "威胁",
+    0.164
+   ]
+  ],
+  "input_tokens": 97,
+  "correct": false
+ },
+ {
+  "probe_shape": "zh_nodesc",
+  "id": "P5",
+  "signal": "deception",
+  "gold": "有线索",
+  "predicted": "无线索",
+  "answer_confidence": 0.9551,
+  "top3": [
+   [
+    "无线索",
+    0.955
+   ],
+   [
+    "有线索",
+    0.03
+   ],
+   [
+    "信息不足",
+    0.015
+   ]
+  ],
+  "input_tokens": 102,
+  "correct": false
+ }
+]

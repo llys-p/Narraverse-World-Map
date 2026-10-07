@@ -1,0 +1,266 @@
+{
+  "built_at": "2026-10-07T12:25:06+08:00",
+  "families_without_samples": [
+    "F15",
+    "F16",
+    "F17",
+    "F18",
+    "F19",
+    "F20"
+  ],
+  "files": {
+    "blind-answer-sheet.jsonl": "e9bee6c1f31c754050777bd75309e36d2946dbf89c624c2c30a005b668807c97",
+    "blind-package.jsonl": "063e2e16f47c57bca4bab7b25b1bd19ae87e21dca820f90fee4ccfc2084c810d",
+    "scenarios-calibration.jsonl": "5146dfeb512e8f44b38206f7787d4e87dd688a7391c2f6ad64e8773f3c8c4b82",
+    "scenarios-dev.jsonl": "73962c2f2164d6d8cc58423a598e459afa400d9cd9f75158d7487bb8e48c7bb9"
+  },
+  "generated_by": "scripts/validate_data.py",
+  "label_freeze": {
+    "blind_review": {
+      "agreement": null,
+      "disagreements_adjudicated": 0,
+      "kappa": null,
+      "returned_at": null,
+      "reviewer": null,
+      "status": "not_returned"
+    },
+    "final_frozen": false,
+    "final_gold_location": "outside repository (sealed); path recorded by controller",
+    "final_gold_sha256": "4b245c18a634322550f537f5be46702f4900c7633c69743debb342ccac5efcbc",
+    "final_scenarios": 62,
+    "note": "M3 may open the final split only after blind review is returned, disagreements adjudicated, and final_frozen set true with this same gold sha256."
+  },
+  "seal_note": "The repository contains no gold labels for the final split, so the external reviewer cannot read the answer key from this branch.",
+  "signal_option_sets": {
+    "boundary_violation": [
+      "已越过",
+      "未越过",
+      "信息不足"
+    ],
+    "deception": [
+      "有线索",
+      "无线索",
+      "信息不足"
+    ],
+    "fear_shift": [
+      "上升",
+      "不变",
+      "下降",
+      "不确定"
+    ],
+    "social_act": [
+      "威胁",
+      "示好",
+      "求助",
+      "合作",
+      "中性",
+      "不确定"
+    ],
+    "trust_shift": [
+      "上升",
+      "不变",
+      "下降",
+      "不确定"
+    ]
+  },
+  "split_policy": "family-exclusive",
+  "splits": {
+    "calibration": {
+      "classes_under_20": [
+        "boundary_violation:信息不足",
+        "boundary_violation:已越过",
+        "boundary_violation:未越过",
+        "deception:信息不足",
+        "deception:有线索",
+        "fear_shift:上升",
+        "fear_shift:下降",
+        "fear_shift:不确定",
+        "social_act:不确定",
+        "social_act:中性",
+        "social_act:合作",
+        "social_act:威胁",
+        "social_act:求助",
+        "social_act:示好",
+        "trust_shift:上升",
+        "trust_shift:下降",
+        "trust_shift:不变",
+        "trust_shift:不确定"
+      ],
+      "content_sha256": "409738eb6df597ccf96995c7709ae6e45381f5245b64d2fdb62393e4deef3f36",
+      "families": [
+        "F04",
+        "F05",
+        "F06",
+        "F07",
+        "F08"
+      ],
+      "items": 165,
+      "label_distribution": {
+        "boundary_violation": {
+          "信息不足": 2,
+          "已越过": 14,
+          "未越过": 17
+        },
+        "deception": {
+          "信息不足": 7,
+          "无线索": 22,
+          "有线索": 4
+        },
+        "fear_shift": {
+          "上升": 9,
+          "下降": 3,
+          "不变": 21,
+          "不确定": 0
+        },
+        "social_act": {
+          "不确定": 0,
+          "中性": 4,
+          "合作": 10,
+          "威胁": 5,
+          "求助": 9,
+          "示好": 5
+        },
+        "trust_shift": {
+          "上升": 7,
+          "下降": 11,
+          "不变": 15,
+          "不确定": 0
+        }
+      },
+      "scenarios": 33
+    },
+    "dev": {
+      "classes_under_20": [
+        "boundary_violation:信息不足",
+        "boundary_violation:已越过",
+        "boundary_violation:未越过",
+        "deception:信息不足",
+        "deception:无线索",
+        "deception:有线索",
+        "fear_shift:上升",
+        "fear_shift:下降",
+        "fear_shift:不确定",
+        "social_act:不确定",
+        "social_act:中性",
+        "social_act:合作",
+        "social_act:威胁",
+        "social_act:求助",
+        "social_act:示好",
+        "trust_shift:上升",
+        "trust_shift:下降",
+        "trust_shift:不确定"
+      ],
+      "content_sha256": "33721fd843c26545e93cb319f2d6fae4a518f1b4261ad54b6d92093566f38182",
+      "families": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "items": 150,
+      "label_distribution": {
+        "boundary_violation": {
+          "信息不足": 2,
+          "已越过": 12,
+          "未越过": 16
+        },
+        "deception": {
+          "信息不足": 15,
+          "无线索": 12,
+          "有线索": 3
+        },
+        "fear_shift": {
+          "上升": 9,
+          "下降": 1,
+          "不变": 20,
+          "不确定": 0
+        },
+        "social_act": {
+          "不确定": 0,
+          "中性": 3,
+          "合作": 13,
+          "威胁": 2,
+          "求助": 9,
+          "示好": 3
+        },
+        "trust_shift": {
+          "上升": 4,
+          "下降": 6,
+          "不变": 20,
+          "不确定": 0
+        }
+      },
+      "scenarios": 30
+    },
+    "final": {
+      "classes_under_20": [
+        "boundary_violation:信息不足",
+        "deception:有线索",
+        "fear_shift:下降",
+        "fear_shift:不确定",
+        "social_act:不确定",
+        "social_act:中性",
+        "social_act:威胁",
+        "social_act:求助",
+        "social_act:示好",
+        "trust_shift:上升",
+        "trust_shift:下降",
+        "trust_shift:不确定"
+      ],
+      "content_sha256": "3f90601464c7a0318c189c934465d7b5a4ee4adb8c4095739a8d3f1cc94fdfea",
+      "families": [
+        "F09",
+        "F10",
+        "F11",
+        "F12",
+        "F13",
+        "F14"
+      ],
+      "items": 310,
+      "label_distribution": {
+        "boundary_violation": {
+          "信息不足": 12,
+          "已越过": 25,
+          "未越过": 25
+        },
+        "deception": {
+          "信息不足": 26,
+          "无线索": 30,
+          "有线索": 6
+        },
+        "fear_shift": {
+          "上升": 20,
+          "下降": 0,
+          "不变": 40,
+          "不确定": 2
+        },
+        "social_act": {
+          "不确定": 0,
+          "中性": 16,
+          "合作": 25,
+          "威胁": 4,
+          "求助": 9,
+          "示好": 8
+        },
+        "trust_shift": {
+          "上升": 6,
+          "下降": 15,
+          "不变": 41,
+          "不确定": 0
+        }
+      },
+      "scenarios": 62
+    }
+  },
+  "total_scenarios": 125,
+  "warnings": [
+    "dev: social_act:不确定 has 0 samples",
+    "dev: trust_shift:不确定 has 0 samples",
+    "dev: fear_shift:不确定 has 0 samples",
+    "calibration: social_act:不确定 has 0 samples",
+    "calibration: trust_shift:不确定 has 0 samples",
+    "calibration: fear_shift:不确定 has 0 samples",
+    "final: social_act:不确定 has 0 samples",
+    "final: trust_shift:不确定 has 0 samples",
+    "final: fear_shift:下降 has 0 samples"
+  ]
+}
