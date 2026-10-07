@@ -1,8 +1,10 @@
 # C4：可知事实记忆、关系与阶段C验收
 
-2026-10-07（Asia/Shanghai）。任务合同已准备，**主实现已接通，C4阶段验收进行中**，不把局部模块当完整NPC记忆闭环。依赖C3完整收口；源码真源仍D:\Narraverse-World-Map-a2，开工从最终codex/world-runtime-c3交接点创建codex/world-runtime-c4，必须先核对最终SHA/dirty与实际额度。用户要求持续推进至额度停点，若本轮停在合同则下轮继续本项，不拆成更低的验收目标。
+2026-10-07 18:12（Asia/Shanghai）。**C4已验收，阶段C仍进行中**。源码真源D:\Narraverse-World-Map-a2 @ codex/world-runtime-c4，代码交付2793dad39fdabccae30848ca0fc8577ff253025d。逐项核对架构发现人格影响选择尚未实现，补C5后才能验收完整C阶段；不把需求/职业差异冒充人格。
 
 ## 给用户：本项结果与边界
+
+本项已实现并验证。人物记忆有来源和上限，真实关系改变交易选择/价格，恢复存档不刷信任；没有页面、模型或全社会网络。
 
 完成后，每个人只记自己经历、交易对象透露以及村内公开的事实，不能从世界快照直接知道别人的钱包、目标或心理。关系必须来自真实事件，并能影响下一次交易选择或报价；保存后继续同一个人物/关系/记忆。仍没有LLM社会信号、页面或完整社会网络，不能把存储几个字符串当阶段C验收。
 
@@ -59,3 +61,12 @@
 - memoryModel入Snapshot，完整公告/命令/收入/药/Goal/RNG/记忆淘汰/观测时间重放核对；入口、存盘与buildActorKnowledge都全量审计，不开放可信/跳过参数。人物知识只返回本人状态、可知公告/行情、关系和32条记忆；死者只返回墓碑与封存历史。knowledge目录纳入runner源码指纹。
 - 全simulation+独立化边界164/164（原139+新增25），148秒。定向真实8日优惠对照、四日磁盘保存继续/篡改拒绝、CLI完整6日=4+2状态和CSV、整tick回退及死后封存已通过。CLI新增memory-config.json、memories.csv、relationships.csv；CSV是逐日有界保留状态，不能把重复日报行重复当信任增量。
 - 下一步在干净提交运行真实100日=40+60及独立来源/可见性/所有权消费者、旧规则兼容证据；尚未验收完整C阶段，不进入D。当前代码等待保存点，后续只补证据/收口，不降低原合同门槛。
+
+## 最终验收（2026-10-07 18:12 Asia/Shanghai）
+
+- 代码2793dad（主实现089ade7、增量记忆优化2793dad），工作树干净，origin/codex/world-runtime-c4已推送。全simulation+独立化边界168/168，151.2秒；新增未交付等待失败/冷却、增量与全历史一致、系统改写旧记忆整tick回退反例。没有skipValidation参数，独立observer仍全来源校验，入场/存盘/knowledge仍从初始配置完整重放。
+- 干净代码CLI100=40保存+60恢复，六组完整checkpoint和13类导出逐字节与已独立复算的089ade7产物一致。tick14400、599事实；stateHash d7e821c2e0f07c1c5451c8c46e4527fe9f5cde93743404173a1beedff58cb43d，eventHash 3d4938f150ef192c4fead924b19863d7a3007eacd676ff6047749cac3d746de4。runtime指纹b27b17193d8209340d8f3aad2733b60389c4dfb007531b569212acb2043336e6。
+- 独立消费者从实际来源复算32条淘汰/视角/观察时间/trust、9240条基线记忆CSV行、三钱包与公私粮药BigInt账；实际关系8日第三/四单少2金币，恢复健康800/trust40。最后1公药竞争只有1成功。合法自定义23日配置中商人选trust90猎人而非trust30村长，仅获分配者等待收药，未改默认参数。旧C2/C3完整100日checkpoint字节未变。
+- 性能对照仅观察器：相同100日事实，同进程先完整历史后增量，50.9秒/1.7秒且状态相同；同期CLI100日119.9秒，末尾RSS267603968非峰值。不同并发条件不能据旧369秒计算整体加速比例；尚非规模测试。
+- 证据在忽略目录artifacts/world-runtime-c4-acceptance-20261007：comparison.json、optimized-comparison.json、observer-performance.json、trusted-allocation23.json、optimized-full-tests.txt及真实CLI产物。未运行浏览器/模型/Laya/真实旧存档迁移，不合并runtime main。
+- C1身份/死亡、C2需求/缺钱→多步目标、C3竞争、C4可知记忆/关系/保存连续均已有真实消费者证据。架构“人格可改变选择”仍缺实现与对照证据，下一项C5，阶段C不提前标通过，D仍待开始。

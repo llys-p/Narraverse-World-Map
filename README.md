@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-c3` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-c4` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
@@ -377,6 +377,17 @@ ATB 时间条、奥义 / 极限槽、召唤、队伍与人物切换。另外现�
 遭遇→迎战→回合影可视→胜/败两路结算入库（败：HP 10/19+losses 1；胜：+38EXP/+15铜/kills 1，无跳级）→
 回地图面板持久。修复过程：战斗实体漏传 level 导致结算 NaN（已修+防御性消毒），步骤函数引用陷阱（setInterval 先捕获原引用，重构为单循环内挂点）。
 截图：`e2e-battle.png`。
+
+## C4：可知事实与关系实验
+
+`memory-village`保存每人最多32条有来源的记忆，仅含本人、直接交易或村内公开事实。`memory-relations`和`memory-relations-control`使用相同资产与伤病，前者两次真实交易后少收2金币；`memory-medicine-race`验证最后一份公药竞争。人物上下文通过`buildActorKnowledge`白名单读取，不返回他人私账或全知日志。新增memory-config.json、memories.csv、relationships.csv；CSV包含每天保留状态，不按重复行累加信任。
+
+```powershell
+node simulation-runner.mjs --fixture memory-relations --days 8 --seed 42 --out artifacts/simulation/memory-relations8
+node simulation-runner.mjs --fixture memory-village --days 100 --seed 42 --out artifacts/simulation/memory100
+```
+
+完整入口/保存/知识读取保持全量审计，私有session只对已验证历史增量推进。C4已验收，人格选择对照仍待C5，完整C阶段及页面接入未通过；见[C4合同与验收](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)。以下原型描述与历史E2E不代表新Runtime页面接入。
 
 ## 结构（用户提案：骑马与砍杀式两层 + 火柴人）
 

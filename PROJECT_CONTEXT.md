@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 17:13（Asia/Shanghai）。
+更新时间：2026-10-07 18:15（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -67,7 +67,7 @@
 
 ## 下一步
 
-A/B及C1～C3已验收，C3交接13b137c。C4在D:\Narraverse-World-Map-a2 @ codex/world-runtime-c4：c-memory-v1已接通公开医疗公告、可知规划/真实关系优惠与匹配等待、Snapshot/MemoryDaySettled全量重放、人物knowledge白名单、CLI记忆/关系CSV；全simulation+边界164/164（原139+新25，148秒）。8日真实交易优惠、整tick回退、观测时机/来源/信任篡改拒绝、死者封存、真实磁盘与CLI跨档通过。待干净提交100日=40+60完整消费者与阶段C逐项收口；C4/C阶段仍进行中，不进入D。[合同及证据](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)。源码不合并main、不接UI/模型/旧存档，E预研独立。
+A/B及C1～C4已验收。C4代码2793dad（D:\Narraverse-World-Map-a2 @ codex/world-runtime-c4）：168/168全回归，干净100日=40+60完整checkpoint/13类导出与原独立复算产物字节一致，真实关系优惠/可知记忆/信任/资产/死亡封存通过。增量观察器保持完整入场/存盘审计，100日约120秒。证据artifacts/world-runtime-c4-acceptance-20261007/optimized-comparison.json与[C4收口](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)。逐项发现人格未影响选择，完整C阶段仍进行中，下一项[C5合同](tasks/C5-PERSONALITY-CHOICE-TASK.md)；不进入D、不合并runtime main，E预研独立。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -79,8 +79,8 @@ A/B及C1～C3已验收，C3交接13b137c。C4在D:\Narraverse-World-Map-a2 @ cod
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
-- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`、C2 `PVTI_lAHOEF9IDs4BmADfzg_EnoU`、C3 `PVTI_lAHOEF9IDs4BmADfzg_FGww`、C4 `PVTI_lAHOEF9IDs4BmADfzg_Fov0`（进行中）。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
+- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`、C2 `PVTI_lAHOEF9IDs4BmADfzg_EnoU`、C3 `PVTI_lAHOEF9IDs4BmADfzg_FGww`、C4 `PVTI_lAHOEF9IDs4BmADfzg_Fov0`（已验收）。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4与阶段A门槛、阶段B校准配置门槛及C1～C3单项已通过，C阶段进行中，C4观察层已实现，完整C4进行中，D～G主线未开始。E阶段待开始；E1工具收尾完成，下一项[24条长dev合同](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-LONG-DEV-TASK.md)待派发，规范/数据可靠性仍需验证。完整400/final160另发合同，旧125与封存保留；不训练/装CUDA/启E2，不启qoder_cron。
+- A1～A4与A门槛、阶段B校准配置门槛及C1～C4单项已通过。C阶段仍进行中，C5人格对照待实施；D～G主线未开始。E阶段待开始；E1工具收尾完成，下一项[24条长dev合同](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-LONG-DEV-TASK.md)待派发，规范/数据可靠性仍需验证。完整400/final160另发合同，旧125与封存保留；不训练/装CUDA/启E2，不启qoder_cron。
