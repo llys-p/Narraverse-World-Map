@@ -1,8 +1,10 @@
 # C4：可知事实记忆、关系与阶段C验收
 
-2026-10-07（Asia/Shanghai）。任务合同已准备，**观察层已开工，C4整体未验收**，不把局部模块当完整NPC记忆闭环。依赖C3完整收口；源码真源仍D:\Narraverse-World-Map-a2，开工从最终codex/world-runtime-c3交接点创建codex/world-runtime-c4，必须先核对最终SHA/dirty与实际额度。用户要求持续推进至额度停点，若本轮停在合同则下轮继续本项，不拆成更低的验收目标。
+2026-10-07 18:12（Asia/Shanghai）。**C4已验收，阶段C仍进行中**。源码真源D:\Narraverse-World-Map-a2 @ codex/world-runtime-c4，代码交付2793dad39fdabccae30848ca0fc8577ff253025d。逐项核对架构发现人格影响选择尚未实现，补C5后才能验收完整C阶段；不把需求/职业差异冒充人格。
 
 ## 给用户：本项结果与边界
+
+本项已实现并验证。人物记忆有来源和上限，真实关系改变交易选择/价格，恢复存档不刷信任；没有页面、模型或全社会网络。
 
 完成后，每个人只记自己经历、交易对象透露以及村内公开的事实，不能从世界快照直接知道别人的钱包、目标或心理。关系必须来自真实事件，并能影响下一次交易选择或报价；保存后继续同一个人物/关系/记忆。仍没有LLM社会信号、页面或完整社会网络，不能把存储几个字符串当阶段C验收。
 
@@ -45,11 +47,26 @@
 
 原阶段C验收逐项证据：饥饿/伤病/缺钱改变目标→真实行为影响同世界→目标恢复/死者不工作→多人竞争仅一次成功→循环目标终止/冷却→NPC只获得可知事实→人物身份/关系/记忆跨存档连续。C1～C4及当前所有回归、真实100日/跨档消费者与隐私反例全通过才将阶段C已验收；不因个人模块测试绿就进入D。未经授权不开放旧页面写入口、不用模型/桥、不迁移真实存档，D单独合同后续。
 
-C3最终交接点 `13b137c798fca9a9534e3d6daf83786b47562250` 已推origin/codex/world-runtime-c3，139/139及真实消费者已验收。开C4从这个保存点取代码；本C4整体尚未验收。
-
 ## 当前实现切片（2026-10-07 16:38 Asia/Shanghai）
 
 - 已从13b137c建立codex/world-runtime-c4；新增memory-observer.mjs与memory-observer.test.mjs。基于真实C3事实，输出自己的行动/日状态、双方药交易投影及村庄公开行情，拒绝嵌套私人账；32条稳定淘汰、cursor重扫不刷trust、真实死亡后封存ID。定向9/9、全simulation+边界148/148（原139+新9，132.7秒），观察层切片8a02917已推origin，C4整体仍进行中；干净代码真实磁盘消费者15=6+9完整C3 bundle/独立observer一致，来源/可见性/cashDelta/trust逐项独立核对，证据artifacts/world-runtime-c4-acceptance-20261007/observer-disk15/comparison.json（忽略不上传）。
 - RED：缺模块ERR_MODULE_NOT_FOUND；独立重复commandId但新eventSeq反例先失败，现来源序号/命令去重及日tick校验拒绝。真实初始死亡与运行中死亡均有消费者反例。
 - 当前API为createMemoryState/advanceActorMemory/projectActorEvent/validateMemoryHistory/buildObservedMemory；这是独立观察器，不是完整buildActorKnowledge或c-memory-v1世界规则。validateMemoryHistory核对投影/淘汰/关系来源，但不认证原始世界、初始人物状态或真实观察时机；这些必须由后续整世界命令/公告/MemoryDaySettled全量重放证明。没有skipValidation接口。
 - 下一步继续公告事实及同日可知规划，报价/选客/买方等待必须由真实交易落账；随后集成Snapshot、完整重放、CLI导出和100日/存档消费者。尚未达到阶段C门槛，不进入D。
+
+## C4主实现与阶段验收（2026-10-07 17:13 Asia/Shanghai）
+
+- c-memory-v1/memory-config-v1已接入真实引擎：外部输入→本人请求/供应事实→同快照可知规划→ID顺序提交→SocietyDaySettled→过滤与关系更新→MemoryDaySettled。公开字段只有1药/公布报价/当日有效期；选客只用公告与已观察关系，实际提交复核健康/资金/货物。旧c-society-v1仍保持原规则，不默默迁移旧存档。
+- 两次真实peer交易后双方trust20，后续报价去掉2金币；买方只在匹配的真实商人计划上等待，不多执行一次动作。等待成功以卖方当日成交及无药买方实际获药证明，失败进入Goal失败计数/终止冷却。已修复误把卖方lastSaleDay读作买方收货时间的反例，恢复健康目标持续至800。
+- memoryModel入Snapshot，完整公告/命令/收入/药/Goal/RNG/记忆淘汰/观测时间重放核对；入口、存盘与buildActorKnowledge都全量审计，不开放可信/跳过参数。人物知识只返回本人状态、可知公告/行情、关系和32条记忆；死者只返回墓碑与封存历史。knowledge目录纳入runner源码指纹。
+- 全simulation+独立化边界164/164（原139+新增25），148秒。定向真实8日优惠对照、四日磁盘保存继续/篡改拒绝、CLI完整6日=4+2状态和CSV、整tick回退及死后封存已通过。CLI新增memory-config.json、memories.csv、relationships.csv；CSV是逐日有界保留状态，不能把重复日报行重复当信任增量。
+- 下一步在干净提交运行真实100日=40+60及独立来源/可见性/所有权消费者、旧规则兼容证据；尚未验收完整C阶段，不进入D。当前代码等待保存点，后续只补证据/收口，不降低原合同门槛。
+
+## 最终验收（2026-10-07 18:12 Asia/Shanghai）
+
+- 代码2793dad（主实现089ade7、增量记忆优化2793dad），工作树干净，origin/codex/world-runtime-c4已推送。全simulation+独立化边界168/168，151.2秒；新增未交付等待失败/冷却、增量与全历史一致、系统改写旧记忆整tick回退反例。没有skipValidation参数，独立observer仍全来源校验，入场/存盘/knowledge仍从初始配置完整重放。
+- 干净代码CLI100=40保存+60恢复，六组完整checkpoint和13类导出逐字节与已独立复算的089ade7产物一致。tick14400、599事实；stateHash d7e821c2e0f07c1c5451c8c46e4527fe9f5cde93743404173a1beedff58cb43d，eventHash 3d4938f150ef192c4fead924b19863d7a3007eacd676ff6047749cac3d746de4。runtime指纹b27b17193d8209340d8f3aad2733b60389c4dfb007531b569212acb2043336e6。
+- 独立消费者从实际来源复算32条淘汰/视角/观察时间/trust、9240条基线记忆CSV行、三钱包与公私粮药BigInt账；实际关系8日第三/四单少2金币，恢复健康800/trust40。最后1公药竞争只有1成功。合法自定义23日配置中商人选trust90猎人而非trust30村长，仅获分配者等待收药，未改默认参数。旧C2/C3完整100日checkpoint字节未变。
+- 性能对照仅观察器：相同100日事实，同进程先完整历史后增量，50.9秒/1.7秒且状态相同；同期CLI100日119.9秒，末尾RSS267603968非峰值。不同并发条件不能据旧369秒计算整体加速比例；尚非规模测试。
+- 证据在忽略目录artifacts/world-runtime-c4-acceptance-20261007：comparison.json、optimized-comparison.json、observer-performance.json、trusted-allocation23.json、optimized-full-tests.txt及真实CLI产物。未运行浏览器/模型/Laya/真实旧存档迁移，不合并runtime main。
+- C1身份/死亡、C2需求/缺钱→多步目标、C3竞争、C4可知记忆/关系/保存连续均已有真实消费者证据。架构“人格可改变选择”仍缺实现与对照证据，下一项C5，阶段C不提前标通过，D仍待开始。
