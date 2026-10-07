@@ -6,6 +6,8 @@ import { createHash } from 'node:crypto';
 import { createClockSmoke, CLOCK_SMOKE_RULES } from './runtime/fixtures/clock-smoke.mjs';
 import { createResourceVillage } from './runtime/fixtures/resource-village.mjs';
 import { RESOURCE_RULES } from './runtime/core/resource-ledger.mjs';
+import { createEcologyVillage, createDeerShock } from './runtime/fixtures/ecology-village.mjs';
+import { ECOLOGY_RULES } from './runtime/core/ecology.mjs';
 import { advanceOneTick } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
@@ -15,6 +17,8 @@ const hash = (value) => createHash('sha256').update(canonicalJson(value), 'utf8'
 const profiles = new Map([
   ['clock-smoke', { rulesVersion: CLOCK_SMOKE_RULES, create: createClockSmoke }],
   ['resource-village', { rulesVersion: RESOURCE_RULES, create: createResourceVillage }],
+  ['ecology-village', { rulesVersion: ECOLOGY_RULES, create: createEcologyVillage }],
+  ['ecology-deer-shock', { rulesVersion: ECOLOGY_RULES, create: createDeerShock }],
 ]);
 
 async function selectSimulation(options) {
@@ -25,12 +29,12 @@ async function selectSimulation(options) {
   }
   // Explicit registered-version dispatch. Only a version mismatch permits the next profile;
   // corruption, I/O errors and budget failures stop immediately. No legacy shape inference.
-  for (const [fixtureId, profile] of profiles) {
+  for (const profile of profiles.values()) {
     const { systems } = profile.create();
     let bundle;
     try { bundle = await loadCheckpoint(options.resume, { rulesVersion: profile.rulesVersion, systems }); }
     catch (error) { if (error.code === 'UNSUPPORTED_VERSION') continue; throw error; }
-    requireCondition(bundle.snapshot.fixtureId === fixtureId && bundle.snapshot.fixtureVersion === '1', 'Unknown fixture version', 'UNSUPPORTED_VERSION');
+    requireCondition(profiles.get(bundle.snapshot.fixtureId)?.rulesVersion === profile.rulesVersion && bundle.snapshot.fixtureVersion === '1', 'Unknown fixture version', 'UNSUPPORTED_VERSION');
     return { bundle, systems };
   }
   throw fault('UNSUPPORTED_VERSION', 'Checkpoint does not match a registered fixture/rules version');
@@ -97,12 +101,37 @@ async function writeEconomy(file, events) {
   const handle = await fs.open(file, 'wx');
   try {
     await handle.writeFile(columns.join(',') + '\n');
-    for (const event of events) for (const row of event.payload.entries) {
-      const data = { day: event.payload.day, ...row, productionRemainder: row.remainders.production,
-        consumptionRemainder: row.remainders.consumption, lossRemainder: row.remainders.loss };
-      await handle.writeFile(columns.map(key => String(data[key])).join(',') + '\n');
+    for (const event of events) {
+      if (!['ResourceDaySettled', 'EcologyDaySettled'].includes(event.type)) continue;
+      const payload = event.type === 'EcologyDaySettled' ? event.payload.resources : event.payload;
+      for (const row of payload.entries) {
+        const data = { day: payload.day, ...row, productionRemainder: row.remainders.production,
+          consumptionRemainder: row.remainders.consumption, lossRemainder: row.remainders.loss };
+        await handle.writeFile(columns.map(key => String(data[key])).join(',') + '\n');
+      }
     }
   } finally { await handle.close(); }
+}
+
+async function writeEcology(directory, events) {
+  const populationColumns = ['day','deer','wolves','injuredCount'];
+  const ecologyColumns = ['day','predationDemand','unmetPredation','pressurePermille','hungryWolves','farmLossRequested','farmLoss',
+    'hunters','huntTarget','foodWorkers','herbWorkers','injuredOpening','newInjuries','healed','injuredClosing','sample',
+    'deerOpening','deerBirths','deerNaturalDeaths','deerPredation','deerHunted','deerClosing',
+    'wolvesOpening','wolvesBirths','wolvesNaturalDeaths','wolvesStarvationDeaths','wolvesHunted','wolvesClosing'];
+  for (const [file, columns] of [['population.csv',populationColumns],['ecology.csv',ecologyColumns]]) {
+    const handle = await fs.open(path.join(directory,file),'wx');
+    try {
+      await handle.writeFile(columns.join(',')+'\n');
+      for (const event of events) if (event.type === 'EcologyDaySettled') {
+        const p = event.payload;
+        const row = file === 'population.csv' ? {day:p.day,deer:p.deer.closing,wolves:p.wolves.closing,injuredCount:p.injuredClosing} : {...p};
+        if (file === 'ecology.csv') for (const id of ['deer','wolves']) for (const [key,value] of Object.entries(p[id]))
+          row[id+key[0].toUpperCase()+key.slice(1)] = value;
+        await handle.writeFile(columns.map(key=>String(row[key])).join(',')+'\n');
+      }
+    } finally { await handle.close(); }
+  }
 }
 
 export async function runSimulation(options, hooks = {}) {
@@ -133,10 +162,15 @@ export async function runSimulation(options, hooks = {}) {
     checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
     await fs.writeFile(path.join(directory, 'inputs.json'), JSON.stringify(completeInputs(bundle.snapshot), null, 2), { flag: 'wx' });
     await writeEvents(path.join(directory, 'events.csv'), bundle.eventLog);
-    const resourceConfig = bundle.snapshot.rulesVersion === RESOURCE_RULES ? bundle.snapshot.world.resourceModel.config : undefined;
+    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
+    const ecologyConfig = bundle.snapshot.rulesVersion === ECOLOGY_RULES ? bundle.snapshot.world.ecologyModel.config : undefined;
     if (resourceConfig) {
       await fs.writeFile(path.join(directory, 'resource-config.json'), JSON.stringify(resourceConfig, null, 2), { flag: 'wx' });
       await writeEconomy(path.join(directory, 'economy.csv'), bundle.eventLog);
+    }
+    if (ecologyConfig) {
+      await fs.writeFile(path.join(directory,'ecology-config.json'),JSON.stringify(ecologyConfig,null,2),{flag:'wx'});
+      await writeEcology(directory,bundle.eventLog);
     }
     const summary = { status: failure ? 'failed' : 'succeeded', ...identity, nodeVersion: process.version,
       fixtureId: bundle.snapshot.fixtureId, fixtureVersion: bundle.snapshot.fixtureVersion,
@@ -144,6 +178,7 @@ export async function runSimulation(options, hooks = {}) {
       seed: bundle.snapshot.rng.seed, startTick, tick: bundle.snapshot.tick, revision: bundle.snapshot.revision,
       eventCount: bundle.eventLog.length, stateHash: hash(bundle.snapshot), eventHash: hash(bundle.eventLog),
       ...(resourceConfig ? { resourceConfigHash: hash(resourceConfig) } : {}),
+      ...(ecologyConfig ? { ecologyConfigHash: hash(ecologyConfig) } : {}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,
       elapsedMs: performance.now() - started, memoryUsage: process.memoryUsage(), checkpointPath };

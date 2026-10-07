@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-b1` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-b2` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
@@ -46,6 +46,17 @@ node simulation-runner.mjs --resume artifacts/simulation/resources30/checkpoint-
 ```
 
 额外导出 resource-config.json 与 economy.csv，逐日包含期初、生产/流入、需求/实际消费/缺口、流出/缺口、损耗、容量损失、期末和三种余量。金币保持不变。实验流量来自配置的flows，不是交互命令或付费贸易；inputs.json仍只表示Command队列/回执输入。保存与恢复会逐日复算账本并严格验证完整世界；配置指纹用于一致性检查，不是防恶意修改的数字签名。累计10000资源日为保护预算，不是性能承诺。见[B1合同](tasks/B1-RESOURCE-LEDGER-TASK.md)。
+
+### B2：鹿狼、聚合捕猎与治疗
+
+新规则b-ecology-v1保存种群收支、出生/死亡/捕食余量、狼食物压力、农田损失、健康劳动力和伤者。每天固定抽一个RNG样本，种群不自动回填；药实际消耗才能恢复伤者。食物少于5日口粮或有狼压力才捕猎，猎人来自未受伤且未分配给生产的剩余劳动力。这是聚合模型，未实现实名NPC、人口出生死亡、价格或付费贸易。
+
+```powershell
+node simulation-runner.mjs --fixture ecology-village --days 60 --seed 1 --out artifacts/simulation/ecology-base60
+node simulation-runner.mjs --fixture ecology-deer-shock --days 60 --seed 1 --out artifacts/simulation/ecology-shock60
+```
+
+两fixture使用相同配置；shock仅在tick1440（第10天结算前）通过RemovePopulation命令移除90鹿，inputs.json保存该输入，超出当时存量时拒绝。产物新增ecology-config.json、population.csv、ecology.csv，并保留资源配置、资源账CSV与完整checkpoint。续跑沿用fixture、配置、输入回执和RNG，无另传seed/fixture。60天是示例，逐tick历史重算成本会随日志增长，B4长程性能尚未验收；需快速查看时先用--days 3。见[B2合同](tasks/B2-ECOLOGY-HUNTING-TASK.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

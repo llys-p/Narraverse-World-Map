@@ -4,6 +4,7 @@ import { restoreClock } from './simulation-clock.mjs';
 import { advanceScheduler } from './scheduler.mjs';
 import { validateFact } from './event-log.mjs';
 import { RESOURCE_RULES } from './resource-ledger.mjs';
+import { ECOLOGY_RULES, removePopulation, ecologyCauses } from './ecology.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
@@ -47,15 +48,21 @@ export function advanceOneTick(bundle, systems) {
     for (const input of s.pendingCommands) {
       if (input.targetTick !== failedTick) { remaining.push(input); continue; }
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
-      const { from, to, amount } = input.payload, balances = s.world.resources;
-      const success = from !== to && own(balances, from) && own(balances, to) && balances[from] >= amount &&
-        balances[to] <= Number.MAX_SAFE_INTEGER - amount;
-      let result, eventSeqs = [];
-      if (success) {
-        balances[from] -= amount; balances[to] += amount; result = { from, to, amount };
-        eventSeqs = [append({ type: 'ResourceTransferred', sourceSystem: 'command-engine', commandId: input.commandId,
-          causationEventSeqs: [], entityIds: [from, to], payload: result })];
-      } else result = { code: 'RULE_REJECTED' };
+      let success, result, eventSeqs = [];
+      if (rulesVersion === ECOLOGY_RULES) {
+        const removal = removePopulation(s.world, input.payload);
+        s.world = removal.world; success = removal.success; result = removal.result;
+        if (success) eventSeqs = [append({ type: 'PopulationRemoved', sourceSystem: 'command-engine', commandId: input.commandId,
+          causationEventSeqs: [], entityIds: [result.species], payload: result })];
+      } else {
+        const { from, to, amount } = input.payload, balances = s.world.resources;
+        success = from !== to && own(balances, from) && own(balances, to) && balances[from] >= amount && balances[to] <= Number.MAX_SAFE_INTEGER - amount;
+        if (success) {
+          balances[from] -= amount; balances[to] += amount; result = { from, to, amount };
+          eventSeqs = [append({ type: 'ResourceTransferred', sourceSystem: 'command-engine', commandId: input.commandId,
+            causationEventSeqs: [], entityIds: [from, to], payload: result })];
+        } else result = { code: 'RULE_REJECTED' };
+      }
       put(s.commandReceipts, input.commandId, { inputSeq: input.inputSeq,
         input: { type: input.type, payload: cloneData(input.payload), targetTick: input.targetTick },
         fingerprint: inputFingerprint(input), status: success ? 'succeeded' : 'rejected', result, eventSeqs });
@@ -67,11 +74,14 @@ export function advanceOneTick(bundle, systems) {
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
       return canonicalJson({ ...protectedFields,
-        ...(rulesVersion === RESOURCE_RULES ? { resourceConfig: world.resourceModel.config } : {}) });
+        ...([RESOURCE_RULES, ECOLOGY_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
+        ...(rulesVersion === ECOLOGY_RULES ? { ecologyConfig: world.ecologyModel.config } : {}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
-      const context = { snapshot: s, rng, emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
+      const context = { snapshot: s, rng,
+        ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
+        emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
         // Observe rejection so a rejected Promise does not escape as an unhandled host error.

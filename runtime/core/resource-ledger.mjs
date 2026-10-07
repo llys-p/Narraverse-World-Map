@@ -92,8 +92,17 @@ function fractional(quantity, fraction, remainder) {
   return { amount: safe(numerator / denominator), remainder: safe(numerator % denominator) };
 }
 
-export function settleResourceDay(input) {
+export function settleResourceDay(input, modifiers) {
   validateResourceWorld(input);
+  if (modifiers !== undefined) {
+    fields(modifiers, ['settlement', 'foodBonus', 'foodDamage']);
+    fields(modifiers.settlement, ['humanCount', 'foodWorkers', 'herbWorkers', 'injuredCount']);
+    for (const value of Object.values(modifiers.settlement)) integer(value);
+    requireCondition(BigInt(modifiers.settlement.foodWorkers) + BigInt(modifiers.settlement.herbWorkers) + BigInt(modifiers.settlement.injuredCount)
+      <= BigInt(modifiers.settlement.humanCount), 'Invalid daily labour allocation');
+    requireCondition(modifiers.settlement.humanCount === input.resourceModel.config.settlement.humanCount, 'Daily population cannot change');
+    integer(modifiers.foodBonus); integer(modifiers.foodDamage);
+  }
   const world = cloneData(input);
   const model = world.resourceModel, config = model.config, day = model.day + 1;
   requireCondition(day <= MAX_RESOURCE_DAYS, 'Resource history day budget exceeded', 'LIMIT_EXCEEDED');
@@ -104,19 +113,22 @@ export function settleResourceDay(input) {
       unmetConsumption: 0, requestedOutflow: 0, outflow: 0, unmetOutflow: 0, loss: 0, capacityLoss: 0,
       closing: opening, remainders: carry() };
     if (id !== 'gold') {
-      const spec = config.resources[id], remainder = model.remainders[id], village = config.settlement;
+      const spec = config.resources[id], remainder = model.remainders[id], village = modifiers?.settlement ?? config.settlement;
       const production = fractional(id === 'food' ? village.foodWorkers : village.herbWorkers, spec.production, remainder.production);
       const demand = fractional(id === 'food' ? village.humanCount : village.injuredCount, spec.consumption, remainder.consumption);
       row.production = production.amount; row.demand = demand.amount;
+      if (id === 'food' && modifiers) row.production = safe(BigInt(row.production) + BigInt(modifiers.foodBonus));
       for (const flow of config.flows) if (flow.day === day && flow.resource === id) {
         const key = flow.direction === 'in' ? 'inflow' : 'requestedOutflow';
         row[key] = safe(BigInt(row[key]) + BigInt(flow.amount));
       }
       let stock = safe(BigInt(opening) + BigInt(row.production) + BigInt(row.inflow));
+      const farmLoss = id === 'food' && modifiers ? Math.min(stock, modifiers.foodDamage) : 0;
+      stock -= farmLoss;
       row.consumption = Math.min(stock, row.demand); row.unmetConsumption = row.demand - row.consumption; stock -= row.consumption;
       row.outflow = Math.min(stock, row.requestedOutflow); row.unmetOutflow = row.requestedOutflow - row.outflow; stock -= row.outflow;
       const loss = fractional(stock, { numerator: spec.lossPermille, denominator: 1000 }, remainder.loss);
-      row.loss = loss.amount; stock -= row.loss;
+      row.loss = safe(BigInt(loss.amount) + BigInt(farmLoss)); stock -= loss.amount;
       row.capacityLoss = Math.max(0, stock - spec.capacity); row.closing = stock - row.capacityLoss;
       row.remainders = { production: production.remainder, consumption: demand.remainder, loss: loss.remainder };
       model.remainders[id] = cloneData(row.remainders);

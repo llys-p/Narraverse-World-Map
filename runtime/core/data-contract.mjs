@@ -93,9 +93,15 @@ export function commandInput(raw, strictType = true) {
   identifier(input.commandId); integer(input.targetTick, 1); identifier(input.type);
   record(input.payload); payloadBudget(input.payload);
   if (strictType) {
-    requireCondition(input.type === 'TransferResource', 'Unknown command type');
-    fields(input.payload, ['from', 'to', 'amount']);
-    identifier(input.payload.from); identifier(input.payload.to); integer(input.payload.amount, 1);
+    if (input.type === 'RemovePopulation') {
+      fields(input.payload, ['species', 'amount']);
+      requireCondition(['deer', 'wolves'].includes(input.payload.species), 'Unknown population species');
+      integer(input.payload.amount, 1);
+    } else {
+      requireCondition(input.type === 'TransferResource', 'Unknown command type');
+      fields(input.payload, ['from', 'to', 'amount']);
+      identifier(input.payload.from); identifier(input.payload.to); integer(input.payload.amount, 1);
+    }
   }
   return input;
 }
