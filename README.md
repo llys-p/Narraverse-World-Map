@@ -18,6 +18,10 @@
 
 详见 [独立化与下一步](PROJECT_CONTEXT.md)、[世界运行时架构与分阶段计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)、[来源记录](SOURCE_ORIGIN.md)。
 
+## 新世界运行时进度
+
+阶段A底座已通过；B1资源账本已通过验收，代码位于 `codex/world-runtime-b1` 任务分支。main目前维护控制文档，没有合并运行时代码。查看[任务分支的运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-b1/README.md)、[B1合同](tasks/B1-RESOURCE-LEDGER-TASK.md)与[当前状态](PROJECT_CONTEXT.md)。本阶段暂不接页面、NPC、模型或旧存档。
+
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
 历史文档中的“移植正式版”是当时建议；本仓库现在作为独立项目发展，不自动执行该建议。

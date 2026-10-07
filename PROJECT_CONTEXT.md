@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 13:01（Asia/Shanghai）。
+更新时间：2026-10-07 13:26（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -35,6 +35,9 @@
 
 - A2/A3/A4：全部simulation及独立化边界60/60通过；独立消费者/磁盘探针通过。干净796b483上的CLI100天与40天保存加载+60天完整checkpoint/inputs一致，tick14400、103事件，两哈希相同。最终02cecea干净seed0烟测通过，runtime源码指纹与100天验证相同。
 - 证据：源码树artifacts/world-runtime-a-acceptance-20261007-1258/comparison.json及continuous100/prefix40/resumed60；产物保持忽略、不入仓。Node v24.14.0，100天实测约46秒；只是clock-smoke正确性，规模/生态/页面/模型/桥接入未验证。[A4合同与收口](tasks/A4-RUNNER-TASK.md)。
+
+- B1 `6382ad5`：配置/单位/每日资源收支与整数余量入存档，ResourceDaySettled事实与配置逐日复算；零库存、缺口、容量损失、非法数据、整tick回退及超预算提前拒绝通过。全部simulation+边界70/70（本轮约228秒，含并发运行），原A行为保持；[B1合同与收口](tasks/B1-RESOURCE-LEDGER-TASK.md)。
+- 干净6382ad5实际CLI10天=4天保存+6天续跑，完整checkpoint/配置一致，30行CSV使用BigInt逐行对账；最终f3aff78干净seed0一天烟测通过、源码指纹相同；tick1440、10事实、粮1012/药87/金币20000。源码指纹49bc5f3718a744a75b33069c99c2341bbb7ee1e826c01ae70cc73b3e6612e2b0；证据artifacts/world-runtime-b1-acceptance-20261007-1321/comparison.json与full-tests.txt保持忽略。10天约17秒（并发回归条件），内存为末尾采样；逐tick历史重算开销大，长程实验前需要改进验证策略，不能据此承诺1000天性能。此fixture不使用RNG，鹿狼静态，不宣称生态平衡或贸易完成。
 ## 尚未完成
 
 - 两个localStorage键非事务、多标签页冲突、战斗中途刷新恢复。
@@ -45,7 +48,7 @@
 
 ## 下一步
 
-阶段A底座已通过，本对话按用户授权完成A2→A3→A4。源码目录D:\Narraverse-World-Map-a2 @ codex/world-runtime-a4，最终交接SHA `02cecea38697c9607a14c0098812b3df0c4ef14d` 已推origin；A2=0988707、A3=cac590c、A4=796b483，最后02cecea仅状态收口。源码未合并main；下一步B1先定义生态经济schema/单位/公式，B～G未开始。E预研保留原范围。
+阶段A已通过，B1资源账本已实现并验收：源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-b1，代码基准A4 02cecea，实现保存点 `6382ad5fc9945cf9a3cb68ce72cd63e2f61f9d19`；最终交接 `f3aff786fae405f1b9196307a1110a0ccba88f84` 已推origin（末次仅文档同步）。全部simulation+边界70/70、真实磁盘30=12+18、干净CLI10=4+6和CSV逐行对账通过；源码不自动合并main。下一项B2鹿狼与聚合捕猎；B阶段仍进行中，B3价格/付费延迟贸易及B4长期生态门槛未开始。E1R预研维持原状态。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -57,8 +60,8 @@
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
-- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；收口A4 `PVTI_lAHOEF9IDs4BmADfzg_BwQg`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
+- 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4与阶段A门槛已通过；B～G未开始。E阶段保持待开始，E1离线预研需修正：先修工具/隔离及小样本标签试审，再补总量300～500/final≥150与完整盲审；暂不安装CUDA torch、训练或启动E2。
+- A1～A4与阶段A门槛、B1单项已通过；B阶段进行中，B2～B4未开始，C～G主线未开始。E阶段保持待开始，E1离线预研需修正：先修工具/隔离及小样本标签试审，再补总量300～500/final≥150与完整盲审；暂不安装CUDA torch、训练或启动E2。
