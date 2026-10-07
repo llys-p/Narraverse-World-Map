@@ -1,6 +1,18 @@
 # D2B：玩家身份与资产公共合同
 
-2026-10-07 20:18（Asia/Shanghai）。用户批准中控与三路子代理并行，共同合同基准2f04ac7（上接D2A交接0aa76fb）。D2B已验收，最终代码8e596a312580b76095bbbc78d72ae3ec3acbfeba；源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2b。只代表玩家身份与资产归属完成，不等于D2旅行交易或阶段D完成。
+2026-10-07 20:18（Asia/Shanghai）。用户批准中控与三路子代理并行，共同合同基准2f04ac7（上接D2A交接0aa76fb）。D2B初次验收代码8e596a312580b76095bbbc78d72ae3ec3acbfeba；源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2b。只代表玩家身份与资产归属完成，不等于D2旅行交易或阶段D完成。
+
+## 2026-10-07 20:36（Asia/Shanghai）边界返修
+
+用户提供报告为196项；本轮在当前D2B交接926a5bf上复现并修复，代码732103db37db70ac1f194c50c294f20888bb092d，核心/人物规则未改，源码仍留codex/world-runtime-d2b。
+
+- 丢失锁时ownsLock返回false，提交明确503 OWNER_BUSY，不再把原生ENOENT归为通用500，不自动建锁/抢锁；重复拒绝后世界与磁盘未变。其他I/O错误仍按原错误处理，不把它们伪装成“已拥有锁”。
+- 正式状态文件全被移走但锁仍在时，空inventory先拒绝，明确503 INVALID_SERVICE_COMMIT而非TypeError/通用500；内存读数保持，明确恢复自己的实验原档后同ID可合法提交，失败不占成功ID或写新档。
+- 临时识别扩为checkpoint/service-commit两类，必须普通文件、精确格式、最多128项、与已发布正式档同家族。保留且不加载/删除临时文件；只有临时档、异物、混家族仍拒绝。实际只读初始化子进程在checkpoint-r0正式发布后exit75，留下临时硬链接；崩溃锁先OWNER_BUSY，核对已退出自有测试PID与原token后仅人工清理该实验锁，严格恢复r0、字节不变、临时仍保留。产品未增加自动删锁/恢复开关。
+- 前端先按HTTP状态处理明确拒绝/409，之后仅成功响应解析JSON：纯文本400/405/413/415释放意图、409冲突重读；502/断连/成功回执损坏保留原DTO/ID直到确认。保留不确定请求是防重复提交合同，不把所有非JSON一律清空。
+- 新六项回归先红：5失败/1通过（不确定请求原本保留正确）；修后服务相关+边界定向36/36。最终干净732103d全量`node --test --test-concurrency=2 tests/simulation/*.test.mjs tests/export-boundaries.test.mjs`238/238、零失败/跳过，296.1秒；旧测试不删改。
+- 真实in-app browser经自有本机测试代理18315→真实Runtime18314，依次注入纯文本413、HTML502，再真实转发成功：第一次释放ID，第二次/第三次保持同完整DTO，磁盘只有一条成功提交、tick6，玩家100金币/3粮/1药不变。console无error/warn；测试代理不属于产品、不写入源码/未放宽产品Host/Origin限制。自己的服务/代理/验收页签均正常关闭，其他实例与真实数据不动。
+- 证据忽略目录artifacts/world-runtime-boundary-fix-20261007：red.txt、targeted.txt、full-tests.txt、browser-comparison.json、readonly-crash-comparison.json、normal-stop.json、browser-recovered.png。此前232/232保留为D2B初次集成验收记录；本次238项是当前新增六回归后的真实复跑。D2C仍未开工，D整体仍未验收。
 
 ## 结果与范围
 

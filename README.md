@@ -319,4 +319,4 @@ ATB 时间条、奥义 / 极限槽、召唤、队伍与人物切换。另外现�
 
 ## 世界运行时进度
 
-Runtime保留在codex/world-runtime-d2b任务分支，代码8e596a3；A/B/C、D1、D2A及D2B已验收，源码未合并main。D2B新增真实独立玩家及私账、四实名+76匿名总80，232/232和真实HTTP/双页签/重启与硬退出恢复通过。新实验profile入口见任务分支README，验收证据见[D2B收口](tasks/D2B-PLAYER-CONTRACT.md)。旅行/主动休整/交易与战斗尚未接入，D整体未验收。
+Runtime保留在codex/world-runtime-d2b任务分支，代码732103d；A/B/C、D1、D2A及D2B已验收，源码未合并main。D2B新增真实独立玩家及私账、四实名+76匿名总80，当前238/238和真实HTTP/双页签/重启与硬退出恢复通过；丢锁/空档案、checkpoint临时档和非JSON错误容错已修。新实验profile入口见任务分支README，验收证据见[D2B收口](tasks/D2B-PLAYER-CONTRACT.md)。旅行/主动休整/交易与战斗尚未接入，D整体未验收。
