@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 10:07（Asia/Shanghai）。
+更新时间：2026-10-07 12:10（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -30,6 +30,7 @@
 - 同次隔离18313服务：五个页面与三个脚本路由均HTTP200；模型配置configured=false，没有调用模型或桥；测试后停止自己的服务。
 - 不宣称原型全部E2E、真实模型、状态恢复或素材许可通过。
 - 2026-10-07 本次只修订架构计划与状态入口；阶段依赖、文档链接、代码围栏与 diff 格式已检查。不新增运行时代码，未运行模拟、浏览器或模型验收；上述原型测试不代表新模拟内核通过。
+- 2026-10-07 A1 执行者交付（分支 `codex/world-runtime-a1`，基准 14293ba）：`node --test tests/simulation/rng.test.mjs tests/simulation/clock-scheduler.test.mjs` 23 项通过（R1～I1，含 RNG 已知向量/恢复、tick 边界与溢出、调度排序/分块一致/边界一次/非法拒绝、纯 Node 静态扫描）；`node --test tests/export-boundaries.test.mjs` 3 项通过；`git diff --check` 干净。实现前先跑过两份测试并确认失败为 ERR_MODULE_NOT_FOUND。未运行浏览器 E2E、模型或 Laya 桥。以上为执行者自报，待中控独立验收。
 
 ## 尚未完成
 
@@ -41,7 +42,7 @@
 
 ## 下一步
 
-下一项为阶段 A / A1：确定性 RNG、SimulationClock、Scheduler 与定向测试。[A1 任务书](tasks/A1-DETERMINISTIC-CLOCK-TASK.md) 已备好，待用户转发；尚未开工或验收。
+阶段 A / A1（确定性 RNG、SimulationClock、Scheduler 与定向测试）执行者已交付，待中控验收：任务分支 `codex/world-runtime-a1`，交付内容为 `runtime/core/rng.mjs`、`simulation-clock.mjs`、`scheduler.mjs`、`tests/simulation/` 两份测试及本文件状态更新；[A1 任务书](tasks/A1-DETERMINISTIC-CLOCK-TASK.md)。中控复跑有界测试与关键反例后决定已验收或需修正；验收通过前不进入 A2。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
@@ -57,4 +58,4 @@
 - 中控按架构依赖逐项写任务书，用户转发给执行者；执行者使用任务分支实现、提交并回传证据，中控负责独立验收与发布下一项。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1 尚未派发，A2～A4 及 B～G 尚未开始；不把文档完成计作代码完成。
+- A1 执行者已交付待验收；A2～A4 及 B～G 尚未开始；不把文档完成计作代码完成，也不把执行者交付计作中控验收。
