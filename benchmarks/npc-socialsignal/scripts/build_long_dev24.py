@@ -1481,6 +1481,13 @@ def norm_text(t):
 
 def validate_schema(items):
     errs = []
+    if len(items) != 24:
+        errs.append("plan requires exactly 24 scenarios")
+    categories = {c: sum(c in r.get("tags", []) for r in items) for c in CATEGORIES}
+    if any(n != 6 for n in categories.values()):
+        errs.append("plan requires six scenarios in each of the four categories")
+    if len({r.get("family") for r in items}) < 8:
+        errs.append("plan requires at least eight plot families")
     seen_sids, seen_turns = set(), {}
     for r in items:
         where = r.get("sid", "?")
@@ -1498,6 +1505,9 @@ def validate_schema(items):
         for sig in SIGNALS:
             if not (r.get("basis") or {}).get(sig):
                 errs.append(f"{where}: {sig} has no basis note")
+        evidence = r.get("decisive_evidence")
+        if not isinstance(evidence, dict) or set(evidence) != set(SIGNALS):
+            errs.append(f"{where}: decisive evidence must cover the five signals")
         if r["sid"] in seen_sids:
             errs.append(f"{where}: duplicate sid")
         seen_sids.add(r["sid"])

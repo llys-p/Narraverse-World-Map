@@ -1,0 +1,34 @@
+{
+  "schema": "long-dev24-control-audit-v1",
+  "planned_scenarios": 24,
+  "planned_signal_items": 120,
+  "batch_sha256": "d96c67ee8490a416eda3f5f7d5eee31b3655142876d5e3072ffa4c59d8ea4c8b",
+  "label_spec_sha256": "bb7058b4df6b1eae14564b241ff07c9105df3ee93385992af58e8d7a01a05268",
+  "tokenizer_sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+  "category_counts": {
+    "cat0_within_budget": 6,
+    "cat1_irrelevant_only_trimmed": 6,
+    "cat2_decisive_evidence_lost": 6,
+    "cat3_core_over_budget_refused": 6
+  },
+  "head_tokens": {
+    "social_act": 78,
+    "trust_shift": 44,
+    "fear_shift": 39,
+    "deception": 46,
+    "boundary_violation": 46
+  },
+  "formal_cli_rejection_exit": {
+    "primary": 4,
+    "long": 4
+  },
+  "synthetic_predictions_only": true,
+  "model_inference": false,
+  "label_quality_accepted": false,
+  "primary_missing_evidence_scenarios": 10,
+  "primary_over_budget_scenarios": 8,
+  "scope": "Input-path and synthetic CLI publication guards only; no model selection or final acceptance",
+  "v1_reproduction": "build rerun using original D:/ModelBench/laya base: all three artifacts byte-identical",
+  "existing_regressions": "regressions_e1r2/stability_regressions/regressions_control all exit 0 in disposable copy",
+  "source_commit": "7ee4a91b77378d9a0617231e003481e662450b82"
+}
