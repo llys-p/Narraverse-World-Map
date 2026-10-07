@@ -1,0 +1,2896 @@
+{
+  "batch_file": "samples/long-dev24-v2.jsonl",
+  "budget": 768,
+  "category_counts": {
+    "cat0_within_budget": 6,
+    "cat1_irrelevant_only_trimmed": 6,
+    "cat2_decisive_evidence_lost": 6,
+    "cat3_core_over_budget_refused": 6
+  },
+  "condition_policy": "primary omits extra_history; long combines history+extra_history and trims oldest. Same IDs do not establish gold comparability; both are diagnostic only until condition-specific review.",
+  "corpus_version": "long-dev24-v2",
+  "families": 8,
+  "label_status": "provisional development annotations; no frozen gold or full five-signal acceptance",
+  "model_inference": false,
+  "plan_id": "long-dev24-v2",
+  "planned_ids": {
+    "long": [
+      "E1-L24-001",
+      "E1-L24-002",
+      "E1-L24-003",
+      "E1-L24-004",
+      "E1-L24-005",
+      "E1-L24-006",
+      "E1-L24-007",
+      "E1-L24-008",
+      "E1-L24-009",
+      "E1-L24-010",
+      "E1-L24-011",
+      "E1-L24-012",
+      "E1-L24-013",
+      "E1-L24-014",
+      "E1-L24-015",
+      "E1-L24-016",
+      "E1-L24-017",
+      "E1-L24-018",
+      "E1-L24-019",
+      "E1-L24-020",
+      "E1-L24-021",
+      "E1-L24-022",
+      "E1-L24-023",
+      "E1-L24-024"
+    ],
+    "primary": [
+      "E1-L24-001",
+      "E1-L24-002",
+      "E1-L24-003",
+      "E1-L24-004",
+      "E1-L24-005",
+      "E1-L24-006",
+      "E1-L24-007",
+      "E1-L24-008",
+      "E1-L24-009",
+      "E1-L24-010",
+      "E1-L24-011",
+      "E1-L24-012",
+      "E1-L24-013",
+      "E1-L24-014",
+      "E1-L24-015",
+      "E1-L24-016",
+      "E1-L24-017",
+      "E1-L24-018",
+      "E1-L24-019",
+      "E1-L24-020",
+      "E1-L24-021",
+      "E1-L24-022",
+      "E1-L24-023",
+      "E1-L24-024"
+    ]
+  },
+  "records": [
+    {
+      "category": "cat0_within_budget",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "天黑之后不渡",
+            "趁天光大"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 658,
+          "tokens_after": 658,
+          "tokens_before_truncation": 658
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "补上",
+            "当面点过收好"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 658,
+          "tokens_after": 658,
+          "tokens_before_truncation": 658
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "趁天光大"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 658,
+          "tokens_after": 658,
+          "tokens_before_truncation": 658
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "鱼担我挑来了",
+            "船钱照旧到岸当面点清"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 658,
+          "tokens_after": 658,
+          "tokens_before_truncation": 658
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "把前年记下的三文船钱补上",
+            "当面点过收好"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 658,
+          "tokens_after": 658,
+          "tokens_before_truncation": 658
+        }
+      },
+      "sid": "E1-L24-001"
+    },
+    {
+      "category": "cat1_irrelevant_only_trimmed",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "天黑之后不渡",
+            "今日晌午"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前渡口只有陈九一条船，旺季要排到日头偏西。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前河对岸的渡口并了官渡，陈九的私渡差点被禁，靠老主顾联名保下来的。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "六年前陈九的亡兄在河里救人没上来，从那以后他撑船不看热闹只看水。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 757,
+          "tokens_after": 757,
+          "tokens_before_truncation": 843
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "前两回的钱我都记着呢",
+            "等下回一起算"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前渡口只有陈九一条船，旺季要排到日头偏西。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前河对岸的渡口并了官渡，陈九的私渡差点被禁，靠老主顾联名保下来的。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "六年前陈九的亡兄在河里救人没上来，从那以后他撑船不看热闹只看水。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 757,
+          "tokens_after": 757,
+          "tokens_before_truncation": 843
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "又到渡口"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前渡口只有陈九一条船，旺季要排到日头偏西。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前河对岸的渡口并了官渡，陈九的私渡差点被禁，靠老主顾联名保下来的。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "六年前陈九的亡兄在河里救人没上来，从那以后他撑船不看热闹只看水。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 757,
+          "tokens_after": 757,
+          "tokens_before_truncation": 843
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "再渡我一趟"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前渡口只有陈九一条船，旺季要排到日头偏西。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前河对岸的渡口并了官渡，陈九的私渡差点被禁，靠老主顾联名保下来的。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "六年前陈九的亡兄在河里救人没上来，从那以后他撑船不看热闹只看水。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 757,
+          "tokens_after": 757,
+          "tokens_before_truncation": 843
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "说好到岸补两文船钱",
+            "船钱还是没补"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前渡口只有陈九一条船，旺季要排到日头偏西。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前河对岸的渡口并了官渡，陈九的私渡差点被禁，靠老主顾联名保下来的。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "六年前陈九的亡兄在河里救人没上来，从那以后他撑船不看热闹只看水。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 757,
+          "tokens_after": 757,
+          "tokens_before_truncation": 843
+        }
+      },
+      "sid": "E1-L24-002"
+    },
+    {
+      "category": "cat2_decisive_evidence_lost",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "天黑之后不渡，给多少都不渡；过渡的钱到岸当面点清，不欠账。",
+            "本次玩家到场，陈九刚刚当面逐一验收修船缆绳，实际交到手的合计42根，除此没有交来别的。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交修船缆绳42根，这次到场点收时全部结清，陈九保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 750,
+          "tokens_after": 750,
+          "tokens_before_truncation": 796
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "本次玩家到场，陈九刚刚当面逐一验收修船缆绳，实际交到手的合计42根，除此没有交来别的。",
+            "陈九，这次交来的修船缆绳你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交修船缆绳42根，这次到场点收时全部结清，陈九保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 750,
+          "tokens_after": 750,
+          "tokens_before_truncation": 796
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "陈九，这次交来的修船缆绳你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交修船缆绳42根，这次到场点收时全部结清，陈九保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 750,
+          "tokens_after": 750,
+          "tokens_before_truncation": 796
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "陈九，这次交来的修船缆绳你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交修船缆绳42根，这次到场点收时全部结清，陈九保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 750,
+          "tokens_after": 750,
+          "tokens_before_truncation": 796
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交修船缆绳42根，这次到场点收时全部结清，陈九保留了原字据。",
+            "本次玩家到场，陈九刚刚当面逐一验收修船缆绳，实际交到手的合计42根，除此没有交来别的。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交修船缆绳42根，这次到场点收时全部结清，陈九保留了原字据。"
+          ],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交修船缆绳42根，这次到场点收时全部结清，陈九保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 750,
+          "tokens_after": 750,
+          "tokens_before_truncation": 796
+        }
+      },
+      "sid": "E1-L24-003"
+    },
+    {
+      "category": "cat1_irrelevant_only_trimmed",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "来路说不清的物件不当",
+            "家里拆洗下来的"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前白老夹还是二柜，给大柜掌簸箕看银子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前大柜告老还乡，白老夹接的大柜，头一件事就是立验来看历的规矩。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 742,
+          "tokens_after": 742,
+          "tokens_before_truncation": 793
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "家里拆洗下来的"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前白老夹还是二柜，给大柜掌簸箕看银子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前大柜告老还乡，白老夹接的大柜，头一件事就是立验来看历的规矩。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 742,
+          "tokens_after": 742,
+          "tokens_before_truncation": 793
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "又来"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前白老夹还是二柜，给大柜掌簸箕看银子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前大柜告老还乡，白老夹接的大柜，头一件事就是立验来看历的规矩。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 742,
+          "tokens_after": 742,
+          "tokens_before_truncation": 793
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "先押二十文"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前白老夹还是二柜，给大柜掌簸箕看银子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前大柜告老还乡，白老夹接的大柜，头一件事就是立验来看历的规矩。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 742,
+          "tokens_after": 742,
+          "tokens_before_truncation": 793
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "说定三日后来赎",
+            "银钗没赎"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前白老夹还是二柜，给大柜掌簸箕看银子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前大柜告老还乡，白老夹接的大柜，头一件事就是立验来看历的规矩。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 742,
+          "tokens_after": 742,
+          "tokens_before_truncation": 793
+        }
+      },
+      "sid": "E1-L24-004"
+    },
+    {
+      "category": "cat2_decisive_evidence_lost",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "来路说不清的物件不当；当出的东西凭票赎，票不认人。",
+            "本次玩家到场，白老夹刚刚当面逐一验收柜上包货油纸，实际交到手的合计12张，除此没有交来别的。"
+          ],
+          "history_remaining": 24,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交柜上包货油纸18张，这次到场点收时全部结清，白老夹保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 756,
+          "tokens_after": 756,
+          "tokens_before_truncation": 805
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "本次玩家到场，白老夹刚刚当面逐一验收柜上包货油纸，实际交到手的合计12张，除此没有交来别的。",
+            "白老夹，这次交来的柜上包货油纸你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 24,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交柜上包货油纸18张，这次到场点收时全部结清，白老夹保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 756,
+          "tokens_after": 756,
+          "tokens_before_truncation": 805
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "白老夹，这次交来的柜上包货油纸你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 24,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交柜上包货油纸18张，这次到场点收时全部结清，白老夹保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 756,
+          "tokens_after": 756,
+          "tokens_before_truncation": 805
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "白老夹，这次交来的柜上包货油纸你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 24,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交柜上包货油纸18张，这次到场点收时全部结清，白老夹保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 756,
+          "tokens_after": 756,
+          "tokens_before_truncation": 805
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交柜上包货油纸18张，这次到场点收时全部结清，白老夹保留了原字据。",
+            "本次玩家到场，白老夹刚刚当面逐一验收柜上包货油纸，实际交到手的合计12张，除此没有交来别的。"
+          ],
+          "history_remaining": 24,
+          "lost_decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交柜上包货油纸18张，这次到场点收时全部结清，白老夹保留了原字据。"
+          ],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交柜上包货油纸18张，这次到场点收时全部结清，白老夹保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 756,
+          "tokens_after": 756,
+          "tokens_before_truncation": 805
+        }
+      },
+      "sid": "E1-L24-005"
+    },
+    {
+      "category": "cat3_core_over_budget_refused",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "来路说不清的物件不当",
+            "绝不是外头流窜的赃货"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [
+            "来路说不清的物件不当"
+          ],
+          "minimum_possible_tokens": 826,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 来路说不清的物件不当；当出的东西凭票赎，票不认人。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 826,
+          "tokens_after": 826,
+          "tokens_before_truncation": 829
+        },
+        "deception": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "说是船上用了多年要换新的",
+            "把表兄的腰牌借您过目"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 826,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 来路说不清的物件不当；当出的东西凭票赎，票不认人。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 826,
+          "tokens_after": 826,
+          "tokens_before_truncation": 829
+        },
+        "fear_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "千万别跟柜上旁人提"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 826,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 来路说不清的物件不当；当出的东西凭票赎，票不认人。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 826,
+          "tokens_after": 826,
+          "tokens_before_truncation": 829
+        },
+        "social_act": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "先押两件"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 826,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 来路说不清的物件不当；当出的东西凭票赎，票不认人。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 826,
+          "tokens_after": 826,
+          "tokens_before_truncation": 829
+        },
+        "trust_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "下个月漕银一发下来",
+            "连本带利一并来赎"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 826,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 来路说不清的物件不当；当出的东西凭票赎，票不认人。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 826,
+          "tokens_after": 826,
+          "tokens_before_truncation": 829
+        }
+      },
+      "sid": "E1-L24-006"
+    },
+    {
+      "category": "cat2_decisive_evidence_lost",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "镖单底子不与外人看；柜上的账，只对东家和官面上的查证开口。",
+            "本次玩家到场，程守拙刚刚当面逐一验收登记用空白账页，实际交到手的合计48页，除此没有交来别的。"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交登记用空白账页48页，这次到场点收时全部结清，程守拙保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七八年前程守拙刚进镖局时只管伙食账，米面进出记了整三年。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 751,
+          "tokens_after": 751,
+          "tokens_before_truncation": 827
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "本次玩家到场，程守拙刚刚当面逐一验收登记用空白账页，实际交到手的合计48页，除此没有交来别的。",
+            "程守拙，这次交来的登记用空白账页你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交登记用空白账页48页，这次到场点收时全部结清，程守拙保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七八年前程守拙刚进镖局时只管伙食账，米面进出记了整三年。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 751,
+          "tokens_after": 751,
+          "tokens_before_truncation": 827
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "程守拙，这次交来的登记用空白账页你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交登记用空白账页48页，这次到场点收时全部结清，程守拙保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七八年前程守拙刚进镖局时只管伙食账，米面进出记了整三年。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 751,
+          "tokens_after": 751,
+          "tokens_before_truncation": 827
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "程守拙，这次交来的登记用空白账页你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交登记用空白账页48页，这次到场点收时全部结清，程守拙保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七八年前程守拙刚进镖局时只管伙食账，米面进出记了整三年。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 751,
+          "tokens_after": 751,
+          "tokens_before_truncation": 827
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交登记用空白账页48页，这次到场点收时全部结清，程守拙保留了原字据。",
+            "本次玩家到场，程守拙刚刚当面逐一验收登记用空白账页，实际交到手的合计48页，除此没有交来别的。"
+          ],
+          "history_remaining": 23,
+          "lost_decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交登记用空白账页48页，这次到场点收时全部结清，程守拙保留了原字据。"
+          ],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交登记用空白账页48页，这次到场点收时全部结清，程守拙保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七八年前程守拙刚进镖局时只管伙食账，米面进出记了整三年。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 751,
+          "tokens_after": 751,
+          "tokens_before_truncation": 827
+        }
+      },
+      "sid": "E1-L24-007"
+    },
+    {
+      "category": "cat3_core_over_budget_refused",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "镖单底子不与外人看",
+            "跟这批货相关的几行对一对"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [
+            "镖单底子不与外人看"
+          ],
+          "minimum_possible_tokens": 769,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 镖单底子不与外人看；柜上的账，只对东家和官面上的查证开口。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 769,
+          "tokens_after": 769,
+          "tokens_before_truncation": 776
+        },
+        "deception": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "正月初三的镖",
+            "签的是贵局的票"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 769,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 镖单底子不与外人看；柜上的账，只对东家和官面上的查证开口。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 769,
+          "tokens_after": 769,
+          "tokens_before_truncation": 776
+        },
+        "fear_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "只给我看货名和斤两",
+            "只当没我这回事"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 769,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 镖单底子不与外人看；柜上的账，只对东家和官面上的查证开口。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 769,
+          "tokens_after": 769,
+          "tokens_before_truncation": 776
+        },
+        "social_act": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "求您容我",
+            "对一对"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 769,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 镖单底子不与外人看；柜上的账，只对东家和官面上的查证开口。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 769,
+          "tokens_after": 769,
+          "tokens_before_truncation": 776
+        },
+        "trust_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "一年香烛钱我包了",
+            "我的货还走您的票"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 769,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 镖单底子不与外人看；柜上的账，只对东家和官面上的查证开口。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 769,
+          "tokens_after": 769,
+          "tokens_before_truncation": 776
+        }
+      },
+      "sid": "E1-L24-008"
+    },
+    {
+      "category": "cat0_within_budget",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "镖单底子不与外人看",
+            "把昨日说好的三十文脚钱也结了"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 603,
+          "tokens_after": 603,
+          "tokens_before_truncation": 603
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "验过那半匹靛青",
+            "对得上"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 603,
+          "tokens_after": 603,
+          "tokens_before_truncation": 603
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "今儿顺路"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 603,
+          "tokens_after": 603,
+          "tokens_before_truncation": 603
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "把昨日说好的三十文脚钱也结了"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 603,
+          "tokens_after": 603,
+          "tokens_before_truncation": 603
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "原样送回",
+            "成色与账上记的对得上"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 603,
+          "tokens_after": 603,
+          "tokens_before_truncation": 603
+        }
+      },
+      "sid": "E1-L24-009"
+    },
+    {
+      "category": "cat3_core_over_budget_refused",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "灶台后头生人不进",
+            "让我进灶台后头自己盛"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [
+            "灶台后头生人不进"
+          ],
+          "minimum_possible_tokens": 834,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 灶台后头生人不进；要加面自己喊，不许伸手进汤锅。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 834,
+          "tokens_after": 834,
+          "tokens_before_truncation": 837
+        },
+        "deception": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "家里灶租给了对面的贩子",
+            "我娘病了小半年"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 834,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 灶台后头生人不进；要加面自己喊，不许伸手进汤锅。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 834,
+          "tokens_after": 834,
+          "tokens_before_truncation": 837
+        },
+        "fear_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "绝不碰您的汤锅"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 834,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 灶台后头生人不进；要加面自己喊，不许伸手进汤锅。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 834,
+          "tokens_after": 834,
+          "tokens_before_truncation": 837
+        },
+        "social_act": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "就求一件事",
+            "让我进灶台后头自己盛"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 834,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 灶台后头生人不进；要加面自己喊，不许伸手进汤锅。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 834,
+          "tokens_after": 834,
+          "tokens_before_truncation": 837
+        },
+        "trust_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "月底我把饭钱一并给您送去",
+            "给您把摊前的路垫三车石子"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 834,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 灶台后头生人不进；要加面自己喊，不许伸手进汤锅。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 834,
+          "tokens_after": 834,
+          "tokens_before_truncation": 837
+        }
+      },
+      "sid": "E1-L24-010"
+    },
+    {
+      "category": "cat0_within_budget",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "灶台后头生人不进",
+            "坐在摊前的条凳上"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 565,
+          "tokens_after": 565,
+          "tokens_before_truncation": 565
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "收了一个",
+            "照旧数了钱"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 565,
+          "tokens_after": 565,
+          "tokens_before_truncation": 565
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "照旧坐在摊前的条凳上"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 565,
+          "tokens_after": 565,
+          "tokens_before_truncation": 565
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "帮着端了半个时辰的碗",
+            "幌子我给您擦擦"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 565,
+          "tokens_after": 565,
+          "tokens_before_truncation": 565
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "误了自己揽活",
+            "照旧数了钱"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 565,
+          "tokens_after": 565,
+          "tokens_before_truncation": 565
+        }
+      },
+      "sid": "E1-L24-011"
+    },
+    {
+      "category": "cat1_irrelevant_only_trimmed",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "灶台后头生人不进",
+            "又来吃了面"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前孙婆婆的摊子只卖阳春面，一样做三十年。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前摊上添了辣子罐，是从过路的川货郎那儿学的吃法。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 768,
+          "tokens_after": 768,
+          "tokens_before_truncation": 813
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "两碗面钱我记着呢",
+            "明日一早给您送来"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前孙婆婆的摊子只卖阳春面，一样做三十年。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前摊上添了辣子罐，是从过路的川货郎那儿学的吃法。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 768,
+          "tokens_after": 768,
+          "tokens_before_truncation": 813
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "又来吃了面"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前孙婆婆的摊子只卖阳春面，一样做三十年。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前摊上添了辣子罐，是从过路的川货郎那儿学的吃法。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 768,
+          "tokens_after": 768,
+          "tokens_before_truncation": 813
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "这碗也赊着"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前孙婆婆的摊子只卖阳春面，一样做三十年。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前摊上添了辣子罐，是从过路的川货郎那儿学的吃法。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 768,
+          "tokens_after": 768,
+          "tokens_before_truncation": 813
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "说今日晌午一并还钱",
+            "这会儿天擦黑了"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前孙婆婆的摊子只卖阳春面，一样做三十年。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前摊上添了辣子罐，是从过路的川货郎那儿学的吃法。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 768,
+          "tokens_after": 768,
+          "tokens_before_truncation": 813
+        }
+      },
+      "sid": "E1-L24-012"
+    },
+    {
+      "category": "cat0_within_budget",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "窑口三步之内不站生人",
+            "站在窑口三步外等着"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 562,
+          "tokens_after": 562,
+          "tokens_before_truncation": 562
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "过秤收了",
+            "一块块码上了车"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 562,
+          "tokens_after": 562,
+          "tokens_before_truncation": 562
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "站在窑口三步外等着"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 562,
+          "tokens_after": 562,
+          "tokens_before_truncation": 562
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "砖我也当面点数"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 562,
+          "tokens_after": 562,
+          "tokens_before_truncation": 562
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "把两车柴送到窑上",
+            "过秤收了"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 562,
+          "tokens_after": 562,
+          "tokens_before_truncation": 562
+        }
+      },
+      "sid": "E1-L24-013"
+    },
+    {
+      "category": "cat1_irrelevant_only_trimmed",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "窑口三步之内不站生人",
+            "三步外"
+          ],
+          "history_remaining": 28,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前郑一窑烧的是青砖，后来县里时兴红砖才改的方子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前窑上出过一窑歪砖，郑一窑自己赔了工钱。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 748,
+          "tokens_after": 748,
+          "tokens_before_truncation": 796
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "过两日卖完窑货一并送上"
+          ],
+          "history_remaining": 28,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前郑一窑烧的是青砖，后来县里时兴红砖才改的方子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前窑上出过一窑歪砖，郑一窑自己赔了工钱。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 748,
+          "tokens_after": 748,
+          "tokens_before_truncation": 796
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "又来，还要再码二十块"
+          ],
+          "history_remaining": 28,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前郑一窑烧的是青砖，后来县里时兴红砖才改的方子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前窑上出过一窑歪砖，郑一窑自己赔了工钱。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 748,
+          "tokens_after": 748,
+          "tokens_before_truncation": 796
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "再给我码二十块砖坯"
+          ],
+          "history_remaining": 28,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前郑一窑烧的是青砖，后来县里时兴红砖才改的方子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前窑上出过一窑歪砖，郑一窑自己赔了工钱。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 748,
+          "tokens_after": 748,
+          "tokens_before_truncation": 796
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "说好今日付钱",
+            "今早玩家又来"
+          ],
+          "history_remaining": 28,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前郑一窑烧的是青砖，后来县里时兴红砖才改的方子。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前窑上出过一窑歪砖，郑一窑自己赔了工钱。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 748,
+          "tokens_after": 748,
+          "tokens_before_truncation": 796
+        }
+      },
+      "sid": "E1-L24-014"
+    },
+    {
+      "category": "cat2_decisive_evidence_lost",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "窑口三步之内不站生人；看火的时候谁也不许搭手。",
+            "本次玩家到场，郑一窑刚刚当面逐一验收晾坯木托盘，实际交到手的合计9只，除此没有交来别的。"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交晾坯木托盘12只，这次到场点收时全部结清，郑一窑保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 754,
+          "tokens_after": 754,
+          "tokens_before_truncation": 802
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "本次玩家到场，郑一窑刚刚当面逐一验收晾坯木托盘，实际交到手的合计9只，除此没有交来别的。",
+            "郑一窑，这次交来的晾坯木托盘你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交晾坯木托盘12只，这次到场点收时全部结清，郑一窑保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 754,
+          "tokens_after": 754,
+          "tokens_before_truncation": 802
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "郑一窑，这次交来的晾坯木托盘你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交晾坯木托盘12只，这次到场点收时全部结清，郑一窑保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 754,
+          "tokens_after": 754,
+          "tokens_before_truncation": 802
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "郑一窑，这次交来的晾坯木托盘你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交晾坯木托盘12只，这次到场点收时全部结清，郑一窑保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 754,
+          "tokens_after": 754,
+          "tokens_before_truncation": 802
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交晾坯木托盘12只，这次到场点收时全部结清，郑一窑保留了原字据。",
+            "本次玩家到场，郑一窑刚刚当面逐一验收晾坯木托盘，实际交到手的合计9只，除此没有交来别的。"
+          ],
+          "history_remaining": 27,
+          "lost_decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交晾坯木托盘12只，这次到场点收时全部结清，郑一窑保留了原字据。"
+          ],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交晾坯木托盘12只，这次到场点收时全部结清，郑一窑保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 754,
+          "tokens_after": 754,
+          "tokens_before_truncation": 802
+        }
+      },
+      "sid": "E1-L24-015"
+    },
+    {
+      "category": "cat1_irrelevant_only_trimmed",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "塾里的书不外借",
+            "今早玩家到塾里来取信"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前塾里只有七八个蒙童，如今坐满了两排。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前顾先生的老先生过世，留下满柜的批本和一句话：书比命长。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 767,
+          "tokens_after": 767,
+          "tokens_before_truncation": 811
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "昨儿实在走不开"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前塾里只有七八个蒙童，如今坐满了两排。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前顾先生的老先生过世，留下满柜的批本和一句话：书比命长。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 767,
+          "tokens_after": 767,
+          "tokens_before_truncation": 811
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "今早玩家到塾里来取信"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前塾里只有七八个蒙童，如今坐满了两排。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前顾先生的老先生过世，留下满柜的批本和一句话：书比命长。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 767,
+          "tokens_after": 767,
+          "tokens_before_truncation": 811
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "求顾先生代写一封家信"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前塾里只有七八个蒙童，如今坐满了两排。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前顾先生的老先生过世，留下满柜的批本和一句话：书比命长。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 767,
+          "tokens_after": 767,
+          "tokens_before_truncation": 811
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "讲定今日来取",
+            "托邻童带话"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前塾里只有七八个蒙童，如今坐满了两排。",
+              "reason": "oldest_history_over_budget"
+            },
+            {
+              "line": "七年前顾先生的老先生过世，留下满柜的批本和一句话：书比命长。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 767,
+          "tokens_after": 767,
+          "tokens_before_truncation": 811
+        }
+      },
+      "sid": "E1-L24-016"
+    },
+    {
+      "category": "cat2_decisive_evidence_lost",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "塾里的书不外借；要读可以来塾里抄，抄时不得带出大门。",
+            "本次玩家到场，顾先生刚刚当面逐一验收习字用素纸，实际交到手的合计30张，除此没有交来别的。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交习字用素纸30张，这次到场点收时全部结清，顾先生保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 734,
+          "tokens_after": 734,
+          "tokens_before_truncation": 781
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "本次玩家到场，顾先生刚刚当面逐一验收习字用素纸，实际交到手的合计30张，除此没有交来别的。",
+            "顾先生，这次交来的习字用素纸你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交习字用素纸30张，这次到场点收时全部结清，顾先生保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 734,
+          "tokens_after": 734,
+          "tokens_before_truncation": 781
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "顾先生，这次交来的习字用素纸你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交习字用素纸30张，这次到场点收时全部结清，顾先生保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 734,
+          "tokens_after": 734,
+          "tokens_before_truncation": 781
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "顾先生，这次交来的习字用素纸你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交习字用素纸30张，这次到场点收时全部结清，顾先生保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 734,
+          "tokens_after": 734,
+          "tokens_before_truncation": 781
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交习字用素纸30张，这次到场点收时全部结清，顾先生保留了原字据。",
+            "本次玩家到场，顾先生刚刚当面逐一验收习字用素纸，实际交到手的合计30张，除此没有交来别的。"
+          ],
+          "history_remaining": 25,
+          "lost_decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交习字用素纸30张，这次到场点收时全部结清，顾先生保留了原字据。"
+          ],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交习字用素纸30张，这次到场点收时全部结清，顾先生保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 734,
+          "tokens_after": 734,
+          "tokens_before_truncation": 781
+        }
+      },
+      "sid": "E1-L24-017"
+    },
+    {
+      "category": "cat3_core_over_budget_refused",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "塾里的书不外借",
+            "借我五日"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [
+            "塾里的书不外借"
+          ],
+          "minimum_possible_tokens": 865,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 塾里的书不外借；要读可以来塾里抄，抄时不得带出大门。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 865,
+          "tokens_after": 865,
+          "tokens_before_truncation": 869
+        },
+        "deception": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "我家那口子病着",
+            "他病中误了一个月的功课"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 865,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 塾里的书不外借；要读可以来塾里抄，抄时不得带出大门。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 865,
+          "tokens_after": 865,
+          "tokens_before_truncation": 869
+        },
+        "fear_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "绝不带出村"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 865,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 塾里的书不外借；要读可以来塾里抄，抄时不得带出大门。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 865,
+          "tokens_after": 865,
+          "tokens_before_truncation": 869
+        },
+        "social_act": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "求您把那部《蒙求》借我五日"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 865,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 塾里的书不外借；要读可以来塾里抄，抄时不得带出大门。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 865,
+          "tokens_after": 865,
+          "tokens_before_truncation": 869
+        },
+        "trust_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "拿家里的田契押给您",
+            "五日后一准原样送回"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 865,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 塾里的书不外借；要读可以来塾里抄，抄时不得带出大门。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 865,
+          "tokens_after": 865,
+          "tokens_before_truncation": 869
+        }
+      },
+      "sid": "E1-L24-018"
+    },
+    {
+      "category": "cat2_decisive_evidence_lost",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "棚里那匹枣红生马不卖不借，也不许生人进后棚喂它。",
+            "本次玩家到场，老奚官刚刚当面逐一验收前棚青骡草料，实际交到手的合计5捆，除此没有交来别的。"
+          ],
+          "history_remaining": 26,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交前棚青骡草料7捆，这次到场点收时全部结清，老奚官保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 741,
+          "tokens_after": 741,
+          "tokens_before_truncation": 789
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "本次玩家到场，老奚官刚刚当面逐一验收前棚青骡草料，实际交到手的合计5捆，除此没有交来别的。",
+            "老奚官，这次交来的前棚青骡草料你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 26,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交前棚青骡草料7捆，这次到场点收时全部结清，老奚官保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 741,
+          "tokens_after": 741,
+          "tokens_before_truncation": 789
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "老奚官，这次交来的前棚青骡草料你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 26,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交前棚青骡草料7捆，这次到场点收时全部结清，老奚官保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 741,
+          "tokens_after": 741,
+          "tokens_before_truncation": 789
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "老奚官，这次交来的前棚青骡草料你已点过，我就交这些，没有别的了。"
+          ],
+          "history_remaining": 26,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交前棚青骡草料7捆，这次到场点收时全部结清，老奚官保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 741,
+          "tokens_after": 741,
+          "tokens_before_truncation": 789
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交前棚青骡草料7捆，这次到场点收时全部结清，老奚官保留了原字据。",
+            "本次玩家到场，老奚官刚刚当面逐一验收前棚青骡草料，实际交到手的合计5捆，除此没有交来别的。"
+          ],
+          "history_remaining": 26,
+          "lost_decisive_evidence": [
+            "双方此前当面写下这份待结供货约：玩家承诺本次交前棚青骡草料7捆，这次到场点收时全部结清，老奚官保留了原字据。"
+          ],
+          "removed_lines": [
+            {
+              "line": "双方此前当面写下这份待结供货约：玩家承诺本次交前棚青骡草料7捆，这次到场点收时全部结清，老奚官保留了原字据。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 741,
+          "tokens_after": 741,
+          "tokens_before_truncation": 789
+        }
+      },
+      "sid": "E1-L24-019"
+    },
+    {
+      "category": "cat3_core_over_budget_refused",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "枣红生马不卖不借",
+            "您把缰绳给我一日"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [
+            "枣红生马不卖不借"
+          ],
+          "minimum_possible_tokens": 801,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 棚里那匹枣红生马不卖不借，也不许生人进后棚喂它。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 801,
+          "tokens_after": 801,
+          "tokens_before_truncation": 806
+        },
+        "deception": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "班里的压台马前日暴毙",
+            "县里买票的账都收了"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 801,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 棚里那匹枣红生马不卖不借，也不许生人进后棚喂它。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 801,
+          "tokens_after": 801,
+          "tokens_before_truncation": 806
+        },
+        "fear_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "反正马我明日一早来牵",
+            "只求您别把这事说出去"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 801,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 棚里那匹枣红生马不卖不借，也不许生人进后棚喂它。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 801,
+          "tokens_after": 801,
+          "tokens_before_truncation": 806
+        },
+        "social_act": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "您把缰绳给我一日",
+            "不应也应，反正马我明日一早来牵"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 801,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 棚里那匹枣红生马不卖不借，也不许生人进后棚喂它。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 801,
+          "tokens_after": 801,
+          "tokens_before_truncation": 806
+        },
+        "trust_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "一天我出二两",
+            "把班里的账房押在您店里"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 801,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 棚里那匹枣红生马不卖不借，也不许生人进后棚喂它。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 801,
+          "tokens_after": 801,
+          "tokens_before_truncation": 806
+        }
+      },
+      "sid": "E1-L24-020"
+    },
+    {
+      "category": "cat0_within_budget",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "不许生人进后棚",
+            "搁在前棚等着"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 573,
+          "tokens_after": 573,
+          "tokens_before_truncation": 573
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "当面数清放在案上"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 573,
+          "tokens_after": 573,
+          "tokens_before_truncation": 573
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "青骡我牵走了"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 573,
+          "tokens_after": 573,
+          "tokens_before_truncation": 573
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "掌铁钱您点点"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 573,
+          "tokens_after": 573,
+          "tokens_before_truncation": 573
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "讲定今日来取",
+            "当面数清放在案上"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 573,
+          "tokens_after": 573,
+          "tokens_before_truncation": 573
+        }
+      },
+      "sid": "E1-L24-021"
+    },
+    {
+      "category": "cat3_core_over_budget_refused",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "不给活人扎屋",
+            "预扎一座阳宅"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [
+            "不给活人扎屋"
+          ],
+          "minimum_possible_tokens": 814,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 不给活人扎屋；夜里的活不接，天黑就上铺板。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 814,
+          "tokens_after": 814,
+          "tokens_before_truncation": 816
+        },
+        "deception": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "我打听了个偏方",
+            "王婆婆的婆婆就是这么冲好的"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 814,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 不给活人扎屋；夜里的活不接，天黑就上铺板。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 814,
+          "tokens_after": 814,
+          "tokens_before_truncation": 816
+        },
+        "fear_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "您千万替我包严实些"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 814,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 不给活人扎屋；夜里的活不接，天黑就上铺板。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 814,
+          "tokens_after": 814,
+          "tokens_before_truncation": 816
+        },
+        "social_act": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "我要一座三间的纸宅子"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 814,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 不给活人扎屋；夜里的活不接，天黑就上铺板。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 814,
+          "tokens_after": 814,
+          "tokens_before_truncation": 816
+        },
+        "trust_shift": {
+          "boundary_kept": false,
+          "boundary_state": "outside_window",
+          "decisive_evidence": [
+            "工钱我出三倍"
+          ],
+          "history_remaining": 0,
+          "lost_decisive_evidence": [],
+          "minimum_possible_tokens": 814,
+          "refused": "core_over_budget",
+          "removed_lines": [
+            {
+              "line": "已知边界: 不给活人扎屋；夜里的活不接，天黑就上铺板。",
+              "reason": "boundary_outside_window"
+            }
+          ],
+          "requires_relabel": true,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 814,
+          "tokens_after": 814,
+          "tokens_before_truncation": 816
+        }
+      },
+      "sid": "E1-L24-022"
+    },
+    {
+      "category": "cat0_within_budget",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "不给活人扎屋",
+            "为亡母周年订了一对纸马"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 531,
+          "tokens_after": 531,
+          "tokens_before_truncation": 531
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "尾款二百文",
+            "当面点清"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 531,
+          "tokens_after": 531,
+          "tokens_before_truncation": 531
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "多谢您这几日"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 531,
+          "tokens_after": 531,
+          "tokens_before_truncation": 531
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "尾款您点收"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 531,
+          "tokens_after": 531,
+          "tokens_before_truncation": 531
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "讲定今日来取",
+            "当面点清"
+          ],
+          "history_remaining": 21,
+          "lost_decisive_evidence": [],
+          "removed_lines": [],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 531,
+          "tokens_after": 531,
+          "tokens_before_truncation": 531
+        }
+      },
+      "sid": "E1-L24-023"
+    },
+    {
+      "category": "cat1_irrelevant_only_trimmed",
+      "per_signal": {
+        "boundary_violation": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "不给活人扎屋",
+            "订了一对纸灯"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前铺子只扎纸人纸马，何师傅的爹说手艺不在多在精。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "boundary_violation",
+          "state_budget": 768,
+          "state_tokens": 760,
+          "tokens_after": 760,
+          "tokens_before_truncation": 786
+        },
+        "deception": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "我娘生前属鸡"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前铺子只扎纸人纸马，何师傅的爹说手艺不在多在精。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "deception",
+          "state_budget": 768,
+          "state_tokens": 760,
+          "tokens_after": 760,
+          "tokens_before_truncation": 786
+        },
+        "fear_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "今日傍晚玩家到铺前"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前铺子只扎纸人纸马，何师傅的爹说手艺不在多在精。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "fear_shift",
+          "state_budget": 768,
+          "state_tokens": 760,
+          "tokens_after": 760,
+          "tokens_before_truncation": 786
+        },
+        "social_act": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "订了一对纸灯",
+            "要添一只纸鹤"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前铺子只扎纸人纸马，何师傅的爹说手艺不在多在精。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "social_act",
+          "state_budget": 768,
+          "state_tokens": 760,
+          "tokens_after": 760,
+          "tokens_before_truncation": 786
+        },
+        "trust_shift": {
+          "boundary_kept": true,
+          "boundary_state": "stated",
+          "decisive_evidence": [
+            "讲定今日来取付钱",
+            "纸灯我明日来取"
+          ],
+          "history_remaining": 29,
+          "lost_decisive_evidence": [],
+          "removed_lines": [
+            {
+              "line": "七八年前铺子只扎纸人纸马，何师傅的爹说手艺不在多在精。",
+              "reason": "oldest_history_over_budget"
+            }
+          ],
+          "requires_relabel": false,
+          "signal": "trust_shift",
+          "state_budget": 768,
+          "state_tokens": 760,
+          "tokens_after": 760,
+          "tokens_before_truncation": 786
+        }
+      },
+      "sid": "E1-L24-024"
+    }
+  ],
+  "sample_sha256": "529be9ee02c7383fa043c14c7ddb0d3c19bd7f26d7f8943138dbe35f9513069d",
+  "schema": "long-dev24-v2-input-verification",
+  "signals": [
+    "social_act",
+    "trust_shift",
+    "fear_shift",
+    "deception",
+    "boundary_violation"
+  ],
+  "source_v1_sha256": "d96c67ee8490a416eda3f5f7d5eee31b3655142876d5e3072ffa4c59d8ea4c8b",
+  "spec_sha256": "bb7058b4df6b1eae14564b241ff07c9105df3ee93385992af58e8d7a01a05268",
+  "tokenizer_sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f"
+}

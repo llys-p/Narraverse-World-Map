@@ -1,0 +1,49 @@
+{
+  "schema": "long-dev24-v2-control-acceptance",
+  "planned_scenarios": 24,
+  "planned_signal_items": 120,
+  "batch_file": "long-dev24-v2.jsonl",
+  "batch_sha256": "529be9ee02c7383fa043c14c7ddb0d3c19bd7f26d7f8943138dbe35f9513069d",
+  "label_spec_sha256": "bb7058b4df6b1eae14564b241ff07c9105df3ee93385992af58e8d7a01a05268",
+  "tokenizer_sha256": "609d8f4c067cd3950f88594c5a802616cea245823836ef5848ee4fc40aab5b6f",
+  "category_counts": {
+    "cat0_within_budget": 6,
+    "cat1_irrelevant_only_trimmed": 6,
+    "cat2_decisive_evidence_lost": 6,
+    "cat3_core_over_budget_refused": 6
+  },
+  "head_tokens": {
+    "social_act": 78,
+    "trust_shift": 44,
+    "fear_shift": 39,
+    "deception": 46,
+    "boundary_violation": 46
+  },
+  "formal_cli_rejection_exit": {
+    "primary": 4,
+    "long": 4
+  },
+  "synthetic_predictions_only": true,
+  "model_inference": false,
+  "label_quality_accepted": false,
+  "primary_missing_evidence_scenarios": 13,
+  "primary_over_budget_scenarios": 8,
+  "scope_accepted": "input paths and current-window trust counterexamples only; not frozen five-signal gold",
+  "new_cat2_independent_trust": {
+    "planned": 6,
+    "returned": 6,
+    "matches_adjudicated_labels": 6,
+    "basis": "fresh anonymous full visible texts; same model separate context, no gold access",
+    "receipt_sha256": "34d009fe62330f4a5df0b707b70a6552ca03f656f8831d7d5c5d05b03f1da728"
+  },
+  "unchanged_other18_trust_review": "visible text unchanged from v1 independent review; disputed labels corrected without new inputs",
+  "not_executed": [
+    "inference",
+    "full five-signal two-reviewer acceptance",
+    "truncated-text relabelling",
+    "400 expansion",
+    "calibration/final",
+    "freeze",
+    "Runtime"
+  ]
+}

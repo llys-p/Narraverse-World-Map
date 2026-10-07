@@ -17,14 +17,15 @@ import build_long_dev24 as builder
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def audit(base):
+def audit(base, batch="long-dev24.jsonl"):
     os.environ["HF_HUB_OFFLINE"] = "1"
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
     from transformers import AutoTokenizer
     tok_path = Path(base) / "runtime/A/tokenizer"
     tok = AutoTokenizer.from_pretrained(tok_path, local_files_only=True)
     counter = lambda text: len(tok(text, add_special_tokens=False)["input_ids"])
-    rows = [json.loads(line) for line in (ROOT / "samples/long-dev24.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+    batch_path = ROOT / "samples" / batch
+    rows = [json.loads(line) for line in batch_path.read_text(encoding="utf-8").splitlines() if line.strip()]
     assert len(rows) == 24 and len({r["sid"] for r in rows}) == 24
     assert not builder.validate_schema(rows)
     incomplete = deepcopy(rows)
@@ -74,7 +75,7 @@ def audit(base):
             assert exits[condition] == 4
             assert not list(Path(td).rglob("scores-*.json"))
     return {"schema": "long-dev24-control-audit-v1", "planned_scenarios": 24, "planned_signal_items": 120,
-            "batch_sha256": hashlib.sha256((ROOT / "samples/long-dev24.jsonl").read_bytes()).hexdigest(),
+            "batch_file": batch, "batch_sha256": hashlib.sha256(batch_path.read_bytes()).hexdigest(),
             "label_spec_sha256": hashlib.sha256((ROOT / "LABEL_SPEC.md").read_bytes()).hexdigest(),
             "tokenizer_sha256": hashlib.sha256((tok_path / "tokenizer.json").read_bytes()).hexdigest(),
             "category_counts": dict(counts), "head_tokens": head_counts,
@@ -87,9 +88,10 @@ def audit(base):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", default="D:/ModelBench/laya")
+    ap.add_argument("--batch", choices=["long-dev24.jsonl", "long-dev24-v2.jsonl"], default="long-dev24.jsonl")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
-    output = audit(args.base)
+    output = audit(args.base, args.batch)
     with open(args.out, "x", encoding="utf-8") as fh:
         json.dump(output, fh, ensure_ascii=False, indent=2)
     print("Independent input paths and formal CLI guards passed; label reliability remains separate.")
