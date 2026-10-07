@@ -319,4 +319,4 @@ ATB 时间条、奥义 / 极限槽、召唤、队伍与人物切换。另外现�
 
 ## 世界运行时进度
 
-Runtime保留在codex/world-runtime-d1任务分支，代码0f86d40；A/B/C及D1已验收，源码未合并main。D1是独立本机只读世界服务与地图，全量184/184、真实HTTP/双页签/断连重启通过；刷新不推进时间。启动方式见任务分支README，验收与边界见[D1收口](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。本轮按用户要求停在D1；D2A任务书已准备未开工，旅行/交易/战斗及D整体尚未验收。
+Runtime保留在codex/world-runtime-d2a任务分支，代码d29da21；A/B/C、D1与D2A已验收，源码未合并main。D2A在显式实验写模式下提交世界时间，196/196、真实双页签冲突/断连重试/磁盘及硬退出恢复通过；刷新不推进。启动方式见任务分支README，合同与证据见[D2A收口](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)。D2B玩家身份/资产归属尚未开工，旅行/交易/战斗及D整体未验收。
