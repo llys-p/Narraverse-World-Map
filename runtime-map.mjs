@@ -1,5 +1,5 @@
 const byId=id=>document.getElementById(id),status=byId('connection'),button=byId('refresh');let last=null;
-const occupations={chief:'村长',hunter:'猎人',merchant:'商人'};
+const occupations={chief:'村长',hunter:'猎人',merchant:'商人',player:'玩家'};
 const advance=byId('advance'),ticks=byId('advance-ticks'),commandStatus=byId('command-status');let writable=false,pending=null,submitting=false;
 function controls(){advance.disabled=!writable || !last || submitting;ticks.disabled=submitting || pending!==null;advance.textContent=pending?'重试同一请求':'推进世界时间';}
 function render(dto){
@@ -15,19 +15,39 @@ function render(dto){
     body.append(name,detail);li.append(seal,body);return li;});
   byId('actor-list').replaceChildren(...rows);document.documentElement.dataset.revision=String(dto.revision);
 }
+function renderPlayer(player){
+  byId('player-panel').hidden=player===null;if(!player)return;const s=player.self,a=s.identity;
+  byId('player-identity').textContent=`${a.name} · ${a.location==='village'?'村庄':a.location} · ${a.alive?'存活':`已逝 · 第 ${Math.floor(a.deathTick/144)+1} 天`}`;
+  for(const key of ['health','hunger','fatigue','wallet'])byId('player-'+key).textContent=s[key];
+  byId('player-food').textContent=s.inventory.food;byId('player-herbs').textContent=s.inventory.herbs;
+  byId('player-needs').textContent=`当前需求：食物 ${s.needs.food} · 治疗 ${s.needs.healing} · 休息 ${s.needs.rest}`;
+  byId('player-panel').dataset.revision=String(player.revision);
+}
+async function readPair(playerAvailable){
+  const read=async route=>{const response=await fetch(route,{cache:'no-store',signal:AbortSignal.timeout(6000)});
+    if(!response.ok)throw new Error('读数读取失败');const dto=await response.json();if(dto.apiVersion!==1)throw new Error('未知世界接口');return dto;};
+  for(let attempt=0;attempt<2;attempt++){
+    const [dto,player]=await Promise.all([read('/api/runtime/snapshot'),playerAvailable?read('/api/runtime/player'):null]);
+    if(!player || (dto.simulationId===player.simulationId && dto.revision===player.revision && dto.tick===player.tick))return {dto,player};
+  }
+  throw Object.assign(new Error('两份世界读数不一致'),{code:'READING_CONFLICT'});
+}
+let refreshing=false;
 async function refresh(){
+  if(refreshing)return;refreshing=true;
   button.disabled=true;status.dataset.state='loading';status.textContent='正在读取世界…';
   try{
-    const response=await fetch('/api/runtime/snapshot',{cache:'no-store',signal:AbortSignal.timeout(6000)});
-    if(!response.ok)throw new Error('世界读取失败');const dto=await response.json();
-    if(dto.apiVersion!==1)throw new Error('未知世界接口');render(dto);last=dto;
     const capResponse=await fetch('/api/runtime/capabilities',{cache:'no-store',signal:AbortSignal.timeout(6000)});
     if(!capResponse.ok)throw new Error('世界能力读取失败');const capabilities=await capResponse.json();
-    writable=capabilities.apiVersion===1 && capabilities.writes===true;byId('time-controls').hidden=!writable;
+    if(capabilities.apiVersion!==1 || typeof capabilities.playerAvailable!=='boolean')throw new Error('未知世界能力');
+    const {dto,player}=await readPair(capabilities.playerAvailable);render(dto);renderPlayer(player);last=dto;
+    writable=capabilities.writes===true;byId('time-controls').hidden=!writable;
     byId('map-note').textContent=writable?'世界时间仅在明确提交后推进':'只读观察 · 世界时间不会自动流逝';
     status.dataset.state='ready';status.textContent='已读取服务保存的世界 · 刷新不会推进时间';
-  }catch{status.dataset.state='error';status.textContent=last?'连接中断，显示上次读数。请重试。':'暂时无法连接世界。请重试。';}
-  finally{button.disabled=false;controls();}
+  }catch(error){status.dataset.state='error';status.textContent=error.code==='READING_CONFLICT'?
+    (last?'世界与本人读数暂不一致，保留上次一致读数。请刷新重试。':'世界与本人读数暂不一致，暂未显示。请刷新重试。'):
+    (last?'连接中断，显示上次读数。请重试。':'暂时无法连接世界。请重试。');}
+  finally{refreshing=false;button.disabled=false;controls();}
 }
 async function submitTime(){
   if(submitting || !writable || !last)return;

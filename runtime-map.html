@@ -10,6 +10,18 @@
     <button id="advance" type="button" disabled>推进世界时间</button>
     <p id="command-status" role="status" aria-live="polite">世界会真实结算生态、经济与居民行动。</p>
   </section>
+  <section id="player-panel" class="player-panel" hidden aria-labelledby="player-title">
+    <div class="section-title"><h2 id="player-title">我的状态与物资</h2><span id="player-identity"></span></div>
+    <dl class="player-readings">
+      <div><dt>健康 / 1000</dt><dd id="player-health">—</dd></div>
+      <div><dt>饥饿 / 1000</dt><dd id="player-hunger">—</dd></div>
+      <div><dt>疲劳 / 1000</dt><dd id="player-fatigue">—</dd></div>
+      <div><dt>我的金币</dt><dd id="player-wallet">—</dd></div>
+      <div><dt>我的口粮</dt><dd id="player-food">—</dd></div>
+      <div><dt>我的药材</dt><dd id="player-herbs">—</dd></div>
+    </dl>
+    <p id="player-needs"></p><p class="player-note">存活时，每天消耗一份本人存粮。这里可以观察状态与库存。</p>
+  </section>
   <section class="landscape" aria-label="村庄与山林示意图">
     <svg viewBox="0 0 1000 300" role="img" aria-labelledby="map-title map-desc"><title id="map-title">村庄与山林</title><desc id="map-desc">居民所在村落与周围山林的地理示意，不表示野生动物的具体位置。</desc>
       <path class="ridge" d="M0 190 90 115 145 157 260 65 340 154 405 94 510 182 620 82 720 143 830 58 920 125 1000 105V300H0Z"/>
