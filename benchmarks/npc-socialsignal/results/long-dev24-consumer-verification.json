@@ -1,0 +1,165 @@
+{
+ "budget": {
+  "state_budget": 768
+ },
+ "category_outcomes": {
+  "E1-L24-001": {
+   "category": "cat0_within_budget",
+   "outcome_matches_design": true
+  },
+  "E1-L24-002": {
+   "category": "cat1_irrelevant_only_trimmed",
+   "outcome_matches_design": true
+  },
+  "E1-L24-003": {
+   "category": "cat2_decisive_evidence_lost",
+   "outcome_matches_design": true
+  },
+  "E1-L24-004": {
+   "category": "cat1_irrelevant_only_trimmed",
+   "outcome_matches_design": true
+  },
+  "E1-L24-005": {
+   "category": "cat2_decisive_evidence_lost",
+   "outcome_matches_design": true
+  },
+  "E1-L24-006": {
+   "category": "cat3_core_over_budget_refused",
+   "outcome_matches_design": true
+  },
+  "E1-L24-007": {
+   "category": "cat2_decisive_evidence_lost",
+   "outcome_matches_design": true
+  },
+  "E1-L24-008": {
+   "category": "cat3_core_over_budget_refused",
+   "outcome_matches_design": true
+  },
+  "E1-L24-009": {
+   "category": "cat0_within_budget",
+   "outcome_matches_design": true
+  },
+  "E1-L24-010": {
+   "category": "cat3_core_over_budget_refused",
+   "outcome_matches_design": true
+  },
+  "E1-L24-011": {
+   "category": "cat0_within_budget",
+   "outcome_matches_design": true
+  },
+  "E1-L24-012": {
+   "category": "cat1_irrelevant_only_trimmed",
+   "outcome_matches_design": true
+  },
+  "E1-L24-013": {
+   "category": "cat0_within_budget",
+   "outcome_matches_design": true
+  },
+  "E1-L24-014": {
+   "category": "cat1_irrelevant_only_trimmed",
+   "outcome_matches_design": true
+  },
+  "E1-L24-015": {
+   "category": "cat2_decisive_evidence_lost",
+   "outcome_matches_design": true
+  },
+  "E1-L24-016": {
+   "category": "cat1_irrelevant_only_trimmed",
+   "outcome_matches_design": true
+  },
+  "E1-L24-017": {
+   "category": "cat2_decisive_evidence_lost",
+   "outcome_matches_design": true
+  },
+  "E1-L24-018": {
+   "category": "cat3_core_over_budget_refused",
+   "outcome_matches_design": true
+  },
+  "E1-L24-019": {
+   "category": "cat2_decisive_evidence_lost",
+   "outcome_matches_design": true
+  },
+  "E1-L24-020": {
+   "category": "cat3_core_over_budget_refused",
+   "outcome_matches_design": true
+  },
+  "E1-L24-021": {
+   "category": "cat0_within_budget",
+   "outcome_matches_design": true
+  },
+  "E1-L24-022": {
+   "category": "cat3_core_over_budget_refused",
+   "outcome_matches_design": true
+  },
+  "E1-L24-023": {
+   "category": "cat0_within_budget",
+   "outcome_matches_design": true
+  },
+  "E1-L24-024": {
+   "category": "cat1_irrelevant_only_trimmed",
+   "outcome_matches_design": true
+  }
+ },
+ "coverage": {
+  "categories": {
+   "cat0_within_budget": 6,
+   "cat1_irrelevant_only_trimmed": 6,
+   "cat2_decisive_evidence_lost": 6,
+   "cat3_core_over_budget_refused": 6
+  },
+  "families": 8,
+  "items": 24,
+  "signals_per_item": 5
+ },
+ "four_paths": {
+  "path1_within_budget_keeps_full_text": {
+   "body_produced": true,
+   "removed_lines": 0,
+   "requires_relabel": false,
+   "sid": "E1-L24-001",
+   "tokens_after": 658,
+   "tokens_before_truncation": 658
+  },
+  "path2_irrelevant_history_trimmed_without_evidence_loss": {
+   "lost_decisive_evidence": [],
+   "removed_lines": 3,
+   "requires_relabel": false,
+   "sid": "E1-L24-002",
+   "tokens_after": 757,
+   "tokens_before_truncation": 843
+  },
+  "path3_evidence_loss_blocks_formal_scoring": {
+   "lost_decisive_evidence": [
+    "借了三十文",
+    "讲定次年冰化头一渡之前还清"
+   ],
+   "requires_relabel": true,
+   "scorer_result": {
+    "accuracy_over_planned": 0.5,
+    "excluded_value": "__EXCLUDED_RELABEL__",
+    "n_excluded_requires_relabel": 1,
+    "planned_items": 2
+   },
+   "sid": "E1-L24-003",
+   "tokens_after": 749,
+   "tokens_before_truncation": 783
+  },
+  "path4_core_over_budget_refused": {
+   "body_is_none": true,
+   "minimum_possible_tokens": 826,
+   "refused": "core_over_budget",
+   "sid": "E1-L24-006"
+  }
+ },
+ "plan_id": "long-dev24-v1",
+ "schema": "e1-long-dev24-consumer-verification-v1",
+ "tokenizer": {
+  "model": "A",
+  "path": "D:/ModelBench/laya\\runtime\\A\\tokenizer"
+ },
+ "unexecuted": {
+  "independent_review": "trust-rule counterexamples (trust-relevant cat1/cat2 items) need reviewer(s) independent of the author; not arranged inside this delivery",
+  "model_inference": "none (no weights loaded; token counting only, as the task book allows)",
+  "stability_runs": "not applicable: no predictions exist for this plan yet"
+ }
+}
