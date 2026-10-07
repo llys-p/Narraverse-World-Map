@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-c4` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-c5` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
@@ -387,7 +387,11 @@ node simulation-runner.mjs --fixture memory-relations --days 8 --seed 42 --out a
 node simulation-runner.mjs --fixture memory-village --days 100 --seed 42 --out artifacts/simulation/memory100
 ```
 
-完整入口/保存/知识读取保持全量审计，私有session只对已验证历史增量推进。C4已验收，人格选择对照仍待C5，完整C阶段及页面接入未通过；见[C4合同与验收](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)。以下原型描述与历史E2E不代表新Runtime页面接入。
+完整入口/保存/知识读取保持全量审计，私有session只对已验证历史增量推进。C4已验收；见[C4合同与验收](tasks/C4-KNOWABLE-MEMORY-RELATION-TASK.md)。
+
+### C5：持久人格偏好
+
+`personality-neutral/health/food`保持相同资产和伤病，以本人持久需求权重改变新目标的优先级，经真实命令扣款/转移货物，原Goal继续及失败冷却保留。新c-personality-v1/memory-config-v2显式版本，不迁移旧C4；额外输出personality-config.json。C5与C阶段已通过177/177、100日跨档、独立评分/资产消费者及旧C4存档字节兼容；见[C5合同](tasks/C5-PERSONALITY-CHOICE-TASK.md)。仍不代表页面、模型或完整心理网络完成。以下原型描述与历史E2E不代表新Runtime页面接入。
 
 ## 结构（用户提案：骑马与砍杀式两层 + 火柴人）
 
