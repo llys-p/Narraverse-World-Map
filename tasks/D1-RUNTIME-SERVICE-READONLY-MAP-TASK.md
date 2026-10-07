@@ -1,6 +1,6 @@
 # D1：独立Runtime服务、只读地图与写入合同
 
-2026-10-07 18:33（Asia/Shanghai）。中控直接实施，尚未交付。依赖完整C阶段验收代码04dc222；D:\Narraverse-World-Map-a2，从C5最终文档交接点创建codex/world-runtime-d1。新独立入口，不改旧server.cjs/index.html/页面、正式平台或真实存档。
+2026-10-07 19:00（Asia/Shanghai）。中控直接实施，已验收。代码0f86d4076b3a49a11ac41e32f56c79182b5130a7；D:\Narraverse-World-Map-a2 @ codex/world-runtime-d1，基准a8ff72a（C5代码04dc222）。新独立入口，不改旧server.cjs/index.html/页面、正式平台或真实存档。
 
 ## 给用户：本项结果
 
@@ -27,3 +27,12 @@
 4. 所有当前simulation+边界及D1定向回归通过。D1通过才进入D2，D整体仍进行中；旅行/交易/遭遇/多标签页过期写需D2～D4验收，不提前标D完成。
 
 产物留忽略artifacts/world-runtime-d1-*，只能启停本次新服务/隔离浏览器，精确暂存推任务分支，不合并runtime main/部署/迁移真实数据。
+
+## 中控验收
+
+- 定向7/7通过；干净0f86d40上`node --test --test-concurrency=2 tests/simulation/*.test.mjs tests/export-boundaries.test.mjs`全量184/184、零失败/跳过，279.7秒。首次默认并发失败，多个旧模块及D1子进程出现VirtualAlloc/Zone Allocation内存错误；保留失败日志，降低运行并发后原测试全过，没有删测试/改断言。失败后采样物理可用约845MiB、系统commit约57.3/68.4GB，不代表崩溃时峰值。
+- 真HTTP覆盖公开字段/复制隔离、GET/HEAD纯读、私有路径404、Host/Origin403、POST405、超限413、chunked400及owner竞争。独立socket探针：9000字节header431；未完成header约24.9秒400断开。Node配置5秒受连接巡检影响，未承诺严格5秒响应。
+- 真实in-app browser两页签读取实际磁盘世界：tick/revision0、粮894、药8、人80（3实名/77匿名）、鹿120/狼14。刷新不推进；断连显示旧读数与重试提示，同目录重启重试恢复。正常与复验console无error/warn；不是静态HTML/mock验收。
+- 硬终止本次自有服务后锁保留，CLI重启OWNER_BUSY。仅实验锁经原token、死PID与存档哈希核对后人工移除；产品没有自动抢锁。TTY实际quit正常停止并清理自锁；再CLI启动仍读原档，两次正常quit成功。最终自有18314服务和验收页签已停止/关闭。
+- checkpoint-r0.json前后SHA256保持0149f370d05852a3dc90f1653235d1945efc3cec789dc1cf0937764bfbebafa6。忽略证据目录artifacts/world-runtime-d1-acceptance-20261007：full-tests.txt（首次失败）、full-tests-bounded.txt、browser-before.json、browser-restart.json、hard-crash.json、normal-stop.json、http-header-timeout.json。
+- D1 PASS，阶段D继续进行中。下一项[D2A时间提交合同](D2A-TIME-COMMAND-COMMIT-TASK.md)已定义未开工；按用户要求本轮在D1收口后停止。旅行/休整/交易/战斗及完整多页签写入未实现，未合并runtime main/部署。

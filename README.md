@@ -20,7 +20,15 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-c5` 任务分支，未合并main。无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+Runtime目前保留在 `codex/world-runtime-d1` 任务分支，未合并main。离线runner无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+
+D1已新增独立只读世界服务：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-d1/my-world --port 18314
+```
+
+打开`http://127.0.0.1:18314/`；终端输入`quit`后回车正常停止。目录专用于新实验，已有档严格恢复，不覆盖重建。页面显示真实公仓/价格/种群/人物身份；刷新与重启不推进时间，没有旅行/交易/战斗写入口。崩溃锁不自动清理，不能删除其他实例的锁。D1全量184/184与真HTTP/双页签/断连重启通过，见[D1证据](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。共享机全回归建议给`node --test`加`--test-concurrency=2`，测试集保持完整。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100
