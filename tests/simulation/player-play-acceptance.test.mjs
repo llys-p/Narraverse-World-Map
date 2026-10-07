@@ -55,7 +55,8 @@ test('D2C independent midnight purchase: last private ration is bought before co
   assert.equal(r.outcome,'succeeded');assert.equal(r.durationTicks,1);assert.equal(r.result.unitPrice,10);assert.equal(r.result.amount,10);
   assert.equal(r.result.after.publicStock.food,r.result.before.publicStock.food-1);assert.equal(r.result.after.inventory.food,1);
   const w=r.bundle.snapshot.world;assert.equal(w.playerModel.inventory.food,0);assert.equal(w.playerModel.wallet,90);assert.equal(body(r.bundle).alive,true);
-  assert.equal(body(r.bundle).health,1);assert.equal(body(r.bundle).hunger,900);assert.deepEqual(start,old);
+  // Existing daily rule caps hunger at1000 before subtracting the actual200 ration benefit.
+  assert.equal(body(r.bundle).health,1);assert.equal(body(r.bundle).hunger,800);assert.deepEqual(start,old);
   const row=r.bundle.eventLog.find(e=>e.type==='SocietyDaySettled').payload.actors.rows.find(a=>a.actorId==='actor-4');assert.equal(row.food,1);
 });
 

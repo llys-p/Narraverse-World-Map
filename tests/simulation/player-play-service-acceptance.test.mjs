@@ -55,8 +55,11 @@ test('D2C independent entry rejects422 and strict DTO rejects400, both pure; old
   const before=await bytes(directory);
   for(const d of [dto('same','PlayerTravel',{destination:'village'}),dto('too-expensive','PlayerBuy',{product:'herbs',quantity:10})])assert.equal((await post(s.url,d)).status,422);
   for(const d of [{...dto('actor','PlayerRest'),actorId:'actor-2'},dto('price','PlayerBuy',{product:'food',quantity:1,price:1}),
-    dto('partial','PlayerBuy',{product:'food',quantity:0.5}),dto('ten-plus','PlayerSell',{product:'food',quantity:11}),
+    dto('partial','PlayerBuy',{product:'food',quantity:0.5}),
     dto('target','PlayerRest',{startTick:0,targetTick:0}),dto('society-day-1-actor-1','PlayerRest'),{...dto('version','PlayerRest'),version:1}])assert.equal((await post(s.url,d)).status,400);
+  const overQuantity=await post(s.url,dto('ten-plus','PlayerSell',{product:'food',quantity:11}));
+  assert.equal(overQuantity.status,413);assert.equal(overQuantity.body.error.code,'LIMIT_EXCEEDED');
+  assert.equal((await get(s.url,'/api/runtime/player')).body.tick,0);
   assert.deepEqual(await bytes(directory),before);assert.equal((await post(s.url,time('after',0,1))).status,200);
   const legacy=await startRuntimeServer({directory:path.join(root,'legacy'),port:0,profile:'player-village',writable:true});t.after(()=>legacy.close());
   assert.equal((await get(legacy.url,'/api/runtime/capabilities')).body.playerActionsAvailable,false);
