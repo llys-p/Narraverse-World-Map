@@ -33,6 +33,7 @@
 - A1/A1R `7b4a2db` 中控复验 PASS：Node v24.14.0 定向30/30、边界3/3、diff格式通过；受限堆超预算提前拒绝、100万结果边界、advance队列上限、600组BigInt大tick对照通过。F1/F2/F3关闭，详见 [A1R复验记录](tasks/A1R-SCHEDULER-LIMITS-TASK.md)；源码仍在任务分支，未合并main。
 - E1R2 `226a09a` 中控复跑原回归通过，但单独反例仍发现重复键/概率键、回执实算、token失败估算及稳定性漏项；已内部修复并推 `codex/laya-benchmark-control` @ `fa0550a`（源码D:\Narraverse-World-Map-benchmark-review）。稳定性18项、中控8项、原门槛回归及语法/diff检查通过；临时副本按索引重算dev/calibration准确率不变。新运行不覆盖raw，回归不改研究原件，未重跑真实模型、未开final、未合并源码main。工具限定收尾通过，E1整体未验收。
 - E1新版规范试审：两名全新AI各25条已回收，包规范哈希840f2c74…；social/trust/fear/deception/boundary一致率96/68/88/96/100%，κ0.9427/0.4737/0.7549/0.6528/1.0。回执/支持/混淆矩阵/13项分歧在仓库外D:\ModelBench\laya\review-return\sanity-retrial-v2；仅同模型独立上下文试标。中控随后明确信任“不变/不确定”及历史违约不得重复扣信任，新修订未独立验证，旧κ不能沿用；仍不冻结/准入。
+- E1长dev小批：作者7ee4a91的v1原件保留，中控修正NPC/玩家履约主体与当前窗口标签，另建v2并推codex/laya-long-dev-control @ 0c8fc10（源码D:\Narraverse-World-Map-benchmark-review）。四类各6条/8家族、真token路径、两次构建逐字节一致与三套回归通过；新cat2匿名信任复核6/6一致。输入设计/信任反例限定验收，五信号未冻结、无推理/扩400/final/训练。v2 primary缺依据13条、超预算8条，不能与long共用完整标签评分；详见[小批收口](tasks/E1-LONG-DEV-TASK.md)。
 
 - A2/A3/A4：全部simulation及独立化边界60/60通过；独立消费者/磁盘探针通过。干净796b483上的CLI100天与40天保存加载+60天完整checkpoint/inputs一致，tick14400、103事件，两哈希相同。最终02cecea干净seed0烟测通过，runtime源码指纹与100天验证相同。
 - 证据：源码树artifacts/world-runtime-a-acceptance-20261007-1258/comparison.json及continuous100/prefix40/resumed60；产物保持忽略、不入仓。Node v24.14.0，100天实测约46秒；只是clock-smoke正确性，规模/生态/页面/模型/桥接入未验证。[A4合同与收口](tasks/A4-RUNNER-TASK.md)。
@@ -56,7 +57,7 @@
 - 干净d3f3d39实际CLI baseline100=40保存+60恢复，恢复目标20=2保存+18恢复，完整checkpoint/两哈希/八CSV/inputs/配置一致；独立核对公共+私人粮药、现金归属、实际工资/锁价/私药使用/同鹿群扣除与inputSeq。recovery20同一Goal完成7次工作、3次买药/使用：工资140/药费125/钱包15，health到800；基线100含5次实名猎鹿、个人真实吃100份粮、Goal完成5次。100日约15秒（并发全回归，末尾内存非峰值）；旧C1 100日与B4 frozen 1000日完整checkpoint字节未变。runtime指纹3e1cf858c838910be0a01da6ec47e6cc7f05f7b90930f7f12c77cd3b0a69c759；证据artifacts/world-runtime-c2-acceptance-20261007/comparison.json、full-tests.txt与消费者输出保持忽略。最终31c4690干净seed42一天烟测/源码指纹通过。仅猎人自主，C3多人物竞争/C4关系记忆未实现；world.gold为聚落总量、钱包是归属份额，内部outflow不是外部出口。
 
 - C3实现3756071/补测a3fbde6：三人独立私账/Goal，同快照规划后按ID提交重校验；最后1公药/20工资只有1人成功，拒绝不损钱货；村长实际公共粮工作、猎人同鹿群捕猎、商人持药并peer转售。139/139（原125+新增14）全回归，坏输入/访问器/空批策略、来源/资产/Goal/交易/RNG篡改及整tick回退通过。[C3合同及交接](tasks/C3-SOCIETY-COMPETITION-TASK.md)。
-- 干净3756071实际CLI100=40保存+60恢复，转售4=1保存+3恢复，完整checkpoint/两哈希/八CSV/inputs/配置一致；独立核对合计钱包、公共+私人粮药/真实使用、转售双方现金与药一增一减，拒绝回执及inputSeq。peer首单52金币、买方下一日才用药；基线100有5实名猎鹿、三人真实吃私粮245、工资680、目标完成145，无假增人口或货币；未吃饭日由Need/饥饿规则如实体现，不声称私粮需求全满足。100日约91秒（并发回归），末尾内存非峰值，三人校验明显变慢，未测规模。旧C2 100日完整checkpoint字节未变；runtime指纹fff194b770da08242808da46d53f7919f9b50ff428d6588d4986398c7261213c。证据artifacts/world-runtime-c3-acceptance-20261007/comparison.json、final-full-tests.txt等保持忽略。C4记忆/关系/Actor-known上下文尚未实现。
+- 干净3756071实际CLI100=40保存+60恢复，转售4=1保存+3恢复，完整checkpoint/两哈希/八CSV/inputs/配置一致；独立核对合计钱包、公共+私人粮药/真实使用、转售双方现金与药一增一减，拒绝回执及inputSeq。peer首单52金币、买方下一日才用药；基线100有5实名猎鹿、三人真实吃私粮245、工资680、目标完成145，无假增人口或货币；未吃饭日由Need/饥饿规则如实体现，不声称私粮需求全满足。100日约91秒（并发回归），末尾内存非峰值，三人校验明显变慢，未测规模。旧C2 100日完整checkpoint字节未变；runtime指纹fff194b770da08242808da46d53f7919f9b50ff428d6588d4986398c7261213c。证据artifacts/world-runtime-c3-acceptance-20261007/comparison.json、final-full-tests.txt等保持忽略。最终13b137c干净peer-sale一天烟测和源码指纹相同；C4记忆/关系/Actor-known上下文尚未实现。
 ## 尚未完成
 
 - 两个localStorage键非事务、多标签页冲突、战斗中途刷新恢复。
@@ -83,4 +84,4 @@ A/B及C1～C4已验收。C4代码2793dad（D:\Narraverse-World-Map-a2 @ codex/wo
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4与A门槛、阶段B校准配置门槛及C1～C4单项已通过。C阶段仍进行中，C5人格对照待实施；D～G主线未开始。E阶段待开始；E1工具收尾完成，下一项[24条长dev合同](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-LONG-DEV-TASK.md)待派发，规范/数据可靠性仍需验证。完整400/final160另发合同，旧125与封存保留；不训练/装CUDA/启E2，不启qoder_cron。
+- A1～A4与A门槛、阶段B校准配置门槛及C1～C4单项已通过。C阶段仍进行中，C5人格对照待实施；D～G主线未开始。E阶段待开始；E1工具及长dev输入/信任反例限定收口，下一项[新400条路线/首批30条dev合同](tasks/E1-CORPUS400-TASK.md)待派发，五信号规范/数据质量仍需双复核。首次仅30条，不直接扩满400或开final160；旧125/小批/封存保留，不训练/装CUDA/启E2或qoder_cron。
