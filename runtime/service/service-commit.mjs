@@ -3,27 +3,40 @@ import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { fields,denseArray,requireCondition,cloneData,fault } from '../core/data-contract.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
-import { projectPublicSnapshot,runtimeProfile,validateTimeCommandDto } from './http-contract.mjs';
+import { projectPublicSnapshot,runtimeProfile,validateServiceCommandDto } from './http-contract.mjs';
+import { executePlayerIntent } from '../core/player-intents.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
 export const MAX_SERVICE_COMMANDS=128,MAX_SERVICE_FILES=128,MAX_PENDING_REQUESTS=16;
 export function timeReceipt(dto,toRevision){return {apiVersion:1,commandId:dto.commandId,status:'committed',fromRevision:dto.expectedRevision,toRevision,tick:toRevision};}
+// Submit and journal audit use this same complete transition; the service owns no world rules.
+export function transitionServiceCommand(bundle,dto){
+  dto=validateServiceCommandDto(dto);
+  const profile=runtimeProfile(bundle);requireCondition(dto.version===1 || profile.serviceFormatVersion===3,'Profile does not support player actions','COMMAND_UNSUPPORTED');
+  if(dto.version===1){const session=createSimulationSession(bundle,profile.systems);session.advanceTicks(dto.payload.ticks);
+    const next=session.getBundle();return {bundle:next,receipt:timeReceipt(dto,next.snapshot.revision)};}
+  const {bundle:next,outcome,result}=executePlayerIntent(bundle,{commandId:dto.commandId,type:dto.type,payload:dto.payload});
+  return {bundle:next,receipt:{apiVersion:1,receiptVersion:2,commandId:dto.commandId,status:'committed',fromRevision:dto.expectedRevision,
+    toRevision:next.snapshot.revision,tick:next.snapshot.tick,type:dto.type,outcome,result}};
+}
 export function validateServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
-  requireCondition([1,2].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
+  requireCondition([1,2,3].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
   const profile=runtimeProfile(envelope.anchor),finalProfile=runtimeProfile(envelope.bundle);
   requireCondition(envelope.serviceFormatVersion===profile.serviceFormatVersion && envelope.serviceFormatVersion===finalProfile.serviceFormatVersion,
     'Service format/profile mismatch','UNSUPPORTED_VERSION');
   denseArray(envelope.commands,MAX_SERVICE_COMMANDS);
   projectPublicSnapshot(envelope.anchor);projectPublicSnapshot(envelope.bundle);
-  const session=createSimulationSession(envelope.anchor,profile.systems),seen=new Set();let revision=envelope.anchor.snapshot.revision;
+  const seen=new Set();let replay=envelope.anchor,revision=envelope.anchor.snapshot.revision;
   for(const entry of envelope.commands){
-    fields(entry,['dto','receipt']);const dto=validateTimeCommandDto(entry.dto);fields(entry.receipt,['apiVersion','commandId','status','fromRevision','toRevision','tick']);
+    fields(entry,['dto','receipt']);const dto=validateServiceCommandDto(entry.dto);
+    fields(entry.receipt,dto.version===1?['apiVersion','commandId','status','fromRevision','toRevision','tick']:
+      ['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','tick','type','outcome','result']);
     requireCondition(!seen.has(dto.commandId) && dto.expectedRevision===revision,'Invalid service command sequence');seen.add(dto.commandId);
-    session.advanceTicks(dto.payload.ticks);revision+=dto.payload.ticks;
-    requireCondition(isDeepStrictEqual(entry.receipt,timeReceipt(dto,revision)),'Service receipt does not match replay');
+    const next=transitionServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;
+    requireCondition(isDeepStrictEqual(entry.receipt,next.receipt),'Service receipt does not match replay');
   }
-  requireCondition(isDeepStrictEqual(session.getBundle(),envelope.bundle),'Service world does not match command replay');
+  requireCondition(isDeepStrictEqual(replay,envelope.bundle),'Service world does not match command replay');
 }
 export async function saveServiceCommit(envelope,directory,io=defaultIo){
   validateServiceCommit(envelope);
