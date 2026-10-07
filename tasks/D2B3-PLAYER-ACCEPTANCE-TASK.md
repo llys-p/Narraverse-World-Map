@@ -1,0 +1,13 @@
+# D2B3：独立反例与验收
+
+依赖[共同合同](D2B-PLAYER-CONTRACT.md)，D2A交接0aa76fb。工作树D:\Narraverse-World-Map-d2b-acceptance、分支codex/world-runtime-d2b-acceptance；实际合同基准SHA由中控给出。与实施并行编写合同反例，核心/服务依赖可稍后纳入。
+
+白名单仅新增tests/simulation/player-acceptance.test.mjs、player-service-acceptance.test.mjs与本工作树忽略artifacts/world-runtime-d2b-*。不修改生产文件、原测试/阈值/断言、文档、看板、其他工作树。不能用实现输出生成自己的期望向量；用独立整数/BigInt守恒公式、固定反例或既有C5完整消费者对照。
+
+独立门槛：四人/76匿名/80总人口、四私粮与76公需求一次；玩家无私粮不可被公仓补；gold120/玩家100/两NPC缺钱时只首个20工资成功；gold100全归玩家时外采与工作拒绝；真实NPC付款货物/cash/public余额同变且总币不变；玩家死亡后一日不消费/观察且私币药封存。构造精确低数值反例，不通过OOM。
+
+另验证本人知识与HTTP白名单、纯读改返回值不污染、143+1完整存盘=144及死亡跨档、改玩家库存/死亡/人口/归属/回执重算指纹仍拒绝、坏最新不回退、旧C4/C5及service1不变、HTTP非法actorId/钱包/旅行交易拒绝。不是仅检查新模块导出存在。
+
+先记录红灯（缺模块或缺行为），依赖交付后node --test --test-concurrency=1本路两个文件。核心/服务测试失败不得顺手改实现，应给中控最小反例与文件行；中控安排责任路修复。完整回归和真CLI/浏览器由中控最终复跑，不把本路通过等于D2B验收。
+
+精确提交/推送自己的测试，给出依赖/测试SHA、命令、独立预期依据、失败/未验证与保护范围；不得合并main或推进下一阶段。
