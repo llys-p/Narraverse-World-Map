@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 14:37（Asia/Shanghai）。
+更新时间：2026-10-07 14:39（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -58,7 +58,7 @@
 
 ## 下一步
 
-A与阶段B（校准实验配置）门槛已通过；源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-b4，基准B3 ee480ea，验证实现 `8ef4d455d97e12fdf92ad343b7664c998a914b8e`；最终交接 `28c60d4858d98800a9d85b3cb99c3de2f38a8f61` 已推origin（末次仅文档同步）。98/98全回归、42次干净CLI矩阵、5固定seed与2holdout、重复100/40+60、独立45420行CSV/哈希/现金/在途复核通过；[B4完整验收](docs/runtime/B4-ACCEPTANCE.md)。源码不合并main。下一项C1身份/聚合人口份额/Needs，未实施，复用冻结b4-baseline；用户要求额度约剩10%～15%时保存停下，本轮正在收口。E1预研独立保留。
+A与阶段B（校准实验配置）门槛已通过；源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-b4，基准B3 ee480ea，验证实现 `8ef4d455d97e12fdf92ad343b7664c998a914b8e`；最终交接 `28c60d4858d98800a9d85b3cb99c3de2f38a8f61` 已推origin（末次仅文档同步）。98/98全回归、42次干净CLI矩阵、5固定seed与2holdout、重复100/40+60、独立45420行CSV/哈希/现金/在途复核通过；[B4完整验收](docs/runtime/B4-ACCEPTANCE.md)。源码不合并main。下一项C1身份/聚合人口份额/Needs，未实施，复用冻结b4-baseline；用户额度停点已满足：2026-10-07五小时窗口检查剩13%，已保存并暂停本轮代码推进；C1未开工。E1预研独立保留。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 
