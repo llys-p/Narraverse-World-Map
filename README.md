@@ -16,7 +16,9 @@
 - 原浏览器E2E脚本仍含旧端口、Windows Edge路径和可能的云调用；运行前逐个核实，不直接全跑。
 - 当前目录的浏览器存档与旧端口按origin隔离；本次没有迁移真实存档。
 
-详见 [独立化与下一步](PROJECT_CONTEXT.md)、[世界运行时架构与分阶段计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)、[来源记录](SOURCE_ORIGIN.md)。
+先读 [项目指导书：主方向、架构边界与参考采用](PROJECT_GUIDE.md)，了解整个项目要做什么、如何取舍，以及后续设计应注意什么。
+
+详细技术合同见 [世界运行时架构与分阶段计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)；最新进度与执行基准见 [当前状态](PROJECT_CONTEXT.md)；原型来源见 [来源记录](SOURCE_ORIGIN.md)。指导书中的候选参考不代表已经实现或立即开工。
 
 ## 新世界运行时进度
 

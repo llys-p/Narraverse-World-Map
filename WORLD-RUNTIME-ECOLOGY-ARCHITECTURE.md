@@ -5,6 +5,8 @@
 > 当前起点：A/B/C、D1～D2C、M1/M2 已本地验收。M3-1A/B 均从 M2 integration 交接 `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9` 开始，并经中控裁定 PASS/本地验收（仅纯内核），M3-1 收口。M3-2A/B 任务书已在本地发布，待派发、未开工；共同源码基准为 `D:\Narraverse-World-Map-m3-base @ codex/world-runtime-m3-base`、HEAD `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。M3-2实现、M3-3认知频率运行时接入及完整 M3 均未验收；D3/D4 顺序不变。实际进度唯一记录在 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)。
 > 承接 `9db7035` 的架构方向和 `28b1ebb` 的状态记录；原版本保留在 Git 历史。
 
+> 2026-10-09 导读补充：整个项目的目标、权责边界、复杂度原则、架构注意事项和外部参考采用见 [PROJECT_GUIDE.md](PROJECT_GUIDE.md)。本文继续负责详细技术约定与阶段依赖；任务书负责具体实现合同，当前进度只在 PROJECT_CONTEXT.md 维护。本次指导书整理不改变已发布的 M3-2 合同。
+
 ## 1. 目标与使用方式
 
 把独立 RPG 原型逐步发展成能在没有玩家输入时推进、产生因果并保存历史的 World Runtime。长期目标是让地图、场景、战斗与文字交流成为同一个运行世界的不同交互入口，并让重要人物依据自己可知的信息、经历与目标形成判断，持续生活在这个世界中。
@@ -33,7 +35,7 @@
 
 ## 2. 源码基线与保护边界
 
-仓库根目录为 `D:\Narraverse-World-Map`，远端为私有仓库 `llys-p/Narraverse-World-Map`。当前 runtime 交接树为 `D:\Narraverse-World-Map-m2-integration`，控制文档树为 `D:\Narraverse-World-Map-control`；执行者从任务书固定提交建独立工作树，开工按 Git 核对所有权，不在已验收集成树或历史 A1 树上编辑。此独立项目不是 Narraverse 正式平台的工作树。
+仓库根目录为 `D:\Narraverse-World-Map`，远端为私有仓库 `llys-p/Narraverse-World-Map`。M2 已验收 runtime 交接树为 `D:\Narraverse-World-Map-m2-integration`；M3-2 共同代码基准树为 `D:\Narraverse-World-Map-m3-base`；控制文档树为 `D:\Narraverse-World-Map-control`。精确 SHA 与最新状态见任务书及 PROJECT_CONTEXT.md。执行者从任务书固定提交建独立工作树，开工按 Git 核对所有权，不在已验收集成树或历史 A1 树上编辑。此独立项目不是 Narraverse 正式平台的工作树。
 
 已有地图、场景、战斗、角色、商店与 `WorldRPG / WorldInv / WorldState / WorldSkill / WorldFX / WorldCombatFX`。现有代码不能直接视为新内核：
 
@@ -65,7 +67,7 @@ E 是独立可选支线：最早在 M1 已证明消费链、且具体 Provider �
 
 三种取舍：继续先做 D3/D4 可以尽快补齐战斗，但会延后验证人物心智这一核心体验；一次实现笔记 V1 的全部心理层能保持概念完整，却难以定位因果并明显增加版本和验证成本。本次选择复用已验收世界、先交付小规模规则心智闭环，代价是自由对话和丰富心理表现稍后补齐。
 
-每次只领取一个任务或一个用户明确授权的阶段。完成当前范围后报告并停在约定边界；同一已授权阶段内的顺序任务无需反复询问。文档改写本身不授权立即实现 M 或重开 E；本轮仅准备 M3-2A/B 任务书供中控审阅后本地发布，Projects 待网络权限恢复并核实后同步。
+每次只领取一个任务或一个用户明确授权的阶段。完成当前范围后报告并停在约定边界；同一已授权阶段内的顺序任务无需反复询问。文档改写本身不授权立即实现 M 或重开 E；任务书发布不代表开工。派发、验收与远端同步状态见 PROJECT_CONTEXT.md，不从历史段落推断当前状态。
 
 开工核对 Git 与局部规则；每个任务完成后运行定向验证，更新 `PROJECT_CONTEXT.md` 的结果与下一步。默认只验证改动及直接影响：页面检查相关交互，模块检查模块及直接回归；同一提交已有通过证据且代码未变，不重复跑。时间调度、确定性重演、存档格式等公共底座改动才扩大验证；全量模拟回归集中于较大阶段收口一次。独立验收针对风险补反例，不机械重跑全部已有证据。失败如实记录，不降低门槛。
 
