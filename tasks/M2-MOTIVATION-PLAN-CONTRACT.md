@@ -1,6 +1,6 @@
 # M2 共同合同：动机计划与受约束反事实
 
-合同版本：`m2-contract-v1`；状态：任务书已发布、未开工。冻结日期：2026-10-08（Asia/Shanghai）。本合同是 M2A1、M2A2、M2B、M2C 的唯一公共定义；修改公共字段、公式、顺序或错误语义，须由中控同步修订本合同及受影响任务书。四份任务书与本文共用一个合同版本。
+合同版本：`m2-contract-v2`；状态：新任务书已冻结、尚未开工。冻结日期：2026-10-08（Asia/Shanghai）。本合同是 M2A1、M2A2、M2B、M2C 的唯一公共定义；修改公共字段、公式、顺序或错误语义，须由中控同步修订本合同及受影响任务书。四份任务书与本文共用一个合同版本。本文取代尚未开工的 `m2-contract-v1`（发布提交 `be7ca9ba44684c7b1e2cbf1c9051b94bef4f3b68`）；v1 保留在 Git 历史，不要求回滚、迁移或改写任何实现/存档。
 
 执行书：[M2A1 纯规划器](M2A1-MOTIVATION-PLANNER-TASK.md)、[M2A2 运行时集成](M2A2-MOTIVATION-RUNTIME-TASK.md)、[M2B 检查器](M2B-PLAN-INSPECTOR-TASK.md)、[M2C 独立验收](M2C-MOTIVATION-ACCEPTANCE-TASK.md)。
 
@@ -9,9 +9,24 @@
 - Runtime 唯一基准：`D:\Narraverse-World-Map-m1-integration`，提交 `87aa9b605f5f509ce3b0daa97e34ded004d22f33`。从该提交创建各任务工作树；`main` 没有 runtime，不能作为代码起点。
 - 控制文档位于 `D:\Narraverse-World-Map-control`。执行者在派发时记录合同与任务书导入的控制树提交 SHA、实际代码 HEAD、工作区状态和依赖 SHA。
 - 新增实验 profile `motivation-village`、fixture 版本 1、rules `m-motivation-v1`、service 格式 5。snapshot 版本 2、event schema 版本 1、checkpoint 容器版本 1 不变。M1、D2C 及其它旧 profile 的行为与兼容产物保持原样。
+- `motivation-*v1` 字符串、`m-motivation-v1` 和 service5 是 M2 从未实现/存档情况下的首个运行时版本标识，不代表兼容或迁移旧 M2。M2 唯一源码基准仍为 M1 integration `87aa9b605f5f509ce3b0daa97e34ded004d22f33`。
 - 人物固定为 actor-2 猎人、actor-3 商人、actor-1 村长对照、actor-4 玩家；人口仍为 80。M1 的 `mindModel` 保留为观察、公药信念与刺激来源；M2 使用独立 `motivationModel`。M2 中 M1 mind actors 的 `lastDecision`、`lastOutcome` 恒为 null。
-- 只增加五种固定候选，顺序为 `UseMedicine`、`BuyMedicine`、`WorkForPay`、`Rest`、`NoAction`。不实现 Hunt、聊天、战斗、模型、MBTI、多目标栈、通用搜索或经验 LOD。
+- 只增加五种固定候选，顺序为 `UseMedicine`、`BuyMedicine`、`WorkForPay`、`Rest`、`NoAction`，由三个固定 provider 和一个 fallback 收集。不实现插件框架、Hunt、聊天、战斗、模型、MBTI、多目标栈、通用搜索或经验 LOD。
 - 动机范围是响应真实村长的做工请求，并在健康恢复、职责、疲劳恢复之间作有限比较。权威物理效果一律复用现有 society resolver，不复制或私写资产规则。
+
+## Reference Review
+
+**Problem：** 限定五个候选如何出现；普通分数变化何时可以改变已承诺计划；阻塞、延期与权威拒绝如何影响计划及长期 Goal。
+
+**Primary：** REF-CDDA。固定源码提交 43be0bb0e65d995a5cbb07a5dc48dab361638f0d：[npcmove.cpp：1697–1849](https://github.com/CleverRaven/Cataclysm-DDA/blob/43be0bb0e65d995a5cbb07a5dc48dab361638f0d/src/npcmove.cpp#L1697-L1849)、[npcmove.cpp：1913–1937](https://github.com/CleverRaven/Cataclysm-DDA/blob/43be0bb0e65d995a5cbb07a5dc48dab361638f0d/src/npcmove.cpp#L1913-L1937) 与 [npc_test.cpp：6053–6170](https://github.com/CleverRaven/Cataclysm-DDA/blob/43be0bb0e65d995a5cbb07a5dc48dab361638f0d/tests/npc_test.cpp#L6053-L6170)。已读范围支持 committed goal、按执行状态区分保持/抢占，并以 holding/progressed/deferred 与 urgent 反例测试边界；只借结构，不借实现或数值。
+
+**Secondary：** `REF-RW` / `REF-ONI` 仅取参考库社区目录层的 Urgent/Normal 概念；未核验其官方源码，不据此声称数值、具体机制或官方实现事实。参考库冻结于 `b0b13a3baccf0d26fae167f7827930a1df995876`：[ADOPTION-PROTOCOL](https://github.com/llys-p/Narraverse-World-Map/blob/b0b13a3baccf0d26fae167f7827930a1df995876/docs/reference-library/ADOPTION-PROTOCOL.md)、[MODULE-INDEX](https://github.com/llys-p/Narraverse-World-Map/blob/b0b13a3baccf0d26fae167f7827930a1df995876/docs/reference-library/MODULE-INDEX.md)、[PATTERN-DECISIONS](https://github.com/llys-p/Narraverse-World-Map/blob/b0b13a3baccf0d26fae167f7827930a1df995876/docs/reference-library/PATTERN-DECISIONS.md)、[REF-CDDA 所在目录](https://github.com/llys-p/Narraverse-World-Map/blob/b0b13a3baccf0d26fae167f7827930a1df995876/docs/reference-library/GAME-CATALOG.md) 与 [CODE-REFERENCE](https://github.com/llys-p/Narraverse-World-Map/blob/b0b13a3baccf0d26fae167f7827930a1df995876/docs/reference-library/CODE-REFERENCE.md)。
+
+**Adopted：** 对应 PAT-001（Need 是输入，不直接命令）、PAT-004（Goal commitment / anti flip-flop）与 PAT-009（World Fact != Subjective State）；PAT-003 只借有限候选由固定 provider 暴露的入口，不采纳其通用框架。日结决策高频、关键且必须重放，因此用确定规则；低频语义策略本阶段不造高成本确定性系统。
+
+**Rejected：** 不移植 CDDA 的候选层级、Oracle、阈值、优先级数值、游戏规则或代码；不把 RW/ONI 概念扩成通用急迫度系统；不加多层暂停栈、持续行为扫描或外部 LOD。世界事实仍只由 World Runtime 决定，Mind 只形成有限知识、意图与计划，提交时由原权威 resolver 重验；反事实不得成为事实。
+
+**Code copied：** no。**Source level：** 指定开源仓库固定提交的源码与测试切片静态阅读；未运行 CDDA 测试。**Narraverse changes：** 使用自有五候选、permille 评分、确定性日结、持久可重演状态和现有资产账；不复制代码、数值阈值、全知 Oracle 或弱化不变量的架构。参考只限定本 M2 可执行范围，不重新排 M3/D3/D4 全项目路线。
 
 ## 2. 配置与固定实验
 
@@ -36,132 +51,131 @@
 
   仅允许覆写 profiles 中两个固定 actor 的合法权重、requests 合法数组、`mind.stimuli` 合法数组以及 memory 的合法实验输入；M1 `mind-config-v1` 的 schema、固定 actorIds、TTL 与 M1+M2 总计64/每tick8预算不变。默认 mind stimuli 仍为上列 mc02/mc03。M2 economics 六项不接受覆写。除上述明确项外不开放其它配置键。request 只表示输入消息，不直接改变库存、需求或决定。speaker 或 listener 死亡时记录 `unavailable`，不交付 duty。请求按 tick 后 requestId 码元序排序；ID 唯一；`expiresTick>tick` 且不大于 `tick+288`。先做安全整数及加法溢出检查，再做范围检查。
 
-固定四日预期（seed 42，未列变量均为默认值）：actor-2 在 tick 144 买药，建立 Goal 1、planId 1，购买成功后下一步为 UseMedicine；tick 200 收到 d01；tick 288 因职责分高于治疗分而执行 WorkForPay，获得工资 20、公粮生产记账 8、fatigue 650→800，治疗 planId 1 / stepIndex 1 挂起；tick 432 请求已过期且疲劳强制 Rest，日结后 fatigue 600；tick 576 恢复原 planId 1 执行 UseMedicine，私药 -1、health 400→500。治疗子计划完成不等于长期 health 目标完成。公仓期末值须按旧日结逐日复算，不能把 `+8` 直接加到最终公仓值。仅将 actor-2 dutyWeight 从 900 改为 700，或 riskAversion 从 200 改为 400，其它不变时，tick 288 改选 UseMedicine。
+固定四日预期（seed 42，未列变量均为默认值）：actor-2 在 tick144 买药，创建 Goal1/planId1，购买成功后等待 Use；tick200 收到 d01。tick288 首次评估该未读 Duty，urgency=1000 打开 NEW_MAJOR_DUTY 完整重评，Work710 高于 Use700 和 Rest650，于是本次选择 Work，而非单因高分打断；成功回执后将 d01 置为 fulfilled/fulfilledTick=288，工资+20、公粮生产记账8、fatigue 650→800，Goal1/Plan1 挂起且 Goal.step 仍为 use。tick432 请求已过期，URGENT_FATIGUE 只选择 Rest，日结 fatigue=600；tick576 恢复原 planId1 执行 Use，私药-1、health=500，长期 health Goal 未完成。完成一次 Work 不会在 TTL 内重复履约；公仓值按旧日结逐日复算。权重配对：在相同 major gate 下，只将 dutyWeight 900→700 或 riskAversion 200→400，其它不变时，tick288 改选 UseMedicine。
 
 ### Q3 专用合法配置 recipe
 
 以下只为合同 Q3 的存活期限与死亡清理边界，不增加新业务；均从合法配置构造，执行者不得手改 snapshot 或跳时。
 
-- **期限等待 fixture**：从默认配置仅改 actor-2/3 fatigue=200；全部三名 NPC initialFood=32；public herbs initial=0、production=0；全部 NPC/玩家 initialHerbs=0；mind.stimuli 仅为 `[{stimulusId:'deadline-statement',tick:12,kind:'statement',speakerId:'actor-1',listenerId:'actor-2',available:true}]`；motivation.requests=[]；经济固定 wage=20/workFood=8/workFatigue=150/deadlineDays=20/maxFailures=3/cooldownDays=2。actor-2 day1 依据已送达陈述相信有药，创建 Goal1/Plan1（BuyMedicine）；权威库存为0而拒绝，failedActions 与 Goal.failures 各增加一次，Plan1 stepIndex=0。日末公开无药纠正后，day2～20 保留 Goal/Plan1，每日 NoAction，不再扣 failures、不休息、不消费药。day21 旧 Goal deadline 失败只结算一次并清 Plan1，cooldownUntilDay=23；day22 不建新 Goal/Plan；day23 可建 Goal2，belief 仍无药，NoAction 不建新 Plan、不复活 Plan1。通过从 tick0 引擎分段推进覆盖真实前缀。
-- **死亡清理 fixture**：从默认配置仅改 actor-2 health=1、hunger=1000、initialFood=0；private herbs=0、wallet=100；其它默认，包括 tick200 的 d01 请求。actor-2 在 tick144 的 BuyMedicine 成功但不回血，日末因无私粮按旧规则死亡；canonical Goal 与待执行 Use Plan 清理、Goal failures 仅计一次，已购私药/钱包及最后 Decision/Outcome 封存。tick200 的 d01 记录 unavailable、不进入 duty；可增加 tick210 给 actor-2 的 market-check，同样 unavailable。推进到 tick576 后死者不再增加 Plan/Decision/报价/观察，旧记录不变，背景世界仍按规则结算。若真实旧 actor 规则不产生此死亡结果，记录阻断并停在合法配置，不手造死亡快照。
+- **期限等待 fixture**：从默认配置仅改 actor-2/3 fatigue=200；全部三名 NPC initialFood=32；public herbs initial=0、production=0；全部 NPC/玩家 initialHerbs=0；mind.stimuli 仅为 `[{stimulusId:'deadline-statement',tick:12,kind:'statement',speakerId:'actor-1',listenerId:'actor-2',available:true}]`；motivation.requests=[]；经济固定 wage=20/workFood=8/workFatigue=150/deadlineDays=20/maxFailures=3/cooldownDays=2。actor-2 day1 依据已送达陈述相信有药，创建 Goal1/Plan1（BuyMedicine）；权威库存为0而拒绝，failedActions 与 Goal.failures 各增加一次，Plan1 stepIndex=0/status=blocked。日末公开无药纠正后，day2～20 保留 Goal/Plan1，每日 NoAction，不再扣 failures、不休息、不消费药。day21 旧 Goal deadline 失败只结算一次并清 Plan1，cooldownUntilDay=23；day22 不建新 Goal/Plan；day23 可建 Goal2，belief 仍无药，NoAction 不建新 Plan、不复活 Plan1。通过从 tick0 引擎分段推进覆盖真实前缀。
+- **死亡清理 fixture**：从默认配置仅改 actor-2 health=1、hunger=1000、initialFood=0；private herbs=0、wallet=100；其它默认，包括 tick200 的 d01 请求。actor-2 在 tick144 的 BuyMedicine 成功但不回血，日末按旧规则因无私粮死亡；canonical Goal 与待执行 Use Plan 清理；society estate.state.ledger.goalsFailed 仅增加一次，因 Buy 已成功 failedActions 不增，死亡本身不再作为一次 Goal.failures 的动作失败。已购私药/钱包及最后 Decision/Outcome 封存。tick200 的 d01 记录 unavailable、不进入 duty；可增加 tick210 给 actor-2 的 market-check，同样 unavailable。推进到 tick576 后死者不再增加 Plan/Decision/报价/观察，旧记录不变，背景世界仍按规则结算。若真实旧 actor 规则不产生此死亡结果，记录阻断并停在合法配置，不手造死亡快照。
 
 ## 3. 长期目标、计划与固定状态
 
-- 唯一长期 Goal 继续存于 `world.societyModel.agents[].state.currentGoal`。沿用 M1 的 `recover-health`：仅当没有 currentGoal 且 health≤700、day≥cooldownUntilDay 时创建；Goal deadline 为当前 day+20，原 Goal 字段 `target=800`。Goal 未完成/失败时沿用原 goalId。终止和死亡按旧 society 规则处理，不在 motivationModel 复制 Goal 实体。
-- 临时职责和休息计划不创建新的长期 Goal；Plan.goalId 对所有 kind 都引用该人物当前唯一 canonical health Goal，只有无 Goal 时才为 null。临时计划只表达职责/休息用途，绝不复制 Goal。Goal.step 映射为 Use=`use`、Buy=`buy`、Work=`earn`、Rest=`rest`、NoAction=`wait`；不能将 suspended 等计划状态塞入旧 Goal 字段。实际 SocietyAction payload 的 goalId=`Decision.goalId ?? 0`；sentinel `0` 仅对应本日 canonicalGoal=null，其余绑定精确 canonical Goal ID，并绑定本日 Decision/Plan。
-- Plan 精确字段：`{planId,goalId,kind,steps,stepIndex,status,createdDay,deadlineDay,requestId}`。kind 为 `recover-health`、`aid-village`、`recover-rest`；status 为 `ready`、`suspended`、`completed`、`cancelled`。治疗无私药时 steps=`[BuyMedicine,UseMedicine]`，有药时为 `[UseMedicine]`；duty 为 `[WorkForPay]`；rest 为 `[Rest]`。最多两步。所有 Plan.goalId 都必须等于本日人物 canonical health Goal ID 或 null；recover-health Plan 必须非 null。若当时存在 Goal，aid-village/recover-rest Plan 同样引用该 Goal ID；若无 Goal 则为 null。health Plan 的 deadlineDay 与 Goal 匹配；临时职责/休息 deadlineDay 为自身请求或当日期限，不要求等于健康 Goal 的期限。除 `aid-village` 外 requestId=null；职责 Plan 的 requestId 必须精确等于其有效本人 duty.requestId。duty deadlineDay=`floor((expiresTick-1)/144)`，rest deadlineDay 为创建当日。ready/suspended 的 stepIndex 满足 `0≤stepIndex<steps.length`；completed 时 `stepIndex===steps.length`；cancelled 时索引仍在合法范围。
-- `motivationModel` 精确为 `{version:'motivation-state-v1',config,configFingerprint,requestCursor,cursor,actors}`，不得加额外元字段。`configFingerprint=canonicalJson(config)`；初始 requestCursor=0、cursor=0。actors 恰为 `[ {actorId,lastDuty,activePlan,suspendedPlan,nextPlanId,lastDecision,lastOutcome}, ... ]`，顺序 actor-2、actor-3；初始 lastDuty/activePlan/suspendedPlan/lastDecision/lastOutcome 均 null，nextPlanId=1。requestCursor 是已处理 M2 request 前缀长度；actor-2/3 的 activePlan 若非 null 必须 status=ready，suspendedPlan 若非 null 必须 status=suspended，并仅属于该 actor。所有 active/suspended Plan 的 goalId 按前述规则引用本人 canonical health Goal；健康 Plan 必须非 null，职责/休息 Plan 仅在本人没有 Goal 时为 null。终端 completed/cancelled 只允许出现在当 tick planner/settlement 的瞬时状态与 transitions，不跨日保留在 active/suspended slot；日结清空对应 slot。`cursor` 是已消费 EventLog 序号。nextPlanId 为正安全整数，溢出先拒绝。active/suspended 不得同 planId。计划 ID 与 Goal ID 归属于本人，禁止跨人引用。
-- duty 精确字段：`{requestId,sourceEventSeq,observedTick,expiresTick,urgencyPermille}`。仅保留本人收到的最新有效 request；有效窗口为 `[observedTick,expiresTick)`，请求不叠加。过期只在 Knowledge 投影中映射为 null，lastDuty 原记录保留。死亡者不再收到消息、报价或计划。
-- committedIntent 精确为 `{goalId,kind:'recover-health'}` 或 null。`apparentAction` 只表示本次所选 choice；是否成功只看 outcome。
+- 唯一长期 Goal 继续存于 world.societyModel.agents[].state.currentGoal。沿用 M1 的 recover-health：仅当没有 currentGoal 且 health≤700、day≥cooldownUntilDay 时创建；Goal deadline 为当前 day+20，原 Goal 字段 target=800。Goal 未完成/失败时沿用原 goalId。终止和死亡按旧 society 规则处理，不在 motivationModel 复制 Goal 实体。
+- 临时职责和休息计划不创建长期 Goal，Plan.goalId 必须为 null；治疗计划 goalId 必须等于本人的 canonical health Goal id。Goal.step 只由治疗计划的 Buy/use/wait 变化；Work/Rest 不把旧 Goal.step 改为 earn/rest，且不得把 Plan 状态塞进旧 Goal 字段。Decision.goalId 等于所选或等待计划的 goalId；没有计划时为 null。committedIntent 可继续指向背景健康 Goal。
+- SocietyAction.payload.goalId=Decision.goalId ?? 0。临时 Work/Rest 即使背景健康 Goal 仍存在也传 0，wrapper 与完整重演按 Plan.kind 绑定本日 Decision/Plan，不要求 payload goalId 等于背景 Goal。0 是合法临时任务标记。
+- Plan 精确字段：{planId,goalId,kind,steps,stepIndex,status,createdDay,deadlineDay,requestId}。kind 为 recover-health、aid-village、recover-rest；status 为 ready、blocked、suspended、completed、cancelled。治疗无私药时 steps=[BuyMedicine,UseMedicine]，有药时为 [UseMedicine]；duty 为 [WorkForPay]；rest 为 [Rest]。最多两步。recover-health Plan.goalId 必须等于本人 canonical health Goal id；aid-village/recover-rest Plan.goalId 必须为 null。health Plan 的 deadlineDay 与 Goal 匹配；临时职责/休息 deadlineDay 为自身请求或当日期限。除 aid-village 外 requestId=null；职责 Plan.requestId 精确等于本人 duty.requestId。duty deadlineDay=floor((expiresTick-1)/144)，rest deadlineDay 为创建当日。ready/blocked/suspended 的 stepIndex 满足 0≤stepIndex<steps.length；completed 时 stepIndex===steps.length；cancelled 时索引仍合法。
+- motivationModel 精确为 {version:'motivation-state-v1',config,configFingerprint,requestCursor,cursor,actors}，不得加额外元字段。configFingerprint=canonicalJson(config)；初始 requestCursor=0、cursor=0。actors 恰为 [{actorId,lastDuty,lastReviewedDutyId,activePlan,suspendedPlan,nextPlanId,lastDecision,lastOutcome}, ...]，顺序 actor-2、actor-3；初始 lastDuty、lastReviewedDutyId、activePlan、suspendedPlan、lastDecision、lastOutcome 均 null，nextPlanId=1。requestCursor 是已处理 M2 request 前缀长度；activePlan 若非 null 必须 status=ready|blocked，suspendedPlan 若非 null 必须 status=suspended，并仅属于该 actor。健康 Plan 绑定本人 canonical health Goal；临时 Plan 的 goalId 为 null。completed/cancelled 仅出现在当 tick planner/settlement 的瞬时状态与 transitions，不跨日保留。cursor 是已消费 EventLog 序号。nextPlanId 为正安全整数，溢出先拒绝；active/suspended 不得同 planId；计划与 Goal ID 不得跨人引用。
+- Duty 精确字段：{requestId,sourceEventSeq,observedTick,expiresTick,urgencyPermille,status,fulfilledTick}。仅保留本人最后收到的请求；status 为 pending|fulfilled，fulfilledTick 为 null 或安全整数 tick。新请求覆盖旧记录，不叠加；有效机会窗口为 [observedTick,expiresTick)。Knowledge 保留最后已知记录，包括过期或 fulfilled 状态；候选只在 pending 且窗口有效时可选。新请求成功送达后，任何 requestId 不同于新 Duty.requestId 的 active aid-village Plan 立即以 REQUEST_SUPERSEDED 取消，不执行、不改变资产或 Goal.failure、不履约旧请求，也不转移旧 commitment；保留 suspended 健康 Plan，当前新请求仍按承诺门重新评估且不强制 Work。Duty、Work Plan 与 Work 候选 sourceRef 必须 requestId 一致，方可继续、提交 authority command 或标记 fulfilled。只有对应 WorkForPay 成功才把该 duty 标为 fulfilled 并记录执行 tick；拒绝保持 pending；fulfilled 请求在 TTL 内不得重复工作。过期历史留在 lastDuty，不再活动。死亡者不再收到消息、报价或计划。
+- lastReviewedDutyId 初始为 null，只记录已经打开 NEW_MAJOR_DUTY 重评门的本人 requestId；若 urgent fatigue 先覆盖，不标记尚未评估的请求。
+- committedIntent 精确为 {goalId,kind:'recover-health'} 或 null，表示长期健康 Goal；apparentAction / choice 只表示本次动作。Intent、action、outcome 三者独立。
 
 ## 4. Knowledge、Decision 与公式
 
 ### 4.0 公共导出与校验边界
 
-- A1 `runtime/core/motivation-state.mjs` 导出固定常量：`MOTIVATION_RULES='m-motivation-v1'`、`MOTIVATION_CONFIG_VERSION='motivation-config-v1'`、`MOTIVATION_STATE_VERSION='motivation-state-v1'`、`MOTIVATION_KNOWLEDGE_VERSION='motivation-knowledge-v1'`、`MOTIVATION_DECISION_VERSION='motivation-decision-v1'`、`MOTIVATION_INSPECTOR_VERSION='motivation-inspector-v1'`、`MAX_MOTIVATION_ACTORS=2`、`MAX_MOTIVATION_CANDIDATES=5`、`MAX_MOTIVATION_PLAN_STEPS=2`、`MAX_MOTIVATION_REQUESTS=64`、`MAX_MOTIVATION_INPUTS_PER_TICK=8`、`MAX_MOTIVATION_KNOWLEDGE_BYTES=16384`、`MAX_MOTIVATION_INSPECTOR_BYTES=131072`、`MAX_MOTIVATION_PLAN_TRANSITIONS=8`。
-- A1 函数签名固定：`validateMotivationConfig(config)` 只接 motivation config；`createMotivationModel(config)`；`validateMotivationModel(model)` 只负责结构/预算合法性，不做历史重演。
-- A2 固定导出：`buildMotivationKnowledge(bundle,actorId)` 只构造 committed phase；`projectMotivationInspector(bundle)` 做完整 bundle audit 后克隆。仅 A2 可有 decision-phase 内部 helper，B/C 不得调用内部 helper 或用 A1 planner 生成验收 expected。
-- A2 `validateMotivationWorld(world,sealed=true)` 的 sealed=true 只保证配对结构；不替代对 bundle 的完整审计与历史重演。M1 stimuli + M2 requests 的跨配置总预算、每 tick 总量、request 前缀/cursor 及完整历史均由 A2 fixture/world/runtime 校验，不能放进 A1 config validator。
+- A1 `runtime/core/motivation-state.mjs` 导出以下固定常量：`MOTIVATION_RULES='m-motivation-v1'`；`MOTIVATION_CONFIG_VERSION='motivation-config-v1'`、`MOTIVATION_STATE_VERSION='motivation-state-v1'`、`MOTIVATION_KNOWLEDGE_VERSION='motivation-knowledge-v1'`、`MOTIVATION_DECISION_VERSION='motivation-decision-v1'`、`MOTIVATION_INSPECTOR_VERSION='motivation-inspector-v1'`；`MAX_MOTIVATION_ACTORS=2`、`MAX_MOTIVATION_CANDIDATES=5`、`MAX_MOTIVATION_PLAN_STEPS=2`、`MAX_MOTIVATION_REQUESTS=64`、`MAX_MOTIVATION_INPUTS_PER_TICK=8`、`MAX_MOTIVATION_KNOWLEDGE_BYTES=16384`、`MAX_MOTIVATION_INSPECTOR_BYTES=131072`、`MAX_MOTIVATION_PLAN_TRANSITIONS=8`。同模块导出 `validateMotivationConfig(config)`、`createMotivationModel(config)`、`validateMotivationModel(model)`。validator 只接 motivation config/model，并做自身结构/预算检查，不做历史重演。
+- A1 `runtime/core/motivation-planner.mjs` 导出 `collectMotivationCandidates(knowledge)`、`planMotivationDecision(knowledge)`、`buildFastCounterfactual(decision)`。planner 纯计算候选、承诺门和计划变化；不执行命令、不修改输入、不消耗 RNG/clock、不读其他 actor/world。
+- A2 公共导出及签名为 `defaultMotivationVillageConfig()`、`createMotivationVillage(seed=42,simulationId='motivation-village',config=defaultMotivationVillageConfig())`、`motivationSystems()`、`validateMotivationWorld(world,sealed=true)`、`executeMotivationPlayerIntent(bundle,intent)`、`describeMotivationPlayerActions(bundle)`、`buildMotivationKnowledge(bundle,actorId)`、`projectMotivationInspector(bundle)`。`buildMotivationKnowledge` 只构造 committed phase；`projectMotivationInspector` 完整 bundle audit 后返回克隆。A2 的 decision-phase helper 私有，B/C 不得调用或用 A1 planner 生成独立 expected。`validateMotivationWorld` 只保证配对结构，不替代 bundle 完整审计和历史重演。M1 stimuli + M2 requests 的跨配置总预算、每 tick 总量、request 前缀/cursor 及完整历史由 A2 校验。
 
 ### 4.1 Knowledge
 
-Knowledge 的精确字段白名单为（对象键插入顺序不是合同；fingerprint 使用 canonicalJson）：
-`{knowledgeVersion,phase,simulationId,actorId,tick,revision,self,quote,observations,belief,profile,duty,planState}`。
+Knowledge 顶层精确白名单为 {knowledgeVersion,phase,simulationId,actorId,tick,revision,self,quote,observations,belief,profile,duty,planState}。不增其它顶层键；对象键插入顺序不属于合同，fingerprint 使用 canonical JSON。
 
-- `knowledgeVersion='motivation-knowledge-v1'`；phase 为 `committed` 或 `decision`。公开投影为当前已提交 tick/revision；每日 planner 输入为当日 tick、revision=tick-1。
-- `self` 白名单：`{name,occupation,location,alive,health,hunger,fatigue,wallet,inventory:{food,herbs},currentGoal,nextGoalId,cooldownUntilDay}`。currentGoal 沿 M1 原字段；只含本人值。
-- `self.health/hunger/fatigue` 均为 0..1000 安全整数；wallet 为非负安全整数；inventory.food/herbs 均为 0..1000 整数。`quote={product:'herbs',price:uint≥1,observedTick:uint,sourceEventSeq:uint|null}`；sourceEventSeq 非 null 时须为≥1安全整数。`observations` 项为 `{sourceEventSeq,occurrenceTick,observedTick,channel:'statement'|'market-check'|'daily-public'|'own-rejection',sourceActorId:'actor-1'|null,available:boolean|null,confidencePermille,expiresTick}`；`belief={topic:'public-herbs-available',value:'available'|'unavailable'|'unknown',confidencePermille,evidenceRefs:[eventSeq],contradictionRefs:[eventSeq],lastUpdatedTick:uint|null}`。派生/TTL/去重规则沿 [M1 共同合同](M1-CHARACTER-MIND-CONTRACT.md) §4.2；不得使用当前 world truth 替代主体可知信息。
-- 所有嵌套数据遵 M1 §8.1 的普通/null 原型、密集数组、无 getter 与预算规则；M2 再按本合同更高的 16384/131072 字节界限拒绝。
-- `own-rejection` 继续严格沿 M1 §4.2：仅本人 `BuyMedicine` 的权威拒绝可追加 `channel:'own-rejection'`、`available:null`、`confidencePermille:0` 的观察，使公仓药材 Belief 暂为 unknown；后续可见日末 public observation 可纠正。WorkForPay、Rest、UseMedicine 的拒绝只影响自身 Outcome/既有 Goal 失败账，不产生公仓 Belief 证据。不得增加第二命题或学习字段。
-- `profile={dutyWeightPermille,riskAversionPermille}`；`duty` 为上述有效本人请求或 null；`planState={activePlan,suspendedPlan,nextPlanId}`。M2 Knowledge 不含可从 Decision 推导的 `innerStance`、`committedIntent`，也不含 world、他人私账、未来 RNG、事件全文或隐藏 getter。
-- 死亡 actor 的 self.alive=false、currentGoal=null、意图/计划清空或封存；不接新观察、请求或决定。历史观察和最近决定/结果按合同封存规则投影，Belief 仅由已知历史及 TTL 纯派生。
+- knowledgeVersion='motivation-knowledge-v1'；phase 为 committed 或 decision。公开投影是当前已提交 tick/revision；每日 planner 输入为当日 tick、revision=tick-1。
+- self 白名单：{name,occupation,location,alive,health,hunger,fatigue,wallet,inventory:{food,herbs},currentGoal,nextGoalId,cooldownUntilDay}。currentGoal 沿用 M1 原字段，且只含本人值。health/hunger/fatigue 为 0..1000 安全整数；wallet 非负安全整数；inventory.food/herbs 为 0..1000 整数。
+- quote={product:'herbs',price:uint≥1,observedTick:uint,sourceEventSeq:uint|null}；非 null sourceEventSeq 须为≥1安全整数。observations 项为 {sourceEventSeq,occurrenceTick,observedTick,channel:'statement'|'market-check'|'daily-public'|'own-rejection',sourceActorId:'actor-1'|null,available:boolean|null,confidencePermille,expiresTick}。belief 为 {topic:'public-herbs-available',value:'available'|'unavailable'|'unknown',confidencePermille,evidenceRefs:[eventSeq],contradictionRefs:[eventSeq],lastUpdatedTick:uint|null}。派生、TTL、去重遵 [M1 共同合同](M1-CHARACTER-MIND-CONTRACT.md) §4.2；不得以当前 world truth 替代人物可知信息。
+- 所有嵌套数据遵 [M1 共同合同](M1-CHARACTER-MIND-CONTRACT.md) §8.1 的普通/null 原型、密集数组、无 getter 和预算规则；M2 Knowledge/Inspector 上限分别为 16384/131072 UTF-8 bytes。
+- own-rejection 继续遵 [M1 共同合同](M1-CHARACTER-MIND-CONTRACT.md) §4.2：仅本人 BuyMedicine 的权威拒绝可追加 channel='own-rejection'、available:null、confidencePermille:0 的观察，令公仓药材 Belief 暂为 unknown；后续可见日末 public observation 可纠正。WorkForPay、Rest、UseMedicine 拒绝不新增/改写供给观察或旧证据。不得增加第二命题或学习字段。
+- profile={dutyWeightPermille,riskAversionPermille}；duty 是本人最后收到的 Duty 记录，可能过期或 fulfilled。planState={activePlan,suspendedPlan,nextPlanId,lastReviewedDutyId}。M2 Knowledge 不含 world、他人私账、未来 RNG、事件全文或隐藏 getter。
+- 死亡 actor 的 self.alive=false、currentGoal=null；意图/计划清理或按历史封存规则投影，且不接新观察、请求或决定。历史观察和最近决定/结果封存，Belief 只由已知历史及 TTL 纯派生。
 
-### 4.2 Decision 与候选
+### 4.2 候选、Decision 与承诺门
 
-Decision 精确为：
-`{version,decisionId,actorId,tick,goalId,planId,innerStance,committedIntent,apparentAction,choice,reasonCode,strainPermille,candidates,evidenceRefs,knowledgeFingerprint}`。
+候选固定 5 项，顺序为 UseMedicine、BuyMedicine、WorkForPay、Rest、NoAction。collectMotivationCandidates(knowledge) 只依本人的 Knowledge 收集和评分，绝不访问真实公仓、他人钱包、communalGold、隐藏 World Truth 或 resolver。潜在健康 Goal 按 M1 创建门槛纯推导，不真实分配 ID。
 
-- `version='motivation-decision-v1'`；decisionId=`motivation-day-{day}-{actorId}`；`apparentAction===choice`。goalId 为当时 canonical health Goal id 或 null。NoAction 的 planId 为 active 治疗 planId 或 null。evidenceRefs 是当时 belief 的 evidenceRefs、contradictionRefs 与当前有效 duty.sourceEventSeq 的去重升序并集；所有来源必须早于本 Decision 且对本人可知。
-- candidates 固定 5 项且顺序不变，每项 `{action,eligible,score,support,opposition,reasonCode}`。不合格候选固定 `score=null,support=0,opposition=0`，不参与选优；eligible 才按表公式计算 `score=support-opposition`。同分按候选固定顺序选择。
-- 每个候选的软前提仅读 Knowledge：
+每项精确字段为 {action,provider,sourceRef,eligible,score,support,opposition,reasonCode}；Decision 中每项再含 {selectable,selectionBlockCode}。来源固定如下：
+
+| action | provider | sourceRef |
+|---|---|---|
+| UseMedicine | health-need | recover-health |
+| BuyMedicine | health-need | recover-health |
+| WorkForPay | role-request | 本人当前有效 pending Duty 的 requestId；否则 null |
+| Rest | fatigue-need | self-fatigue |
+| NoAction | fallback | null |
+
+候选软前提、分数公式、reasonCode 与同分固定顺序沿用 v1：
 
 | action | eligibility | support / opposition / score |
 |---|---|---|
-| UseMedicine | 有 recover-health Goal、私药>0、health<1000 | support=`recoveryScore`，opposition=0 |
-| BuyMedicine | 有 Goal、私药=0、belief.value=`available`、confidence≥600、本人 wallet≥已知报价、本人容量合法 | support=`recoveryScore`，opposition=0 |
-| WorkForPay | 本人 duty 有效、health≥300、fatigue≤700 | support=`floor(urgencyPermille*dutyWeightPermille/1000)`；opposition=`floor(strainPermille*riskAversionPermille/1000)` |
-| Rest | fatigue≥600 | support=`fatigue`；fatigue≥800 时 support 与 score 固定为 2000；opposition=0 |
-| NoAction | 始终合格 | support=0，opposition=0，score=0 |
+| UseMedicine | 有 recover-health Goal、私药>0、health<1000 | support=recoveryScore，opposition=0 |
+| BuyMedicine | 有 Goal、私药=0、belief.value=available、confidence≥600、本人 wallet≥已知报价、本人容量合法 | support=recoveryScore，opposition=0 |
+| WorkForPay | 本人 Duty 为 pending、当前位于 [observedTick,expiresTick)、health≥300、fatigue≤700 | support=floor(urgencyPermille*dutyWeightPermille/1000)；opposition=floor(strainPermille*riskAversionPermille/1000) |
+| Rest | fatigue≥600 | support=fatigue；fatigue≥800 时 support 与 score 固定为 2000；opposition=0 |
+| NoAction | 始终 eligible | support=0，opposition=0，score=0 |
 
-- `recoveryScore=0`（无 Goal）；有 Goal 时 `max(0,800-health)+300`。`strainPermille=min(1000,fatigue+max(0,700-health))`。所有运算输入为 0..1000 的安全整数；乘法项按表中 `floor(.../1000)` 先整除向下取整。strain 只是派生的压力代理，不是心理测量。
-- reasonCode 只允许下表。候选未满足多个前提时按 eligibility 表从左到右遇到的首个失败项返回；Use/Buy/Work/Rest 各自按表中前提顺序检查。NoAction 始终用 `WAIT`。Decision.reasonCode 等于所选候选的 reasonCode。
+不合格候选固定 score=null,support=0,opposition=0。recoveryScore=0（无 Goal）；有 Goal 时 max(0,800-health)+300。strainPermille=min(1000,fatigue+max(0,700-health))。所有输入为 0..1000 安全整数；表内乘法按 floor(.../1000) 向下取整。strain 是支持/反对因素所用的压力代理，不是心理测量。Work 候选来源存在不代表本人知晓库存、一定能执行或请求已回复。
 
-| reasonCode | 含义 |
-|---|---|
-| `RECOVER_HEALTH` | UseMedicine/BuyMedicine 合格并表示健康恢复动机 |
-| `NO_HEALTH_GOAL` / `PRIVATE_MEDICINE_MISSING` / `HEALTH_ALREADY_FULL` | UseMedicine 前提失败 |
-| `PRIVATE_MEDICINE_PRESENT` / `SUPPLY_UNKNOWN` / `SUPPLY_UNAVAILABLE` / `SUPPLY_CONFIDENCE_LOW` / `WALLET_INSUFFICIENT` / `CAPACITY_UNAVAILABLE` | BuyMedicine 前提失败 |
-| `DUTY_UNAVAILABLE` / `HEALTH_TOO_LOW_FOR_WORK` / `FATIGUE_TOO_HIGH_FOR_WORK` | WorkForPay 前提失败 |
-| `DUTY` | WorkForPay 合格并表示职责动机 |
-| `FATIGUE_BELOW_REST_THRESHOLD` | Rest 前提失败 |
-| `FATIGUE_RELIEF` | Rest 合格且 fatigue<800 |
-| `EMERGENCY_FATIGUE` | Rest 合格且 fatigue≥800 |
-| `WAIT` | NoAction |
+进入 gate 评估前先按本人 Knowledge 清理已知死亡、Goal 终止、Duty 过期与临时 Plan deadline：已过期请求不可重试；因过期失效的临时 Plan 先取消，若健康 Plan 仍有效则同一决策可恢复它。该规范化不执行第二个动作、不消耗 RNG。
 
-- innerStance 只由选中候选映射：Use/Buy→`self-preservation`，Work→`duty-leaning`，Rest→`overloaded`，NoAction→`undecided`。不表示完整人格/情绪。
-- `knowledgeFingerprint` 是完整 decision-phase Knowledge 的规范 JSON 文本本身（不是不可逆散列值），UTF-8 字节≤16384；不得通过状态摘要替代。
+承诺门严格按以下次序选一个 gate；不能在更后级覆盖前级：
 
-### 4.3 规划纯度与计划转换
+1. URGENT_FATIGUE：活人 fatigue≥800。只 Rest selectable=true；其它 eligible 候选 selectionBlockCode=URGENT_OVERRIDE。保留长期健康 Goal 和暂停治疗 Plan。仍按日结，每日最多一个真实行动，不即时行动。
+2. NEW_MAJOR_DUTY：本人 Duty 为 pending、窗口有效、urgencyPermille≥900，且 requestId 不等于 lastReviewedDutyId。更新 lastReviewedDutyId=requestId，打开一次完整重评门；不强制接受 Work。899 不是重大请求。
+3. CONTINUE_COMMITTED：无上两条件，activePlan.status=ready 且当前下一步 soft eligible。仅该下一步 selectable；其他 eligible 项 selectionBlockCode=COMMITMENT_PROTECTED。普通高分变化不能暂停承诺。
+4. RESUME_COMMITTED：没有有效 active（失效 active 先按本合同清理），有有效 suspended health Plan 且下一步 soft eligible，无 urgent/重大请求时恢复原 planId，只原步骤 selectable。
+5. LOCAL_REPLAN_BLOCKED：active blocked、ready 下一步前提失效/需等待，或没有 active 但 suspended health Plan 的下一步已不 eligible 时，按本人 Knowledge 局部修复剩余步骤并允许当前可知候选重评；保留 health Plan 原 planId 与已完成步骤，不补执行旧步骤。若临时 Plan 被可执行的健康 Plan 替代，可取消该临时 Plan、保留对应 Duty pending 并恢复原健康 Plan，不得另建第二层暂停栈。没有可选实际动作时 NoAction 保持现有 blocked/suspended 状态，不清仍有效的长期 Goal、不循环多动作。
+6. SELECT_NEW_PLAN：没有有效 active/suspended Plan 时才按 eligible score 和固定顺序选择新计划。NoAction 不建 Plan。
 
-`planMotivationDecision(knowledge)` 为纯函数，返回 `{currentGoal,nextGoalId,activePlan,suspendedPlan,nextPlanId,decision}`；不执行命令、不修改输入、不消耗 RNG、不读其他 actor/world。A1 的 validateMotivationConfig 只接 motivation config 并做自身结构/预算检查；M1 stimuli 与 M2 requests 合计≤64、每 tick≤8、已到期请求前缀/cursor 与完整历史由 A2 fixture/world/runtime 交叉校验。
+gateReason 精确取上述枚举之一。Decision 精确为 {version,decisionId,actorId,tick,goalId,planId,innerStance,committedIntent,apparentAction,choice,reasonCode,gateReason,strainPermille,candidates,evidenceRefs,knowledgeFingerprint}。apparentAction===choice。Decision.goalId 等于本次所选/继续/恢复 Plan.goalId；若没有 Plan 则 null。planId 指对应 active/suspended/新建 Plan，若无则 null。Decision.reasonCode 保持为选中候选的 reasonCode，gateReason 说明为什么继续、恢复或全量重评，二者不能混用。
 
-- planner 基于五个候选的 eligible score 与固定顺序选一个动作，并输出与 choice 对应的 canonical Goal/计划状态。
-- 四日 FSM 固定为：day1 创建健康 planId 1，Buy 成功后 stepIndex=1/status=ready；day2 挂起 planId 1 并新建职责 planId 2，Work 成功后职责计划 completed 并清 active，健康计划仍 suspended，不在该 tick 自动恢复或执行健康行动；day3 新建 Rest planId 3，Rest 成功后 completed 并清 active，健康计划仍 suspended；day4 恢复原 planId 1 执行 Use，stepIndex=2/status=completed 并清 active，Goal 1 因 health=500 仍未完成。此四日中三个 Plan 的 goalId 都是 canonical Goal 1；临时 duty/rest Plan 不创建新 Goal。每日最多一个真实人物行动。NoAction 不让前日 Rest 标记继续产生 Rest 收益；挂起不延长 canonical Goal deadline。
-- NoAction 不创建新的 Plan。可按旧规则建立/保留 canonical health Goal；若已有 ready 治疗计划因本人药物/信念前提暂不满足，可保留原 plan、不推进。初始空状态的 activePlan/suspendedPlan=null、nextPlanId=1；NoAction 保留传入 nextPlanId，计划完成或清空不得重置已使用的编号。初始无 duty/历史决定/结果时 lastDuty/lastDecision/lastOutcome=null。
-- active 治疗计划被更高分 WorkForPay 或 Rest 打断时，保留原 planId 与 next step 为 suspendedPlan；最多一层，不复制 Goal。职责计划只有请求仍有效时可执行。
-- 治疗恢复时先检查本人当前信息及 Goal；保留原 planId。若前提变化，只局部重算剩余 steps，不补执行旧步骤。成功才推进 stepIndex；失败不推进，也不在 wrapper 之外重复增加 Goal.failures。每日旧 society 结算只允许对每个 Goal 计一次失败。
-- 计划完成、canonical Goal 完成/失败、请求过期、deadline、死亡时清理相应计划并记终止原因；active 与 suspended 不得分别对同一 Goal 重复扣失败次数。Goal 创建门槛、失败、冷却与死亡终止遵旧 society 规则；Goal deadline 为 day+20，不因挂起延长。步骤只有对应权威 receipt 成功后推进；失败不推进，Goal.failures 只由旧 resolver 增加一次；NoAction 不加失败。前提变化只局部调整未执行步骤，保留 planId/Goal，不重放已完成购买。死亡/Goal 结束清除 active 与 suspended，不额外计失败。
-- M2 wrapper 负责把计划、Goal、step、choice、commandId、事实及完整重演绑定；不修改旧 resolver 行为。NoAction 无命令、receipt 或休息收益。Rest 立即 delta.fatigue=0；日结 `restReduction` 才扣 200，禁止两处扣减。
+selectable 只能在 eligible=true 时为 true。完整重评门（NEW_MAJOR_DUTY、LOCAL_REPLAN_BLOCKED、SELECT_NEW_PLAN）将全部 eligible 候选设为 selectable、block=null；所有 ineligible 候选设 selectable=false,selectionBlockCode=SOFT_PRECONDITION_FAILED。CONTINUE_COMMITTED 与 RESUME_COMMITTED 只开放对应下一步，其它 eligible 候选 block=COMMITMENT_PROTECTED；URGENT_FATIGUE 只开放 Rest，其它 eligible 候选 block=URGENT_OVERRIDE。selectionBlockCode 只允许 null、SOFT_PRECONDITION_FAILED、COMMITMENT_PROTECTED、URGENT_OVERRIDE；仅软前提不满足时使用 SOFT_PRECONDITION_FAILED。
 
+- 候选 reasonCode 固定沿用 v1 枚举：RECOVER_HEALTH、NO_HEALTH_GOAL、PRIVATE_MEDICINE_MISSING、HEALTH_ALREADY_FULL、PRIVATE_MEDICINE_PRESENT、SUPPLY_UNKNOWN、SUPPLY_UNAVAILABLE、SUPPLY_CONFIDENCE_LOW、WALLET_INSUFFICIENT、CAPACITY_UNAVAILABLE、DUTY_UNAVAILABLE、HEALTH_TOO_LOW_FOR_WORK、FATIGUE_TOO_HIGH_FOR_WORK、DUTY、FATIGUE_BELOW_REST_THRESHOLD、FATIGUE_RELIEF、EMERGENCY_FATIGUE、WAIT。候选多项前提失败时沿原 eligibility 顺序返回首个失败原因；NoAction 始终为 WAIT。
+- innerStance 不从 choice 映射：fatigue≥800 → fatigue-concerned；否则 health≤700 或仍有 recover-health Goal → health-concerned；否则 balanced。它只是本人 Need 评价代理，不代表完整心理学。committedIntent 只指健康 Goal {goalId,kind:'recover-health'} 或 null；apparentAction/choice 是本次动作，Outcome 才说明权威结果。
+- evidenceRefs 是本次 belief 的 evidenceRefs、contradictionRefs 与当前记录 Duty.sourceEventSeq 的去重升序并集（只包含有效、已送达且对本人可知的请求来源）；每个 source 必须早于本 Decision。knowledgeFingerprint 为完整 decision-phase Knowledge 的 canonical JSON 文本本身，非散列摘要，UTF-8≤16384 bytes。
+
+### 4.3 规划纯度、计划与失败归属
+
+planMotivationDecision(knowledge) 返回 {currentGoal,nextGoalId,activePlan,suspendedPlan,nextPlanId,lastReviewedDutyId,decision}。它与 collectMotivationCandidates 都是纯函数：不执行命令、不改输入、不消耗 RNG/clock、不读取其他人物或 world。若需要按 M1 门槛创建潜在 Goal，planner 从 Knowledge.self.nextGoalId 纯提议 exact Goal id 和递增后的 nextGoalId，并先检查安全整数溢出；planId 同样从 Knowledge.planState.nextPlanId 提议。A2 必须按 proposal 原样提交，不能另选、重分配或改序号；collectMotivationCandidates 仅推导潜在 Goal eligibility，不占用 ID。所有纯函数不得修改输入对象。
+
+- NEW_MAJOR_DUTY 门中，actor-2 的 710 分 Work 高于 Use 700 和 Rest 650，才产生示例职责行动；urgent Rest≥800 只开 Rest。普通分数即使更高，也不能绕过 CONTINUE_COMMITTED。
+- 固定四日示例：day1 / tick144 actor-2 创建健康 Goal1 和治疗 planId1，Buy 成功后 stepIndex=1 等待 Use；tick200 收到 d01。tick288 d01 urgency1000 首次打开 NEW_MAJOR_DUTY，候选 Work=710、Use=700、Rest=650，选择 Work；innerStance=health-concerned、committedIntent=Goal1、apparentAction=WorkForPay 各自表达 Need、长期目的、本次动作。治疗 Goal.step 仍为 use，Plan1 挂起；临时 Plan2.goalId=null，命令 payload goalId=0，成功后实际工资+20、公粮生产记账8、fatigue 650→800，且只在成功回执后将 d01 设为 fulfilled/fulfilledTick=288。tick432 由 URGENT_FATIGUE 选临时 Rest Plan3（goalId=null/payload0），保留 Goal1/Plan1；日末 fatigue=600。tick576 由 RESUME_COMMITTED 恢复原 Plan1 执行 Use，私药-1、health 400→500，健康 Goal1 未完成。每日最多一个真实动作，NoAction 不产生休息收益，挂起不延长 Goal deadline。
+- 给承诺门的可执行配对 fixture：从默认配置只将 actor-2 的 dutyWeightPermille=1000、riskAversionPermille=0；其余合法输入不变。d01 urgency1000 与 urgency899 两个分支只差请求 urgency。两者 tick144 先 Buy；tick288 urgency1000 触发 NEW_MAJOR_DUTY 并因 Work=1000>Use=700 选 Work；urgency899 不触发重大门，CONTINUE_COMMITTED 继续 Plan1 的 Use，即使 Work 分数899。此反例不能通过修改 Goal/私账制造。
+- 临时Work/Rest在 M2-only adapter 中隔离失败归属：只在不写入源 world 的候选 society 投影视图中暂置该 actor.currentGoal=null，再调用原 authority resolver。真实资产、failedActions、lastAction/lastActionDay、产粮、fatigue 和 resolver/RNG 结果照常提交；随后只恢复该 actor 的原健康 Goal 数据（包含原字段、failures 与 step），不能覆盖/回滚资产、ledger、failedActions、lastAction、其它人物或 RNG。投影视图不写源、不持久化、不进入历史。健康 action 直接走原 resolver，失败沿旧规则增加健康 Goal.failures 一次。
+- 临时 action 的真实 RULE_REJECTED 只令对应临时 Plan blocked，照常增加通用 ledger.failedActions；Outcome.failureOwner 为 {planId,goalId:null}，挂起健康 Goal.failure 与 Goal.step 不变。健康 action 拒绝使健康 Plan blocked，failureOwner 为 {planId,goalId:<healthGoalId>}，由旧 resolver 增加健康 Goal.failures 一次。NoAction 或被承诺门挡下的候选不产生命令、receipt 或失败。
+- blocked 表示等待 soft precondition 恢复或真实通用拒绝后的有界重试；deferred 只由当前 gate 选择结果派生（如 COMMITMENT_PROTECTED），不存为 Plan.status，不创建 deferred Plan/多层暂停栈。impossible 只能由已知死亡、Goal 结束、职责过期或 Plan deadline 等明确终止条件导出；一条 RULE_REJECTED 不足以证明永久 impossible。只支持单层 suspended 健康 Plan。
+- 成功 receipt 才推进对应 stepIndex；失败不推进。职责成功将 Duty 标 fulfilled；职责拒绝保留 pending。Goal deadline、cooldown、死亡按旧 society 规则；临时 Work/Rest 不改变健康 Goal.step/failures。任一计划的状态只因真实状态变化产生 transitions。Goal 结束/死亡清除健康 active/suspended；临时职责过期可取消 Plan 并恢复仍有效的健康 Plan，不能伪造第二个暂停栈。
+- M2 wrapper/replay 按 Plan.kind 绑定 Decision、commandId、SocietyAction、facts 与 Outcome，不修改旧 society.mjs、hunter.mjs 或其它旧 profile 语义。Rest 即时 delta.fatigue=0；日结 restReduction 只扣200，不双扣。
 ## 5. 反事实函数
 
-`buildFastCounterfactual(decision)` 先对保存的完整 JSON 文本执行 JSON.parse，再 canonical 重编码并严格要求与 knowledgeFingerprint 字节一致；同时核对 actor、tick、revision、Decision/Knowledge 版本。重算 baseline 的 choice 与 candidates，必须与记录的 Decision 完全一致才可返回任何 case；坏保存 Decision 不能生成假反事实回执。对原 decision-phase Knowledge 副本计算固定三个 case：
+buildFastCounterfactual(decision) 先解析保存的完整 canonical JSON Knowledge，再 canonical 重编码并严格要求与 knowledgeFingerprint 字节一致；同时核对 actor、tick、revision、Decision/Knowledge 版本。基于冻结 Decision 与原 Knowledge 副本重新验证 baseline。baseline 的 choice、完整 candidates（含 provider/sourceRef、eligible、评分、selectable 与 selectionBlockCode）及 gateReason 必须全部与保存 Decision 一致，任何不一致即拒绝，不返回部分结果。
 
-1. `baseline`：changedField/fromValue/toValue 均为 null；
-2. `duty-minus-200`：changedField=`profile.dutyWeightPermille`，将其设为 `max(0,原值-200)`；
-3. `risk-plus-200`：changedField=`profile.riskAversionPermille`，将其设为 `min(1000,原值+200)`。
+之后对原 decision-phase Knowledge 的副本计算且只计算三个 case：
+1. baseline：changedField/fromValue/toValue 均为 null。
+2. duty-minus-200：changedField=profile.dutyWeightPermille，设为 max(0,原值-200)。
+3. risk-plus-200：changedField=profile.riskAversionPermille，设为 min(1000,原值+200)。
 
-返回数组项 `{caseId,changedField,fromValue,toValue,choice,candidates}`。仅重跑纯 planner 并返回选择及评分，标注为假设；不承诺 world action 成功。不得生成未来 Knowledge、执行命令、推进 tick、消费 RNG、读取隐藏 world、改原 Goal/Plan/历史 fingerprint/世界文件/hash。无 lastDecision 时 Inspector.counterfactual 为 null。每 actor 固定三 case。
+返回数组项 {caseId,changedField,fromValue,toValue,choice,candidates,gateReason}。只重跑纯 planner 并返回选择、诊断与门控，标注为假设；不承诺 World action 成功。不得执行命令、推进 tick/clock、消费 RNG、读取隐藏 world、修改原 Knowledge/Decision/ID/Role 状态/Goal/Plan/历史 fingerprint/世界文件/hash。无 lastDecision 时 Inspector.counterfactual 为 null。每 actor 固定三 case。候选分数增加但被承诺门阻挡时，输出仍须显示原 gateReason 与 selectionBlockCode。
 
 ## 6. Outcome、事件与确定性顺序
 
-Outcome 精确字段：`{decisionId,actorId,commandId,status,code,delta,price,publicFoodProduced}`，其中 `delta={wallet,herbs,health,fatigue}`；status 为 `succeeded`、`rejected`、`no-action`。拒绝 code=`RULE_REJECTED`，其它为 null。非成功的 delta 全零、price=null、publicFoodProduced=0。Buy 的 price 为真实扣款；Work price=null、publicFoodProduced=8（旧账生产记账值，不表示净库存增加 8）；Use/Rest price=null。Rest 即时 fatigue delta 为 0，日结另按旧规则减 200。Outcome/Knowledge/Counterfactual 不得包含 communalGold、他人余额、全量 action result 或世界 before/after。
+Outcome 精确字段为 {decisionId,actorId,commandId,status,code,delta,price,publicFoodProduced,failureOwner}，其中 delta={wallet,herbs,health,fatigue}；status 为 succeeded、rejected、no-action。rejected code=RULE_REJECTED，其它为 null。failureOwner 仅在 rejected 时非 null：健康行动为 {planId,goalId:<healthGoalId>}，临时 Work/Rest 为 {planId,goalId:null}；成功/no-action 必须为 null。非成功 delta 全零、price=null、publicFoodProduced=0。Buy.price 为真实扣款；Work.price=null、publicFoodProduced=8（旧账生产记账，不表示净库存增加 8）；Use/Rest.price=null。Rest 即时 fatigue delta 为0，日结另按旧规则减200。Outcome/Knowledge/Counterfactual 不得包含 communalGold、他人余额、全量 action result 或世界 before/after。
 
-M2 新规则可接收四类 sourceSystem=`motivation` 事实：
+M2 新规则可接收四类 sourceSystem=motivation 事实：
+- MotivationRequestResolved：payload {requestId,speakerId,listenerId,urgencyPermille,expiresTick,status}；status=delivered|unavailable。entityIds=[listenerId]、commandId=null、causationEventSeqs=[]；unavailable 不进入 duty。送达后 actor.lastDuty 记录完整 Duty，fulfilled 只能在对应 Work 成功回执后写入状态。
+- MotivationDecisionPlanned：payload 为完整 Decision；entityIds=[actorId]、commandId=null、causationEventSeqs=decision.evidenceRefs。
+- MotivationDecisionResolved：payload 为 Outcome；entityIds=[actorId]、commandId=outcome.commandId、causationEventSeqs=[对应 planned eventSeq]。NoAction 仍产生 Planned 与 Resolved/no-action，但没有 SocietyCommand/receipt，不能伪造计划成功。
+- 仅 MotivationDecisionResolved 中本人 BuyMedicine 的 authority rejected RULE_REJECTED，按 M1 own-rejection 规则追加 Observation，引用本事件 eventSeq 并将该命题暂置 unknown；WorkForPay/Rest/UseMedicine 拒绝不得改变该人物药材 observations/Belief 或旧证据。日末可见 public observation 是独立新来源，不算动作拒绝副作用。
+- MotivationPlanSettled：每 actor 每 tick 至多一次，仅当该 tick 有 Decision、发生请求覆盖取消、或死亡/目标终止需清理状态时产生；没有当日 Decision 时 decisionId=null。payload 精确 {actorId,decisionId,currentGoalId,lastDuty,lastReviewedDutyId,activePlan,suspendedPlan,transitions}；entityIds=[actorId]、commandId=null。非日界仅因 request batch 消费导致旧职责 Plan 取消时，在该 tick 请求批处理后发出，causationEventSeqs 为造成状态变化的 MotivationRequestResolved eventSeq；若在日界则合并本 tick 请求覆盖、DecisionResolved 和 SocietyDaySettled（若存在）的 causation refs，按 eventSeq 升序去重。请求覆盖的取消必须在本 tick 持久化，不得缓存 transitions 到下一日；请求处理不额外 advance tick、不产生命令，也不自动恢复/执行 suspended Plan。无状态变化不发噪声事件；每 actor 每 tick 的 PlanSettled.transitions 超过8则该 tick 整体拒绝；每份 payload 上限8，两个 actor 同 tick 合计最多16。currentGoalId 在日界为 Society 日结后的 canonical Goal，在非日界为该已提交 tick 的当前 canonical Goal。
+- 每个 transition 为 {planId,kind,fromStatus,toStatus,reasonCode}，fromStatus 可 null，toStatus 为 Plan.status。reasonCode 允许 CREATED、INTERRUPTED_DUTY、INTERRUPTED_REST、RESUMED、PRECONDITION_CHANGED、CONDITION_READY、POLICY_DEFERRED、STEP_SUCCEEDED、EXECUTION_REJECTED、PLAN_BLOCKED、DUTY_FULFILLED、PLAN_COMPLETED、GOAL_COMPLETED、GOAL_FAILED、REQUEST_EXPIRED、REQUEST_SUPERSEDED、DEAD。最多8条，按实际 FSM 顺序；仅记录真实状态或 stepIndex 变化。STEP_SUCCEEDED 可用 ready→ready 记录真实 stepIndex 前进；EXECUTION_REJECTED / PLAN_BLOCKED 可用 ready→blocked 记录真实拒绝；CONDITION_READY 可用 blocked→ready 记录前提恢复；DUTY_FULFILLED 只对应真实成功 receipt；POLICY_DEFERRED 说明由 gate 导出的本次未选行为，不创建 deferred Plan，且只在对应计划/步骤状态确实变化时记录。NoAction 且计划稳定不产生 transition；同一 blocked Plan 再次被 authority 拒绝、状态未变化时只记 Outcome/failedActions，不重复产生 transition；不得重复记录稳定状态。终止 reason 对每个 plan 只记一次，已 PLAN_COMPLETED 的子计划不再为同一 plan 加 GOAL_COMPLETED。currentGoalId 在日界为 Society 日结后的 canonical Goal，在非日界为该已提交 tick 的当前 canonical Goal。已死亡且无状态变化的人物不继续产生心理事件。
 
-- `MotivationRequestResolved`：payload `{requestId,speakerId,listenerId,urgencyPermille,expiresTick,status}`；status=`delivered|unavailable`。entityIds=[listenerId]、commandId=null、causationEventSeqs=[]；unavailable 不进入 duty。
-- `MotivationDecisionPlanned`：payload 为完整 Decision；entityIds=[actorId]、commandId=null、causationEventSeqs=decision.evidenceRefs。
-- `MotivationDecisionResolved`：payload 为 Outcome；entityIds=[actorId]、commandId=outcome.commandId、causationEventSeqs=[对应 planned eventSeq]。NoAction 仍产生 Planned 与 Resolved/no-action，但没有 SocietyCommand/receipt，不能伪造计划成功。
-- 仅 `MotivationDecisionResolved` 中本人 BuyMedicine 的 authority rejected `RULE_REJECTED`，按 M1 own-rejection 规则追加 Observation，引用本事件 eventSeq 并将该命题暂置 unknown；WorkForPay/Rest/UseMedicine 拒绝不得改变该人物的药材 observations/Belief 或旧证据。日末可见 public observation 是独立新来源，不算动作拒绝副作用。
-- `MotivationPlanSettled`：仅对当日有 Decision，或死亡/目标终止需清理状态的人物在该日产生一次；没有当日 Decision 时 `decisionId=null`。payload 精确 `{actorId,decisionId,currentGoalId,activePlan,suspendedPlan,transitions}`；entityIds=[actorId]、commandId=null、causationEventSeqs 包含当日 DecisionResolved 和 SocietyDaySettled（若存在），按 eventSeq 升序去重。每个 transition 为 `{planId,kind,fromStatus,toStatus,reasonCode}`，fromStatus 可 null，toStatus 必须为 Plan.status。reasonCode 仅 `CREATED`、`INTERRUPTED_DUTY`、`INTERRUPTED_REST`、`RESUMED`、`PRECONDITION_CHANGED`、`STEP_SUCCEEDED`、`EXECUTION_REJECTED`、`PLAN_COMPLETED`、`GOAL_COMPLETED`、`GOAL_FAILED`、`REQUEST_EXPIRED`、`DEAD`。最多 8 条，按实际 FSM 发生顺序记录；`STEP_SUCCEEDED` 可用 ready→ready 记录 stepIndex 真实推进；`EXECUTION_REJECTED` 可用 ready→ready 记录当日真实拒绝 receipt（Goal.failure 仍由旧 resolver 单次增加）；`PRECONDITION_CHANGED` 可用 ready→ready 记录确有剩余 steps 变化。NoAction 且计划稳定时不产生 transition；其它无实际 Plan/状态变化不记录；不得重复记录稳定状态。reason 按发生顺序：规划创建/挂起/恢复或局部更新→真实动作 receipt 推进或失败→日结完成/死亡/目标终止→清理。每个 plan 的终止 reason 只记录一次；已由 PLAN_COMPLETED 终止的子计划不再为同一 plan 追加 GOAL_COMPLETED。currentGoalId 始终投影 Society 日结后的 canonical Goal。已死亡且无状态变化的人物不继续产生心理事件。
+M2 不改 event schemaVersion=1 外壳；tick/eventSeq/输入序列由原引擎分配。NoAction 不登记 SocietyCommand/receipt，但仍记录 Planned 与 Resolved/no-action。每个 M2 actor 每日最多一个真实动作；chief 按旧规则独立处理，无额外行动。命令 ID 和 Decision ID 固定 motivation-day-{day}-{actorId}。M1 scriptCursor 和 M2 requestCursor 分别精确对应已到期并处理的输入前缀；M1/M2 各自 event cursor 在已提交状态须等于 nextEventSeq-1。来源引用、游标和请求消费均按定义完整重演，不重复消费输入。
 
-M2 不改 event schemaVersion=1 外壳；tick/eventSeq/输入序列由原引擎分配。NoAction 不登记 SocietyCommand/receipt，但仍记录 Planned 与 Resolved/no-action；不能让计划因 NoAction 假成功。每个 M2 actor 每日最多一个真实动作；chief 按旧规则独立处理，无额外行动。命令 ID 固定 `motivation-day-{day}-{actorId}`，Decision ID 同式。M1 的 `scriptCursor` 和 M2 `requestCursor` 分别精确对应各自已到期并处理的输入前缀；M1/M2 各自的 event cursor 在已提交状态均须等于 `nextEventSeq-1`。来源引用、游标和请求消费均按各自定义完整重演，不重复消费输入。
+同一 tick 严格顺序保持 v1：PlayerAction；M1心智刺激；M2请求（requestId排序）；既有每日公开 announcement；请求成功送达并写入新 lastDuty 后，若当前 aid-village Plan.requestId 与新 Duty.requestId 不同，立即以 REQUEST_SUPERSEDED 取消旧职责 Plan（不执行、不改钱货或 Goal.failure，不履约旧请求、不转移 commitment），保留 suspended 健康 Plan；随后同一候选快照计算 chief 旧 plan 与两位 M2 pure plans（chief 只保留自身旧结果，丢弃旧 planner 对 actor-2/3 的候选/Goal/资产改动）；按 chief、actor-2、actor-3 顺序执行并由 authority resolver 重新验证真实世界（两位 M2 不读取彼此当 tick 执行结果）；SocietyDaySettled；PlayerDaySettled；MemoryDaySettled；更新存活者公开 belief 并封存死亡者观察/计划。
 
-同一 tick 严格顺序：
-
-1. PlayerAction；
-2. M1 心智信息刺激；
-3. M2 请求（按 requestId）；
-4. 既有每日公开 announcement；
-5. 同一候选快照计算 chief 旧 plan 与两位 M2 pure plans；chief 仅保留自身旧结果，丢弃旧 planner 对 actor-2/3 的候选/Goal/资产改动；
-6. 按 chief、actor-2、actor-3 顺序执行并由权威 resolver 重新验证当前真实世界；两位 M2 不得读取彼此当 tick 的执行结果再规划；
-7. SocietyDaySettled；
-8. PlayerDaySettled；
-9. MemoryDaySettled；
-10. 更新存活者公开 belief，封存死亡者观察与计划状态。
-
-完整重演必须从配置、初始 world/mind/motivation state 与 seed 重算所有事件、输入、计划/Goal/命令绑定、RNG、人口、资产及旧物理账；不得只以 config fingerprint、state hash 或保存的决定通过。M2 validator 只能在新 rules 分支分离 motivationModel 后复用 mind/memory/society 校验，并严格重演完整历史；不得降低 M1 validator 或省略旧物理账。
-
+完整重演必须从配置、初始 world/mind/motivation state 与 seed 重算所有事件、输入、候选/门控/Decision、计划/Goal/命令绑定、failureOwner、Duty fulfillment、RNG、人口、资产及旧物理账；不得只以 config fingerprint、state hash 或保存的决定通过。M2 validator 只能在新 rules 分支分离 motivationModel 后复用 mind/memory/society 校验，并严格重演完整历史；不得降低 M1 validator 或省略旧物理账。
 ## 7. Inspector 与服务
 
 `projectMotivationInspector(bundle)` 完整审计后返回脱离原对象的 JSON 克隆：
@@ -198,14 +212,14 @@ worldFacts 只展示公仓 food/herbs 与已公布药价；不得展示全部私
 
 ## 9. 固定验收命题
 
-- **Q1 公式与配对因果**：独立计算 tick 288 的 Work 710、Use 700、Rest 650；只改 actor-2 dutyWeight 900→700 或 risk 200→400 后改选 Use。配对除一个 profile 权重外输入完全相同。
-- **Q2 四日计划链**：验证 Goal 1 / planId 1 的 Buy→挂起→职责 Work→紧急 Rest→原 Use；health=500、真实工资/私药/公粮账正确，health target 800 未宣称完成。
-- **Q3 漂移与失败**：用 §3.1 期限等待/死亡两个合法 fixture。前提变化后按当前本人 Knowledge 局部调整，不补旧步骤；失败不推进、不重复扣 failures；BuyMedicine 权威拒绝产生 M1 own-rejection/unknown，WorkForPay 拒绝不改药材 Belief 或旧证据（若当日日末公开观察改变 Belief，按独立来源核对）；NoAction 不是 Rest。验证死亡、Goal deadline 第 21 日、cooldown 第 23 日清计划且不重复扣失败。
-- **Q4 Counterfactual 纯度**：三 case 和公式独立核算；零 RNG、命令、事件、文件/tick 变化，不读取 world/未来。
-- **Q5 重演与磁盘**：576 连续与 200+376、288+288、432+144 分段一致；CLI 两日+两日恢复，format5 磁盘与重启；篡改 goal/plan/source/score/fingerprint/suspended/cursor/额外事实均拒绝。
-- **Q6 消费者链**：真实 HTTP、玩家动作、三投影候选同次发布、原 ID 幂等、stale 409、保存故障保持旧投影、双页浏览器读取零写、开关关闭 404。
-- **Q7 兼容**：旧 M1 默认 288、目标 deadline 原测试、D2C 六操作与 C5 短程对照基准 87aa9b6。复用同 SHA 既有证据；若公共底座变化再补直接配对，不重复已绿组凑数量。
-
+- Q1 候选来源、公式和承诺因果：确认五项 provider/sourceRef 正确、软前提只读 Knowledge；独立手算 tick288 的 Work710、Use700、Rest650。只改 actor-2 dutyWeight 900→700 或 risk 200→400 时，完整重评应改选 Use。额外运行承诺门配对 fixture：profile dutyWeight1000/risk0，比较 request urgency1000 与899 的单变量输入；1000 打开 NEW_MAJOR_DUTY 并选 Work，899 由 CONTINUE_COMMITTED 保持 Plan1 Use，即使 Work 得分899。另以同一合法本人 request 替换 fixture，只改变新 requestId/urgency：旧职责 Plan 必须在新请求送达后取消为 REQUEST_SUPERSEDED，旧请求不得 fulfilled，健康 suspended Plan 保留，新请求只按门重评；Duty/Plan/candidate sourceRef 不一致时禁止 continue/执行/履约。核对同分候选按固定次序。
+- Q2 四日三层链：验证 Goal1 / health Plan1 的 Buy→挂起→Use 恢复，duty Work Plan2 与 urgent Rest Plan3 的 goalId=null、payload goalId=0；Decision 的 innerStance=health-concerned、committedIntent=Goal1、apparentAction=WorkForPay 同时成立。验证仅 Work 成功后 d01 fulfilled/fulfilledTick=288，工资20/公粮生产记账8/疲劳650→800；tick432只可 Rest、日结fatigue600；tick576恢复 Plan1，私药-1、health400→500，Goal target800未完成。每日最多一个真实动作，NoAction不获Rest收益。
+- Q3 失败归属、漂移和生命周期：保留期限等待与死亡两个合法 fixture；Buy 权威拒绝使健康 Plan blocked、健康 Goal.failure按旧规则只加一次，day2–20 NoAction不重复失败，day21 deadline结束一次，day23可新建Goal且不复活旧Plan。死亡 actor 真实日结清理 Goal/计划一次，ledger.goalsFailed 仅加一次，failedActions不增，死亡不作为额外Goal.failures动作失败，后续请求记 unavailable。临时 Work/Rest 拒绝只增加通用 failedActions、不增加挂起健康 Goal.failures；NoAction/承诺保护不创建命令、receipt或失败，blocked可有界等待，impossible只由已知终止条件判定。
+- Q3 临时失败归属配对 recipe：从默认 M2 config 只改 player.initialHerbs=20、公仓herbs.initial=50且production=0、resources.gold.initial=350（memory.society.actors.market.ecology.resources.resources.gold.initial）；其它默认。actor-2/3 各在 tick144 以公药价50购买，令 public cash 由50到150；两人钱包各50；player wallet100。tick144之后、288之前真实 PlayerSell 一次卖 herbs qty7（固定服务价格20，卖得140，public cash变10，小于 wage20），这条真实输入/命令进入重演，但不暴露给NPC Knowledge。tick200 d01送达；tick288 Work 候选仍为710并按重大门选中，权威因工资不足 RULE_REJECTED：ledger.failedActions +1、failureOwner={planId:2,goalId:null}、health Goal1.failures仍0且step仍use、钱包/药/疲劳不变、Belief与供给观察不变、duty保持pending，Work Plan2=blocked。tick432请求过期取消临时计划并恢复健康 Plan1 Use；health到500。实施时逐日核实公共现金与资源账；若配置/旧规则不产生该精确序列，停下报告最小偏差，不改母规则、不手改快照、不跳时、不调经济deadline凑绿。该配对同时证明玩家输入及服务/Inspector消费者。
+- Q4 反事实纯度：baseline 先验证完整保存 Decision 与 choice/candidates/gateReason 一致；三 case 独立复算。包含高分 Work 被承诺门挡下的反例。零 ID/Role/输入/文件/RNG/clock/world 变化，不执行行动、不声称成功。
+- Q5 完整重演与持久化：连续576 tick 与200+376、288+288、432+144 分段一致；另覆盖非日界新请求导致的旧职责 Plan REQUEST_SUPERSEDED 取消，并在请求批处理后同 tick 持久化单一 PlanSettled；覆盖日界请求覆盖与当天决策合并为单一 PlanSettled。CLI两日保存+两日恢复。篡改 reviewedDutyId、Duty fulfillmentTick/status、Duty与Work Plan/candidate的requestId/sourceRef对应关系、source、candidateProvider/selectable/blockCode/gate、Goal failure归属、Plan引用/step、score、fingerprint、cursor或额外事实均拒绝；restore不得重置profile或误复用已fulfilled request，也不得丢失跨 request 的取消记录。
+- Q6 真实消费者：真实 HTTP、玩家动作和 A2 adapter；三投影同候选原子发布、同ID重启幂等、stale409、save fault保持旧投影、关闭404。真实浏览器两页只读并显示来源、gate、意图/动作/结果与失败归属；mock不能替代真实链。
+- Q7 旧兼容：以 M1 integration 基准 87aa9b6 的同 SHA 证据核对旧 M1 Inspector 同服务、默认288、Goal deadline、D2C六操作和C5短程；仅当关联代码变化或证据不覆盖直接影响时定向补跑。阶段收口按约定一次全量simulation+export；不跑旧100/500/1000日长程。
 ## 10. 路线边界、交付与停止
 
 - 三条执行路：A 含串行 A1→A2；B 为服务/检查器；C 为独立验收。A1、A2 使用同一计划工作树但绝不同时编辑。A2 依赖 A1 实际交付 SHA。B/C 可先用合同定义的模拟 DTO 开发，但集成只接受 A2 实际导出；依赖缺失须显式记为待验，不得吞 import 或写成永远缺失。
