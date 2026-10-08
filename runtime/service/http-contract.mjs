@@ -18,6 +18,30 @@ export const MAX_SERVICE_ADVANCE_TICKS=1440;
 export { MIND_RULES };
 const _mindBackend={fixture:mindFixture,runtime:mindRuntime,knowledge:mindKnowledge};
 export function mindBackend(){return _mindBackend;}
+// M2 contract §1: rules string of the motivation experiment. The canonical constant lands with
+// A1's motivation-state.mjs; service5 only recognizes the contract-frozen value and never
+// invents a compatible alias for it.
+export const MOTIVATION_RULES='m-motivation-v1';
+// M2B: service5 consumes only A2's real exports (runtime/core/motivation-runtime.mjs). The
+// import is attempted explicitly and its failure is recorded and reportable; there is no mock
+// fallback and no swallowed dependency error. Until A2 is delivered, motivation worlds cannot
+// be created or loaded by this deployment.
+let _motivationBackend=null;
+export async function loadMotivationBackend(){
+  if(_motivationBackend?.module)return _motivationBackend;
+  try{_motivationBackend={module:await import('../core/motivation-runtime.mjs'),error:null};}
+  catch(error){_motivationBackend={module:null,error:String(error?.message??error)};}
+  return _motivationBackend;
+}
+export function motivationBackendState(){
+  return _motivationBackend?{available:Boolean(_motivationBackend.module),error:_motivationBackend.error}
+    :{available:false,error:'motivation backend has not been loaded yet'};
+}
+export function requireMotivationBackend(){
+  const backend=_motivationBackend?.module;
+  requireCondition(backend,'M2 motivation runtime module is not available in this deployment','UNSUPPORTED_VERSION');
+  return backend;
+}
 export function parseCommandBytes(bytes){return validateServiceCommandDto(parseStrictJson(bytes,MAX_COMMAND_BYTES));}
 export function validateServiceCommandDto(dto){
   fields(dto,['version','commandId','expectedRevision','type','payload']);
@@ -49,12 +73,16 @@ export function runtimeProfile(bundle){
   if(s.rulesVersion===MIND_RULES && s.fixtureId==='mind-village'){
     return {serviceFormatVersion:4,rulesVersion:MIND_RULES,systems:_mindBackend.fixture.mindSystems()};
   }
+  if(s.rulesVersion===MOTIVATION_RULES && s.fixtureId==='motivation-village'){
+    return {serviceFormatVersion:5,rulesVersion:MOTIVATION_RULES,systems:requireMotivationBackend().motivationSystems()};
+  }
   requireCondition(false,'Runtime service profile is not registered','UNSUPPORTED_VERSION');
 }
 export function projectPlayerSnapshot(bundle){
   const profile=runtimeProfile(bundle);let actions;
   if(profile.serviceFormatVersion===3)actions=describePlayerActions(bundle);
   else if(profile.serviceFormatVersion===4)actions=_mindBackend.runtime.describeMindPlayerActions(bundle);
+  else if(profile.serviceFormatVersion===5)actions=requireMotivationBackend().describeMotivationPlayerActions(bundle);
   return cloneData({apiVersion:1,...buildPlayerKnowledge(bundle),...(actions?{actions}:{})});
 }
 export function projectPublicSnapshot(bundle){
@@ -66,8 +94,10 @@ export function projectPublicSnapshot(bundle){
     population:{namedAlive,unnamedAlive,totalAlive:namedAlive+unnamedAlive,deer:w.ecologyModel.populations.deer,wolves:w.ecologyModel.populations.wolves},
     actors:actors.map(a=>({actorId:a.actorId,name:a.name,occupation:a.occupation,location:a.location,alive:a.alive}))});
 }
-// Read-only developer projection (contract §8.1 Inspector). The real projection lives in A's
-// mind-knowledge module and fully re-validates the bundle before returning detached JSON data.
+// Read-only developer projection (contract M2 §7 Inspector). Format4 keeps the M1 projection;
+// format5 dispatches to A2's projectMotivationInspector. Both entries fully re-validate the
+// bundle before returning detached JSON data, so the served DTO is always one audited candidate.
 export function projectMindInspector(bundle){
+  if(runtimeProfile(bundle).serviceFormatVersion===5)return cloneData(requireMotivationBackend().projectMotivationInspector(bundle));
   return cloneData(_mindBackend.knowledge.projectMindInspector(bundle));
 }

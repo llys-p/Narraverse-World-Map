@@ -15,6 +15,7 @@
   <section class="world-facts" aria-label="世界事实">
     <div class="section-title"><h2>世界事实</h2><span>公开账本，与人物主观判断分开</span></div>
     <dl class="facts">
+      <div id="m2-fact-food" hidden><dt>公仓粮</dt><dd id="fact-food">—</dd></div>
       <div><dt>公仓药材</dt><dd id="fact-herbs">—</dd></div>
       <div><dt>公布药价</dt><dd id="fact-price">—</dd></div>
     </dl>
@@ -25,15 +26,28 @@
       <div><dt>身份</dt><dd id="self-name">—</dd></div>
       <div><dt>位置</dt><dd id="self-location">—</dd></div>
       <div><dt>健康</dt><dd id="self-health">—</dd></div>
+      <div id="m2-self-extra" hidden><dt>饥饿 / 疲劳</dt><dd id="self-hunger-fatigue">—</dd></div>
+      <div id="m2-profile-row" hidden><dt>职责权重 / 风险厌恶</dt><dd id="profile-weights">—</dd></div>
+      <div id="m2-goal-row" hidden><dt>本人所知的健康目标</dt><dd id="self-current-goal">—</dd></div>
       <div><dt>钱包</dt><dd id="self-wallet">—</dd></div>
       <div><dt>私药</dt><dd id="self-herbs">—</dd></div>
       <div><dt>已知报价</dt><dd id="self-quote">—</dd></div>
       <div><dt>判断（公仓是否有药）</dt><dd id="belief-value">—</dd></div>
       <div><dt>确信程度</dt><dd id="belief-confidence">—</dd></div>
-      <div><dt>立场</dt><dd id="inner-stance">—</dd></div>
-      <div><dt>当前目标</dt><dd id="committed-intent">—</dd></div>
+      <div id="m1-stance-row"><dt>立场</dt><dd id="inner-stance">—</dd></div>
+      <div id="m1-intent-row"><dt>当前目标</dt><dd id="committed-intent">—</dd></div>
     </dl>
     <p id="observations-note"></p><ul id="observations-list" class="detail-list"></ul><p id="belief-note"></p>
+  </section>
+  <section id="m2-duty-plan" class="duty-plan" aria-label="职责与计划" hidden>
+    <div class="section-title"><h2>职责与计划</h2><span>本人所知中的请求与计划状态，不等于权威结果</span></div>
+    <dl class="knowledge-readings">
+      <div><dt>收到的职责请求</dt><dd id="duty-summary">—</dd></div>
+      <div><dt>请求状态</dt><dd id="duty-status">—</dd></div>
+      <div><dt>当前计划</dt><dd id="plan-active">—</dd></div>
+      <div><dt>挂起的治疗计划</dt><dd id="plan-suspended">—</dd></div>
+      <div><dt>已开门评估的请求</dt><dd id="plan-reviewed">—</dd></div>
+    </dl>
   </section>
   <section class="decision" aria-label="当时决策与结果">
     <div class="section-title"><h2>当时决策与结果</h2><span id="decision-seal"></span></div>
@@ -46,12 +60,31 @@
       <div><dt>当时判断（冻结知识）</dt><dd id="decision-belief">—</dd></div>
       <div class="wide"><dt>候选详情</dt><dd><ul id="decision-candidates" class="detail-list"></ul></dd></div>
     </dl>
+    <dl id="m2-decision-fields" class="decision-readings" hidden>
+      <div><dt>评估门（为何继续 / 恢复 / 重评）</dt><dd id="decision-gate">—</dd></div>
+      <div><dt>内在评价（独立于行动）</dt><dd id="decision-inner">—</dd></div>
+      <div><dt>长期承诺</dt><dd id="decision-intent">—</dd></div>
+      <div><dt>本次行动</dt><dd id="decision-apparent">—</dd></div>
+      <div><dt>绑定计划</dt><dd id="decision-plan">—</dd></div>
+      <div><dt>压力代理</dt><dd id="decision-strain">—</dd></div>
+      <div class="wide"><dt>候选明细（分数高≠被选中，承诺门可拦截）</dt><dd>
+        <table class="candidate-table"><thead><tr><th>行动</th><th>来源 provider / ref</th><th>前提</th><th>支持/反对</th><th>分数</th><th>可选</th><th>原因</th></tr></thead>
+        <tbody id="m2-candidates-body"></tbody></table>
+      </dd></div>
+    </dl>
     <dl id="outcome-fields" class="decision-readings" hidden>
       <div><dt>结果</dt><dd id="outcome-status">—</dd></div>
       <div><dt>编码</dt><dd id="outcome-code">—</dd></div>
       <div><dt>本人钱 / 药 / 健康变化</dt><dd id="outcome-delta">—</dd></div>
       <div><dt>成交单价</dt><dd id="outcome-price">—</dd></div>
+      <div id="m2-outcome-fatigue" hidden><dt>疲劳变化</dt><dd id="outcome-fatigue">—</dd></div>
+      <div id="m2-outcome-owner" hidden><dt>公粮生产记账 / 失败归属</dt><dd id="outcome-owner">—</dd></div>
     </dl>
+  </section>
+  <section id="m2-counterfactual" class="counterfactual" aria-label="反事实假设" hidden>
+    <div class="section-title"><h2>反事实假设</h2><span>只读推演 · 不执行动作 · 不代表世界结果或成功</span></div>
+    <p id="cf-empty">暂无反事实记录。</p>
+    <ul id="cf-list" class="detail-list"></ul>
   </section>
   <p class="read-note">开发者只读视图：不提供编辑心理字段、实验发言、推进时间或调用模型。切换人物与刷新都不会推进世界或修改心理状态。</p>
 </main>
