@@ -29,7 +29,7 @@ function projectKnowledge(world,entry,tick,revision,phase,events,simulationId){
     requireCondition(observable,'Missing visible village-market projection');
     quote={product:'herbs',price:observable.observable.prices.herbs,observedTick:lastPublic.tick,sourceEventSeq:lastPublic.eventSeq};
   }else{
-    quote={product:'herbs',price:world.marketModel.prices.herbs,observedTick:0,sourceEventSeq:null};
+    quote={product:'herbs',price:world.marketModel.config.products.herbs.basePrice,observedTick:0,sourceEventSeq:null};
   }
   const belief=deriveMindBelief(entry.observations,tick);
   const currentGoal=actor.alive&&estate.state.currentGoal?cloneData(estate.state.currentGoal):null;

@@ -8,36 +8,23 @@ import { buildPlayerKnowledge } from '../knowledge/player-knowledge.mjs';
 import { PLAY_RULES,describePlayerActions } from '../core/player-intents.mjs';
 import { playerPlaySystems } from '../fixtures/player-play-village.mjs';
 import { deriveClockReading } from '../core/simulation-clock.mjs';
+import { MIND_RULES } from '../core/mind-state.mjs';
+import * as mindFixture from '../fixtures/mind-village.mjs';
+import * as mindRuntime from '../core/mind-runtime.mjs';
+import * as mindKnowledge from '../knowledge/mind-knowledge.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 export const MAX_COMMAND_BYTES=4096;
 export const MAX_SERVICE_ADVANCE_TICKS=1440;
-// M1B mind integration point. The mind rules version is frozen by M1 contract §3; the owning
-// constant ships in `runtime/core/mind-state.mjs` when M1A delivers it. This literal matches it
-// and is kept here solely so the service layer can recognise a mind bundle before A is present.
-export const MIND_RULES='m-mind-v1';
-// M core modules (mind-village fixture, mind-runtime, mind-knowledge, mind-state) are delivered
-// by M1A and may be absent in this worktree. The real path is the dynamic import below; it must
-// never silently fall back to a mock. Tests may observe this resolution result but the HTTP/CLI
-// path only ever sees `null` (mind unavailable) when A has not been delivered.
-let _mindBackend=null;
-try{
-  const [fixture,runtime,knowledge,state]=await Promise.all([
-    import('../fixtures/mind-village.mjs'),
-    import('../core/mind-runtime.mjs'),
-    import('../knowledge/mind-knowledge.mjs'),
-    import('../core/mind-state.mjs'),
-  ]);
-  _mindBackend={kind:'real',fixture,runtime,knowledge,state};
-}catch{/* M1A not delivered: the mind integration stays unavailable. */}
+export { MIND_RULES };
+const _mindBackend={fixture:mindFixture,runtime:mindRuntime,knowledge:mindKnowledge};
 export function mindBackend(){return _mindBackend;}
-export function hasMindSupport(){return _mindBackend!==null;}
 export function parseCommandBytes(bytes){return validateServiceCommandDto(parseStrictJson(bytes,MAX_COMMAND_BYTES));}
 export function validateServiceCommandDto(dto){
   fields(dto,['version','commandId','expectedRevision','type','payload']);
   if(dto.version===1)return validateTimeCommandDto(dto);
   requireCondition(dto.version===2,'Unknown command DTO version','UNSUPPORTED_VERSION');
   requireCondition(typeof dto.commandId==='string' && dto.commandId.length<=64 && /^[A-Za-z0-9_-]+$/.test(dto.commandId) &&
-    !dto.commandId.startsWith('society-day-') && !dto.commandId.startsWith('mind-day-'),'Invalid action command ID');integer(dto.expectedRevision);
+    !dto.commandId.startsWith('society-day-'),'Invalid action command ID');integer(dto.expectedRevision);
   if(dto.type==='PlayerTravel'){fields(dto.payload,['destination']);requireCondition(['village','forest'].includes(dto.payload.destination),'Invalid destination');}
   else if(dto.type==='PlayerRest')fields(dto.payload,[]);
   else if(['PlayerBuy','PlayerSell'].includes(dto.type)){
@@ -60,7 +47,6 @@ export function runtimeProfile(bundle){
   if(s.rulesVersion===PLAYER_RULES && s.fixtureId==='player-village')return {serviceFormatVersion:2,rulesVersion:PLAYER_RULES,systems:playerSystems()};
   if(s.rulesVersion===PLAY_RULES && s.fixtureId==='player-play-village')return {serviceFormatVersion:3,rulesVersion:PLAY_RULES,systems:playerPlaySystems()};
   if(s.rulesVersion===MIND_RULES && s.fixtureId==='mind-village'){
-    requireCondition(_mindBackend!==null,'Mind runtime is not delivered','UNSUPPORTED_VERSION');
     return {serviceFormatVersion:4,rulesVersion:MIND_RULES,systems:_mindBackend.fixture.mindSystems()};
   }
   requireCondition(false,'Runtime service profile is not registered','UNSUPPORTED_VERSION');
@@ -83,6 +69,5 @@ export function projectPublicSnapshot(bundle){
 // Read-only developer projection (contract §8.1 Inspector). The real projection lives in A's
 // mind-knowledge module and fully re-validates the bundle before returning detached JSON data.
 export function projectMindInspector(bundle){
-  requireCondition(_mindBackend!==null,'Mind inspector unavailable','MIND_UNAVAILABLE');
   return cloneData(_mindBackend.knowledge.projectMindInspector(bundle));
 }

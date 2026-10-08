@@ -126,8 +126,8 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
       m.announcements.every(a=>a.payload.expiresTick===day*144) && s.world.societyModel.agents.every(a=>a.state.lastActionDay<=day) &&
       s.scheduledTasks.length===1 && task.taskId==='daily-memory' && task.systemId==='society' && task.intervalTicks===144 && task.priority===10 && task.nextDueTick===(day+1)*144,'Invalid Mind schedule/identity/observation boundary');
     requireCondition(mind.cursor===s.nextEventSeq-1,'Mind cursor differs from the committed event log');
-    requireCondition(mind.scriptCursor===0 || (mind.config.stimuli[mind.scriptCursor-1].tick<=s.tick &&
-      (mind.scriptCursor===mind.config.stimuli.length || mind.config.stimuli[mind.scriptCursor].tick>s.tick)),'Mind stimulus cursor disagrees with the committed tick');
+    const dueStimuli=mind.config.stimuli.filter(stimulus=>stimulus.tick<=s.tick).length;
+    requireCondition(mind.scriptCursor===dueStimuli,'Mind stimulus cursor disagrees with the committed tick');
   }else if(s.rulesVersion===SOCIETY_RULES){
     validateSocietyWorld(s.world);
     requireCondition(['society-village','society-medicine-race','society-peer-sale'].includes(s.fixtureId) && s.fixtureVersion==='1','Unknown Society fixture','UNSUPPORTED_VERSION');
@@ -148,7 +148,8 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
     requireCondition([PLAY_RULES,MIND_RULES].includes(s.rulesVersion)?input.type==='PlayerAction':[MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(input.type) :
       input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Command does not belong to this rules version');
     requireCondition(s.rulesVersion!==HUNTER_RULES || !input.commandId.startsWith('hunter-day-'),'External input claimed internal command namespace');
-    requireCondition(![SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(s.rulesVersion) || (!input.commandId.startsWith('society-day-') && !input.commandId.startsWith('mind-day-')),'External input claimed internal command namespace');
+    requireCondition(![SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(s.rulesVersion) || !input.commandId.startsWith('society-day-'),'External input claimed internal command namespace');
+    requireCondition(s.rulesVersion!==MIND_RULES || !input.commandId.startsWith('mind-day-'),'External input claimed mind command namespace');
     remember(entry.commandId, inputSeq);
     if(input.type==='PlayerAction')requireCondition(input.payload.startTick<=s.tick && input.targetTick===input.payload.startTick+playerIntentDuration({commandId:input.commandId,...input.payload.intent}),'Invalid pending player timing');
     requireCondition(inputSeq > previousInput && entry.targetTick > s.tick, 'Out-of-order or expired pending input'); previousInput = inputSeq;

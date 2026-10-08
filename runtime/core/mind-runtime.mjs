@@ -160,7 +160,6 @@ export function planMindDay(input,events,tick,simulationId){
     if(!actor.alive)continue;
     const knowledge=decisionPhaseKnowledge(world,events,actorId,tick,simulationId);
     const planned=planMindDecision(knowledge);
-    if(planned.goal)planned.goal.step=planned.decision.choice==='UseMedicine'?'use':planned.decision.choice==='BuyMedicine'?'buy':'wait';
     estate.state.currentGoal=planned.goal?cloneData(planned.goal):null;
     estate.state.nextGoalId=planned.nextGoalId;
     entry.lastDecision=cloneData(planned.decision);

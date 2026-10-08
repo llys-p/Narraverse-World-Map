@@ -1,4 +1,5 @@
 import { createInitialBundle } from '../core/world-state.mjs';
+import { fields,cloneData } from '../core/data-contract.mjs';
 import { defaultPlayerPlayConfig } from '../core/player-intents.mjs';
 import { MIND_RULES } from '../core/mind-state.mjs';
 import { createMindWorld,settleMindSocietyDay } from '../core/mind-runtime.mjs';
@@ -30,9 +31,11 @@ export function defaultMindVillageConfig(){
 }
 
 export function createMindVillage(seed=42,simulationId='mind-village',config=defaultMindVillageConfig()){
+  fields(config,['memory','mind']);
+  const input=cloneData(config);
   const systems=mindSystems();
   const bundle=createInitialBundle({rulesVersion:MIND_RULES,simulationId,fixtureId:'mind-village',fixtureVersion:'1',seed,
-    world:createMindWorld(config.memory,config.mind),commands:[],
+    world:createMindWorld(input.memory,input.mind),commands:[],
     scheduledTasks:[{taskId:'daily-memory',systemId:'society',nextDueTick:144,intervalTicks:144,priority:10}]},systems);
   return {bundle,systems};
 }

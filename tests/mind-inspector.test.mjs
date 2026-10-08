@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'node:fs/promises';
 import vm from 'node:vm';
+import { canonicalJson } from '../runtime/core/data-contract.mjs';
 
 const MIND_JS=new URL('../runtime-mind.mjs',import.meta.url);
 
@@ -14,11 +15,16 @@ const stance=value=>value==='available'?'expect-supply':value==='unavailable'?'e
 const belief=(value,confidencePermille,evidenceRefs=[],contradictionRefs=[],lastUpdatedTick=null)=>
   ({topic:'public-herbs-available',value,confidencePermille,evidenceRefs,contradictionRefs,lastUpdatedTick});
 const decision=(actorId,choice,reasonCode,evidenceRefs=[])=>({version:'mind-decision-v1',decisionId:`mind-day-1-${actorId}`,
-  actorId,tick:144,goalId:3,choice,reasonCode,candidates:[],evidenceRefs,knowledgeFingerprint:'fixture-fingerprint'});
+  actorId,tick:144,goalId:3,choice,reasonCode,candidates:[
+    {action:'UseMedicine',eligible:false,reasonCode:'NO_PRIVATE_MEDICINE'},
+    {action:'BuyMedicine',eligible:false,reasonCode:'SUPPLY_UNAVAILABLE'},
+    {action:'NoAction',eligible:true,reasonCode:'WAIT'},
+  ],evidenceRefs,knowledgeFingerprint:canonicalJson(knowledge(actorId,{phase:'decision',tick:144,revision:143,
+    belief:belief(reasonCode==='SUPPLY_UNAVAILABLE'?'unavailable':'unknown',reasonCode==='SUPPLY_UNAVAILABLE'?600:0,evidenceRefs)}))});
 function knowledge(actorId,overrides={}){
   const b=overrides.belief??belief(overrides.beliefValue??'unknown',0);
   return {
-    knowledgeVersion:'mind-knowledge-v1',phase:'committed',simulationId:MOCK_SIM,actorId,
+    knowledgeVersion:'mind-knowledge-v1',phase:overrides.phase??'committed',simulationId:MOCK_SIM,actorId,
     tick:overrides.tick??0,revision:overrides.revision??0,
     self:{name:overrides.name??(actorId==='actor-2'?'猎人':'商人'),occupation:actorId==='actor-2'?'hunter':'merchant',location:'village',
       alive:overrides.alive??true,health:400,hunger:0,fatigue:200,wallet:100,inventory:{food:20,herbs:overrides.herbs??0},
@@ -40,14 +46,15 @@ function inspector(overrides={}){
 
 async function pageHarness(initialTransport){
   const elements=new Map();
-  const make=()=>({textContent:'',hidden:false,disabled:false,value:'',dataset:{},handlers:{},
-    append(){},replaceChildren(){},addEventListener(type,fn){this.handlers[type]=fn;}});
+  const make=()=>({textContent:'',hidden:false,disabled:false,value:'',dataset:{},handlers:{},children:[],
+    append(child){this.children.push(child);},replaceChildren(){this.children=[];},addEventListener(type,fn){this.handlers[type]=fn;}});
   const document={documentElement:{dataset:{}},createElement:make,_handlers:{},
     addEventListener(type,fn){this._handlers[type]=fn;},
     getElementById(id){if(!elements.has(id))elements.set(id,make());return elements.get(id);}};
   let transport=initialTransport,calls=0;
   const context=vm.createContext({document,AbortSignal,fetch:(...a)=>{calls++;return transport(...a);}});
-  vm.runInContext(await fs.readFile(MIND_JS,'utf8'),context);
+  const source=await fs.readFile(MIND_JS,'utf8');
+  vm.runInContext(source,context);
   let i=0;while(elements.get('mind-status')?.dataset.state==='loading'&&i++<100)await new Promise(r=>setImmediate(r));
   return {elements,document,context,calls:()=>calls,setTransport(fn){transport=fn;}};
 }
@@ -86,7 +93,34 @@ test('a corrected belief keeps the original decision basis and marks the correct
   assert.equal(p.elements.get('belief-value').textContent,'有药');
   assert.equal(p.elements.get('decision-choice').textContent,'无动作');
   assert.equal(p.elements.get('decision-evidence').textContent,'12');
+  assert.equal(p.elements.get('decision-belief').textContent,'无药');
+  assert.match(p.elements.get('decision-candidates').children?.[0]?.textContent??'',/不可选/);
   assert.match(p.elements.get('belief-note').textContent,/已纠正/);
+});
+
+test('UseMedicine does not invent the old belief from choice and shows received observations',async()=>{
+  const d=decision('actor-2','UseMedicine','USE_OWN_MEDICINE',[12]);
+  d.knowledgeFingerprint=canonicalJson(knowledge('actor-2',{phase:'decision',tick:144,revision:143,
+    belief:belief('unavailable',600,[12]),observations:[{sourceEventSeq:12,occurrenceTick:12,observedTick:12,
+      channel:'statement',sourceActorId:'actor-1',available:false,confidencePermille:600,expiresTick:300}]}));
+  const current=knowledge('actor-2',{tick:144,revision:144,belief:belief('available',900,[30],[12],144),
+    observations:[{sourceEventSeq:12,occurrenceTick:12,observedTick:12,channel:'statement',sourceActorId:'actor-1',available:false,
+      confidencePermille:600,expiresTick:300}]});
+  const p=await pageHarness(async()=>okJson(inspector({revision:144,tick:144,actors:[
+    {knowledge:current,lastDecision:d,lastOutcome:null},{knowledge:knowledge('actor-3'),lastDecision:null,lastOutcome:null}]})));
+  assert.equal(p.elements.get('decision-belief').textContent,'无药');
+  assert.equal(p.elements.get('belief-note').textContent,'已纠正：当时依据结论为「无药」，当前判断为「有药」。');
+  assert.match(p.elements.get('observations-list').children[0].textContent,/statement · 无药 · tick 12 · 来源事件 12/);
+});
+
+test('invalid or absent frozen knowledge fingerprint is reported as unreadable rather than guessed',async()=>{
+  const d=decision('actor-2','BuyMedicine','FUNDS_INSUFFICIENT',[12]);
+  d.knowledgeFingerprint='not-json';
+  const p=await pageHarness(async()=>okJson(inspector({actors:[
+    {knowledge:knowledge('actor-2',{beliefValue:'available'}),lastDecision:d,lastOutcome:null},
+    {knowledge:knowledge('actor-3'),lastDecision:null,lastOutcome:null}]})));
+  assert.equal(p.elements.get('decision-belief').textContent,'无法读取合法的当时判断依据');
+  assert.match(p.elements.get('belief-note').textContent,/未从选择或原因推断/);
 });
 
 test('success and rejection outcomes render status, code and deltas',async()=>{

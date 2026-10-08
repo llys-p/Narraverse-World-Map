@@ -74,6 +74,7 @@ export function planMindDecision(knowledge){
   const wait={action:'NoAction',eligible:true,reasonCode:'WAIT'};
   const candidates=[use,buy,wait];
   const choice=candidates.find(c=>c.eligible).action;
+  if(goal)goal.step=choice==='UseMedicine'?'use':choice==='BuyMedicine'?'buy':'wait';
   const reasonCode=choice==='UseMedicine'?'USE_OWN_MEDICINE':choice==='BuyMedicine'?'BUY_KNOWN_SUPPLY':buy.reasonCode;
   const evidenceRefs=[...new Set([...knowledge.belief.evidenceRefs,...knowledge.belief.contradictionRefs])].sort((a,b)=>a-b);
   const decision={version:MIND_DECISION_VERSION,decisionId:'mind-day-'+day+'-'+knowledge.actorId,actorId:knowledge.actorId,

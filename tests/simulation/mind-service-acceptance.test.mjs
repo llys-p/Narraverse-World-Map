@@ -7,27 +7,15 @@ import { createSimulationSession } from '../../runtime/core/command-engine.mjs';
 import { saveCheckpoint, loadCheckpoint } from '../../runtime/persistence/checkpoint-store.mjs';
 import { createRuntimeOwner } from '../../runtime/service/runtime-owner.mjs';
 
-// =============================================================================
-// M1A/M1B 未交付时的显式依赖标记。A 交付核心模块、B 交付 owner/inspector 服务后，
-// m1Skip 自动变 false，下方全部断言即可真实运行（断言正文一律保留，绝不为通过而删）。
-// =============================================================================
-const M1 = await (async () => {
-  try {
-    const [fixture, state, planner, runtime, knowledge] = await Promise.all([
-      import('../../runtime/fixtures/mind-village.mjs'),
-      import('../../runtime/core/mind-state.mjs'),
-      import('../../runtime/core/mind-planner.mjs'),
-      import('../../runtime/core/mind-runtime.mjs'),
-      import('../../runtime/knowledge/mind-knowledge.mjs'),
-    ]);
-    return { fixture, state, planner, runtime, knowledge };
-  } catch (error) {
-    return { error };
-  }
-})();
-const m1Skip = M1.error
-  ? `依赖未交付（基准 feb2856，M1A/M1B 未交付）：${M1.error.code ?? 'IMPORT_FAILED'} ${(M1.error.message ?? '').split('\n')[0]}`
-  : false;
+// M1 core and runtime-owner modules are required dependencies for these tests.
+const [fixture, state, planner, runtime, knowledge] = await Promise.all([
+  import('../../runtime/fixtures/mind-village.mjs'),
+  import('../../runtime/core/mind-state.mjs'),
+  import('../../runtime/core/mind-planner.mjs'),
+  import('../../runtime/core/mind-runtime.mjs'),
+  import('../../runtime/knowledge/mind-knowledge.mjs'),
+]);
+const M1 = { fixture, state, planner, runtime, knowledge };
 
 const agent = (w, id) => w.societyModel.agents.find((a) => a.state.actorId === id).state;
 const actorOf = (w, id) => w.actorModel.actors.find((a) => a.actorId === id);
@@ -48,21 +36,33 @@ async function jsonBytes(dir) {
 const time = (commandId, expectedRevision, ticks) => ({ version: 1, commandId, expectedRevision, type: 'AdvanceTime', payload: { ticks } });
 
 test('K6 硬上限常量与合同 §8.3 一致（独立期望，非从 A/B 倒抄）', () => {
-  if (m1Skip) assert.ok(true, `当前依赖未交付：${m1Skip.slice(0, 200)}`);
-  else {
-    const s = M1.state;
-    assert.equal(s.MAX_MIND_ACTORS, 2);
-    assert.equal(s.MAX_MIND_STIMULI, 64);
-    assert.equal(s.MAX_MIND_STIMULI_PER_TICK, 8);
-    assert.equal(s.MAX_MIND_OBSERVATIONS, 8);
-    assert.equal(s.MIND_EVIDENCE_TTL_TICKS, 288);
-    assert.equal(s.MAX_MIND_CANDIDATES, 3);
-    assert.equal(s.MAX_MIND_KNOWLEDGE_BYTES, 8192);
-    assert.equal(s.MAX_MIND_INSPECTOR_BYTES, 65536);
-  }
+  const s = M1.state;
+  assert.equal(s.MAX_MIND_ACTORS, 2);
+  assert.equal(s.MAX_MIND_STIMULI, 64);
+  assert.equal(s.MAX_MIND_STIMULI_PER_TICK, 8);
+  assert.equal(s.MAX_MIND_OBSERVATIONS, 8);
+  assert.equal(s.MIND_EVIDENCE_TTL_TICKS, 288);
+  assert.equal(s.MAX_MIND_CANDIDATES, 3);
+  assert.equal(s.MAX_MIND_KNOWLEDGE_BYTES, 8192);
+  assert.equal(s.MAX_MIND_INSPECTOR_BYTES, 65536);
 });
 
-test('K6 预算反例：65条刺激 / 同tick9条 / 未知版本 / 非法actor 显式拒绝', { skip: m1Skip }, () => {
+test('K6 配置入口拒绝未知字段和访问器且不执行访问器', () => {
+  const withUnknown = M1.fixture.defaultMindVillageConfig();
+  withUnknown.extra = true;
+  assert.throws(() => M1.fixture.createMindVillage(42, 'mind-village', withUnknown), (e) => e.code === 'INVALID_INPUT');
+  let getterExecuted = false;
+  const withGetter = M1.fixture.defaultMindVillageConfig();
+  Object.defineProperty(withGetter, 'extra', { enumerable: true, get() { getterExecuted = true; return true; } });
+  assert.throws(() => M1.fixture.createMindVillage(42, 'mind-village', withGetter), (e) => e.code === 'INVALID_INPUT');
+  assert.equal(getterExecuted, false, '校验顶层配置形状时不得执行调用方 getter');
+  const nestedGetter = M1.fixture.defaultMindVillageConfig();
+  Object.defineProperty(nestedGetter.memory.society, 'economics', { enumerable: true, get() { getterExecuted = true; return {}; } });
+  assert.throws(() => M1.fixture.createMindVillage(42, 'mind-village', nestedGetter), (e) => e.code === 'INVALID_INPUT');
+  assert.equal(getterExecuted, false, '克隆配置数据前不得执行嵌套 economics getter');
+});
+
+test('K6 预算反例：65条刺激 / 同tick9条 / 未知版本 / 非法actor 显式拒绝', () => {
   // 65 条刺激（>64）→ LIMIT_EXCEEDED
   const over = M1.fixture.defaultMindVillageConfig();
   over.mind.stimuli = Array.from({ length: 65 }, (_, i) => ({ stimulusId: `s${i}`, tick: 12 + i, kind: 'market-check', listenerId: 'actor-2' }));
@@ -81,13 +81,15 @@ test('K6 预算反例：65条刺激 / 同tick9条 / 未知版本 / 非法actor �
   assert.throws(() => M1.knowledge.buildMindKnowledge(bundle, 'actor-1'), (e) => e.code === 'MIND_ACTOR_UNAVAILABLE');
 });
 
-test('K6 死亡分支：144 按规则死亡后，tick156 s03 未送达、不观察不决策，保留墓碑/私账/封存判断', { skip: m1Skip }, () => {
+test('K6 死亡分支：144 按规则死亡后，tick156 s03 未送达、不观察不决策，保留墓碑/私账/封存判断', () => {
   const f = mk((c) => {
     c.memory.society.actors.initialActors[1].health = 1;
     c.memory.society.actors.initialActors[2].health = 1;
     c.memory.society.actors.initialActors[1].hunger = 1000;
     c.memory.society.actors.initialActors[2].hunger = 1000;
     for (const e of c.memory.society.estates) { e.initialFood = 0; e.initialHerbs = 0; }
+    c.memory.society.player.initialFood = 0;
+    c.memory.society.player.initialHerbs = 0;
     const res = c.memory.society.actors.market.ecology.resources.resources;
     for (const id of ['food', 'herbs']) { res[id].initial = 0; res[id].production.numerator = 0; }
     c.memory.society.actors.market.products.food.maxOrder = 0;
@@ -111,7 +113,7 @@ test('K6 死亡分支：144 按规则死亡后，tick156 s03 未送达、不观�
   assert.ok(ma2.lastDecision !== null, '封存判断记录保留');
 });
 
-test('service4 同 ID 跨重启幂等：相同 DTO 重试只返回原回执，不重复推进时间', { skip: m1Skip }, async (t) => {
+test('service4 同 ID 跨重启幂等：相同 DTO 重试只返回原回执，不重复推进时间', async (t) => {
   const dir = await temporary(t);
   const owner = await createRuntimeOwner({ directory: dir, profile: 'mind-village', writable: true });
   t.after(() => owner.close());
@@ -126,7 +128,7 @@ test('service4 同 ID 跨重启幂等：相同 DTO 重试只返回原回执，�
   assert.equal(restored.getMindInspector().revision, 24, 'revision 未因重试重复推进');
 });
 
-test('service4 冲突：过期 expectedRevision 409、同 ID 异 payload 冲突', { skip: m1Skip }, async (t) => {
+test('service4 冲突：过期 expectedRevision 409、同 ID 异 payload 冲突', async (t) => {
   const dir = await temporary(t);
   const owner = await createRuntimeOwner({ directory: dir, profile: 'mind-village', writable: true });
   t.after(() => owner.close());
@@ -135,7 +137,7 @@ test('service4 冲突：过期 expectedRevision 409、同 ID 异 payload 冲突'
   await assert.rejects(owner.submit(time('adv24', 24, 120)), (e) => e.code === 'COMMAND_ID_CONFLICT', '同 ID 异 payload 冲突');
 });
 
-test('service4 保存故障：提交失败后 公共/玩家/检查器 三份投影与磁盘保持旧读数，恢复后发布一致', { skip: m1Skip }, async (t) => {
+test('service4 保存故障：提交失败后 公共/玩家/检查器 三份投影与磁盘保持旧读数，恢复后发布一致', async (t) => {
   const directory = path.join(await temporary(t), 'world');
   let fail = true;
   const io = {
@@ -161,7 +163,7 @@ test('service4 保存故障：提交失败后 公共/玩家/检查器 三份投�
   assert.equal(owner.getMindInspector().revision, 24);
 });
 
-test('K6 恢复最小真实消费者：core 保存 checkpoint → owner 显式加载 → 检查器与磁盘/投影一致且读取零写', { skip: m1Skip }, async (t) => {
+test('K6 恢复最小真实消费者：core 保存 checkpoint → owner 显式加载 → 检查器与磁盘/投影一致且读取零写', async (t) => {
   const root = await temporary(t);
   const f = mk();
   const s = createSimulationSession(f.bundle, f.systems);

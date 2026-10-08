@@ -13,6 +13,8 @@ export function timeReceipt(dto,toRevision){return {apiVersion:1,commandId:dto.c
 export function transitionServiceCommand(bundle,dto){
   dto=validateServiceCommandDto(dto);
   const profile=runtimeProfile(bundle),mindPlayer=profile.serviceFormatVersion===4;
+  if(mindPlayer && dto.commandId.startsWith('mind-day-'))throw fault('INVALID_INPUT','Reserved mind command ID');
+  if(mindPlayer && dto.commandId.startsWith('society-day-'))throw fault('INVALID_INPUT','Reserved society command ID');
   requireCondition(dto.version===1 || profile.serviceFormatVersion===3 || mindPlayer,'Profile does not support player actions','COMMAND_UNSUPPORTED');
   if(dto.version===1){const session=createSimulationSession(bundle,profile.systems);session.advanceTicks(dto.payload.ticks);
     const next=session.getBundle();return {bundle:next,receipt:timeReceipt(dto,next.snapshot.revision)};}

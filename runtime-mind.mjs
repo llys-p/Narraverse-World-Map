@@ -7,14 +7,23 @@ const stanceLabel={'uncertain-supply':'供给不明','expect-supply':'预期有�
 const choiceLabel={'UseMedicine':'用药','BuyMedicine':'买药','NoAction':'无动作'};
 const outcomeLabel={succeeded:'成功',rejected:'拒绝','no-action':'无动作'};
 let selected='actor-2',last=null,refreshing=false;
+const canonicalFingerprint=value=>{
+  const encode=item=>item===null||typeof item!=='object'?JSON.stringify(item):Array.isArray(item)?`[${item.map(encode).join(',')}]`:
+    `{${Object.keys(item).sort().map(key=>`${JSON.stringify(key)}:${encode(item[key])}`).join(',')}}`;
+  return encode(value);
+};
 
 function decisionConclusion(decision){
   if(!decision)return null;
-  if(decision.choice==='BuyMedicine')return 'available';
-  if(decision.choice==='UseMedicine')return null;
-  if(decision.reasonCode==='SUPPLY_UNAVAILABLE')return 'unavailable';
-  if(decision.reasonCode==='SUPPLY_UNKNOWN')return 'unknown';
-  return null;
+  try{
+    const fingerprint=decision.knowledgeFingerprint;
+    if(typeof fingerprint!=='string')return null;
+    const frozen=JSON.parse(fingerprint);
+    if(canonicalFingerprint(frozen)!==fingerprint || frozen.knowledgeVersion!=='mind-knowledge-v1' || frozen.phase!=='decision' ||
+      frozen.actorId!==decision.actorId || frozen.tick!==decision.tick || frozen.revision!==decision.tick-1 ||
+      !['available','unavailable','unknown'].includes(frozen.belief?.value))return null;
+    return frozen.belief.value;
+  }catch{return null;}
 }
 function setText(id,value){byId(id).textContent=value==null||value===''?'—':String(value);}
 
@@ -31,6 +40,13 @@ function renderActor(actor){
   byId('inner-stance').textContent=stanceLabel[k.innerStance]??k.innerStance??'—';
   byId('committed-intent').textContent=k.committedIntent?`${k.committedIntent.kind}（目标 ${k.committedIntent.goalId}）`:'无';
   byId('observations-note').textContent=`已记录的观察 ${k.observations?.length??0} 条`;
+  byId('observations-list').replaceChildren();
+  for(const observation of k.observations??[]){
+    const item=document.createElement('li');
+    const value=observation.available===true?'有药':observation.available===false?'无药':'未知';
+    item.textContent=`${observation.channel} · ${value} · tick ${observation.observedTick} · 来源事件 ${observation.sourceEventSeq}`;
+    byId('observations-list').append(item);
+  }
   const d=actor.lastDecision,o=actor.lastOutcome;
   const empty=byId('decision-empty'),decisionFields=byId('decision-fields'),outcomeFields=byId('outcome-fields'),seal=byId('decision-seal');
   if(!d && !o){
@@ -44,6 +60,12 @@ function renderActor(actor){
     setText('decision-reason',d.reasonCode);
     setText('decision-goal',d.goalId==null?'无目标':d.goalId);
     byId('decision-evidence').textContent=d.evidenceRefs?.length?d.evidenceRefs.join(', '):'无';
+    byId('decision-candidates').replaceChildren();
+    for(const candidate of d.candidates??[]){
+      const item=document.createElement('li');
+      item.textContent=`${choiceLabel[candidate.action]??candidate.action} · ${candidate.eligible?'可选':'不可选'} · ${candidate.reasonCode}`;
+      byId('decision-candidates').append(item);
+    }
   }
   if(o){
     byId('outcome-status').textContent=outcomeLabel[o.status]??o.status;
@@ -52,10 +74,13 @@ function renderActor(actor){
     setText('outcome-price',o.price);
   }
   const conclusion=decisionConclusion(d),current=b.value;
+  byId('decision-belief').textContent=conclusion?beliefLabel[conclusion]:'无法读取合法的当时判断依据';
   if(conclusion && (current==='available'||current==='unavailable') && conclusion!==current){
     byId('belief-note').textContent=`已纠正：当时依据结论为「${beliefLabel[conclusion]}」，当前判断为「${beliefLabel[current]}」。`;
+  }else if(d && conclusion){
+    byId('belief-note').textContent=`当时判断为「${beliefLabel[conclusion]}」；当前判断为「${beliefLabel[current]??'未知'}」。`;
   }else if(d){
-    byId('belief-note').textContent=`当时决策依据与当前判断一致（${beliefLabel[current]??'未知'}）。`;
+    byId('belief-note').textContent='无法读取合法的当时判断依据；未从选择或原因推断。';
   }else{byId('belief-note').textContent='';}
 }
 function renderReading(inspector){

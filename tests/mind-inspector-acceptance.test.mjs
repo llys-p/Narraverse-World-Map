@@ -6,27 +6,18 @@ import path from 'node:path';
 import { startRuntimeServer } from '../runtime-server.mjs';
 
 // =============================================================================
-// M1A/M1B 未交付时的显式依赖标记（检查器消费链依赖 A 核心 + B 服务/页面）。
-// 交付后 m1Skip 自动 false，下面 HTTP 断言即可真实运行；浏览器交互另需浏览器驱动。
+// The HTTP acceptance path requires the real core and service. Browser interaction
+// remains pending a browser driver.
 // =============================================================================
-const M1 = await (async () => {
-  try {
-    const [fixture, state, planner, runtime, knowledge] = await Promise.all([
-      import('../runtime/fixtures/mind-village.mjs'),
-      import('../runtime/core/mind-state.mjs'),
-      import('../runtime/core/mind-planner.mjs'),
-      import('../runtime/core/mind-runtime.mjs'),
-      import('../runtime/knowledge/mind-knowledge.mjs'),
-    ]);
-    return { fixture, state, planner, runtime, knowledge };
-  } catch (error) {
-    return { error };
-  }
-})();
-const m1Skip = M1.error
-  ? `依赖未交付（基准 feb2856，M1A/M1B 未交付）：${M1.error.code ?? 'IMPORT_FAILED'} ${(M1.error.message ?? '').split('\n')[0]}`
-  : false;
-const browserSkip = m1Skip ? m1Skip : '浏览器消费链：需真实浏览器驱动（A+B 交付后以独立临时服务执行，本路不启动浏览器/云）';
+const [fixture, state, planner, runtime, knowledge] = await Promise.all([
+  import('../runtime/fixtures/mind-village.mjs'),
+  import('../runtime/core/mind-state.mjs'),
+  import('../runtime/core/mind-planner.mjs'),
+  import('../runtime/core/mind-runtime.mjs'),
+  import('../runtime/knowledge/mind-knowledge.mjs'),
+]);
+const M1 = { fixture, state, planner, runtime, knowledge };
+const browserSkip = '浏览器消费链：需真实浏览器驱动（独立临时服务上执行）';
 
 async function temporary(t) {
   const prefix = path.join(os.tmpdir(), 'world-mind-inspector-');
@@ -47,7 +38,7 @@ const post = async (url, d) => {
 };
 const time = (commandId, expectedRevision, ticks) => ({ version: 1, commandId, expectedRevision, type: 'AdvanceTime', payload: { ticks } });
 
-test('K6 检查器两人/真 revision：tick0 世界事实与空决定，推进24/120后刷新对应 revision，区分当前判断与当时依据', { skip: m1Skip }, async (t) => {
+test('K6 检查器两人/真 revision：tick0 世界事实与空决定，推进24/120后刷新对应 revision，区分当前判断与当时依据', async (t) => {
   const dir = await temporary(t);
   const s = await startRuntimeServer({ directory: dir, port: 0, profile: 'mind-village', writable: true, inspectMind: true });
   t.after(() => s.close());
@@ -75,7 +66,7 @@ test('K6 检查器两人/真 revision：tick0 世界事实与空决定，推进2
   assert.equal(a3.lastOutcome.status, 'succeeded');
 });
 
-test('K6 读取零写：重复 GET/HEAD 不改变 revision/输入/文件字节，HEAD 无正文', { skip: m1Skip }, async (t) => {
+test('K6 读取零写：重复 GET/HEAD 不改变 revision/输入/文件字节，HEAD 无正文', async (t) => {
   const dir = await temporary(t);
   const s = await startRuntimeServer({ directory: dir, port: 0, profile: 'mind-village', writable: true, inspectMind: true });
   t.after(() => s.close());
@@ -90,7 +81,7 @@ test('K6 读取零写：重复 GET/HEAD 不改变 revision/输入/文件字节�
   assert.deepEqual(await jsonBytes(dir), before, '不被 GET/HEAD 写入');
 });
 
-test('K6 权限/拒绝链：inspectMind false→404、旧 profile→404、POST→405、查询串→400', { skip: m1Skip }, async (t) => {
+test('K6 权限/拒绝链：inspectMind false→404、旧 profile→404、POST→405、查询串→400', async (t) => {
   const root = await temporary(t);
   const off = await startRuntimeServer({ directory: path.join(root, 'off'), port: 0, profile: 'mind-village', writable: true, inspectMind: false });
   t.after(() => off.close());
@@ -106,7 +97,7 @@ test('K6 权限/拒绝链：inspectMind false→404、旧 profile→404、POST�
   assert.equal((await fetch(on.url + '/api/runtime/minds?x=1')).status, 400, '查询串存在即 400');
 });
 
-test('K6 不可伪造：POST 命令无法伪造 statement/market-check/MindDecision', { skip: m1Skip }, async (t) => {
+test('K6 不可伪造：POST 命令无法伪造 statement/market-check/MindDecision', async (t) => {
   const dir = await temporary(t);
   const s = await startRuntimeServer({ directory: dir, port: 0, profile: 'mind-village', writable: true, inspectMind: true });
   t.after(() => s.close());
@@ -117,20 +108,21 @@ test('K6 不可伪造：POST 命令无法伪造 statement/market-check/MindDecis
   ]) assert.equal((await post(s.url, d)).status, 400, '无 H 入口可伪造心智事实');
 });
 
-test('K6 断连/读失败：关闭服务读取失败，重开保留旧 revision 不丢读数', { skip: m1Skip }, async (t) => {
+test('K6 断连/读失败：关闭服务读取失败，重开保留旧 revision 不丢读数', async (t) => {
   const dir = await temporary(t);
   let s = await startRuntimeServer({ directory: dir, port: 0, profile: 'mind-village', writable: true, inspectMind: true });
-  const url = s.url + '/api/runtime/minds';
+  let url = s.url + '/api/runtime/minds';
   await post(s.url, time('adv24', 0, 24));
   const before = (await get(url)).body.revision;
   await s.close();
   await assert.rejects(fetch(url), '关闭后读取必须失败（断连语义）');
   s = await startRuntimeServer({ directory: dir, port: 0, writable: true, inspectMind: true });
+  url = s.url + '/api/runtime/minds';
   t.after(() => s.close());
   assert.equal((await get(url)).body.revision, before, '重开保留旧 revision');
 });
 
-test('K6 检查器静态页与边界：/runtime-mind.html 及 js/css 同受开关约束', { skip: m1Skip }, async (t) => {
+test('K6 检查器静态页与边界：/runtime-mind.html 及 js/css 同受开关约束', async (t) => {
   const root = await temporary(t);
   const on = await startRuntimeServer({ directory: path.join(root, 'on'), port: 0, profile: 'mind-village', writable: true, inspectMind: true });
   t.after(() => on.close());
@@ -145,7 +137,7 @@ test('K6 检查器静态页与边界：/runtime-mind.html 及 js/css 同受开�
 });
 
 test('K6 浏览器消费链（真实浏览器：人物切换/刷新/双页签/断连显示，需浏览器驱动）', { skip: browserSkip }, async () => {
-  // 骨架：A+B 交付后由中控在独立临时服务上以真实浏览器执行
+  // Run against an independent temporary service with a real browser driver.
   // 页面 /runtime-mind.html：两人选择器、手动刷新、单次读数绑定单一 revision、断连显示读失败不显示成功。
   assert.fail('需真实浏览器驱动，本路不单独启动浏览器或服务进程（阻断级：接口存在≠核心消费通过）');
 });

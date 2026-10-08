@@ -183,7 +183,7 @@ export function deriveMindBelief(observations,tick){
   if(active.length===0)return empty;
   const newest=active[active.length-1];
   if(newest.channel==='own-rejection')return {topic:'public-herbs-available',value:'unknown',confidencePermille:0,
-    evidenceRefs:[],contradictionRefs:[],lastUpdatedTick:newest.observedTick};
+    evidenceRefs:[newest.sourceEventSeq],contradictionRefs:[],lastUpdatedTick:newest.observedTick};
   const booleans=active.filter(o=>o.channel!=='own-rejection'),winner=booleans[booleans.length-1];
   const contradictionRefs=booleans.filter(o=>o.available!==winner.available).map(o=>o.sourceEventSeq).sort((a,b)=>a-b);
   return {topic:'public-herbs-available',value:winner.available?'available':'unavailable',confidencePermille:winner.confidencePermille,

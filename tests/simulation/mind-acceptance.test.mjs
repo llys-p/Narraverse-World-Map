@@ -7,33 +7,18 @@ import { createSimulationSession } from '../../runtime/core/command-engine.mjs';
 import { saveCheckpoint, loadCheckpoint } from '../../runtime/persistence/checkpoint-store.mjs';
 import { validateBundle } from '../../runtime/core/world-state.mjs';
 
-// =============================================================================
-// M1A 未交付时的显式依赖标记。这些 import 在代码基准 feb2856 下必然失败，模块缺失
-// 只能记录为「依赖未交付」，不得声称已复现业务缺陷或反例先红后绿。A 交付后去掉
-// 该守卫（或 m1Skip 自动变 false）即可真实运行全部断言；断言正文一律保留。
-// =============================================================================
-const M1 = await (async () => {
-  try {
-    const [fixture, state, planner, runtime, knowledge] = await Promise.all([
-      import('../../runtime/fixtures/mind-village.mjs'),
-      import('../../runtime/core/mind-state.mjs'),
-      import('../../runtime/core/mind-planner.mjs'),
-      import('../../runtime/core/mind-runtime.mjs'),
-      import('../../runtime/knowledge/mind-knowledge.mjs'),
-    ]);
-    return { fixture, state, planner, runtime, knowledge };
-  } catch (error) {
-    return { error };
-  }
-})();
-const m1Skip = M1.error
-  ? `依赖未交付（基准 feb2856，M1A 核心未交付）：${M1.error.code ?? 'IMPORT_FAILED'} ${(M1.error.message ?? '').split('\n')[0]}`
-  : false;
-// 兼容项（旧 C5 四日 / D2C 六操作）：仅当 A 交付且共享分派文件发生变化时才有对照意义。
-const compatSkip = m1Skip ? `${m1Skip}（兼容项同 SHA 无变化，按任务书不重复昂贵运行）` : false;
+// M1A core modules are a required dependency for this acceptance suite.
+const [fixture, state, planner, runtime, knowledge] = await Promise.all([
+  import('../../runtime/fixtures/mind-village.mjs'),
+  import('../../runtime/core/mind-state.mjs'),
+  import('../../runtime/core/mind-planner.mjs'),
+  import('../../runtime/core/mind-runtime.mjs'),
+  import('../../runtime/knowledge/mind-knowledge.mjs'),
+]);
+const M1 = { fixture, state, planner, runtime, knowledge };
 
 // ---------------------------------------------------------------------------
-// 独立 world/agent/mind 定位辅助（仅在被跳过的用例体里调用，故不依赖 M1 加载成功）。
+// 独立 world/agent/mind 定位辅助。
 // ---------------------------------------------------------------------------
 const agent = (w, id) => w.societyModel.agents.find((a) => a.state.actorId === id).state;
 const actorOf = (w, id) => w.actorModel.actors.find((a) => a.actorId === id);
@@ -53,18 +38,10 @@ async function temporary(t) {
   return dir;
 }
 
-// ---------------------------------------------------------------------------
-// 非业务自检：证明依赖守卫按预期工作（这条允许通过，它不构成任何业务断言）。
-// ---------------------------------------------------------------------------
-test('M1C 依赖状态自检（不含业务断言；失败≠业务通过）', () => {
-  if (m1Skip) assert.ok(true, `当前依赖未交付：${m1Skip.slice(0, 240)}`);
-  else assert.ok(M1.fixture && M1.state && M1.planner && M1.runtime && M1.knowledge, 'M1 核心模块已交付');
-});
-
 // =============================================================================
 // K1 信息隔离 / 配对因果 / 泄漏
 // =============================================================================
-test('K1 信息隔离：默认推进24 — actor-2=unavailable/600、actor-3=available/900，互不可见，公仓仍20', { skip: m1Skip }, () => {
+test('K1 信息隔离：默认推进24 — actor-2=unavailable/600、actor-3=available/900，互不可见，公仓仍20', () => {
   const bundle = advance(mk(), 24);
   assert.equal(bundle.snapshot.world.resources.herbs, 20, 'world 公仓仍 20');
   const k2 = know(bundle, 'actor-2');
@@ -81,7 +58,7 @@ test('K1 信息隔离：默认推进24 — actor-2=unavailable/600、actor-3=ava
   assert.equal(k3.observations.every((o) => o.channel !== 'statement'), true);
 });
 
-test('K1 143 尚无非决策 → 144：2 NoAction(钱包100/药0)，3 BuyMedicine(50, 100→50, 0→1, 公仓20→19)', { skip: m1Skip }, () => {
+test('K1 143 尚无非决策 → 144：2 NoAction(钱包100/药0)，3 BuyMedicine(50, 100→50, 0→1, 公仓20→19)', () => {
   const f = mk(), s = session(f);
   s.advanceTicks(143);
   assert.equal(mindActor(s.getBundle().snapshot.world, 'actor-2').lastDecision, null);
@@ -101,7 +78,7 @@ test('K1 143 尚无非决策 → 144：2 NoAction(钱包100/药0)，3 BuyMedicin
   assert.equal(w.resources.herbs, 19, '公仓只扣一次');
 });
 
-test('K1 配对因果：仅改 s01.available→true，其余不变，actor-2 在144也买(100→50, 0→1)，公仓18', { skip: m1Skip }, () => {
+test('K1 配对因果：仅改 s01.available→true，其余不变，actor-2 在144也买(100→50, 0→1)，公仓18', () => {
   const f = mk((c) => { c.mind.stimuli.find((x) => x.stimulusId === 's01').available = true; return c; });
   const bundle = advance(f, 144), w = bundle.snapshot.world;
   const d2 = mindActor(w, 'actor-2'), d3 = mindActor(w, 'actor-3');
@@ -114,14 +91,19 @@ test('K1 配对因果：仅改 s01.available→true，其余不变，actor-2 在
   assert.equal(w.resources.herbs, 18);
 });
 
-test('K1 泄漏与纯度：改变他人私有钱包不改本人纯计划；planner 输入无世界/私有字段或隐藏 getter', { skip: m1Skip }, () => {
+test('K1 泄漏与纯度：改变他人私有钱包不改本人纯计划；planner 输入无世界/私有字段或隐藏 getter', () => {
   const base = M1.fixture.defaultMindVillageConfig();
   const altered = structuredClone(base);
   altered.memory.society.estates[2].initialWallet = 150; // 只变 actor-3 私有钱包，actor-2 可知输入不变
-  const kBase = know(mk().bundle, 'actor-2');
-  const kAltered = know(M1.fixture.createMindVillage(42, 'mind-village', altered).bundle, 'actor-2');
+  const toDecisionPhase = (value) => ({ ...value, phase: 'decision', tick: 144, revision: 143 });
+  const kBase = toDecisionPhase(know(mk().bundle, 'actor-2'));
+  const kAltered = toDecisionPhase(know(M1.fixture.createMindVillage(42, 'mind-village', altered).bundle, 'actor-2'));
   assert.deepEqual(kBase, kAltered, '本人知识不变（他人钱包不属于其可知输入）');
   assert.deepEqual(M1.planner.planMindDecision(kBase), M1.planner.planMindDecision(kAltered), '纯计划不能变化');
+  const buyKnowledge = { ...kBase, belief: { ...kBase.belief, value: 'available', confidencePermille: 900 } };
+  assert.equal(M1.planner.planMindDecision(buyKnowledge).goal.step, 'buy', '纯 BuyMedicine 决策应返回更新后的 goal.step');
+  const useKnowledge = { ...kBase, self: { ...kBase.self, inventory: { ...kBase.self.inventory, herbs: 1 } } };
+  assert.equal(M1.planner.planMindDecision(useKnowledge).goal.step, 'use', '纯 UseMedicine 决策应返回更新后的 goal.step');
   // Knowledge 白名单（§8.1），无 bundle/world/其他私有字段
   const allowed = ['knowledgeVersion', 'phase', 'simulationId', 'actorId', 'tick', 'revision', 'self', 'quote', 'observations', 'belief', 'innerStance', 'committedIntent'];
   assert.deepEqual(Object.keys(kBase).sort(), allowed.sort());
@@ -141,7 +123,7 @@ test('K1 泄漏与纯度：改变他人私有钱包不改本人纯计划；plann
 // =============================================================================
 // K2 未知 / 反证 / 过期
 // =============================================================================
-test('K2 空stimuli对照：143 belief=unknown/0，144 均 NoAction', { skip: m1Skip }, () => {
+test('K2 空stimuli对照：143 belief=unknown/0，144 均 NoAction', () => {
   const f = mk((c) => { c.mind.stimuli = []; return c; });
   const bundle143 = advance(f, 143);
   for (const id of ['actor-2', 'actor-3']) {
@@ -157,7 +139,7 @@ test('K2 空stimuli对照：143 belief=unknown/0，144 均 NoAction', { skip: m1
   assert.equal(bundle144.snapshot.world.resources.herbs, 20);
 });
 
-test('K2 反证：默认144结算后 actor-2 被日末公开库存纠正为 available/900，contradictionRefs 含 s01；lastDecision 仍保留 unavailable 依据', { skip: m1Skip }, () => {
+test('K2 反证：默认144结算后 actor-2 被日末公开库存纠正为 available/900，contradictionRefs 含 s01；lastDecision 仍保留 unavailable 依据', () => {
   const bundle = advance(mk(), 144), w = bundle.snapshot.world;
   const s01seq = seqWhere(bundle, (e) => e.type === 'MindStimulusResolved' && e.payload.stimulusId === 's01');
   const d2 = mindActor(w, 'actor-2');
@@ -173,7 +155,7 @@ test('K2 反证：默认144结算后 actor-2 被日末公开库存纠正为 avai
   assert.deepEqual({ eligible: buyCand.eligible, reasonCode: buyCand.reasonCode }, { eligible: false, reasonCode: 'SUPPLY_UNAVAILABLE' });
 });
 
-test('K2 到288：actor-2 复用 recover-health Goal 买药(实扣当时已发布报价)；actor-3 用私药 UseMedicine(health+100, 药-1)', { skip: m1Skip }, () => {
+test('K2 到288：actor-2 复用 recover-health Goal 买药(实扣当时已发布报价)；actor-3 用私药 UseMedicine(health+100, 药-1)', () => {
   const bundle = advance(mk(), 288), w = bundle.snapshot.world;
   const d2 = mindActor(w, 'actor-2'), d3 = mindActor(w, 'actor-3');
   assert.equal(agent(w, 'actor-2').currentGoal.kind, 'recover-health');
@@ -191,7 +173,7 @@ test('K2 到288：actor-2 复用 recover-health Goal 买药(实扣当时已发�
   assert.equal(actorOf(w, 'actor-3').health, 500);
 });
 
-test('K2 TTL纯函数边界：tick12 statement 在 299 有效、300 过期未知；保留最新活跃源并正确列出矛盾源；无新来源不续期', { skip: m1Skip }, () => {
+test('K2 TTL纯函数边界：tick12 statement 在 299 有效、300 过期未知；保留最新活跃源并正确列出矛盾源；无新来源不续期', () => {
   const derive = M1.state.deriveMindBelief;
   const obs = [{ sourceEventSeq: 11, occurrenceTick: 12, observedTick: 12, channel: 'statement', sourceActorId: 'actor-1', available: false, confidencePermille: 600, expiresTick: 300 }];
   const at299 = derive(obs, 299);
@@ -203,10 +185,43 @@ test('K2 TTL纯函数边界：tick12 statement 在 299 有效、300 过期未知
   assert.equal(at300.lastUpdatedTick, null);
   // 最新活跃源取胜，反值活跃源入 contradictionRefs
   const later = { sourceEventSeq: 20, occurrenceTick: 50, observedTick: 50, channel: 'daily-public', sourceActorId: null, available: true, confidencePermille: 900, expiresTick: 338 };
-  const mixed = derive([obs, later], 100);
+  const mixed = derive([...obs, later], 100);
   assert.deepEqual({ value: mixed.value, confidencePermille: mixed.confidencePermille }, { value: 'available', confidencePermille: 900 });
   assert.deepEqual(mixed.evidenceRefs, [20]);
   assert.deepEqual(mixed.contradictionRefs, [11]);
+  const rejection = { sourceEventSeq: 21, occurrenceTick: 100, observedTick: 100, channel: 'own-rejection', sourceActorId: null, available: null, confidencePermille: 0, expiresTick: 388 };
+  const rejected = derive([...obs, rejection], 100);
+  assert.deepEqual({ value: rejected.value, confidencePermille: rejected.confidencePermille }, { value: 'unknown', confidencePermille: 0 });
+  assert.deepEqual(rejected.evidenceRefs, [21], '最新 own-rejection 是胜出来源，不能丢失其事件依据');
+  assert.deepEqual(rejected.contradictionRefs, []);
+});
+
+test('K2 死者报价隔离：初始死亡与第144tick死亡者只保留生前可见报价，不读未来挂牌价', () => {
+  const base = M1.fixture.defaultMindVillageConfig();
+  const initialPrice = base.memory.society.actors.market.products.herbs.basePrice;
+  const immediatelyDead = structuredClone(base);
+  immediatelyDead.memory.society.actors.initialActors[1].health = 0;
+  const initial = M1.fixture.createMindVillage(42, 'mind-village', immediatelyDead).bundle;
+  const initialKnowledge = know(initial, 'actor-2');
+  assert.equal(initialKnowledge.self.alive, false);
+  assert.deepEqual(initialKnowledge.quote, { product: 'herbs', price: initialPrice, observedTick: 0, sourceEventSeq: null });
+
+  const diesAt144 = structuredClone(base);
+  diesAt144.memory.society.actors.initialActors[1].health = 1;
+  diesAt144.memory.society.actors.initialActors[1].hunger = 1000;
+  for (const estate of diesAt144.memory.society.estates) { estate.initialFood = 0; estate.initialHerbs = 0; }
+  diesAt144.memory.society.player.initialFood = 0;
+  diesAt144.memory.society.player.initialHerbs = 0;
+  const resources = diesAt144.memory.society.actors.market.ecology.resources.resources;
+  for (const id of ['food', 'herbs']) { resources[id].initial = 0; resources[id].production.numerator = 0; }
+  diesAt144.memory.society.actors.market.products.food.maxOrder = 0;
+  diesAt144.memory.society.actors.market.products.herbs.maxOrder = 0;
+  const deadFixture = M1.fixture.createMindVillage(42, 'mind-village', diesAt144);
+  const deadBundle = advance(deadFixture, 144);
+  assert.equal(actorOf(deadBundle.snapshot.world, 'actor-2').alive, false, '健康值1且无粮使该人物按日结规则死亡');
+  const deadKnowledge = know(deadBundle, 'actor-2');
+  assert.deepEqual(deadKnowledge.quote, { product: 'herbs', price: initialPrice, observedTick: 0, sourceEventSeq: null },
+    '死亡者不接收死亡日公开报价；无生前报告时只能使用初始配置牌价');
 });
 
 // =============================================================================
@@ -222,7 +237,7 @@ function competitionConfig() {
   return c;
 }
 
-test('K3 最后一药双NPC竞争：同快照均计划Buy；2成功(50,公仓1→0)，3 rejected/钱包100不变/Goal.failures恰+1，先拒后日末 unavailable', { skip: m1Skip }, () => {
+test('K3 最后一药双NPC竞争：同快照均计划Buy；2成功(50,公仓1→0)，3 rejected/钱包100不变/Goal.failures恰+1，先拒后日末 unavailable', () => {
   const bundle = advance(mk(() => competitionConfig()), 144), w = bundle.snapshot.world;
   const d2 = mindActor(w, 'actor-2'), d3 = mindActor(w, 'actor-3');
   assert.equal(d2.lastDecision.choice, 'BuyMedicine');
@@ -245,7 +260,7 @@ test('K3 最后一药双NPC竞争：同快照均计划Buy；2成功(50,公仓1�
   assert.equal(k3.belief.value, 'unavailable', '随后日末真实报告更新为 unavailable');
 });
 
-test('K3 玩家 143→144 抢先购买：玩家经唯一入口买1药，NPC2/3 仍凭旧证据计划但权威提交拒绝（不能凭信念造药或绕顺序）', { skip: m1Skip }, () => {
+test('K3 玩家 143→144 抢先购买：玩家经唯一入口买1药，NPC2/3 仍凭旧证据计划但权威提交拒绝（不能凭信念造药或绕顺序）', () => {
   const f = mk(() => competitionConfig());
   const at143 = advance(f, 143);
   const moved = M1.runtime.executeMindPlayerIntent(at143, { commandId: 'p-buy-herb', type: 'PlayerBuy', payload: { product: 'herbs', quantity: 1 } });
@@ -265,7 +280,7 @@ test('K3 玩家 143→144 抢先购买：玩家经唯一入口买1药，NPC2/3 �
 // =============================================================================
 // K4 纯主观变化（观察不写资产 / NoAction 无命令回执休息收益 / 日结算不被跳过）
 // =============================================================================
-test('K4 无外显行动：空stimuli初始fatigue200，推进144两人NoAction，无mind-day-*回执/inputSeq/restDays，无休息收益，私粮各消费1', { skip: m1Skip }, () => {
+test('K4 无外显行动：空stimuli初始fatigue200，推进144两人NoAction，无mind-day-*回执/inputSeq/restDays，无休息收益，私粮各消费1', () => {
   const f = mk((c) => { c.mind.stimuli = []; return c; });
   const bundle = advance(f, 144), w = bundle.snapshot.world;
   for (const id of ['actor-2', 'actor-3']) {
@@ -302,14 +317,14 @@ async function runResume(dir, totalTicks, saveAt) {
   return resumed.getBundle();
 }
 
-test('K5 完整重演：默认连续288 = 保存tick24后续264 = 保存tick143后续145（整份bundle一致，非仅hash）', { skip: m1Skip }, async (t) => {
+test('K5 完整重演：默认连续288 = 保存tick24后续264 = 保存tick143后续145（整份bundle一致，非仅hash）', async (t) => {
   const dir = await temporary(t);
   const full = runDirect(288);
   assert.deepEqual(await runResume(dir, 288, 24), full);
   assert.deepEqual(await runResume(dir, 288, 143), full);
 });
 
-test('K5 竞争分支重演：连续288（144失败后续144）整份bundle一致', { skip: m1Skip }, async (t) => {
+test('K5 竞争分支重演：连续288（144失败后续144）整份bundle一致', async (t) => {
   const dir = await temporary(t);
   const f = mk(() => competitionConfig()), s = session(f); s.advanceTicks(288);
   const full = s.getBundle();
@@ -321,7 +336,7 @@ test('K5 竞争分支重演：连续288（144失败后续144）整份bundle一�
   assert.deepEqual(resumed.getBundle(), full);
 });
 
-test('K5 篡改拒绝：刺激来源/脚本游标/observedTick/决定证据/决定choice与指纹/Goal/重复事件回执 7 类一律拒绝，冷冻输入不变', { skip: m1Skip }, () => {
+test('K5 篡改拒绝：刺激来源/脚本游标/observedTick/决定证据/决定choice与指纹/Goal/重复事件回执 7 类一律拒绝，冷冻输入不变', () => {
   const bundle = runDirect(288);
   const envelope = { formatVersion: 1, ...structuredClone(bundle) };
   const rejects = () => {
@@ -352,10 +367,19 @@ test('K5 篡改拒绝：刺激来源/脚本游标/observedTick/决定证据/决�
   assert.deepEqual({ snapshot: envelope.snapshot, eventLog: envelope.eventLog }, structuredClone(bundle));
 });
 
+test('K5 完整审计拒绝缺失的到期刺激前缀：scriptCursor=0不能为tick24空事件日志开绿灯', () => {
+  const { bundle } = mk();
+  const tampered = structuredClone(bundle);
+  tampered.snapshot.tick = 24;
+  tampered.snapshot.revision = 24;
+  assert.throws(() => validateBundle(tampered, { rulesVersion: M1.state.MIND_RULES, systems: M1.fixture.mindSystems() }),
+    (error) => Boolean(error && error.code), 'snapshot 到达刺激tick后，完整审计必须要求对应的配置前缀已消费');
+});
+
 // =============================================================================
-// K7 兼容与独立性（旧 C5 四日 / D2C 六操作与基准一致；同 SHA 无变化时暂缓）
+// K7 兼容与独立性（旧 C5 四日 / D2C 六操作与基准一致）
 // =============================================================================
-test('K7 兼容：D2C 六操作完整 bundle 与逐段恢复一致（A 交付后运行）', { skip: compatSkip }, async (t) => {
+test('K7 兼容：D2C 六操作完整 bundle 与逐段恢复一致', async (t) => {
   const { PLAY_RULES, executePlayerIntent } = await import('../../runtime/core/player-intents.mjs');
   const { createPlayerPlayVillage, playerPlaySystems } = await import('../../runtime/fixtures/player-play-village.mjs');
   const dir = await temporary(t);
@@ -380,7 +404,7 @@ test('K7 兼容：D2C 六操作完整 bundle 与逐段恢复一致（A 交付后
   assert.deepEqual(resumed, whole);
 });
 
-test('K7 兼容：旧 C5 四日完整 vs 2+2 恢复一致（A 交付后运行）', { skip: compatSkip }, async (t) => {
+test('K7 兼容：旧 C5 四日完整 vs 2+2 恢复一致', async (t) => {
   const { createPersonalityFood } = await import('../../runtime/fixtures/personality-village.mjs');
   const { memorySystems } = await import('../../runtime/fixtures/memory-village.mjs');
   const { PERSONALITY_RULES } = await import('../../runtime/core/memory-runtime.mjs');

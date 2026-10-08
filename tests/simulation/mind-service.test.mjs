@@ -5,11 +5,12 @@ import path from 'node:path';
 import os from 'node:os';
 import { createRuntimeOwner } from '../../runtime/service/runtime-owner.mjs';
 import { startRuntimeServer } from '../../runtime-server.mjs';
-import { parseCommandBytes,validateServiceCommandDto,projectMindInspector,runtimeProfile,mindBackend,hasMindSupport,MIND_RULES } from '../../runtime/service/http-contract.mjs';
+import { parseCommandBytes,validateServiceCommandDto,projectMindInspector,runtimeProfile,MIND_RULES } from '../../runtime/service/http-contract.mjs';
 import { validateServiceCommit,transitionServiceCommand } from '../../runtime/service/service-commit.mjs';
 import { createPersonalityNeutral } from '../../runtime/fixtures/personality-village.mjs';
 import { createPlayerVillage } from '../../runtime/fixtures/player-village.mjs';
 import { createPlayerPlayVillage } from '../../runtime/fixtures/player-play-village.mjs';
+import { createMindVillage } from '../../runtime/fixtures/mind-village.mjs';
 
 const intent=(commandId,expectedRevision,type,payload)=>({version:2,commandId,expectedRevision,type,payload});
 const bytes=dto=>Buffer.from(JSON.stringify(dto));
@@ -18,27 +19,32 @@ async function temporary(t){const prefix=path.join(os.tmpdir(),'world-mind-servi
   t.after(async()=>{assert.ok(path.isAbsolute(dir)&&dir.startsWith(prefix));await fs.rm(dir,{recursive:true,force:true});});return dir;}
 async function getJson(url,opts){const r=await fetch(url,opts);let body=null;try{body=await r.json();}catch{/* HEAD/204 */}return {status:r.status,body};}
 
-test('M1B mind integration resolves as unavailable while M1A is not delivered (real path, no mock fallback)',()=>{
-  assert.equal(hasMindSupport(),false);
-  assert.equal(mindBackend(),null);
-  assert.equal(MIND_RULES,'m-mind-v1');
-  assert.throws(()=>projectMindInspector({}),e=>e.code==='MIND_UNAVAILABLE');
-});
-
-test('M1B existing service profiles keep formats 1/2/3 and a mind bundle is refused until A delivers its runtime',()=>{
+test('M1B real mind fixture projects through format4 while invalid profiles remain rejected',()=>{
   assert.equal(runtimeProfile(createPersonalityNeutral().bundle).serviceFormatVersion,1);
   assert.equal(runtimeProfile(createPlayerVillage().bundle).serviceFormatVersion,2);
   assert.equal(runtimeProfile(createPlayerPlayVillage().bundle).serviceFormatVersion,3);
+  const mind=createMindVillage().bundle;
+  assert.equal(MIND_RULES,'m-mind-v1');
+  assert.equal(runtimeProfile(mind).serviceFormatVersion,4);
+  assert.equal(projectMindInspector(mind).actors.length,2);
+  assert.doesNotThrow(()=>validateServiceCommit({serviceFormatVersion:4,anchor:mind,commands:[],bundle:mind}));
   const forged={snapshot:{fixtureVersion:'1',rulesVersion:'m-mind-v1',fixtureId:'mind-village'},eventLog:[]};
-  assert.throws(()=>runtimeProfile(forged),e=>e.code==='UNSUPPORTED_VERSION');
+  assert.throws(()=>projectMindInspector(forged));
   const unknown={snapshot:{fixtureVersion:'1',rulesVersion:'m-mind-v1',fixtureId:'not-mind'},eventLog:[]};
   assert.throws(()=>runtimeProfile(unknown),e=>e.code==='UNSUPPORTED_VERSION');
 });
 
-test('M1B action command IDs reserve the mind-day- namespace like society-day- without weakening valid actions',()=>{
+test('M1B command parser keeps legacy IDs and M transition reserves internal prefixes for both DTO versions',()=>{
   assert.deepEqual(parseCommandBytes(bytes(intent('rest',0,'PlayerRest',{}))),intent('rest',0,'PlayerRest',{}));
-  assert.throws(()=>parseCommandBytes(bytes(intent('mind-day-1-actor-2',0,'PlayerRest',{}))),e=>e.code==='INVALID_INPUT');
+  assert.equal(validateServiceCommandDto(intent('mind-day-legacy-external',0,'PlayerRest',{})).commandId,'mind-day-legacy-external');
   assert.throws(()=>parseCommandBytes(bytes(intent('society-day-1',0,'PlayerRest',{}))),e=>e.code==='INVALID_INPUT');
+  const mind=createMindVillage().bundle,play=createPlayerPlayVillage().bundle;
+  for(const prefix of ['mind-day-','society-day-']){
+    assert.throws(()=>transitionServiceCommand(mind,time(`${prefix}external`)),e=>e.code==='INVALID_INPUT');
+    assert.throws(()=>transitionServiceCommand(mind,intent(`${prefix}external`,0,'PlayerRest',{})),e=>e.code==='INVALID_INPUT');
+  }
+  assert.doesNotThrow(()=>transitionServiceCommand(play,intent('mind-day-legacy-external',0,'PlayerRest',{})));
+  assert.equal(transitionServiceCommand(play,time('mind-day-legacy-time')).receipt.toRevision,6);
 });
 
 test('M1B owner exposes mindAvailable=false and never serves a mind inspector without the mind profile',async t=>{
@@ -49,10 +55,13 @@ test('M1B owner exposes mindAvailable=false and never serves a mind inspector wi
   assert.throws(()=>owner.getMindInspector(),e=>e.code==='MIND_UNAVAILABLE');
 });
 
-test('M1B owner rejects the mind-village profile while the mind runtime is not delivered, leaving no artifacts',async t=>{
+test('M1B owner loads the real mind-village profile and returns its initial inspector projection',async t=>{
   const base=await temporary(t),directory=path.join(base,'mind');
-  await assert.rejects(createRuntimeOwner({directory,profile:'mind-village'}),e=>e.code==='UNSUPPORTED_VERSION');
-  await assert.rejects(fs.access(directory),e=>e.code==='ENOENT');
+  const owner=await createRuntimeOwner({directory,profile:'mind-village'});t.after(()=>owner.close());
+  assert.equal(owner.mindAvailable,true);
+  const inspector=owner.getMindInspector();
+  assert.equal(inspector.actors.length,2);
+  assert.equal(inspector.revision,0);
 });
 
 test('M1B real HTTP keeps the inspector closed without a mind profile: capability-first 404 for every method and query',async t=>{

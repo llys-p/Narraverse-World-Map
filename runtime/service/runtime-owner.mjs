@@ -61,7 +61,6 @@ export async function createRuntimeOwner(options,io=fs){
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
   if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
-  requireCondition(options.profile!=='mind-village' || mindBackend()!==null,'Mind profile requires the delivered mind runtime','UNSUPPORTED_VERSION');
   requireCondition(options.profile===undefined || options.checkpoint===undefined,'Profile and checkpoint are mutually exclusive');
   if(options.seed!==undefined){integer(options.seed);requireCondition(options.seed<=0xffffffff,'Invalid runtime seed');}
   if(options.checkpoint!==undefined)requireCondition(typeof options.checkpoint==='string' && options.checkpoint.length>0 && options.seed===undefined,'Checkpoint cannot reset seed');
