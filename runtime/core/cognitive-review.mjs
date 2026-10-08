@@ -3,7 +3,7 @@
 // machine — no clock, RNG, IO, world or cross-actor access. Signals are future adapter
 // summaries; this module never reads hidden world state and never pauses plans or the world:
 // 'maintain' only means "no candidate comparison this day".
-import { fields,record,identifier,integer,denseArray,cloneData,canonicalJson,requireCondition } from './data-contract.mjs';
+import { fields,record,identifier,integer,denseArray,cloneData,canonicalJson,requireCondition,MAX_EVENTS } from './data-contract.mjs';
 import { TICKS_PER_DAY } from './simulation-clock.mjs';
 
 export const COGNITIVE_REVIEW_STATE_VERSION='cognitive-review-state-v1';
@@ -32,6 +32,28 @@ const INPUT_PERMILLE_FIELDS=Object.freeze(['importancePermille','relevancePermil
 function canonicalBytes(value){return new TextEncoder().encode(canonicalJson(value)).length;}
 function budgetCheck(value,limit,label){
   requireCondition(canonicalBytes(value)<=limit,`${label} exceeds budget`,'LIMIT_EXCEEDED');
+}
+function inspectInputTree(value,ancestors=new Set(),depth=0){
+  requireCondition(depth<=64,'Data nesting budget exceeded','LIMIT_EXCEEDED');
+  if(value===null||typeof value==='string'||typeof value==='boolean')return;
+  if(typeof value==='number'){
+    requireCondition(Number.isFinite(value),'Non-finite number');
+    return;
+  }
+  requireCondition(typeof value==='object','Non-JSON data');
+  requireCondition(!ancestors.has(value),'Cyclic data');
+  ancestors.add(value);
+  if(Array.isArray(value)){
+    requireCondition(Object.getPrototypeOf(value)===Array.prototype,'Unsupported array prototype');
+    denseArray(value,MAX_EVENTS);
+    for(let i=0;i<value.length;i++)
+      inspectInputTree(Object.getOwnPropertyDescriptor(value,String(i)).value,ancestors,depth+1);
+  }else{
+    record(value);
+    for(const key of Object.keys(value))
+      inspectInputTree(Object.getOwnPropertyDescriptor(value,key).value,ancestors,depth+1);
+  }
+  ancestors.delete(value);
 }
 function safeAdd(a,b){
   requireCondition(a<=Number.MAX_SAFE_INTEGER-b,'Safe-integer addition overflow','LIMIT_EXCEEDED');
@@ -115,6 +137,7 @@ export function createCognitiveReviewState(simulationId,actorId){
 }
 
 export function validateCognitiveReviewState(state){
+  inspectInputTree(state);
   const stateClone=cloneData(state);
   budgetCheck(stateClone,MAX_COGNITIVE_REVIEW_STATE_BYTES,'Cognitive review state');
   validateStateBusiness(stateClone);
@@ -122,6 +145,8 @@ export function validateCognitiveReviewState(state){
 }
 
 export function evaluateCognitiveReview(state,input){
+  inspectInputTree(state);
+  inspectInputTree(input);
   const stateClone=cloneData(state),inputClone=cloneData(input);
   budgetCheck(inputClone,MAX_COGNITIVE_REVIEW_INPUT_BYTES,'Cognitive review input');
   budgetCheck(stateClone,MAX_COGNITIVE_REVIEW_STATE_BYTES,'Cognitive review state');

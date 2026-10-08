@@ -518,3 +518,71 @@ test('I: purity — deep-frozen inputs, decoupled results, deterministic repeats
   // Deterministic repeat on identical inputs.
   assert.deepEqual(evaluateCognitiveReview(fresh(),inputOf()),baseline);
 });
+
+test('regression: reject custom-prototype arrays before any map getter can run',()=>{
+  const hostileReasons=(mapResult)=>{
+    let getterCalls=0;
+    const prototype=Object.create(Array.prototype);
+    Object.defineProperty(prototype,'map',{get(){
+      getterCalls++;
+      return this.mapResult;
+    }});
+    const reasons=['INITIAL'];
+    Object.defineProperty(prototype,'mapResult',{value:mapResult});
+    Object.setPrototypeOf(reasons,prototype);
+    return {reasons,getterCalls:()=>getterCalls};
+  };
+  const hostileNested=(mapResult)=>{
+    let getterCalls=0;
+    const prototype=Object.create(Array.prototype);
+    Object.defineProperty(prototype,'map',{get(){getterCalls++;return mapResult;}});
+    const nested=[1];
+    Object.setPrototypeOf(nested,prototype);
+    return {nested,getterCalls:()=>getterCalls};
+  };
+  const observations=[];
+  const observe=(operation,readCount,path)=>{
+    let error=null;
+    try{operation();}catch(caught){error={name:caught.name,code:caught.code??null};}
+    observations.push({path,accepted:error===null,errorCode:error?.code??null,getterCalls:readCount(),
+      errorName:error?.name??null});
+  };
+  const accepted=evaluateCognitiveReview(fresh(),inputOf()).state;
+
+  for(const mapResult of [Array.prototype.map,undefined]){
+    const variant=mapResult===undefined?'undefined':'function';
+    const reasonState=()=>{
+      const reasonCase=hostileReasons(mapResult);
+      return {value:{...accepted,lastEvaluation:{...accepted.lastEvaluation,
+        decision:{...accepted.lastEvaluation.decision,reasonCodes:reasonCase.reasons}}},
+      getterCalls:reasonCase.getterCalls};
+    };
+    for(const [path,run] of [
+      [`validate/state/reasonCodes/map=${variant}`,({value})=>validateCognitiveReviewState(value)],
+      [`evaluate/state/reasonCodes/tick=0/map=${variant}`,({value})=>evaluateCognitiveReview(value,inputOf())],
+      [`evaluate/state/reasonCodes/tick=144/map=${variant}`,({value})=>evaluateCognitiveReview(value,inputOf({tick:144}))],
+    ]){
+      const sample=reasonState();
+      observe(()=>run(sample),sample.getterCalls,path);
+    }
+
+    for(const [path,run] of [
+      [`validate/state/unknownExtra.nested/map=${variant}`,(nested)=>validateCognitiveReviewState({...accepted,unknownExtra:{nested}})],
+      [`evaluate/state/unknownExtra.nested/map=${variant}`,(nested)=>evaluateCognitiveReview({...accepted,unknownExtra:{nested}},inputOf())],
+      [`evaluate/input/unknownExtra.nested/map=${variant}`,(nested)=>evaluateCognitiveReview(fresh(),{...inputOf(),unknownExtra:{nested}})],
+    ]){
+      const sample=hostileNested(mapResult);
+      observe(()=>run(sample.nested),sample.getterCalls,path);
+    }
+  }
+  const expectedPaths=[
+    'validate/state/reasonCodes/map=function','evaluate/state/reasonCodes/tick=0/map=function',
+    'evaluate/state/reasonCodes/tick=144/map=function','validate/state/unknownExtra.nested/map=function',
+    'evaluate/state/unknownExtra.nested/map=function','evaluate/input/unknownExtra.nested/map=function',
+    'validate/state/reasonCodes/map=undefined','evaluate/state/reasonCodes/tick=0/map=undefined',
+    'evaluate/state/reasonCodes/tick=144/map=undefined','validate/state/unknownExtra.nested/map=undefined',
+    'evaluate/state/unknownExtra.nested/map=undefined','evaluate/input/unknownExtra.nested/map=undefined',
+  ];
+  assert.deepEqual(observations,expectedPaths.map((path)=>({path,accepted:false,errorCode:'INVALID_INPUT',
+    getterCalls:0,errorName:'Error'})));
+});
