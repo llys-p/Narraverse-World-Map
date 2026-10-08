@@ -10,6 +10,7 @@ import { ACTOR_RULES,applyActorCommand,settleActorDay } from './actors.mjs';
 import { HUNTER_RULES,applyHunterCommand,planHunterDay,applyHunterAction,hunterActionFact,hunterCauses,settleHunterDay } from './hunter.mjs';
 import { SOCIETY_RULES,applySocietyCommand,planSocietyDay,applySocietyAction,societyActionFact,societyCauses,settleSocietyDay } from './society.mjs';
 import { MEMORY_RULE_VERSIONS,isMemoryRules,prepareMemoryDay,planMemoryDay,applyMemoryAction,applyMemoryCommand,settleMemorySocietyDay,finishMemoryDay,validateMemoryDayPayload } from './memory-runtime.mjs';
+import { MIND_RULES,applyMindAction,applyMindCommand,applyMindStimuliTick,planMindDay,finishMindDay,prepareMindDay,settleMindSocietyDay,finishMindMemoryDay,mindDecisionPlannedFact,mindResolvedOutcome,mindResolvedFact,sealMindOutcome,pushMindObservation,mindRejectionObservation } from './mind-runtime.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
 import { PLAYER_RULES,PLAY_RULES,playerDayFact,applyPlayerAction,playerActionFact } from './player-state.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
@@ -60,9 +61,13 @@ function performTick(bundle, systems, mode) {
     const commitInput=(input)=>{
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
       let success, result, eventSeqs = [];
-      if(rulesVersion===PLAY_RULES && input.type==='PlayerAction'){
+      if((rulesVersion===PLAY_RULES||rulesVersion===MIND_RULES) && input.type==='PlayerAction'){
         const applied=applyPlayerAction(s.world,input);s.world=applied.world;success=applied.success;result=applied.result;
         if(success)eventSeqs=[append(playerActionFact(input,result))];
+      }else if(rulesVersion===MIND_RULES){
+        const applied=input.type==='SocietyAction'?applyMindAction(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null):applyMindCommand(s.world,{type:input.type,payload:input.payload});
+        s.world=applied.world;success=applied.success;result=applied.result;
+        if(success)eventSeqs=[append(input.type==='SocietyAction'?societyActionFact(input,result):marketCommandFact(input,result))];
       }else if([SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion)){
         const action=isMemoryRules(rulesVersion)?applyMemoryAction:applySocietyAction,command=isMemoryRules(rulesVersion)?applyMemoryCommand:applySocietyCommand;
         const applied=input.type==='SocietyAction'?action(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null):command(s.world,{type:input.type,payload:input.payload});
@@ -101,6 +106,10 @@ function performTick(bundle, systems, mode) {
       commitInput(input);
     }
     s.pendingCommands = remaining;
+    // §6.1/6.2: due stimuli are consumed right after player completions and before any
+    // daily business; observations only update on activity ticks, never via extra loops.
+    if (rulesVersion === MIND_RULES) applyMindStimuliTick(s.world, failedTick, append);
+    if (rulesVersion === MIND_RULES) s.world.mindModel.cursor = s.nextEventSeq - 1;
     const plan = advanceScheduler({ currentTick: s.tick, tasks: s.scheduledTasks }, failedTick, Object.keys(systems));
     if(rulesVersion===HUNTER_RULES && plan.dueTasks.length){
       const decision=planHunterDay(s.world);s.world=decision.world;
@@ -109,6 +118,34 @@ function performTick(bundle, systems, mode) {
         requireCondition(input.targetTick===failedTick && !own(s.commandReceipts,input.commandId),'Internal command identity/due tick mismatch');
         requireCondition(s.nextInputSeq<Number.MAX_SAFE_INTEGER,'Internal input counter overflow','LIMIT_EXCEEDED');
         commitInput({...input,inputSeq:s.nextInputSeq++});
+      }
+    }
+    if(rulesVersion===MIND_RULES && plan.dueTasks.length){
+      const prepared=prepareMindDay(s.world,failedTick);s.world=prepared.world;
+      for(const fact of prepared.facts){validateMedicineAnnouncement(fact);append(fact);}
+      const planned=planMindDay(s.world,candidate.eventLog,failedTick,s.simulationId);s.world=planned.world;
+      const plannedSeqs=new Map();
+      for(const p of planned.plans)plannedSeqs.set(p.actorId,append(mindDecisionPlannedFact(p.decision)));
+      const submits=[...planned.chiefs.map(command=>({actorId:null,command,decision:null,selfHealth:null})),
+        ...planned.plans.map(p=>({actorId:p.actorId,command:p.command,decision:p.decision,selfHealth:p.selfHealth}))];
+      for(const item of submits){
+        if(item.command){
+          const input=commandInput(item.command);
+          requireCondition(input.targetTick===failedTick && !own(s.commandReceipts,input.commandId),'Mind internal due tick/ID mismatch');
+          requireCondition(s.nextInputSeq<Number.MAX_SAFE_INTEGER,'Mind input counter overflow','LIMIT_EXCEEDED');
+          commitInput({...input,inputSeq:s.nextInputSeq++});
+        }
+        if(item.actorId!==null){
+          const receipt=item.command?s.commandReceipts[item.command.commandId]:null;
+          const outcome=mindResolvedOutcome({decision:item.decision,command:item.command,selfHealth:item.selfHealth,receipt},s.world);
+          const seq=append(mindResolvedFact(plannedSeqs.get(item.actorId),outcome));
+          sealMindOutcome(s.world,outcome);
+          if(item.decision.choice==='BuyMedicine'&&receipt&&receipt.status==='rejected'){
+            pushMindObservation(s.world,item.actorId,mindRejectionObservation(seq,failedTick));
+            // The rejection observation cites the fact appended this tick; the cursor must
+            // advance before any other mid-tick world validation sees it.
+            s.world.mindModel.cursor=s.nextEventSeq-1;}
+        }
       }
     }
     if([SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion) && plan.dueTasks.length){
@@ -124,13 +161,14 @@ function performTick(bundle, systems, mode) {
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
       return canonicalJson({ ...protectedFields,
-        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
-        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
-        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
-        ...([ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
+        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
+        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
+        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
+        ...([ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
         ...(rulesVersion===HUNTER_RULES?{hunterConfig:world.hunterModel.config}:{}),
-        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion)?{societyConfig:world.societyModel.config}:{}),
-        ...(isMemoryRules(rulesVersion)?{memoryConfig:world.memoryModel.config}:{}) });
+        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion)?{societyConfig:world.societyModel.config}:{}),
+        ...((isMemoryRules(rulesVersion)||rulesVersion===MIND_RULES)?{memoryConfig:world.memoryModel.config}:{}),
+        ...(rulesVersion===MIND_RULES?{mindConfig:world.mindModel.config}:{}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
@@ -138,7 +176,7 @@ function performTick(bundle, systems, mode) {
         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
         ...([MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { populationCauses: Object.freeze(marketCauses(candidate.eventLog)) } : {}),
         ...(rulesVersion===HUNTER_RULES?{populationCauses:Object.freeze(hunterCauses(candidate.eventLog))}:{}),
-        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion)?{populationCauses:Object.freeze(societyCauses(candidate.eventLog))}:{}),
+        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion)?{populationCauses:Object.freeze(societyCauses(candidate.eventLog))}:{}),
         emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
@@ -148,13 +186,16 @@ function performTick(bundle, systems, mode) {
       }
     }
     requireCondition(envelope() === beforeSystems, 'System changed protected snapshot fields');
-    if([PLAYER_RULES,PLAY_RULES].includes(rulesVersion) && plan.dueTasks.length){
+    if([PLAYER_RULES,PLAY_RULES,MIND_RULES].includes(rulesVersion) && plan.dueTasks.length){
       const daily=candidate.eventLog.findLast(e=>e.type==='SocietyDaySettled' && e.tick===failedTick);
       requireCondition(daily,'Missing player daily source');append(playerDayFact(s.world,daily.payload));
     }
-    if(isMemoryRules(rulesVersion) && plan.dueTasks.length){
-      const memory=finishMemoryDay(s.world,candidate.eventLog,failedTick);s.world=memory.world;validateMemoryDayPayload(memory.fact.payload);append(memory.fact);
+    if((isMemoryRules(rulesVersion)||rulesVersion===MIND_RULES) && plan.dueTasks.length){
+      const memory=rulesVersion===MIND_RULES?finishMindMemoryDay(s.world,candidate.eventLog,failedTick):finishMemoryDay(s.world,candidate.eventLog,failedTick);
+      s.world=memory.world;validateMemoryDayPayload(memory.fact.payload);append(memory.fact);
     }
+    if(rulesVersion===MIND_RULES && plan.dueTasks.length)s.world=finishMindDay(s.world,candidate.eventLog,failedTick);
+    if(rulesVersion===MIND_RULES)s.world.mindModel.cursor=s.nextEventSeq-1;
     requireCondition(s.nextEventSeq === nextEventSeq, 'System rewrote event counter');
     requireCondition(s.nextEntityId <= Number.MAX_SAFE_INTEGER, 'Entity ID overflow', 'LIMIT_EXCEEDED');
     requireCondition(Number.isSafeInteger(s.nextEntityId) && s.nextEntityId >= previousEntityId, 'System reduced/invalidated entity ID counter');
@@ -193,6 +234,7 @@ function canonicalSystems(rulesVersion) {
   if (rulesVersion === ACTOR_RULES) return define('actors', 'ActorDaySettled', settleActorDay, true);
   if (rulesVersion === HUNTER_RULES) return define('hunter','HunterDaySettled',settleHunterDay,true);
   if (rulesVersion === SOCIETY_RULES) return define('society','SocietyDaySettled',settleSocietyDay,true);
+  if (rulesVersion===MIND_RULES) return define('society','SocietyDaySettled',settleMindSocietyDay,true);
   if (isMemoryRules(rulesVersion)) return define('society','SocietyDaySettled',settleMemorySocietyDay,true);
   throw fault('UNSUPPORTED_VERSION', 'No canonical transition for these rules');
 }
@@ -210,7 +252,7 @@ export function createSimulationSession(bundle, systems) {
   fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
   const registered = Object.freeze({ ...systems });
   validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
-  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(bundle.snapshot.rulesVersion),
+  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(bundle.snapshot.rulesVersion),
     'Session rules are not registered', 'UNSUPPORTED_VERSION');
   let current = freezeData(cloneBundle(bundle)), busy = false;
   const stats = { idleTicks: 0, activityTicks: 0 };
@@ -226,6 +268,11 @@ export function createSimulationSession(bundle, systems) {
           let nextActivity = Infinity;
           for (const command of current.snapshot.pendingCommands) nextActivity = Math.min(nextActivity, command.targetTick);
           for (const task of current.snapshot.scheduledTasks) nextActivity = Math.min(nextActivity, task.nextDueTick);
+          if (current.snapshot.rulesVersion === MIND_RULES) {
+            const mind = current.snapshot.world.mindModel;
+            if (mind.scriptCursor < mind.config.stimuli.length)
+              nextActivity = Math.min(nextActivity, mind.config.stimuli[mind.scriptCursor].tick);
+          }
           const idleTarget = Math.min(target, nextActivity - 1);
           if (idleTarget > current.snapshot.tick) {
             const advanced = idleTarget - current.snapshot.tick;

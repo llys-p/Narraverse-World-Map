@@ -10,6 +10,8 @@ import { ACTOR_RULES,validateActorPayload,validateActorWorld,validateActorHistor
 import { HUNTER_RULES,validateHunterWorld,validateHunterActionResult,validateHunterPayload,validateHunterHistory } from './hunter.mjs';
 import { SOCIETY_RULES,validateSocietyWorld,validateSocietyActionResult,validateSocietyPayload,validateSocietyHistory } from './society.mjs';
 import { MEMORY_RULE_VERSIONS,isMemoryRules,validateMemoryWorld,validateMemoryDayPayload,validateMemoryRuntimeHistory } from './memory-runtime.mjs';
+import { MIND_RULES,validateMindStimulusPayload,validateDecision,validateOutcome } from './mind-state.mjs';
+import { validateMindRuntimeHistory,validateMindWorld } from './mind-runtime.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
 import { PLAYER_RULES,PLAY_RULES,validatePlayerDayPayload,validatePlayerActionResult } from './player-state.mjs';
 
@@ -34,7 +36,7 @@ export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
     requireCondition(fact.type==='ActorDaySettled' && systemId==='actors','Invalid Actor fact');validateActorPayload(fact.payload);
   }else if(rulesVersion===HUNTER_RULES){
     requireCondition(fact.type==='HunterDaySettled' && systemId==='hunter','Invalid Hunter daily fact');validateHunterPayload(fact.payload);
-  }else if([SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(rulesVersion)){
+  }else if ([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion)) {
     requireCondition(fact.type==='SocietyDaySettled' && systemId==='society','Invalid Society daily fact');validateSocietyPayload(fact.payload);
   } else {
     requireCondition(fact.type === 'FixturePulse', 'Unknown system fact');
@@ -54,6 +56,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
     denseArray(eventLog, MAX_RESOURCE_DAYS + 100000); validateEcologyWorld(snapshot.world);
   } else if (snapshot.rulesVersion === MARKET_RULES) {
     denseArray(eventLog, MAX_RESOURCE_DAYS + 100000); validateMarketWorld(snapshot.world);
+  } else if (snapshot.rulesVersion === MIND_RULES) {
+    denseArray(eventLog, MAX_RESOURCE_DAYS*4 + 100000); validateMindWorld(snapshot.world);
   } else if (snapshot.rulesVersion===ACTOR_RULES) {
     denseArray(eventLog,MAX_RESOURCE_DAYS+100000);validateActorWorld(snapshot.world);
   }else if(snapshot.rulesVersion===HUNTER_RULES){
@@ -70,7 +74,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
   const ecologyProfile = state.rulesVersion === ECOLOGY_RULES;
   const actorProfile=state.rulesVersion===ACTOR_RULES;
   const hunterProfile=state.rulesVersion===HUNTER_RULES;
-  const memoryProfile=isMemoryRules(state.rulesVersion);
+  const mindProfile=state.rulesVersion===MIND_RULES;
+  const memoryProfile=isMemoryRules(state.rulesVersion)||mindProfile;
   const societyProfile=state.rulesVersion===SOCIETY_RULES || memoryProfile;
   const marketProfile = state.rulesVersion === MARKET_RULES || actorProfile || hunterProfile || societyProfile;
   if (!resourceProfile && !ecologyProfile && !marketProfile) fields(state.world, ['resources']);
@@ -96,11 +101,25 @@ export function validateEventLog(eventLog, snapshot, systems) {
       requireCondition(memoryProfile && event.tick===event.payload.expiresTick,'Invalid announcement profile/clock');
       const {eventSeq,tick,schemaVersion,...fact}=event;validateMedicineAnnouncement(fact);
     }else if(event.type==='PlayerActionCommitted'){
-      requireCondition(state.rulesVersion===PLAY_RULES && event.sourceSystem==='command-engine' && event.entityIds.length===1 && event.entityIds[0]==='actor-4' && event.causationEventSeqs.length===0,'Invalid player action source');
+      requireCondition([PLAY_RULES,MIND_RULES].includes(state.rulesVersion) && event.sourceSystem==='command-engine' && event.entityIds.length===1 && event.entityIds[0]==='actor-4' && event.causationEventSeqs.length===0,'Invalid player action source');
       identifier(event.commandId);validatePlayerActionResult(event.payload);requireCondition(event.tick===event.payload.endTick && !commandEvents.has(event.commandId),'Invalid player action clock/duplicate');commandEvents.set(event.commandId,event);
     }else if(event.type==='PlayerDaySettled'){
-      requireCondition([PLAYER_RULES,PLAY_RULES].includes(state.rulesVersion) && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player daily source');
+      requireCondition([PLAYER_RULES,PLAY_RULES,MIND_RULES].includes(state.rulesVersion) && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player daily source');
       validatePlayerDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Player closing clock mismatch');
+    }else if(event.type==='MindStimulusResolved'){
+      requireCondition(mindProfile && event.sourceSystem==='mind' && event.commandId===null && event.causationEventSeqs.length===0,'Invalid mind stimulus fact source');
+      validateMindStimulusPayload(event.payload);
+      requireCondition(event.entityIds.length===1 && event.entityIds[0]===event.payload.listenerId,'Mind stimulus identity mismatch');
+    }else if(event.type==='MindDecisionPlanned'){
+      requireCondition(mindProfile && event.sourceSystem==='mind' && event.commandId===null,'Invalid mind decision fact source');
+      validateDecision(event.payload);
+      requireCondition(event.entityIds.length===1 && event.entityIds[0]===event.payload.actorId && event.payload.tick===event.tick &&
+        canonicalJson(event.causationEventSeqs)===canonicalJson(event.payload.evidenceRefs),'Mind decision identity/causation mismatch');
+    }else if(event.type==='MindDecisionResolved'){
+      requireCondition(mindProfile && event.sourceSystem==='mind' && event.causationEventSeqs.length===1,'Invalid mind outcome fact source');
+      if(event.commandId!==null)identifier(event.commandId);
+      validateOutcome(event.payload);
+      requireCondition(event.entityIds.length===1 && event.entityIds[0]===event.payload.actorId,'Mind outcome identity mismatch');
     }else if(event.type==='MemoryDaySettled'){
       requireCondition(memoryProfile && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0,'Invalid Memory closing source');
       validateMemoryDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Memory closing clock mismatch');
@@ -157,7 +176,7 @@ export function validateEventLog(eventLog, snapshot, systems) {
     if (receipt.status === 'succeeded') {
       const event = commandEvents.get(id);
       requireCondition(event && receipt.eventSeqs.length === 1 && receipt.eventSeqs[0] === event.eventSeq, 'Success receipt missing its fact');
-      if(state.rulesVersion===PLAY_RULES && receipt.input.type==='PlayerAction'){
+      if([PLAY_RULES,MIND_RULES].includes(state.rulesVersion) && receipt.input.type==='PlayerAction'){
         validatePlayerActionResult(receipt.result);requireCondition(event.tick===receipt.input.targetTick && event.type==='PlayerActionCommitted' && canonicalJson(event.payload)===canonicalJson(receipt.result),'Player input/receipt/fact mismatch');
       }else if(societyProfile && receipt.input.type==='SocietyAction'){
         validateSocietyActionResult(receipt.result);
@@ -195,7 +214,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
   requireCondition(commandEvents.size === 0, 'Fact references missing receipt');
   if (resourceProfile) validateResourceHistory(state.world, resourcePayloads);
   if (ecologyProfile) validateEcologyHistory(state, events);
-  if(memoryProfile)validateMemoryRuntimeHistory(state,events);
+  if(mindProfile)validateMindRuntimeHistory(state,events);
+  else if(memoryProfile)validateMemoryRuntimeHistory(state,events);
   else if(societyProfile)validateSocietyHistory(state,events);
   else if(hunterProfile)validateHunterHistory(state,events);
   else if (actorProfile) validateActorHistory(state,events);

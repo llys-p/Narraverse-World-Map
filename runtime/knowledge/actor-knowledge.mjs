@@ -1,5 +1,7 @@
 import { validateBundle,cloneBundle } from '../core/world-state.mjs';
 import { MEMORY_RULES,PERSONALITY_RULES } from '../core/memory-runtime.mjs';
+import { MIND_RULES } from '../core/mind-state.mjs';
+import { buildMindKnowledge } from './mind-knowledge.mjs';
 import { memorySystems } from '../fixtures/memory-village.mjs';
 import { identifier,requireCondition,cloneData,fields,record } from '../core/data-contract.mjs';
 import { projectActorEvent } from '../core/memory-observer.mjs';
@@ -7,8 +9,9 @@ import { projectActorEvent } from '../core/memory-observer.mjs';
 // Full public entry audit precedes the whitelist projection. No caller-supplied
 // trust flag, configuration or system can bypass history/visibility validation.
 export function buildActorKnowledge(bundle,actorId){
-  identifier(actorId);
   fields(bundle,['snapshot','eventLog']);record(bundle.snapshot);
+  if(bundle.snapshot.rulesVersion===MIND_RULES)return buildMindKnowledge(bundle,actorId);
+  identifier(actorId);
   const rulesVersion=bundle.snapshot.rulesVersion;
   requireCondition([MEMORY_RULES,PERSONALITY_RULES].includes(rulesVersion),'Unknown actor knowledge rules','UNSUPPORTED_VERSION');
   validateBundle(bundle,{rulesVersion,systems:memorySystems()});
