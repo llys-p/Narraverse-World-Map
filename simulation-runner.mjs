@@ -23,6 +23,9 @@ import { createPersonalityNeutral,createPersonalityHealth,createPersonalityFood 
 import { MIND_RULES } from './runtime/core/mind-state.mjs';
 import { createMindVillage } from './runtime/fixtures/mind-village.mjs';
 import { projectMindInspector } from './runtime/knowledge/mind-knowledge.mjs';
+import { MOTIVATION_RULES } from './runtime/core/motivation-state.mjs';
+import { createMotivationVillage } from './runtime/fixtures/motivation-village.mjs';
+import { projectMotivationInspector } from './runtime/knowledge/motivation-knowledge.mjs';
 import { createSimulationSession } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
@@ -55,6 +58,7 @@ const profiles = new Map([
   ['personality-health',{rulesVersion:PERSONALITY_RULES,create:createPersonalityHealth}],
   ['personality-food',{rulesVersion:PERSONALITY_RULES,create:createPersonalityFood}],
   ['mind-village',{rulesVersion:MIND_RULES,create:createMindVillage}],
+  ['motivation-village',{rulesVersion:MOTIVATION_RULES,create:createMotivationVillage}],
 ]);
 const actorPayload=event=>['HunterDaySettled','SocietyDaySettled'].includes(event.type)?event.payload.actors:event.type==='ActorDaySettled'?event.payload:undefined;
 const marketPayload=event=>actorPayload(event)?.market??(event.type==='EconomyDaySettled'?event.payload:undefined);
@@ -308,15 +312,17 @@ export async function runSimulation(options, hooks = {}) {
     checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
     await fs.writeFile(path.join(directory, 'inputs.json'), JSON.stringify(completeInputs(bundle.snapshot), null, 2), { flag: 'wx' });
     await writeEvents(path.join(directory, 'events.csv'), bundle.eventLog);
-    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
-    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
-    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
-    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
+    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
+    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
+    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
+    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
     const hunterConfig=bundle.snapshot.rulesVersion===HUNTER_RULES?bundle.snapshot.world.hunterModel.config:undefined;
-    const societyConfig=[SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.societyModel.config:undefined;
-    const memoryConfig=(isMemoryRules(bundle.snapshot.rulesVersion)||bundle.snapshot.rulesVersion===MIND_RULES)?bundle.snapshot.world.memoryModel.config:undefined;
-    const mindConfig=bundle.snapshot.rulesVersion===MIND_RULES?bundle.snapshot.world.mindModel.config:undefined;
+    const societyConfig=[SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.societyModel.config:undefined;
+    const memoryConfig=(isMemoryRules(bundle.snapshot.rulesVersion)||[MIND_RULES,MOTIVATION_RULES].includes(bundle.snapshot.rulesVersion))?bundle.snapshot.world.memoryModel.config:undefined;
+    const mindConfig=[MIND_RULES,MOTIVATION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.mindModel.config:undefined;
     const mindInspector=bundle.snapshot.rulesVersion===MIND_RULES?projectMindInspector(bundle):undefined;
+    const motivationConfig=bundle.snapshot.rulesVersion===MOTIVATION_RULES?bundle.snapshot.world.motivationModel.config:undefined;
+    const motivationInspector=bundle.snapshot.rulesVersion===MOTIVATION_RULES?projectMotivationInspector(bundle):undefined;
     const personalityConfig=bundle.snapshot.rulesVersion===PERSONALITY_RULES?{version:'personality-config-v1',personalities:memoryConfig.personalities}:undefined;
     if (resourceConfig) {
       await fs.writeFile(path.join(directory, 'resource-config.json'), JSON.stringify(resourceConfig, null, 2), { flag: 'wx' });
@@ -342,6 +348,8 @@ export async function runSimulation(options, hooks = {}) {
     if(memoryConfig){await fs.writeFile(path.join(directory,'memory-config.json'),JSON.stringify(memoryConfig,null,2),{flag:'wx'});await writeMemory(directory,bundle.eventLog);}
     if(mindConfig)await fs.writeFile(path.join(directory,'mind-config.json'),JSON.stringify(mindConfig,null,2),{flag:'wx'});
     if(mindInspector)await fs.writeFile(path.join(directory,'mind-inspector.json'),JSON.stringify(mindInspector,null,2),{flag:'wx'});
+    if(motivationConfig)await fs.writeFile(path.join(directory,'motivation-config.json'),JSON.stringify(motivationConfig,null,2),{flag:'wx'});
+    if(motivationInspector)await fs.writeFile(path.join(directory,'motivation-inspector.json'),JSON.stringify(motivationInspector,null,2),{flag:'wx'});
     if(personalityConfig)await fs.writeFile(path.join(directory,'personality-config.json'),JSON.stringify(personalityConfig,null,2),{flag:'wx'});
     const summary = { status: failure ? 'failed' : 'succeeded', ...identity, nodeVersion: process.version,
       fixtureId: bundle.snapshot.fixtureId, fixtureVersion: bundle.snapshot.fixtureVersion,
@@ -357,6 +365,8 @@ export async function runSimulation(options, hooks = {}) {
       ...(memoryConfig?{memoryConfigHash:hash(memoryConfig)}:{}),
       ...(mindConfig?{mindConfigHash:hash(mindConfig)}:{}),
       ...(mindInspector?{mindInspectorHash:hash(mindInspector)}:{}),
+      ...(motivationConfig?{motivationConfigHash:hash(motivationConfig)}:{}),
+      ...(motivationInspector?{motivationInspectorHash:hash(motivationInspector)}:{}),
       ...(personalityConfig?{personalityConfigHash:hash(personalityConfig)}:{}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       executionStats: session.getStats(),

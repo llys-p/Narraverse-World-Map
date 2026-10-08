@@ -11,6 +11,8 @@ import { HUNTER_RULES,applyHunterCommand,planHunterDay,applyHunterAction,hunterA
 import { SOCIETY_RULES,applySocietyCommand,planSocietyDay,applySocietyAction,societyActionFact,societyCauses,settleSocietyDay } from './society.mjs';
 import { MEMORY_RULE_VERSIONS,isMemoryRules,prepareMemoryDay,planMemoryDay,applyMemoryAction,applyMemoryCommand,settleMemorySocietyDay,finishMemoryDay,validateMemoryDayPayload } from './memory-runtime.mjs';
 import { MIND_RULES,applyMindAction,applyMindCommand,applyMindStimuliTick,planMindDay,finishMindDay,prepareMindDay,settleMindSocietyDay,finishMindMemoryDay,mindDecisionPlannedFact,mindResolvedOutcome,mindResolvedFact,sealMindOutcome,pushMindObservation,mindRejectionObservation } from './mind-runtime.mjs';
+import { MOTIVATION_RULES } from './motivation-state.mjs';
+import { motivationRuntimeHooks } from './motivation-runtime.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
 import { PLAYER_RULES,PLAY_RULES,playerDayFact,applyPlayerAction,playerActionFact } from './player-state.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
@@ -61,9 +63,14 @@ function performTick(bundle, systems, mode) {
     const commitInput=(input)=>{
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
       let success, result, eventSeqs = [];
-      if((rulesVersion===PLAY_RULES||rulesVersion===MIND_RULES) && input.type==='PlayerAction'){
+      if((rulesVersion===PLAY_RULES||rulesVersion===MIND_RULES||rulesVersion===MOTIVATION_RULES) && input.type==='PlayerAction'){
         const applied=applyPlayerAction(s.world,input);s.world=applied.world;success=applied.success;result=applied.result;
         if(success)eventSeqs=[append(playerActionFact(input,result))];
+      }else if(rulesVersion===MOTIVATION_RULES){
+        requireCondition(input.type==='SocietyAction','Unexpected motivation command');
+        const applied=motivationRuntimeHooks.applyAction(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null);
+        s.world=applied.world;success=applied.success;result=applied.result;
+        if(success)eventSeqs=[append(societyActionFact(input,result))];
       }else if(rulesVersion===MIND_RULES){
         const applied=input.type==='SocietyAction'?applyMindAction(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null):applyMindCommand(s.world,{type:input.type,payload:input.payload});
         s.world=applied.world;success=applied.success;result=applied.result;
@@ -110,6 +117,11 @@ function performTick(bundle, systems, mode) {
     // daily business; observations only update on activity ticks, never via extra loops.
     if (rulesVersion === MIND_RULES) applyMindStimuliTick(s.world, failedTick, append);
     if (rulesVersion === MIND_RULES) s.world.mindModel.cursor = s.nextEventSeq - 1;
+    const motivationContext=rulesVersion===MOTIVATION_RULES?motivationRuntimeHooks.beforeSystems(s,candidate.eventLog,failedTick,append,(raw)=>{
+      const input=commandInput(raw);requireCondition(input.targetTick===failedTick&&!own(s.commandReceipts,input.commandId),'Motivation internal due tick/ID mismatch');
+      requireCondition(s.nextInputSeq<Number.MAX_SAFE_INTEGER,'Motivation input overflow','LIMIT_EXCEEDED');
+      commitInput({...input,inputSeq:s.nextInputSeq++});return s.commandReceipts[input.commandId];
+    }):null;
     const plan = advanceScheduler({ currentTick: s.tick, tasks: s.scheduledTasks }, failedTick, Object.keys(systems));
     if(rulesVersion===HUNTER_RULES && plan.dueTasks.length){
       const decision=planHunterDay(s.world);s.world=decision.world;
@@ -161,14 +173,15 @@ function performTick(bundle, systems, mode) {
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
       return canonicalJson({ ...protectedFields,
-        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
-        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
-        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
-        ...([ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
+        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
+        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
+        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
+        ...([ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
         ...(rulesVersion===HUNTER_RULES?{hunterConfig:world.hunterModel.config}:{}),
-        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion)?{societyConfig:world.societyModel.config}:{}),
-        ...((isMemoryRules(rulesVersion)||rulesVersion===MIND_RULES)?{memoryConfig:world.memoryModel.config}:{}),
-        ...(rulesVersion===MIND_RULES?{mindConfig:world.mindModel.config}:{}) });
+        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(rulesVersion)?{societyConfig:world.societyModel.config}:{}),
+        ...((isMemoryRules(rulesVersion)||[MIND_RULES,MOTIVATION_RULES].includes(rulesVersion))?{memoryConfig:world.memoryModel.config}:{}),
+        ...([MIND_RULES,MOTIVATION_RULES].includes(rulesVersion)?{mindConfig:world.mindModel.config}:{}),
+        ...(rulesVersion===MOTIVATION_RULES?{motivationConfig:world.motivationModel.config}:{}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
@@ -176,7 +189,7 @@ function performTick(bundle, systems, mode) {
         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
         ...([MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { populationCauses: Object.freeze(marketCauses(candidate.eventLog)) } : {}),
         ...(rulesVersion===HUNTER_RULES?{populationCauses:Object.freeze(hunterCauses(candidate.eventLog))}:{}),
-        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(rulesVersion)?{populationCauses:Object.freeze(societyCauses(candidate.eventLog))}:{}),
+        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(rulesVersion)?{populationCauses:Object.freeze(societyCauses(candidate.eventLog))}:{}),
         emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
@@ -196,6 +209,7 @@ function performTick(bundle, systems, mode) {
     }
     if(rulesVersion===MIND_RULES && plan.dueTasks.length)s.world=finishMindDay(s.world,candidate.eventLog,failedTick);
     if(rulesVersion===MIND_RULES)s.world.mindModel.cursor=s.nextEventSeq-1;
+    if(rulesVersion===MOTIVATION_RULES)motivationRuntimeHooks.afterSystems(s,candidate.eventLog,failedTick,append,motivationContext);
     requireCondition(s.nextEventSeq === nextEventSeq, 'System rewrote event counter');
     requireCondition(s.nextEntityId <= Number.MAX_SAFE_INTEGER, 'Entity ID overflow', 'LIMIT_EXCEEDED');
     requireCondition(Number.isSafeInteger(s.nextEntityId) && s.nextEntityId >= previousEntityId, 'System reduced/invalidated entity ID counter');
@@ -234,6 +248,7 @@ function canonicalSystems(rulesVersion) {
   if (rulesVersion === ACTOR_RULES) return define('actors', 'ActorDaySettled', settleActorDay, true);
   if (rulesVersion === HUNTER_RULES) return define('hunter','HunterDaySettled',settleHunterDay,true);
   if (rulesVersion === SOCIETY_RULES) return define('society','SocietyDaySettled',settleSocietyDay,true);
+  if (rulesVersion===MOTIVATION_RULES) return define('society','SocietyDaySettled',motivationRuntimeHooks.settleDay,true);
   if (rulesVersion===MIND_RULES) return define('society','SocietyDaySettled',settleMindSocietyDay,true);
   if (isMemoryRules(rulesVersion)) return define('society','SocietyDaySettled',settleMemorySocietyDay,true);
   throw fault('UNSUPPORTED_VERSION', 'No canonical transition for these rules');
@@ -252,7 +267,7 @@ export function createSimulationSession(bundle, systems) {
   fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
   const registered = Object.freeze({ ...systems });
   validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
-  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES].includes(bundle.snapshot.rulesVersion),
+  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES].includes(bundle.snapshot.rulesVersion),
     'Session rules are not registered', 'UNSUPPORTED_VERSION');
   let current = freezeData(cloneBundle(bundle)), busy = false;
   const stats = { idleTicks: 0, activityTicks: 0 };
@@ -268,11 +283,13 @@ export function createSimulationSession(bundle, systems) {
           let nextActivity = Infinity;
           for (const command of current.snapshot.pendingCommands) nextActivity = Math.min(nextActivity, command.targetTick);
           for (const task of current.snapshot.scheduledTasks) nextActivity = Math.min(nextActivity, task.nextDueTick);
-          if (current.snapshot.rulesVersion === MIND_RULES) {
+          if ([MIND_RULES,MOTIVATION_RULES].includes(current.snapshot.rulesVersion)) {
             const mind = current.snapshot.world.mindModel;
             if (mind.scriptCursor < mind.config.stimuli.length)
               nextActivity = Math.min(nextActivity, mind.config.stimuli[mind.scriptCursor].tick);
           }
+          if(current.snapshot.rulesVersion===MOTIVATION_RULES){const motivation=current.snapshot.world.motivationModel;
+            if(motivation.requestCursor<motivation.config.requests.length)nextActivity=Math.min(nextActivity,motivation.config.requests[motivation.requestCursor].tick);}
           const idleTarget = Math.min(target, nextActivity - 1);
           if (idleTarget > current.snapshot.tick) {
             const advanced = idleTarget - current.snapshot.tick;
