@@ -1,6 +1,6 @@
 # M3-1B：重要性 × 相关性的认知审查内核
 
-合同版本：`m3-kernels-contract-v1`。状态：待派发；尚未开工、未实现、未验收。任务书发布提交由中控发布后填入控制状态，不在此预填。
+合同版本：`m3-kernels-contract-v1`。状态：中控裁定 PASS/本地已验收（仅纯内核）。合同发布 SHA：`8282a135a85967818c39a6289cd1a0e7dcec769d`。
 
 ## 给用户看
 
@@ -17,7 +17,7 @@
 
 ## 基准、目录与所有权
 
-- 控制文档目录：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`，任务书编写前 HEAD `0af0b79aadbc0bbd127de87c6de2a68f9b83967c`。
+- 控制文档目录：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`，合同发布 SHA `8282a135a85967818c39a6289cd1a0e7dcec769d`。
 - 唯一代码交接基准：`D:\Narraverse-World-Map-m2-integration`，分支 `codex/world-runtime-m2-integration`，本地基准 `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`。冻结 M2 验收代码 SHA `83826a82fea5c0edfe62aa3d676313eefe2a7790` 与该基准仅 README/PROJECT_CONTEXT 不同；M2 历史 401/401 不重跑，也不把该历史结果当本任务验证。
 - 从本地 `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9` 建立专用工作树：`D:\Narraverse-World-Map-m3-cognition`，分支 `codex/world-runtime-m3-cognition`。创建前核实路径不存在，且分支未被其他工作树占用；若已存在，先确认其归属与实际状态，不覆盖、不重置、不挪用。
 - 不从 `main` 或其他工作树复制 runtime；不碰已验收 integration 树、A 路工作树或他人数据。A/B 互不导入，不新增 helper。
@@ -25,7 +25,7 @@
   - `runtime/core/cognitive-review.mjs`
   - `tests/simulation/cognitive-review.test.mjs`
 - 唯一允许的只读 import：`./data-contract.mjs` 与共享日界常量 `./simulation-clock.mjs` 的 `TICKS_PER_DAY`。不得修改这些模块或其他既有生产、测试、合同、状态及看板文件。
-- 中控后续在指定提交 SHA 上独立定向补反例。任务执行者提交精确本地代码 commit，不 push、不合并 main、不部署；控制库发布合同 SHA 由中控在发布时填写。
+- 中控在指定提交 SHA 上独立定向补反例。任务执行者提交精确本地代码 commit，不 push、不合并 main、不部署；控制库发布合同 SHA 见本任务顶部。
 - 测试与机械批处理交给本路子代理，推理程度统一 high；明确分配本路测试文件的唯一所有权，测试者不修改生产模块。验证时冻结被测代码，按实际 SHA 和真实命令交回证据。
 
 ## 精确公共接口与 DTO
@@ -120,4 +120,13 @@ git diff --check
 
 代码未变化且该提交已有有效通过证据时不重复。全量回归留给 M3 阶段收口。不得把 M2 历史 401/401 当成本路验证，也不得增跑另一任务的测试。
 
-交付回执说明：用户可见行为与限制；实际工作树、分支、基准 SHA、精确代码 commit SHA；控制合同发布 SHA（按中控提供值填写）；本路精确文件；命令、数字结果、真实证据路径；PASS 建议及未验范围。结束于 M3-1B 本地精确 commit；不执行 M3-2 adapter、完整体验、合并、push、部署或阶段验收。M3-1 尚需中控按提交 SHA 定向补反例；M3 整体仍未验收。
+交付回执说明：用户可见行为与限制；实际工作树、分支、基准 SHA、精确代码 commit SHA；控制合同发布 SHA `8282a135a85967818c39a6289cd1a0e7dcec769d`；本路精确文件；命令、数字结果、真实证据路径；PASS 建议及未验范围。执行范围止于 M3-1B 本地代码交付；不执行 M3-2 adapter、完整体验、合并、push 或部署。本路中控独立验收已完成，M3-1 两个纯内核轮次均已收口；完整 M3 仍未验收。
+
+## 中控验收记录（2026-10-08 20:15 Asia/Shanghai）
+
+- 裁定：M3-1B PASS/本地已验收（仅纯内核）。合同 `m3-kernels-contract-v1` 的实际发布 SHA 为 `8282a135a85967818c39a6289cd1a0e7dcec769d`；`b7379` 是后续状态摘要，不是引入本任务书的发布提交。源码基准 `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`；代码树 `D:\Narraverse-World-Map-m3-cognition @ codex/world-runtime-m3-cognition`；作者交付 `3d4b21e3eb64f68f3d0b9a4d2801a113a1a9be0d`；中控修复提交 `9a4794700234f097be0e1b7cb490dad4341e2e85`，当前干净。仅原合同的两项白名单文件有改动；data-contract、simulation-clock、M2及其他既有文件未改。
+- 作者原 26 项为已记录的历史 26/26，未在未变的 `3d4b21e` 初始交付上重跑。中控首次独立 8 门为 5 pass/3 fail，集中于 inherited array 的 `map` getter：非法 state 被接受，另有 TypeError 未带约定 code，且 unknown nested input 可先执行 getter。红证据保留于 `artifacts/world-runtime-m3b-controller-review-20261008/{result.json,observations.json,tests.tap,review.md}`；这是 8 tests、36 个普通 assertions、12 条 boundary observations，不能把 12 条路径计作 12 个测试。
+- 修复在本模块增加局部 descriptor tree 预检并复用既有 record/denseArray 检查，拒绝自定义 array prototype、环和超深对象，保留普通/null-prototype records；新增 1 个回归测试。未改 data-contract、simulation-clock、阈值、评分、reason、gates、DTO 或 exports。修后原 26 项加新增 1 项，共 27/27 pass、0 fail/skip/cancel，exit 0，128.6013 ms。运行时 HEAD 仍为 `3d4b21e` 且两文件有未提交修复；测试字节随后提交于 `9a47947`，不声称这 27 项是在已提交 `9a47947` 上执行。证据：`artifacts/world-runtime-m3b-controller-review-20261008/repair/{module-after-repair.json,module-after-repair.tap,final-snapshot.json,red-focused.json,red-focused.tap}`。
+- 在实际 `9a4794700234f097be0e1b7cb490dad4341e2e85` 上仅定向复跑 G6-G8，3/3 pass、0 fail/skip，exit 0，90.5213 ms（wall 154.1448 ms）。3 项普通 assertions 覆盖 12 次 getter observations，均为 accepted=false、`INVALID_INPUT`、getterCalls=0。focused probe 副本只调整模块相对 import，bodyParity=true；原 red probe/TAP/observations/result 的四个 hash 未变，HEAD、source/test/deps/probe 前后相同且树 clean。未重跑旧 5 个通过门或 27 项模块套件。证据：`artifacts/world-runtime-m3b-controller-review-20261008/focused/{result.json,observations.json,tests.tap,review.md}`。
+- 源码 RAW SHA256 `be3b1d6b489b5ace02fa315a489fed83dc09a871d687463eb34b9e27aa7994cf`；测试 SHA256 `7eaf85612a43ef662ca9c494ad3afae74747ff4a187abe93e0df558570183834`；最终源码 Git blob `41c57885b364151e7c316cc21a1165bc55581c38`，与实际被测字节对应。合同解释核对不要求改算法/spec：评分决定 full 分级，按本次144周期可同时记 PROMOTED 与 PERIOD_DUE，仍只触发一次 review；validator 只证明末态结构，不证明历史因果；7 reason 的单 DTO 合法不是缺陷；预算字符数示例用于构造超限输入，不声称唯一数学阈值。
+- M3-1A/B 两个纯内核至此全部 PASS/本地验收，M3-1 收口。M3-2 的受信任事件 adapter、真实候选消费、既有计划和日结完整维持、保存/重演及真实消费者仍未实现，也未发布；完整 M3 未验收。本轮不派发或实现后续任务，不合并 main、不 push、不联网、不更新服务或平台。
