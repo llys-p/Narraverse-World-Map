@@ -20,9 +20,9 @@
 
 ## 新世界运行时进度
 
-2026-10-08 17:40（Asia/Shanghai）更新：M2在冻结 integration SHA `83826a82fea5c0edfe62aa3d676313eefe2a7790` 上阶段全量57 simulation + export 共58 files，401/401 pass，0 fail/skip/cancel/todo，Node 24.14.0/concurrency2，exit 0；A1/A2/B/C及M2由中控本地验收PASS。C原30项red=29 pass/1 browser fail/0 skip；修后仅定向该浏览器用例1 pass覆盖原失败，原29项未重跑。B四日UI与断连/迟到DTO保留通过，三条harness red原件保留。M3未开始；停止于M2，不合并main。Projects和push未执行：应用网络权限仍已撤销；本地提交不代表远端已同步。
+2026-10-08 18:45（Asia/Shanghai）：M2已本地验收收口，冻结代码 `83826a8` 的401/401阶段回归与真实浏览器证据已归档；交接基准为 `D:\Narraverse-World-Map-m2-integration @ c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`。下一轮只发布 [M3-1A 工作结果经验内核](tasks/M3-1A-WORK-EXPERIENCE-TASK.md)和 [M3-1B 认知审查内核](tasks/M3-1B-COGNITIVE-REVIEW-TASK.md)，合同 `m3-kernels-contract-v1`，两路可并行、均待派发/未开工；中控独立验收，不另派C。每路一个模块和一份测试，真实运行时接入待依赖交付后另发M3-2；M3整体未验收。本轮子代理使用high推理，仅编写任务书。未合并main、未push/更新Projects；此前应用网络权限撤销，本轮未联网核实恢复。
 
-M1、M2及M2 A1/A2/B/C已本地验收；M3/D3/D4未开始。D2C历史树不是M2代码基准；正式平台、模型/桥与真实旧存档未接入。Projects/push因应用网络权限撤销待同步，未声称远端已更新。详见[当前状态](PROJECT_CONTEXT.md)。
+M1、M2及M2 A1/A2/B/C已本地验收；M3-1发布不代表开工，D3/D4未开始。执行者记录两份任务书的实际控制分支发布SHA，并从固定M2交接点创建独占工作树。详见[当前状态](PROJECT_CONTEXT.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
