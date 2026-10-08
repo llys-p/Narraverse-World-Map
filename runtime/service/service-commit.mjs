@@ -3,7 +3,7 @@ import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { fields,denseArray,requireCondition,cloneData,fault } from '../core/data-contract.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
-import { projectPublicSnapshot,runtimeProfile,validateServiceCommandDto } from './http-contract.mjs';
+import { projectPublicSnapshot,runtimeProfile,validateServiceCommandDto,mindBackend } from './http-contract.mjs';
 import { executePlayerIntent } from '../core/player-intents.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
@@ -12,16 +12,18 @@ export function timeReceipt(dto,toRevision){return {apiVersion:1,commandId:dto.c
 // Submit and journal audit use this same complete transition; the service owns no world rules.
 export function transitionServiceCommand(bundle,dto){
   dto=validateServiceCommandDto(dto);
-  const profile=runtimeProfile(bundle);requireCondition(dto.version===1 || profile.serviceFormatVersion===3,'Profile does not support player actions','COMMAND_UNSUPPORTED');
+  const profile=runtimeProfile(bundle),mindPlayer=profile.serviceFormatVersion===4;
+  requireCondition(dto.version===1 || profile.serviceFormatVersion===3 || mindPlayer,'Profile does not support player actions','COMMAND_UNSUPPORTED');
   if(dto.version===1){const session=createSimulationSession(bundle,profile.systems);session.advanceTicks(dto.payload.ticks);
     const next=session.getBundle();return {bundle:next,receipt:timeReceipt(dto,next.snapshot.revision)};}
-  const {bundle:next,outcome,result}=executePlayerIntent(bundle,{commandId:dto.commandId,type:dto.type,payload:dto.payload});
+  const execute=mindPlayer?mindBackend().runtime.executeMindPlayerIntent:executePlayerIntent;
+  const {bundle:next,outcome,result}=execute(bundle,{commandId:dto.commandId,type:dto.type,payload:dto.payload});
   return {bundle:next,receipt:{apiVersion:1,receiptVersion:2,commandId:dto.commandId,status:'committed',fromRevision:dto.expectedRevision,
     toRevision:next.snapshot.revision,tick:next.snapshot.tick,type:dto.type,outcome,result}};
 }
 export function validateServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
-  requireCondition([1,2,3].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
+  requireCondition([1,2,3,4].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
   const profile=runtimeProfile(envelope.anchor),finalProfile=runtimeProfile(envelope.bundle);
   requireCondition(envelope.serviceFormatVersion===profile.serviceFormatVersion && envelope.serviceFormatVersion===finalProfile.serviceFormatVersion,
     'Service format/profile mismatch','UNSUPPORTED_VERSION');
