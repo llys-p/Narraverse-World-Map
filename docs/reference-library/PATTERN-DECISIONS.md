@@ -202,3 +202,119 @@ Narraverse 自己的硬边界：
 优先让 LLM / Model Provider 根据受限 Character Context 生成解释或候选策略。
 
 高频、关键、需要重放和资产一致性的部分仍工程化。
+
+
+---
+
+## PAT-011 Campaign Map as Orchestrator
+
+状态：CANDIDATE for World Map。
+
+参考：Mount & Blade II: Bannerlord。
+
+方向：
+
+世界地图不是单独小游戏，而是 settlement、travel、trade、diplomacy、encounter、scene、battle 的编排层。
+
+地图只负责高层 state / intent；进入具体场景后由对应子系统执行，结果结构化写回 World Runtime。
+
+---
+
+## PAT-012 Mobile Party as Persistent World Actor
+
+状态：CANDIDATE。
+
+参考：Bannerlord / Kenshi / Starsector。
+
+方向：
+
+Caravan、Patrol、Army、Bandit、Refugees、Messenger 等共享一个高层 Party contract，而不是每类各写一套地图移动逻辑。
+
+---
+
+## PAT-013 Physicalized Important Logistics
+
+状态：CANDIDATE。
+
+参考：X4 / Battle Brothers / Endless Sky。
+
+方向：
+
+宏观经济继续允许 aggregate，但对真正影响玩法的重要物流批次实体化成 caravan / convoy。
+
+这样护送、劫掠、延误、道路风险和短缺可以连接成同一因果链。
+
+---
+
+## PAT-014 World State Override
+
+状态：CANDIDATE。
+
+参考：Kenshi。
+
+方向：
+
+关键人物、战役和 faction state 可以切换 settlement owner、patrol / spawn、service、law 等世界状态。
+
+避免“剧情说城市沦陷了，但地图和系统没变”。
+
+---
+
+## PAT-015 World Problem -> Contract
+
+状态：CANDIDATE。
+
+参考：Battle Brothers / Endless Sky。
+
+方向：
+
+先产生真实世界问题，再派生任务。
+
+~~~text
+shortage / threat / missing caravan / monster pressure
+→ opportunity or contract
+→ player intervention
+→ canonical world consequence
+~~~
+
+---
+
+## PAT-016 Intel != World Truth
+
+状态：ADOPTED-DESIGN，地图侧待实现。
+
+参考：Starsector / Caves of Qud；与 PAT-009 同源。
+
+方向：
+
+Player Map 也不应默认全知。
+
+地点、敌军、商路风险、资源短缺等信息可以有 source、age、confidence / certainty 与 lastObservedTick。
+
+---
+
+## PAT-017 Regional Field
+
+状态：CANDIDATE。
+
+参考：Factorio pollution。
+
+方向：
+
+对适合空间扩散的宏观压力使用低成本 field，而不是给每个 NPC 分别跑逻辑。
+
+可用于 plague、monster pressure、war pressure、corruption、weather severity 等。
+
+---
+
+## PAT-018 World Context Packet
+
+状态：ADOPTED-DESIGN，D3/D4 候选落点。
+
+参考：Bannerlord 的 campaign → scene / battle 层次；Narraverse 自身 World Runtime 边界。
+
+决定：
+
+地图进入场景/战斗时传结构化 Context；退出时只返回 Outcome，由 World Runtime 验证并提交。
+
+Scene / Battle 不成为第二世界权威。
