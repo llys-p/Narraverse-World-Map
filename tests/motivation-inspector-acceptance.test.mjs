@@ -3,106 +3,213 @@ import assert from 'node:assert/strict';
 import * as fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
+import { createSimulationSession } from '../runtime/core/command-engine.mjs';
+import { saveCheckpoint } from '../runtime/persistence/checkpoint-store.mjs';
+import { startRuntimeServer } from '../runtime-server.mjs';
 
-// ============================================================================
-// M2 独立验收测试集：检查器投影、真实只读消费者链与旧系统向后兼容 (Q6 / Q7)
-// 共同合同：m2-contract-v2 (0d7cc74)
-// 代码基准：87aa9b605f5f509ce3b0daa97e34ded004d22f33
-// ============================================================================
-
-// 1. 基准既有 M1 / D2C 模块导入（这些在 87aa9b6 基准中均已存在）
-import * as M1State from '../runtime/core/mind-state.mjs';
-import * as PlayerState from '../runtime/core/player-state.mjs';
-
-// 2. M2 新增依赖动态导入检查（B 检查器与 A2 运行时）
-let B = null;
-let B_ERR = null;
-let A2 = null;
-let A2_ERR = null;
-
-try {
-  const [inspector, runtime] = await Promise.all([
-    import('../runtime/service/motivation-inspector.mjs').catch(() => null),
-    import('../runtime/core/motivation-runtime.mjs').catch(() => null),
-  ]);
-  if (inspector) B = inspector;
-  if (runtime) A2 = runtime;
-} catch (e) {
-  B_ERR = e;
+// Q6 uses the A2 Inspector export, not an invented service/motivation-inspector.
+// Q7 independently reruns bounded legacy scenarios against the exact 87aa9b6 tree.
+async function dependency(specifier, names) {
+  const url = new URL(specifier, import.meta.url); let module;
+  try { module = await import(url.href); }
+  catch (e) { if (e.code === 'ERR_MODULE_NOT_FOUND' && e.url === url.href) return { missing: url.href }; throw e; }
+  for (const name of names) assert.equal(typeof module[name], 'function', `${specifier} export ${name}`);
+  return { module };
 }
-
-function checkB(t) {
-  if (!B) {
-    t.diagnostic(`DEPENDENCY_UNDELIVERED: B (motivation-inspector) 未交付 (${B_ERR?.message || '模块不存在'})`);
-    t.skip('依赖未交付：待 B 交付实际 SHA 后接入');
-    return false;
+const deps = await Promise.all([
+  dependency('../runtime/fixtures/motivation-village.mjs', ['defaultMotivationVillageConfig', 'createMotivationVillage', 'motivationSystems']),
+  dependency('../runtime/core/motivation-runtime.mjs', ['validateMotivationWorld', 'executeMotivationPlayerIntent', 'describeMotivationPlayerActions']),
+  dependency('../runtime/knowledge/motivation-knowledge.mjs', ['buildMotivationKnowledge', 'projectMotivationInspector']),
+]);
+const [fixture, runtime, knowledge] = deps.map(d => d.module);
+function ready(t) {
+  const missing = deps.filter(d => d.missing).map(d => d.missing);
+  if (!missing.length) return true; t.skip(`DEPENDENCY_UNDELIVERED: ${missing.join(', ')}`); return false;
+}
+async function temporary(t) {
+  const prefix = path.join(os.tmpdir(), 'm2c-inspector-'), dir = await fs.mkdtemp(prefix);
+  t.after(async () => { assert.ok(path.isAbsolute(dir) && dir.startsWith(prefix)); await fs.rm(dir, { recursive: true, force: true }); }); return dir;
+}
+async function disk(dir) {
+  return Promise.all((await fs.readdir(dir)).filter(f => f.endsWith('.json')).sort().map(async f => [f, await fs.readFile(path.join(dir, f), 'utf8')]));
+}
+async function get(url, route = '/api/runtime/minds') { const r = await fetch(url + route); assert.equal(r.status, 200, route); return r.json(); }
+async function post(url, dto) {
+  const r = await fetch(url + '/api/runtime/commands', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dto) });
+  assert.equal(r.status, 200, await r.clone().text()); return r.json();
+}
+const time = (commandId, expectedRevision, ticks) => ({ version: 1, commandId, expectedRevision, type: 'AdvanceTime', payload: { ticks } });
+const m = b => b.snapshot.world.motivationModel.actors[0];
+function scenario(config) {
+  const f = fixture.createMotivationVillage(42, 'm2c-inspector', config ?? fixture.defaultMotivationVillageConfig()); const s = createSimulationSession(f.bundle, f.systems); s.advanceTicks(288); return s.getBundle();
+}
+test('Q6 real Inspector projection contains sources/gate/three intents/outcome and detached private whitelist', t => {
+  if (!ready(t)) return;
+  const b = scenario(), before = structuredClone(b), dto = knowledge.projectMotivationInspector(b);
+  assert.deepEqual(Object.keys(dto).sort(), ['actors', 'apiVersion', 'mindVersion', 'revision', 'simulationId', 'tick', 'view', 'worldFacts']);
+  assert.equal(dto.mindVersion, 'motivation-inspector-v1'); assert.equal(dto.view, 'developer'); assert.deepEqual(Object.keys(dto.worldFacts).sort(), ['postedHerbPrice', 'publicFood', 'publicHerbs']);
+  assert.deepEqual(dto.actors.map(a => a.knowledge.actorId), ['actor-2', 'actor-3']);
+  const a = dto.actors[0]; assert.equal(a.knowledge.phase, 'committed'); assert.equal(a.lastDecision.gateReason, 'NEW_MAJOR_DUTY');
+  assert.deepEqual([a.lastDecision.innerStance, a.lastDecision.committedIntent, a.lastDecision.apparentAction], ['health-concerned', { goalId: 1, kind: 'recover-health' }, 'WorkForPay']);
+  assert.deepEqual(a.lastDecision.candidates.map(c => [c.action, c.provider, c.sourceRef]), [['UseMedicine', 'health-need', 'recover-health'], ['BuyMedicine', 'health-need', 'recover-health'], ['WorkForPay', 'role-request', 'd01'], ['Rest', 'fatigue-need', 'self-fatigue'], ['NoAction', 'fallback', null]]);
+  assert.equal(a.lastOutcome.status, 'succeeded'); assert.equal(a.lastOutcome.failureOwner, null); assert.equal(a.counterfactual.length, 3);
+  assert.deepEqual(Object.keys(a.knowledge).sort(), ['actorId', 'belief', 'duty', 'knowledgeVersion', 'observations', 'phase', 'planState', 'profile', 'quote', 'revision', 'self', 'simulationId', 'tick']);
+  assert.equal(JSON.stringify(dto).includes('communalGold'), false); assert.equal(Object.hasOwn(a, 'transitionsHistory'), false);
+  a.knowledge.self.wallet++; dto.worldFacts.publicHerbs++; assert.deepEqual(b, before);
+  const corrupt = structuredClone(b); m(corrupt).lastDuty.fulfilledTick = 287; assert.throws(() => knowledge.projectMotivationInspector(corrupt), e => Boolean(e.code));
+});
+test('Q4/Q6 actual read-only projection leaves complete world/RNG/clock/IDs/inputs and checkpoint bytes unchanged', async t => {
+  if (!ready(t)) return;
+  const dir = await temporary(t), b = scenario(), before = structuredClone(b);
+  await saveCheckpoint(b, { directory: dir, rulesVersion: 'm-motivation-v1', systems: fixture.motivationSystems() }); const bytes = await disk(dir);
+  const first = knowledge.projectMotivationInspector(b);
+  for (let i = 0; i < 3; i++) assert.deepEqual(knowledge.projectMotivationInspector(b), first);
+  assert.deepEqual(b, before); assert.deepEqual(await disk(dir), bytes);
+});
+test('Q6 real HTTP GET/HEAD repeats are zero-write and match A2 audited projection', async t => {
+  if (!ready(t)) return;
+  const root = await temporary(t), b = scenario(), checkpoint = await saveCheckpoint(b, { directory: path.join(root, 'source'), rulesVersion: 'm-motivation-v1', systems: fixture.motivationSystems() });
+  const directory = path.join(root, 'world'), server = await startRuntimeServer({ directory, checkpoint, port: 0, writable: true, inspectMind: true }); t.after(() => server.close());
+  const before = await disk(directory), expected = knowledge.projectMotivationInspector(b);
+  for (let i = 0; i < 3; i++) {
+    assert.deepEqual(await get(server.url), expected);
+    const head = await fetch(server.url + '/api/runtime/minds', { method: 'HEAD' }); assert.equal(head.status, 200); assert.equal(await head.text(), '');
+    assert.ok(Number(head.headers.get('content-length')) > 0);
   }
-  return true;
-}
-
-function checkA2(t) {
-  if (!A2) {
-    t.diagnostic(`DEPENDENCY_UNDELIVERED: A2 (motivation-runtime) 未交付 (${A2_ERR?.message || '模块不存在'})`);
-    t.skip('依赖未交付：待 A2 交付实际 SHA 后接入');
-    return false;
+  assert.equal((await get(server.url, '/api/runtime/snapshot')).revision, 288); assert.deepEqual(await disk(directory), before);
+});
+test('Q6 disabled Inspector returns404 for every method/query/static resource; enabled method405 precedes query400', async t => {
+  if (!ready(t)) return;
+  const root = await temporary(t), off = await startRuntimeServer({ directory: path.join(root, 'off'), profile: 'motivation-village', port: 0, inspectMind: false }); t.after(() => off.close());
+  for (const route of ['/api/runtime/minds', '/runtime-mind.html', '/runtime-mind.mjs', '/runtime-mind.css']) for (const method of ['GET', 'HEAD', 'POST']) for (const query of ['', '?x=1']) {
+    assert.equal((await fetch(off.url + route + query, { method })).status, 404, `${method} ${route}${query}`);
   }
-  return true;
+  assert.equal((await get(off.url, '/api/runtime/capabilities')).mindAvailable, false);
+  const on = await startRuntimeServer({ directory: path.join(root, 'on'), profile: 'motivation-village', port: 0, inspectMind: true }); t.after(() => on.close());
+  assert.equal((await fetch(on.url + '/api/runtime/minds?x=1', { method: 'POST' })).status, 405);
+  assert.equal((await fetch(on.url + '/api/runtime/minds?x=1')).status, 400);
+  assert.equal((await fetch(on.url + '/api/runtime/minds', { headers: { Origin: 'https://invalid.example' } })).status, 403);
+  await off.close(); await assert.rejects(fetch(off.url + '/api/runtime/minds'), e => e.cause?.code === 'ECONNREFUSED');
+});
+test('Q6 real browser two pages display source/gate/intent/result/failure and reads/counterfactual/refresh write nothing', async t => {
+  if (!ready(t)) return;
+  // A real browser is required when A2/B are delivered. Missing driver fails, never empty PASS.
+  const { chromium } = await import(process.env.M2C_PLAYWRIGHT_MODULE ?? 'playwright');
+  assert.equal(typeof chromium?.launch, 'function');
+  const root = await temporary(t), cfg = fixture.defaultMotivationVillageConfig(), res = cfg.memory.society.actors.market.ecology.resources.resources;
+  cfg.memory.society.player.initialHerbs = 20; res.herbs.initial = 50; res.herbs.production.numerator = 0; res.gold.initial = 350;
+  const f = fixture.createMotivationVillage(42, 'm2c-browser', cfg), s = createSimulationSession(f.bundle, f.systems); s.advanceTicks(144);
+  const sold = runtime.executeMotivationPlayerIntent(s.getBundle(), { commandId: 'browser-sell', type: 'PlayerSell', payload: { product: 'herbs', quantity: 7 } });
+  assert.equal(sold.outcome, 'succeeded'); const follow = createSimulationSession(sold.bundle, fixture.motivationSystems()); follow.advanceTicks(143);
+  const checkpoint = await saveCheckpoint(follow.getBundle(), { directory: path.join(root, 'source'), rulesVersion: 'm-motivation-v1', systems: fixture.motivationSystems() });
+  const directory = path.join(root, 'world'), server = await startRuntimeServer({ directory, checkpoint, port: 0, writable: true, inspectMind: true }); t.after(() => server.close());
+  const browser = await chromium.launch({ headless: true, ...(process.env.M2C_BROWSER_EXECUTABLE ? { executablePath: process.env.M2C_BROWSER_EXECUTABLE } : {}) }); t.after(() => browser.close());
+  const context = await browser.newContext(), pages = [await context.newPage(), await context.newPage()], errors = [], writes = [];
+  for (const page of pages) { page.on('pageerror', e => errors.push(e.message)); page.on('request', r => { if (!['GET', 'HEAD'].includes(r.method())) writes.push(r.url()); }); }
+  const before = await disk(directory), dto = await get(server.url);
+  await Promise.all(pages.map(page => page.goto(server.url + '/runtime-mind.html')));
+  for (const page of pages) {
+    await page.waitForFunction(() => document.body.textContent.includes('NEW_MAJOR_DUTY'));
+    const text = await page.locator('body').innerText();
+    for (const token of ['role-request', 'd01', 'health-concerned', 'recover-health', 'WorkForPay', 'RULE_REJECTED']) assert.ok(text.includes(token), `rendered ${token}`);
+    assert.match(text, /归属|failureOwner/); assert.match(text, /假设|反事实/);
+    await page.locator('#actor-3').click(); await page.locator('#actor-2').click(); await page.locator('#mind-refresh').click(); await page.reload();
+    await page.waitForFunction(() => document.body.textContent.includes('NEW_MAJOR_DUTY'));
+  }
+  assert.deepEqual(await get(server.url), dto); assert.deepEqual(await disk(directory), before); assert.deepEqual(writes, []); assert.deepEqual(errors, []);
+});
+
+const BASELINE = '87aa9b605f5f509ce3b0daa97e34ded004d22f33';
+const baselineRoot = 'D:/Narraverse-World-Map-m1-integration';
+const localRoot = fileURLToPath(new URL('../', import.meta.url));
+function canonical(v) {
+  if (Array.isArray(v)) return '[' + v.map(canonical).join(',') + ']';
+  if (v !== null && typeof v === 'object') return '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canonical(v[k])).join(',') + '}';
+  return JSON.stringify(v);
 }
-
-// ============================================================================
-// Q6 检查器投影与真实浏览器消费者链 (Contract §6, §7, §9)
-// ============================================================================
-
-test('Q6 检查器投影数据完整性：正确暴露来源、gateReason、意图、动作与失败归属', async (t) => {
-  if (!checkB(t) || !checkA2(t)) return;
-  // B/A2 交付后运行：
-  // 校验检查器 DTO 包含：
-  // - candidate provider 与 sourceRef
-  // - selectionBlockCode 与 gateReason
-  // - 三层意图：innerStance, committedIntent, apparentAction
-  // - 真实权威结果与 failureOwner 归属
+const hash = v => createHash('sha256').update(typeof v === 'string' || Buffer.isBuffer(v) ? v : canonical(v)).digest('hex');
+function git(root, ...args) { const r = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); return r.stdout.trim(); }
+async function legacy(root) {
+  const load = name => import(pathToFileURL(path.join(root, name)).href);
+  const [engine, mind, mindKnowledge, player, intents, personality, server] = await Promise.all([
+    'runtime/core/command-engine.mjs', 'runtime/fixtures/mind-village.mjs', 'runtime/knowledge/mind-knowledge.mjs', 'runtime/fixtures/player-play-village.mjs',
+    'runtime/core/player-intents.mjs', 'runtime/fixtures/personality-village.mjs', 'runtime-server.mjs',
+  ].map(load));
+  return { engine, mind, mindKnowledge, player, intents, personality, server };
+}
+function advance(lib, f, ticks) { const s = lib.engine.createSimulationSession(f.bundle, f.systems); s.advanceTicks(ticks); return s.getBundle(); }
+function goalScenario(lib) {
+  const c = lib.mind.defaultMindVillageConfig(); c.mind.stimuli = []; c.memory.society.actors.market.ecology.resources.resources.herbs.initial = 0;
+  c.memory.society.estates.slice(1, 3).forEach(e => { e.initialFood = 32; });
+  const f = lib.mind.createMindVillage(42, 'm2c-old-deadline', c), s = lib.engine.createSimulationSession(f.bundle, f.systems), results = [];
+  for (const ticks of [144, 19 * 144, 144, 144, 144]) { s.advanceTicks(ticks); results.push(s.getBundle()); }
+  return results;
+}
+const leafFiles = ['runtime/core/hunter.mjs', 'runtime/core/society.mjs', 'runtime/core/actors.mjs', 'runtime/core/rng.mjs', 'runtime/core/simulation-clock.mjs',
+  'runtime/core/mind-state.mjs', 'runtime/core/mind-planner.mjs', 'runtime/core/player-intents.mjs', 'runtime/core/personality.mjs'];
+async function sourceFingerprints(root) {
+  // Windows checkouts may use CRLF or LF for the same Git blob. Explicitly hash
+  // UTF-8 source normalized to LF, rather than report that line endings changed rules.
+  return Object.fromEntries(await Promise.all(leafFiles.map(async file => [file, hash((await fs.readFile(path.join(root, file), 'utf8')).replaceAll('\r\n', '\n'))])));
+}
+function legacyResults(lib) {
+  const b288 = advance(lib, lib.mind.createMindVillage(42, 'm2c-old-default'), 288), deadline = goalScenario(lib);
+  const ops = [
+    ['PlayerTravel', { destination: 'forest' }], ['PlayerTravel', { destination: 'village' }], ['PlayerRest', {}],
+    ['PlayerBuy', { product: 'food', quantity: 1 }], ['PlayerBuy', { product: 'herbs', quantity: 1 }], ['PlayerSell', { product: 'food', quantity: 1 }],
+  ];
+  let b = lib.player.createPlayerPlayVillage(42, 'm2c-old-player').bundle;
+  const six = ops.map(([type, payload], i) => { const r = lib.intents.executePlayerIntent(b, { commandId: `op${i + 1}`, type, payload }); assert.equal(r.outcome, 'succeeded'); b = r.bundle; return hash(b); });
+  return { default288Hash: hash(b288), inspector: lib.mindKnowledge.projectMindInspector(b288), deadlineHashes: deadline.map(hash),
+    deadlineStates: deadline.map(b => { const e = b.snapshot.world.societyModel.agents[1].state; return { goal: e.currentGoal, failed: e.ledger.goalsFailed, cooldown: e.cooldownUntilDay }; }),
+    d2cPrefixHashes: six, c5FourDayHash: hash(advance(lib, lib.personality.createPersonalityFood(42, 'm2c-old-c5'), 576)) };
+}
+async function httpResults(server) {
+  await post(server.url, time('old24', 0, 24)); await post(server.url, time('old288', 24, 264));
+  const routes = ['/api/runtime/minds', '/api/runtime/player', '/api/runtime/snapshot', '/api/runtime/capabilities'];
+  return Object.fromEntries(await Promise.all(routes.map(async route => [route, await get(server.url, route)])));
+}
+let oraclePromise;
+function frozenOracle() {
+  return oraclePromise ??= (async () => {
+    assert.equal(git(baselineRoot, 'rev-parse', 'HEAD'), BASELINE);
+    assert.equal(git(baselineRoot, 'status', '--porcelain', '--untracked-files=no'), '', 'baseline tracked tree must be unchanged');
+    const fingerprints = await sourceFingerprints(baselineRoot);
+    const file = process.env.M2C_LEGACY_ORACLE ?? path.join(localRoot, 'artifacts', 'world-runtime-m2-acceptance-repair-20261008', 'legacy-oracle-87aa9b6.json');
+    let cached;
+    try { cached = JSON.parse(await fs.readFile(file, 'utf8')); }
+    catch (e) { if (e.code !== 'ENOENT') throw e; }
+    if (cached) {
+      assert.equal(cached.baselineSHA, BASELINE); assert.deepEqual(cached.sourceFingerprints, fingerprints);
+      assert.equal(cached.payloadHash, hash(cached.results)); return cached;
+    }
+    const old = await legacy(baselineRoot), prefix = path.join(os.tmpdir(), 'm2c-oracle-'), directory = await fs.mkdtemp(prefix);
+    let server;
+    try {
+      const scenarios = legacyResults(old);
+      server = await old.server.startRuntimeServer({ directory, profile: 'mind-village', port: 0, writable: true, inspectMind: true });
+      const results = { scenarios, http: await httpResults(server) };
+      cached = { baselineSHA: BASELINE, sourceFingerprints: fingerprints, results, payloadHash: hash(results) };
+      await fs.mkdir(path.dirname(file), { recursive: true }); await fs.writeFile(file, JSON.stringify(cached, null, 2), { flag: 'wx' }); return cached;
+    } finally { if (server) await server.close(); assert.ok(directory.startsWith(prefix)); await fs.rm(directory, { recursive: true, force: true }); }
+  })();
+}
+test('Q7 frozen baseline oracle records real source/scenario/HTTP hashes once; this is preparation, not M2 compatibility', async t => {
+  const o = await frozenOracle(), d = o.results.scenarios.deadlineStates;
+  assert.equal(d[1].goal.goalId, 1); assert.equal(d[2].goal, null); assert.equal(d[2].cooldown, 23); assert.equal(d[3].goal, null); assert.equal(d[4].goal.goalId, 2); assert.equal(d[4].failed, 1);
+  assert.equal(o.results.scenarios.d2cPrefixHashes.length, 6); assert.equal(o.results.http['/api/runtime/minds'].mindVersion, 'mind-inspector-v1');
+  t.diagnostic(`Baseline oracle only: ${BASELINE}, payload SHA256 ${o.payloadHash}; M2 compatibility is separately gated on delivered A2.`);
 });
-
-test('Q6 纯读零写消费者：检查器 GET / HEAD 读取不推进 tick、不消耗 RNG、不修改世界文件', async (t) => {
-  if (!checkB(t)) return;
-  // B 交付后运行：
-  // 重复 GET 检查器端点，对比世界快照和 revision 保持零漂移
+test('Q7 delivered M2 code retains frozen legacy source and default288/deadline/D2C/C5 results', async t => {
+  if (!ready(t)) return;
+  const o = await frozenOracle(); assert.deepEqual(await sourceFingerprints(localRoot), o.sourceFingerprints);
+  assert.deepEqual(legacyResults(await legacy(localRoot)), o.results.scenarios);
 });
-
-test('Q6 检查器访问隔离：未启用 inspect-mind 时私有检查器端点保持不可用 (404/不可达)', async (t) => {
-  if (!checkB(t)) return;
-  // B 交付后运行：
-  // 默认启动不传 --inspect-mind 时，检查器路由不注册或返回 404
-});
-
-// ============================================================================
-// Q7 旧系统向后兼容性 (Contract §7, §9)
-// 以 87aa9b6 基准同 SHA 源码与既有测试证据核验 M1/D2C/C5 兼容性
-// ============================================================================
-
-test('Q7 基础不变性：M1 核心规则与版本常量未受破坏', () => {
-  // 验证 M1 核心版本常量完全未变，保证旧 profile 1/2/3/4 不受干扰
-  assert.equal(M1State.MIND_RULES, 'm-mind-v1');
-  assert.equal(M1State.MIND_CONFIG_VERSION, 'mind-config-v1');
-  assert.equal(M1State.MIND_STATE_VERSION, 'mind-state-v1');
-  assert.equal(M1State.MIND_KNOWLEDGE_VERSION, 'mind-knowledge-v1');
-  assert.equal(M1State.MIND_DECISION_VERSION, 'mind-decision-v1');
-  assert.equal(M1State.MIND_INSPECTOR_VERSION, 'mind-inspector-v1');
-  assert.equal(M1State.MAX_MIND_ACTORS, 2);
-  assert.equal(M1State.MAX_MIND_STIMULI, 64);
-  assert.equal(M1State.MAX_MIND_CANDIDATES, 3);
-  assert.equal(M1State.MAX_MIND_KNOWLEDGE_BYTES, 8192);
-  assert.equal(M1State.MAX_MIND_INSPECTOR_BYTES, 65536);
-});
-
-test('Q7 基础不变性：Player 核心规则常量保持原样', () => {
-  assert.equal(PlayerState.PLAYER_RULES, 'd-player-v1');
-  assert.equal(PlayerState.PLAY_RULES, 'd-player-v2');
-});
-
-test('Q7 历史证据核对：M1/D2C/C5 既有功能由基准 87aa9b6 对应测试集保证', (t) => {
-  // 合同 §9 要求：
-  // 以 M1 integration 基准 87aa9b6 的同 SHA 证据核对旧 M1 Inspector 同服务、默认288、Goal deadline、D2C六操作和C5短程。
-  // 关联代码（mind-state, society, player 等）未发生修改，无需重复全量执行。
-  t.diagnostic('Q7 证据核对：基准 87aa9b6 源码中 M1 mind、D2C play、C5 personality 关键文件未修改，历史证据有效覆盖');
+test('Q7 delivered service retains original M1 HTTP DTO288/player/public/capability against frozen oracle', async t => {
+  if (!ready(t)) return;
+  const root = await temporary(t), o = await frozenOracle(), server = await startRuntimeServer({ directory: path.join(root, 'world'), profile: 'mind-village', port: 0, writable: true, inspectMind: true }); t.after(() => server.close());
+  assert.deepEqual(await httpResults(server), o.results.http);
 });
