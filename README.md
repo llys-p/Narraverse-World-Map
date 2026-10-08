@@ -20,9 +20,9 @@
 
 ## 新世界运行时进度
 
-2026-10-08 17:06（Asia/Shanghai）更新：顺序仍为 M0 → M1 → M2 → M3 → D3/D4。M2源码基准为M1 integration `87aa9b6`，A1 `79b0c50` 已验收；A2 `51b9975`、B `2a8eb52`、C `1b715af` 已本地提交并导入 `D:\Narraverse-World-Map-m2-integration`，真实验收代码 SHA `12ed715`。C独立30项29通过/1浏览器失败/0跳过；真实CLI、保存恢复、期限/死亡/失败归属、原D2C六操作与C5四日兼容及HTTP均过，B额外依赖服务三项3/3。浏览器失败源于测试等待原始门控枚举与页面中文显示不一致，须修断言并真实定向复验。子代理因额度中断，阶段全量回归未开始，M2未验收；新提交未push、main未合并，Projects因网络权限撤销待同步。合同原冻结0d7cc74与期限fixture补正02c1a64保留；下一步只补该浏览器用例再阶段收口。
+2026-10-08 17:40（Asia/Shanghai）更新：M2在冻结 integration SHA `83826a82fea5c0edfe62aa3d676313eefe2a7790` 上阶段全量57 simulation + export 共58 files，401/401 pass，0 fail/skip/cancel/todo，Node 24.14.0/concurrency2，exit 0；A1/A2/B/C及M2由中控本地验收PASS。C原30项red=29 pass/1 browser fail/0 skip；修后仅定向该浏览器用例1 pass覆盖原失败，原29项未重跑。B四日UI与断连/迟到DTO保留通过，三条harness red原件保留。M3未开始；停止于M2，不合并main。Projects和push未执行：应用网络权限仍已撤销；本地提交不代表远端已同步。
 
-M1与M2 A1已验收；M2其余本地集成待最终浏览器与阶段回归，M3/D3/D4未开始。D2C历史树不是M2代码基准；正式平台、模型/桥与真实旧存档未接入。详见[当前状态](PROJECT_CONTEXT.md)。
+M1、M2及M2 A1/A2/B/C已本地验收；M3/D3/D4未开始。D2C历史树不是M2代码基准；正式平台、模型/桥与真实旧存档未接入。Projects/push因应用网络权限撤销待同步，未声称远端已更新。详见[当前状态](PROJECT_CONTEXT.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

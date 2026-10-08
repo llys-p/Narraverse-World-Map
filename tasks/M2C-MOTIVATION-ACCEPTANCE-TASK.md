@@ -1,6 +1,6 @@
 # M2C：承诺门、失败归属与真实消费者独立验收
 
-合同：m2-contract-v2；状态：已修原场景并集成，真实独立30项为29 pass/1 browser fail/0 skip；NEED REVISION，待定向复验。共同合同 Q1–Q7 为唯一 expected 来源；不从 A1/A2/B 输出倒抄预期。
+合同：m2-contract-v2；状态：原独立30项red为29 pass/1 browser fail/0 skip；C修复 `574856e9c84c650edebb4ec110cfe806884f4984` 集成于 `83826a8`，修后定向浏览器用例1 pass覆盖原失败，原29项未重跑。集成冻结SHA `83826a82fea5c0edfe62aa3d676313eefe2a7790` 阶段全量58 files、401/401 pass、0 fail/skip/cancel/todo、exit 0；M2及A1/A2/B/C中控PASS。共同合同 Q1–Q7 为唯一 expected 来源；不从 A1/A2/B 输出倒抄预期。
 
 ## 给用户看
 
@@ -74,3 +74,7 @@ C 增量修正 `1b715afbddbab26018c4017c2171cf4a3b27752d` 已本地提交并导�
 唯一失败位于 `tests/motivation-inspector-acceptance.test.mjs:115`：等待 `NEW_MAJOR_DUTY` 超时，源码将 gate/inner stance 显示为“新的重大职责 · 打开完整重评”/“以健康为虑”。C 的原始枚举文本断言与中文页面显示不一致，尚不能凭源审认定真实页面通过。额度恢复后只修本路浏览器断言，用实际 API DTO 核原 gate/stance/kind，用可见 DOM 专用 ID 核对应中文门控、意图、计划/Goal、来源和失败归属；保留两页、切换/刷新/重载、反事实/磁盘/网络零写、console/pageerror 检查，不给 UI 塞原枚举凑测试，不 skip 或削弱断言。仅定向补跑该浏览器用例并归档截图；已过29项不重复。随后对最终冻结代码做一次阶段全量回归，当前未开始。B/C 子代理因额度限制中断，下一步已排队但尚未执行；不启 M3/D3，不合并 main，不 push。
 
 使用现有本机 driver：`M2C_PLAYWRIGHT_MODULE=file:///C:/Users/11/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs`；`M2C_BROWSER_EXECUTABLE=C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`；`M2C_LEGACY_ORACLE=D:\Narraverse-World-Map-m2-acceptance\artifacts\world-runtime-m2-acceptance-repair-20261008\legacy-oracle-87aa9b6-v2.json`。不重复生成基准。
+
+## 中控修复定向复验与阶段收口（2026-10-08 17:40 Asia/Shanghai）
+
+C 浏览器断言修复 `574856e9c84c650edebb4ec110cfe806884f4984` 已导入集成冻结 SHA `83826a82fea5c0edfe62aa3d676313eefe2a7790`。原30项red结果仍为29 pass/1 fail/0 skip；仅定向复跑浏览器用例1 pass，覆盖原失败，不声称重跑30/30。真实 Edge 154.0.4258.62 双页/双 actor、API原枚举与中文DOM、五候选/三反事实/失败归属、刷新重载通过；18 GET/0写、pageerror/console warning/error均0，存档字节不变，四截图证据 `artifacts/world-runtime-m2-integration-acceptance-20261008/C-browser-repair-4f71fcb/`。B 四日真实UI及断连/迟到 DTO 保留也通过；B三条 harness red 保留。阶段全量在该冻结SHA上57 simulation + export共58 files，Node 24.14.0/concurrency2，401/401 pass、0 fail/skip/cancel/todo、exit0；17:23:13–17:37:36（Asia/Shanghai），runner 862724.7246ms、wall 863113.088ms。测试前后tracked/source/test指纹一致且工作树clean；sourceHash `634382b8331645ea83af710a7297a33619fba165712ea774367fc3a69e8159fa`，testHash `7471c392e9f0e0fe64fa7f9a4947b25f9606837c40f5a37e9880813a4dc3ebae`，trackedHash `7ec28fb7786159c086a0b6578d00c641a674fb62e177b973273592e15ad8a6d0`。阶段证据 `artifacts/world-runtime-m2-stage-closeout-20261008/{manifest-before.json,test-files.txt,tests.txt,result.json}`，log SHA `a58a95f3a9e096b7705615e490133fa89e8c6fc288e6d9beb53ac2bc277e3129`。中控据此裁定M2及A1/A2/B/C PASS；停止于M2，不启M3/D3、不合并main。

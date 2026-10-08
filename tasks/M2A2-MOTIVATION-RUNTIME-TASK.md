@@ -1,6 +1,6 @@
 # M2A2：动机运行时、权威结算与重演
 
-合同：m2-contract-v2；状态：本地交付 `51b9975`，已集成、待阶段收口；不代表 M2 完整验收。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
+合同：m2-contract-v2；状态：本地交付 `51b9975` 已集成并验收；M2及A1/A2/B/C中控PASS。冻结集成 SHA `83826a82fea5c0edfe62aa3d676313eefe2a7790` 阶段全量58 files、401/401 pass，0 fail/skip/cancel/todo，exit 0。停止于M2，不启M3/D3、不合并main。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
 
 ## 给用户看
 

@@ -1,6 +1,6 @@
 # M2B：动机检查器与服务接入
 
-合同：m2-contract-v2；状态：修复已集成，真实 service5/保存故障/重启 HTTP 已过；M2 浏览器仍待复验，不代表 B 完整验收。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
+合同：m2-contract-v2；状态：真实 service5/保存故障/重启 HTTP 与四日成功UI、断连/迟到 DTO 保留均已过；三条 harness red 原件保留，不称统一套件全绿。证据 `artifacts/world-runtime-m2-integration-service-20261008/default-four-day-browser/receipt.json`。M2及A1/A2/B/C中控PASS。冻结集成 SHA `83826a82fea5c0edfe62aa3d676313eefe2a7790` 阶段全量58 files、401/401 pass、0 fail/skip/cancel/todo，exit 0。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
 
 ## 给用户看
 
