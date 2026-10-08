@@ -21,6 +21,7 @@
 - [MODULE-INDEX.md](MODULE-INDEX.md)：按“我要做什么功能”查参考。
 - [GAME-CATALOG.md](GAME-CATALOG.md)：按游戏看 Character Mind / Agent 可借鉴机制。
 - [WORLD-MAP-INDEX.md](WORLD-MAP-INDEX.md)：按世界地图 / 沙盒功能查参考。
+- [WORLD-MAP-CHECKLIST.md](WORLD-MAP-CHECKLIST.md)：世界地图参考的轻量清单索引，标明近期、候选与暂缓。
 - [SANDBOX-WORLD-CATALOG.md](SANDBOX-WORLD-CATALOG.md)：按沙盒游戏看 world-map / campaign-layer 机制。
 - [CODE-REFERENCE.md](CODE-REFERENCE.md)：公开代码、Mod 接口、许可证和可读文件。
 - [ADOPTION-PROTOCOL.md](ADOPTION-PROTOCOL.md)：以后写任务书或实现前怎样使用本参考库。
