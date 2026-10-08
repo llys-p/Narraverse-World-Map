@@ -1,6 +1,6 @@
 # M3-2A：本人 Work 经验消费运行时
 
-合同版本：m3-experience-runtime-contract-v1。状态：实现进行中（2026-10-09 00:32 Asia/Shanghai）；执行树 `D:\Narraverse-World-Map-m3-runtime`、分支 `codex/world-runtime-m3-runtime`，共同基准 `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。当前7个 tracked 模块修改、5个新增源码/测试文件；尚无新交付 SHA，本轮未验收任何字节。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
+合同版本：m3-experience-runtime-contract-v1。状态：中控修正与定向复验通过，待 B 完整独立验收（A 卡待验收；2026-10-09 Asia/Shanghai）。执行树 `D:\Narraverse-World-Map-m3-runtime @ codex/world-runtime-m3-runtime`；作者交付 `7cb7615468398041111adec9cdb2ce12395e6cc4`，生产修复 `adee47e1f35fa5105a2dfeecc9265bd62b17cd5d`，B 唯一依赖的最终测试交接 `ad8695097b6b974030fd43f4947d7a01f627abf3`。分项复验及范围见文末记录。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
 
 ## 给用户看
 
@@ -127,4 +127,8 @@ EXPERIENCE_RULES="m-experience-v1"、EXPERIENCE_CONFIG_VERSION="experience-confi
 
 ## 当前状态
 
-M3-1已收口；M3-2A实现进行中，已有改动但尚无新交付 SHA、未验收任何字节；M3-2B独立验收用例编写中，未提交，真实集成验收等待A精确交付 SHA。M3-3认知运行时未开始；完整M3未验收。Project #2已同步并完成远端读回核对；源码未合并main、未push。
+M3-1已收口。M3-2A作者交付 `7cb7615468398041111adec9cdb2ce12395e6cc4`，生产修复 `adee47e1f35fa5105a2dfeecc9265bd62b17cd5d`；E4仅测试修正交接 `ad8695097b6b974030fd43f4947d7a01f627abf3` 并定向1/1通过。中控定向复验如本任务记录，结论为可交 B 完整独立验收，A待验收。E3额外“失败→成功挤出→再失败”未由成功窗口用例证明。B两份测试已本地提交，已获准使用精确依赖 `ad8695097b6b974030fd43f4947d7a01f627abf3` 开始独立验收，尚未运行。M3-2不标阶段 PASS；M3-3未开始，完整 M3未验收。代码未合并 main、未 push。
+
+## 中控修复复验记录（2026-10-09，Asia/Shanghai）
+
+修复提交 `adee47e1f35fa5105a2dfeecc9265bd62b17cd5d` 仅涉及7个文件；修复 adapter 关联漏验、继承 map getter 触发、mind-settle namespace 与复制 M2 FSM 四类反例。新增边界集在作者提交 `7cb7615` 上10/45通过、35失败；修复工作字节45/45通过，独立生产源码指纹核对与 `adee47e` 一致。planner 5/5、runner 3/3、direct engine/session/world-state 22/22、有界 checkpoint 4/4通过。旧 M2 兼容复验通过：默认576完整业务 bundle、22份业务 JSON/CSV/checkpoint 字节与 `c8d78d4` 对照一致；oracle 双 hash 与9项叶子通过，D2C六操作终 tick176、C5四日业务哈希相等，sourceHash `9dca3796dd2a55b04b6cb9ccb0b24eab8c0dce90b6f638ea1a33e2d6654875ca` 前后稳定。Proof 初跑3项通过、1项预期路径误差，修正 budget expected 后单项补跑1/1；不合并为单次 proof4/4。getter hook 触发数0；两种 fault 和自然日界溢出均整 tick rollback；三个 cursor 均等最终 eventSeq=31（一个封口测试）。完整中控裁定与分项证据：A树 `artifacts/world-runtime-m32a-controller-review-20261009/controller-review.json`；边界证据 `boundaries/repair-boundary-evidence.json`，最终检查摘要 `final-tests/review.md`。E4测试夹具修正仅在 `ad8695097b6b974030fd43f4947d7a01f627abf3`，runtime/runner相对生产提交零差异；测得测试 blob 等于交接提交 blob，raw SHA256 `a9dc8fdf7345bac579277d7990ebc414cdfe1654974230d7b9d1796e6f4c2b4a`，定向结果1 pass/0 fail/0 skip、exit 0。未重跑 runtime 原3项（其已在 `adee47e` 通过），不合并称单次 runtime4/4，也不把各子集拼成单次87项套件。本记录不构成整体验收。
