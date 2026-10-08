@@ -1,6 +1,6 @@
 # M2C：承诺门、失败归属与真实消费者独立验收
 
-合同：m2-contract-v2；状态：独立断言准备已修，Q7 原场景正在补正；A2 真实依赖项未验。共同合同 Q1–Q7 为唯一 expected 来源；不从 A1/A2/B 输出倒抄预期。
+合同：m2-contract-v2；状态：已修原场景并集成，真实独立30项为29 pass/1 browser fail/0 skip；NEED REVISION，待定向复验。共同合同 Q1–Q7 为唯一 expected 来源；不从 A1/A2/B 输出倒抄预期。
 
 ## 给用户看
 
@@ -66,3 +66,11 @@
 C 修复 `880c10de924b7fdd3b0f17a8900a326e3b53bc8c` 已本地提交，未推送且 tracked 工作区 clean，三项测试现已填实。prepared30 为1 baseline-prep pass、29 精确 A2 dependency skips、0 fail，不算 M2 兼容验收；冻结 A1 副本独立8 pass、4 A2 skips、0 fail。四项 import-failure 负探针与一次冻结 `87aa9b6` oracle 检查已完成。中控源审尚待完成，故 C 未获正式验收。证据 `artifacts/world-runtime-m2-acceptance-repair-20261008`；oracle payload SHA `983717df5384b1f20498b49bbe311dd76fdfdb649f469eb6bf76134f83f21805`，后续消费不重复跑基准。
 
 中控源审补正（2026-10-08 16:33，Asia/Shanghai）：Q7 必须采用已归档 `world-runtime-m1a-compat/scenario.mjs` 的原输入：单条 `m1a-buy-food` 买 food quantity=2，再卖 herbs1、旅行 forest、Rest、返回 village、推进144，最终 tick176；C5 使用 `createPersonalityHealth(42,'personality-health-seed-42')` 推进576。不得换成另一组六条交易或 personality-food。已生成 oracle 的未变场景可复用，原 oracle 保留，补正场景另存新版本；不把准备性通过当作 M2 兼容通过。
+
+## 中控真实集成复核与剩余修正（2026-10-08 17:06 Asia/Shanghai）
+
+C 增量修正 `1b715afbddbab26018c4017c2171cf4a3b27752d` 已本地提交并导入，原17份兼容产物核验通过；v2 oracle payload SHA `1ebe129b1a252434e8b103796778f3b71f9ffc6587cb0578f8ea7828d6c87f67`，旧v1保留。集成 `12ed715` 实际执行三份 C 测试30项：29 pass、1 fail、0 skip、exit1、322187.9791ms。已过 Q1/Q2/Q3/Q4、完整 checkpoint/terminal CLI/篡改拒绝、真实 HTTP/幂等409/保存故障、原 M1/D2C/C5 与服务兼容；不把浏览器失败或阶段回归算通过。62份验收范围文件测试前后 hash 未变。完整证据：集成树 `artifacts/world-runtime-m2-integration-acceptance-20261008/C-independent-12ed715/` 与 `controller-review.json`。
+
+唯一失败位于 `tests/motivation-inspector-acceptance.test.mjs:115`：等待 `NEW_MAJOR_DUTY` 超时，源码将 gate/inner stance 显示为“新的重大职责 · 打开完整重评”/“以健康为虑”。C 的原始枚举文本断言与中文页面显示不一致，尚不能凭源审认定真实页面通过。额度恢复后只修本路浏览器断言，用实际 API DTO 核原 gate/stance/kind，用可见 DOM 专用 ID 核对应中文门控、意图、计划/Goal、来源和失败归属；保留两页、切换/刷新/重载、反事实/磁盘/网络零写、console/pageerror 检查，不给 UI 塞原枚举凑测试，不 skip 或削弱断言。仅定向补跑该浏览器用例并归档截图；已过29项不重复。随后对最终冻结代码做一次阶段全量回归，当前未开始。B/C 子代理因额度限制中断，下一步已排队但尚未执行；不启 M3/D3，不合并 main，不 push。
+
+使用现有本机 driver：`M2C_PLAYWRIGHT_MODULE=file:///C:/Users/11/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs`；`M2C_BROWSER_EXECUTABLE=C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`；`M2C_LEGACY_ORACLE=D:\Narraverse-World-Map-m2-acceptance\artifacts\world-runtime-m2-acceptance-repair-20261008\legacy-oracle-87aa9b6-v2.json`。不重复生成基准。

@@ -20,9 +20,9 @@
 
 ## 新世界运行时进度
 
-2026-10-08 更新：顺序仍为 M0 → M1 → M2 → M3 → D3/D4。M2源码基准为已验收 M1 integration `87aa9b605f5f509ce3b0daa97e34ded004d22f33`，生产 main 仍为 `a7a10f2`，未合并。A1 修复 `79b0c50b7acfa78b9b2661a7a158457ecbc43197` 本地 clean commit，中控复核 PASS（42/42、focused2/2、新7项先红后绿）；A2 已正式放行，在 core 原树开工中，首个真实四日 BuyWorkRestUse 链跑通，其余验证未完成。B 修复 `2a8eb52a0590017f1d6794e30962034ed31e449f` 本地 clean commit，源/证据/M1浏览器审 PASS；真实 A2 service5/browser仍待复验。C 修复 `880c10de924b7fdd3b0f17a8900a326e3b53bc8c` 本地 clean commit，有限准备与A1副本验证完成，中控源审待做，A2依赖项未验证。M2阶段未验收。集成树正在导入B/C/A2，当前状态会变。远端看板同步待办（此前网络权限撤销）；最后核实看板状态仍是 M2进行中、A1/B/C需修正、A2待派发。合同原冻结 SHA `0d7cc74c376a4c8d8bb45813637ddc66d4608dc2` 仅为历史来源。 中控另补期限实验的合法 herbs.maxOrder=0 无外来药条件，原等待/截止预期不变、尚待真实验证；C 正补齐原 quantity2 单次买粮六操作与 personality-health 四日，未宣称 M2 兼容通过。
+2026-10-08 17:06（Asia/Shanghai）更新：顺序仍为 M0 → M1 → M2 → M3 → D3/D4。M2源码基准为M1 integration `87aa9b6`，A1 `79b0c50` 已验收；A2 `51b9975`、B `2a8eb52`、C `1b715af` 已本地提交并导入 `D:\Narraverse-World-Map-m2-integration`，真实验收代码 SHA `12ed715`。C独立30项29通过/1浏览器失败/0跳过；真实CLI、保存恢复、期限/死亡/失败归属、原D2C六操作与C5四日兼容及HTTP均过，B额外依赖服务三项3/3。浏览器失败源于测试等待原始门控枚举与页面中文显示不一致，须修断言并真实定向复验。子代理因额度中断，阶段全量回归未开始，M2未验收；新提交未push、main未合并，Projects因网络权限撤销待同步。合同原冻结0d7cc74与期限fixture补正02c1a64保留；下一步只补该浏览器用例再阶段收口。
 
-M1 已验收；M2 A1 已验收，A2 开工中，B/C 本地准备完成但待 A2 依赖复验，阶段仍未验收。D2C历史代码仍保留于 `codex/world-runtime-d2c`，不代表 M2 基准。D3/D4仍待合同，D整体未验收；本次未调整路线。历史运行说明见[当前状态](PROJECT_CONTEXT.md)。
+M1与M2 A1已验收；M2其余本地集成待最终浏览器与阶段回归，M3/D3/D4未开始。D2C历史树不是M2代码基准；正式平台、模型/桥与真实旧存档未接入。详见[当前状态](PROJECT_CONTEXT.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

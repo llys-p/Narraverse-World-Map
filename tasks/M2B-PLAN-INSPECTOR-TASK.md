@@ -1,6 +1,6 @@
 # M2B：动机检查器与服务接入
 
-合同：m2-contract-v2；状态：修复与中控 prep 源审完成，待 A2 真实 service5/browser 依赖复验；不代表 B 完整验收。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
+合同：m2-contract-v2；状态：修复已集成，真实 service5/保存故障/重启 HTTP 已过；M2 浏览器仍待复验，不代表 B 完整验收。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
 
 ## 给用户看
 
@@ -80,3 +80,7 @@ mock、HTTP、浏览器证据分开说明；依赖未交付的部分标未验证
 
 ## 中控返修复核（2026-10-08 16:26 Asia/Shanghai）
 B 修复 `2a8eb52a0590017f1d6794e30962034ed31e449f` 已本地提交，未推送且 tracked 工作区 clean。中控 prep 源审、证据及真实 M1 浏览器审查 PASS：指定2 suite+2 counter共26 pass；CSS-only 后 UI 17/17。真实 M1 `SAVE_FAILED` 完整三投影、能力、磁盘 bytes、retry/reopen 通过。证据位于 service 树 `artifacts/world-runtime-m2b-repair-20261008/metadata.json`、`m1-browser-result.json` 与 cleanup。A2 真实 service5/browser 链仍待依赖，不构成 B 完整验收；M2 未验收。B 的 stale lock 临时目录按既定审批保留，另一临时目录已优雅关闭、锁释放，两自建进程已停止；不清理其他目录。
+
+## 中控真实集成复核（2026-10-08 17:06 Asia/Shanghai）
+
+集成代码 `12ed715aba31483a5ceb777332c36834ed77563e` 上，此前依赖 A2 的三项真实 B 服务用例3/3、0 skip、5977ms：三内部命名空间、真实 service5 路由、保存故障保旧完整投影与磁盘后重试/重启。C 独立真实 HTTP、PlayerDTO 完整审计、同 ID 重启幂等、409、GET/HEAD 零写及开关顺序也通过。B 后续浏览器审查因子代理额度中断，C 浏览器用例因等待页面不会显示的原枚举文本超时，尚须定向纠正与真实复验，不记浏览器通过。证据：集成树 `artifacts/world-runtime-m2-integration-service-20261008/pending-service-gates.log.txt` 与 C 独立 TAP。远端同步仍待网络权限恢复；未 push。

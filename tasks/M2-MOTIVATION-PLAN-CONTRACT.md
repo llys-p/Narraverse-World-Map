@@ -1,6 +1,6 @@
 # M2 共同合同：动机计划与受约束反事实
 
-合同版本：`m2-contract-v2`；状态：A1 修正已通过中控验收，A2 实现中，B/C 待真实依赖复验；M2 未验收。冻结日期：2026-10-08（Asia/Shanghai）。本合同是 M2A1、M2A2、M2B、M2C 的唯一公共定义；修改公共字段、公式、顺序或错误语义，须由中控同步修订本合同及受影响任务书。四份任务书与本文共用一个合同版本。本文取代尚未开工的 `m2-contract-v1`（发布提交 `be7ca9ba44684c7b1e2cbf1c9051b94bef4f3b68`）；v1 保留在 Git 历史，不要求回滚、迁移或改写任何实现/存档。
+合同版本：`m2-contract-v2`；状态：A1 已验收，A2/B/C 已本地集成；独立验收 29/30，浏览器断言待修，阶段全量回归未开始；M2 未验收。冻结日期：2026-10-08（Asia/Shanghai）。本合同是 M2A1、M2A2、M2B、M2C 的唯一公共定义；修改公共字段、公式、顺序或错误语义，须由中控同步修订本合同及受影响任务书。四份任务书与本文共用一个合同版本。本文取代尚未开工的 `m2-contract-v1`（发布提交 `be7ca9ba44684c7b1e2cbf1c9051b94bef4f3b68`）；v1 保留在 Git 历史，不要求回滚、迁移或改写任何实现/存档。
 
 执行书：[M2A1 纯规划器](M2A1-MOTIVATION-PLANNER-TASK.md)、[M2A2 运行时集成](M2A2-MOTIVATION-RUNTIME-TASK.md)、[M2B 检查器](M2B-PLAN-INSPECTOR-TASK.md)、[M2C 独立验收](M2C-MOTIVATION-ACCEPTANCE-TASK.md)。
 

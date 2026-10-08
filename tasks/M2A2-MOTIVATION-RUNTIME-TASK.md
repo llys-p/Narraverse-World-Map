@@ -1,6 +1,6 @@
 # M2A2：动机运行时、权威结算与重演
 
-合同：m2-contract-v2；状态：已正式放行，2026-10-08 开工中（尚无交付 SHA）。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
+合同：m2-contract-v2；状态：本地交付 `51b9975`，已集成、待阶段收口；不代表 M2 完整验收。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
 
 ## 给用户看
 
@@ -22,7 +22,7 @@
 - 唯一代码基准：D:\Narraverse-World-Map-m1-integration @ 87aa9b605f5f509ce3b0daa97e34ded004d22f33；main 无 runtime。
 - 记录实际 A1 SHA、代码 HEAD、合同/任务书导入控制树 SHA、工作区状态与所有权。缺少 A1 导出或签名不一致时显式停报，不复制实现、不吞 import。
 - M2 v1 未开工；v2 首次实现使用已有 motivation-*v1 / m-motivation-v1 / service5 名称，不做旧 M2 数据迁移。
-- A2 已获正式放行，在 core 原树串行实现；首个真实四日 Buy→Work→Rest→Use 链跑通，其余 Q1/Q3/Q5/Q6、完整重演及服务/浏览器消费者仍未验，不据此宣称 A2 或 M2 完成。内部 `hooks` 对象仅按共同合同 §4.0 的有限连接用途实现，不向 B/C 提供业务接口。
+- A2 在 core 原树以 `51b99752bceaa1fefa27e298da54f3e8a617efc0` 本地交付、未推送；已导入集成树，独立真实核心/恢复/CLI/HTTP 验证已通过，浏览器与阶段回归尚未收口。内部 `hooks` 对象仅按共同合同 §4.0 的有限连接用途实现，不向 B/C 提供业务接口。
 - 本路交付后停止；不合并 main、不启 M3/D3、不接模型/正式平台/真实旧存档/旧实例。
 
 ## 文件白名单
@@ -78,3 +78,7 @@
 ## 交付回执
 
 给用户说明可执行选择、持久恢复和边界。给中控提交 A1/A2 SHA、代码/合同/依赖 SHA、工作树所有权与状态、白名单差异、真实命令/结果、事件/物理/失败账与服务消费者证据、兼容证据、未验证项。完成本路即停止，等待独立 B/C 与中控裁定。
+
+## 中控集成复核（2026-10-08 17:06 Asia/Shanghai）
+
+A2 交付 `51b9975` 仅修改白名单10文件，工作树 clean。原统一18项为17 pass、原期限配方1 fail；依据控制补正 `02c1a64`，仅增加期限 fixture 的 `herbs.maxOrder=0` 后定向1/1通过，生产源码未变，不声称重跑统一18/18。源审确认临时 Work/Rest 仅隔离 Goal 投影，完整资产/RNG/失败账由原 resolver 与历史重演校验；49生产文件与执行者测试证据匹配，集成内容统一 LF 后49/49相同。真实 terminal CLI、分段 checkpoint、21类篡改、原 D2C/C5/M1 兼容及 HTTP 消费者已由 C 在集成 `12ed715` 验证通过。C 全套30项中唯一浏览器断言失败，阶段全量回归未开始，M2 未验收。证据：core 树 `artifacts/m2a2-directed-20261008-1647/final-metadata.json`；集成树 `artifacts/world-runtime-m2-integration-acceptance-20261008/controller-review.json`。
