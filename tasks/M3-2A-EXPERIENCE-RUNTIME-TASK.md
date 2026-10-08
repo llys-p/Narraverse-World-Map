@@ -1,6 +1,6 @@
 # M3-2A：本人 Work 经验消费运行时
 
-合同版本：m3-experience-runtime-contract-v1。状态：本地已发布，待派发/未开工（2026-10-08 21:26 Asia/Shanghai）。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
+合同版本：m3-experience-runtime-contract-v1。状态：实现进行中（2026-10-09 00:32 Asia/Shanghai）；执行树 `D:\Narraverse-World-Map-m3-runtime`、分支 `codex/world-runtime-m3-runtime`，共同基准 `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。当前7个 tracked 模块修改、5个新增源码/测试文件；尚无新交付 SHA，本轮未验收任何字节。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
 
 ## 给用户看
 
@@ -127,4 +127,4 @@ EXPERIENCE_RULES="m-experience-v1"、EXPERIENCE_CONFIG_VERSION="experience-confi
 
 ## 当前状态
 
-M3-1已收口；M3-2A/B已在本地发布、待派发、未开工；M3-3待设计；完整M3未验收。main未动、远端待同步。
+M3-1已收口；M3-2A实现进行中，已有改动但尚无新交付 SHA、未验收任何字节；M3-2B独立验收用例编写中，未提交，真实集成验收等待A精确交付 SHA。M3-3认知运行时未开始；完整M3未验收。Project #2已同步并完成远端读回核对；源码未合并main、未push。

@@ -1,6 +1,6 @@
 # M3-2B：本人 Work 经验消费独立验收
 
-合同版本：m3-experience-runtime-contract-v1；共同合同唯一权威见 [M3-2A §共同合同](M3-2A-EXPERIENCE-RUNTIME-TASK.md#共同合同唯一权威版本)。状态：本地已发布，待派发/未开工（2026-10-08 21:26 Asia/Shanghai）。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
+合同版本：m3-experience-runtime-contract-v1；共同合同唯一权威见 [M3-2A §共同合同](M3-2A-EXPERIENCE-RUNTIME-TASK.md#共同合同唯一权威版本)。状态：独立验收用例编写中（2026-10-09 00:32 Asia/Shanghai）；执行树 `D:\Narraverse-World-Map-m3-acceptance`、分支 `codex/world-runtime-m3-acceptance`，共同基准 `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。当前新增未跟踪 `tests/simulation/experience-acceptance.test.mjs`，未提交、无新交付 SHA；真实集成验收等待 A 精确交付。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
 
 ## 给用户看
 
@@ -62,4 +62,4 @@
 
 如需单独检查直接消费者，记录真实命令和产物；不要重复无关全量。交回工作树/分支、A 实际依赖 SHA、B 本地精确 commit、各命令数字结果、expected/actual 与证据路径、PASS/NEED REVISION 建议和未验证范围。缺依赖时交回待跑清单和精确错误，不声称通过。
 
-本路完成后停止交中控裁定；不改 A 文件、不合并 main、不 push、不部署、不接 HTTP/UI/M3-3/D3/D4。M3-2A/B 已在本地发布、待派发/未开工，M3-3待设计，完整 M3未验收。
+本路完成后停止交中控裁定；不改 A 文件、不合并 main、不 push、不部署、不接 HTTP/UI/M3-3/D3/D4。当前 B 独立验收用例编写中，未提交；真实集成验收等待 A 精确交付 SHA。M3-3认知运行时未开始，完整 M3未验收。Project #2已同步并完成远端读回核对。

@@ -22,7 +22,7 @@
 
 ## 新世界运行时进度
 
-2026-10-08 21:26（Asia/Shanghai）：M1/M2 与 M3-1A/B 已本地验收收口。[M3-2A 经验运行时实现](tasks/M3-2A-EXPERIENCE-RUNTIME-TASK.md)和[M3-2B 独立验收](tasks/M3-2B-EXPERIENCE-ACCEPTANCE-TASK.md)任务书已在本地发布，待派发、未开工；共同基准 `D:\Narraverse-World-Map-m3-base @ codex/world-runtime-m3-base`，HEAD `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。后续再规划 M3-3 认知频率运行时接入；完整 M3 未验收，源码未合并 main、未 push，Projects 待同步。详情见[当前状态](PROJECT_CONTEXT.md)。
+2026-10-09 00:32（Asia/Shanghai）：M1/M2 与 M3-1A/B 已本地验收收口。M3-2A 正在独立树 `D:\Narraverse-World-Map-m3-runtime @ codex/world-runtime-m3-runtime` 开发，共同代码基准为 `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`，已有7个 tracked 模块修改和5个新增源码/测试文件，尚无新交付 SHA、未验收任何字节。M3-2B 正在独立编写验收用例，当前新增一个未跟踪测试文件，未提交、无交付 SHA；真实集成验收等待 A 精确交付。共同合同与范围见 [M3-2A](tasks/M3-2A-EXPERIENCE-RUNTIME-TASK.md) 和 [M3-2B](tasks/M3-2B-EXPERIENCE-ACCEPTANCE-TASK.md)。M3-3认知运行时未开始，完整 M3 未验收；源码未合并 main、未 push，GitHub Project #2 已同步并完成远端读回核对。详情见[当前状态](PROJECT_CONTEXT.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
