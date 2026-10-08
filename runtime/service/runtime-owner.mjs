@@ -12,7 +12,7 @@ import { MAX_STATE_FILE_BYTES,readStateFile } from '../persistence/bounded-json-
 import { validateBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { fields,record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
-import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,runtimeProfile,validateServiceCommandDto,mindBackend } from './http-contract.mjs';
+import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,runtimeProfile,validateServiceCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend } from './http-contract.mjs';
 import { saveServiceCommit,loadServiceCommit,transitionServiceCommand,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 async function loadExplicitCheckpoint(file,io){
@@ -58,9 +58,12 @@ async function inspectDirectory(directory,io){
 // IO injection is a library test boundary; HTTP/CLI cannot supply handlers or bypass validation.
 export async function createRuntimeOwner(options,io=fs){
   record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','writable'].includes(k)),'Unknown owner option');
+  // Prime the A2 motivation backend before any profile dispatch so the dependency state is
+  // explicit at startup, never discovered midway through a command.
+  await loadMotivationBackend();
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
-  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
+  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
   requireCondition(options.profile===undefined || options.checkpoint===undefined,'Profile and checkpoint are mutually exclusive');
   if(options.seed!==undefined){integer(options.seed);requireCondition(options.seed<=0xffffffff,'Invalid runtime seed');}
   if(options.checkpoint!==undefined)requireCondition(typeof options.checkpoint==='string' && options.checkpoint.length>0 && options.seed===undefined,'Checkpoint cannot reset seed');
@@ -86,6 +89,7 @@ export async function createRuntimeOwner(options,io=fs){
       requireCondition(options.seed===undefined || options.seed===bundle.snapshot.rng.seed,'Cannot reset existing runtime seed');
     }else{
       const create=options.profile==='mind-village'?mindBackend().fixture.createMindVillage:
+        options.profile==='motivation-village'?requireMotivationBackend().createMotivationVillage:
         options.profile==='player-play-village'?createPlayerPlayVillage:options.profile==='player-village'?createPlayerVillage:createPersonalityNeutral;
       bundle=options.checkpoint===undefined?create(options.seed??42).bundle:
         await loadExplicitCheckpoint(options.checkpoint,io);
@@ -93,7 +97,8 @@ export async function createRuntimeOwner(options,io=fs){
       if(writable || serviceFormatVersion>=2)state={serviceFormatVersion,anchor:cloneData(bundle),commands:[],bundle};
     }
     const {systems,serviceFormatVersion}=runtimeProfile(bundle),playerAvailable=serviceFormatVersion>=2,
-      playerActionsAvailable=serviceFormatVersion===3||serviceFormatVersion===4,mindAvailable=serviceFormatVersion===4;
+      playerActionsAvailable=serviceFormatVersion===3||serviceFormatVersion===4||serviceFormatVersion===5,
+      mindAvailable=serviceFormatVersion===4||serviceFormatVersion===5;
     let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(bundle),playerProjection=playerAvailable?projectPlayerSnapshot(bundle):null,
       mindProjection=mindAvailable?projectMindInspector(bundle):null;
     if(!states.length){
