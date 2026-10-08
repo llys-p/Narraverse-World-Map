@@ -110,6 +110,9 @@ function validateKnowledge(knowledge){
     requireCondition(false,'Motivation knowledge carries two health plans with nowhere to park them');
   if(active!==null&&suspended!==null)requireCondition(active.planId!==suspended.planId,'Active and suspended plans must be distinct');
   integer(knowledge.planState.nextPlanId,1);
+  for(const plan of [active,suspended])if(plan!==null)
+    requireCondition(knowledge.planState.nextPlanId>plan.planId,
+      'Motivation plan counter must exceed existing plan identifiers');
   if(knowledge.planState.lastReviewedDutyId!==null)identifier(knowledge.planState.lastReviewedDutyId);
   return knowledge;
 }
@@ -121,13 +124,13 @@ const strainOf=self=>Math.min(MAX_MOTIVATION_PERMILLE,self.fatigue+Math.max(0,HE
 const recoveryOf=self=>Math.max(0,HEALTH_GOAL_TARGET-self.health)+RECOVERY_BIAS;
 const providerOf=action=>action==='WorkForPay'?'role-request':action==='Rest'?'fatigue-need':
   action==='NoAction'?'fallback':'health-need';
-// A duty candidate only cites a request that is actually open; a blocked one cites nothing.
+// Work cites an open pending request even when its health/fatigue precondition blocks it.
 const sourceRefOf=action=>action==='WorkForPay'||action==='NoAction'?null:
   action==='Rest'?'self-fatigue':'recover-health';
 const scored=(action,reasonCode,support)=>({action,provider:providerOf(action),
   sourceRef:sourceRefOf(action),eligible:true,score:support,support,opposition:0,reasonCode});
-const softBlocked=(action,reasonCode)=>({action,provider:providerOf(action),
-  sourceRef:sourceRefOf(action),eligible:false,score:null,support:0,opposition:0,reasonCode});
+const softBlocked=(action,reasonCode,sourceRef=sourceRefOf(action))=>({action,provider:providerOf(action),
+  sourceRef,eligible:false,score:null,support:0,opposition:0,reasonCode});
 
 function useCandidate(hasGoal,self){
   if(!hasGoal)return softBlocked('UseMedicine','NO_HEALTH_GOAL');
@@ -151,8 +154,8 @@ function buyCandidate(hasGoal,self,knowledge){
 function workCandidate(self,knowledge){
   const duty=knowledge.duty;
   if(!dutyWindowOpen(duty,knowledge.tick))return softBlocked('WorkForPay','DUTY_UNAVAILABLE');
-  if(self.health<WORK_HEALTH_FLOOR)return softBlocked('WorkForPay','HEALTH_TOO_LOW_FOR_WORK');
-  if(self.fatigue>WORK_FATIGUE_CEILING)return softBlocked('WorkForPay','FATIGUE_TOO_HIGH_FOR_WORK');
+  if(self.health<WORK_HEALTH_FLOOR)return softBlocked('WorkForPay','HEALTH_TOO_LOW_FOR_WORK',duty.requestId);
+  if(self.fatigue>WORK_FATIGUE_CEILING)return softBlocked('WorkForPay','FATIGUE_TOO_HIGH_FOR_WORK',duty.requestId);
   const sourceRef=duty.requestId;
   const support=Math.floor(duty.urgencyPermille*knowledge.profile.dutyWeightPermille/1000);
   const opposition=Math.floor(strainOf(self)*knowledge.profile.riskAversionPermille/1000);
@@ -222,8 +225,8 @@ export function planMotivationDecision(knowledge){
 
   const candidates=collectCandidates(knowledge);
   const eligibleOf=action=>candidates.find(candidate=>candidate.action===action).eligible;
-  let activePlan=slotValid(self.currentGoal===null?null:cloneData(knowledge.planState.activePlan),currentGoal,knowledge,day);
-  let suspendedPlan=slotValid(cloneData(knowledge.planState.suspendedPlan),currentGoal,knowledge,day);
+  let activePlan=slotValid(cloneData(knowledge.planState.activePlan),self.currentGoal,knowledge,day);
+  let suspendedPlan=slotValid(cloneData(knowledge.planState.suspendedPlan),self.currentGoal,knowledge,day);
   let nextPlanId=knowledge.planState.nextPlanId;
   let lastReviewedDutyId=knowledge.planState.lastReviewedDutyId;
   const duty=knowledge.duty;
@@ -277,12 +280,17 @@ export function planMotivationDecision(knowledge){
     activePlan=boundPlan;
     currentGoal={...currentGoal,step:choice==='UseMedicine'?'use':'buy'};
   }else if(choice==='WorkForPay'||choice==='Rest'){
-    requireCondition(nextPlanId<Number.MAX_SAFE_INTEGER,'Motivation plan counter overflow','LIMIT_EXCEEDED');
     const kind=choice==='WorkForPay'?'aid-village':'recover-rest';
-    boundPlan={planId:nextPlanId,goalId:null,kind,steps:[choice],stepIndex:0,status:'ready',createdDay:day,
-      deadlineDay:kind==='aid-village'?Math.floor((duty.expiresTick-1)/DAY_TICKS):day,
-      requestId:kind==='aid-village'?duty.requestId:null};
-    nextPlanId+=1;
+    if((gateReason==='CONTINUE_COMMITTED'||gateReason==='LOCAL_REPLAN_BLOCKED')&&
+      activePlan!==null&&activePlan.kind===kind){
+      boundPlan={...activePlan,status:'ready'};
+    }else{
+      requireCondition(nextPlanId<Number.MAX_SAFE_INTEGER,'Motivation plan counter overflow','LIMIT_EXCEEDED');
+      boundPlan={planId:nextPlanId,goalId:null,kind,steps:[choice],stepIndex:0,status:'ready',createdDay:day,
+        deadlineDay:kind==='aid-village'?Math.floor((duty.expiresTick-1)/DAY_TICKS):day,
+        requestId:kind==='aid-village'?duty.requestId:null};
+      nextPlanId+=1;
+    }
     if(activePlan!==null&&activePlan.kind==='recover-health')suspendedPlan={...activePlan,status:'suspended'};
     activePlan=boundPlan;
   }else if(activePlan!==null||suspendedPlan!==null){

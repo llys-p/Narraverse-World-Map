@@ -268,6 +268,8 @@ export function validateMotivationModel(model){
     if(actor.activePlan!==null&&actor.suspendedPlan!==null)
       requireCondition(actor.activePlan.planId!==actor.suspendedPlan.planId,'Active and suspended plans must be distinct');
     integer(actor.nextPlanId,1);
+    for(const plan of [actor.activePlan,actor.suspendedPlan])if(plan!==null)
+      requireCondition(actor.nextPlanId>plan.planId,'Motivation plan counter must exceed existing plan identifiers');
     if(actor.lastDecision!==null){
       validateMotivationDecision(actor.lastDecision);
       requireCondition(actor.lastDecision.actorId===actor.actorId,'Foreign motivation decision stored on this actor');

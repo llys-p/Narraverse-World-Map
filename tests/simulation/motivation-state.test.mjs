@@ -167,7 +167,21 @@ test('model: plan slots keep one health plan and never carry finished plans',()=
   assert.doesNotThrow(()=>modelWith({lastDuty:dutyOf(),lastReviewedDutyId:'d01',
     suspendedPlan:healthPlan({status:'suspended'}),nextPlanId:3}));
   assert.doesNotThrow(()=>modelWith({activePlan:dutyPlan(),suspendedPlan:healthPlan({status:'suspended'}),nextPlanId:3}));
-  assert.doesNotThrow(()=>modelWith({activePlan:healthPlan({status:'blocked'})}));
+  assert.doesNotThrow(()=>modelWith({activePlan:healthPlan({status:'blocked'}),nextPlanId:2}));
+});
+
+test('model: nextPlanId is strictly beyond active and suspended plan identifiers',()=>{
+  const slots=[{activePlan:healthPlan({planId:7}),suspendedPlan:null},
+    {activePlan:null,suspendedPlan:healthPlan({planId:7,status:'suspended'})},
+    {activePlan:dutyPlan({planId:8}),suspendedPlan:healthPlan({planId:7,status:'suspended'})}];
+  for(const actor of slots){
+    const highest=actor.activePlan?.planId??actor.suspendedPlan.planId;
+    for(const nextPlanId of [1,highest])
+      assert.throws(()=>modelWith({...actor,nextPlanId}),{code:'INVALID_INPUT'});
+    assert.doesNotThrow(()=>modelWith({...actor,nextPlanId:highest+1}));
+    assert.doesNotThrow(()=>modelWith({...actor,nextPlanId:Number.MAX_SAFE_INTEGER}),
+      'the safe endpoint is valid when no new identifier is allocated');
+  }
 });
 
 test('plan: fixed step shapes, goal/request binding and deadlines are structural',()=>{

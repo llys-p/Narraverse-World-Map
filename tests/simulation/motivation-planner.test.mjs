@@ -13,6 +13,8 @@ const healthPlan=(over={})=>({planId:1,goalId:1,kind:'recover-health',steps:['Bu
   status:'ready',createdDay:1,deadlineDay:21,requestId:null,...structuredClone(over)});
 const dutyPlan=(over={})=>({planId:2,goalId:null,kind:'aid-village',steps:['WorkForPay'],stepIndex:0,status:'ready',
   createdDay:2,deadlineDay:2,requestId:'d01',...structuredClone(over)});
+const restPlan=(over={})=>({planId:3,goalId:null,kind:'recover-rest',steps:['Rest'],stepIndex:0,status:'ready',
+  createdDay:2,deadlineDay:2,requestId:null,...structuredClone(over)});
 const dutyOf=(over={})=>({requestId:'d01',sourceEventSeq:12,observedTick:200,expiresTick:432,urgencyPermille:1000,
   status:'pending',fulfilledTick:null,...structuredClone(over)});
 const beliefOf=(value,over={})=>({topic:'public-herbs-available',value,
@@ -131,6 +133,17 @@ test('collect: a potential health goal opens treatment without consuming an iden
   for(const over of [{currentGoal:null,health:701},{currentGoal:null,health:400,cooldownUntilDay:3}])
     assert.equal(collectMotivationCandidates(knowledge({self:over}))
       .find(candidate=>candidate.action==='UseMedicine').reasonCode,'NO_HEALTH_GOAL');
+});
+
+test('collect: an open pending duty keeps its source when work is soft-ineligible',()=>{
+  for(const [self,reasonCode] of [[{health:299},'HEALTH_TOO_LOW_FOR_WORK'],
+    [{fatigue:701},'FATIGUE_TOO_HIGH_FOR_WORK']]){
+    const work=collectMotivationCandidates(knowledge({self})).find(candidate=>candidate.action==='WorkForPay');
+    assert.deepEqual(work,{action:'WorkForPay',provider:'role-request',sourceRef:'d01',eligible:false,
+      score:null,support:0,opposition:0,reasonCode});
+  }
+  for(const duty of [null,dutyOf({status:'fulfilled',fulfilledTick:288}),dutyOf({expiresTick:288})])
+    assert.equal(collectMotivationCandidates(knowledge({duty})).find(c=>c.action==='WorkForPay').sourceRef,null);
 });
 
 test('purity: neither entry point mutates or reads beyond its own knowledge',()=>{
@@ -272,6 +285,73 @@ test('gates: local replan keeps the plan identifier and re-derives only remainin
   assert.equal(parked.decision.choice,'NoAction');
   assert.deepEqual([parked.activePlan,parked.suspendedPlan.planId,parked.suspendedPlan.status,parked.suspendedPlan.steps],
     [null,1,'suspended',['BuyMedicine','UseMedicine']],'one suspension layer only, no second stack');
+});
+
+// Compact legal planner DTOs, not a claim about runtime history. The request spans day 1/2;
+// Work support=900, opposition=0, so it wins the local retry over Use700 and Rest650.
+const retryDutyKnowledge=(status,currentGoal,nextPlanId=2)=>knowledge({
+  self:{health:currentGoal===null?750:400,currentGoal},belief:beliefOf('unknown'),
+  profile:{dutyWeightPermille:900,riskAversionPermille:0},
+  duty:dutyOf({sourceEventSeq:7,observedTick:12,expiresTick:300}),
+  planState:{activePlan:dutyPlan({planId:1,status,createdDay:1}),suspendedPlan:null,nextPlanId,
+    lastReviewedDutyId:'d01'}});
+
+for(const [status,gateReason] of [['ready','CONTINUE_COMMITTED'],['blocked','LOCAL_REPLAN_BLOCKED']]){
+  test('gates: '+status+' duty reuses its plan with or without a background health Goal',()=>{
+    for(const currentGoal of [goalOf({step:'wait'}),null]){
+      const source=deepFreeze(retryDutyKnowledge(status,currentGoal));
+      const before=canonicalJson(source),result=planMotivationDecision(source);
+      assert.deepEqual([result.decision.gateReason,result.decision.choice,result.decision.planId,
+        result.decision.goalId,result.nextPlanId],[gateReason,'WorkForPay',1,null,2]);
+      assert.deepEqual(result.activePlan,dutyPlan({planId:1,status:'ready',createdDay:1}));
+      assert.deepEqual([result.currentGoal,result.suspendedPlan,result.lastReviewedDutyId],
+        [currentGoal,null,'d01']);
+      assert.equal(canonicalJson(source),before,'continuation/retry must not rewrite the source DTO');
+    }
+  });
+}
+
+test('gates: ready and blocked temporary Rest retain their plan identity',()=>{
+  for(const [status,gateReason] of [['ready','CONTINUE_COMMITTED'],['blocked','LOCAL_REPLAN_BLOCKED']]){
+    const result=plan({self:{currentGoal:null,health:750},duty:null,
+      planState:{activePlan:restPlan({status}),suspendedPlan:null,nextPlanId:4,lastReviewedDutyId:null}});
+    assert.deepEqual([result.decision.gateReason,result.decision.choice,result.decision.planId,
+      result.decision.goalId,result.nextPlanId],[gateReason,'Rest',3,null,4]);
+    assert.deepEqual(result.activePlan,restPlan());
+    assert.deepEqual([result.currentGoal,result.suspendedPlan],[null,null]);
+  }
+});
+
+test('gates: continuing or retrying a temporary plan needs no counter allocation at the endpoint',()=>{
+  for(const [status,gateReason] of [['ready','CONTINUE_COMMITTED'],['blocked','LOCAL_REPLAN_BLOCKED']]){
+    const work=planMotivationDecision(retryDutyKnowledge(status,null,Number.MAX_SAFE_INTEGER));
+    assert.deepEqual([work.decision.gateReason,work.decision.choice,work.decision.planId,work.nextPlanId],
+      [gateReason,'WorkForPay',1,Number.MAX_SAFE_INTEGER]);
+    const rest=plan({self:{currentGoal:null,health:750},duty:null,
+      planState:{activePlan:restPlan({status}),suspendedPlan:null,nextPlanId:Number.MAX_SAFE_INTEGER}});
+    assert.deepEqual([rest.decision.gateReason,rest.decision.choice,rest.decision.planId,rest.nextPlanId],
+      [gateReason,'Rest',3,Number.MAX_SAFE_INTEGER]);
+  }
+  // A new temporary plan still needs an increment: the final usable ID is MAX_SAFE_INTEGER-1.
+  const fresh=plan({self:{currentGoal:null,health:750},duty:null,
+    planState:{activePlan:null,suspendedPlan:null,nextPlanId:Number.MAX_SAFE_INTEGER-1}});
+  assert.deepEqual([fresh.activePlan.planId,fresh.nextPlanId],
+    [Number.MAX_SAFE_INTEGER-1,Number.MAX_SAFE_INTEGER]);
+  assert.throws(()=>plan({self:{currentGoal:null,health:750},duty:null,
+    planState:{activePlan:null,suspendedPlan:null,nextPlanId:Number.MAX_SAFE_INTEGER}}),{code:'LIMIT_EXCEEDED'});
+});
+
+test('knowledge boundary: nextPlanId is strictly beyond every existing plan slot',()=>{
+  const slots=[{activePlan:healthPlan({planId:7}),suspendedPlan:null},
+    {activePlan:null,suspendedPlan:healthPlan({planId:7,status:'suspended'})},
+    {activePlan:dutyPlan({planId:8}),suspendedPlan:healthPlan({planId:7,status:'suspended'})}];
+  for(const planState of slots){
+    const highest=planState.activePlan?.planId??planState.suspendedPlan.planId;
+    for(const nextPlanId of [1,highest])for(const run of [collectMotivationCandidates,planMotivationDecision])
+      assert.throws(()=>run(knowledge({planState:{...planState,nextPlanId,lastReviewedDutyId:'d01'}})),
+        {code:'INVALID_INPUT'});
+    assert.doesNotThrow(()=>plan({planState:{...planState,nextPlanId:highest+1,lastReviewedDutyId:'d01'}}));
+  }
 });
 
 test('gates: expired and superseded duty plans never survive into a new action',()=>{
