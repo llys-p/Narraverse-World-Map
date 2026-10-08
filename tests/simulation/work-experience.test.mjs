@@ -116,9 +116,10 @@ test('duplicate protection: same windowed event with an equal projection changes
 });
 
 test('window order: evicted sequences, backward ticks and reused identifiers all fail',()=>{
-  const state=stateOf([1,2,3,4].map(seq=>sample(seq,12*seq,'F',seq)));
-  rejects(()=>observeWorkOutcome(state,sample(2,60,'S',9)),{code:'INVALID_INPUT'},
-    'seq 2 left the window and may not be re-learned');
+  let state=createWorkExperienceState(SIM,'actor-2');
+  for(let seq=1;seq<=5;seq++)state=observeWorkOutcome(state,sample(seq,12*seq,'F',seq)).state;
+  rejects(()=>observeWorkOutcome(state,sample(1,72,'S',9)),{code:'INVALID_INPUT'},
+    'seq 1 left the four-sample window and may not be re-learned');
   rejects(()=>observeWorkOutcome(state,sample(0,12,'S',9)),{code:'INVALID_INPUT'});
   rejects(()=>observeWorkOutcome(state,{...sample(5,60,'S',5),occurrenceTick:47}),{code:'INVALID_INPUT'},
     'a later event cannot report an earlier tick than the newest sample');
@@ -128,7 +129,35 @@ test('window order: evicted sequences, backward ticks and reused identifiers all
   const decisions=stateOf([{...sample(1,12,'F',1),commandId:'cmd-x'},{...sample(2,24,'F',2),commandId:'cmd-y'}]);
   rejects(()=>observeWorkOutcome(decisions,{...sample(3,36,'S',2),commandId:'cmd-z'}),{code:'INVALID_INPUT'},
     'a reused decision identifier is a conflict even at a newer sequence');
-  assert.equal(observeWorkOutcome(state,sample(5,60,'S',5)).disposition,'learned','a fresh slot is still accepted');
+  assert.equal(observeWorkOutcome(state,sample(6,72,'S',6)).disposition,'learned','a fresh slot is still accepted');
+});
+
+test('array prototype guard: inherited map getters stay inert in every public input path',()=>{
+  let getterCalls=0;
+  const attempt=run=>{
+    try{run();return {code:null,getterCalls};}
+    catch(error){return {code:error?.code??null,getterCalls};}
+  };
+  const taintedArray=values=>{
+    const array=structuredClone(values);
+    const prototype=Object.create(Array.prototype);
+    Object.defineProperty(prototype,'map',{get(){getterCalls++;return Array.prototype.map;}});
+    Object.setPrototypeOf(array,prototype);
+    return array;
+  };
+  const taintedState=stateOf([sample(1,12,'F',1)]);
+  taintedState.samples=taintedArray(taintedState.samples);
+  const validation=attempt(()=>validateWorkExperienceState(taintedState));
+  const derivation=attempt(()=>deriveWorkExperience(taintedState));
+  const observation=attempt(()=>observeWorkOutcome(taintedState,sample(2,24,'S',2)));
+
+  const unknownNestedArray=taintedArray([1]);
+  const state=createWorkExperienceState(SIM,'actor-2');
+  const nested=attempt(()=>observeWorkOutcome(state,{...sample(1,12,'S',1),unknownNestedArray}));
+  assert.deepEqual([validation,derivation,observation,nested].map(({code,getterCalls})=>({code,calls:getterCalls})),[
+    {code:'INVALID_INPUT',calls:0},{code:'INVALID_INPUT',calls:0},
+    {code:'INVALID_INPUT',calls:0},{code:'INVALID_INPUT',calls:0}
+  ],'every public input path must reject before the inherited map getter executes');
 });
 
 test('narrow scope: only WorkForPay success or authority rejection is a sample',()=>{

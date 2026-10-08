@@ -3,7 +3,7 @@
 // failure out of the window and so lower the derived reading, while no stored sample, past
 // decision or past derivation is ever rewritten. Pure data in, pure data out: no world, event
 // log, RNG, clock or filesystem access, and nothing here proves that an outcome really happened.
-import { fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition } from './data-contract.mjs';
+import { MAX_COLLECTION,MAX_EVENTS,fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition } from './data-contract.mjs';
 
 export const WORK_EXPERIENCE_STATE_VERSION='work-experience-state-v1';
 export const WORK_EXPERIENCE_VIEW_VERSION='work-experience-view-v1';
@@ -22,10 +22,55 @@ const STATE_FIELDS=['version','simulationId','actorId','samples'];
 
 function byteLength(value){return new TextEncoder().encode(canonicalJson(value)).length;}
 
+function inspectInputTree(root){
+  const ancestors=new Set();
+  const visit=(value,depth)=>{
+    requireCondition(depth<=64,'Data nesting budget exceeded','LIMIT_EXCEEDED');
+    if(value===null||typeof value==='string'||typeof value==='boolean')return;
+    if(typeof value==='number'){
+      requireCondition(Number.isFinite(value),'Non-finite number');
+      return;
+    }
+    requireCondition(typeof value==='object','Non-JSON data');
+    requireCondition(!ancestors.has(value),'Cyclic data');
+    ancestors.add(value);
+    const array=Array.isArray(value),prototype=Object.getPrototypeOf(value);
+    if(array){
+      requireCondition(prototype===Array.prototype,'Unsupported array prototype');
+      const descriptors=Object.getOwnPropertyDescriptors(value);
+      const length=descriptors.length?.value;
+      requireCondition(Number.isSafeInteger(length)&&length>=0,'Invalid array length');
+      requireCondition(length<=MAX_EVENTS,'Array budget exceeded','LIMIT_EXCEEDED');
+      const keys=Reflect.ownKeys(descriptors);
+      requireCondition(keys.length===length+1,'Sparse array or extra array properties');
+      for(let index=0;index<length;index++){
+        const descriptor=descriptors[String(index)];
+        requireCondition(descriptor&&descriptor.enumerable&&Object.hasOwn(descriptor,'value'),
+          'Sparse array or accessor element');
+        visit(descriptor.value,depth+1);
+      }
+    }else{
+      requireCondition(prototype===Object.prototype||prototype===null,'Unsupported record prototype');
+      const descriptors=Object.getOwnPropertyDescriptors(value);
+      const keys=Reflect.ownKeys(descriptors);
+      requireCondition(keys.length<=MAX_COLLECTION,'Record budget exceeded','LIMIT_EXCEEDED');
+      for(const key of keys){
+        const descriptor=descriptors[key];
+        requireCondition(typeof key==='string'&&descriptor.enumerable&&Object.hasOwn(descriptor,'value'),
+          'Only enumerable data properties are supported');
+        visit(descriptor.value,depth+1);
+      }
+    }
+    ancestors.delete(value);
+  };
+  visit(root,0);
+}
+
 // Descriptor checks run before any value is read, so a getter is rejected without being executed;
 // the byte budget is the next gate and still precedes business semantics such as ID length.
 function cloneWithinBudget(value,budget,label){
   requireCondition(value!==null&&typeof value==='object','Expected '+label+' data record');
+  inspectInputTree(value);
   const copy=cloneData(value);
   requireCondition(byteLength(copy)<=budget,label+' exceeds the fixed byte budget','LIMIT_EXCEEDED');
   return copy;
