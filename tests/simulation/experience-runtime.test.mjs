@@ -217,14 +217,19 @@ test('E4: 因果、幂等和边界保护', async () => {
     commandReceipts: currentBundle.snapshot.commandReceipts,
   };
 
-  // 1. Other actors: actor-1 (chief) or actor-4 (player) return null
-  assert.equal(projectOwnWorkOutcome(adapterContext, 'actor-2', 1), null);
+  // 1. Correct the original fixture: seq 1 is not Resolved. Contract §4 requires
+  // damaged/non-Resolved links to throw; other-actor null requires a valid chain.
+  assert.notEqual(currentBundle.eventLog.find((e) => e.eventSeq === 1)?.type, 'MotivationDecisionResolved');
+  assert.throws(() => projectOwnWorkOutcome(adapterContext, 'actor-2', 1), { code: 'INVALID_INPUT' });
 
   // 2. actor-3 looking at actor-2's resolved event returns null
   const actor2Resolved = currentBundle.eventLog.find(
     (e) => e.type === 'MotivationDecisionResolved' && e.payload.actorId === 'actor-2' && e.tick === 288
   );
   assert.ok(actor2Resolved);
+  // actor-1 (chief) and actor-4 (player) inspect the same real, valid Resolved.
+  assert.equal(projectOwnWorkOutcome(adapterContext, 'actor-1', actor2Resolved.eventSeq), null);
+  assert.equal(projectOwnWorkOutcome(adapterContext, 'actor-4', actor2Resolved.eventSeq), null);
   assert.equal(projectOwnWorkOutcome(adapterContext, 'actor-3', actor2Resolved.eventSeq), null);
 
   // 3. Non-WorkForPay action returns null
