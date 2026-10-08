@@ -1,6 +1,6 @@
 # M2C：承诺门、失败归属与真实消费者独立验收
 
-合同：m2-contract-v2；状态：已交付，2026-10-08 中控首次审查 NEED REVISION。共同合同 Q1–Q7 为唯一 expected 来源；不从 A1/A2/B 输出倒抄预期。
+合同：m2-contract-v2；状态：独立断言准备已修，Q7 原场景正在补正；A2 真实依赖项未验。共同合同 Q1–Q7 为唯一 expected 来源；不从 A1/A2/B 输出倒抄预期。
 
 ## 给用户看
 
@@ -38,7 +38,7 @@
 1. Q1 候选来源与独立分数：从冻结 Knowledge 独立核验 provider/sourceRef、soft eligibility、Work710/Use700/Rest650、候选固定顺序与同分选择。不调用 planner 生成 expected。
 2. Q1 承诺配对：profile dutyWeight1000/risk0，同 actor/初态只改变 d01 urgency：1000 触发 NEW_MAJOR_DUTY 并可选 Work；899 不触发，CONTINUE_COMMITTED 继续 Plan1 Use，即使 Work 分数899。另独立核验原900/200配对中权重单变量变化导致完整重评选择变化。
 3. Q2 固定四日链：tick144 Buy / Goal1 / Plan1 step1；tick200 duty 到达；tick288 首次重大门选 Work，health Goal.step仍use、Plan1挂起、Plan2.goalId null、payload goalId0，成功后工资/生产账正确且仅该 requestId 对应 Duty fulfilled/288；Decision 三层意图分离；tick432只Rest并保留健康Goal/Plan；tick576恢复原 Plan1 Use，health500、Goal未完成。
-4. Q3 失败归属、漂移和生命周期：从 tick0 用合同 recipe 推进，不手改 snapshot/跳时。期限 fixture 的 Buy refusal 使治疗 Plan blocked，day2–20 NoAction 不重扣，day21 Goal 终止一次，day23新Goal不复活旧Plan；死亡 fixture 的 Buy 已成功，核对 ledger.goalsFailed 仅增加一次、failedActions不增加、死亡不额外作为 Goal.failures 动作失败，后续请求 unavailable。
+4. Q3 失败归属、漂移和生命周期：从 tick0 用合同 recipe 推进，不手改 snapshot/跳时。期限 fixture 须设 `memory.society.actors.market.products.herbs.maxOrder=0` 禁止外来药材补给；其 Buy refusal 使治疗 Plan blocked，day2–20 NoAction 不重扣，day21 Goal 终止一次，day23新Goal不复活旧Plan；死亡 fixture 的 Buy 已成功，核对 ledger.goalsFailed 仅增加一次、failedActions不增加、死亡不额外作为 Goal.failures 动作失败，后续请求 unavailable。
 5. Q3 临时失败归属真实 recipe：使用合同 Q3 指定 player.initialHerbs20、公仓herbs50/production0、resources.gold.initial350（memory.society.actors.market.ecology.resources.resources.gold.initial）。tick144 两NPC各购药后，144与288之间真实 PlayerSell herbs qty7，duration=1 tick，得到140金币并将 public cash 从150降到10；不把玩家私账输入 Knowledge。tick200 d01，tick288 Work score710/major gate，但真实 wage20 支付失败。独立核对 ledger.failedActions +1、failureOwner={planId:2,goalId:null}、健康 Goal1.failures=0/stepuse、健康Plan保持、Work Plan blocked、Duty pending、无私账/疲劳变化和无供给Belief副作用；tick432过期后回到 Plan1 Use。逐日独立对账金币、药材、工资、产粮、actor资产与旧日结。如真实旧规则不匹配，记录最小差异并请求合同修订；不改实现或快照消除失败。
 6. Q4 反事实纯度：冻结完整 Decision/Knowledge，独立验证 canonical 文本、baseline choice+candidates+gateReason，再核 duty-minus-200/risk-plus-200。检查高分被 gate 挡住仍显示 gate，零 tick/RNG/clock/command/event/file/ID/Role 状态变化。
 7. Q5 完整重演：连续576、200+376、288+288、432+144与CLI两日保存+两日恢复相等；独立覆盖非日界 request supersession 同 tick 持久化以及日界单一 PlanSettled 合并；独立篡改 reviewedDutyId、Duty fulfillmentTick/status、Duty与Work Plan/candidate 的 requestId/sourceRef 错配、source、provider、selectable/block/gate、Goal failureOwner、Plan/Goal引用及A1 proposal的Goal/Plan ID重分配、score、fingerprint、cursor、额外事实后拒绝。restore 不得再消费已履约请求或丢失 supersession 取消记录。
@@ -61,3 +61,8 @@
 
 ## 中控首次审查（2026-10-08 15:31 Asia/Shanghai）
 交付 fbae74d80cf57c9cd6e1df6a6082daebbe692486 已推送，仅三测试文件。原27 tests为6 pass/21 skip；仅将导入接至 A1 ignored 临时副本后12 tests为6 pass/6 skip，仍是假绿：Q1–Q6大多只有依赖 gate 与注释，没有真实 core/runner/http 断言；B 错导入合同不存在的 service/motivation-inspector.mjs，宽 catch-all 会吞掉语法/初始化错误，Q7 固定诊断不核对基准与证据。另修正服务检查概念：合同要求 inspectMind 关闭时 HTTP 404；服务停止时应 connection refused。故 NEED REVISION。证据：交付树 ignored artifacts/world-runtime-m2c-controller-review-20261008/review.md 与 TAP。A1 已交付不等于 C 已导入；不改生产代码或 expected。
+
+## 中控返修复核（2026-10-08 16:26 Asia/Shanghai）
+C 修复 `880c10de924b7fdd3b0f17a8900a326e3b53bc8c` 已本地提交，未推送且 tracked 工作区 clean，三项测试现已填实。prepared30 为1 baseline-prep pass、29 精确 A2 dependency skips、0 fail，不算 M2 兼容验收；冻结 A1 副本独立8 pass、4 A2 skips、0 fail。四项 import-failure 负探针与一次冻结 `87aa9b6` oracle 检查已完成。中控源审尚待完成，故 C 未获正式验收。证据 `artifacts/world-runtime-m2-acceptance-repair-20261008`；oracle payload SHA `983717df5384b1f20498b49bbe311dd76fdfdb649f469eb6bf76134f83f21805`，后续消费不重复跑基准。
+
+中控源审补正（2026-10-08 16:33，Asia/Shanghai）：Q7 必须采用已归档 `world-runtime-m1a-compat/scenario.mjs` 的原输入：单条 `m1a-buy-food` 买 food quantity=2，再卖 herbs1、旅行 forest、Rest、返回 village、推进144，最终 tick176；C5 使用 `createPersonalityHealth(42,'personality-health-seed-42')` 推进576。不得换成另一组六条交易或 personality-food。已生成 oracle 的未变场景可复用，原 oracle 保留，补正场景另存新版本；不把准备性通过当作 M2 兼容通过。

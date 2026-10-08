@@ -1,6 +1,6 @@
 # M2 共同合同：动机计划与受约束反事实
 
-合同版本：`m2-contract-v2`；状态：新任务书已冻结、尚未开工。冻结日期：2026-10-08（Asia/Shanghai）。本合同是 M2A1、M2A2、M2B、M2C 的唯一公共定义；修改公共字段、公式、顺序或错误语义，须由中控同步修订本合同及受影响任务书。四份任务书与本文共用一个合同版本。本文取代尚未开工的 `m2-contract-v1`（发布提交 `be7ca9ba44684c7b1e2cbf1c9051b94bef4f3b68`）；v1 保留在 Git 历史，不要求回滚、迁移或改写任何实现/存档。
+合同版本：`m2-contract-v2`；状态：A1 修正已通过中控验收，A2 实现中，B/C 待真实依赖复验；M2 未验收。冻结日期：2026-10-08（Asia/Shanghai）。本合同是 M2A1、M2A2、M2B、M2C 的唯一公共定义；修改公共字段、公式、顺序或错误语义，须由中控同步修订本合同及受影响任务书。四份任务书与本文共用一个合同版本。本文取代尚未开工的 `m2-contract-v1`（发布提交 `be7ca9ba44684c7b1e2cbf1c9051b94bef4f3b68`）；v1 保留在 Git 历史，不要求回滚、迁移或改写任何实现/存档。
 
 执行书：[M2A1 纯规划器](M2A1-MOTIVATION-PLANNER-TASK.md)、[M2A2 运行时集成](M2A2-MOTIVATION-RUNTIME-TASK.md)、[M2B 检查器](M2B-PLAN-INSPECTOR-TASK.md)、[M2C 独立验收](M2C-MOTIVATION-ACCEPTANCE-TASK.md)。
 
@@ -57,7 +57,9 @@
 
 以下只为合同 Q3 的存活期限与死亡清理边界，不增加新业务；均从合法配置构造，执行者不得手改 snapshot 或跳时。
 
-- **期限等待 fixture**：从默认配置仅改 actor-2/3 fatigue=200；全部三名 NPC initialFood=32；public herbs initial=0、production=0；全部 NPC/玩家 initialHerbs=0；mind.stimuli 仅为 `[{stimulusId:'deadline-statement',tick:12,kind:'statement',speakerId:'actor-1',listenerId:'actor-2',available:true}]`；motivation.requests=[]；经济固定 wage=20/workFood=8/workFatigue=150/deadlineDays=20/maxFailures=3/cooldownDays=2。actor-2 day1 依据已送达陈述相信有药，创建 Goal1/Plan1（BuyMedicine）；权威库存为0而拒绝，failedActions 与 Goal.failures 各增加一次，Plan1 stepIndex=0/status=blocked。日末公开无药纠正后，day2～20 保留 Goal/Plan1，每日 NoAction，不再扣 failures、不休息、不消费药。day21 旧 Goal deadline 失败只结算一次并清 Plan1，cooldownUntilDay=23；day22 不建新 Goal/Plan；day23 可建 Goal2，belief 仍无药，NoAction 不建新 Plan、不复活 Plan1。通过从 tick0 引擎分段推进覆盖真实前缀。
+- **期限等待 fixture**：从默认配置仅改 actor-2/3 fatigue=200；全部三名 NPC initialFood=32；public herbs initial=0、production=0，并设 `memory.society.actors.market.products.herbs.maxOrder=0` 禁止该实验的外来药材补给；全部 NPC/玩家 initialHerbs=0；mind.stimuli 仅为 `[{stimulusId:'deadline-statement',tick:12,kind:'statement',speakerId:'actor-1',listenerId:'actor-2',available:true}]`；motivation.requests=[]；经济固定 wage=20/workFood=8/workFatigue=150/deadlineDays=20/maxFailures=3/cooldownDays=2。actor-2 day1 依据已送达陈述相信有药，创建 Goal1/Plan1（BuyMedicine）；权威库存为0而拒绝，failedActions 与 Goal.failures 各增加一次，Plan1 stepIndex=0/status=blocked。日末公开无药纠正后，day2～20 保留 Goal/Plan1，每日 NoAction，不再扣 failures、不休息、不消费药。day21 旧 Goal deadline 失败只结算一次并清 Plan1，cooldownUntilDay=23；day22 不建新 Goal/Plan；day23 可建 Goal2，belief 仍无药，NoAction 不建新 Plan、不复活 Plan1。通过从 tick0 引擎分段推进覆盖真实前缀。
+中控实验补正（2026-10-08 16:33，Asia/Shanghai）：原期限 recipe 的库存/生产均为 0，仍允许旧市场第 1 天采购 12 药、第 3 天到货，第 4 天恢复 BuyMedicine；执行者报告该真实反例后，中控补充上述合法 maxOrder=0 前提。此补正覆盖原 0d7cc74 recipe 的漏项，保留原等待/截止验收预期，不改默认 M2、旧经济规则、公式、预算、DTO 或运行时版本。补正后的真实期限链尚待验证。
+
 - **死亡清理 fixture**：从默认配置仅改 actor-2 health=1、hunger=1000、initialFood=0；private herbs=0、wallet=100；其它默认，包括 tick200 的 d01 请求。actor-2 在 tick144 的 BuyMedicine 成功但不回血，日末按旧规则因无私粮死亡；canonical Goal 与待执行 Use Plan 清理；society estate.state.ledger.goalsFailed 仅增加一次，因 Buy 已成功 failedActions 不增，死亡本身不再作为一次 Goal.failures 的动作失败。已购私药/钱包及最后 Decision/Outcome 封存。tick200 的 d01 记录 unavailable、不进入 duty；可增加 tick210 给 actor-2 的 market-check，同样 unavailable。推进到 tick576 后死者不再增加 Plan/Decision/报价/观察，旧记录不变，背景世界仍按规则结算。若真实旧 actor 规则不产生此死亡结果，记录阻断并停在合法配置，不手造死亡快照。
 
 ## 3. 长期目标、计划与固定状态
@@ -86,6 +88,8 @@ A2 公共函数的模块归属如下；函数名、签名与业务 DTO 仍按本
 | `defaultMotivationVillageConfig()`、`createMotivationVillage(...)`、`motivationSystems()` | `runtime/fixtures/motivation-village.mjs` |
 | `validateMotivationWorld(...)`、`executeMotivationPlayerIntent(...)`、`describeMotivationPlayerActions(...)` | `runtime/core/motivation-runtime.mjs` |
 | `buildMotivationKnowledge(...)`、`projectMotivationInspector(...)` | `runtime/knowledge/motivation-knowledge.mjs` |
+
+中控实现澄清（2026-10-08）：A2 可在其白名单文件内部定义一个具名 `hooks` 对象，仅供白名单内 `engine/world-state/event-log/fixture` 连接，拟含 `createWorld`、`beforeSystems`、`afterSystems`、`applyAction`、`settleDay`、`validateHistory` 六项；每项须有实际消费者且为完成本合同所必需。它不是业务接口，不得由 B/C 引用，不得新增 barrel/re-export。上表八个业务公共函数的模块归属保持不变；decision-phase Knowledge builder 必须是 core 私有闭包，不加入 hooks、不 export。此项只澄清内部接线，不修改公式、DTO、业务版本或白名单。
 
 ### 4.1 Knowledge
 

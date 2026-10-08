@@ -1,6 +1,6 @@
 # M2A2：动机运行时、权威结算与重演
 
-合同：m2-contract-v2；状态：待派发、未开工。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
+合同：m2-contract-v2；状态：已正式放行，2026-10-08 开工中（尚无交付 SHA）。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
 
 ## 给用户看
 
@@ -22,6 +22,7 @@
 - 唯一代码基准：D:\Narraverse-World-Map-m1-integration @ 87aa9b605f5f509ce3b0daa97e34ded004d22f33；main 无 runtime。
 - 记录实际 A1 SHA、代码 HEAD、合同/任务书导入控制树 SHA、工作区状态与所有权。缺少 A1 导出或签名不一致时显式停报，不复制实现、不吞 import。
 - M2 v1 未开工；v2 首次实现使用已有 motivation-*v1 / m-motivation-v1 / service5 名称，不做旧 M2 数据迁移。
+- A2 已获正式放行，在 core 原树串行实现；首个真实四日 Buy→Work→Rest→Use 链跑通，其余 Q1/Q3/Q5/Q6、完整重演及服务/浏览器消费者仍未验，不据此宣称 A2 或 M2 完成。内部 `hooks` 对象仅按共同合同 §4.0 的有限连接用途实现，不向 B/C 提供业务接口。
 - 本路交付后停止；不合并 main、不启 M3/D3、不接模型/正式平台/真实旧存档/旧实例。
 
 ## 文件白名单
@@ -60,7 +61,7 @@
 
 - Q2 固定四日三层意图链、重大职责请求与 urgent fatigue、真实 Work/Rest payload goalId=0、Goal/Plan ID 连续、Duty 只在真实 Work receipt 成功后履约、失败/成功结果一致。
 - Q1 承诺配对：dutyWeight1000/risk0 下 urgency1000 vs899；1000 重新评分选 Work，899 保持治疗 Plan1 Use。核候选来源/score/selectable/gate，非重大请求的高分不得打断。另送达新的本人 requestId 覆盖旧请求时，旧 aid-village Plan 必须转 REQUEST_SUPERSEDED 并取消、不执行、不改资产/Goal.failure、不履约旧请求；保留 suspended 健康 Plan，新 Duty 与 Work candidate/Plan sourceRef 必须同 requestId，不能把旧 Plan 用于履行新请求。
-- Q3 期限 fixture 与死亡 fixture 按合同合法 config 从 tick0 连续/分段推进，不改 snapshot、不跳时；health Buy 拒绝 Plan blocked、Goal failure+1 一次；死亡 recipe 中已成功 Buy 后死亡，society estate.state.ledger.goalsFailed 只增加一次、failedActions 不增加、死亡不再额外增加 Goal.failures。另执行真实临时 Work 失败 recipe：player.initialHerbs=20、公仓 herbs initial=50 / production=0、resources.gold.initial=350（路径 memory.society.actors.market.ecology.resources.resources.gold.initial）；actor-2/3 tick144 各购药后，tick144 后且288前经真实 PlayerSell 卖 herbs qty7，duration=1 tick，确认 public cash 降至10、tick200 d01送达、tick288 Work RULE_REJECTED，临时 Plan2 blocked / failureOwner={planId:2,goalId:null} / ledger.failedActions+1，健康 Goal1.failures=0且 step=use，Duty pending、私账/疲劳不变且无供给Belief副作用；tick432过期后恢复 Plan1 Use。逐日核对所有公仓现金、余额、药材、工资、生产和旧日结账。若真实配置与预期不合，停报最小偏差，不改旧 resolver/母规则、不过写deadline、不手造snapshot。
+- Q3 期限 fixture 须额外设 `memory.society.actors.market.products.herbs.maxOrder=0`；期限与死亡 fixture 均按合同合法 config 从 tick0 连续/分段推进，不改 snapshot、不跳时；health Buy 拒绝 Plan blocked、Goal failure+1 一次；死亡 recipe 中已成功 Buy 后死亡，society estate.state.ledger.goalsFailed 只增加一次、failedActions 不增加、死亡不再额外增加 Goal.failures。另执行真实临时 Work 失败 recipe：player.initialHerbs=20、公仓 herbs initial=50 / production=0、resources.gold.initial=350（路径 memory.society.actors.market.ecology.resources.resources.gold.initial）；actor-2/3 tick144 各购药后，tick144 后且288前经真实 PlayerSell 卖 herbs qty7，duration=1 tick，确认 public cash 降至10、tick200 d01送达、tick288 Work RULE_REJECTED，临时 Plan2 blocked / failureOwner={planId:2,goalId:null} / ledger.failedActions+1，健康 Goal1.failures=0且 step=use，Duty pending、私账/疲劳不变且无供给Belief副作用；tick432过期后恢复 Plan1 Use。逐日核对所有公仓现金、余额、药材、工资、生产和旧日结账。若真实配置与预期不合，停报最小偏差，不改旧 resolver/母规则、不过写deadline、不手造snapshot。
 - own-rejection 只对本人 BuyMedicine 权威拒绝；Work/Rest rejection 不改供给belief；日末 public observation 作为独立来源。
 - Q4 baseline/反事实不执行、不读隐藏 world、无 RNG/clock/存档写入；A2 只产可审计 Inspector 数据。
 - Q5 连续/分段 576 tick（200+376、288+288、432+144）及 CLI 两日保存+两日恢复；tamper 候选来源、selectable/gate、reviewedDutyId、Duty fulfilled 状态或与 Work Plan/candidate 不一致的 requestId/sourceRef、failureOwner、plan/Goal 引用、cursor、事件或 fingerprint 后拒绝；覆盖非日界/日界请求 supersession 的持久化与单一 PlanSettled 合并。

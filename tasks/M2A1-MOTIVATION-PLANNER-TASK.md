@@ -1,6 +1,6 @@
 # M2A1：候选收集、承诺门与纯规划器
 
-合同：m2-contract-v2；状态：已交付，2026-10-08 中控首次审查 NEED REVISION。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
+合同：m2-contract-v2；状态：修复已交付，2026-10-08 中控复核 PASS（限 A1）。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
 
 ## 给用户看
 
@@ -64,3 +64,6 @@ Q1 独立手算 Work710 / Use700 / Rest650、固定顺序、承诺门和权重�
 
 ## 中控首次审查（2026-10-08 15:34 Asia/Shanghai）
 交付 `6ee1719e0403a8bff0422a046ab221f3b79fc89b` 已推送，四个白名单文件、tracked 工作区干净。原定向 Node v24.14.0 suite 35/35、0 skip、exit 0（325ms）。新增两项紧凑纯 DTO retry probes 均失败（329ms、exit 1）：有 active aid Plan、无 suspended Plan、pending duty 的 day1 直接 Work 被拒后，day2 blocked retry 实际换成 Plan2/nextPlan3，expected 保持 Plan1/nextPlan2；去掉 Goal 的对应输入实际为 SELECT/Plan2。该构造仅检 planner DTO，不代表真实 world 历史。较早的宽 DTO probes 另显示 sourceRef 丢失与 counter 边界/ID 复用问题；不把宽 probes 描述为规范 suite 的业务 case。证据均在交付树 ignored `artifacts/world-runtime-m2a1-controller-review-20261008/`，含 `focused-retry.test.mjs`、TAP、metadata、independent probes。A1 结论仅限纯 DTO，A2 未测试；NEED REVISION。
+
+## 中控复核（2026-10-08 16:26 Asia/Shanghai）
+A1 修复 `79b0c50b7acfa78b9b2661a7a158457ecbc43197` 已在本地提交，未推送且 tracked 工作区 clean。中控源审与证据复核 PASS：42/42，原 focused probes 2/2；新增7项回归先红后绿。证据 `artifacts/world-runtime-m2a1-repair-20261008/validation-metadata.json`。结论限 A1；真实 A2 链和 M2 阶段仍未验收。

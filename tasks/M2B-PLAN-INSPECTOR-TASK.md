@@ -1,6 +1,6 @@
 # M2B：动机检查器与服务接入
 
-合同：m2-contract-v2；状态：已交付，2026-10-08 中控审查 NEED REVISION。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
+合同：m2-contract-v2；状态：修复与中控 prep 源审完成，待 A2 真实 service5/browser 依赖复验；不代表 B 完整验收。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
 
 ## 给用户看
 
@@ -77,3 +77,6 @@ mock、HTTP、浏览器证据分开说明；依赖未交付的部分标未验证
 ## 中控首次审查（2026-10-08 15:46 Asia/Shanghai）
 交付 SHA `131d7a6d9eeaf3d01138bf0d34e64760b854cb8f`，相对 `87aa9b6` 的8个白名单文件，tracked干净；origin指向本地clone，但root已确认GitHub远端存在同SHA。指定B2 suite 21 tests：19 pass、2 skip、0 fail，3.221s；两个skip依赖A2真实namespace/save fault。证据在交付树ignored `artifacts/world-runtime-m2b-controller-review-20261008/`，含metadata、TAP与两个VM mock counter反例：deadlineDay=21显示22；soft-eligible且selectable=false时旧列表仍标可选（新表格正确）。UI mock另有Goal.deadline=20而health Plan.deadline=21；dutyPlan.deadline=3而expiresTick=432，合同期限应为floor((432-1)/144)=2；Knowledge指纹也由不同输入构造。需按冻结输入重建mock并断言canonical投影中的deadline与阻断项。
 审查发现 `runtime-mind.css` 以8行M2样式替换原完整M1字体、布局、grid、focus与media样式；format5的`projectPlayerSnapshot`仍调用只接受M1/PLAYER/PLAY的旧`buildPlayerKnowledge`，合法M2 bundle会被拒，owner的`playerAvailable5`初始化及强制调用也会阻断服务启动。save-fault测试的`IO.link`非故障路径是no-op，不会真实link。独立M1纯库临时目录IO probe确认只有`.runtime-owner.lock`，没有`service-commit-r0`文件；合法AdvanceTime(1)首先返回`INVALID_SERVICE_COMMIT`，到不了`SAVE_FAILED`。需恢复真实`fs.link`故障注入，并核对磁盘及三份完整DTO，不能只核revision。另将任意动态import异常压成unavailable、用`!module`宽泛skip均需改为仅精准缺失specifier + `ERR_MODULE_NOT_FOUND`可待验，语法/初始化异常必须失败。DTO不含transitionsHistory，不虚构REQUEST_SUPERSEDED历史；只验当前投影与A2提供的真实event ledger。证据：ignored `review.md`、`savefault-link-probe.mjs`与log。没有真实A2 service5或browser证据；M2B NEED REVISION。公共函数模块归属现由中控在共同合同§4.0澄清，不归为执行者违反合同。本轮不改server CLI whitelist。
+
+## 中控返修复核（2026-10-08 16:26 Asia/Shanghai）
+B 修复 `2a8eb52a0590017f1d6794e30962034ed31e449f` 已本地提交，未推送且 tracked 工作区 clean。中控 prep 源审、证据及真实 M1 浏览器审查 PASS：指定2 suite+2 counter共26 pass；CSS-only 后 UI 17/17。真实 M1 `SAVE_FAILED` 完整三投影、能力、磁盘 bytes、retry/reopen 通过。证据位于 service 树 `artifacts/world-runtime-m2b-repair-20261008/metadata.json`、`m1-browser-result.json` 与 cleanup。A2 真实 service5/browser 链仍待依赖，不构成 B 完整验收；M2 未验收。B 的 stale lock 临时目录按既定审批保留，另一临时目录已优雅关闭、锁释放，两自建进程已停止；不清理其他目录。
