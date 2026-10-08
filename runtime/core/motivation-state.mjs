@@ -4,6 +4,7 @@
 // the runtime layer, which is the only place that can see the mind configuration.
 import { fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition } from './data-contract.mjs';
 import { MAX_MIND_OBSERVATIONS } from './mind-state.mjs';
+import { inspectDescriptorTree } from './experience-state.mjs';
 
 export const MOTIVATION_RULES='m-motivation-v1';
 export const MOTIVATION_CONFIG_VERSION='motivation-config-v1';
@@ -178,15 +179,15 @@ export function validateMotivationCandidate(candidate){
   return candidate;
 }
 
-export function validateMotivationDecision(decision){
+function validateDecisionInternal(decision, expectedVersion, prefix, maxRefs){
   record(decision);
   fields(decision,['version','decisionId','actorId','tick','goalId','planId','innerStance','committedIntent',
     'apparentAction','choice','reasonCode','gateReason','strainPermille','candidates','evidenceRefs','knowledgeFingerprint']);
-  requireCondition(decision.version===MOTIVATION_DECISION_VERSION,'Unknown motivation decision version','UNSUPPORTED_VERSION');
+  requireCondition(decision.version===expectedVersion,'Unknown motivation decision version','UNSUPPORTED_VERSION');
   identifier(decision.decisionId);
   requireCondition(MOTIVATION_ACTOR_IDS.includes(decision.actorId),'Foreign motivation decision identity');
   integer(decision.tick,144);requireCondition(decision.tick%144===0,'Motivation decision must sit on a daily tick');
-  requireCondition(decision.decisionId==='motivation-day-'+decision.tick/144+'-'+decision.actorId,
+  requireCondition(decision.decisionId===prefix+decision.tick/144+'-'+decision.actorId,
     'Motivation decision identifier must follow the daily identity');
   if(decision.goalId!==null)integer(decision.goalId,1);
   if(decision.planId!==null)integer(decision.planId,1);
@@ -209,12 +210,21 @@ export function validateMotivationDecision(decision){
   const chosen=decision.candidates.find(candidate=>candidate.action===decision.choice);
   requireCondition(chosen.selectable,'Motivation choice must be a selectable candidate');
   requireCondition(chosen.reasonCode===decision.reasonCode,'Motivation decision reason must be the chosen candidate reason');
-  denseArray(decision.evidenceRefs,MAX_MOTIVATION_EVIDENCE_REFS);let previous=0;
+  denseArray(decision.evidenceRefs,maxRefs);let previous=0;
   for(const sequence of decision.evidenceRefs){integer(sequence,1);requireCondition(sequence>previous,'Dirty/duplicate motivation evidence');previous=sequence;}
   requireCondition(typeof decision.knowledgeFingerprint==='string'&&
     new TextEncoder().encode(decision.knowledgeFingerprint).length<=MAX_MOTIVATION_KNOWLEDGE_BYTES,
     'Motivation knowledge fingerprint exceeds budget','LIMIT_EXCEEDED');
   return decision;
+}
+
+export function validateMotivationDecision(decision){
+  return validateDecisionInternal(decision, MOTIVATION_DECISION_VERSION, 'motivation-day-', MAX_MOTIVATION_EVIDENCE_REFS);
+}
+
+export function validateExperienceMotivationDecision(decision){
+  inspectDescriptorTree(decision);
+  return validateDecisionInternal(decision, 'experience-decision-v1', 'experience-day-', 69);
 }
 
 export function validateMotivationOutcome(outcome){
@@ -242,9 +252,9 @@ export function validateMotivationOutcome(outcome){
   return outcome;
 }
 
-export function validateMotivationModel(model){
+function validateModelInternal(model, expectedVersion, decisionValidator){
   record(model);
-  requireCondition(model.version===MOTIVATION_STATE_VERSION,'Unknown motivation state version','UNSUPPORTED_VERSION');
+  requireCondition(model.version===expectedVersion,'Unknown motivation state version','UNSUPPORTED_VERSION');
   fields(model,['version','config','configFingerprint','requestCursor','cursor','actors']);
   validateMotivationConfig(model.config);
   requireCondition(model.configFingerprint===canonicalJson(model.config),'Motivation configuration fingerprint mismatch');
@@ -271,7 +281,7 @@ export function validateMotivationModel(model){
     for(const plan of [actor.activePlan,actor.suspendedPlan])if(plan!==null)
       requireCondition(actor.nextPlanId>plan.planId,'Motivation plan counter must exceed existing plan identifiers');
     if(actor.lastDecision!==null){
-      validateMotivationDecision(actor.lastDecision);
+      decisionValidator(actor.lastDecision);
       requireCondition(actor.lastDecision.actorId===actor.actorId,'Foreign motivation decision stored on this actor');
     }
     if(actor.lastOutcome!==null){
@@ -284,4 +294,13 @@ export function validateMotivationModel(model){
     }
   }
   return model;
+}
+
+export function validateMotivationModel(model){
+  return validateModelInternal(model, MOTIVATION_STATE_VERSION, validateMotivationDecision);
+}
+
+export function validateExperienceMotivationModel(model){
+  inspectDescriptorTree(model);
+  return validateModelInternal(model, 'experience-motivation-state-v1', validateExperienceMotivationDecision);
 }
