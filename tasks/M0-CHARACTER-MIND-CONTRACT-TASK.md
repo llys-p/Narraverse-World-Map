@@ -1,6 +1,6 @@
 # M0：人物心智合同与场景冻结
 
-制定时间：2026-10-08 07:25（Asia/Shanghai）。状态：待派发；本文件是 M0 任务书，M0 尚未完成，M1 实现尚未开工。
+制定时间：2026-10-08 07:25（Asia/Shanghai）。状态：M0 文档交付完成，收口见文末；M1 三路待派发，尚未开工。
 
 ## 给用户看的任务
 
@@ -13,7 +13,7 @@
 - 方向依据：[架构 §9.3](../WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md#character-mind-runtime)；愿景原文：[灵感笔记 v0.2](../docs/character-mind/NPC_Brain_Character_Mind_Runtime_灵感笔记_v0.2.md)，原提交 `8c187a2b6ec68e31a3c3d9510b2b6cb00a026370`。愿景不是所有字段必须一次实现的 schema。
 - Runtime 阅读基准：`D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2c`，交接 `feb2856910bf8a9a6757aba892128d00d795bc15`，已验收运行时代码 `172ac9f39abed9d6a1091d4f50e341c10d63f681`。开工记录实际 HEAD，若有后续变更先做有界差异核对。
 - 文档工作树：`D:\Narraverse-World-Map-control @ codex/world-runtime-control`，开工读取 main 本次规划并记录实际 SHA；不切换或覆盖 a2 的 runtime 分支。未来 M1 分支从已验收 runtime 基准创建，按白名单同步最新合同，不能从缺 runtime 的 main 开始写业务。
-- 修改白名单：本任务书、`tasks/M1-CHARACTER-MIND-CONTRACT.md`、`tasks/M1A-MIND-CORE-TASK.md`、`tasks/M1B-MIND-INSPECTOR-TASK.md`、`tasks/M1C-MIND-ACCEPTANCE-TASK.md`、架构的 M 小节及 `PROJECT_CONTEXT.md` 的相关状态。这四份 M1 文件是本任务的待交付物，当前尚不存在。
+- 修改白名单：本任务书、`tasks/M1-CHARACTER-MIND-CONTRACT.md`、`tasks/M1A-MIND-CORE-TASK.md`、`tasks/M1B-MIND-INSPECTOR-TASK.md`、`tasks/M1C-MIND-ACCEPTANCE-TASK.md`、架构的 M 小节/下一步及 `PROJECT_CONTEXT.md` 的相关状态；README 仅同步当前阶段入口。这四份 M1 文件现已交付，均不代表实现。
 - 本任务只读代码、修改文档；不修改 runtime、页面、测试、原始灵感笔记或 E1 研究资料，不启动模型/桥/服务、不迁移存档，不把规划认定为功能验收。
 
 ## 最小产品边界
@@ -64,3 +64,11 @@ M0 必须把上表展开为精确文件白名单、分支命名、基准、导�
 - M0 只做文档差异、链接/引用、状态与范围检查，不跑模拟全量回归。M1 开发只跑改动及直接回归；影响时间、重演、存档等公共底座才扩大，M1 收口再集中全量一次；相同提交已有证据且代码未变不重复执行。
 - 交付回执列实际目录/分支/基准/交付 SHA、文档范围、已验证/未验证、M1 可派发状态。更新 `PROJECT_CONTEXT.md` 与 Project #2；M0 完成仅说明合同可执行，不代表 M1 功能通过。
 - 完成 M0 后停止于合同收口。后续获准开工才启动 M1 三路；不顺带推进 D3/D4、重开 E1 或调用模型。
+
+## M0 收口（2026-10-08 07:57，Asia/Shanghai）
+
+- **裁定：M0 文档合同通过。** 文档基准 `d444e718971de8cdf175d764655d3f88a85e8709`；Runtime 阅读点仍为干净 `feb2856910bf8a9a6757aba892128d00d795bc15`，未修改其源码或复跑历史测试。交付 SHA 为 Git 中包含本节及下述四文件的同一提交，实际派发时记录完整 SHA。
+- 交付：[M1 共同合同](M1-CHARACTER-MIND-CONTRACT.md) `m1-contract-v1`、[M1A 核心](M1A-MIND-CORE-TASK.md)、[M1B 服务检查器](M1B-MIND-INSPECTOR-TASK.md)、[M1C 独立验收](M1C-MIND-ACCEPTANCE-TASK.md)。README、架构及 PROJECT_CONTEXT 只同步入口/当前状态；灵感原文、E1 资料不变。
+- 冻结结论：两位 NPC、一个“公仓是否有药”命题、结构化消息/查验、买药/用药/NoAction；信息与权威库存分开。明确日末公开报告会纠正误信、两人同快照规划后按 ID 提交、无动作不获休息/公共治疗收益，以及已提交读数与决策候选的不同时间语义。新 profile 与完整恢复审计均有指定消费入口，未新增空 Provider。
+- 已验证：8 份文档的本地链接目标与代码围栏；13 个既有源文件中的 24 个引用符号存在，并人工核对相关消费链；三路白名单共 29 个互不重叠文件（A15/B11/C3），定向回归文件在基准中存在；K1～K6 输入/预期、共同 DTO、版本/预算/错误及阶段状态一致；`git diff --check` 通过。PROJECT_CONTEXT 保持 150 行以内。
+- 未验证：M1 功能、性能、模拟/保存/HTTP/浏览器与模型。本文的 M1 命令是后续待执行项，历史 D2C 270/270 不计本次证据。当前无 M1 工作树或实现，三路均待派发，完成本阶段即停止。

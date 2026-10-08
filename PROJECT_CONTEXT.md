@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-08 07:25（Asia/Shanghai）。
+更新时间：2026-10-08 07:57（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -72,14 +72,14 @@
 - 当前运行时：`D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2c`，已验收代码 `172ac9f` / 交接 `feb2856`；控制文档：`D:\Narraverse-World-Map-control @ codex/world-runtime-control`。main 未合并 runtime 源码，开工不能把原 A1 目录当最新源码。
 - A/B/C 与 D1～D2C 均已验收。C5 177/177、D1 184/184、D2A 196/196、D2B 及边界修正 238/238、D2C 270/270 为各提交已归档证据，非本次复跑；详见 [C5](tasks/C5-PERSONALITY-CHOICE-TASK.md)、[D1](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)、[D2A](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)、[D2B](tasks/D2B-PLAYER-CONTRACT.md)、[D2C 收口](tasks/D2C-PLAY-CONTRACT.md)。D2C 真实浏览器/重启原 ID/硬退出恢复、旧 C5 四天完整存档与 20 份导出字节对照通过；本地证据 `artifacts/world-runtime-d2c-acceptance-20261007`。D3/D4 未开始，D 整体未验收。
 - 本次完整阅读 [NPC Brain 灵感笔记 v0.2](docs/character-mind/NPC_Brain_Character_Mind_Runtime_灵感笔记_v0.2.md)（原分支 docs/npc-brain-v0.2-20261008，原提交 8c187a2），原文保留；依据真实源码将后续重点改为 Character Mind Runtime。旧人格只有三项需求权重，NPC knowledge 尚未适配 D2C；完整信念/动机/学习不是已有能力。
-- 下一项 [M0 合同与场景冻结](tasks/M0-CHARACTER-MIND-CONTRACT-TASK.md)待派发；本轮完成路线及 M0 任务书，未完成 M0、未开工 M1。顺序为已完成 A/B/C/D2 → M0 → M1 最小规则心智闭环与检查器 → M2 动机冲突/有限计划 → M3 经验/认知 LOD → D3/D4。详见[架构](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)；M0 冻结接口/文件归属后，再按额度启动核心、服务检查器、独立验收三路。
+- [M0 合同与场景冻结](tasks/M0-CHARACTER-MIND-CONTRACT-TASK.md)已交付：[M1 共同合同](tasks/M1-CHARACTER-MIND-CONTRACT.md) `m1-contract-v1` 冻结新 mind-village、两位 NPC 的公仓药材判断、买药/用药/等待、完整重演、只读检查器及 K1～K6。下一项 [M1A 核心](tasks/M1A-MIND-CORE-TASK.md) / [M1B 服务检查器](tasks/M1B-MIND-INSPECTOR-TASK.md) / [M1C 独立验收](tasks/M1C-MIND-ACCEPTANCE-TASK.md)均待派发，目录/分支/文件归属已定义；本轮停在 M0，没有 M1 实现。后续 M1 → M2 动机/计划 → M3 经验/认知 LOD → D3/D4，详见[架构](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)。
 - E 调整为可选 Provider 支线，正式准入仍为空；M 不依赖 Laya/LLM，旧 E1 不重开，未来按真实消费缺口另发窄合同。F/G 尚未开工；不接正式平台、模型/桥或真实旧存档，不启停旧实例，不自动合并 runtime main。
-- 验证按用户约定：只查改动及直接影响；相同提交已过且代码未变不重复；公共时间/重演/存档底座变更才扩大，较大阶段收口集中全量一次。本轮只查文档差异/链接/合同一致性，不跑模拟或浏览器。
+- 验证按用户约定：只查改动及直接影响；相同提交已过且代码未变不重复；公共时间/重演/存档底座变更才扩大，较大阶段收口集中全量一次。M0 本轮文档链接/围栏、源码引用、三路29个文件互斥归属、合同/状态及 diff 检查通过；未跑模拟或浏览器，M1 功能未验证。
 
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
-- M 主线已同步：阶段卡 `PVTI_lAHOEF9IDs4BmADfzg_Q8JY`；M0 `PVTI_lAHOEF9IDs4BmADfzg_Q8LE`（待派发）；M1 `PVTI_lAHOEF9IDs4BmADfzg_Q8NI`、M2 `PVTI_lAHOEF9IDs4BmADfzg_Q8Pk`、M3 `PVTI_lAHOEF9IDs4BmADfzg_Q8Sg`（待开始）。均为 Todo，未开工；新增阶段 M 选项并保留原八项 ID，D/E 卡已注明后排/可选支线，旧验收状态未回退。
+- M 主线：阶段卡 `PVTI_lAHOEF9IDs4BmADfzg_Q8JY` 进行中（尚未整体验收）；M0 `PVTI_lAHOEF9IDs4BmADfzg_Q8LE` Done/已验收（仅合同）；M1 `PVTI_lAHOEF9IDs4BmADfzg_Q8NI` Todo/待派发。M1A `PVTI_lAHOEF9IDs4BmADfzg_RL_U`、M1B `PVTI_lAHOEF9IDs4BmADfzg_RMCU`、M1C `PVTI_lAHOEF9IDs4BmADfzg_RMFo` 均 Todo/待派发，未开工；M2 `PVTI_lAHOEF9IDs4BmADfzg_Q8Pk`、M3 `PVTI_lAHOEF9IDs4BmADfzg_Q8Sg` 仍待开始。D/E 后排/可选支线，旧验收状态不回退。
 - 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`、C2 `PVTI_lAHOEF9IDs4BmADfzg_EnoU`、C3 `PVTI_lAHOEF9IDs4BmADfzg_FGww`、C4 `PVTI_lAHOEF9IDs4BmADfzg_Fov0`（已验收）、C5 `PVTI_lAHOEF9IDs4BmADfzg_G6Gg`（已验收）；D阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwCU`（进行中）、D1 `PVTI_lAHOEF9IDs4BmADfzg_HMTc`、D2A `PVTI_lAHOEF9IDs4BmADfzg_Hq7Y`（已验收）；D2B `PVTI_lAHOEF9IDs4BmADfzg_IGm4`、三路 `PVTI_lAHOEF9IDs4BmADfzg_IGrM` / `PVTI_lAHOEF9IDs4BmADfzg_IGuY` / `PVTI_lAHOEF9IDs4BmADfzg_IG0Q`（已验收）。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。

@@ -20,7 +20,7 @@
 
 ## 新世界运行时进度
 
-2026-10-08 规划更新：依据 [NPC Brain 灵感笔记 v0.2](docs/character-mind/NPC_Brain_Character_Mind_Runtime_灵感笔记_v0.2.md)，后续先做人物心智 M 主线：M0 合同 → M1 最小规则闭环与检查器 → M2 动机/计划 → M3 经验/认知 LOD，再补 D3/D4。Laya/LLM 为可选 Provider；旧 E1 筛查保持收档。本轮只更新规划，[M0 任务书](tasks/M0-CHARACTER-MIND-CONTRACT-TASK.md)待派发，尚未启动实现；详细依赖以[架构计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)为准。
+2026-10-08 规划更新：依据 [NPC Brain 灵感笔记 v0.2](docs/character-mind/NPC_Brain_Character_Mind_Runtime_灵感笔记_v0.2.md)，后续先做人物心智 M 主线：M0 合同 → M1 最小规则闭环与检查器 → M2 动机/计划 → M3 经验/认知 LOD，再补 D3/D4。Laya/LLM 为可选 Provider；旧 E1 筛查保持收档。[M0](tasks/M0-CHARACTER-MIND-CONTRACT-TASK.md) 已完成文档合同，[M1 共同合同及三路任务书](tasks/M1-CHARACTER-MIND-CONTRACT.md)已冻结、待派发，尚未启动实现；详细依赖以[架构计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)为准。
 
 A/B/C及D1、D2A、D2B、D2C均已验收。当前运行时代码172ac9f保留在 `codex/world-runtime-d2c` 任务分支（源码D:\Narraverse-World-Map-a2），main维护控制文档、没有合并运行时代码。D2C提供村庄↔森林旅行、主动休整及真实公仓买卖；全量270/270与真实浏览器/重启原ID/硬退出恢复/旧C5字节对照通过，D2门槛已收口。本轮停止在D2C，D3战斗与D4完整场景连续仍待任务合同，D整体未验收。查看[任务分支运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-d2c/README.md)、[D2C合同与证据](tasks/D2C-PLAY-CONTRACT.md)及[当前状态](PROJECT_CONTEXT.md)。实验服务已停止；不接正式平台、模型/Laya或真实旧存档。
 
