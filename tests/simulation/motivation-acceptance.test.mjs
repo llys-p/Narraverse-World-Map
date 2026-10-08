@@ -211,6 +211,7 @@ test('Q3 deadline fixture: one Buy refusal, bounded blocked waiting without rece
   const c = fixture.defaultMotivationVillageConfig(); c.memory.society.actors.initialActors.slice(1, 3).forEach(a => { a.fatigue = 200; });
   c.memory.society.estates.forEach(e => { e.initialFood = 32; e.initialHerbs = 0; }); c.memory.society.player.initialHerbs = 0;
   const herbs = c.memory.society.actors.market.ecology.resources.resources.herbs; herbs.initial = 0; herbs.production.numerator = 0;
+  c.memory.society.actors.market.products.herbs.maxOrder = 0;
   c.mind.stimuli = [{ stimulusId: 'deadline-statement', tick: 12, kind: 'statement', speakerId: 'actor-1', listenerId: 'actor-2', available: true }]; c.motivation.requests = [];
   const s = session(c); s.advanceTicks(144); const first = s.getBundle();
   assert.equal(mind(first).lastDecision.choice, 'BuyMedicine'); assert.equal(mind(first).lastOutcome.status, 'rejected'); assert.deepEqual(mind(first).lastOutcome.failureOwner, { planId: 1, goalId: 1 });

@@ -157,15 +157,68 @@ async function sourceFingerprints(root) {
 }
 function legacyResults(lib) {
   const b288 = advance(lib, lib.mind.createMindVillage(42, 'm2c-old-default'), 288), deadline = goalScenario(lib);
-  const ops = [
-    ['PlayerTravel', { destination: 'forest' }], ['PlayerTravel', { destination: 'village' }], ['PlayerRest', {}],
-    ['PlayerBuy', { product: 'food', quantity: 1 }], ['PlayerBuy', { product: 'herbs', quantity: 1 }], ['PlayerSell', { product: 'food', quantity: 1 }],
-  ];
-  let b = lib.player.createPlayerPlayVillage(42, 'm2c-old-player').bundle;
-  const six = ops.map(([type, payload], i) => { const r = lib.intents.executePlayerIntent(b, { commandId: `op${i + 1}`, type, payload }); assert.equal(r.outcome, 'succeeded'); b = r.bundle; return hash(b); });
   return { default288Hash: hash(b288), inspector: lib.mindKnowledge.projectMindInspector(b288), deadlineHashes: deadline.map(hash),
     deadlineStates: deadline.map(b => { const e = b.snapshot.world.societyModel.agents[1].state; return { goal: e.currentGoal, failed: e.ledger.goalsFailed, cooldown: e.cooldownUntilDay }; }),
-    d2cPrefixHashes: six, c5FourDayHash: hash(advance(lib, lib.personality.createPersonalityFood(42, 'm2c-old-c5'), 576)) };
+    ...originalScenarioResults(lib) };
+}
+const archiveRoot = 'D:/Narraverse-World-Map-m1-core/artifacts/world-runtime-m1a-compat';
+const originalScriptHash = '114708d1c95cf2e89f169d5885e97ab66551a2cce03731028c3e23c62f0f16d9';
+const originalManifestHash = '6ea2dbe1cf2f802fd45e35ae01b8fb84a10e10e2da6736659996845db51a80a9';
+const priorOracleHash = '983717df5384b1f20498b49bbe311dd76fdfdb649f469eb6bf76134f83f21805';
+const d2cCommands = [
+  { commandId: 'm1a-buy-food', type: 'PlayerBuy', payload: { product: 'food', quantity: 2 } },
+  { commandId: 'm1a-sell-herbs', type: 'PlayerSell', payload: { product: 'herbs', quantity: 1 } },
+  { commandId: 'm1a-travel-forest', type: 'PlayerTravel', payload: { destination: 'forest' } },
+  { commandId: 'm1a-rest', type: 'PlayerRest', payload: {} },
+  { commandId: 'm1a-travel-village', type: 'PlayerTravel', payload: { destination: 'village' } },
+];
+function originalScenarioSpecs(lib) {
+  const c5 = lib.personality.createPersonalityHealth(42, 'personality-health-seed-42');
+  const d2c = lib.player.createPlayerPlayVillage(42, 'player-play-village');
+  return {
+    c5FourDay: { fixtureId: 'personality-health', simulationId: 'personality-health-seed-42', seed: 42, advanceTicks: 576,
+      config: c5.bundle.snapshot.world.memoryModel.config, commands: [] },
+    d2cSixOperations: { fixtureId: 'player-play-village', simulationId: 'player-play-village', seed: 42, advanceTicks: 144,
+      config: d2c.bundle.snapshot.world.memoryModel.config, commands: d2cCommands, finalTick: 176, finalPlayer: { wallet: 105, food: 4, herbs: 0 } },
+  };
+}
+function exportManifest(bundle) {
+  const w = bundle.snapshot.world;
+  const inputs = [...bundle.snapshot.pendingCommands, ...Object.entries(bundle.snapshot.commandReceipts).map(([commandId, receipt]) =>
+    ({ commandId, inputSeq: receipt.inputSeq, ...receipt.input }))].sort((a, b) => a.inputSeq - b.inputSeq);
+  const projections = {
+    actors: w.actorModel.actors, economy: { resources: w.resources, ledger: w.resourceModel.ledger },
+    memories: w.memoryModel.observer.actors.map(a => ({ actorId: a.actorId, memories: a.memories })),
+    relationships: w.memoryModel.observer.actors.map(a => ({ actorId: a.actorId, relationships: a.relationships })),
+    society: w.societyModel.agents, ...(w.playerModel ? { player: w.playerModel } : {}), events: bundle.eventLog, inputs,
+  };
+  return { stateHash: hash(bundle.snapshot), eventHash: hash(bundle.eventLog), files: {
+    [`checkpoint-r${bundle.snapshot.revision}.json`]: hash({ formatVersion: 1, ...bundle }),
+    ...Object.fromEntries(Object.entries(projections).map(([name, value]) => [`${name}.json`, hash(value)])),
+  } };
+}
+function originalScenarioResults(lib) {
+  const c5 = advance(lib, lib.personality.createPersonalityHealth(42, 'personality-health-seed-42'), 576);
+  let b = lib.player.createPlayerPlayVillage(42, 'player-play-village').bundle;
+  for (const intent of d2cCommands) { const result = lib.intents.executePlayerIntent(b, structuredClone(intent)); assert.equal(result.outcome, 'succeeded'); b = result.bundle; }
+  b = advance(lib, { bundle: b, systems: lib.player.playerPlaySystems() }, 144);
+  assert.equal(b.snapshot.tick, 176);
+  assert.deepEqual({ wallet: b.snapshot.world.playerModel.wallet, food: b.snapshot.world.playerModel.inventory.food, herbs: b.snapshot.world.playerModel.inventory.herbs }, { wallet: 105, food: 4, herbs: 0 });
+  assert.equal(c5.snapshot.fixtureId, 'personality-health'); assert.equal(c5.snapshot.simulationId, 'personality-health-seed-42');
+  const originalInputs = Object.entries(b.snapshot.commandReceipts).filter(([, r]) => r.input.type === 'PlayerAction').sort((a, b) => a[1].inputSeq - b[1].inputSeq)
+    .map(([commandId, r]) => ({ commandId, ...r.input.payload.intent }));
+  assert.deepEqual(originalInputs, d2cCommands);
+  return { c5FourDay: exportManifest(c5), d2cSixOperations: exportManifest(b) };
+}
+async function originalArchive() {
+  assert.equal(hash(await fs.readFile(path.join(archiveRoot, 'scenario.mjs'))), originalScriptHash, 'actual original scenario script');
+  const bytes = await fs.readFile(path.join(archiveRoot, 'out', 'hashes.json'));
+  assert.equal(hash(bytes), originalManifestHash, 'actual original manifest');
+  const manifest = JSON.parse(bytes);
+  for (const [scenario, entry] of Object.entries(manifest)) for (const [file, digest] of Object.entries(entry.files)) {
+    assert.equal(hash(await fs.readFile(path.join(archiveRoot, 'out', scenario, file))), digest, `${scenario}/${file}`);
+  }
+  return { c5FourDay: manifest['c5-four-day'], d2cSixOperations: manifest['d2c-six-ops'] };
 }
 async function httpResults(server) {
   await post(server.url, time('old24', 0, 24)); await post(server.url, time('old288', 24, 264));
@@ -178,29 +231,35 @@ function frozenOracle() {
     assert.equal(git(baselineRoot, 'rev-parse', 'HEAD'), BASELINE);
     assert.equal(git(baselineRoot, 'status', '--porcelain', '--untracked-files=no'), '', 'baseline tracked tree must be unchanged');
     const fingerprints = await sourceFingerprints(baselineRoot);
-    const file = process.env.M2C_LEGACY_ORACLE ?? path.join(localRoot, 'artifacts', 'world-runtime-m2-acceptance-repair-20261008', 'legacy-oracle-87aa9b6.json');
+    const old = await legacy(baselineRoot), scenarioSpecs = originalScenarioSpecs(old), archived = await originalArchive();
+    const provenance = { originalScriptHash, originalManifestHash, priorOracleHash };
+    const file = process.env.M2C_LEGACY_ORACLE ?? path.join(localRoot, 'artifacts', 'world-runtime-m2-acceptance-repair-20261008', 'legacy-oracle-87aa9b6-v2.json');
     let cached;
     try { cached = JSON.parse(await fs.readFile(file, 'utf8')); }
     catch (e) { if (e.code !== 'ENOENT') throw e; }
     if (cached) {
-      assert.equal(cached.baselineSHA, BASELINE); assert.deepEqual(cached.sourceFingerprints, fingerprints);
-      assert.equal(cached.payloadHash, hash(cached.results)); return cached;
+      assert.equal(cached.schemaVersion, 2); assert.equal(cached.baselineSHA, BASELINE); assert.deepEqual(cached.sourceFingerprints, fingerprints);
+      assert.deepEqual(cached.scenarioSpecs, scenarioSpecs); assert.deepEqual(cached.provenance, provenance);
+      assert.deepEqual({ c5FourDay: cached.results.scenarios.c5FourDay, d2cSixOperations: cached.results.scenarios.d2cSixOperations }, archived);
+      assert.equal(cached.payloadHash, hash({ scenarioSpecs, provenance, results: cached.results })); return cached;
     }
-    const old = await legacy(baselineRoot), prefix = path.join(os.tmpdir(), 'm2c-oracle-'), directory = await fs.mkdtemp(prefix);
-    let server;
-    try {
-      const scenarios = legacyResults(old);
-      server = await old.server.startRuntimeServer({ directory, profile: 'mind-village', port: 0, writable: true, inspectMind: true });
-      const results = { scenarios, http: await httpResults(server) };
-      cached = { baselineSHA: BASELINE, sourceFingerprints: fingerprints, results, payloadHash: hash(results) };
-      await fs.mkdir(path.dirname(file), { recursive: true }); await fs.writeFile(file, JSON.stringify(cached, null, 2), { flag: 'wx' }); return cached;
-    } finally { if (server) await server.close(); assert.ok(directory.startsWith(prefix)); await fs.rm(directory, { recursive: true, force: true }); }
+    const priorFile = process.env.M2C_LEGACY_ORACLE_V1 ?? 'D:/Narraverse-World-Map-m2-acceptance/artifacts/world-runtime-m2-acceptance-repair-20261008/legacy-oracle-87aa9b6.json';
+    const prior = JSON.parse(await fs.readFile(priorFile, 'utf8'));
+    assert.equal(prior.baselineSHA, BASELINE); assert.deepEqual(prior.sourceFingerprints, fingerprints);
+    assert.equal(prior.payloadHash, priorOracleHash); assert.equal(hash(prior.results), priorOracleHash);
+    const corrected = originalScenarioResults(old); assert.deepEqual(corrected, archived, 'two minimal baseline reruns match every original complete-bundle/data export hash');
+    const { default288Hash, inspector, deadlineHashes, deadlineStates } = prior.results.scenarios;
+    const results = { scenarios: { default288Hash, inspector, deadlineHashes, deadlineStates, ...corrected }, http: prior.results.http };
+    cached = { schemaVersion: 2, baselineSHA: BASELINE, sourceFingerprints: fingerprints, scenarioSpecs, provenance, results,
+      payloadHash: hash({ scenarioSpecs, provenance, results }) };
+    await fs.mkdir(path.dirname(file), { recursive: true }); await fs.writeFile(file, JSON.stringify(cached, null, 2), { flag: 'wx' }); return cached;
   })();
 }
 test('Q7 frozen baseline oracle records real source/scenario/HTTP hashes once; this is preparation, not M2 compatibility', async t => {
   const o = await frozenOracle(), d = o.results.scenarios.deadlineStates;
   assert.equal(d[1].goal.goalId, 1); assert.equal(d[2].goal, null); assert.equal(d[2].cooldown, 23); assert.equal(d[3].goal, null); assert.equal(d[4].goal.goalId, 2); assert.equal(d[4].failed, 1);
-  assert.equal(o.results.scenarios.d2cPrefixHashes.length, 6); assert.equal(o.results.http['/api/runtime/minds'].mindVersion, 'mind-inspector-v1');
+  assert.equal(o.scenarioSpecs.d2cSixOperations.commands.length, 5); assert.equal(o.scenarioSpecs.d2cSixOperations.advanceTicks, 144);
+  assert.equal(o.scenarioSpecs.c5FourDay.fixtureId, 'personality-health'); assert.equal(o.results.http['/api/runtime/minds'].mindVersion, 'mind-inspector-v1');
   t.diagnostic(`Baseline oracle only: ${BASELINE}, payload SHA256 ${o.payloadHash}; M2 compatibility is separately gated on delivered A2.`);
 });
 test('Q7 delivered M2 code retains frozen legacy source and default288/deadline/D2C/C5 results', async t => {
