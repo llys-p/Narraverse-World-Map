@@ -1,6 +1,8 @@
 
 # Sandbox World / World Map 功能索引
 
+轻量索引见 [WORLD-MAP-CHECKLIST.md](WORLD-MAP-CHECKLIST.md)。
+
 更新时间：2026-10-08。
 
 本文件服务于 Narraverse 的世界地图、沙盒运行时、地图→场景→战斗切换、聚落、队伍、商路、派系与区域事件设计。
