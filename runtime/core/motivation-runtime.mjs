@@ -1,4 +1,4 @@
-// M2-only integration. The exported hooks object is an engine/fixture connection,
+// Motivation and experience integration. The exported hooks objects are engine/fixture connections,
 // not a business API. Decision-phase Knowledge remains private to this module.
 import {fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,inputFingerprint,MAX_COLLECTION} from './data-contract.mjs';
 import {createMindWorld,validateMindWorld,applyMindStimuliTick,prepareMindDay,settleMindSocietyDay,finishMindMemoryDay,finishMindDay,pushMindObservation,mindRejectionObservation} from './mind-runtime.mjs';
@@ -29,9 +29,17 @@ const body=(w,id)=>w.actorModel.actors.find(a=>a.actorId===id);
 const entryOf=(w,id)=>w.motivationModel.actors.find(a=>a.actorId===id);
 const withoutMotivation=w=>{const {motivationModel,...base}=w;return base;};
 const withoutExperienceAndMotivation=w=>{const {experienceModel,motivationModel,...base}=w;return base;};
+const MOTIVATION_PROFILE=Object.freeze({experience:false,rules:MOTIVATION_RULES,knowledgeVersion:MOTIVATION_KNOWLEDGE_VERSION,knowledgeBytes:MAX_MOTIVATION_KNOWLEDGE_BYTES,label:'Motivation'});
+const EXPERIENCE_PROFILE=Object.freeze({experience:true,rules:EXPERIENCE_RULES,knowledgeVersion:EXPERIENCE_KNOWLEDGE_VERSION,knowledgeBytes:MAX_EXPERIENCE_KNOWLEDGE_BYTES,label:'Experience'});
+const lowerWorld=(world,profile)=>profile.experience?withoutExperienceAndMotivation(world):withoutMotivation(world);
+function retainModels(base,world,profile){
+  const result={...base,motivationModel:cloneData(world.motivationModel)};
+  if(profile.experience)result.experienceModel=cloneData(world.experienceModel);
+  return result;
+}
 const reserved=id=>['society-day-','mind-day-','motivation-day-'].some(p=>id.startsWith(p));
-const experienceReserved=id=>['society-day-','mind-day-','motivation-day-','experience-day-'].some(p=>id.startsWith(p));
-function setExperienceCursors(world,events){world.mindModel.cursor=events.length;world.motivationModel.cursor=events.length;world.experienceModel.cursor=events.length;}
+const experienceReserved=id=>['society-day-','mind-day-','mind-settle-','motivation-day-','experience-day-'].some(p=>id.startsWith(p));
+const reservedFor=(id,profile)=>profile.experience?experienceReserved(id):reserved(id);
 
 function validateInputs(memory,mind,motivation){
   record(mind);record(motivation);denseArray(mind.stimuli,64);denseArray(motivation.requests,64);
@@ -45,15 +53,34 @@ function validateInputs(memory,mind,motivation){
     requireCondition(e[key]===value,'Motivation economics are frozen','UNSUPPORTED_VERSION');
 }
 
-function createWorld(memory,mind,motivation){
-  record(memory);record(mind);record(motivation);canonicalJson({memory,mind,motivation});
+function createWorldFor(memory,mind,motivation,experience,simulationId,profile){
+  record(memory);record(mind);record(motivation);
+  if(profile.experience){record(experience);identifier(simulationId);canonicalJson({memory,mind,motivation,experience});}
+  else canonicalJson({memory,mind,motivation});
   validateInputs(memory,mind,motivation);
-  return {...createMindWorld(memory,mind),motivationModel:createMotivationModel(motivation)};
+  if(profile.experience)validateExperienceConfig(experience);
+  const world={...createMindWorld(memory,mind),motivationModel:createMotivationModel(motivation)};
+  if(profile.experience){
+    world.motivationModel.version=EXPERIENCE_MOTIVATION_STATE_VERSION;
+    world.experienceModel=createExperienceModel(simulationId,experience);
+  }
+  return world;
 }
 
-export function validateMotivationWorld(world,sealed=true){
-  record(world);requireCondition(typeof sealed==='boolean','Invalid motivation seal mode');
-  canonicalJson(world);validateMindWorld(withoutMotivation(world),sealed);validateMotivationModel(world.motivationModel);
+function createWorld(memory,mind,motivation){return createWorldFor(memory,mind,motivation,null,null,MOTIVATION_PROFILE);}
+function createExperienceWorld(memory,mind,motivation,experience,simulationId){
+  inspectDescriptorTree({memory,mind,motivation,experience,simulationId});
+  return createWorldFor(memory,mind,motivation,experience,simulationId,EXPERIENCE_PROFILE);
+}
+
+function validateWorldFor(world,sealed,profile){
+  record(world);requireCondition(typeof sealed==='boolean',profile.experience?'Invalid experience world seal mode':'Invalid motivation seal mode');
+  canonicalJson(world);
+  if(profile.experience){
+    validateExperienceModel(world.experienceModel);validateExperienceMotivationModel(world.motivationModel);
+    validateMindWorld(lowerWorld(world,profile),sealed);
+    if(sealed)requireCondition(world.mindModel.cursor===world.motivationModel.cursor&&world.motivationModel.cursor===world.experienceModel.cursor,'Mind, motivation, and experience cursors must match when sealed');
+  }else{validateMindWorld(lowerWorld(world,profile),sealed);validateMotivationModel(world.motivationModel);}
   const m=world.motivationModel;validateInputs(world.memoryModel.config,world.mindModel.config,m.config);
   for(const mind of world.mindModel.actors)requireCondition(mind.lastDecision===null&&mind.lastOutcome===null,'M2 mind stores observations only');
   for(const entry of m.actors){const state=agent(world,entry.actorId),actor=body(world,entry.actorId);
@@ -77,21 +104,32 @@ export function validateMotivationWorld(world,sealed=true){
   return world;
 }
 
+export function validateMotivationWorld(world,sealed=true){return validateWorldFor(world,sealed,MOTIVATION_PROFILE);}
+export function validateExperienceWorld(world,sealed=true){
+  inspectDescriptorTree(world);
+  return validateWorldFor(world,sealed,EXPERIENCE_PROFILE);
+}
+
 // A frozen actor-local view; quotes come from previously published facts, never the
 // hidden current public cash or another actor's execution results.
-function decisionKnowledge(world,events,actorId,tick,simulationId){
+function decisionKnowledge(world,events,actorId,tick,simulationId,runtimeProfile){
   const actor=body(world,actorId),state=agent(world,actorId),entry=entryOf(world,actorId),mind=world.mindModel.actors.find(a=>a.actorId===actorId);
   const publicEvents=events.filter(e=>e.eventSeq<=world.mindModel.cursor&&e.type==='SocietyDaySettled'&&(actor.alive||e.tick<actor.deathTick));
   const last=publicEvents.at(-1),observable=last?projectActorEvent(last,actorId).find(p=>p.channel==='public').observable:null;
   const profile=world.motivationModel.config.profiles.find(p=>p.actorId===actorId);
-  const knowledge={knowledgeVersion:MOTIVATION_KNOWLEDGE_VERSION,phase:'decision',simulationId,actorId,tick,revision:tick-1,
+  const knowledge={knowledgeVersion:runtimeProfile.knowledgeVersion,phase:'decision',simulationId,actorId,tick,revision:tick-1,
     self:{name:actor.name,occupation:actor.occupation,location:actor.location,alive:actor.alive,health:actor.health,hunger:actor.hunger,fatigue:actor.fatigue,
       wallet:state.wallet,inventory:cloneData(state.inventory),currentGoal:cloneData(state.currentGoal),nextGoalId:state.nextGoalId,cooldownUntilDay:state.cooldownUntilDay},
     quote:{product:'herbs',price:observable?observable.prices.herbs:world.marketModel.config.products.herbs.basePrice,observedTick:last?.tick??0,sourceEventSeq:last?.eventSeq??null},
     observations:cloneData(mind.observations),belief:deriveMindBelief(mind.observations,tick),
     profile:{dutyWeightPermille:profile.dutyWeightPermille,riskAversionPermille:profile.riskAversionPermille},duty:cloneData(entry.lastDuty),
     planState:{activePlan:cloneData(entry.activePlan),suspendedPlan:cloneData(entry.suspendedPlan),nextPlanId:entry.nextPlanId,lastReviewedDutyId:entry.lastReviewedDutyId}};
-  requireCondition(new TextEncoder().encode(canonicalJson(knowledge)).length<=MAX_MOTIVATION_KNOWLEDGE_BYTES,'Motivation knowledge exceeds budget','LIMIT_EXCEEDED');
+  if(runtimeProfile.experience){
+    const expActor=world.experienceModel.actors.find(a=>a.actorId===actorId);
+    knowledge.experience=deriveWorkExperience(expActor.workExperienceState);
+    knowledge.useWorkExperience=world.experienceModel.config.useWorkExperience;
+  }
+  requireCondition(new TextEncoder().encode(canonicalJson(knowledge)).length<=runtimeProfile.knowledgeBytes,`${runtimeProfile.label} knowledge exceeds budget`,'LIMIT_EXCEEDED');
   return knowledge;
 }
 
@@ -101,7 +139,7 @@ function transition(list,plan,fromStatus,toStatus,reasonCode){
 }
 function cancel(entry,slot,reason,list){const plan=entry[slot];if(plan!==null){transition(list,plan,plan.status,'cancelled',reason);entry[slot]=null;}}
 function facts(type,payload,causes=[],commandId=null){return {type,sourceSystem:'motivation',commandId,entityIds:[payload.actorId??payload.listenerId],causationEventSeqs:cloneData(causes),payload:cloneData(payload)};}
-function setCursors(world,events){world.mindModel.cursor=events.length;world.motivationModel.cursor=events.length;}
+function setCursors(world,events,profile){world.mindModel.cursor=events.length;world.motivationModel.cursor=events.length;if(profile.experience)world.experienceModel.cursor=events.length;}
 
 function requestsTick(world,tick,append,context){
   const m=world.motivationModel;
@@ -133,14 +171,14 @@ function proposalTransitions(before,after,tick,list){
   for(const next of allAfter)if(![before.activePlan,before.suspendedPlan].some(p=>p?.planId===next.planId))transition(list,next,null,next.status,'CREATED');
 }
 
-function beforeSystems(snapshot,events,tick,append,commit){
+function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
   const context=new Map(snapshot.world.motivationModel.actors.map(e=>[e.actorId,{transitions:[],requestSeqs:[],resolvedSeq:null,decisionId:null}]));
-  applyMindStimuliTick(withoutMotivation(snapshot.world),tick,append);
-  requestsTick(snapshot.world,tick,append,context);setCursors(snapshot.world,events);
+  applyMindStimuliTick(lowerWorld(snapshot.world,profile),tick,append);
+  requestsTick(snapshot.world,tick,append,context);setCursors(snapshot.world,events,profile);
   if(tick%144!==0)return context;
-  const prepared=prepareMindDay(withoutMotivation(snapshot.world),tick);
-  snapshot.world={...prepared.world,motivationModel:cloneData(snapshot.world.motivationModel)};
-  for(const fact of prepared.facts)append(fact);setCursors(snapshot.world,events);
+  const prepared=prepareMindDay(lowerWorld(snapshot.world,profile),tick);
+  snapshot.world=retainModels(prepared.world,snapshot.world,profile);
+  for(const fact of prepared.facts)append(fact);setCursors(snapshot.world,events,profile);
   const world=cloneData(snapshot.world),day=tick/144;
   const chief=planSocietyDay(societyProject(world),{buyerId:null,price:null},world.memoryModel.config.personalities);
   world.societyModel.agents[0]=chief.world.societyModel.agents[0];
@@ -150,8 +188,8 @@ function beforeSystems(snapshot,events,tick,append,commit){
   const proposals=[];
   for(const entry of world.motivationModel.actors){const state=agent(world,entry.actorId);state.lastAction='None';state.lastDecision=null;
     if(!body(world,entry.actorId).alive)continue;
-    const knowledge=decisionKnowledge(world,events,entry.actorId,tick,snapshot.simulationId);
-    proposals.push({entry,knowledge,priorPlan:cloneData(entry.activePlan),proposal:planMotivationDecision(knowledge)});
+    const knowledge=decisionKnowledge(world,events,entry.actorId,tick,snapshot.simulationId,profile);
+    proposals.push({entry,knowledge,priorPlan:cloneData(entry.activePlan),proposal:profile.experience?planExperienceMotivationDecision(knowledge):planMotivationDecision(knowledge)});
   }
   for(const {entry,knowledge,priorPlan,proposal} of proposals){const ctx=context.get(entry.actorId),state=agent(world,entry.actorId);
     proposalTransitions(entry,proposal,tick,ctx.transitions);
@@ -192,13 +230,29 @@ function beforeSystems(snapshot,events,tick,append,commit){
         plan.status='blocked';
       }
     }
-    setCursors(snapshot.world,events);
+    if(profile.experience)observeResolvedWork(snapshot,events,item,ctx.resolvedSeq,append);
+    setCursors(snapshot.world,events,profile);
   }
   return context;
 }
 
-function applyAction(input,payload,sample=null){
-  validateMotivationWorld(input,false);
+function observeResolvedWork(snapshot,events,item,resolvedSeq,append){
+    if(body(snapshot.world,item.actorId).alive){
+      const adapterContext={simulationId:snapshot.simulationId,rulesVersion:EXPERIENCE_RULES,eventLog:events,commandReceipts:snapshot.commandReceipts};
+      const workOutcome=projectOwnWorkOutcome(adapterContext,item.actorId,resolvedSeq);
+      if(workOutcome!==null){
+        const expActor=snapshot.world.experienceModel.actors.find(a=>a.actorId===item.actorId);
+        const obs=observeWorkOutcome(expActor.workExperienceState,workOutcome);
+        expActor.workExperienceState=obs.state;
+        const experienceView=deriveWorkExperience(expActor.workExperienceState);
+        append({type:'ExperienceWorkObserved',sourceSystem:'experience',commandId:workOutcome.commandId,entityIds:[item.actorId],causationEventSeqs:[resolvedSeq],
+          payload:{actorId:item.actorId,sourceEventSeq:resolvedSeq,experienceView}});
+      }
+    }
+}
+
+function applyActionFor(input,payload,sample,profile){
+  validateWorldFor(input,false,profile);
   const entry=entryOf(input,payload.actorId);
   if(entry){const d=entry.lastDecision,p=entry.activePlan;
     requireCondition(d&&p&&d.choice===payload.action&&p.steps[p.stepIndex]===payload.action&&d.planId===p.planId&&d.goalId===p.goalId&&d.actorId===payload.actorId&&payload.goalId===(d.goalId??0),'Motivation command/decision/plan binding mismatch');
@@ -209,7 +263,7 @@ function applyAction(input,payload,sample=null){
   if(temporary)agent(projection,payload.actorId).currentGoal=null;
   const result=applySocietyAction(projection,payload,sample,null);
   if(temporary)agent(result.world,payload.actorId).currentGoal=goal;
-  return {...result,world:{...result.world,memoryModel:cloneData(input.memoryModel),mindModel:cloneData(input.mindModel),motivationModel:cloneData(input.motivationModel)}};
+  return {...result,world:retainModels({...result.world,memoryModel:cloneData(input.memoryModel),mindModel:cloneData(input.mindModel)},input,profile)};
 }
 
 function resolvedOutcome(item,receipt,world){
@@ -223,17 +277,17 @@ function resolvedOutcome(item,receipt,world){
   return validateMotivationOutcome(outcome);
 }
 
-function settleDay(input,sample){
-  const result=settleMindSocietyDay(withoutMotivation(input),sample);
-  return {...result,world:{...result.world,motivationModel:cloneData(input.motivationModel)}};
+function settleDayFor(input,sample,profile){
+  const result=settleMindSocietyDay(lowerWorld(input,profile),sample);
+  return {...result,world:retainModels(result.world,input,profile)};
 }
 
-function afterSystems(snapshot,events,tick,append,context){
+function afterSystemsFor(snapshot,events,tick,append,context,profile){
   if(tick%144===0){
     const daily=events.findLast(e=>e.type==='SocietyDaySettled'&&e.tick===tick);requireCondition(daily,'Missing motivation daily source');
     append(playerDayFact(snapshot.world,daily.payload));
-    let base=withoutMotivation(snapshot.world);const memory=finishMindMemoryDay(base,events,tick);base=memory.world;append(memory.fact);
-    base=finishMindDay(base,events,tick);snapshot.world={...base,motivationModel:cloneData(snapshot.world.motivationModel)};
+    let base=lowerWorld(snapshot.world,profile);const memory=finishMindMemoryDay(base,events,tick);base=memory.world;append(memory.fact);
+    base=finishMindDay(base,events,tick);snapshot.world=retainModels(base,snapshot.world,profile);
   }
   for(const entry of snapshot.world.motivationModel.actors){const ctx=context.get(entry.actorId),a=body(snapshot.world,entry.actorId),state=agent(snapshot.world,entry.actorId);
     if(tick%144===0){for(const slot of ['activePlan','suspendedPlan']){
@@ -250,25 +304,32 @@ function afterSystems(snapshot,events,tick,append,context){
         lastDuty:entry.lastDuty,lastReviewedDutyId:entry.lastReviewedDutyId,activePlan:entry.activePlan,suspendedPlan:entry.suspendedPlan,transitions:ctx.transitions},[...new Set(refs)].sort((a,b)=>a-b)));
     }
   }
-  setCursors(snapshot.world,events);
+  setCursors(snapshot.world,events,profile);
 }
 
-function audit(bundle){fields(bundle,['snapshot','eventLog']);record(bundle.snapshot);
-  requireCondition(bundle.snapshot.rulesVersion===MOTIVATION_RULES,'Unknown motivation rules','UNSUPPORTED_VERSION');
-  validateBundle(bundle,{rulesVersion:MOTIVATION_RULES,systems:motivationSystems()});}
+function auditFor(bundle,profile){fields(bundle,['snapshot','eventLog']);record(bundle.snapshot);
+  requireCondition(bundle.snapshot.rulesVersion===profile.rules,profile.experience?'Unknown experience rules':'Unknown motivation rules','UNSUPPORTED_VERSION');
+  validateBundle(bundle,{rulesVersion:profile.rules,systems:profile.experience?experienceSystems():motivationSystems()});}
+function audit(bundle){return auditFor(bundle,MOTIVATION_PROFILE);}
 
-export function executeMotivationPlayerIntent(bundle,intent){
-  audit(bundle);const durationTicks=playerIntentDuration(intent),s=bundle.snapshot;
-  requireCondition(!reserved(intent.commandId),'Player command uses a reserved namespace');
+function executePlayerIntentFor(bundle,intent,profile){
+  auditFor(bundle,profile);const durationTicks=playerIntentDuration(intent),s=bundle.snapshot;
+  requireCondition(!reservedFor(intent.commandId,profile),'Player command uses a reserved namespace');
   requireCondition(!Object.hasOwn(s.commandReceipts,intent.commandId)&&!s.pendingCommands.some(c=>c.commandId===intent.commandId),'Player ID already registered','COMMAND_ID_CONFLICT');
   requireCondition(s.pendingCommands.length===0&&canPlayerIntent(s.world,intent),'Player intent cannot start','RULE_REJECTED');
   requireCondition(s.tick<=Number.MAX_SAFE_INTEGER-durationTicks&&s.nextInputSeq<Number.MAX_SAFE_INTEGER,'Player time/input overflow','LIMIT_EXCEEDED');
   requireCondition(Object.keys(s.commandReceipts).length<MAX_COLLECTION,'Player input budget exceeded','LIMIT_EXCEEDED');
   const next=cloneData(bundle);next.snapshot.pendingCommands.push({commandId:intent.commandId,inputSeq:next.snapshot.nextInputSeq++,targetTick:s.tick+durationTicks,
     type:'PlayerAction',payload:{startTick:s.tick,intent:{type:intent.type,payload:cloneData(intent.payload)}}});
-  audit(next);const session=createSimulationSession(next,motivationSystems());session.advanceTicks(durationTicks);
+  auditFor(next,profile);const session=createSimulationSession(next,profile.experience?experienceSystems():motivationSystems());session.advanceTicks(durationTicks);
   const result=session.getBundle(),receipt=result.snapshot.commandReceipts[intent.commandId];requireCondition(receipt,'Missing player completion');
   return {bundle:result,durationTicks,outcome:receipt.status,result:cloneData(receipt.result)};
+}
+
+export function executeMotivationPlayerIntent(bundle,intent){return executePlayerIntentFor(bundle,intent,MOTIVATION_PROFILE);}
+export function executeExperiencePlayerIntent(bundle,intent){
+  inspectDescriptorTree({bundle,intent});
+  return executePlayerIntentFor(bundle,intent,EXPERIENCE_PROFILE);
 }
 
 export function describeMotivationPlayerActions(bundle){
@@ -277,12 +338,12 @@ export function describeMotivationPlayerActions(bundle){
     prices:Object.fromEntries(['food','herbs'].map(id=>[id,{buy:w.marketModel.prices[id],sell:Math.max(1,Math.floor(w.marketModel.prices[id]/2))}])),canTrade:a.alive&&a.location==='village'};
 }
 
-function validateHistory(snapshot,events){
-  validateMotivationWorld(snapshot.world);denseArray(events,140000);
+function validateHistoryFor(snapshot,events,profile){
+  validateWorldFor(snapshot.world,true,profile);denseArray(events,140000);
   const receipts=snapshot.commandReceipts,pending=snapshot.pendingCommands;
   const entries=[...Object.entries(receipts).filter(([,r])=>r.input.type==='PlayerAction').map(([commandId,r])=>({commandId,inputSeq:r.inputSeq,...r.input,receipt:r})),...pending];
   denseArray(entries,MAX_COLLECTION);const starts=new Map(),ends=new Map(),ticks=new Set();
-  for(const e of entries){requireCondition(e.type==='PlayerAction'&&!reserved(e.commandId),'Unknown motivation external command');
+  for(const e of entries){requireCondition(e.type==='PlayerAction'&&!reservedFor(e.commandId,profile),`Unknown ${profile.label.toLowerCase()} external command`);
     const duration=playerIntentDuration({commandId:e.commandId,...e.payload.intent});integer(e.payload.startTick);
     requireCondition(e.payload.startTick<=Number.MAX_SAFE_INTEGER-duration&&e.targetTick===e.payload.startTick+duration&&e.payload.startTick<=snapshot.tick,'Player timing mismatch');
     requireCondition(!starts.has(e.payload.startTick),'Overlapping player admissions');starts.set(e.payload.startTick,e);ticks.add(e.payload.startTick);
@@ -291,12 +352,14 @@ function validateHistory(snapshot,events){
   const config=snapshot.world;for(const stimulus of config.mindModel.config.stimuli)if(stimulus.tick<=snapshot.tick)ticks.add(stimulus.tick);
   for(const request of config.motivationModel.config.requests)if(request.tick<=snapshot.tick)ticks.add(request.tick);
   for(let day=1;day<=Math.floor(snapshot.tick/144);day++)ticks.add(day*144);
-  const replay={world:createWorld(config.memoryModel.config,config.mindModel.config,config.motivationModel.config),simulationId:snapshot.simulationId};
+  const replay={world:createWorldFor(config.memoryModel.config,config.mindModel.config,config.motivationModel.config,
+    profile.experience?config.experienceModel.config:null,snapshot.simulationId,profile),simulationId:snapshot.simulationId};
+  if(profile.experience)replay.commandReceipts=receipts;
   const rng=createRng(snapshot.rng.seed),rebuilt=[],seen=new Set();let nextSeq=1,registered=[];
   const expect=(fact,tick)=>{const event={...cloneData(fact),eventSeq:rebuilt.length+1,tick,schemaVersion:1};
-    requireCondition(canonicalJson(events[rebuilt.length])===canonicalJson(event),'Motivation history disagrees with inputs/rules');rebuilt.push(event);return event.eventSeq;};
-  const checkReceipt=(id,input,applied,seqs)=>{const r=receipts[id];requireCondition(r&&!seen.has(id),'Missing or duplicate motivation receipt');
-    requireCondition(r.inputSeq===nextSeq++&&r.fingerprint===inputFingerprint(input)&&canonicalJson(r.input)===canonicalJson(input)&&r.status===(applied.success?'succeeded':'rejected')&&canonicalJson(r.result)===canonicalJson(applied.result)&&canonicalJson(r.eventSeqs)===canonicalJson(seqs),'Motivation receipt/authority mismatch');seen.add(id);return r;};
+    requireCondition(canonicalJson(events[rebuilt.length])===canonicalJson(event),`${profile.label} history disagrees with inputs/rules`);rebuilt.push(event);return event.eventSeq;};
+  const checkReceipt=(id,input,applied,seqs)=>{const r=receipts[id];requireCondition(r&&!seen.has(id),`Missing or duplicate ${profile.label.toLowerCase()} receipt`);
+    requireCondition(r.inputSeq===nextSeq++&&r.fingerprint===inputFingerprint(input)&&canonicalJson(r.input)===canonicalJson(input)&&r.status===(applied.success?'succeeded':'rejected')&&canonicalJson(r.result)===canonicalJson(applied.result)&&canonicalJson(r.eventSeqs)===canonicalJson(seqs),`${profile.label} receipt/authority mismatch`);seen.add(id);return r;};
   for(const tick of [...ticks].sort((a,b)=>a-b)){
     const append=f=>expect(f,tick),end=ends.get(tick);
     if(end){requireCondition(registered.length===1&&registered[0].commandId===end.commandId,'Missing player admission');registered=[];
@@ -305,267 +368,49 @@ function validateHistory(snapshot,events){
       const r=receipts[end.commandId];requireCondition(r.inputSeq<nextSeq&&r.status===(applied.success?'succeeded':'rejected')&&r.fingerprint===inputFingerprint(r.input)&&canonicalJson(r.result)===canonicalJson(applied.result)&&canonicalJson(r.eventSeqs)===canonicalJson(seqs),'Player outcome mismatch');seen.add(end.commandId);
     }
     if(tick>0){const commit=command=>{const input={type:command.type,payload:cloneData(command.payload),targetTick:command.targetTick};
-      const applied=applyAction(replay.world,command.payload,command.payload.action==='Hunt'?rng.next():null);replay.world=applied.world;
+      const applied=applyActionFor(replay.world,command.payload,command.payload.action==='Hunt'?rng.next():null,profile);replay.world=applied.world;
       return checkReceipt(command.commandId,input,applied,applied.success?[append(societyActionFact(command,applied.result))]:[]);};
-      const context=beforeSystems(replay,rebuilt,tick,append,commit);
-      if(tick%144===0){const daily=settleDay(replay.world,rng.next());replay.world=daily.world;
+      const context=beforeSystemsFor(replay,rebuilt,tick,append,commit,profile);
+      if(tick%144===0){const daily=settleDayFor(replay.world,rng.next(),profile);replay.world=daily.world;
         append({type:'SocietyDaySettled',sourceSystem:'society',commandId:null,entityIds:[],causationEventSeqs:societyCauses(rebuilt),payload:daily.payload});}
-      afterSystems(replay,rebuilt,tick,append,context);
+      afterSystemsFor(replay,rebuilt,tick,append,context,profile);
     }
     const start=starts.get(tick);if(start){requireCondition(registered.length===0&&start.inputSeq===nextSeq++&&canPlayerIntent(replay.world,{commandId:start.commandId,...start.payload.intent}),'Player registration mismatch');
       const {receipt,...input}=start;registered.push(input);}
   }
-  requireCondition(rebuilt.length===events.length&&seen.size===Object.keys(receipts).length&&nextSeq===snapshot.nextInputSeq,'Unclaimed motivation history/receipt/input');
-  requireCondition(canonicalJson(registered)===canonicalJson(pending),'Motivation pending input mismatch');
-  requireCondition(canonicalJson(replay.world)===canonicalJson(snapshot.world),'Motivation final world/identity/assets mismatch');
-  requireCondition(canonicalJson(rng.getState())===canonicalJson(snapshot.rng),'Motivation RNG history mismatch');
+  requireCondition(rebuilt.length===events.length&&seen.size===Object.keys(receipts).length&&nextSeq===snapshot.nextInputSeq,`Unclaimed ${profile.label.toLowerCase()} history/receipt/input`);
+  requireCondition(canonicalJson(registered)===canonicalJson(pending),`${profile.label} pending input mismatch`);
+  requireCondition(canonicalJson(replay.world)===canonicalJson(snapshot.world),`${profile.label} final world/identity/assets mismatch`);
+  requireCondition(canonicalJson(rng.getState())===canonicalJson(snapshot.rng),`${profile.label} RNG history mismatch`);
+}
+
+// Public connection signatures remain fixed; only data inputs are descriptor-checked.
+function beforeSystems(snapshot,events,tick,append,commit){return beforeSystemsFor(snapshot,events,tick,append,commit,MOTIVATION_PROFILE);}
+function afterSystems(snapshot,events,tick,append,context){return afterSystemsFor(snapshot,events,tick,append,context,MOTIVATION_PROFILE);}
+function applyAction(input,payload,sample=null){return applyActionFor(input,payload,sample,MOTIVATION_PROFILE);}
+function settleDay(input,sample){return settleDayFor(input,sample,MOTIVATION_PROFILE);}
+function validateHistory(snapshot,events){return validateHistoryFor(snapshot,events,MOTIVATION_PROFILE);}
+
+function experienceBeforeSystems(snapshot,events,tick,append,commit){
+  inspectDescriptorTree({snapshot,events});
+  return beforeSystemsFor(snapshot,events,tick,append,commit,EXPERIENCE_PROFILE);
+}
+function experienceAfterSystems(snapshot,events,tick,append,context){
+  inspectDescriptorTree({snapshot,events});
+  return afterSystemsFor(snapshot,events,tick,append,context,EXPERIENCE_PROFILE);
+}
+function experienceApplyAction(input,payload,sample=null){
+  inspectDescriptorTree({input,payload,sample});
+  return applyActionFor(input,payload,sample,EXPERIENCE_PROFILE);
+}
+function experienceSettleDay(input,sample){
+  inspectDescriptorTree({input,sample});
+  return settleDayFor(input,sample,EXPERIENCE_PROFILE);
+}
+function validateExperienceHistory(snapshot,events){
+  inspectDescriptorTree({snapshot,events});
+  return validateHistoryFor(snapshot,events,EXPERIENCE_PROFILE);
 }
 
 export const motivationRuntimeHooks=Object.freeze({createWorld,beforeSystems,afterSystems,applyAction,settleDay,validateHistory});
-
-export function validateExperienceWorld(world,sealed=true){
-  record(world);requireCondition(typeof sealed==='boolean','Invalid experience world seal mode');
-  inspectDescriptorTree(world);canonicalJson(world);
-  validateExperienceModel(world.experienceModel);
-  validateExperienceMotivationModel(world.motivationModel);
-  validateMindWorld(withoutExperienceAndMotivation(world),sealed);
-  const m=world.motivationModel;validateInputs(world.memoryModel.config,world.mindModel.config,m.config);
-  validateExperienceConfig(world.experienceModel.config);
-  if(sealed)requireCondition(world.mindModel.cursor===world.motivationModel.cursor&&world.motivationModel.cursor===world.experienceModel.cursor,'Mind, motivation, and experience cursors must match when sealed');
-  for(const mind of world.mindModel.actors)requireCondition(mind.lastDecision===null&&mind.lastOutcome===null,'M2 mind stores observations only');
-  for(const entry of m.actors){const state=agent(world,entry.actorId),actor=body(world,entry.actorId);
-    requireCondition(actor&&state,'Missing motivation actor/estate');
-    requireCondition(state.currentGoal===null||state.currentGoal.kind==='recover-health','Unexpected motivation canonical goal');
-    if(sealed)requireCondition((entry.lastDecision===null)===(entry.lastOutcome===null),'Committed motivation decision has no outcome');
-    requireCondition(!(entry.activePlan?.kind==='recover-health'&&entry.suspendedPlan!==null),'Motivation actor carries two health plans');
-    if(entry.lastReviewedDutyId!==null){const index=m.config.requests.findIndex(r=>r.requestId===entry.lastReviewedDutyId),r=m.config.requests[index];
-      requireCondition(index>=0&&index<m.requestCursor&&r.listenerId===entry.actorId&&r.urgencyPermille>=900,'Reviewed duty is not a consumed major request for this actor');}
-    for(const plan of [entry.activePlan,entry.suspendedPlan])if(plan!==null){
-      requireCondition(actor.alive,'Dead motivation actor retains a plan');
-      if(plan.kind==='recover-health')requireCondition(state.currentGoal!==null&&plan.goalId===state.currentGoal.goalId&&plan.deadlineDay===state.currentGoal.deadlineDay,'Health plan references another goal');
-      if(plan.kind==='aid-village')requireCondition(entry.lastDuty!==null&&entry.lastDuty.requestId===plan.requestId&&entry.lastDuty.status==='pending','Duty plan/request mismatch');
-    }
-    if(entry.lastDuty!==null){const d=entry.lastDuty,request=m.config.requests.find(r=>r.requestId===d.requestId);
-      requireCondition(request&&m.config.requests.indexOf(request)<m.requestCursor&&request.listenerId===entry.actorId&&request.tick===d.observedTick&&request.expiresTick===d.expiresTick&&request.urgencyPermille===d.urgencyPermille,'Duty configuration/prefix mismatch');
-      requireCondition(d.sourceEventSeq<=m.cursor,'Duty cites an unconsumed source');
-      if(d.fulfilledTick!==null)requireCondition(d.fulfilledTick>=d.observedTick&&d.fulfilledTick<d.expiresTick,'Duty fulfilled outside its opportunity');
-    }
-  }
-  return world;
-}
-
-function createExperienceWorld(memory,mind,motivation,experience,simulationId){
-  record(memory);record(mind);record(motivation);record(experience);identifier(simulationId);
-  inspectDescriptorTree({memory,mind,motivation,experience});canonicalJson({memory,mind,motivation,experience});
-  validateInputs(memory,mind,motivation);validateExperienceConfig(experience);
-  const base=createMindWorld(memory,mind);
-  const motModel=createMotivationModel(motivation);
-  motModel.version=EXPERIENCE_MOTIVATION_STATE_VERSION;
-  const expModel=createExperienceModel(simulationId,experience);
-  return {...base,motivationModel:motModel,experienceModel:expModel};
-}
-
-function experienceDecisionKnowledge(world,events,actorId,tick,simulationId){
-  const actor=body(world,actorId),state=agent(world,actorId),entry=entryOf(world,actorId),mind=world.mindModel.actors.find(a=>a.actorId===actorId);
-  const publicEvents=events.filter(e=>e.eventSeq<=world.mindModel.cursor&&e.type==='SocietyDaySettled'&&(actor.alive||e.tick<actor.deathTick));
-  const last=publicEvents.at(-1),observable=last?projectActorEvent(last,actorId).find(p=>p.channel==='public').observable:null;
-  const profile=world.motivationModel.config.profiles.find(p=>p.actorId===actorId);
-  const expActor=world.experienceModel.actors.find(a=>a.actorId===actorId);
-  const experienceView=deriveWorkExperience(expActor.workExperienceState);
-  const useWorkExperience=world.experienceModel.config.useWorkExperience;
-  const knowledge={knowledgeVersion:EXPERIENCE_KNOWLEDGE_VERSION,phase:'decision',simulationId,actorId,tick,revision:tick-1,
-    self:{name:actor.name,occupation:actor.occupation,location:actor.location,alive:actor.alive,health:actor.health,hunger:actor.hunger,fatigue:actor.fatigue,
-      wallet:state.wallet,inventory:cloneData(state.inventory),currentGoal:cloneData(state.currentGoal),nextGoalId:state.nextGoalId,cooldownUntilDay:state.cooldownUntilDay},
-    quote:{product:'herbs',price:observable?observable.prices.herbs:world.marketModel.config.products.herbs.basePrice,observedTick:last?.tick??0,sourceEventSeq:last?.eventSeq??null},
-    observations:cloneData(mind.observations),belief:deriveMindBelief(mind.observations,tick),
-    profile:{dutyWeightPermille:profile.dutyWeightPermille,riskAversionPermille:profile.riskAversionPermille},duty:cloneData(entry.lastDuty),
-    planState:{activePlan:cloneData(entry.activePlan),suspendedPlan:cloneData(entry.suspendedPlan),nextPlanId:entry.nextPlanId,lastReviewedDutyId:entry.lastReviewedDutyId},
-    experience:experienceView,useWorkExperience};
-  requireCondition(new TextEncoder().encode(canonicalJson(knowledge)).length<=MAX_EXPERIENCE_KNOWLEDGE_BYTES,'Experience knowledge exceeds budget','LIMIT_EXCEEDED');
-  return knowledge;
-}
-
-function experienceBeforeSystems(snapshot,events,tick,append,commit){
-  const context=new Map(snapshot.world.motivationModel.actors.map(e=>[e.actorId,{transitions:[],requestSeqs:[],resolvedSeq:null,decisionId:null}]));
-  applyMindStimuliTick(withoutExperienceAndMotivation(snapshot.world),tick,append);
-  requestsTick(snapshot.world,tick,append,context);setExperienceCursors(snapshot.world,events);
-  if(tick%144!==0)return context;
-  const prepared=prepareMindDay(withoutExperienceAndMotivation(snapshot.world),tick);
-  snapshot.world={...prepared.world,motivationModel:cloneData(snapshot.world.motivationModel),experienceModel:cloneData(snapshot.world.experienceModel)};
-  for(const fact of prepared.facts)append(fact);setExperienceCursors(snapshot.world,events);
-  const world=cloneData(snapshot.world),day=tick/144;
-  const chief=planSocietyDay(societyProject(world),{buyerId:null,price:null},world.memoryModel.config.personalities);
-  world.societyModel.agents[0]=chief.world.societyModel.agents[0];
-  const plans=[];
-  const proposals=[];
-  for(const entry of world.motivationModel.actors){const state=agent(world,entry.actorId);state.lastAction='None';state.lastDecision=null;
-    if(!body(world,entry.actorId).alive)continue;
-    const knowledge=experienceDecisionKnowledge(world,events,entry.actorId,tick,snapshot.simulationId);
-    proposals.push({entry,knowledge,priorPlan:cloneData(entry.activePlan),proposal:planExperienceMotivationDecision(knowledge)});
-  }
-  for(const {entry,knowledge,priorPlan,proposal} of proposals){const ctx=context.get(entry.actorId),state=agent(world,entry.actorId);
-    proposalTransitions(entry,proposal,tick,ctx.transitions);
-    state.currentGoal=cloneData(proposal.currentGoal);state.nextGoalId=proposal.nextGoalId;
-    for(const key of ['activePlan','suspendedPlan','nextPlanId','lastReviewedDutyId'])entry[key]=cloneData(proposal[key]);
-    entry.lastDecision=cloneData(proposal.decision);entry.lastOutcome=null;ctx.decisionId=proposal.decision.decisionId;
-    const decision=proposal.decision,command=decision.choice==='NoAction'?null:{commandId:decision.decisionId,targetTick:tick,type:'SocietyAction',
-      payload:{actorId:entry.actorId,goalId:decision.goalId??0,action:decision.choice,targetActorId:null}};
-    plans.push({actorId:entry.actorId,decision,command,priorPlan,selfHealth:knowledge.self.health,selfFatigue:knowledge.self.fatigue});
-  }
-  snapshot.world=world;
-  for(const item of plans)item.plannedSeq=append(facts('MotivationDecisionPlanned',item.decision,item.decision.evidenceRefs));
-  for(const command of chief.commands.filter(c=>c.payload.actorId==='actor-1'))commit(command);
-  for(const item of plans){const receipt=item.command?commit(item.command):null,entry=entryOf(snapshot.world,item.actorId),ctx=context.get(item.actorId);
-    const outcome=resolvedOutcome(item,receipt,snapshot.world);ctx.resolvedSeq=append(facts('MotivationDecisionResolved',outcome,[item.plannedSeq],outcome.commandId));
-    entry.lastOutcome=cloneData(outcome);
-    if(item.decision.choice==='BuyMedicine'&&receipt?.status==='rejected')pushMindObservation(snapshot.world,item.actorId,mindRejectionObservation(ctx.resolvedSeq,tick));
-    if(receipt&&entry.activePlan){const plan=entry.activePlan;
-      requireCondition(plan.planId===item.decision.planId,'Outcome plan mismatch');
-      if(receipt.status==='succeeded'){
-        plan.stepIndex++;
-        if(plan.stepIndex===plan.steps.length){
-          transition(ctx.transitions,plan,plan.status,'completed',plan.kind==='aid-village'?'DUTY_FULFILLED':'PLAN_COMPLETED');entry.activePlan=null;
-        }else transition(ctx.transitions,plan,plan.status,plan.status,'STEP_SUCCEEDED');
-        if(plan.kind==='aid-village'){
-          requireCondition(entry.lastDuty?.requestId===plan.requestId&&entry.lastDuty.status==='pending'&&tick<entry.lastDuty.expiresTick,'Work outcome cites the wrong request');
-          entry.lastDuty.status='fulfilled';entry.lastDuty.fulfilledTick=tick;
-        }
-        if(plan.kind==='recover-health'&&agent(snapshot.world,item.actorId).currentGoal)agent(snapshot.world,item.actorId).currentGoal.step=item.decision.choice==='BuyMedicine'?'use':'wait';
-      }else{
-        const stillBlocked=item.priorPlan?.planId===plan.planId&&item.priorPlan.status==='blocked'&&
-          canonicalJson(item.priorPlan)===canonicalJson({...plan,status:'blocked'});
-        if(stillBlocked){
-          ctx.transitions=ctx.transitions.filter(t=>!(t.planId===plan.planId&&t.reasonCode==='CONDITION_READY'));
-        }else if(plan.status!=='blocked')transition(ctx.transitions,plan,plan.status,'blocked','EXECUTION_REJECTED');
-        plan.status='blocked';
-      }
-    }
-    if(body(snapshot.world,item.actorId).alive){
-      const adapterContext={simulationId:snapshot.simulationId,rulesVersion:EXPERIENCE_RULES,eventLog:events,commandReceipts:snapshot.commandReceipts};
-      const workOutcome=projectOwnWorkOutcome(adapterContext,item.actorId,ctx.resolvedSeq);
-      if(workOutcome!==null){
-        const expActor=snapshot.world.experienceModel.actors.find(a=>a.actorId===item.actorId);
-        const obs=observeWorkOutcome(expActor.workExperienceState,workOutcome);
-        expActor.workExperienceState=obs.state;
-        const experienceView=deriveWorkExperience(expActor.workExperienceState);
-        append({type:'ExperienceWorkObserved',sourceSystem:'experience',commandId:workOutcome.commandId,entityIds:[item.actorId],causationEventSeqs:[ctx.resolvedSeq],
-          payload:{actorId:item.actorId,sourceEventSeq:ctx.resolvedSeq,experienceView}});
-      }
-    }
-    setExperienceCursors(snapshot.world,events);
-  }
-  return context;
-}
-
-function experienceApplyAction(input,payload,sample=null){
-  validateExperienceWorld(input,false);
-  const entry=entryOf(input,payload.actorId);
-  if(entry){const d=entry.lastDecision,p=entry.activePlan;
-    requireCondition(d&&p&&d.choice===payload.action&&p.steps[p.stepIndex]===payload.action&&d.planId===p.planId&&d.goalId===p.goalId&&d.actorId===payload.actorId&&payload.goalId===(d.goalId??0),'Motivation command/decision/plan binding mismatch');
-    if(p.kind==='aid-village')requireCondition(entry.lastDuty?.status==='pending'&&p.requestId===entry.lastDuty.requestId&&d.candidates.find(c=>c.action==='WorkForPay').sourceRef===p.requestId&&d.tick<entry.lastDuty.expiresTick,'Motivation work request provenance mismatch');
-  }
-  const temporary=entry&&['aid-village','recover-rest'].includes(entry.activePlan.kind),projection=cloneData(societyProject(input));
-  const goal=cloneData(agent(input,payload.actorId).currentGoal);
-  if(temporary)agent(projection,payload.actorId).currentGoal=null;
-  const result=applySocietyAction(projection,payload,sample,null);
-  if(temporary)agent(result.world,payload.actorId).currentGoal=goal;
-  return {...result,world:{...result.world,memoryModel:cloneData(input.memoryModel),mindModel:cloneData(input.mindModel),motivationModel:cloneData(input.motivationModel),experienceModel:cloneData(input.experienceModel)}};
-}
-
-function experienceSettleDay(input,sample){
-  const result=settleMindSocietyDay(withoutExperienceAndMotivation(input),sample);
-  return {...result,world:{...result.world,motivationModel:cloneData(input.motivationModel),experienceModel:cloneData(input.experienceModel)}};
-}
-
-function experienceAfterSystems(snapshot,events,tick,append,context){
-  if(tick%144===0){
-    const daily=events.findLast(e=>e.type==='SocietyDaySettled'&&e.tick===tick);requireCondition(daily,'Missing motivation daily source');
-    append(playerDayFact(snapshot.world,daily.payload));
-    let base=withoutExperienceAndMotivation(snapshot.world);const memory=finishMindMemoryDay(base,events,tick);base=memory.world;append(memory.fact);
-    base=finishMindDay(base,events,tick);snapshot.world={...base,motivationModel:cloneData(snapshot.world.motivationModel),experienceModel:cloneData(snapshot.world.experienceModel)};
-  }
-  for(const entry of snapshot.world.motivationModel.actors){const ctx=context.get(entry.actorId),a=body(snapshot.world,entry.actorId),state=agent(snapshot.world,entry.actorId);
-    if(tick%144===0){for(const slot of ['activePlan','suspendedPlan']){
-      const plan=entry[slot];if(plan===null)continue;
-      if(!a.alive)cancel(entry,slot,'DEAD',ctx.transitions);
-      else if(plan.kind==='recover-health'&&(state.currentGoal===null||state.currentGoal.goalId!==plan.goalId)){
-        const daily=events.findLast(e=>e.type==='SocietyDaySettled'&&e.tick===tick);
-        const reason=daily.payload.agents.find(g=>g.actorId===entry.actorId).goalOutcome==='completed'?'GOAL_COMPLETED':'GOAL_FAILED';cancel(entry,slot,reason,ctx.transitions);
-      }
-    }}
-    if(ctx.decisionId!==null||ctx.transitions.length){const daily=events.findLast(e=>e.type==='SocietyDaySettled'&&e.tick===tick);
-      const refs=[...ctx.requestSeqs,...(ctx.resolvedSeq?[ctx.resolvedSeq]:[]),...(daily?[daily.eventSeq]:[])];
-      append(facts('MotivationPlanSettled',{actorId:entry.actorId,decisionId:ctx.decisionId,currentGoalId:state.currentGoal?.goalId??null,
-        lastDuty:entry.lastDuty,lastReviewedDutyId:entry.lastReviewedDutyId,activePlan:entry.activePlan,suspendedPlan:entry.suspendedPlan,transitions:ctx.transitions},[...new Set(refs)].sort((a,b)=>a-b)));
-    }
-  }
-  setExperienceCursors(snapshot.world,events);
-}
-
-function auditExperience(bundle){
-  fields(bundle,['snapshot','eventLog']);record(bundle.snapshot);
-  inspectDescriptorTree(bundle);
-  requireCondition(bundle.snapshot.rulesVersion===EXPERIENCE_RULES,'Unknown experience rules','UNSUPPORTED_VERSION');
-  validateBundle(bundle,{rulesVersion:EXPERIENCE_RULES,systems:experienceSystems()});
-}
-
-export function executeExperiencePlayerIntent(bundle,intent){
-  auditExperience(bundle);const durationTicks=playerIntentDuration(intent),s=bundle.snapshot;
-  inspectDescriptorTree(intent);
-  requireCondition(!experienceReserved(intent.commandId),'Player command uses a reserved namespace');
-  requireCondition(!Object.hasOwn(s.commandReceipts,intent.commandId)&&!s.pendingCommands.some(c=>c.commandId===intent.commandId),'Player ID already registered','COMMAND_ID_CONFLICT');
-  requireCondition(s.pendingCommands.length===0&&canPlayerIntent(s.world,intent),'Player intent cannot start','RULE_REJECTED');
-  requireCondition(s.tick<=Number.MAX_SAFE_INTEGER-durationTicks&&s.nextInputSeq<Number.MAX_SAFE_INTEGER,'Player time/input overflow','LIMIT_EXCEEDED');
-  requireCondition(Object.keys(s.commandReceipts).length<MAX_COLLECTION,'Player input budget exceeded','LIMIT_EXCEEDED');
-  const next=cloneData(bundle);next.snapshot.pendingCommands.push({commandId:intent.commandId,inputSeq:next.snapshot.nextInputSeq++,targetTick:s.tick+durationTicks,
-    type:'PlayerAction',payload:{startTick:s.tick,intent:{type:intent.type,payload:cloneData(intent.payload)}}});
-  auditExperience(next);const session=createSimulationSession(next,experienceSystems());session.advanceTicks(durationTicks);
-  const result=session.getBundle(),receipt=result.snapshot.commandReceipts[intent.commandId];requireCondition(receipt,'Missing player completion');
-  return {bundle:result,durationTicks,outcome:receipt.status,result:cloneData(receipt.result)};
-}
-
-function validateExperienceHistory(snapshot,events){
-  validateExperienceWorld(snapshot.world);denseArray(events,140000);
-  const receipts=snapshot.commandReceipts,pending=snapshot.pendingCommands;
-  const entries=[...Object.entries(receipts).filter(([,r])=>r.input.type==='PlayerAction').map(([commandId,r])=>({commandId,inputSeq:r.inputSeq,...r.input,receipt:r})),...pending];
-  denseArray(entries,MAX_COLLECTION);const starts=new Map(),ends=new Map(),ticks=new Set();
-  for(const e of entries){requireCondition(e.type==='PlayerAction'&&!experienceReserved(e.commandId),'Unknown experience external command');
-    const duration=playerIntentDuration({commandId:e.commandId,...e.payload.intent});integer(e.payload.startTick);
-    requireCondition(e.payload.startTick<=Number.MAX_SAFE_INTEGER-duration&&e.targetTick===e.payload.startTick+duration&&e.payload.startTick<=snapshot.tick,'Player timing mismatch');
-    requireCondition(!starts.has(e.payload.startTick),'Overlapping player admissions');starts.set(e.payload.startTick,e);ticks.add(e.payload.startTick);
-    if(e.receipt){requireCondition(!ends.has(e.targetTick),'Overlapping player completions');ends.set(e.targetTick,e);ticks.add(e.targetTick);}
-  }
-  const config=snapshot.world;for(const stimulus of config.mindModel.config.stimuli)if(stimulus.tick<=snapshot.tick)ticks.add(stimulus.tick);
-  for(const request of config.motivationModel.config.requests)if(request.tick<=snapshot.tick)ticks.add(request.tick);
-  for(let day=1;day<=Math.floor(snapshot.tick/144);day++)ticks.add(day*144);
-  const replay={world:createExperienceWorld(config.memoryModel.config,config.mindModel.config,config.motivationModel.config,config.experienceModel.config,snapshot.simulationId),simulationId:snapshot.simulationId,commandReceipts:snapshot.commandReceipts};
-  const rng=createRng(snapshot.rng.seed),rebuilt=[],seen=new Set();let nextSeq=1,registered=[];
-  const expect=(fact,tick)=>{const event={...cloneData(fact),eventSeq:rebuilt.length+1,tick,schemaVersion:1};
-    requireCondition(canonicalJson(events[rebuilt.length])===canonicalJson(event),'Experience history disagrees with inputs/rules');rebuilt.push(event);return event.eventSeq;};
-  const checkReceipt=(id,input,applied,seqs)=>{const r=receipts[id];requireCondition(r&&!seen.has(id),'Missing or duplicate experience receipt');
-    requireCondition(r.inputSeq===nextSeq++&&r.fingerprint===inputFingerprint(input)&&canonicalJson(r.input)===canonicalJson(input)&&r.status===(applied.success?'succeeded':'rejected')&&canonicalJson(r.result)===canonicalJson(applied.result)&&canonicalJson(r.eventSeqs)===canonicalJson(seqs),'Experience receipt/authority mismatch');seen.add(id);return r;};
-  for(const tick of [...ticks].sort((a,b)=>a-b)){
-    const append=f=>expect(f,tick),end=ends.get(tick);
-    if(end){requireCondition(registered.length===1&&registered[0].commandId===end.commandId,'Missing player admission');registered=[];
-      const applied=applyPlayerAction(replay.world,end);replay.world=applied.world;
-      const seqs=applied.success?[append(playerActionFact(end,applied.result))]:[];
-      const r=receipts[end.commandId];requireCondition(r.inputSeq<nextSeq&&r.status===(applied.success?'succeeded':'rejected')&&r.fingerprint===inputFingerprint(r.input)&&canonicalJson(r.result)===canonicalJson(applied.result)&&canonicalJson(r.eventSeqs)===canonicalJson(seqs),'Player outcome mismatch');seen.add(end.commandId);
-    }
-    if(tick>0){const commit=command=>{const input={type:command.type,payload:cloneData(command.payload),targetTick:command.targetTick};
-      const applied=experienceApplyAction(replay.world,command.payload,command.payload.action==='Hunt'?rng.next():null);replay.world=applied.world;
-      return checkReceipt(command.commandId,input,applied,applied.success?[append(societyActionFact(command,applied.result))]:[]);};
-      const context=experienceBeforeSystems(replay,rebuilt,tick,append,commit);
-      if(tick%144===0){const daily=experienceSettleDay(replay.world,rng.next());replay.world=daily.world;
-        append({type:'SocietyDaySettled',sourceSystem:'society',commandId:null,entityIds:[],causationEventSeqs:societyCauses(rebuilt),payload:daily.payload});}
-      experienceAfterSystems(replay,rebuilt,tick,append,context);
-    }
-    const start=starts.get(tick);if(start){requireCondition(registered.length===0&&start.inputSeq===nextSeq++&&canPlayerIntent(replay.world,{commandId:start.commandId,...start.payload.intent}),'Player registration mismatch');
-      const {receipt,...input}=start;registered.push(input);}
-  }
-  requireCondition(rebuilt.length===events.length&&seen.size===Object.keys(receipts).length&&nextSeq===snapshot.nextInputSeq,'Unclaimed experience history/receipt/input');
-  requireCondition(canonicalJson(registered)===canonicalJson(pending),'Experience pending input mismatch');
-  requireCondition(canonicalJson(replay.world)===canonicalJson(snapshot.world),'Experience final world/identity/assets mismatch');
-  requireCondition(canonicalJson(rng.getState())===canonicalJson(snapshot.rng),'Experience RNG history mismatch');
-}
-
 export const experienceRuntimeHooks=Object.freeze({createWorld:createExperienceWorld,beforeSystems:experienceBeforeSystems,afterSystems:experienceAfterSystems,applyAction:experienceApplyAction,settleDay:experienceSettleDay,validateHistory:validateExperienceHistory});

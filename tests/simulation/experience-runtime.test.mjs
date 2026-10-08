@@ -8,6 +8,9 @@ import { validateBundle } from '../../runtime/core/world-state.mjs';
 import { executeExperiencePlayerIntent, experienceRuntimeHooks } from '../../runtime/core/motivation-runtime.mjs';
 import { projectOwnWorkOutcome } from '../../runtime/core/work-experience-adapter.mjs';
 import { observeWorkOutcome } from '../../runtime/core/work-experience.mjs';
+import { cloneBundle, createInitialBundle, validateSnapshotStructure } from '../../runtime/core/world-state.mjs';
+import { lookupCommand, advanceOneTick } from '../../runtime/core/command-engine.mjs';
+import { validateEventLog, validateFact } from '../../runtime/core/event-log.mjs';
 
 function buildE2Config(useWorkExperience = true) {
   const config = defaultExperienceVillageConfig();
@@ -295,4 +298,135 @@ test('E6: 全恢复历史篡改拒绝与完整重演防御', async () => {
     () => validateBundle(tampered4, { rulesVersion: EXPERIENCE_RULES, systems }),
     /Experience config fingerprint mismatch/
   );
+});
+
+function boundaryContext(bundle) {
+  return { simulationId: bundle.snapshot.simulationId, rulesVersion: bundle.snapshot.rulesVersion,
+    eventLog: bundle.eventLog, commandReceipts: bundle.snapshot.commandReceipts };
+}
+
+test('controller boundary: adapter verifies complete real chains before null', async (t) => {
+  const fixture = createExperienceVillage(42, 'controller-boundary-regression');
+  const session = createSimulationSession(fixture.bundle, fixture.systems);
+  session.advanceTicks(288);
+  const context = boundaryContext(session.getBundle());
+  const work = context.eventLog.find(e => e.type === 'MotivationDecisionResolved' && e.tick === 288 && e.payload.actorId === 'actor-2');
+  const nonWork = context.eventLog.find(e => e.type === 'MotivationDecisionResolved' && e.tick === 144 && e.payload.actorId === 'actor-2');
+  const resolved = c => c.eventLog.find(e => e.eventSeq === work.eventSeq);
+  const planned = c => c.eventLog.find(e => e.eventSeq === work.causationEventSeqs[0]);
+  const receipt = c => c.commandReceipts[work.commandId];
+  const committed = c => c.eventLog.find(e => e.eventSeq === receipt(c).eventSeqs[0]);
+  assert.equal(projectOwnWorkOutcome(context, 'actor-2', work.eventSeq).status, 'succeeded');
+  assert.equal(projectOwnWorkOutcome(context, 'actor-3', work.eventSeq), null);
+  assert.equal(projectOwnWorkOutcome(context, 'actor-1', work.eventSeq), null);
+  assert.equal(projectOwnWorkOutcome(context, 'actor-2', nonWork.eventSeq), null);
+  const mutations = [
+    ['target tick', c => receipt(c).input.targetTick++],
+    ['resolved payload command', c => resolved(c).payload.commandId = 'forged-command'],
+    ...['wallet', 'herbs', 'health', 'fatigue'].map(key => ['delta ' + key, c => resolved(c).payload.delta[key]++]),
+    ['public food', c => resolved(c).payload.publicFoodProduced++],
+    ['price', c => resolved(c).payload.price = 1],
+    ['planned event tick', c => planned(c).tick++],
+    ['planned command', c => planned(c).commandId = work.commandId],
+    ['other actor bad cause', c => resolved(c).causationEventSeqs = [999999], work.eventSeq, 'actor-3'],
+    ['foreign query actor bad cause', c => resolved(c).causationEventSeqs = [999999], work.eventSeq, 'actor-1'],
+    ['forged null work', c => { resolved(c).payload.commandId = null; resolved(c).commandId = null; }],
+    ['non-work missing receipt', c => { delete c.commandReceipts[nonWork.commandId]; }, nonWork.eventSeq],
+    ['non-work wrong delta', c => c.eventLog.find(e => e.eventSeq === nonWork.eventSeq).payload.delta.herbs++ , nonWork.eventSeq],
+    ['context extra key', c => c.extra = true],
+    ['complete receipt result', c => receipt(c).result.extra = true],
+    ['committed source', c => committed(c).sourceSystem = 'forged'],
+    ['committed schema', c => committed(c).schemaVersion = 999],
+    ['committed entities', c => committed(c).entityIds.push('actor-3')],
+    ['duplicate committed', c => { const e = structuredClone(committed(c)); e.eventSeq = c.eventLog.at(-1).eventSeq + 1; c.eventLog.push(e); }],
+    ['duplicate resolved', c => { const e = structuredClone(resolved(c)); e.eventSeq = c.eventLog.at(-1).eventSeq + 1; c.eventLog.push(e); }],
+    ['duplicate planned decision', c => { const e = structuredClone(planned(c)); e.eventSeq = c.eventLog.at(-1).eventSeq + 1; c.eventLog.push(e); }],
+    ['resolved sequence absent', () => {}, 999999],
+    ['resolved wrong type', c => resolved(c).type = 'SocietyDaySettled'],
+  ];
+  for (const [name, mutate, seq = work.eventSeq, actor = 'actor-2'] of mutations) await t.test(name, () => {
+    const bad = structuredClone(context); mutate(bad);
+    assert.throws(() => projectOwnWorkOutcome(bad, actor, seq), { code: 'INVALID_INPUT' });
+  });
+  await t.test('unknown adapter rules', () => {
+    const bad = structuredClone(context); bad.rulesVersion = 'unknown-rules';
+    assert.throws(() => projectOwnWorkOutcome(bad, 'actor-2', work.eventSeq), { code: 'UNSUPPORTED_VERSION' });
+  });
+});
+
+test('controller boundary: legitimate NoAction is checked and has no receipt', () => {
+  const config = defaultExperienceVillageConfig();
+  for (const actor of config.memory.society.actors.initialActors) { actor.health = 1000; actor.fatigue = 0; }
+  config.motivation.requests = [];
+  const fixture = createExperienceVillage(42, 'controller-noaction', config);
+  const session = createSimulationSession(fixture.bundle, fixture.systems); session.advanceTicks(144);
+  const context = boundaryContext(session.getBundle());
+  const event = context.eventLog.find(e => e.type === 'MotivationDecisionResolved');
+  assert.equal(event.payload.status, 'no-action');
+  assert.equal(projectOwnWorkOutcome(context, event.payload.actorId, event.eventSeq), null);
+  for (const mutate of [
+    c => c.eventLog.find(e => e.eventSeq === event.eventSeq).causationEventSeqs = [999999],
+    c => c.eventLog.find(e => e.eventSeq === event.eventSeq).payload.delta.health++,
+    c => c.commandReceipts[event.payload.decisionId] = { forged: true },
+  ]) {
+    const bad = structuredClone(context); mutate(bad);
+    assert.throws(() => projectOwnWorkOutcome(bad, event.payload.actorId, event.eventSeq), { code: 'INVALID_INPUT' });
+  }
+});
+
+test('controller boundary: public experience entries reject inherited map without executing getters', async (t) => {
+  const fixture = createExperienceVillage(42, 'controller-descriptors');
+  const session = createSimulationSession(fixture.bundle, fixture.systems); session.advanceTicks(144);
+  const historical = session.getBundle();
+  let calls = 0;
+  const inheritedMap = array => {
+    const prototype = Object.create(Array.prototype);
+    Object.defineProperty(prototype, 'map', { get() { calls++; return Array.prototype.map; } });
+    Object.setPrototypeOf(array, prototype); return array;
+  };
+  const raw = { commandId: 'controller-probe', targetTick: 1, type: 'PlayerAction', payload: { startTick: 0, intent: { type: 'PlayerRest', payload: {} } } };
+  const entryPoints = [
+    ['cloneBundle eventLog', b => inheritedMap(b.eventLog), b => cloneBundle(b)],
+    ['lookupCommand eventLog', b => inheritedMap(b.eventLog), b => lookupCommand(b, raw)],
+    ['lookupCommand raw payload', () => {}, b => { const input = structuredClone(raw); input.payload.extra = inheritedMap([]); return lookupCommand(b, input); }],
+    ['validateEventLog eventLog', b => inheritedMap(b.eventLog), b => validateEventLog(b.eventLog, b.snapshot, fixture.systems)],
+    ['validateEventLog pending', b => inheritedMap(b.snapshot.pendingCommands), b => validateEventLog(b.eventLog, b.snapshot, fixture.systems)],
+    ['validateEventLog receipts', b => b.snapshot.commandReceipts.extra = { data: inheritedMap([]) }, b => validateEventLog(b.eventLog, b.snapshot, fixture.systems)],
+    ['validateSnapshotStructure pending', b => inheritedMap(b.snapshot.pendingCommands), b => validateSnapshotStructure(b.snapshot, { rulesVersion: EXPERIENCE_RULES, systems: fixture.systems }, 0)],
+    ['advanceOneTick eventLog', b => inheritedMap(b.eventLog), b => advanceOneTick(b, fixture.systems)],
+    ['createSimulationSession eventLog', b => inheritedMap(b.eventLog), b => createSimulationSession(b, fixture.systems)],
+  ];
+  for (const [name, mutate, run] of entryPoints) await t.test(name, () => {
+    const b = structuredClone(fixture.bundle); calls = 0; mutate(b);
+    assert.throws(() => run(b), e => e.code === 'INVALID_INPUT' || (e.code === 'TICK_FAILED' && e.cause?.code === 'INVALID_INPUT'));
+    assert.equal(calls, 0);
+  });
+  await t.test('validateFact', () => {
+    const fact = structuredClone(historical.eventLog.find(e => e.type === 'SocietyDaySettled'));
+    delete fact.eventSeq; delete fact.tick; delete fact.schemaVersion; calls = 0; inheritedMap(fact.causationEventSeqs);
+    assert.throws(() => validateFact(fact, 'society', EXPERIENCE_RULES), { code: 'INVALID_INPUT' }); assert.equal(calls, 0);
+  });
+  await t.test('createInitialBundle commands', () => {
+    const b = structuredClone(fixture.bundle); calls = 0;
+    const config = { rulesVersion: EXPERIENCE_RULES, simulationId: b.snapshot.simulationId, fixtureId: 'experience-village', fixtureVersion: '1', seed: 42,
+      world: b.snapshot.world, commands: inheritedMap([]), scheduledTasks: b.snapshot.scheduledTasks };
+    assert.throws(() => createInitialBundle(config, fixture.systems), { code: 'INVALID_INPUT' }); assert.equal(calls, 0);
+  });
+  for (const entry of ['cloneBundle', 'lookupCommand', 'validateEventLog', 'createInitialBundle']) await t.test(entry + ' rules getter', () => {
+    calls = 0; const b = structuredClone(fixture.bundle);
+    const target = entry === 'createInitialBundle' ? { rulesVersion: EXPERIENCE_RULES } : b.snapshot;
+    Object.defineProperty(target, 'rulesVersion', { enumerable: true, get() { calls++; return EXPERIENCE_RULES; } });
+    assert.throws(() => entry === 'cloneBundle' ? cloneBundle(b) : entry === 'lookupCommand' ? lookupCommand(b, raw) :
+      entry === 'validateEventLog' ? validateEventLog(b.eventLog, b.snapshot, fixture.systems) : createInitialBundle(target, fixture.systems), { code: 'INVALID_INPUT' });
+    assert.equal(calls, 0);
+  });
+});
+
+test('controller boundary: pending commands cannot claim mind-settle namespace', () => {
+  const fixture = createExperienceVillage(42, 'controller-pending-prefix');
+  const bad = structuredClone(fixture.bundle);
+  bad.snapshot.pendingCommands.push({ commandId: 'mind-settle-controller', inputSeq: 1, targetTick: 6, type: 'PlayerAction',
+    payload: { startTick: 0, intent: { type: 'PlayerRest', payload: {} } } });
+  bad.snapshot.nextInputSeq = 2;
+  assert.throws(() => validateSnapshotStructure(bad.snapshot, { rulesVersion: EXPERIENCE_RULES, systems: fixture.systems }, 0), { code: 'INVALID_INPUT' });
 });

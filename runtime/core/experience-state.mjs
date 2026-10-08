@@ -66,6 +66,17 @@ export function inspectDescriptorTree(root) {
   visit(root, 0);
 }
 
+// Read the rule discriminator without invoking accessors. Only the experience
+// profile opts into a complete JSON-tree preflight; callbacks stay outside it.
+export function preflightExperienceData(data, bundled = false) {
+  record(data);
+  const container = bundled ? Object.getOwnPropertyDescriptor(data, 'snapshot')?.value : data;
+  record(container);
+  const experience = Object.getOwnPropertyDescriptor(container, 'rulesVersion')?.value === EXPERIENCE_RULES;
+  if (experience) inspectDescriptorTree(data);
+  return experience;
+}
+
 export function validateExperienceConfig(config) {
   requireCondition(config !== null && typeof config === 'object', 'Expected experience configuration record');
   inspectDescriptorTree(config);

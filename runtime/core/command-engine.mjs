@@ -13,13 +13,14 @@ import { MEMORY_RULE_VERSIONS,isMemoryRules,prepareMemoryDay,planMemoryDay,apply
 import { MIND_RULES,applyMindAction,applyMindCommand,applyMindStimuliTick,planMindDay,finishMindDay,prepareMindDay,settleMindSocietyDay,finishMindMemoryDay,mindDecisionPlannedFact,mindResolvedOutcome,mindResolvedFact,sealMindOutcome,pushMindObservation,mindRejectionObservation } from './mind-runtime.mjs';
 import { MOTIVATION_RULES } from './motivation-state.mjs';
 import { motivationRuntimeHooks, experienceRuntimeHooks } from './motivation-runtime.mjs';
-import { EXPERIENCE_RULES } from './experience-state.mjs';
+import { EXPERIENCE_RULES, inspectDescriptorTree, preflightExperienceData } from './experience-state.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
 import { PLAYER_RULES,PLAY_RULES,playerDayFact,applyPlayerAction,playerActionFact } from './player-state.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
   requireCondition, integer, normalizeSystems, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 
 export function lookupCommand(bundle, raw) {
+  if (preflightExperienceData(bundle, true)) inspectDescriptorTree(raw);
   const input = commandInput(raw, false), fingerprint = inputFingerprint(input);
   const { snapshot } = cloneBundle(bundle);
   record(snapshot); denseArray(snapshot.pendingCommands); record(snapshot.commandReceipts);
@@ -40,6 +41,7 @@ function performTick(bundle, systems, mode) {
   let failedTick;
   let active = true;
   try {
+    preflightExperienceData(bundle, true);
     fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
     if (mode === 'full') validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems });
     const candidate = mode === 'full' ? cloneBundle(bundle) :
@@ -272,6 +274,7 @@ function freezeData(value) {
 }
 
 export function createSimulationSession(bundle, systems) {
+  preflightExperienceData(bundle, true);
   normalizeSystems(systems);
   fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
   const registered = Object.freeze({ ...systems });

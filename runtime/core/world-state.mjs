@@ -12,7 +12,7 @@ import { PERSONALITY_RULES,MEMORY_RULE_VERSIONS,isMemoryRules,validateMemoryWorl
 import { MIND_RULES,validateMindWorld } from './mind-runtime.mjs';
 import { MOTIVATION_RULES } from './motivation-state.mjs';
 import { validateMotivationWorld, validateExperienceWorld } from './motivation-runtime.mjs';
-import { EXPERIENCE_RULES, inspectDescriptorTree } from './experience-state.mjs';
+import { EXPERIENCE_RULES, inspectDescriptorTree, preflightExperienceData } from './experience-state.mjs';
 import { PLAYER_RULES,PLAY_RULES,playerIntentDuration,validatePlayerActionResult } from './player-state.mjs';
 import { cloneData, fields, record, identifier, integer, denseArray, normalizeSystems,
   commandInput, inputFingerprint, requireCondition, fault, MAX_EVENTS } from './data-contract.mjs';
@@ -22,11 +22,13 @@ const SNAPSHOT_FIELDS = ['schemaVersion', 'rulesVersion', 'simulationId', 'fixtu
   'scheduledTasks', 'pendingCommands', 'commandReceipts', 'world'];
 
 export function cloneBundle(bundle) {
+  preflightExperienceData(bundle, true);
   fields(bundle, ['snapshot', 'eventLog']);
   return cloneData(bundle);
 }
 
 function checkBudgets(snapshot, events) {
+  if (preflightExperienceData(snapshot)) inspectDescriptorTree(events);
   record(snapshot);
   denseArray(events, MAX_EVENTS);
   denseArray(snapshot.scheduledTasks); denseArray(snapshot.pendingCommands);
@@ -48,7 +50,6 @@ function checkBudgets(snapshot, events) {
   }else if(snapshot.rulesVersion===MOTIVATION_RULES){
     denseArray(events,MAX_RESOURCE_DAYS*4+100000);validateMotivationWorld(snapshot.world);
   }else if(snapshot.rulesVersion===EXPERIENCE_RULES){
-    inspectDescriptorTree(snapshot);inspectDescriptorTree(events);
     denseArray(events,MAX_RESOURCE_DAYS*4+100000);validateExperienceWorld(snapshot.world);
   }else if(snapshot.rulesVersion===MIND_RULES){
     denseArray(events,MAX_RESOURCE_DAYS*4+100000);validateMindWorld(snapshot.world);
@@ -56,6 +57,7 @@ function checkBudgets(snapshot, events) {
 }
 
 export function validateBundle(bundle, options) {
+  preflightExperienceData(bundle, true);
   fields(options, ['rulesVersion', 'systems']); identifier(options.rulesVersion);
   normalizeSystems(options.systems); fields(bundle, ['snapshot', 'eventLog']);
   checkBudgets(bundle.snapshot, bundle.eventLog);
@@ -167,6 +169,7 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
     requireCondition(![MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(s.rulesVersion) || !input.commandId.startsWith('mind-day-'),'External input claimed mind command namespace');
     requireCondition(![MOTIVATION_RULES,EXPERIENCE_RULES].includes(s.rulesVersion) || !input.commandId.startsWith('motivation-day-'),'External input claimed motivation command namespace');
     requireCondition(s.rulesVersion!==EXPERIENCE_RULES || !input.commandId.startsWith('experience-day-'),'External input claimed experience command namespace');
+    requireCondition(s.rulesVersion!==EXPERIENCE_RULES || !input.commandId.startsWith('mind-settle-'),'External input claimed mind settlement namespace');
     remember(entry.commandId, inputSeq);
     if(input.type==='PlayerAction')requireCondition(input.payload.startTick<=s.tick && input.targetTick===input.payload.startTick+playerIntentDuration({commandId:input.commandId,...input.payload.intent}),'Invalid pending player timing');
     requireCondition(inputSeq > previousInput && entry.targetTick > s.tick, 'Out-of-order or expired pending input'); previousInput = inputSeq;
@@ -196,6 +199,7 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
 }
 
 export function createInitialBundle(config, systems) {
+  preflightExperienceData(config);
   record(config);
   const worldField = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(config.rulesVersion) ? 'world' : 'resources';
   fields(config, ['rulesVersion', 'simulationId', 'fixtureId', 'fixtureVersion', 'seed', worldField, 'scheduledTasks', 'commands']);

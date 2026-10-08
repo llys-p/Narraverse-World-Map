@@ -14,12 +14,13 @@ import { MIND_RULES,validateMindStimulusPayload,validateDecision,validateOutcome
 import { validateMindRuntimeHistory,validateMindWorld } from './mind-runtime.mjs';
 import { MOTIVATION_RULES,validateMotivationDecision,validateMotivationOutcome,validateExperienceMotivationDecision } from './motivation-state.mjs';
 import { validateMotivationWorld,motivationRuntimeHooks,validateExperienceWorld,experienceRuntimeHooks } from './motivation-runtime.mjs';
-import { EXPERIENCE_RULES } from './experience-state.mjs';
+import { EXPERIENCE_RULES, inspectDescriptorTree, preflightExperienceData } from './experience-state.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
 import { PLAYER_RULES,PLAY_RULES,validatePlayerDayPayload,validatePlayerActionResult } from './player-state.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
 export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
+  if (rulesVersion === EXPERIENCE_RULES) inspectDescriptorTree(raw);
   const fact = cloneData(raw);
   fields(fact, ['type', 'sourceSystem', 'commandId', 'causationEventSeqs', 'entityIds', 'payload']);
   requireCondition(fact.sourceSystem === systemId && fact.commandId === null, 'System fact identity mismatch');
@@ -51,6 +52,7 @@ export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
 }
 
 export function validateEventLog(eventLog, snapshot, systems) {
+  if (preflightExperienceData(snapshot)) inspectDescriptorTree(eventLog);
   normalizeSystems(systems); denseArray(eventLog, MAX_EVENTS);
   record(snapshot);
   if (snapshot.rulesVersion === RESOURCE_RULES) {
