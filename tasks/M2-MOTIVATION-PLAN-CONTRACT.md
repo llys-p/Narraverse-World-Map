@@ -117,7 +117,7 @@ Decision 精确为：
 
 - planner 基于五个候选的 eligible score 与固定顺序选一个动作，并输出与 choice 对应的 canonical Goal/计划状态。
 - 四日 FSM 固定为：day1 创建健康 planId 1，Buy 成功后 stepIndex=1/status=ready；day2 挂起 planId 1 并新建职责 planId 2，Work 成功后职责计划 completed 并清 active，健康计划仍 suspended，不在该 tick 自动恢复或执行健康行动；day3 新建 Rest planId 3，Rest 成功后 completed 并清 active，健康计划仍 suspended；day4 恢复原 planId 1 执行 Use，stepIndex=2/status=completed 并清 active，Goal 1 因 health=500 仍未完成。此四日中三个 Plan 的 goalId 都是 canonical Goal 1；临时 duty/rest Plan 不创建新 Goal。每日最多一个真实人物行动。NoAction 不让前日 Rest 标记继续产生 Rest 收益；挂起不延长 canonical Goal deadline。
-- NoAction 不创建新的 Plan。可按旧规则建立/保留 canonical health Goal；若已有 ready 治疗计划因本人药物/信念前提暂不满足，可保留原 plan、不推进。空状态仍保持 activePlan/suspendedPlan=null、nextPlanId=1；无 duty/历史决定/结果时 lastDuty/lastDecision/lastOutcome=null。
+- NoAction 不创建新的 Plan。可按旧规则建立/保留 canonical health Goal；若已有 ready 治疗计划因本人药物/信念前提暂不满足，可保留原 plan、不推进。初始空状态的 activePlan/suspendedPlan=null、nextPlanId=1；NoAction 保留传入 nextPlanId，计划完成或清空不得重置已使用的编号。初始无 duty/历史决定/结果时 lastDuty/lastDecision/lastOutcome=null。
 - active 治疗计划被更高分 WorkForPay 或 Rest 打断时，保留原 planId 与 next step 为 suspendedPlan；最多一层，不复制 Goal。职责计划只有请求仍有效时可执行。
 - 治疗恢复时先检查本人当前信息及 Goal；保留原 planId。若前提变化，只局部重算剩余 steps，不补执行旧步骤。成功才推进 stepIndex；失败不推进，也不在 wrapper 之外重复增加 Goal.failures。每日旧 society 结算只允许对每个 Goal 计一次失败。
 - 计划完成、canonical Goal 完成/失败、请求过期、deadline、死亡时清理相应计划并记终止原因；active 与 suspended 不得分别对同一 Goal 重复扣失败次数。Goal 创建门槛、失败、冷却与死亡终止遵旧 society 规则；Goal deadline 为 day+20，不因挂起延长。步骤只有对应权威 receipt 成功后推进；失败不推进，Goal.failures 只由旧 resolver 增加一次；NoAction 不加失败。前提变化只局部调整未执行步骤，保留 planId/Goal，不重放已完成购买。死亡/Goal 结束清除 active 与 suspended，不额外计失败。
