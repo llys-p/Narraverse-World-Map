@@ -20,9 +20,9 @@
 
 ## 新世界运行时进度
 
-2026-10-08 规划更新：依据 [NPC Brain 灵感笔记 v0.2](docs/character-mind/NPC_Brain_Character_Mind_Runtime_灵感笔记_v0.2.md)，后续先做人物心智 M 主线：M0 合同 → M1 最小规则闭环与检查器 → M2 动机/计划 → M3 经验/认知 LOD，再补 D3/D4。Laya/LLM 为可选 Provider；旧 E1 筛查保持收档。[M0](tasks/M0-CHARACTER-MIND-CONTRACT-TASK.md) 已完成文档合同，[M1 共同合同及三路任务书](tasks/M1-CHARACTER-MIND-CONTRACT.md)已冻结、待派发，尚未启动实现；详细依赖以[架构计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)为准。
+2026-10-08 更新：M 主线顺序仍为 M0 → M1 → M2 → M3，再补 D3/D4；Laya/LLM 为可选 Provider，旧 E1 筛查保持收档。M1 已由中控验收，唯一运行时代码基准为 M1 integration `87aa9b605f5f509ce3b0daa97e34ded004d22f33`，源码仍在任务分支、未合并 main。M2 `m2-contract-v1` 共同合同及 A1/A2/B/C 四份任务书已定稿，四路状态为 Todo / 待派发，尚未开工；发布 SHA 待控制文档提交后同步。A1→A2 串行，B/C 可独立准备，真实集成依赖 A2。索引：[共同合同](tasks/M2-MOTIVATION-PLAN-CONTRACT.md)、[A1](tasks/M2A1-MOTIVATION-PLANNER-TASK.md)、[A2](tasks/M2A2-MOTIVATION-RUNTIME-TASK.md)、[B](tasks/M2B-PLAN-INSPECTOR-TASK.md)、[C](tasks/M2C-MOTIVATION-ACCEPTANCE-TASK.md)。详细依赖与当前状态见[架构计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)和[状态入口](PROJECT_CONTEXT.md)。
 
-A/B/C及D1、D2A、D2B、D2C均已验收。当前运行时代码172ac9f保留在 `codex/world-runtime-d2c` 任务分支（源码D:\Narraverse-World-Map-a2），main维护控制文档、没有合并运行时代码。D2C提供村庄↔森林旅行、主动休整及真实公仓买卖；全量270/270与真实浏览器/重启原ID/硬退出恢复/旧C5字节对照通过，D2门槛已收口。本轮停止在D2C，D3战斗与D4完整场景连续仍待任务合同，D整体未验收。查看[任务分支运行说明](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-d2c/README.md)、[D2C合同与证据](tasks/D2C-PLAY-CONTRACT.md)及[当前状态](PROJECT_CONTEXT.md)。实验服务已停止；不接正式平台、模型/Laya或真实旧存档。
+A/B/C及D1、D2A、D2B、D2C均已验收；D2C历史代码仍保留在 `codex/world-runtime-d2c`，并不代表它是当前 M 代码基准。当前基准为 M1 integration 交接 `87aa9b605f5f509ce3b0daa97e34ded004d22f33`，未合并 main。M2 任务包以该 SHA 为代码起点；M2 尚无实现、工作树或开工回执。D3/D4仍待合同，D整体未验收。历史 D2C 证据和分支运行说明见[当前状态](PROJECT_CONTEXT.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
