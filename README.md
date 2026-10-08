@@ -18,6 +18,8 @@
 
 详见 [独立化与下一步](PROJECT_CONTEXT.md)、[世界运行时架构与分阶段计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)、[来源记录](SOURCE_ORIGIN.md)。
 
+设计 Character Mind / World Runtime / Director 前可先查 [Game AI / Character Mind 参考库](docs/reference-library/README.md)，按功能索引回看 RimWorld、The Sims、Dwarf Fortress、ONI、Shadows of Doubt、S.T.A.L.K.E.R. A-Life、Wildermyth、Cataclysm:DDA、Veloren 等机制与公开代码参考。参考库默认“借模式、独立实现”，代码复用须另做许可证检查。
+
 ## 新世界运行时进度
 
 2026-10-08 规划更新：依据 [NPC Brain 灵感笔记 v0.2](docs/character-mind/NPC_Brain_Character_Mind_Runtime_灵感笔记_v0.2.md)，后续先做人物心智 M 主线：M0 合同 → M1 最小规则闭环与检查器 → M2 动机/计划 → M3 经验/认知 LOD，再补 D3/D4。Laya/LLM 为可选 Provider；旧 E1 筛查保持收档。[M0](tasks/M0-CHARACTER-MIND-CONTRACT-TASK.md) 已完成文档合同，[M1 共同合同及三路任务书](tasks/M1-CHARACTER-MIND-CONTRACT.md)已冻结、待派发，尚未启动实现；详细依赖以[架构计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)为准。
