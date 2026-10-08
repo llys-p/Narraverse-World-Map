@@ -20,7 +20,7 @@
 
 ## 世界运行时：离线模拟底座
 
-Runtime目前保留在 `codex/world-runtime-d2c` 任务分支，源码位于`D:\Narraverse-World-Map-a2`，未合并main。离线runner无需npm依赖，不启动页面、服务或模型。Node实际验证版本见运行summary。
+当前运行时代码位于 `D:\Narraverse-World-Map-m1-integration`，分支为 `codex/world-runtime-m1-integration`；它包含已提交的 A/B/C 阶段代码及 M1 集成修复，尚未合并 main。下方 D1～D2C 条目记录各阶段当时的实现与验收事实；离线 runner 无需 npm 依赖，不启动页面、服务或模型。Node 实际验证版本见运行 summary。
 
 D1已新增独立只读世界服务：
 
@@ -57,6 +57,32 @@ node runtime-server.mjs --data-dir artifacts/world-runtime-d2c/my-world --port 1
 ```
 
 旅行村庄↔森林耗120分钟、疲劳增加100；主动休整耗60分钟、疲劳减少100，不回血。买卖仅村庄、公仓粮/药，每笔1～10份耗10分钟，按完成时权威价整笔结算，真实转移金币与公私库存。午夜仍按原规则结算；途中死亡时耗时会保存，动作完成拒绝，页面明确区分。过期请求重读、未确认结果重试同一请求，不重复执行。默认及旧profile不隐式开启动作，真实存档不迁移。中控270/270、真实浏览器/CLI重启/硬退出恢复/旧C5字节对照通过，见[D2C收口证据](tasks/D2C-PLAY-CONTRACT.md)。D2门槛通过，战斗与完整场景连续仍待D3/D4；本轮测试服务已停止。
+
+### M1：角色心智与只读检查器（集成验证中）
+
+M1 新增独立 `mind-village` profile（service format 4），保留旧 profile 1/2/3；新建独立数据目录运行，不迁移 D2C 或其他真实存档。检查器默认关闭，`--inspect-mind true` 只开放只读调试页面和接口，不改变世界规则；`--writable true` 才允许时间推进和玩家动作提交，不提供心理字段编辑或实验输入入口。
+
+首次启动新实验：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-m1/demo --profile mind-village --writable true --inspect-mind true --port 0
+```
+
+先确认将使用的新数据目录不存在。启动后从终端 `ready` 输出读取实际 URL，再打开该地址；地图具备 M 能力时可进入检查器，也可直接访问该 URL 的 `/runtime-mind.html`。只读模式可省略 `--writable true`；省略 `--inspect-mind true` 时检查器保持关闭（默认 `false`）。结束时在服务终端输入 `quit` 并回车，正常关闭本次服务。恢复同一服务目录时不要再传 `--profile`，原服务提交会按目录自动恢复：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-m1/demo --writable true --inspect-mind true --port 0
+```
+
+从明确 checkpoint 初始化另一个全新服务目录时，使用 `--checkpoint` 替代 `--profile`；两者不能同时传入：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-m1/from-checkpoint --checkpoint artifacts/world-runtime-m1/source/checkpoint-r24.json --writable true --inspect-mind true --port 0
+```
+
+端口 `0` 让系统分配空闲本机端口；若改用固定端口，先确认它空闲。`--writable true` 开启服务时间推进与玩家动作提交；该参数不允许编辑心理状态或提交实验刺激。
+
+M1 集成代码验收 SHA `78303b4` 已通过中控独立验收，Goal 截止边界测试提交为 `3be94c6a85d17e0baf7c03583eb62fad9f52f0e9`，当前停在 M1；A/B/C 原交付分别为 `d82bfd9`、`ca78d1c`、`45a2ccd`，均已提交推送。集成模拟/边界为328/328、0 skip；服务/检查器19/19、D2C玩家服务/时间HTTP13/13、Goal截止/冷却边界1/1。真实浏览器验证 tick0、推进24+120、纠正前后判断、商人购药、人物切换/刷新、双页签只读、断连保留和关闭开关/404，pageErrors 0；证据位于 `artifacts/world-runtime-m1-controller-review-20261008/browser/run-20261008-78303b4`。兼容核对为：38 对基准 `feb2856` 与 M1A 交付的存档/导出 SHA256 逐字节一致；12 份（三树各4份）冻结合同副本统一换行至 LF 后内容一致。本轮没有重跑旧 CLI。M2/M3未开始，main未合并；正式平台、模型和长程心理质量未验收。合同与范围见 [M1 共同合同](tasks/M1-CHARACTER-MIND-CONTRACT.md) 和 [M1B 任务书](tasks/M1B-MIND-INSPECTOR-TASK.md)。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100

@@ -1,12 +1,18 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-07 21:48（Asia/Shanghai）。
+更新时间：2026-10-08 11:07（Asia/Shanghai）。
 
 ## 项目定位
 
 地图 → 场景 → 战斗 → 成长的独立可玩原型；先单独保存和迭代，不自动替换Narraverse模块四。
 代码保持现有纯JS/HTML结构；本轮没有TS化、没有改战斗/地图玩法、没有引入依赖。
 后续方向已确定为世界运行时 / 生态模拟；按 [架构与分阶段实施计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md) 逐步推进。
+
+## 当前运行时状态
+
+- 当前源码树：`D:\Narraverse-World-Map-m1-integration`，分支 `codex/world-runtime-m1-integration`。A/B/C 原交付分别为 `d82bfd9` / `ca78d1c` / `45a2ccd`，均已提交推送；M1 集成代码验收 SHA `78303b4`，Goal 截止边界测试提交 `3be94c6a85d17e0baf7c03583eb62fad9f52f0e9`。
+- M1 中控独立验收通过并停在 M1：集成模拟/边界 328/328、0 skip；新增 Goal 截止/冷却边界 1/1；服务/检查器 19/19、D2C 玩家服务与时间 HTTP 13/13。真实浏览器通过，证据位于 `artifacts/world-runtime-m1-controller-review-20261008/`。兼容核对为：38 对基准 `feb2856` 与 M1A 交付的存档/导出 SHA256 逐字节一致；12 份（三树各4份）冻结合同副本统一换行至 LF 后内容一致。这是兼容核对，本轮没有重跑旧 CLI。
+- 新实验使用单独 `artifacts/world-runtime-m1/<name>` 数据目录，不迁移真实存档。`--inspect-mind` 默认关闭，只开放只读检查器；`--writable true` 开启时间/玩家动作提交。M2/M3 未开始，源码未合并 main；正式平台、模型和长程心理质量未验收。
 
 ## 已有资产
 
@@ -61,15 +67,15 @@
 - 干净3756071实际CLI100=40保存+60恢复，转售4=1保存+3恢复，完整checkpoint/两哈希/八CSV/inputs/配置一致；独立核对合计钱包、公共+私人粮药/真实使用、转售双方现金与药一增一减，拒绝回执及inputSeq。peer首单52金币、买方下一日才用药；基线100有5实名猎鹿、三人真实吃私粮245、工资680、目标完成145，无假增人口或货币；未吃饭日由Need/饥饿规则如实体现，不声称私粮需求全满足。100日约91秒（并发回归），末尾内存非峰值，三人校验明显变慢，未测规模。旧C2 100日完整checkpoint字节未变；runtime指纹fff194b770da08242808da46d53f7919f9b50ff428d6588d4986398c7261213c。证据artifacts/world-runtime-c3-acceptance-20261007/comparison.json、final-full-tests.txt等保持忽略。最终13b137c干净peer-sale一天烟测和源码指纹相同；C4记忆/关系/Actor-known上下文尚未实现。
 ## 尚未完成
 
-- 两个localStorage键非事务、多标签页冲突、战斗中途刷新恢复。
-- Laya心境驱动地图行为；可信人物判断不是躯干可视化可以证明的。
-- 原浏览器E2E端口与外部路径尚未统一，部分测试会触发云调用。
-- 素材许可/公开发布许可尚未核实，仓库先私有。
-- 旧正式平台移植建议属于历史，不自动成为此独立项目任务。
+- M1真实浏览器验收与最终集成回归待完成；M1整体暂不标验收。
+- M2/M3未开始；D3/D4与D整体验收状态按历史阶段记录。
+- 原型E2E端口/外部路径尚未统一，部分脚本可能触发云调用；运行前逐个核实。
+- 绘制素材许可/公开发布许可尚未核实，仓库先保持私有。
+- 旧正式平台移植建议属于历史，不自动成为本项目任务。
 
-## 下一步
+## 历史阶段收口摘要（截至 D2C）
 
-A/B及阶段C全部已验收。C5代码04dc222（D:\Narraverse-World-Map-a2 @ codex/world-runtime-c5）：177/177全回归，干净100=40+60完整checkpoint/14导出一致，独立评分/真实现金商品账、偏好跨档/篡改拒绝通过；旧C4 100日完整存档/13导出字节不变。源码指纹d3a2129dddc20dfe168b3b0af7a02c6dda6124f7b05289e35bf27be5c436b2a0，证据artifacts/world-runtime-c5-acceptance-20261007/comparison.json与[C5收口](tasks/C5-PERSONALITY-CHOICE-TASK.md)。D1代码0f86d40（codex/world-runtime-d1）已验收：全量184/184，真实HTTP/两个浏览器页签、纯读/断连/重启、锁归属/字节一致通过；首次默认并发系统内存分配失败，保留日志后两路并发原测试全过。证据artifacts/world-runtime-d1-acceptance-20261007，见[D1收口](tasks/D1-RUNTIME-SERVICE-READONLY-MAP-TASK.md)。[D2A时间提交](tasks/D2A-TIME-COMMAND-COMMIT-TASK.md)代码d29da21已验收（源码D:\Narraverse-World-Map-a2 @ codex/world-runtime-d2a，基准da1155f）：最终196/196，真实双页签revision冲突、CLI重启/原ID重试、发布后硬退出恢复、队列/文件预算和键盘操作通过；三请求[144,144,6]完整bundle=C5直接294ticks。证据artifacts/world-runtime-d2a-acceptance-20261007/comparison.json与full-tests-final.txt。三路D2B已集成验收：初次8e596a3（a2 @ codex/world-runtime-d2b），全量232/232；真实双页签/CLI重启原ID/断连重试/键盘/玩家service2硬退出恢复、私币与人口守恒通过，[共同合同收口](tasks/D2B-PLAYER-CONTRACT.md)列真实证据。第四玩家+76匿名总80，私账独立；三请求[144,144,6]完整bundle=核心直接294ticks。旧C5四天完整存档与全部数据导出逐字节不变。首轮工资测试漏商人反例已强化，旧C1/C2及三人观察器新版本边界先红后绿。证据artifacts/world-runtime-d2b-acceptance-20261007/comparison.json和full-tests.txt。本次边界返修732103d全量238/238，丢锁/空档案明确503、同类checkpoint临时档崩溃恢复及非JSON拒绝/不确定重试通过；真实浏览器与只读子进程崩溃探针见artifacts/world-runtime-boundary-fix-20261007。[D2C合同](tasks/D2C-PLAY-CONTRACT.md)已冻结1718a8b（基准33e8154），三路已在D:\Narraverse-World-Map-d2c-core/service/acceptance @ codex/world-runtime-d2c-*独立树开工，中控集成树a2 @ codex/world-runtime-d2c。新profile旅行/主动休整/真实公仓买卖统一耗时，动态核心输入与完整重演；核心/服务/反例白名单分离、旧版本不迁移。D2C三路已集成独立验收，代码172ac9f（a2 @ codex/world-runtime-d2c）：全量270/270，真实页面6次动作/时间提交完整bundle=核心直接执行；双页签冲突/键盘/森林限制/途中死亡155拒绝/CLI重启原ID/非JSON422与502及坏200重试/service3发布后硬退出恢复通过，旧C5四天checkpoint与20份导出逐字节相同。证据artifacts/world-runtime-d2c-acceptance-20261007与[D2C收口](tasks/D2C-PLAY-CONTRACT.md)。本轮三代理/测试服务已停止，D2旅行休整交易门槛通过，D3/D4未开始、D整体未验收；先停在本阶段。源码仍不合并main、不部署/接模型/桥/真实旧档，E预研独立。
+截至D2C收口时，A/B阶段与C1～C5已验收；D1、D2A、D2B、D2C实现及历史验收细节见对应任务书与本文件上方记录。D2C整合验收为270/270，并通过真实页面动作、完整bundle对照、双页签冲突、重启/硬退出恢复和旧C5数据逐字节比较；证据见 `artifacts/world-runtime-d2c-acceptance-20261007` 与 [D2C收口](tasks/D2C-PLAY-CONTRACT.md)。D3/D4未开始，D整体未验收；D2C当时源码未合并main，也未接正式平台、模型、桥或真实旧档。当前M1状态以文件顶部“当前运行时状态”为准。
 
 阶段顺序：A 底座 → B 生态经济 → C 人物决策 → D 玩法接入 → E AI增强；F 世界扩展按需拆项，G 正式平台适配单独规划与授权。
 

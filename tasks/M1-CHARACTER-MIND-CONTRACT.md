@@ -240,4 +240,12 @@ CLI 接入限于 `simulation-runner.mjs` 明确注册 mind-village 与恢复规�
 
 开发期按三路任务书跑直接范围；本版修改 profile/replay/save 消费，所以 A/C 补直接 D2C 与 C5 兼容、失败回退、完整跨档反例。兼容字节对照为 checkpoint、inputs、业务配置/CSV；summary 中源码 SHA、计时与宿主信息单独核对，不要求新旧代码身份相同。阶段最终集成后全量 `node --test --test-concurrency=2 tests/simulation/*.test.mjs tests/export-boundaries.test.mjs` 一次；通过且代码不变不重跑。100/500/1000天旧生态实验不自动重做；M1新增实验验证至288/576ticks及必要目标截止边界，不宣称规模/长程心理质量。
 
-M1 收口还需真实 HTTP/浏览器检查器、原玩家动作与服务恢复消费链；mock、接口存在、测试数量或执行者自报均不能单独过关。所有证据标实际 SHA/fixture/seed/命令、已验证和未验证。M0 仅验收本文可实施与三路无写冲突；当前没有运行这些 M1 测试，不宣称 M1 完成。
+M1 收口还需真实 HTTP/浏览器检查器、原玩家动作与服务恢复消费链；mock、接口存在、测试数量或执行者自报均不能单独过关。所有证据标实际 SHA/fixture/seed/命令、已验证和未验证。M0 仅验收本文可实施与三路无写冲突；**M0冻结时状态：**当前没有运行这些 M1 测试，不宣称 M1 完成。
+
+## 中控验收结果（2026-10-08 11:07，Asia/Shanghai）
+
+集成代码验收 SHA `78303b4`；Goal 截止边界测试提交 SHA `3be94c6a85d17e0baf7c03583eb62fad9f52f0e9`。M1 中控独立验收通过，阶段停在 M1。完整模拟/边界回归 `node --test --test-concurrency=2 tests/simulation/*.test.mjs tests/export-boundaries.test.mjs` 为 328/328、0 skip；新增 `tests/simulation/mind-goal-boundary.test.mjs` 单测 1/1、0 skip，覆盖真实 seed42 session 的 day1 建目标、day20 等待不增失败、day21 截止只失败一次、day22 冷却、day23 新 goalId。B 服务/检查器定向 19/19、D2C玩家服务与时间HTTP回归 13/13 通过。测试输出保存在 `artifacts/world-runtime-m1-controller-review-20261008/`。
+
+真实浏览器证据：`artifacts/world-runtime-m1-controller-review-20261008/browser/run-20261008-78303b4`。隔离 Playwright Edge 154 验证 tick0 空态、24+120推进、当前判断和冻结旧依据并列、商人实际购药50、人物按钮/键盘/刷新、双页签无写、断连保留revision144、关闭开关隐藏并返回404；pageErrors 0，主动 abort 的 `ERR_FAILED` 为预期刺激。兼容核对为：38 对基准 `feb2856` 与 M1A 交付的存档/导出 SHA256 逐字节一致；12 份（三树各4份）冻结合同副本统一换行至 LF 后内容一致。本轮没有重跑旧 CLI。
+
+尚未验证正式平台集成、模型调用或长程心理质量。M2/M3 未开始，源码未合并 main。
