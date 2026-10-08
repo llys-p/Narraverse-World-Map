@@ -1,7 +1,6 @@
 # M3-3A：认知降频与既有计划延续运行时
 
-合同版本：`m3-cognition-runtime-contract-v1`。状态：**本地已发布，待派发、未开工**（2026-10-09 07:41 Asia/Shanghai）。本文件是 A/B 共用 DTO、时序与运行时行为的唯一权威版本；B
-只引用本文件，不复制合同。
+合同版本：`m3-cognition-runtime-contract-v1`。状态：**本地已发布，待派发、未开工**（2026-10-09 07:41 Asia/Shanghai）。本文件是 A/B 共用 DTO、时序与运行时行为的唯一权威；B 仅引用，不另立共同规则。合同本地发布 SHA：`6b02918b60a1a5681fa2194ab362aaf808bceb06`。
 
 ## 给用户看
 
@@ -93,7 +92,7 @@
 - A3：fixture、CLI、保存恢复及 runner 对照，完成 runner 单测。各片切通过后继续下一片；白名单不能闭环则停止。两路测试与机械任务交给 high 推理子代理；每路测试文件只指定一名写入者，A 生产代码由唯一 owner 修改。
 - 必须从真实 `createCognitionVillage` 建立 fresh profile/context；single-tick 定向测试只覆盖局部门，不得替代连续/切片完整 replay。只在被改模块与必要调用链运行本合同新测试；不重跑四个冻结 kernel 测试、未变化且已有有效证据的套件或无关全量 suite；仍运行直接关联的旧模块/存盘回归。测试由唯一测试写入者执行并精确记录命令、exit code、pass/fail/skip/cancel、耗时、被测 SHA 与证据路径。命令为 `node --test tests/simulation/cognition-planner.test.mjs`、`node --test tests/simulation/cognition-runtime.test.mjs`、`node --test tests/simulation/cognition-runner.test.mjs` 及 `git diff --check`。本次合同发布未运行 runtime 验证。
 - 任一失败不得 skip/弱化合同；区分缺依赖、测试自身问题与真实缺陷。保持输入与源数据不变，精确 diff，不提交非白名单文件。
-- A 本地提交后停止：不合并、不 push、不部署、不改 main、不宣称完整 M3 验收，不更新 control 状态文件或看板。回执需列用户可见行为/限制、执行树/分支/基准 SHA/A 精确交付 SHA、白名单差异、分片验证及未验范围。control 任务发布 SHA 由中控实际发布后回填。
+- A 本地提交后停止：不合并、不 push、不部署、不改 main、不宣称完整 M3 验收，不更新 control 状态文件或看板。回执需列用户可见行为/限制、执行树/分支/基准 SHA/A 精确交付 SHA、白名单差异、分片验证及未验范围。control 合同发布 SHA 为 `6b02918b60a1a5681fa2194ab362aaf808bceb06`。
 
 ## A 必须实现并交回的验收场景
 

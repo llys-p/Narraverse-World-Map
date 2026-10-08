@@ -22,7 +22,7 @@
 
 ## 新世界运行时进度
 
-2026-10-09（Asia/Shanghai）：M1/M2 与 M3-1A/B 已验收收口。M3-2A、M3-2B 与 M3-2 限定轮次已中控裁定 PASS/已验收。最终集成 commit `a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2` 基于 A 唯一依赖 `ad8695097b6b974030fd43f4947d7a01f627abf3`，导入 B 原测试提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780` 后，仅修两份 B 测试，生产文件相对 A 零差异；58 个生产文件 SHA256 前后稳定。必需验收按分次命令通过：各分次必需 gate、runner兼容、E1上界、CLI/resume、隔离与恢复门槛均通过，共17项唯一检查覆盖，不表示单次17/17套件。未跑的 optional Inspector/deadline/profile CLI 不计通过。详情、分次结果与未验范围见[当前状态](PROJECT_CONTEXT.md)及两份 M3-2 任务书。完整 M3 未验收；M3-3未开始，代码未合并 main、未 push。
+2026-10-09（Asia/Shanghai）：M1/M2 与 M3-1A/B 已验收收口。M3-2A、M3-2B 与 M3-2 限定轮次已中控裁定 PASS/已验收。最终集成 commit `a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2` 基于 A 唯一依赖 `ad8695097b6b974030fd43f4947d7a01f627abf3`，导入 B 原测试提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780` 后，仅修两份 B 测试，生产文件相对 A 零差异；58 个生产文件 SHA256 前后稳定。必需验收按分次命令通过：各分次必需 gate、runner兼容、E1上界、CLI/resume、隔离与恢复门槛均通过，共17项唯一检查覆盖，不表示单次17/17套件。未跑的 optional Inspector/deadline/profile CLI 不计通过。详情、分次结果与未验范围见[当前状态](PROJECT_CONTEXT.md)及两份 M3-2 任务书。完整 M3 未验收；M3-3合同与A/B本地任务书已发布于控制提交 `6b02918b60a1a5681fa2194ab362aaf808bceb06`，当前待派发、未开工；代码未合并 main、未 push。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

@@ -1,7 +1,6 @@
 # M3-3B：认知降频与延续运行时独立验收
 
-合同版本：`m3-cognition-runtime-contract-v1`。共同 DTO、时序、范围和 A 实现要求的唯一权威是 [M3-3A
-§共同合同](M3-3A-COGNITION-RUNTIME-TASK.md#共同合同唯一权威)。本文件只定义 B 的独立验收与交接，不复制共同合同。状态：**本地已发布，待派发、未开工**（2026-10-09 07:41 Asia/Shanghai）。
+合同版本：`m3-cognition-runtime-contract-v1`。共同合同唯一权威见 [M3-3A §共同合同](M3-3A-COGNITION-RUNTIME-TASK.md#共同合同唯一权威)。本文件只定义 B 的独立验收。状态：**本地已发布，待派发、未开工**（2026-10-09 07:41 Asia/Shanghai）。合同本地发布 SHA：`6b02918b60a1a5681fa2194ab362aaf808bceb06`。
 
 ## 给用户看
 
@@ -45,4 +44,4 @@ B 独立核对人物降频后是否仍延续真实承诺，重要本人事实是
     git diff --check
 
 - B 不修改 A、不修复 production；发现缺陷时报告最小复现、expected/actual 与 A SHA，停止该验收门等待中控处理。不得自行跳过失败或改写 oracle 迎合实现。
-- 测试由唯一写入者负责；测试/机械任务交 high 推理子代理。测试 commit 后停止：不合并、不 push、不部署、不改 main、不更新状态/看板。给出独立裁定建议，最终验收由中控复核。控制合同发布 SHA 由中控实际发布后填写。
+- 测试由唯一写入者负责；测试/机械任务交 high 推理子代理。测试 commit 后停止：不合并、不 push、不部署、不改 main、不更新状态/看板。给出独立裁定建议，最终验收由中控复核。控制合同发布 SHA 为 `6b02918b60a1a5681fa2194ab362aaf808bceb06`。
