@@ -20,7 +20,7 @@
 
 ## 新世界运行时进度
 
-2026-10-08 更新：M 主线顺序仍为 M0 → M1 → M2 → M3，再补 D3/D4；Laya/LLM 为可选 Provider，旧 E1 筛查保持收档。M1 已由中控验收，唯一运行时代码基准为 M1 integration `87aa9b605f5f509ce3b0daa97e34ded004d22f33`，源码仍在任务分支、未合并 main。M2 `m2-contract-v1` 共同合同及 A1/A2/B/C 四份任务书已定稿，四路状态为 Todo / 待派发，尚未开工；发布 SHA 待控制文档提交后同步。A1→A2 串行，B/C 可独立准备，真实集成依赖 A2。索引：[共同合同](tasks/M2-MOTIVATION-PLAN-CONTRACT.md)、[A1](tasks/M2A1-MOTIVATION-PLANNER-TASK.md)、[A2](tasks/M2A2-MOTIVATION-RUNTIME-TASK.md)、[B](tasks/M2B-PLAN-INSPECTOR-TASK.md)、[C](tasks/M2C-MOTIVATION-ACCEPTANCE-TASK.md)。详细依赖与当前状态见[架构计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)和[状态入口](PROJECT_CONTEXT.md)。
+2026-10-08 更新：M 主线顺序仍为 M0 → M1 → M2 → M3，再补 D3/D4；Laya/LLM 为可选 Provider，旧 E1 筛查保持收档。M1 已由中控验收，唯一运行时代码基准为 M1 integration `87aa9b605f5f509ce3b0daa97e34ded004d22f33`，源码仍在任务分支、未合并 main。M2 `m2-contract-v1` 共同合同及 A1/A2/B/C 四份任务书已发布于[控制提交 be7ca9b](https://github.com/llys-p/Narraverse-World-Map/commit/be7ca9ba44684c7b1e2cbf1c9051b94bef4f3b68)；四路状态为 Todo / 待派发，尚未开工。A1→A2 串行，B/C 可独立准备，真实集成依赖 A2。索引：[共同合同](tasks/M2-MOTIVATION-PLAN-CONTRACT.md)、[A1](tasks/M2A1-MOTIVATION-PLANNER-TASK.md)、[A2](tasks/M2A2-MOTIVATION-RUNTIME-TASK.md)、[B](tasks/M2B-PLAN-INSPECTOR-TASK.md)、[C](tasks/M2C-MOTIVATION-ACCEPTANCE-TASK.md)。详细依赖与当前状态见[架构计划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md)和[状态入口](PROJECT_CONTEXT.md)。
 
 A/B/C及D1、D2A、D2B、D2C均已验收；D2C历史代码仍保留在 `codex/world-runtime-d2c`，并不代表它是当前 M 代码基准。当前基准为 M1 integration 交接 `87aa9b605f5f509ce3b0daa97e34ded004d22f33`，未合并 main。M2 任务包以该 SHA 为代码起点；M2 尚无实现、工作树或开工回执。D3/D4仍待合同，D整体未验收。历史 D2C 证据和分支运行说明见[当前状态](PROJECT_CONTEXT.md)。
 
