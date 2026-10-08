@@ -20,9 +20,7 @@
 
 ## 新世界运行时进度
 
-2026-10-08 20:15（Asia/Shanghai）：M2已本地验收收口，冻结代码 `83826a8` 的401/401阶段回归与真实浏览器证据已归档；交接基准为 `D:\Narraverse-World-Map-m2-integration @ c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`。M3-1A/B 两个纯内核均由中控裁定 PASS/本地已验收，M3-1 至此收口；[A 任务书](tasks/M3-1A-WORK-EXPERIENCE-TASK.md)与[B 任务书](tasks/M3-1B-COGNITIVE-REVIEW-TASK.md)记录各自证据。M3-2 尚未发布或实现，完整 M3 未验收。源码未合并 main、未 push；Projects 尚待同步，网络状态未复核。
-
-M1、M2及M2 A1/A2/B/C已本地验收；M3-1A/B 纯内核均已验收，M3-1收口。M3-2 未发布、未实现，完整 M3 未验收；D3/D4未开始。合同 `m3-kernels-contract-v1` 发布 SHA 为 `8282a135a85967818c39a6289cd1a0e7dcec769d`；详见[当前状态](PROJECT_CONTEXT.md)。
+2026-10-08 21:12（Asia/Shanghai）：M1/M2 与 M3-1A/B 已本地验收收口。[M3-2A 经验运行时实现](tasks/M3-2A-EXPERIENCE-RUNTIME-TASK.md)和[M3-2B 独立验收](tasks/M3-2B-EXPERIENCE-ACCEPTANCE-TASK.md)任务书已本地准备，待派发、未开工；共同基准 `D:\Narraverse-World-Map-m3-base @ codex/world-runtime-m3-base`，HEAD `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。后续再规划 M3-3 认知频率运行时接入；完整 M3 未验收，源码未合并 main、未 push，Projects 待同步。详情见[当前状态](PROJECT_CONTEXT.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
