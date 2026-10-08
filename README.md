@@ -86,7 +86,7 @@ node runtime-server.mjs --data-dir artifacts/world-runtime-m1/from-checkpoint --
 
 ### M2 本地集成状态
 
-2026-10-08 17:06（Asia/Shanghai）：当前树 `D:\Narraverse-World-Map-m2-integration @ codex/world-runtime-m2-integration`，验收代码 `12ed715`；基准M1 `87aa9b6`，A1/A2/B/C交付已导入。独立30项29通过/1浏览器失败/0跳过；真实CLI、保存恢复、期限/失败归属、旧完整数据兼容与HTTP服务均过，B额外服务3/3。浏览器断言与页面中文标签不一致，须修后真实定向复验；阶段全量回归未执行，M2未验收。子代理因额度中断；仅本地提交，main未合并，push/Projects因应用网络权限撤销待同步。控制任务书在 `D:\Narraverse-World-Map-control\tasks`，合同m2-contract-v2、期限fixture补正02c1a64；不启M3/D3或接入正式平台/模型。
+2026-10-08 17:40（Asia/Shanghai）：当前树 `D:\Narraverse-World-Map-m2-integration @ codex/world-runtime-m2-integration`，冻结验收HEAD `83826a82fea5c0edfe62aa3d676313eefe2a7790`；基准M1 `87aa9b6`，A1/A2/B/C均由中控验收，M2整体PASS。阶段全量57 simulation + export共58 files，Node24.14.0/concurrency2，401/401 pass、0 fail/skip/cancel/todo、exit0。C原30项red=29 pass/1 browser fail/0 skip；修后仅定向浏览器用例1 pass覆盖原失败，原29项未重跑。B四日UI与断连/迟到DTO保留通过，三条harness red保留。详见 `artifacts/world-runtime-m2-stage-closeout-20261008/result.json`、控制文档 `D:\Narraverse-World-Map-control\PROJECT_CONTEXT.md`。停止于M2，不启M3/D3、不合并main。Projects/push因应用网络权限撤销待同步，未声称远端已更新。
 
 本地实验可使用新的数据目录；运行下面命令会启动一个服务，本轮没有代用户保持常驻实例：
 

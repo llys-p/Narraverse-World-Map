@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-08 17:06（Asia/Shanghai）。
+更新时间：2026-10-08 17:40（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -10,9 +10,9 @@
 
 ## 当前运行时状态
 
-- 当前源码树：`D:\Narraverse-World-Map-m2-integration`，分支 `codex/world-runtime-m2-integration`；M2 独立验收代码 SHA `12ed715aba31483a5ceb777332c36834ed77563e`。基准为已验收 M1 `87aa9b6`；A1 `79b0c50` 已验收，A2 `51b9975`、B `2a8eb52`、C `1b715af` 已本地提交并导入，未 push、未合并 main。
-- M2 实际独立30项为29 pass/1 browser fail/0 skip（322188ms）；真实计划/失败归属、期限/死亡、checkpoint分段、terminal CLI两日保存+两日恢复=四日、篡改拒绝、原M1/D2C六操作/C5四日与HTTP兼容均通过。B额外三个真实A2依赖服务用例3/3。62份验收范围文件前后hash未变；证据 `artifacts/world-runtime-m2-integration-acceptance-20261008/controller-review.json`。浏览器用例等待原枚举文本与中文页面显示不一致，必须修断言并真实定向复验；阶段全量回归未开始，M2 NEED REVISION/未验收。
-- 下一步由C子代理仅修 `tests/motivation-inspector-acceptance.test.mjs` 浏览器断言、真实补跑该1项，已过29项不重复；再最终冻结代码阶段全量回归一次。B/C因额度中断，已排队但未执行；不启M3/D3。任务书及控制状态在 `D:\Narraverse-World-Map-control`，合同 `m2-contract-v2` 原0d7cc74、期限fixture补正02c1a64。Projects/push因应用网络权限撤销待同步，不尝试外网。
+- 当前源码树：`D:\Narraverse-World-Map-m2-integration`，分支 `codex/world-runtime-m2-integration`；冻结并完成验证的代码 SHA 为 `83826a82fea5c0edfe62aa3d676313eefe2a7790`，测试前后工作树干净。其后的提交仅用于状态文档收口，不改变已验收代码。基准为已验收 M1 `87aa9b6`；A1 `79b0c50`、A2 `51b9975`、B `2a8eb52`、C浏览器修正 `574856e9` 已由中控验收并集成。M2及A1/A2/B/C中控PASS，本地验收完成；停止于M2，不启M3/D3、不合并main。
+- 阶段全量在冻结HEAD上57 simulation + export共58 files，Node 24.14.0/concurrency2，401/401 pass、0 fail/skip/cancel/todo，exit 0；17:23:13–17:37:36（Asia/Shanghai），runner 862724.7246ms、wall 863113.088ms。测试前后tracked/source/test指纹一致且clean；sourceHash `634382b8331645ea83af710a7297a33619fba165712ea774367fc3a69e8159fa`，testHash `7471c392e9f0e0fe64fa7f9a4947b25f9606837c40f5a37e9880813a4dc3ebae`，trackedHash `7ec28fb7786159c086a0b6578d00c641a674fb62e177b973273592e15ad8a6d0`。证据 `artifacts/world-runtime-m2-stage-closeout-20261008/{manifest-before.json,test-files.txt,tests.txt,result.json}`，log SHA `a58a95f3a9e096b7705615e490133fa89e8c6fc288e6d9beb53ac2bc277e3129`。
+- C原独立30项red仍为29 pass/1 browser fail/0 skip；修后仅定向浏览器用例1 pass覆盖该失败，原29项未重跑。B四日UI和断连/迟到DTO保留通过，三条harness red原件保留；证据分别为 `artifacts/world-runtime-m2-integration-acceptance-20261008/C-browser-repair-4f71fcb/result.json` 与 `artifacts/world-runtime-m2-integration-service-20261008/default-four-day-browser/receipt.json`。控制任务书在 `D:\Narraverse-World-Map-control\tasks`，合同`m2-contract-v2`、期限fixture补正`02c1a64`。Projects/push因应用网络权限撤销待同步，不声称远端已更新。
 - 历史 M1 中控独立验收 PASS：模拟/边界328/328，Goal边界1/1，服务19/19，玩家/时间13/13及真实浏览器；历史证据在 `D:\Narraverse-World-Map-m1-integration\artifacts\world-runtime-m1-controller-review-20261008`，不是本轮重复执行结果。
 - 新实验使用单独 `artifacts/world-runtime-m2/<name>` 数据目录，不迁移真实存档。`--inspect-mind` 默认关闭、检查器只读；`--writable true` 开启时间/玩家动作提交。正式平台、模型/桥与长程心理质量未验收；未启停旧实例。
 
@@ -69,8 +69,8 @@
 - 干净3756071实际CLI100=40保存+60恢复，转售4=1保存+3恢复，完整checkpoint/两哈希/八CSV/inputs/配置一致；独立核对合计钱包、公共+私人粮药/真实使用、转售双方现金与药一增一减，拒绝回执及inputSeq。peer首单52金币、买方下一日才用药；基线100有5实名猎鹿、三人真实吃私粮245、工资680、目标完成145，无假增人口或货币；未吃饭日由Need/饥饿规则如实体现，不声称私粮需求全满足。100日约91秒（并发回归），末尾内存非峰值，三人校验明显变慢，未测规模。旧C2 100日完整checkpoint字节未变；runtime指纹fff194b770da08242808da46d53f7919f9b50ff428d6588d4986398c7261213c。证据artifacts/world-runtime-c3-acceptance-20261007/comparison.json、final-full-tests.txt等保持忽略。最终13b137c干净peer-sale一天烟测和源码指纹相同；C4记忆/关系/Actor-known上下文尚未实现。
 ## 尚未完成
 
-- M1真实浏览器验收与最终集成回归待完成；M1整体暂不标验收。
-- M2已本地集成、浏览器修正和阶段回归待完成；M3未开始。D3/D4与D整体验收状态按历史阶段记录。
+- M1真实浏览器验收与最终集成回归已完成，中控已裁定 M1 及 A/B/C 通过；这里不重复执行其历史测试。
+- M2及A1/A2/B/C已中控本地验收PASS；M3未开始。D3/D4与D整体验收状态按历史阶段记录。
 - 原型E2E端口/外部路径尚未统一，部分脚本可能触发云调用；运行前逐个核实。
 - 绘制素材许可/公开发布许可尚未核实，仓库先保持私有。
 - 旧正式平台移植建议属于历史，不自动成为本项目任务。
@@ -89,6 +89,7 @@
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
+- 看板最后核实状态历史为 M2 In Progress、A1/B/C需修正、A2待派发；待同步目标为 M2、A1、A2、B、C 均已验收。因应用网络权限撤销，Projects未更新；本地验收/commit不代表远端同步。
 - 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`、C2 `PVTI_lAHOEF9IDs4BmADfzg_EnoU`、C3 `PVTI_lAHOEF9IDs4BmADfzg_FGww`、C4 `PVTI_lAHOEF9IDs4BmADfzg_Fov0`（已验收）、C5 `PVTI_lAHOEF9IDs4BmADfzg_G6Gg`（已验收）；D阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwCU`（进行中）、D1 `PVTI_lAHOEF9IDs4BmADfzg_HMTc`、D2A `PVTI_lAHOEF9IDs4BmADfzg_Hq7Y`（已验收）；D2B `PVTI_lAHOEF9IDs4BmADfzg_IGm4`、三路 `PVTI_lAHOEF9IDs4BmADfzg_IGrM` / `PVTI_lAHOEF9IDs4BmADfzg_IGuY` / `PVTI_lAHOEF9IDs4BmADfzg_IG0Q`（已验收）。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - 待派发不代表开工；收到实际开工回执才进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
