@@ -2,7 +2,7 @@
 // 合同唯一权威：m3-experience-runtime-contract-v1（M3-2A §共同合同）；旧四日与错误语义另据 m2-contract-v2。
 // 独立性：所有 expected 均为手算（注释给出推导）或来自冻结 M2 源码/主控实跑钉死数字；不从被测实现反推。
 // 依赖门控：A 路生产（experience-state / work-experience-adapter / experience-village 及既有模块新导出）尚未派发，
-// 缺失时按精确 ERR_MODULE_NOT_FOUND / 缺名动态跳过；A 落地后自动转为真实运行。其余错误（SyntaxError 等）为未通过证据。
+// 缺失时仅按精确 ERR_MODULE_NOT_FOUND 标记待跑；已导入后的缺名/错类型及其余错误均为未通过证据。
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createSimulationSession } from '../../runtime/core/command-engine.mjs';
@@ -43,8 +43,14 @@ function gate(t) {
   const missing = [];
   for (const [specifier, module, names] of extraModules)
     for (const name of names)
-      if (typeof module[name] !== 'function') missing.push(specifier + ' 导出 ' + name);
-  if (missing.length) { t.skip('A 路依赖未导入，待中控派发 SHA 后运行：' + missing.join(', ')); return false; }
+      if (name === 'experienceRuntimeHooks') {
+        const hooks = module[name];
+        const expected = ['createWorld', 'beforeSystems', 'afterSystems', 'applyAction', 'settleDay', 'validateHistory'];
+        assert.ok(hooks && typeof hooks === 'object', '合同 §5：experienceRuntimeHooks 是六函数对象');
+        assert.deepEqual(Object.keys(hooks).sort(), expected.slice().sort());
+        for (const key of expected) assert.equal(typeof hooks[key], 'function', key);
+      } else if (typeof module[name] !== 'function') missing.push(specifier + ' 导出 ' + name);
+  assert.deepEqual(missing, [], '已导入依赖缺失或导出类型错误不得跳过');
   return true;
 }
 const clone = value => structuredClone(value);
@@ -93,7 +99,7 @@ function kernelView(simulationId, { sampleCount = 0, seq = 23 } = {}) {
   let state = createWorkExperienceState(simulationId, 'actor-2');
   for (let i = 0; i < sampleCount; i++) {
     state = observeWorkOutcome(state, { simulationId, actorId: 'actor-2', sourceEventSeq: seq + i, occurrenceTick: 288 + i,
-      decisionId: 'experience-day-2-actor-2', commandId: 'experience-day-2-actor-2', action: 'WorkForPay', status: 'rejected', code: 'RULE_REJECTED' }).state;
+      decisionId: `experience-day-${2 + i}-actor-2`, commandId: `experience-day-${2 + i}-actor-2`, action: 'WorkForPay', status: 'rejected', code: 'RULE_REJECTED' }).state;
   }
   return deriveWorkExperience(state);
 }
@@ -256,7 +262,7 @@ test('E1 候选消费配对：penalty 只压 soft-eligible WorkForPay 的 opposi
     ['m-experience-v1', 'experience-config-v1', 'experience-runtime-state-v1', 'experience-motivation-state-v1',
       'experience-knowledge-v1', 'experience-decision-v1', 69, 16384, 32768]);
   const planner = plannerExports;
-  const stateConstants = stateExports;
+  const stateConstants = deps.state; // 合同 §2：这些常量由 experience-state 导出。
   assert.equal(stateConstants.EXPERIENCE_DECISION_VERSION, 'experience-decision-v1');
 
   // 同一冻结新 knowledge 的两份/四份副本，只差 experience view 与开关。
@@ -276,6 +282,12 @@ test('E1 候选消费配对：penalty 只压 soft-eligible WorkForPay 的 opposi
   for (const index of [0, 1, 3, 4]) assert.deepEqual(p1.decision.candidates[index], p0.decision.candidates[index], '第' + index + '候选必须逐字段不变');
   assert.deepEqual([p1.decision.candidates[2].support, p1.decision.candidates[2].opposition, p1.decision.candidates[2].score], [900, 290, 610]);
   assert.equal(p1.decision.choice, 'UseMedicine'); // 700 > 610 → 真实改选 Use
+  // 合同 §3 上界：strain1000 × risk1000 / 1000 + 三次拒付penalty300 = 1300，不得夹到1000。
+  const maximum = experienceKnowledge({ experience: kernelView('m2c-independent', { sampleCount: 3 }), useWorkExperience: true });
+  maximum.self.fatigue = 700;
+  maximum.profile.riskAversionPermille = 1000;
+  const maxWork = planner.planExperienceMotivationDecision(maximum).decision.candidates[2];
+  assert.deepEqual([maxWork.support, maxWork.opposition, maxWork.score], [900, 1300, -400]);
   // useWorkExperience=false：opposition 加 0（Work 仍 710）；真实经历仍记录/发 Observed 由 E2 false 分支在运行时覆盖。
   assert.deepEqual(p2.decision.candidates, expectedCandidates({ penalty: 100, useWorkExperience: false }));
   assert.deepEqual([p2.decision.candidates[2].opposition, p2.decision.candidates[2].score], [190, 710]);
@@ -300,6 +312,7 @@ test('E1 候选消费配对：penalty 只压 soft-eligible WorkForPay 的 opposi
   assert.deepEqual([pr.decision.gateReason, pr.decision.choice], ['RESUME_COMMITTED', 'UseMedicine']);
   assert.deepEqual([pr.decision.candidates[2].eligible, pr.decision.candidates[2].score, pr.decision.candidates[2].selectionBlockCode],
     [false, null, 'SOFT_PRECONDITION_FAILED']);
+  assert.deepEqual([pr.decision.candidates[2].support, pr.decision.candidates[2].opposition], [0, 0]);
   assert.deepEqual(pr.decision.candidates.filter(c => c.selectable).map(c => c.action), ['UseMedicine']);
 
   // 损坏 view 不能降级为空经验：身份/推导/形状不符必须拒绝（合同 §3 view 校验）。
@@ -307,15 +320,15 @@ test('E1 候选消费配对：penalty 只压 soft-eligible WorkForPay 的 opposi
     ['penaltyPermille 与 min(300,100*failureCount) 不符', view => { view.penaltyPermille = 101; }],
     ['actorId 身份不符', view => { view.actorId = 'actor-3'; }],
     ['topic 固定值被改', view => { view.topic = 'other-topic'; }],
-    ['view 版本未知', view => { view.version = 'work-experience-view-v0'; }],
+    ['view 版本未知', view => { view.version = 'work-experience-view-v0'; }, 'UNSUPPORTED_VERSION'],
     ['evidenceRefs 长度≠样本数', view => { view.sampleCount = 2; view.failureCount = 1; view.evidenceRefs = [23]; }],
     ['failureCount>sampleCount', view => { view.sampleCount = 2; view.failureCount = 3; }],
-    ['sampleCount>4', view => { view.sampleCount = 5; }],
+    ['sampleCount>4', view => { view.sampleCount = 5; }, 'LIMIT_EXCEEDED'],
   ];
-  for (const [label, mutate] of corruptCases) {
+  for (const [label, mutate, expectedCode = 'INVALID_INPUT'] of corruptCases) {
     const knowledge = experienceKnowledge({ experience: kernelView('m2c-independent', { sampleCount: 1 }), useWorkExperience: true });
     mutate(knowledge.experience);
-    assert.throws(() => planner.planExperienceMotivationDecision(knowledge), e => e.code === 'INVALID_INPUT', label);
+    assert.throws(() => planner.planExperienceMotivationDecision(knowledge), e => e.code === expectedCode, label);
   }
 });
 
@@ -426,8 +439,16 @@ test('E2 真实拒付闭环：tick288 拒付→唯一 Resolved→紧随唯一 Ob
   }
   assert.equal(communal(off288), communal(b288));
   assert.notEqual(canonicalJson(off288.snapshot), canonicalJson(b288.snapshot));
-  // 同日冻结 proposals 对照：actor-3 的 Planned 在两 world 完全一致。
-  assert.equal(canonicalJson(frozenA3), canonicalJson(factsOf(off288, 'MotivationDecisionPlanned', 288).find(e => e.payload.actorId === 'actor-3')));
+  // 合同 §3：完整 knowledge fingerprint 必须包含开关。只归一该已知输入差异后，actor-3 proposal 逐字段相等。
+  const offA3 = clone(factsOf(off288, 'MotivationDecisionPlanned', 288).find(e => e.payload.actorId === 'actor-3'));
+  const onKnowledgeA3 = JSON.parse(frozenA3.payload.knowledgeFingerprint);
+  const offKnowledgeA3 = JSON.parse(offA3.payload.knowledgeFingerprint);
+  assert.equal(onKnowledgeA3.useWorkExperience, true);
+  assert.equal(offKnowledgeA3.useWorkExperience, false);
+  offKnowledgeA3.useWorkExperience = true;
+  assert.deepEqual(offKnowledgeA3, onKnowledgeA3);
+  offA3.payload.knowledgeFingerprint = canonicalJson(offKnowledgeA3);
+  assert.deepEqual(offA3, frozenA3);
   sOff.advanceTicks(144);
   const off432 = sOff.getBundle();
   // false：Work=710（opposition 190，不加 penalty）→ 再次 RULE_REJECTED；kernel 记第二个样本 penalty=200。
@@ -571,6 +592,7 @@ test('E4 因果与身份：他人/非 Work/NoAction 不学习，坏 planned/reso
 
   // 合法非本人/非 Work/NoAction → 返回 null；本人 Work（成功或拒绝）→ 非 null 投影。
   assert.equal(adapter.projectOwnWorkOutcome(contextOf(recipe288), 'actor-3', resolvedOf(recipe288, 288, 'actor-3', 'UseMedicine').eventSeq), null);
+  assert.equal(adapter.projectOwnWorkOutcome(contextOf(recipe288), 'actor-3', ownWork.eventSeq), null, '他人真实 Work 结果不归本人学习');
   assert.equal(adapter.projectOwnWorkOutcome(contextOf(default432), 'actor-2', ownRest.eventSeq), null);
   assert.equal(adapter.projectOwnWorkOutcome(contextOf(deadline288), 'actor-2', ownNoAction.eventSeq), null);
   assert.notEqual(adapter.projectOwnWorkOutcome(contextOf(recipe288), 'actor-2', ownWork.eventSeq), null);
@@ -578,7 +600,7 @@ test('E4 因果与身份：他人/非 Work/NoAction 不学习，坏 planned/reso
 
   // 坏链接必须抛 INVALID_INPUT 而不是静默 null（合同 §4）。
   const bad = (bundle, actorId, seq, mutate) => {
-    const context = contextOf(bundle);
+    const context = clone(contextOf(bundle)); // 每个反例独立，禁止坏 causation 污染后续案例。
     mutate(context);
     assert.throws(() => adapter.projectOwnWorkOutcome(context, actorId, seq), e => e.code === 'INVALID_INPUT');
   };
@@ -600,6 +622,9 @@ test('E4 因果与身份：他人/非 Work/NoAction 不学习，坏 planned/reso
     receipt.eventSeqs = [c.eventLog.find(e => e.type === 'SocietyActionCommitted' && e.commandId !== ownSuccess.payload.commandId).eventSeq]; // 伪造/错引 SocietyActionCommitted
   });
   bad(default432, 'actor-2', ownSuccess.eventSeq, c => { c.commandReceipts[ownSuccess.payload.commandId].input.payload.actorId = 'actor-3'; }); // receipt 输入身份不符
+  bad(default432, 'actor-2', ownRest.eventSeq, c => { plannedOf(c, ownRest.eventSeq).commandId = 'forged-command'; }); // 非 Work 坏链也必须拒绝
+  bad(deadline288, 'actor-2', ownNoAction.eventSeq, c => { c.eventLog.find(e => e.eventSeq === ownNoAction.eventSeq).causationEventSeqs = []; }); // NoAction 坏链也必须拒绝
+  bad(recipe288, 'actor-3', ownWork.eventSeq, c => { plannedOf(c, ownWork.eventSeq).commandId = 'forged-command'; }); // 他人 Work 坏链不能降级 null
 });
 
 test('E4 跨日同请求学习、历史不可变、sealed cursor 与死亡隔离', t => {
@@ -610,14 +635,17 @@ test('E4 跨日同请求学习、历史不可变、sealed cursor 与死亡隔离
   const sold = runtimeExports.executeExperiencePlayerIntent(session.getBundle(),
     { commandId: 'b2b-crossday-sell', type: 'PlayerSell', payload: { product: 'herbs', quantity: 7 } });
   const s = createSimulationSession(sold.bundle, f.systems);
-  s.advanceTicks(287);
+  assert.equal(sold.bundle.snapshot.tick, 145);
+  s.advanceTicks(143);
   const b288 = s.getBundle();
+  assert.equal(b288.snapshot.tick, 288);
   const xpOf = (b, id = 'actor-2') => b.snapshot.world.experienceModel.actors.find(a => a.actorId === id);
   const resolved288 = factsOf(b288, 'MotivationDecisionResolved', 288).find(e => e.payload.actorId === 'actor-2');
   assert.deepEqual([resolved288.payload.status, resolved288.payload.commandId], ['rejected', 'experience-day-2-actor-2']);
   const before288 = canonicalJson({ log: b288.eventLog, samples: xpOf(b288).workExperienceState.samples });
   s.advanceTicks(144);
   const b432 = s.getBundle();
+  assert.equal(b432.snapshot.tick, 432);
   const resolved432 = factsOf(b432, 'MotivationDecisionResolved', 432).find(e => e.payload.actorId === 'actor-2');
   assert.deepEqual([resolved432.payload.status, resolved432.payload.commandId], ['rejected', 'experience-day-3-actor-2']);
   // 每个合法本人 Work 结果都学习一次（去重按真实 resolvedEventSeq/权威 command，不按 requestId）。
@@ -712,18 +740,34 @@ test('rollback：post-learning 预算错误必须整 tick 回滚（公共 sessio
   session.advanceTicks(287);
   const before = session.getBundle();
   const original = f.systems;
-  const wrapped = Object.fromEntries(Object.entries(original).map(([id, handler]) => [id, (ctx) => {
-    if (ctx.snapshot.tick === 288) throw fault('LIMIT_EXCEEDED', 'injected post-learning budget overflow');
-    return handler(ctx);
+  const healthy = createSimulationSession(before, original);
+  healthy.advanceTicks(1);
+  const healthyBundle = healthy.getBundle();
+  const observed = factsOf(healthyBundle, 'ExperienceWorkObserved', 288, 'actor-2');
+  assert.equal(observed.length, 1);
+  const expectedSample = healthyBundle.snapshot.world.experienceModel.actors.find(a => a.actorId === 'actor-2').workExperienceState.samples;
+  assert.equal(expectedSample.length, 1);
+  assert.equal(observed[0].payload.sourceEventSeq, expectedSample[0].sourceEventSeq);
+  let reached = false;
+  const wrapped = Object.fromEntries(Object.entries(original).map(([id, handler]) => [id, (ctx, due) => {
+    // command-engine 执行日界 systems 时 snapshot 仍是287，真实目标在 due.dueTick。
+    if (id === 'society' && due.dueTick === 288) {
+      const samples = ctx.snapshot.world.experienceModel.actors.find(a => a.actorId === 'actor-2').workExperienceState.samples;
+      assert.deepEqual(samples, expectedSample, '失败点前必须已有真实本人 Work 样本');
+      assert.ok(ctx.snapshot.world.experienceModel.cursor >= observed[0].eventSeq, 'Observed 已发且 cursor 已推进');
+      assert.ok(ctx.snapshot.nextEventSeq > observed[0].eventSeq, 'Observed 占据真实事件序号');
+      reached = true;
+      throw fault('LIMIT_EXCEEDED', 'injected post-learning budget overflow');
+    }
+    return handler(ctx, due);
   }]));
   const broken = createSimulationSession(before, wrapped);
   assert.throws(() => broken.advanceTicks(1), e => e.code === 'LIMIT_EXCEEDED' && e.failedTick === 288);
+  assert.equal(reached, true, '注入点必须发生在真实学习和 Observed 之后');
   // 整 tick 回滚：不得部分写入经验、receipt、事件、RNG 或物理状态。
   assert.deepEqual(broken.getBundle(), before);
   // 同一 before 用原系统可正常推进，证明注入是失败原因且 before 未被污染。
-  const healthy = createSimulationSession(before, original);
-  healthy.advanceTicks(1);
-  assert.equal(healthy.getBundle().snapshot.tick, 288);
+  assert.equal(healthyBundle.snapshot.tick, 288);
 });
 
 // 供 E1/getter 预检使用的旧版（M2 形状）decision-phase knowledge：剥除新键后换回旧版本字符串。

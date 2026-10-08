@@ -46,8 +46,14 @@ function gate(t) {
   const missing = [];
   for (const [specifier, module, names] of extraModules)
     for (const name of names)
-      if (typeof module[name] !== 'function') missing.push(specifier + ' 导出 ' + name);
-  if (missing.length) { t.skip('A 路依赖未导入，待中控派发 SHA 后运行：' + missing.join(', ')); return false; }
+      if (name === 'experienceRuntimeHooks') {
+        const hooks = module[name];
+        const expected = ['createWorld', 'beforeSystems', 'afterSystems', 'applyAction', 'settleDay', 'validateHistory'];
+        assert.ok(hooks && typeof hooks === 'object', '合同 §5：experienceRuntimeHooks 是六函数对象');
+        assert.deepEqual(Object.keys(hooks).sort(), expected.slice().sort());
+        for (const key of expected) assert.equal(typeof hooks[key], 'function', key);
+      } else if (typeof module[name] !== 'function') missing.push(specifier + ' 导出 ' + name);
+  assert.deepEqual(missing, [], '已导入依赖缺失或导出类型错误不得跳过');
   return true;
 }
 
@@ -134,10 +140,22 @@ test('E7 oracle deadlineStates：M1 Goal 期限 recipe（day1/20/21/22/23），s
   }
 });
 
-test('E7 oracle deadlineHashes：语义待中控确认', t => {
-  t.skip('oracle 语义待中控确认：deadlineHashes 的哈希对象无法从冻结源唯一确定——deadlineStates 配方与状态已按冻结 '
-    + 'mind-goal-boundary.test.mjs 验证匹配，但对同一检查点尝试 hash(bundle)/hash(snapshot)/hash(world)/hash(actorState)/'
-    + 'hash(eventLog)/hash({goal,failed,cooldown}) 等口径均与五条哈希不符；待中控提供该列哈希的精确计算口径后补跑');
+test('E7 optional oracle deadlineHashes：冻结原脚本完整 bundle 的五个检查点哈希', t => {
+  const oracle = loadOracle(t); if (!oracle) return;
+  // 冻结 M2 tests/motivation-inspector-acceptance.test.mjs:206-211 goalScenario 配方，220-223 deadline.map(hash)。
+  // simulationId 是 m2c-old-deadline；哈希对象是完整 getBundle，不是 deadlineStates 投影。
+  const config = defaultMindVillageConfig();
+  config.mind.stimuli = [];
+  config.memory.society.actors.market.ecology.resources.resources.herbs.initial = 0;
+  for (const estate of config.memory.society.estates.slice(1, 3)) estate.initialFood = 32;
+  const f = createMindVillage(42, 'm2c-old-deadline', config);
+  const s = createSimulationSession(f.bundle, f.systems);
+  const actual = [];
+  for (const ticks of [144, 19 * 144, 144, 144, 144]) {
+    s.advanceTicks(ticks);
+    actual.push(hash(s.getBundle()));
+  }
+  assert.deepEqual(actual, oracle.results.scenarios.deadlineHashes);
 });
 
 test('E7 oracle c5FourDay：createPersonalityHealth(42,"personality-health-seed-42") 推进576，stateHash/eventHash 匹配', t => {
@@ -327,7 +345,9 @@ test('E6 全恢复历史篡改矩阵：sample/开关/fingerprint/decision/Observ
   const cases = [
     // 版本与预算错误按 checkpoint-store 现行为原码直抛。
     ['format-version', m => { m.formatVersion = 2; }, 'UNSUPPORTED_VERSION'],
-    ['rules-version', m => { m.snapshot.rulesVersion = 'm-motivation-v1'; }, 'UNSUPPORTED_VERSION'],
+    // world-state.checkBudgets 先按 discriminator 验 world：已知旧 rule + 新 world 是结构混搭，包装 INVALID_INPUT。
+    ['rules-version-mixed-world', m => { m.snapshot.rulesVersion = 'm-motivation-v1'; }, 'INVALID_CHECKPOINT', 'INVALID_INPUT'],
+    ['rules-version-unknown', m => { m.snapshot.rulesVersion = 'm-experience-v0'; }, 'UNSUPPORTED_VERSION'],
     // kernel 样本：身份/seq/tick/status/penalty/refs（penalty/refs 落在 Observed 派生 view 上）。
     ['sample-actor', m => { m.snapshot.world.experienceModel.actors[0].workExperienceState.samples[0].actorId = 'actor-3'; }],
     ['sample-seq', m => { m.snapshot.world.experienceModel.actors[0].workExperienceState.samples[0].sourceEventSeq -= 1; }],
@@ -349,7 +369,7 @@ test('E6 全恢复历史篡改矩阵：sample/开关/fingerprint/decision/Observ
     ['decision-knowledge', m => { m.eventLog[plannedIndex].payload.knowledgeFingerprint += ' '; }],
     ['decision-score', m => { m.eventLog[plannedIndex].payload.candidates[2].score += 1; }],
     ['decision-opposition', m => { m.eventLog[plannedIndex].payload.candidates[2].opposition += 1; }],
-    ['decision-gate', m => { m.eventLog[plannedIndex].payload.gateReason = 'SELECT_NEW_PLAN'; }],
+    ['decision-gate', m => { m.eventLog[plannedIndex].payload.gateReason = 'CONTINUE_COMMITTED'; }],
     // receipt result / status。
     ['receipt-result', m => { m.snapshot.commandReceipts[workReceiptId].result.foodProduced = 999; }],
     ['receipt-status', m => { m.snapshot.commandReceipts[workReceiptId].status = 'rejected'; }],
@@ -362,13 +382,17 @@ test('E6 全恢复历史篡改矩阵：sample/开关/fingerprint/decision/Observ
     ['rng-seed', m => { m.snapshot.rng.seed = 43; }],
     ['next-event-seq', m => { m.snapshot.nextEventSeq -= 1; }],
   ];
-  for (const [label, mutate, expectedCode] of cases) {
+  for (const [label, mutate, expectedCode, expectedCause] of cases) {
     const mutated = JSON.parse(baseText);
     mutate(mutated);
+    assert.notEqual(canonicalJson(mutated), canonicalJson(base), label + ' 必须是实际篡改，禁止同值反例');
     const file = path.join(dir, 'tampered-' + label + '.json');
     await fs.writeFile(file, JSON.stringify(mutated), 'utf8');
     await assert.rejects(() => loadCheckpoint(file, { rulesVersion: experienceRules, systems }), error => {
-      if (expectedCode) assert.equal(error.code, expectedCode, label);
+      if (expectedCode) {
+        assert.equal(error.code, expectedCode, label);
+        if (expectedCause) assert.equal(error.cause?.code, expectedCause, label + ' cause');
+      }
       else {
         assert.equal(error.code, 'INVALID_CHECKPOINT', label);
         assert.ok(Object.hasOwn(error, 'cause'), label + ' 必须保留 cause');
@@ -399,7 +423,7 @@ test('E7 新旧 profile 隔离：互拒 checkpoint 与旧 inspector 防假读数
   const s = createSimulationSession(f.bundle, f.systems);
   s.advanceTicks(288);
   const dir = await temp(t);
-  const newFile = await saveCheckpoint(s.getBundle(), { directory: dir, rulesVersion: experienceRules, systems });
+  const newFile = await saveCheckpoint(s.getBundle(), { directory: path.join(dir, 'new-profile'), rulesVersion: experienceRules, systems });
   // 旧 rules 版本收到新规则 checkpoint → UNSUPPORTED_VERSION 原码直抛。
   await assert.rejects(() => loadCheckpoint(newFile, { rulesVersion: MOTIVATION_RULES, systems: motivationSystems() }),
     e => e.code === 'UNSUPPORTED_VERSION');
@@ -407,7 +431,7 @@ test('E7 新旧 profile 隔离：互拒 checkpoint 与旧 inspector 防假读数
   const old = createMotivationVillage(42, 'motivation-village');
   const oldSession = createSimulationSession(old.bundle, old.systems);
   oldSession.advanceTicks(288);
-  const oldFile = await saveCheckpoint(oldSession.getBundle(), { directory: dir, rulesVersion: MOTIVATION_RULES, systems: motivationSystems() });
+  const oldFile = await saveCheckpoint(oldSession.getBundle(), { directory: path.join(dir, 'old-profile'), rulesVersion: MOTIVATION_RULES, systems: motivationSystems() });
   await assert.rejects(() => loadCheckpoint(oldFile, { rulesVersion: experienceRules, systems }), e => e.code === 'UNSUPPORTED_VERSION');
   // 旧 inspector 不得对新规则返回假读数：audit 在规则分派处直接拒绝。
   assert.throws(() => projectMotivationInspector({ snapshot: { rulesVersion: experienceRules }, eventLog: [] }),
