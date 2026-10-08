@@ -63,3 +63,28 @@ M3 的核心问题是：
 - 根据人物条件选择适合被卷入事件的人；
 - 制造压力、机会、冲突、秘密；
 - 把人物的最终反应留给 Character Mind。
+
+
+## World Map / Sandbox 建议优先翻阅
+
+入口：[WORLD-MAP-INDEX.md](WORLD-MAP-INDEX.md)。
+
+核心参考：
+
+1. Mount & Blade II: Bannerlord：Campaign Map / MobileParty / Settlement / Battle transition。
+2. Kenshi：World States / Town Override / faction presence。
+3. X4 Foundations：dynamic universe / economy / faction expansion。
+4. Starsector：route risk / visibility / intel / convoy / shortage。
+5. Battle Brothers：procedural map / settlement / contract / caravan。
+6. Endless Sky：开源 mission / fleet / trade / system。
+7. OpenTTD：开源 economy clock / cargo / industry / town。
+8. Factorio：regional field / diffusion / threshold response。
+9. Caves of Qud：history footprints / factions / secrets。
+
+世界地图线的核心问题是：
+
+- 什么东西应该成为持久世界实体，而不是临时 UI 图标？
+- 地图移动实体如何有 Goal、Cargo、Supply、Target 与 Faction？
+- 聚落、道路、贸易和战争怎样互相影响？
+- 世界事件如何自然产生任务、新闻和遭遇？
+- 地图进入场景/战斗后，结果怎样结构化写回唯一 World Runtime？
