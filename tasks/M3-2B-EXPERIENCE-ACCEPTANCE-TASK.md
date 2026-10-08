@@ -1,6 +1,6 @@
 # M3-2B：本人 Work 经验消费独立验收
 
-合同版本：m3-experience-runtime-contract-v1；共同合同唯一权威见 [M3-2A §共同合同](M3-2A-EXPERIENCE-RUNTIME-TASK.md#共同合同唯一权威版本)。状态：待派发/未开工。合同发布 SHA：由中控提交后填写。
+合同版本：m3-experience-runtime-contract-v1；共同合同唯一权威见 [M3-2A §共同合同](M3-2A-EXPERIENCE-RUNTIME-TASK.md#共同合同唯一权威版本)。状态：本地已发布，待派发/未开工（2026-10-08 21:26 Asia/Shanghai）。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
 
 ## 给用户看
 
@@ -62,4 +62,4 @@
 
 如需单独检查直接消费者，记录真实命令和产物；不要重复无关全量。交回工作树/分支、A 实际依赖 SHA、B 本地精确 commit、各命令数字结果、expected/actual 与证据路径、PASS/NEED REVISION 建议和未验证范围。缺依赖时交回待跑清单和精确错误，不声称通过。
 
-本路完成后停止交中控裁定；不改 A 文件、不合并 main、不 push、不部署、不接 HTTP/UI/M3-3/D3/D4。M3-2A/B 当前待派发/未开工，M3-3待设计，完整 M3未验收。
+本路完成后停止交中控裁定；不改 A 文件、不合并 main、不 push、不部署、不接 HTTP/UI/M3-3/D3/D4。M3-2A/B 已在本地发布、待派发/未开工，M3-3待设计，完整 M3未验收。

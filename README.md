@@ -20,7 +20,7 @@
 
 ## 新世界运行时进度
 
-2026-10-08 21:12（Asia/Shanghai）：M1/M2 与 M3-1A/B 已本地验收收口。[M3-2A 经验运行时实现](tasks/M3-2A-EXPERIENCE-RUNTIME-TASK.md)和[M3-2B 独立验收](tasks/M3-2B-EXPERIENCE-ACCEPTANCE-TASK.md)任务书已本地准备，待派发、未开工；共同基准 `D:\Narraverse-World-Map-m3-base @ codex/world-runtime-m3-base`，HEAD `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。后续再规划 M3-3 认知频率运行时接入；完整 M3 未验收，源码未合并 main、未 push，Projects 待同步。详情见[当前状态](PROJECT_CONTEXT.md)。
+2026-10-08 21:26（Asia/Shanghai）：M1/M2 与 M3-1A/B 已本地验收收口。[M3-2A 经验运行时实现](tasks/M3-2A-EXPERIENCE-RUNTIME-TASK.md)和[M3-2B 独立验收](tasks/M3-2B-EXPERIENCE-ACCEPTANCE-TASK.md)任务书已在本地发布，待派发、未开工；共同基准 `D:\Narraverse-World-Map-m3-base @ codex/world-runtime-m3-base`，HEAD `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。后续再规划 M3-3 认知频率运行时接入；完整 M3 未验收，源码未合并 main、未 push，Projects 待同步。详情见[当前状态](PROJECT_CONTEXT.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

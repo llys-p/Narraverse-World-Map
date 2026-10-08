@@ -1,6 +1,6 @@
 # M3-2A：本人 Work 经验消费运行时
 
-合同版本：m3-experience-runtime-contract-v1。状态：待派发/未开工。合同发布 SHA：由中控提交后填写。
+合同版本：m3-experience-runtime-contract-v1。状态：本地已发布，待派发/未开工（2026-10-08 21:26 Asia/Shanghai）。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
 
 ## 给用户看
 
@@ -121,10 +121,10 @@ EXPERIENCE_RULES="m-experience-v1"、EXPERIENCE_CONFIG_VERSION="experience-confi
     node --test tests/simulation/experience-runner.test.mjs
     git diff --check
 
-交付说明用户可见行为/限制、工作树/分支/基准 SHA/本地精确 commit、合同发布 SHA、白名单 diff、A0实测结果、E1–E7证据与未验项。发布 SHA由中控提交后填写，不得猜。
+交付说明用户可见行为/限制、工作树/分支/基准 SHA/本地精确 commit、合同发布 SHA `b4c39e36cf13cb8e3b10073ef695ad105d991e47`、白名单 diff、A0实测结果、E1–E7证据与未验项。
 
 范围止于 M3-2A 实现交付；不得做 M3-2B验收、合并 main、push、部署、HTTP/service/UI、M3-3认知频率接入或D3/D4。测试全过也只是待中控验收。
 
 ## 当前状态
 
-M3-1已收口；M3-2A/B待派发、未开工；M3-3待设计；完整M3未验收。main未动、远端待同步。
+M3-1已收口；M3-2A/B已在本地发布、待派发、未开工；M3-3待设计；完整M3未验收。main未动、远端待同步。

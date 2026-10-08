@@ -1,8 +1,8 @@
 # 世界运行时与生态模拟：架构基线与分阶段实施计划
 
-> 修订：2026-10-08 21:11（Asia/Shanghai）；M1/M2 已本地验收；M3-1A/B 均已中控裁定 PASS/本地验收（仅纯内核），M3-1 收口；M3-2A/B 任务书本地准备、待派发，尚未开工。
+> 修订：2026-10-08 21:26（Asia/Shanghai）；M1/M2 已本地验收；M3-1A/B 均已中控裁定 PASS/本地验收（仅纯内核），M3-1 收口；M3-2A/B 任务书本地已发布，待派发、未开工。
 > 状态：方向已确定；本文是实施约定，不是实现或验收报告。
-> 当前起点：A/B/C、D1～D2C、M1/M2 已本地验收。M3-1A/B 均从 M2 integration 交接 `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9` 开始，并经中控裁定 PASS/本地验收（仅纯内核），M3-1 收口。M3-2A/B 任务书在本地准备、待派发，尚未开工；共同源码基准为 `D:\Narraverse-World-Map-m3-base @ codex/world-runtime-m3-base`、HEAD `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。M3-2实现、M3-3认知频率运行时接入及完整 M3 均未验收；D3/D4 顺序不变。实际进度唯一记录在 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)。
+> 当前起点：A/B/C、D1～D2C、M1/M2 已本地验收。M3-1A/B 均从 M2 integration 交接 `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9` 开始，并经中控裁定 PASS/本地验收（仅纯内核），M3-1 收口。M3-2A/B 任务书已在本地发布，待派发、未开工；共同源码基准为 `D:\Narraverse-World-Map-m3-base @ codex/world-runtime-m3-base`、HEAD `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。M3-2实现、M3-3认知频率运行时接入及完整 M3 均未验收；D3/D4 顺序不变。实际进度唯一记录在 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)。
 > 承接 `9db7035` 的架构方向和 `28b1ebb` 的状态记录；原版本保留在 Git 历史。
 
 ## 1. 目标与使用方式
@@ -27,7 +27,7 @@
 - **已确定**：确定性内核、纯 JS、单写者、聚合人口、重要人物独立主观状态；先规则闭环，模型可选。
 - **待实验校准**：生态系数、经济参数、平衡区间、性能目标；记录配置和结果，不写成已证明。
 - **未来计划**：完整 LOD、社会传播、势力、现实离线补算、正式平台适配。
-- **主线基准**：A/B/C、D1～D2C、M1/M2 已通过。M3-1A/B 两个纯内核均已中控验收，M3-1 收口；M3-2A/B任务书本地准备、待派发，尚未开工；实现、M3-3与完整 M3 未验收。D3/D4 未开始；既有验收数字是已归档证据，本次文档更新不重复执行。
+- **主线基准**：A/B/C、D1～D2C、M1/M2 已通过。M3-1A/B 两个纯内核均已中控验收，M3-1 收口；M3-2A/B任务书已在本地发布、待派发、未开工；实现、M3-3与完整 M3 未验收。D3/D4 未开始；既有验收数字是已归档证据，本次文档更新不重复执行。
 
 执行时读阶段表与当前阶段的合同。后续阶段固定边界和验收目标，细节在进入该阶段时补充到本文，不另建重复路线图。本文的目标命令和模块目前不能当作已经存在的能力。
 
@@ -406,7 +406,7 @@ Persistent Actor 身份独立于 simulationLevel。离开视野可降频，不�
 
 ### 9.3 M 主线：Character Mind Runtime（2026-10-08 重排）
 
-M 扩展已有人物机制，不另建第二个世界引擎。目标是让人物具有可追溯的主观世界、持续动机和有限行动能力。M0、M1、M2 已本地验收；M2 合同、修正与完整证据保留。M3-1A/B 两个纯内核已中控裁定 PASS/本地已验收，M3-1 收口。M3-2A/B任务书已在本地准备、待派发，尚未开工；共同实现合同为 `m3-experience-runtime-contract-v1`，任务书发布提交尚未产生。M3-2使用已验收A/B实际交付SHA对应的新共同基准，覆盖受信任事件投影、经验模式对本人工作成功/拒绝的更新、最近四次经验、下一次 Work 候选的反对证据/惩罚、权威执行、CLI与保存/完整重演。M3-3另做认知频率运行时接入；不改变 M3 与 D3/D4 整体顺序。
+M 扩展已有人物机制，不另建第二个世界引擎。目标是让人物具有可追溯的主观世界、持续动机和有限行动能力。M0、M1、M2 已本地验收；M2 合同、修正与完整证据保留。M3-1A/B 两个纯内核已中控裁定 PASS/本地已验收，M3-1 收口。M3-2A/B任务书已在本地发布，待派发、未开工；共同实现合同为 `m3-experience-runtime-contract-v1`，发布 SHA 见 [当前状态](PROJECT_CONTEXT.md)。M3-2使用已验收A/B实际交付SHA对应的新共同基准，覆盖受信任事件投影、经验模式对本人工作成功/拒绝的更新、最近四次经验、下一次 Work 候选的反对证据/惩罚、权威执行、CLI与保存/完整重演。M3-3另做认知频率运行时接入；不改变 M3 与 D3/D4 整体顺序。
 
 #### 现有能力与真实缺口
 
@@ -448,7 +448,7 @@ M 扩展已有人物机制，不另建第二个世界引擎。目标是让人物
 | **M2：动机冲突与有限计划** | 复用 Needs/Goal，加入场景真正用到的职责/价值/少量情绪、行为倾向；区分三层意图；有限步骤、前提、终止与局部重规划；检查器加入支持/反对因素和快速反事实 | 两个强动机冲突有可解释选择；紧急事件可打断但不抹去长期意图；原目标完成/放弃/恢复可追踪。固定候选的反事实在副本上算，不写主世界、不调用模型 |
 | **M3：经验变化与认知 LOD** | 从重复真实结果形成少量经验模式，有反证可修正；先做已有实名人物的重要性×相关性分级、降频与恢复 | 只变经历应能改变后续风险判断；升降频不丢身份/目标/关键证据、不捏造离场历史；无重复消费/关系增长。完成后评估 D3/D4，不顺带实现完整人群晋升或 Rumor |
 
-M3-1 的任务入口为 [A 工作结果经验内核](tasks/M3-1A-WORK-EXPERIENCE-TASK.md)与 [B 认知审查内核](tasks/M3-1B-COGNITIVE-REVIEW-TASK.md)，合同 `m3-kernels-contract-v1` 发布 SHA `8282a135a85967818c39a6289cd1a0e7dcec769d`。A 固定最近四次本人工作结果，B 固定 full/reduced 的日界审查资格；两者均为同步纯函数、无世界写入，且均已通过中控独立验收。M3-1 纯内核轮次已收口。M3-2任务书入口为 [A 经验运行时实现](tasks/M3-2A-EXPERIENCE-RUNTIME-TASK.md)与[B 独立验收](tasks/M3-2B-EXPERIENCE-ACCEPTANCE-TASK.md)，均为本地准备、待派发、未开工。合同 `m3-experience-runtime-contract-v1`；共同代码基准 `D:\Narraverse-World-Map-m3-base @ codex/world-runtime-m3-base`，HEAD `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。该基准从 A 接入 B 两提交；相对 M2 integration `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9` 仅新增四文件，逐 Git blob 与已验收 A/B 一致，工作树干净，diff check 通过；未重复运行未改字节测试，四文件冻结只读。规划执行树尚未创建。当前任务只含经验真实闭环，不接认知模块、服务/UI、LLM/平台或千日性能；M3-3未来另冻结 actor-local signals 与 continuation，再接认知频率运行时。不跳过既有计划和日结，不把历史 M2 或冻结 `83826a8` 的401项回归写成本轮新跑。
+M3-1 的任务入口为 [A 工作结果经验内核](tasks/M3-1A-WORK-EXPERIENCE-TASK.md)与 [B 认知审查内核](tasks/M3-1B-COGNITIVE-REVIEW-TASK.md)，合同 `m3-kernels-contract-v1` 发布 SHA `8282a135a85967818c39a6289cd1a0e7dcec769d`。A 固定最近四次本人工作结果，B 固定 full/reduced 的日界审查资格；两者均为同步纯函数、无世界写入，且均已通过中控独立验收。M3-1 纯内核轮次已收口。M3-2任务书入口为 [A 经验运行时实现](tasks/M3-2A-EXPERIENCE-RUNTIME-TASK.md)与[B 独立验收](tasks/M3-2B-EXPERIENCE-ACCEPTANCE-TASK.md)，均已在本地发布、待派发、未开工。合同 `m3-experience-runtime-contract-v1`；共同代码基准 `D:\Narraverse-World-Map-m3-base @ codex/world-runtime-m3-base`，HEAD `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`。该基准从 A 接入 B 两提交；相对 M2 integration `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9` 仅新增四文件，逐 Git blob 与已验收 A/B 一致，工作树干净，diff check 通过；本轮只核对任务书/状态、共同基准字节及旧 oracle 只读 SHA-256，未新跑模拟、浏览器或代码测试；基准四文件冻结只读。规划执行树尚未创建。当前任务只含经验真实闭环，不接认知模块、服务/UI、LLM/平台或千日性能；M3-3未来另冻结 actor-local signals 与 continuation，再接认知频率运行时。不跳过既有计划和日结，不把历史 M2 或冻结 `83826a8` 的401项回归写成本轮新跑。
 
 M1 的两位样本共用确定性规则，但使用独立人物配置与知识；规模只是证明消费链，不代表所有 NPC 已具备完整心智。M2/M3 的数字公式、策略范围和性能门槛在各自开工前冻结，不在当前愿景阶段伪造精确心理参数。四组 E/I、S/N、T/F、J/P 可以作为连续创作倾向候选，不按 MBTI 标签决定动作，不作为心理学测量结论。
 
@@ -567,6 +567,6 @@ B 的 100 天闭环通过前暂缓大量技能/怪物/装备/Boss、大规模美
 
 `PROJECT_CONTEXT.md` 维护当前进度，本文维护合同和任务；直接修订相关小节，由 Git 保留历史，不追加多份冲突方案。
 
-**当前状态：M1/M2 已本地验收；M3-1A/B 两个纯内核均已中控 PASS/本地已验收，M3-1 收口。** M3-2A/B任务书本地准备、待派发、未开工；实现和M3-3认知频率运行时接入均未开始，完整 M3 未验收；D3/D4 未开始，既定 E/F/G 范围保持。M3-1 合同 `m3-kernels-contract-v1` 发布 SHA 为 `8282a135a85967818c39a6289cd1a0e7dcec769d`，源码基准为 M2 integration `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`；A/B 各自验收证据与未复跑范围见对应任务书。
+**当前状态：M1/M2 已本地验收；M3-1A/B 两个纯内核均已中控 PASS/本地已验收，M3-1 收口。** M3-2A/B任务书已在本地发布、待派发、未开工；实现和M3-3认知频率运行时接入均未开始，完整 M3 未验收；D3/D4 未开始，既定 E/F/G 范围保持。M3-1 合同 `m3-kernels-contract-v1` 发布 SHA 为 `8282a135a85967818c39a6289cd1a0e7dcec769d`，源码基准为 M2 integration `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`；A/B 各自验收证据与未复跑范围见对应任务书。
 
 A 的生产代码 SHA `473f608f792fb840211a16779a175ffe4e7b7eb5`，最终测试交接 SHA `275b81a37253ddf0bada93e2252b30629d3f3dc5`，代码树 `D:\Narraverse-World-Map-m3-experience @ codex/world-runtime-m3-experience`；其历史验收证据见 A 任务书。上一轮完成 B 模块修复及定向验收，B 交接为 `9a4794700234f097be0e1b7cb490dad4341e2e85`，未复跑历史阶段全量或 A 测试；证据范围见 B 任务书。源码未合并 main、未 push；Projects（含历史 M2 状态）待同步，网络状态未复核。新代码、旧原型、真实存档和正式平台继续隔离。
