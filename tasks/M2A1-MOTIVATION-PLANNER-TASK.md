@@ -1,6 +1,6 @@
 # M2A1：候选收集、承诺门与纯规划器
 
-合同：m2-contract-v2；状态：待派发、未开工。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
+合同：m2-contract-v2；状态：已交付，2026-10-08 中控首次审查 NEED REVISION。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
 
 ## 给用户看
 
@@ -60,3 +60,7 @@ Q1 独立手算 Work710 / Use700 / Rest650、固定顺序、承诺门和权重�
 ## 交付回执
 
 用户摘要说明候选和承诺门可解释范围及限制。中控回执包含目录/分支/基准 SHA、合同导入 SHA、A1 SHA、工作树所有权、精确文件、Q1/Q2 对应验证命令与结果、证据位置、未验证项和停止点。A1 完成即停止，不做 A2、不合并 main、不改阶段状态。
+
+
+## 中控首次审查（2026-10-08 15:34 Asia/Shanghai）
+交付 `6ee1719e0403a8bff0422a046ab221f3b79fc89b` 已推送，四个白名单文件、tracked 工作区干净。原定向 Node v24.14.0 suite 35/35、0 skip、exit 0（325ms）。新增两项紧凑纯 DTO retry probes 均失败（329ms、exit 1）：有 active aid Plan、无 suspended Plan、pending duty 的 day1 直接 Work 被拒后，day2 blocked retry 实际换成 Plan2/nextPlan3，expected 保持 Plan1/nextPlan2；去掉 Goal 的对应输入实际为 SELECT/Plan2。该构造仅检 planner DTO，不代表真实 world 历史。较早的宽 DTO probes 另显示 sourceRef 丢失与 counter 边界/ID 复用问题；不把宽 probes 描述为规范 suite 的业务 case。证据均在交付树 ignored `artifacts/world-runtime-m2a1-controller-review-20261008/`，含 `focused-retry.test.mjs`、TAP、metadata、independent probes。A1 结论仅限纯 DTO，A2 未测试；NEED REVISION。

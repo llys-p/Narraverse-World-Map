@@ -1,6 +1,6 @@
 # M2B：动机检查器与服务接入
 
-合同：m2-contract-v2；状态：待派发、未开工。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
+合同：m2-contract-v2；状态：已交付，2026-10-08 中控审查 NEED REVISION。唯一公共定义：[M2 共同合同](M2-MOTIVATION-PLAN-CONTRACT.md)。
 
 ## 给用户看
 
@@ -20,7 +20,7 @@
 
 - 计划工作树：D:\Narraverse-World-Map-m2-service；分支：codex/world-runtime-m2-service。当前只派发计划，不预先创建。
 - 代码基准：D:\Narraverse-World-Map-m1-integration @ 87aa9b605f5f509ce3b0daa97e34ded004d22f33。
-- 记录实际 HEAD、合同/任务书导入控制树 SHA、工作区状态和所有权。可以先用合同 DTO mock 开发 UI/测试；生产路由不得静默 fallback 到 mock。A2 未交付时标依赖待接入/待验，不吞 import、不写死缺失断言、不声称完整 M2B 通过。
+- 记录实际 HEAD、合同/任务书导入控制树 SHA、工作区状态和所有权。可以先用合同 DTO mock 开发 UI/测试；生产路由不得静默 fallback 到 mock。A2 未交付时标依赖待接入/待验，不吞 import、不写死缺失断言、不声称完整 M2B 通过。 动态 import 仅在精确缺失的 specifier 且错误码为 `ERR_MODULE_NOT_FOUND` 时可记依赖待验；语法错误、模块初始化异常及其他导入错误必须失败。禁止用 `!module` 一概 skip。
 - 本路交付停止；不合并 main、不接模型/真实旧档、不启停他人服务。
 
 ## 文件白名单
@@ -47,9 +47,9 @@
 ## 实现范围
 
 1. 保留 owner 对旧 profiles/checkpoints 的恢复与处理能力；新增 motivation-village 与 service format 5。service5 只消费 A2 的真实导出和真实服务候选，不改写人物规则或目标归属。M2 v1 未实现，不做档案迁移。
-2. public/private Inspector、counterfactual、player 投影与能力信息基于同一候选：全部构造和验证后 durable publish，再一起 swap。GET/HEAD 只读克隆，不恢复、不推理、不落盘、不推进。
+2. public/private Inspector、counterfactual、player 投影与能力信息基于同一候选：全部构造和验证后 durable publish，再一起 swap。GET/HEAD 只读克隆，不恢复、不推理、不落盘、不推进。 M2 player DTO 按合同 §7：format 5 先用真实 M2 rules/systems 完整校验 bundle，再经 `runtime/service/http-contract.mjs` 内只读 adapter 按现有 PlayerDTO 白名单投影本人 actor4、`playerModel` 和 `actions`；不篡改 `rulesVersion`，不走旧 `buildPlayerKnowledge`，不新增 A2 函数或扩大 Knowledge 白名单。M1 与旧 profiles 仍使用原 helper 路径。
 3. /api/runtime/minds 沿用 inspectMind=true。默认关闭时任何 method/query 都404；开启后无 M1/M2 检查器能力404。通过 Host/Origin 保护后先能力检查，再方法，再 query；非 GET/HEAD 405，有 query 400。HEAD 与 GET 同状态/头但无正文。API 与三份检查器静态文件同受门控。旧 M1 mind-inspector-v1、时间 DTO1、玩家动作 DTO2 保持原状。不得增加心理/模型/反事实写 API。
-4. UI 按真实 DTO 展示：worldFacts、Knowledge、Decision/Outcome、active/suspended/blocked Plan、duty 与履约、反事实。候选列 provider/sourceRef、eligible、分数、selectable 与 selectionBlockCode；展示 gateReason，清楚说明高分候选可能被承诺门挡住。innerStance 原样读 Decision 字段，不从 choice 派生；committedIntent、apparentAction 和 Outcome 分开展示。失败归属只读真实 outcome.failureOwner。假设面板明确是假设，不表示 action 可执行或成功。
+4. UI 按真实 DTO 展示：worldFacts、Knowledge、Decision/Outcome、active/suspended/blocked Plan、duty 与履约、反事实。候选列 provider/sourceRef、eligible、分数、selectable 与 selectionBlockCode；展示 gateReason，清楚说明高分候选可能被承诺门挡住。innerStance 原样读 Decision 字段，不从 choice 派生；committedIntent、apparentAction 和 Outcome 分开展示。失败归属只读真实 outcome.failureOwner。假设面板明确是假设，不表示 action 可执行或成功。DTO 不含 `transitionsHistory` 字段，不增加伪历史；仅展示当前状态。REQUEST_SUPERSEDED 历史须由 A2 的真实 event ledger 提供并验收。
 5. 人物切换/刷新/双页签不写；迟到响应不得覆盖新 revision；断连保留最后读数并标读失败；安全显示所有人物/配置字段。
 
 ## 定向验证
@@ -73,3 +73,7 @@ mock、HTTP、浏览器证据分开说明；依赖未交付的部分标未验证
 ## 交付回执
 
 用户摘要说明入口、候选解释、计划与意图展示及反事实限制。中控回执含代码/合同/A2 SHA、工作树/分支所有权、精确文件、测试命令/结果、真实 HTTP 与浏览器只读证据、临时目录/进程归属和未验证项。验收前维持待验收，不更新阶段结论。
+
+## 中控首次审查（2026-10-08 15:46 Asia/Shanghai）
+交付 SHA `131d7a6d9eeaf3d01138bf0d34e64760b854cb8f`，相对 `87aa9b6` 的8个白名单文件，tracked干净；origin指向本地clone，但root已确认GitHub远端存在同SHA。指定B2 suite 21 tests：19 pass、2 skip、0 fail，3.221s；两个skip依赖A2真实namespace/save fault。证据在交付树ignored `artifacts/world-runtime-m2b-controller-review-20261008/`，含metadata、TAP与两个VM mock counter反例：deadlineDay=21显示22；soft-eligible且selectable=false时旧列表仍标可选（新表格正确）。UI mock另有Goal.deadline=20而health Plan.deadline=21；dutyPlan.deadline=3而expiresTick=432，合同期限应为floor((432-1)/144)=2；Knowledge指纹也由不同输入构造。需按冻结输入重建mock并断言canonical投影中的deadline与阻断项。
+审查发现 `runtime-mind.css` 以8行M2样式替换原完整M1字体、布局、grid、focus与media样式；format5的`projectPlayerSnapshot`仍调用只接受M1/PLAYER/PLAY的旧`buildPlayerKnowledge`，合法M2 bundle会被拒，owner的`playerAvailable5`初始化及强制调用也会阻断服务启动。save-fault测试的`IO.link`非故障路径是no-op，不会真实link。独立M1纯库临时目录IO probe确认只有`.runtime-owner.lock`，没有`service-commit-r0`文件；合法AdvanceTime(1)首先返回`INVALID_SERVICE_COMMIT`，到不了`SAVE_FAILED`。需恢复真实`fs.link`故障注入，并核对磁盘及三份完整DTO，不能只核revision。另将任意动态import异常压成unavailable、用`!module`宽泛skip均需改为仅精准缺失specifier + `ERR_MODULE_NOT_FOUND`可待验，语法/初始化异常必须失败。DTO不含transitionsHistory，不虚构REQUEST_SUPERSEDED历史；只验当前投影与A2提供的真实event ledger。证据：ignored `review.md`、`savefault-link-probe.mjs`与log。没有真实A2 service5或browser证据；M2B NEED REVISION。公共函数模块归属现由中控在共同合同§4.0澄清，不归为执行者违反合同。本轮不改server CLI whitelist。

@@ -79,6 +79,14 @@
 - A1 `runtime/core/motivation-planner.mjs` 导出 `collectMotivationCandidates(knowledge)`、`planMotivationDecision(knowledge)`、`buildFastCounterfactual(decision)`。planner 纯计算候选、承诺门和计划变化；不执行命令、不修改输入、不消耗 RNG/clock、不读其他 actor/world。
 - A2 公共导出及签名为 `defaultMotivationVillageConfig()`、`createMotivationVillage(seed=42,simulationId='motivation-village',config=defaultMotivationVillageConfig())`、`motivationSystems()`、`validateMotivationWorld(world,sealed=true)`、`executeMotivationPlayerIntent(bundle,intent)`、`describeMotivationPlayerActions(bundle)`、`buildMotivationKnowledge(bundle,actorId)`、`projectMotivationInspector(bundle)`。`buildMotivationKnowledge` 只构造 committed phase；`projectMotivationInspector` 完整 bundle audit 后返回克隆。A2 的 decision-phase helper 私有，B/C 不得调用或用 A1 planner 生成独立 expected。`validateMotivationWorld` 只保证配对结构，不替代 bundle 完整审计和历史重演。M1 stimuli + M2 requests 的跨配置总预算、每 tick 总量、request 前缀/cursor 及完整历史由 A2 校验。
 
+A2 公共函数的模块归属如下；函数名、签名与业务 DTO 仍按本合同，不要求额外 barrel/re-export：
+
+| 公共函数 | 所属模块 |
+|---|---|
+| `defaultMotivationVillageConfig()`、`createMotivationVillage(...)`、`motivationSystems()` | `runtime/fixtures/motivation-village.mjs` |
+| `validateMotivationWorld(...)`、`executeMotivationPlayerIntent(...)`、`describeMotivationPlayerActions(...)` | `runtime/core/motivation-runtime.mjs` |
+| `buildMotivationKnowledge(...)`、`projectMotivationInspector(...)` | `runtime/knowledge/motivation-knowledge.mjs` |
+
 ### 4.1 Knowledge
 
 Knowledge 顶层精确白名单为 {knowledgeVersion,phase,simulationId,actorId,tick,revision,self,quote,observations,belief,profile,duty,planState}。不增其它顶层键；对象键插入顺序不属于合同，fingerprint 使用 canonical JSON。
@@ -191,6 +199,7 @@ M2 不改 event schemaVersion=1 外壳；tick/eventSeq/输入序列由原引擎�
 
 worldFacts 只展示公仓 food/herbs 与已公布药价；不得展示全部私账。`GET|HEAD /api/runtime/minds` 复用既有 `inspectMind=true` 门；M1 `mind-inspector-v1` 不变。新 profile 才用 service5 并使 capabilities.mindAvailable/playerActions 按真实能力报告。服务命令 v1/v2 经 A2 adapter；不能造永远缺依赖的断言或生产 mock fallback。不得新增写心理/模型/反事实 POST。反事实随私有投影预计算并缓存；GET/HEAD 零写。
 
+M2 service format 5 的 `projectPlayerSnapshot` 必须先执行完整 `validateBundle(bundle,{rulesVersion:MOTIVATION_RULES,systems:motivationSystems()})` 校验，再按既有 PlayerDTO 白名单投影本人 `actor-4` 与 `playerModel`。DTO 精确为 `{apiVersion:1,simulationId,revision,tick,self:{identity:{actorId,name,occupation,location,simulationLevel,alive,deathTick},health,hunger,fatigue,needs,wallet,inventory},actions}`，其中 `actions` 来自真实 `describeMotivationPlayerActions(bundle)`，返回值须为脱离源对象的克隆。不得改写 `rulesVersion` 伪装旧版本，也不得继续调用会选择 `PLAYER_RULES` 并拒绝合法 M2 bundle 的旧 `buildPlayerKnowledge`。B 可在白名单 `runtime/service/http-contract.mjs` 实现只读投影 adapter；不新增 A2 公共函数、不扩展 Knowledge 白名单、不复制人物执行规则。M1 与旧 profiles 保持原 helper 路径。
 - 开关默认关闭。关闭时任意 method/query 均 404。开启但没有 M1/M2 检查器能力时 404；旧 M1 能力继续返回原 DTO/状态。通过现有 Host/Origin 保护后，能力检查先于方法；有能力时非 GET/HEAD 为 405，再检查 query（有 query 为 400）。三份检查器静态文件与 API 同门。
 - 在保留旧 service profiles 1/2/3/4 的前提下新增 service5；不得把 owner 限制为只接受 M2。service5、capability、playerActions、私有 Inspector、公共/player 投影必须基于同一候选：全部构造验证后 durable publish，再一起 swap。保存故障保留旧状态。重启同 ID 幂等，stale revision 409。
 - M2 命名空间为 `society-day-`、`mind-day-`、`motivation-day-`；仅新 rules 对这三类内部前缀实施其合同限制。旧 profile 保留原有命名空间规则，不全局禁用 `motivation-day-`。

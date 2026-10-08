@@ -1,6 +1,6 @@
 # M2C：承诺门、失败归属与真实消费者独立验收
 
-合同：m2-contract-v2；状态：待派发、未开工。共同合同 Q1–Q7 为唯一 expected 来源；不从 A1/A2/B 输出倒抄预期。
+合同：m2-contract-v2；状态：已交付，2026-10-08 中控首次审查 NEED REVISION。共同合同 Q1–Q7 为唯一 expected 来源；不从 A1/A2/B 输出倒抄预期。
 
 ## 给用户看
 
@@ -57,3 +57,7 @@
 ## 回执与裁定
 
 用户摘要说明通过的独立证据与限制。给中控目录/分支/基准 SHA、合同及 A1/A2/B SHA、本路交付 SHA、Q1–Q7映射、真实命令与结果、证据目录、PASS/NEED REVISION 和未验证项。只有中控结合 A/B 与真实消费者证据裁定阶段；本路不更新看板/PROJECT_CONTEXT、不将阶段标为通过。
+
+
+## 中控首次审查（2026-10-08 15:31 Asia/Shanghai）
+交付 fbae74d80cf57c9cd6e1df6a6082daebbe692486 已推送，仅三测试文件。原27 tests为6 pass/21 skip；仅将导入接至 A1 ignored 临时副本后12 tests为6 pass/6 skip，仍是假绿：Q1–Q6大多只有依赖 gate 与注释，没有真实 core/runner/http 断言；B 错导入合同不存在的 service/motivation-inspector.mjs，宽 catch-all 会吞掉语法/初始化错误，Q7 固定诊断不核对基准与证据。另修正服务检查概念：合同要求 inspectMind 关闭时 HTTP 404；服务停止时应 connection refused。故 NEED REVISION。证据：交付树 ignored artifacts/world-runtime-m2c-controller-review-20261008/review.md 与 TAP。A1 已交付不等于 C 已导入；不改生产代码或 expected。
