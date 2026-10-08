@@ -22,23 +22,43 @@ export function mindBackend(){return _mindBackend;}
 // A1's motivation-state.mjs; service5 only recognizes the contract-frozen value and never
 // invents a compatible alias for it.
 export const MOTIVATION_RULES='m-motivation-v1';
-// M2B: service5 consumes only A2's real exports (runtime/core/motivation-runtime.mjs). The
-// import is attempted explicitly and its failure is recorded and reportable; there is no mock
-// fallback and no swallowed dependency error. Until A2 is delivered, motivation worlds cannot
-// be created or loaded by this deployment.
+// M2 contract §4.0 assigns the eight public functions to three modules, without a barrel.
+const MOTIVATION_MODULES={
+  fixture:{specifier:'../fixtures/motivation-village.mjs',exports:['defaultMotivationVillageConfig','createMotivationVillage','motivationSystems']},
+  runtime:{specifier:'../core/motivation-runtime.mjs',exports:['validateMotivationWorld','executeMotivationPlayerIntent','describeMotivationPlayerActions']},
+  knowledge:{specifier:'../knowledge/motivation-knowledge.mjs',exports:['buildMotivationKnowledge','projectMotivationInspector']},
+};
 let _motivationBackend=null;
 export async function loadMotivationBackend(){
-  if(_motivationBackend?.module)return _motivationBackend;
-  try{_motivationBackend={module:await import('../core/motivation-runtime.mjs'),error:null};}
-  catch(error){_motivationBackend={module:null,error:String(error?.message??error)};}
+  if(_motivationBackend?.backend)return _motivationBackend;
+  if(_motivationBackend?.failure)throw _motivationBackend.failure;
+  const backend={};
+  for(const [name,{specifier,exports}] of Object.entries(MOTIVATION_MODULES)){
+    let module;
+    try{
+      module=await import(specifier);
+      for(const key of exports)requireCondition(typeof module[key]==='function',`A2 ${specifier} is missing export ${key}`,'UNSUPPORTED_VERSION');
+    }
+    catch(error){
+      const dependencyPending=error?.code==='ERR_MODULE_NOT_FOUND' && error.url===new URL(specifier,import.meta.url).href;
+      _motivationBackend={backend:null,dependencyPending,missingSpecifier:dependencyPending?specifier:null,
+        error:String(error?.message??error),errorCode:error?.code??null,failure:dependencyPending?null:error};
+      if(!dependencyPending)throw error;
+      return _motivationBackend;
+    }
+    backend[name]=module;
+  }
+  _motivationBackend={backend,dependencyPending:false,missingSpecifier:null,error:null,errorCode:null};
   return _motivationBackend;
 }
 export function motivationBackendState(){
-  return _motivationBackend?{available:Boolean(_motivationBackend.module),error:_motivationBackend.error}
-    :{available:false,error:'motivation backend has not been loaded yet'};
+  return _motivationBackend?{available:Boolean(_motivationBackend.backend),dependencyPending:_motivationBackend.dependencyPending,
+    missingSpecifier:_motivationBackend.missingSpecifier,error:_motivationBackend.error,errorCode:_motivationBackend.errorCode}
+    :{available:false,dependencyPending:false,missingSpecifier:null,error:'motivation backend has not been loaded yet',errorCode:null};
 }
 export function requireMotivationBackend(){
-  const backend=_motivationBackend?.module;
+  if(_motivationBackend?.failure)throw _motivationBackend.failure;
+  const backend=_motivationBackend?.backend;
   requireCondition(backend,'M2 motivation runtime module is not available in this deployment','UNSUPPORTED_VERSION');
   return backend;
 }
@@ -74,15 +94,24 @@ export function runtimeProfile(bundle){
     return {serviceFormatVersion:4,rulesVersion:MIND_RULES,systems:_mindBackend.fixture.mindSystems()};
   }
   if(s.rulesVersion===MOTIVATION_RULES && s.fixtureId==='motivation-village'){
-    return {serviceFormatVersion:5,rulesVersion:MOTIVATION_RULES,systems:requireMotivationBackend().motivationSystems()};
+    return {serviceFormatVersion:5,rulesVersion:MOTIVATION_RULES,systems:requireMotivationBackend().fixture.motivationSystems()};
   }
   requireCondition(false,'Runtime service profile is not registered','UNSUPPORTED_VERSION');
 }
 export function projectPlayerSnapshot(bundle){
   const profile=runtimeProfile(bundle);let actions;
+  if(profile.serviceFormatVersion===5){
+    validateBundle(bundle,{rulesVersion:MOTIVATION_RULES,systems:profile.systems});
+    const s=bundle.snapshot,p=s.world.playerModel,a=s.world.actorModel.actors.find(actor=>actor.actorId==='actor-4');
+    requireCondition(p.actorId==='actor-4' && a,'Motivation player identity is missing');
+    const {actorId,name,occupation,location,simulationLevel,alive,deathTick,health,hunger,fatigue,needs}=a;
+    actions=requireMotivationBackend().runtime.describeMotivationPlayerActions(bundle);
+    return cloneData({apiVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,
+      self:{identity:{actorId,name,occupation,location,simulationLevel,alive,deathTick},health,hunger,fatigue,needs,
+        wallet:p.wallet,inventory:p.inventory},actions});
+  }
   if(profile.serviceFormatVersion===3)actions=describePlayerActions(bundle);
   else if(profile.serviceFormatVersion===4)actions=_mindBackend.runtime.describeMindPlayerActions(bundle);
-  else if(profile.serviceFormatVersion===5)actions=requireMotivationBackend().describeMotivationPlayerActions(bundle);
   return cloneData({apiVersion:1,...buildPlayerKnowledge(bundle),...(actions?{actions}:{})});
 }
 export function projectPublicSnapshot(bundle){
@@ -98,6 +127,6 @@ export function projectPublicSnapshot(bundle){
 // format5 dispatches to A2's projectMotivationInspector. Both entries fully re-validate the
 // bundle before returning detached JSON data, so the served DTO is always one audited candidate.
 export function projectMindInspector(bundle){
-  if(runtimeProfile(bundle).serviceFormatVersion===5)return cloneData(requireMotivationBackend().projectMotivationInspector(bundle));
+  if(runtimeProfile(bundle).serviceFormatVersion===5)return cloneData(requireMotivationBackend().knowledge.projectMotivationInspector(bundle));
   return cloneData(_mindBackend.knowledge.projectMindInspector(bundle));
 }

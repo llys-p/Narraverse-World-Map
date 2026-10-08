@@ -43,7 +43,7 @@ function setMotivationMode(on){
 function motivationPlanText(plan){
   if(!plan)return '无';
   const steps=Array.isArray(plan.steps)&&plan.steps.length?`（${plan.steps.join(' → ')}）`:'';
-  return `#${plan.planId} ${planKindLabel[plan.kind]??plan.kind} · ${planStatusLabel[plan.status]??plan.status} · 步骤 ${plan.stepIndex}/${plan.steps?.length??'?'}${steps} · 期限 第 ${typeof plan.deadlineDay==='number'?plan.deadlineDay+1:plan.deadlineDay} 天`;
+  return `#${plan.planId} ${planKindLabel[plan.kind]??plan.kind} · ${planStatusLabel[plan.status]??plan.status} · 步骤 ${plan.stepIndex}/${plan.steps?.length??'?'}${steps} · 期限 第 ${plan.deadlineDay} 天`;
 }
 function renderCounterfactual(cf){
   const list=byId('cf-list'),empty=byId('cf-empty'),cases=Array.isArray(cf)?cf:[];
@@ -75,7 +75,7 @@ function renderActor(actor,motivation=false){
     setText('self-hunger-fatigue',`${s.hunger} / ${s.fatigue}`);
     setText('profile-weights',k.profile?`职责 ${k.profile.dutyWeightPermille}‰ · 风险厌恶 ${k.profile.riskAversionPermille}‰`:'—');
     const goal=s.currentGoal;
-    byId('self-current-goal').textContent=goal?`#${goal.goalId} ${goal.kind??''}${goal.target!=null?` · 目标值 ${goal.target}`:''}${goal.step!=null?` · 阶段 ${goal.step}`:''}${goal.deadlineDay!=null?` · 截止第 ${goal.deadlineDay+1} 天`:''}`:'无';
+    byId('self-current-goal').textContent=goal?`#${goal.goalId} ${goal.kind??''}${goal.target!=null?` · 目标值 ${goal.target}`:''}${goal.step!=null?` · 阶段 ${goal.step}`:''}${goal.deadlineDay!=null?` · 截止第 ${goal.deadlineDay} 天`:''}`:'无';
     const duty=k.duty;
     byId('duty-summary').textContent=duty?`${duty.requestId} · 紧急度 ${duty.urgencyPermille}‰ · 窗口 tick ${duty.observedTick}–${duty.expiresTick}`:'无';
     let dutyText='无请求';
@@ -112,7 +112,9 @@ function renderActor(actor,motivation=false){
     byId('decision-candidates').replaceChildren();
     for(const candidate of d.candidates??[]){
       const item=document.createElement('li');
-      item.textContent=`${choiceLabel[candidate.action]??candidate.action} · ${candidate.eligible?'可选':'不可选'} · ${candidate.reasonCode}`;
+      const availability=motivation?(candidate.selectable?'可选':`不可选（${blockCodeLabel[candidate.selectionBlockCode]??candidate.selectionBlockCode??'—'}）`):
+        candidate.eligible?'可选':'不可选';
+      item.textContent=`${choiceLabel[candidate.action]??candidate.action} · ${availability} · ${candidate.reasonCode}`;
       byId('decision-candidates').append(item);
     }
     if(motivation){

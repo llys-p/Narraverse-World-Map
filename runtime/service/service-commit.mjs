@@ -21,7 +21,7 @@ export function transitionServiceCommand(bundle,dto){
   requireCondition(dto.version===1 || [3,4,5].includes(profile.serviceFormatVersion),'Profile does not support player actions','COMMAND_UNSUPPORTED');
   if(dto.version===1){const session=createSimulationSession(bundle,profile.systems);session.advanceTicks(dto.payload.ticks);
     const next=session.getBundle();return {bundle:next,receipt:timeReceipt(dto,next.snapshot.revision)};}
-  const execute=mindPlayer?mindBackend().runtime.executeMindPlayerIntent:motivation?requireMotivationBackend().executeMotivationPlayerIntent:executePlayerIntent;
+  const execute=mindPlayer?mindBackend().runtime.executeMindPlayerIntent:motivation?requireMotivationBackend().runtime.executeMotivationPlayerIntent:executePlayerIntent;
   const {bundle:next,outcome,result}=execute(bundle,{commandId:dto.commandId,type:dto.type,payload:dto.payload});
   return {bundle:next,receipt:{apiVersion:1,receiptVersion:2,commandId:dto.commandId,status:'committed',fromRevision:dto.expectedRevision,
     toRevision:next.snapshot.revision,tick:next.snapshot.tick,type:dto.type,outcome,result}};

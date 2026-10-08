@@ -58,9 +58,9 @@ async function inspectDirectory(directory,io){
 // IO injection is a library test boundary; HTTP/CLI cannot supply handlers or bypass validation.
 export async function createRuntimeOwner(options,io=fs){
   record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','writable'].includes(k)),'Unknown owner option');
-  // Prime the A2 motivation backend before any profile dispatch so the dependency state is
-  // explicit at startup, never discovered midway through a command.
-  await loadMotivationBackend();
+  // Keep unrelated legacy profiles available. A failed M2 import is retained by the loader
+  // and rethrown when a motivation profile/checkpoint actually requires that backend.
+  try{await loadMotivationBackend();}catch(error){if(options.profile==='motivation-village')throw error;}
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
   if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
@@ -89,7 +89,7 @@ export async function createRuntimeOwner(options,io=fs){
       requireCondition(options.seed===undefined || options.seed===bundle.snapshot.rng.seed,'Cannot reset existing runtime seed');
     }else{
       const create=options.profile==='mind-village'?mindBackend().fixture.createMindVillage:
-        options.profile==='motivation-village'?requireMotivationBackend().createMotivationVillage:
+        options.profile==='motivation-village'?requireMotivationBackend().fixture.createMotivationVillage:
         options.profile==='player-play-village'?createPlayerPlayVillage:options.profile==='player-village'?createPlayerVillage:createPersonalityNeutral;
       bundle=options.checkpoint===undefined?create(options.seed??42).bundle:
         await loadExplicitCheckpoint(options.checkpoint,io);
