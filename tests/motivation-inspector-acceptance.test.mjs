@@ -107,19 +107,81 @@ test('Q6 real browser two pages display source/gate/intent/result/failure and re
   const checkpoint = await saveCheckpoint(follow.getBundle(), { directory: path.join(root, 'source'), rulesVersion: 'm-motivation-v1', systems: fixture.motivationSystems() });
   const directory = path.join(root, 'world'), server = await startRuntimeServer({ directory, checkpoint, port: 0, writable: true, inspectMind: true }); t.after(() => server.close());
   const browser = await chromium.launch({ headless: true, ...(process.env.M2C_BROWSER_EXECUTABLE ? { executablePath: process.env.M2C_BROWSER_EXECUTABLE } : {}) }); t.after(() => browser.close());
-  const context = await browser.newContext(), pages = [await context.newPage(), await context.newPage()], errors = [], writes = [];
-  for (const page of pages) { page.on('pageerror', e => errors.push(e.message)); page.on('request', r => { if (!['GET', 'HEAD'].includes(r.method())) writes.push(r.url()); }); }
-  const before = await disk(directory), dto = await get(server.url);
-  await Promise.all(pages.map(page => page.goto(server.url + '/runtime-mind.html')));
-  for (const page of pages) {
-    await page.waitForFunction(() => document.body.textContent.includes('NEW_MAJOR_DUTY'));
-    const text = await page.locator('body').innerText();
-    for (const token of ['role-request', 'd01', 'health-concerned', 'recover-health', 'WorkForPay', 'RULE_REJECTED']) assert.ok(text.includes(token), `rendered ${token}`);
-    assert.match(text, /归属|failureOwner/); assert.match(text, /假设|反事实/);
-    await page.locator('#actor-3').click(); await page.locator('#actor-2').click(); await page.locator('#mind-refresh').click(); await page.reload();
-    await page.waitForFunction(() => document.body.textContent.includes('NEW_MAJOR_DUTY'));
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } }), pages = [await context.newPage(), await context.newPage()];
+  const errors = [], consoleMessages = [], requests = [], writes = [], evidence = process.env.M2C_BROWSER_ARTIFACTS;
+  for (const [index, page] of pages.entries()) {
+    page.on('pageerror', e => errors.push({ page: index + 1, message: e.message }));
+    page.on('console', e => consoleMessages.push({ page: index + 1, type: e.type(), text: e.text() }));
+    page.on('request', r => { const record = { page: index + 1, method: r.method(), url: r.url() }; requests.push(record); if (!['GET', 'HEAD'].includes(r.method())) writes.push(record); });
   }
-  assert.deepEqual(await get(server.url), dto); assert.deepEqual(await disk(directory), before); assert.deepEqual(writes, []); assert.deepEqual(errors, []);
+  const before = await disk(directory), dto = await get(server.url);
+  const actor2 = dto.actors.find(a => a.knowledge.actorId === 'actor-2'), decision = actor2.lastDecision;
+  // Raw contract values belong to the real API; the UI deliberately renders Chinese labels.
+  assert.equal(dto.tick, 288); assert.equal(dto.revision, 288); assert.equal(dto.mindVersion, 'motivation-inspector-v1');
+  assert.deepEqual([decision.gateReason, decision.innerStance, decision.committedIntent, decision.apparentAction, decision.planId, decision.goalId],
+    ['NEW_MAJOR_DUTY', 'health-concerned', { goalId: 1, kind: 'recover-health' }, 'WorkForPay', 2, null]);
+  assert.deepEqual(actor2.lastOutcome.failureOwner, { planId: 2, goalId: null }); assert.equal(actor2.lastOutcome.code, 'RULE_REJECTED');
+  assert.deepEqual(decision.candidates.map(c => [c.action, c.provider, c.sourceRef]),
+    [['UseMedicine', 'health-need', 'recover-health'], ['BuyMedicine', 'health-need', 'recover-health'], ['WorkForPay', 'role-request', 'd01'], ['Rest', 'fatigue-need', 'self-fatigue'], ['NoAction', 'fallback', null]]);
+  const actor3 = dto.actors.find(a => a.knowledge.actorId === 'actor-3');
+  assert.deepEqual([actor3.lastDecision.gateReason, actor3.lastDecision.innerStance, actor3.lastDecision.committedIntent, actor3.lastDecision.apparentAction],
+    ['CONTINUE_COMMITTED', 'health-concerned', { goalId: 1, kind: 'recover-health' }, 'UseMedicine']);
+  const labels = { UseMedicine: '用药', BuyMedicine: '买药', WorkForPay: '工作', Rest: '休息', NoAction: '无动作' };
+  const blocks = { SOFT_PRECONDITION_FAILED: '软前提未满足', COMMITMENT_PROTECTED: '承诺保护', URGENT_OVERRIDE: '急迫覆盖' };
+  async function visibleText(page, id, expected) {
+    const node = page.locator('#' + id); assert.equal(await node.isVisible(), true, `${id} visible`); assert.equal(await node.innerText(), expected, id);
+  }
+  async function reading(page, actorId) {
+    await page.locator('#mind-status[data-state="ready"]').waitFor({ state: 'visible' });
+    const actor = dto.actors.find(a => a.knowledge.actorId === actorId), d = actor.lastDecision;
+    assert.equal(await page.locator('#' + actorId).getAttribute('data-active'), 'true');
+    await visibleText(page, 'self-name', actor.knowledge.self.name);
+    await visibleText(page, 'self-health', String(actor.knowledge.self.health));
+    await visibleText(page, 'mind-time', 'tick 288 · revision 288');
+    await visibleText(page, 'decision-choice', labels[d.choice]); await visibleText(page, 'decision-apparent', labels[d.apparentAction]);
+    await visibleText(page, 'decision-inner', '以健康为虑');
+    await visibleText(page, 'decision-intent', `recover-health（目标 ${d.committedIntent.goalId}）`);
+    const rows = await page.locator('#m2-candidates-body tr').evaluateAll(nodes => nodes.map(row => [...row.cells].map(cell => cell.textContent)));
+    assert.equal(rows.length, d.candidates.length);
+    for (const [i, c] of d.candidates.entries()) assert.deepEqual(rows[i],
+      [labels[c.action], `${c.provider} / ${c.sourceRef ?? '—'}`, c.eligible ? '满足' : '不满足', `${c.support} / ${c.opposition}`, c.score == null ? '—' : String(c.score), c.selectable ? '可选' : blocks[c.selectionBlockCode], c.reasonCode]);
+    assert.equal(await page.locator('#m2-counterfactual').isVisible(), true); assert.equal(await page.locator('#cf-list li').count(), 3);
+    assert.match(await page.locator('#m2-counterfactual').innerText(), /只读推演 · 不执行动作 · 不代表世界结果或成功/);
+    if (actorId === 'actor-2') {
+      await visibleText(page, 'decision-gate', '新的重大职责 · 打开完整重评');
+      await visibleText(page, 'decision-plan', '计划 #2（临时 · 不绑定长期目标）');
+      await visibleText(page, 'outcome-status', '拒绝'); await visibleText(page, 'outcome-code', 'RULE_REJECTED');
+      await visibleText(page, 'outcome-owner', '公粮记账 0 · 失败归属 计划 #2（临时，无长期目标）');
+      assert.match(await page.locator('#plan-active').innerText(), /^#2 履行村中职责 · 受阻/);
+      assert.match(await page.locator('#plan-suspended').innerText(), /^#1 恢复健康 · 挂起/);
+      assert.match(await page.locator('#self-current-goal').innerText(), /^#1 /);
+      assert.match(await page.locator('#duty-summary').innerText(), /^d01 ·/);
+    } else {
+      await visibleText(page, 'decision-gate', '继续已承诺计划');
+      await visibleText(page, 'decision-plan', '计划 #1（绑定长期目标 1）');
+      await visibleText(page, 'outcome-status', '成功');
+    }
+  }
+  async function readFromPage(page, action) {
+    const response = page.waitForResponse(r => r.url() === server.url + '/api/runtime/minds' && r.request().method() === 'GET');
+    await action(); const r = await response; assert.equal(r.status(), 200); assert.deepEqual(await r.json(), dto);
+  }
+  if (evidence) await fs.mkdir(evidence, { recursive: true });
+  await Promise.all(pages.map(page => readFromPage(page, () => page.goto(server.url + '/runtime-mind.html'))));
+  for (const [index, page] of pages.entries()) {
+    await reading(page, 'actor-2');
+    if (evidence) await page.screenshot({ path: path.join(evidence, `page-${index + 1}-actor-2.png`), fullPage: true });
+    await page.locator('#actor-3').click(); await reading(page, 'actor-3');
+    if (evidence) await page.screenshot({ path: path.join(evidence, `page-${index + 1}-actor-3.png`), fullPage: true });
+    await page.locator('#actor-2').click(); await reading(page, 'actor-2');
+    await readFromPage(page, () => page.locator('#mind-refresh').click()); await reading(page, 'actor-2');
+    await readFromPage(page, () => page.reload()); await reading(page, 'actor-2');
+  }
+  const after = await disk(directory);
+  if (evidence) await fs.writeFile(path.join(evidence, 'browser-observations.json'), JSON.stringify({ dto, requests, consoleMessages, errors, writes,
+    diskBefore: before.map(([file, bytes]) => [file, hash(bytes)]), diskAfter: after.map(([file, bytes]) => [file, hash(bytes)]), browserVersion: browser.version() }, null, 2));
+  assert.deepEqual(await get(server.url), dto); assert.deepEqual(after, before); assert.deepEqual(writes, []); assert.deepEqual(errors, []);
+  assert.deepEqual(consoleMessages.filter(e => ['error', 'warning'].includes(e.type)), []);
 });
 
 const BASELINE = '87aa9b605f5f509ce3b0daa97e34ded004d22f33';
