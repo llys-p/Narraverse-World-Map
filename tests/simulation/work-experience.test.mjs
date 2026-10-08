@@ -121,10 +121,10 @@ test('window order: evicted sequences, backward ticks and reused identifiers all
   rejects(()=>observeWorkOutcome(state,sample(1,72,'S',9)),{code:'INVALID_INPUT'},
     'seq 1 left the four-sample window and may not be re-learned');
   rejects(()=>observeWorkOutcome(state,sample(0,12,'S',9)),{code:'INVALID_INPUT'});
-  rejects(()=>observeWorkOutcome(state,{...sample(5,60,'S',5),occurrenceTick:47}),{code:'INVALID_INPUT'},
+  rejects(()=>observeWorkOutcome(state,{...sample(6,72,'S',6),occurrenceTick:59}),{code:'INVALID_INPUT'},
     'a later event cannot report an earlier tick than the newest sample');
   // seq and tick move forward, but the command identifier already sits in the window.
-  rejects(()=>observeWorkOutcome(state,sample(5,60,'S',3)),{code:'INVALID_INPUT'},
+  rejects(()=>observeWorkOutcome(state,sample(6,72,'S',3)),{code:'INVALID_INPUT'},
     'a reused command identifier is a conflict even at a newer sequence');
   const decisions=stateOf([{...sample(1,12,'F',1),commandId:'cmd-x'},{...sample(2,24,'F',2),commandId:'cmd-y'}]);
   rejects(()=>observeWorkOutcome(decisions,{...sample(3,36,'S',2),commandId:'cmd-z'}),{code:'INVALID_INPUT'},
