@@ -57,6 +57,7 @@ async function refresh(){
     if(capabilities.playerActionsAvailable===true && !player?.actions)throw new Error('动作读数缺失');
     render(dto);renderPlayer(player);renderActions(player);last=dto;lastPlayer=player;actionsAvailable=capabilities.playerActionsAvailable===true;
     writable=capabilities.writes===true;byId('time-controls').hidden=!writable;
+    byId('mind-link').hidden=capabilities.mindAvailable!==true;
     byId('map-note').textContent=writable?'世界时间仅在明确提交后推进':'只读观察 · 世界时间不会自动流逝';
     status.dataset.state='ready';status.textContent='已读取服务保存的世界 · 刷新不会推进时间';
   }catch(error){status.dataset.state='error';status.textContent=error.code==='READING_CONFLICT'?
