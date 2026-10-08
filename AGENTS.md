@@ -34,3 +34,12 @@
 - 同一任务外部返修原则上控制在三轮以内。剩余小缺陷由中控直接检查、修复或开子代理处理，并复验、提交与同步状态；不再让用户反复转发同一修复。不得因此降低验收门槛或把未验证工作标为通过。
 - 新业务阶段继续保留有界任务书；每份交接分成两块：给用户看功能变化、尚存bug与下一步；给AI看业务所在目录/分支/提交、已完成内容、具体执行范围、验证及停止点。用户摘要不堆实现细节，AI不得把待办当成已完成。
 - 用户不在时继续完成已授权的可逆修复和验证；重大范围变更、付费调用、部署与真实数据迁移仍遵守原授权边界。
+
+
+## 外部游戏 AI 参考库
+
+- 参考库入口：`docs/reference-library/README.md`。设计 Character Mind、World Runtime、Director、NPC 行为、认知 LOD 或相关任务书前，若存在相似成熟机制，先查 `MODULE-INDEX.md`。
+- 使用参考时优先提取架构 Pattern，不按“某游戏有这个功能”直接照搬。任务书按 `ADOPTION-PROTOCOL.md` 记录主参考、采用/拒绝模式、Narraverse 改造点与许可说明。
+- 外部系统不能覆盖本项目硬边界：World Runtime 是事实权威；Fact 与 Interpretation 分离；Character Mind 只形成主观状态/Intent；Director 制造处境；模型无世界写权限。
+- 外部代码默认只读架构并独立实现。任何代码级复用先查 `CODE-REFERENCE.md` 及源仓库当前许可证/commit；专有或反编译代码不得复制进本仓库。
+- 某参考模式真正进入已验收实现后，回写 `PATTERN-DECISIONS.md`，记录对应任务/commit 和 Narraverse 特化，避免后续 Agent 重复调研。
