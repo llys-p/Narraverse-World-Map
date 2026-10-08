@@ -82,7 +82,19 @@ node runtime-server.mjs --data-dir artifacts/world-runtime-m1/from-checkpoint --
 
 端口 `0` 让系统分配空闲本机端口；若改用固定端口，先确认它空闲。`--writable true` 开启服务时间推进与玩家动作提交；该参数不允许编辑心理状态或提交实验刺激。
 
-M1 集成代码验收 SHA `78303b4` 已通过中控独立验收，Goal 截止边界测试提交为 `3be94c6a85d17e0baf7c03583eb62fad9f52f0e9`，当前停在 M1；A/B/C 原交付分别为 `d82bfd9`、`ca78d1c`、`45a2ccd`，均已提交推送。集成模拟/边界为328/328、0 skip；服务/检查器19/19、D2C玩家服务/时间HTTP13/13、Goal截止/冷却边界1/1。真实浏览器验证 tick0、推进24+120、纠正前后判断、商人购药、人物切换/刷新、双页签只读、断连保留和关闭开关/404，pageErrors 0；证据位于 `artifacts/world-runtime-m1-controller-review-20261008/browser/run-20261008-78303b4`。兼容核对为：38 对基准 `feb2856` 与 M1A 交付的存档/导出 SHA256 逐字节一致；12 份（三树各4份）冻结合同副本统一换行至 LF 后内容一致。本轮没有重跑旧 CLI。M2/M3未开始，main未合并；正式平台、模型和长程心理质量未验收。合同与范围见 [M1 共同合同](tasks/M1-CHARACTER-MIND-CONTRACT.md) 和 [M1B 任务书](tasks/M1B-MIND-INSPECTOR-TASK.md)。
+历史 M1 集成代码 `78303b4` 已通过中控验收，Goal边界测试 `3be94c6`；模拟/边界328/328、服务19/19、玩家/时间13/13、Goal边界1/1与真实浏览器均为当轮证据。原A/B/C分别 `d82bfd9`/`ca78d1c`/`45a2ccd`，已推送。证据在M1树 `artifacts/world-runtime-m1-controller-review-20261008`；38对存档/导出与12份合同兼容核对亦属历史结果。合同见 [M1 共同合同](tasks/M1-CHARACTER-MIND-CONTRACT.md)。本树当前M2状态见下文与 [当前状态](PROJECT_CONTEXT.md)。
+
+### M2 本地集成状态
+
+2026-10-08 17:06（Asia/Shanghai）：当前树 `D:\Narraverse-World-Map-m2-integration @ codex/world-runtime-m2-integration`，验收代码 `12ed715`；基准M1 `87aa9b6`，A1/A2/B/C交付已导入。独立30项29通过/1浏览器失败/0跳过；真实CLI、保存恢复、期限/失败归属、旧完整数据兼容与HTTP服务均过，B额外服务3/3。浏览器断言与页面中文标签不一致，须修后真实定向复验；阶段全量回归未执行，M2未验收。子代理因额度中断；仅本地提交，main未合并，push/Projects因应用网络权限撤销待同步。控制任务书在 `D:\Narraverse-World-Map-control\tasks`，合同m2-contract-v2、期限fixture补正02c1a64；不启M3/D3或接入正式平台/模型。
+
+本地实验可使用新的数据目录；运行下面命令会启动一个服务，本轮没有代用户保持常驻实例：
+
+```powershell
+node runtime-server.mjs --data-dir artifacts/world-runtime-m2/demo --profile motivation-village --writable true --inspect-mind true --port 0
+```
+
+检查器只读，五种候选、当前职责、挂起计划和反事实均来自真实运行时；完整浏览器验收尚未通过。
 
 ```powershell
 node simulation-runner.mjs --fixture clock-smoke --days 100 --seed 42 --out artifacts/simulation/run100

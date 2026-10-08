@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-08 11:07（Asia/Shanghai）。
+更新时间：2026-10-08 17:06（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -10,9 +10,11 @@
 
 ## 当前运行时状态
 
-- 当前源码树：`D:\Narraverse-World-Map-m1-integration`，分支 `codex/world-runtime-m1-integration`。A/B/C 原交付分别为 `d82bfd9` / `ca78d1c` / `45a2ccd`，均已提交推送；M1 集成代码验收 SHA `78303b4`，Goal 截止边界测试提交 `3be94c6a85d17e0baf7c03583eb62fad9f52f0e9`。
-- M1 中控独立验收通过并停在 M1：集成模拟/边界 328/328、0 skip；新增 Goal 截止/冷却边界 1/1；服务/检查器 19/19、D2C 玩家服务与时间 HTTP 13/13。真实浏览器通过，证据位于 `artifacts/world-runtime-m1-controller-review-20261008/`。兼容核对为：38 对基准 `feb2856` 与 M1A 交付的存档/导出 SHA256 逐字节一致；12 份（三树各4份）冻结合同副本统一换行至 LF 后内容一致。这是兼容核对，本轮没有重跑旧 CLI。
-- 新实验使用单独 `artifacts/world-runtime-m1/<name>` 数据目录，不迁移真实存档。`--inspect-mind` 默认关闭，只开放只读检查器；`--writable true` 开启时间/玩家动作提交。M2/M3 未开始，源码未合并 main；正式平台、模型和长程心理质量未验收。
+- 当前源码树：`D:\Narraverse-World-Map-m2-integration`，分支 `codex/world-runtime-m2-integration`；M2 独立验收代码 SHA `12ed715aba31483a5ceb777332c36834ed77563e`。基准为已验收 M1 `87aa9b6`；A1 `79b0c50` 已验收，A2 `51b9975`、B `2a8eb52`、C `1b715af` 已本地提交并导入，未 push、未合并 main。
+- M2 实际独立30项为29 pass/1 browser fail/0 skip（322188ms）；真实计划/失败归属、期限/死亡、checkpoint分段、terminal CLI两日保存+两日恢复=四日、篡改拒绝、原M1/D2C六操作/C5四日与HTTP兼容均通过。B额外三个真实A2依赖服务用例3/3。62份验收范围文件前后hash未变；证据 `artifacts/world-runtime-m2-integration-acceptance-20261008/controller-review.json`。浏览器用例等待原枚举文本与中文页面显示不一致，必须修断言并真实定向复验；阶段全量回归未开始，M2 NEED REVISION/未验收。
+- 下一步由C子代理仅修 `tests/motivation-inspector-acceptance.test.mjs` 浏览器断言、真实补跑该1项，已过29项不重复；再最终冻结代码阶段全量回归一次。B/C因额度中断，已排队但未执行；不启M3/D3。任务书及控制状态在 `D:\Narraverse-World-Map-control`，合同 `m2-contract-v2` 原0d7cc74、期限fixture补正02c1a64。Projects/push因应用网络权限撤销待同步，不尝试外网。
+- 历史 M1 中控独立验收 PASS：模拟/边界328/328，Goal边界1/1，服务19/19，玩家/时间13/13及真实浏览器；历史证据在 `D:\Narraverse-World-Map-m1-integration\artifacts\world-runtime-m1-controller-review-20261008`，不是本轮重复执行结果。
+- 新实验使用单独 `artifacts/world-runtime-m2/<name>` 数据目录，不迁移真实存档。`--inspect-mind` 默认关闭、检查器只读；`--writable true` 开启时间/玩家动作提交。正式平台、模型/桥与长程心理质量未验收；未启停旧实例。
 
 ## 已有资产
 
@@ -68,7 +70,7 @@
 ## 尚未完成
 
 - M1真实浏览器验收与最终集成回归待完成；M1整体暂不标验收。
-- M2/M3未开始；D3/D4与D整体验收状态按历史阶段记录。
+- M2已本地集成、浏览器修正和阶段回归待完成；M3未开始。D3/D4与D整体验收状态按历史阶段记录。
 - 原型E2E端口/外部路径尚未统一，部分脚本可能触发云调用；运行前逐个核实。
 - 绘制素材许可/公开发布许可尚未核实，仓库先保持私有。
 - 旧正式平台移植建议属于历史，不自动成为本项目任务。
