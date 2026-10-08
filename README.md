@@ -20,9 +20,9 @@
 
 ## 新世界运行时进度
 
-2026-10-08 18:45（Asia/Shanghai）：M2已本地验收收口，冻结代码 `83826a8` 的401/401阶段回归与真实浏览器证据已归档；交接基准为 `D:\Narraverse-World-Map-m2-integration @ c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`。下一轮只发布 [M3-1A 工作结果经验内核](tasks/M3-1A-WORK-EXPERIENCE-TASK.md)和 [M3-1B 认知审查内核](tasks/M3-1B-COGNITIVE-REVIEW-TASK.md)，合同 `m3-kernels-contract-v1`，两路可并行、均待派发/未开工；中控独立验收，不另派C。每路一个模块和一份测试，真实运行时接入待依赖交付后另发M3-2；M3整体未验收。本轮子代理使用high推理，仅编写任务书。未合并main、未push/更新Projects；此前应用网络权限撤销，本轮未联网核实恢复。
+2026-10-08 19:50（Asia/Shanghai）：M2已本地验收收口，冻结代码 `83826a8` 的401/401阶段回归与真实浏览器证据已归档；交接基准为 `D:\Narraverse-World-Map-m2-integration @ c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`。M3-1A 工作结果经验内核已由中控裁定 PASS/本地已验收（仅纯内核）；[任务书](tasks/M3-1A-WORK-EXPERIENCE-TASK.md)记录合同、代码与定向复核证据。M3-1B 尚未收到交付回执、未验收；M3-1 未整体收口，M3-2 未发布、未实现，M3 整体未验收。未合并 main、未 push 或同步 Projects；网络状态未复核。
 
-M1、M2及M2 A1/A2/B/C已本地验收；M3-1发布不代表开工，D3/D4未开始。执行者记录两份任务书的实际控制分支发布SHA，并从固定M2交接点创建独占工作树。详见[当前状态](PROJECT_CONTEXT.md)。
+M1、M2及M2 A1/A2/B/C已本地验收；M3-1A 已验收，M3-1B 等待交付回执与独立验收。D3/D4未开始。M3-1A 合同发布 SHA 为 `8282a135a85967818c39a6289cd1a0e7dcec769d`；详见[当前状态](PROJECT_CONTEXT.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

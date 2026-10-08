@@ -1,6 +1,6 @@
 # M3-1A：本人工作执行经验内核
 
-合同版本：`m3-kernels-contract-v1`。状态：待派发；尚未开工、未实现、未验收。任务书发布提交由中控发布后填入控制状态，不在此预填。
+合同版本：`m3-kernels-contract-v1`。状态：中控裁定 PASS/本地已验收（仅内核）。合同发布 SHA：`8282a135a85967818c39a6289cd1a0e7dcec769d`。
 
 ## 给用户看
 
@@ -18,7 +18,7 @@
 
 ## 基准、目录与所有权
 
-- 控制文档目录：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`，任务书编写前 HEAD `0af0b79aadbc0bbd127de87c6de2a68f9b83967c`。
+- 控制文档目录：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`，合同发布提交 `8282a135a85967818c39a6289cd1a0e7dcec769d`。
 - 唯一代码交接基准：`D:\Narraverse-World-Map-m2-integration`，分支 `codex/world-runtime-m2-integration`，本地基准 `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`。冻结 M2 验收代码 SHA `83826a82fea5c0edfe62aa3d676313eefe2a7790` 与该基准仅 README/PROJECT_CONTEXT 不同；M2 历史 401/401 不重跑，也不把该历史结果当本任务验证。
 - 从本地 `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9` 建立专用工作树：`D:\Narraverse-World-Map-m3-experience`，分支 `codex/world-runtime-m3-experience`。创建前核实路径不存在，且分支未被其他工作树占用；若已存在，先确认其归属与实际状态，不覆盖、不重置、不挪用。
 - 不从 `main` 或其他工作树复制 runtime；不碰已验收 integration 树、B 路工作树或他人数据。A/B 互不导入，不新增 helper。
@@ -26,7 +26,7 @@
   - `runtime/core/work-experience.mjs`
   - `tests/simulation/work-experience.test.mjs`
 - 唯一允许的只读 import：`./data-contract.mjs`。不得修改该模块或其他既有生产、测试、合同、状态及看板文件。
-- 中控后续在指定提交 SHA 上独立定向补反例。任务执行者提交精确本地代码 commit，不 push、不合并 main、不部署；控制库发布合同 SHA 由中控在发布时填写。
+- 中控在指定提交 SHA 上独立定向补反例。任务执行者提交精确本地代码 commit，不 push、不合并 main、不部署；控制库发布合同 SHA 见本任务顶部。
 - 测试与机械批处理交给本路子代理，推理程度统一 high；明确分配本路测试文件的唯一所有权，测试者不修改生产模块。验证时冻结被测代码，按实际 SHA 和真实命令交回证据。
 
 ## 精确公共接口与 DTO
@@ -115,4 +115,11 @@ git diff --check
 
 代码未变化且该提交已有有效通过证据时不重复。全量回归留给 M3 阶段收口。不得把 M2 历史 401/401 当成本路验证，也不得增跑另一任务的测试。
 
-交付回执说明：用户可见行为与限制；实际工作树、分支、基准 SHA、精确代码 commit SHA；控制合同发布 SHA（按中控提供值填写）；本路精确文件；命令、数字结果、真实证据路径；PASS 建议及未验范围。结束于 M3-1A 本地精确 commit；不执行 M3-2 adapter、完整体验、合并、push、部署或阶段验收。M3-1 尚需中控按提交 SHA 定向补反例；M3 整体仍未验收。
+交付回执说明：用户可见行为与限制；实际工作树、分支、基准 SHA、精确代码 commit SHA；控制合同发布 SHA `8282a135a85967818c39a6289cd1a0e7dcec769d`；本路精确文件；命令、数字结果、真实证据路径；PASS 建议及未验范围。执行范围止于 M3-1A 本地代码交付；不执行 M3-2 adapter、完整体验、合并、push、部署或阶段验收。本路中控定向复核已完成；M3-1 整体仍待 B 路交付与独立验收，M3 整体仍未验收。
+
+## 中控验收记录（2026-10-08 19:50 Asia/Shanghai）
+
+- 裁定：M3-1A PASS/本地已验收，仅限内核；M3-1 整体未收口，M3-2 未发布、未实现，M3 整体未验收。用户原交付 `5a2f641f4e26d78bb9c71ae8368abb7425dcb999`；代码树 `D:\Narraverse-World-Map-m3-experience @ codex/world-runtime-m3-experience`，基准 `c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9`，修复后的生产代码 SHA `473f608f792fb840211a16779a175ffe4e7b7eb5`，最终仅测试变化的交接 `275b81a37253ddf0bada93e2252b30629d3f3dc5`，当前干净。仅两项白名单 tracked file 参与；data-contract 与旧 M2 未改。
+- 作者定义的原套件为 13 项；中控未在最终提交重跑原 13 项。首次新增的 8 项独立门为 7 pass/1 fail，发现 array 自定义 prototype 上的 `map` getter 会执行，三个 state 入口都可触发 getter。修复在本模块先做不执行 getter 的 descriptor/tree 检查并限制数组原型，再复用 cloneData；未改共享 data-contract。原 red 证据保留。
+- 修复后在生产代码修复点执行本路原 13 项加新增 1 项，共 14/14 pass、0 fail/skip，145.3728 ms；证据 `artifacts/world-runtime-m3a-controller-review-20261008/repair/green-single-pass-2.tap`。随后两个测试反例改用 fresh seq 6，仅测试文件变化；定向 window-order 为 1/1 pass、113.4017 ms，日志 `artifacts/world-runtime-m3a-controller-review-20261008/repair/window-order-focused.tap`。当次运行时 Git HEAD 为生产代码 `473f608`，测试文件仍有未提交改动；这些 test-only 字节随后提交于交接 `275b81a`，生产源码未变。独立旧失败门另在实际 `275b81a` 上运行，为 1/1 pass、87.3141 ms、exit 0：三个入口均 `INVALID_INPUT` 且 getterCalls=0；对应证据 `artifacts/world-runtime-m3a-controller-review-20261008/focused-after-repair.json` 与 `focused-review-after-repair.md`。此前 7 个通过门未在最终提交重跑；256 序列、2048 次读取是 1 个独立门，不是 2048 个测试。不能将最终提交表述为全 8 门重跑通过或全 14 项复跑。
+- 修复回执的 source/test 标签曾对调，中控已独立核正；源码 SHA256 `99f1df33a5cef74a660172bdac3280261fbfc4a1538d4b512e459c7b6fda10a2`，最终测试 SHA256 `69d010dc28eb69cab9a69d9a6cc722d53ab7a4addc471a5afc9a51cc4b5f2350`。一组合法 escaped 样例 `1355` outcome / `5856` state 仍在预算内；作者给出的 `1365/315` 仅是 ASCII 形态，不是合法最大值，未放宽合同。
