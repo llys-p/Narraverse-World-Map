@@ -1,4 +1,4 @@
-# Narraverse 已采纳 / 候选模式
+# Narraverse Pattern Decisions / 候选模式
 
 这里记录“参考已经如何影响我们的设计”。
 
