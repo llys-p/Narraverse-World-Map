@@ -67,7 +67,7 @@ Candidate Intents
 
 ## PAT-004 Goal Commitment / Anti Flip-Flop
 
-状态：ADOPTED-DESIGN，M1 已已有窄 Goal 连续性，M2 待扩展。
+状态：ADOPTED-DESIGN，M1 已有窄 Goal 连续性，M2 待扩展。
 
 参考：Cataclysm:DDA / Oxygen Not Included。
 
