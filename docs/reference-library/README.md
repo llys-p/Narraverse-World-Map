@@ -19,7 +19,9 @@
 ## 使用入口
 
 - [MODULE-INDEX.md](MODULE-INDEX.md)：按“我要做什么功能”查参考。
-- [GAME-CATALOG.md](GAME-CATALOG.md)：按游戏看可借鉴机制。
+- [GAME-CATALOG.md](GAME-CATALOG.md)：按游戏看 Character Mind / Agent 可借鉴机制。
+- [WORLD-MAP-INDEX.md](WORLD-MAP-INDEX.md)：按世界地图 / 沙盒功能查参考。
+- [SANDBOX-WORLD-CATALOG.md](SANDBOX-WORLD-CATALOG.md)：按沙盒游戏看 world-map / campaign-layer 机制。
 - [CODE-REFERENCE.md](CODE-REFERENCE.md)：公开代码、Mod 接口、许可证和可读文件。
 - [ADOPTION-PROTOCOL.md](ADOPTION-PROTOCOL.md)：以后写任务书或实现前怎样使用本参考库。
 - [PATTERN-DECISIONS.md](PATTERN-DECISIONS.md)：已经吸收进 Narraverse 的设计模式与暂不采用项。
@@ -58,7 +60,7 @@ Wiki、Modding Reference、经过代码核对的社区文档。
 
 ## 当前参考主题
 
-当前第一批参考围绕 M2 / M3 / Director：
+当前参考分成两条主线：Character Mind / Agent，以及 Sandbox World / World Map。第一批主题包括：
 
 - Needs / Motives
 - Thought / Mood / Stress
@@ -72,5 +74,16 @@ Wiki、Modding Reference、经过代码核对的社区文档。
 - Director Event Casting
 - Relationship-driven Event
 - Open-source NPC AI
+- Mobile Party / Fleet / Caravan
+- Settlement Runtime
+- Route / Travel Risk
+- Dynamic Trade / Supply Chain
+- Faction World State / Territory
+- World State Override
+- Dynamic Contract / Mission
+- Intel / Fog / Rumor
+- Environment Field
+- World Context Packet
+- Procedural History Footprints
 
-后续遇到新模块时继续扩充，不要求一次把所有游戏 AI 理论做全。
+后续遇到新模块时继续扩充，不要求一次把所有游戏 AI 或沙盒世界理论做全。
