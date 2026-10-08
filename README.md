@@ -22,7 +22,7 @@
 
 ## 新世界运行时进度
 
-2026-10-09（Asia/Shanghai）：M1/M2 与 M3-1A/B 已本地验收收口。M3-2A 作者交付 `7cb7615468398041111adec9cdb2ce12395e6cc4` 后，中控修复提交 `adee47e1f35fa5105a2dfeecc9265bd62b17cd5d`；边界修复工作字节45/45通过，且生产源码指纹与该修复提交一致；planner5/5、runner3/3、direct22/22、checkpoint4/4和旧 M2 兼容复验通过。Proof分次结果与 rollback/cursor 边界详见 A 任务书。E4 fixture 仅在测试提交 `ad8695097b6b974030fd43f4947d7a01f627abf3` 修正，定向1/1通过；生产代码仍为 `adee47e`。中控裁定 A 的修正与定向复验完成，可交 B 完整独立验收；A 待验收、M3-2仍进行中。B 两份测试已提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780`，尚未导入精确依赖或运行完整独立验收。M3-3未开始，完整 M3 未验收；代码未合并 main、未 push。详情见[当前状态](PROJECT_CONTEXT.md)。
+2026-10-09（Asia/Shanghai）：M1/M2 与 M3-1A/B 已验收收口。M3-2A、M3-2B 与 M3-2 限定轮次已中控裁定 PASS/已验收。最终集成 commit `a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2` 基于 A 唯一依赖 `ad8695097b6b974030fd43f4947d7a01f627abf3`，导入 B 原测试提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780` 后，仅修两份 B 测试，生产文件相对 A 零差异；58 个生产文件 SHA256 前后稳定。必需验收按分次命令通过：各分次必需 gate、runner兼容、E1上界、CLI/resume、隔离与恢复门槛均通过，共17项唯一检查覆盖，不表示单次17/17套件。未跑的 optional Inspector/deadline/profile CLI 不计通过。详情、分次结果与未验范围见[当前状态](PROJECT_CONTEXT.md)及两份 M3-2 任务书。完整 M3 未验收；M3-3未开始，代码未合并 main、未 push。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

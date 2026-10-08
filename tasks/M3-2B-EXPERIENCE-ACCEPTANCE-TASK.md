@@ -1,6 +1,6 @@
 # M3-2B：本人 Work 经验消费独立验收
 
-合同版本：m3-experience-runtime-contract-v1；共同合同唯一权威见 [M3-2A §共同合同](M3-2A-EXPERIENCE-RUNTIME-TASK.md#共同合同唯一权威版本)。状态：独立验收进行中（2026-10-09，Asia/Shanghai）；执行树 `D:\Narraverse-World-Map-m3-acceptance`、分支 `codex/world-runtime-m3-acceptance`，基准 `fe1dec0f3ee2ca4560438d268ae90a73cb3199db`，B 提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780`，工作树干净。仅提交两个独立测试文件；中控指定唯一依赖 A 交接 `ad8695097b6b974030fd43f4947d7a01f627abf3`，尚未导入或运行完整验收。不可用作者早期 `7cb7615`、生产修复 SHA `adee47e` 或 main 替代。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
+合同版本：m3-experience-runtime-contract-v1；共同合同唯一权威见 [M3-2A §共同合同](M3-2A-EXPERIENCE-RUNTIME-TASK.md#共同合同唯一权威版本)。状态：PASS/已验收（2026-10-09，Asia/Shanghai）；独立验收树 `D:\Narraverse-World-Map-m3-acceptance`、分支 `codex/world-runtime-m3-acceptance`，原提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780`。唯一生产依赖 A 交接 `ad8695097b6b974030fd43f4947d7a01f627abf3`；最终集成树 `D:\Narraverse-World-Map-m3-integration @ codex/world-runtime-m3-integration`，commit `a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2`。合同发布 SHA：`b4c39e36cf13cb8e3b10073ef695ad105d991e47`。
 
 ## 给用户看
 
@@ -62,4 +62,10 @@
 
 如需单独检查直接消费者，记录真实命令和产物；不要重复无关全量。交回工作树/分支、A 实际依赖 SHA、B 本地精确 commit、各命令数字结果、expected/actual 与证据路径、PASS/NEED REVISION 建议和未验证范围。缺依赖时交回待跑清单和精确错误，不声称通过。
 
-本路测试已本地提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780`，仅新增两份独立测试。B 必须以 A 交接 `ad8695097b6b974030fd43f4947d7a01f627abf3` 作为唯一依赖，当前尚未导入或运行 E1-E7/限定兼容检查；不得切换到 `7cb7615`、`adee47e` 或 main。A 修正与定向复验通过，状态待验收；M3-2还需本路独立验收门槛，不标阶段通过。M3-3未开始，完整 M3未验收；不合并 main、不 push、不部署、不接 HTTP/UI/M3-3/D3/D4。
+本路测试已提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780`，仅新增两份独立测试；唯一生产依赖为 A 交接 `ad8695097b6b974030fd43f4947d7a01f627abf3`。中控已裁定 M3-2B 与 M3-2 限定轮次 PASS/已验收。不得切换到 `7cb7615`、`adee47e` 或 main 作为替代依赖。完整 M3 未验收；M3-3未开始；不合并 main、不 push、不部署、不接 HTTP/UI/M3-3/D3/D4。
+
+## 中控最终验收结果（2026-10-09，Asia/Shanghai）
+
+最终集成 commit `a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2`，集成树干净。A 唯一生产依赖 `ad8695097b6b974030fd43f4947d7a01f627abf3`；B 原提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780`，导入提交 `56e2df4d6d95f1fa76fda0af547a41b0c2507763`。root 修复仅触及两份 B 测试，生产文件相对 A 零差异；分别核对 raw SHA256 与 Git blob，确认被测测试字节与提交内容一致。58 个生产文件 SHA256 前后相同：`b8806fb4edc0722360014477931c30a6ca53fd5db00e148195d8dab75a9fbc8c`。
+
+分次结果：gate 首轮有效验收10项中5通过、5测试失败；修正失败项后定向5/5；E1增强再1/1；旧 runner 兼容4/4；真实 CLI/resume 1/1；隔离 fixture 修正后1/1；E6 篡改完整恢复拒绝1/1，且29个 material tamper 均确认真实改变数据。合计覆盖17项唯一必需检查，不是单次17/17全套。初始测试 fixture 错误导致的 skip 不计通过；optional default288 Inspector、deadlineStates/deadlineHashes 23日与旧 profile CLI 未运行、不计通过。deadlineHashes 完整 bundle 定义已溯源并保留可运行测试，不以永久 skip 处理。证据：集成树 `artifacts/world-runtime-m32b-controller-review-20261009/` 下的 `controller-review.json`、`test-review.json`、`test-repair-reasons.md`、`oracle-definition/deadlineHashes-provenance.md`。M3-2A/B 与 M3-2限定轮次均 PASS/已验收；完整 M3 未验收，M3-3未开始。
