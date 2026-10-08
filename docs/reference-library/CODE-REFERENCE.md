@@ -146,3 +146,69 @@ Required attribution/share-alike obligations:
 ```
 
 没有这些字段，不允许把外部代码直接放入生产实现。
+
+
+---
+
+## CODE-ENDLESS-SKY: Endless Sky
+
+仓库：
+
+https://github.com/endless-sky/endless-sky
+
+2026-10-08 重点代码参考：
+
+- source/System.h / System.cpp：system trade state、StepEconomy。
+- source/Trade.h / Trade.cpp：commodity / price range。
+- source/FleetCargo.cpp：fleet cargo。
+- source/Mission.h / Mission.cpp：mission 数据与生命周期。
+- source/MissionAction.h / MissionTimer.h：action / timer。
+- Wiki CreatingMissions：条件、来源/目的地过滤、NPC、timer、action trigger。
+
+许可证：
+
+仓库 license.txt 为 GNU GPL v3。
+
+### 本项目规则
+
+默认只做架构参考。
+
+尤其适合独立重写：
+
+- Data-driven Mission；
+- World node trade state；
+- Fleet / Cargo；
+- Condition / Trigger；
+- economy step separation。
+
+---
+
+## CODE-OPENTTD: OpenTTD
+
+仓库：
+
+https://github.com/OpenTTD/OpenTTD
+
+重点代码：
+
+- src/economy.cpp
+- src/economy_func.h
+- src/industry.h
+- src/timer/timer_game_economy.cpp
+- src/town_cmd.cpp
+- src/cargopacket.h
+
+可观察：
+
+- economy 使用独立时间尺度；
+- industry / house production-consumption；
+- industry closure / spawning；
+- town growth；
+- waiting cargo / delivery / history；
+- payment 与 transit time。
+
+代码文件声明 GNU GPL version 2。
+
+### 本项目规则
+
+默认只读架构，独立实现 economy clock / aggregate logistics 思想；如未来需要复制具体实现，另做许可证兼容判断。
