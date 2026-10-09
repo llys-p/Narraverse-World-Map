@@ -23,7 +23,7 @@ import { createMindVillage, defaultMindVillageConfig } from '../../runtime/fixtu
 import { projectMindInspector } from '../../runtime/knowledge/mind-knowledge.mjs';
 import { projectMotivationInspector } from '../../runtime/knowledge/motivation-knowledge.mjs';
 
-// ---- A 路依赖探针（与 acceptance 文件同规则：精确缺失即动态跳过，其他加载错误为未通过证据）----
+// ---- A 路依赖探针：精确目标缺失阻断验收；其他加载错误保留原始失败 ----
 const REQUIRED = ['../../runtime/core/experience-state.mjs', '../../runtime/core/work-experience-adapter.mjs', '../../runtime/fixtures/experience-village.mjs'];
 let deps = null, depFailure = null;
 try {
@@ -38,10 +38,11 @@ const extraModules = await Promise.all(EXTRA_EXPORTS.map(async ([specifier, load
 function gate(t) {
   if (depFailure !== null) {
     // G0: required evidence comes first. A missing A-lane dependency blocks PASS; it is never a skip.
-    if (depFailure.code === 'ERR_MODULE_NOT_FOUND')
+    if (depFailure.code === 'ERR_MODULE_NOT_FOUND' &&
+        REQUIRED.some(specifier => depFailure.url === new URL(specifier, import.meta.url).href))
       assert.fail('REQUIRED_EVIDENCE_MISSING: A 路 required 依赖未导入，本门阻断 PASS：' +
         (depFailure.url ?? REQUIRED.join(', ')));
-    assert.fail('A 路依赖模块加载失败（非缺失）：' + (depFailure.stack ?? String(depFailure)));
+    throw depFailure;
   }
   const missing = [];
   for (const [specifier, module, names] of extraModules)
@@ -66,6 +67,8 @@ const ORACLE_PATH = 'D:/Narraverse-World-Map-m2-acceptance/artifacts/world-runti
 const ORACLE_ENV = 'M34_ORACLE_FILE';
 const ORACLE_BASELINE = '87aa9b605f5f509ce3b0daa97e34ded004d22f33';
 const ORACLE_SCHEMA_VERSION = 2;
+const ORACLE_RAW_SHA256 = 'e7fee8c0bd872a8294615172dd4ee7fef6e6464663d2df9fc4099d9261221b18';
+const ORACLE_PAYLOAD_SHA256 = '1ebe129b1a252434e8b103796778f3b71f9ffc6587cb0578f8ea7828d6c87f67';
 function oraclePath() {
   const fromEnv = process.env[ORACLE_ENV];
   return fromEnv && fromEnv.trim() !== '' ? path.resolve(fromEnv) : ORACLE_PATH;
@@ -95,7 +98,15 @@ function requireOracleProvenance(oracle) {
   return oracle;
 }
 // oracle 文件只读：绝不修改/复制/提交该 artifact；缺失或损坏现在都是明确阻断（见指纹门）。
-function loadOracle(t) { return requireOracleProvenance(parseOracle(readOracleRaw())); }
+function loadOracle(t) {
+  const raw = readOracleRaw();
+  const oracle = requireOracleProvenance(parseOracle(raw));
+  assert.equal(createHash('sha256').update(raw).digest('hex'), ORACLE_RAW_SHA256,
+    'EVIDENCE_INTEGRITY_FAILED: RAW SHA256 不符（证据：文件被改动或非受控版本）');
+  const payload = hash({ scenarioSpecs: oracle.scenarioSpecs, provenance: oracle.provenance, results: oracle.results });
+  assert.equal(payload, ORACLE_PAYLOAD_SHA256, 'EVIDENCE_INTEGRITY_FAILED: canonical payload SHA256 不符');
+  return oracle;
+}
 // 与 simulation-runner 完全一致的哈希公式：sha256(canonicalJson(value))，canonical 递归排序键、UTF-8。
 const hash = value => createHash('sha256').update(canonicalJson(value), 'utf8').digest('hex');
 async function temp(t) {
@@ -117,18 +128,13 @@ const bodyOf = (b, id = 'actor-2') => b.snapshot.world.actorModel.actors.find(a 
 const mindOf = (b, id = 'actor-2') => b.snapshot.world.motivationModel.actors.find(a => a.actorId === id);
 
 test('E7 oracle 指纹门：RAW SHA256、canonical payload SHA256、schema/baseline/payloadHash 字段', t => {
-  const raw = readOracleRaw();
-  const oracle = requireOracleProvenance(parseOracle(raw));
-  // RAW 指纹（字节级，主控已实测当前匹配）。
-  assert.equal(createHash('sha256').update(raw).digest('hex'),
-    'e7fee8c0bd872a8294615172dd4ee7fef6e6464663d2df9fc4099d9261221b18',
-    'EVIDENCE_INTEGRITY_FAILED: RAW SHA256 不符（证据：文件被改动或非受控版本）');
-  assert.equal(oracle.schemaVersion, 2);
+  const oracle = loadOracle(t);
+  assert.equal(oracle.schemaVersion, ORACLE_SCHEMA_VERSION);
   assert.equal(oracle.baselineSHA, ORACLE_BASELINE);
   // canonical({scenarioSpecs,provenance,results})（递归排序键、UTF-8）payload 指纹。
   const payload = createHash('sha256').update(
     canonicalJson({ scenarioSpecs: oracle.scenarioSpecs, provenance: oracle.provenance, results: oracle.results }), 'utf8').digest('hex');
-  assert.equal(payload, '1ebe129b1a252434e8b103796778f3b71f9ffc6587cb0578f8ea7828d6c87f67',
+  assert.equal(payload, ORACLE_PAYLOAD_SHA256,
     'EVIDENCE_INTEGRITY_FAILED: canonical payload SHA256 不符');
   assert.equal(oracle.payloadHash, payload, 'payloadHash 字段与重算不一致');
 });

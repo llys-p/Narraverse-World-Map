@@ -122,12 +122,15 @@ test('G3 continuation 前提可独立核对：空请求表使 Work 永远不成�
 // ---- A 路 required 依赖门：缺席即阻断，禁止 skip/todo 冒充（G0 口径）----
 const A_REQUIRED = [
   ['../../runtime/experiments/m3-closeout-scenario.mjs', ['createM3CloseoutConfig']],
-  ['../../runtime/knowledge/cognition-knowledge.mjs', ['buildCognitionKnowledge', 'projectCognitionInspector',
-    'COGNITION_INSPECTOR_VERSION', 'MAX_COGNITION_INSPECTOR_BYTES']]
+  ['../../runtime/knowledge/cognition-knowledge.mjs', ['buildCognitionKnowledge', 'projectCognitionInspector']]
 ];
 const aLoad = await Promise.all(A_REQUIRED.map(async ([specifier, names]) => {
   try { return [specifier, await import(specifier), names, null]; }
-  catch (error) { return [specifier, null, names, error]; }
+  catch (error) {
+    if (error.code === 'ERR_MODULE_NOT_FOUND' && error.url === new URL(specifier, import.meta.url).href)
+      return [specifier, null, names, error];
+    throw error; // SyntaxError、传递缺失或初始化异常保留原始原因，不能洗成 A 未交付。
+  }
 }));
 
 test('G2/G3 需要 A 路固定场景与认知投影实体才能继续（未派发 SHA 时按缺失阻断）', async () => {
@@ -136,7 +139,10 @@ test('G2/G3 需要 A 路固定场景与认知投影实体才能继续（未派�
   assert.deepEqual(missing, [], 'REQUIRED_EVIDENCE_MISSING: M3-4A 交付实体未导入，B 不猜导出：' + missing.join(', '));
   for (const [specifier, module, names] of aLoad)
     for (const name of names)
-      assert.ok(module?.[name] !== undefined, '已导入的 A 路模块缺少合同声明的导出 ' + specifier + '#' + name);
+      assert.equal(typeof module[name], 'function', '已导入的 A 路模块导出类型错误 ' + specifier + '#' + name);
+  const knowledge = aLoad.find(([specifier]) => specifier.includes('cognition-knowledge'))[1];
+  assert.equal(knowledge.COGNITION_INSPECTOR_VERSION, 'cognition-inspector-v1', '认知检查器版本必须符合合同');
+  assert.equal(knowledge.MAX_COGNITION_INSPECTOR_BYTES, 131072, '认知检查器字节预算必须符合合同');
   const scenario = aLoad.find(([specifier]) => specifier.includes('m3-closeout-scenario'))[1];
   // Once A exists these are checked against A's helper, but only for equality with the fixed
   // contract inputs above: the expected numbers stay the hand-computed ones declared here.

@@ -6,13 +6,16 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import * as fs from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import os from 'node:os';
+import { canonicalJson } from '../../runtime/core/data-contract.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const TARGET = path.join(HERE, 'experience-runner-acceptance.test.mjs');
-const ORACLE = 'D:/Narraverse-World-Map-m2-acceptance/artifacts/world-runtime-m2-acceptance-repair-20261008/legacy-oracle-87aa9b6-v2.json';
+const ORACLE = process.env.M34_ORACLE_FILE?.trim() ? path.resolve(process.env.M34_ORACLE_FILE) :
+  'D:/Narraverse-World-Map-m2-acceptance/artifacts/world-runtime-m2-acceptance-repair-20261008/legacy-oracle-87aa9b6-v2.json';
 const FINGERPRINT_PATTERN = '^E7 oracle 指纹门';
 const GATE_PATTERN = '^E5 新 profile';
 // The three A-lane modules the acceptance file treats as required evidence.
@@ -110,6 +113,27 @@ test('G0 payload 与 payloadHash 不一致是 EVIDENCE_INTEGRITY_FAILED', async 
   const result = await run(oracleArgs(FINGERPRINT_PATTERN), HERE,
     { M34_ORACLE_FILE: await writeOracle(dir, 'payload-drift.json', JSON.stringify(document)) });
   await assertBlocked(t, result, 'EVIDENCE_INTEGRITY_FAILED', 'payloadHash 与 canonical payload 不一致的 oracle');
+});
+
+test('G0 单独 oracle 消费者也拒绝 RAW 改动，不能绕过指纹门', async t => {
+  const dir = await workspace(t);
+  const document = readDocument();
+  document.controllerReviewUnrelatedExtra = 'RAW identity must still be authoritative';
+  const result = await run(oracleArgs('^E7 oracle default288Hash'), HERE,
+    { M34_ORACLE_FILE: await writeOracle(dir, 'raw-extra-field.json', JSON.stringify(document)) });
+  await assertBlocked(t, result, 'EVIDENCE_INTEGRITY_FAILED', 'payload 不变而 RAW 非权威的 oracle');
+});
+
+test('G0 单独 oracle 消费者拒绝自洽但非权威的 payload', async t => {
+  const dir = await workspace(t);
+  const document = readDocument();
+  document.provenance.controllerReviewUnrelatedExtra = 'self-consistency cannot replace authority';
+  document.payloadHash = createHash('sha256').update(canonicalJson({
+    scenarioSpecs: document.scenarioSpecs, provenance: document.provenance, results: document.results
+  }), 'utf8').digest('hex');
+  const result = await run(oracleArgs('^E7 oracle default288Hash'), HERE,
+    { M34_ORACLE_FILE: await writeOracle(dir, 'self-consistent-payload.json', JSON.stringify(document)) });
+  await assertBlocked(t, result, 'EVIDENCE_INTEGRITY_FAILED', '自洽但非权威的 oracle payload');
 });
 
 test('G0 缺必需依赖整链 fail closed：非零、点名缺失实体、绝不 skip', async t => {
