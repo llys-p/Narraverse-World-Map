@@ -169,6 +169,7 @@ test('G1 DTO1 与 DTO2 走 canonical transition，七内部前缀两版本都拒
 test('G1 同 ID 原 DTO 幂等（含重启），异输入 409，过期 revision 409 带 currentRevision', async t => {
   const directory = path.join(await temporary(t), 'world');
   const server = await startRuntimeServer({ directory, profile: 'cognition-village', port: 0, writable: true });
+  t.after(() => server.close());
   const dto = timeDto('m34b-g1-idempotent', 0, 144);
   const first = await postDto(server.url, dto);
   assert.equal(first.status, 200);
@@ -201,6 +202,7 @@ test('G1 真实 io.link 故障：三投影与磁盘字节全保旧，修复后�
     return typeof value === 'function' ? value.bind(target) : value;
   } });
   const owner = await createRuntimeOwner({ directory, profile: 'cognition-village', writable: true }, io);
+  t.after(() => owner.close());
   const readings = () => canonicalJson({ snapshot: owner.getSnapshot(), player: owner.getPlayer(),
     mind: owner.getMindInspector(), capabilities: [owner.playerAvailable, owner.playerActionsAvailable,
       owner.mindAvailable] });
@@ -239,12 +241,14 @@ test('G1 checkpoint 初始化与既有目录恢复：profile+checkpoint 同传�
   await assert.rejects(createRuntimeOwner({ directory: path.join(root, 'both'), checkpoint: checkpointFile,
     profile: 'cognition-village' }), error => error.code === 'INVALID_INPUT', 'profile and checkpoint cannot combine');
   const restored = await createRuntimeOwner({ directory: runtime, checkpoint: checkpointFile });
+  t.after(() => restored.close());
   assert.equal(restored.getSnapshot().simulationId, 'm34b-g1-checkpoint');
   assert.equal(JSON.parse((await fileBytes(runtime))['service-commit-r0.json']).serviceFormatVersion, 6,
     'checkpoint init stays on the cognition format6 path');
   await restored.close();
   const directory = path.join(root, 'reopen');
   const first = await createRuntimeOwner({ directory, profile: 'cognition-village', writable: true });
+  t.after(() => first.close());
   await first.submit(timeDto('m34b-g1-reopen', 0, 144));
   const identity = first.getSnapshot().simulationId;
   await first.close();
@@ -262,6 +266,7 @@ test('G1 checkpoint 初始化与既有目录恢复：profile+checkpoint 同传�
 test('G1 service6 成员实质变化即使 canonical 已变也被完整 journal 重演拒绝', async t => {
   const directory = path.join(await temporary(t), 'world');
   const owner = await createRuntimeOwner({ directory, profile: 'cognition-village', writable: true });
+  t.after(() => owner.close());
   await owner.submit(timeDto('m34b-g1-journal-a', 0, 144));
   await owner.submit(timeDto('m34b-g1-journal-b', 144, 144));
   await owner.close();
@@ -298,6 +303,134 @@ test('G1 service6 成员实质变化即使 canonical 已变也被完整 journal 
     replay = next.bundle;
   }
   assert.deepEqual(replay, pristine.bundle, 'the durable world equals the replayed world');
+});
+
+test('G1 挂起 durable 发布期间读旧三投影，解除后同一候选一起可见', async t => {
+  const directory = path.join(await temporary(t), 'world');
+  // The suspended link must always be released, even if an assertion below throws, otherwise the
+  // in-flight submission would hang the runner forever.
+  let releaseGate, gateOpened = false, armed = false;
+  const gate = new Promise(resolve => { releaseGate = resolve; });
+  let enteredResolve;
+  const entered = new Promise(resolve => { enteredResolve = resolve; });
+  const io = new Proxy(fs, { get(target, property) {
+    if (property === 'link') return async (...args) => {
+      // Only the armed submission is suspended: the owner's own initial publish must go through,
+      // otherwise the owner creation itself would never return.
+      if (armed) {
+        gateOpened = true;
+        enteredResolve();
+        await gate;
+      }
+      return target.link(...args);
+    };
+    const value = Reflect.get(target, property, target);
+    return typeof value === 'function' ? value.bind(target) : value;
+  } });
+  const owner = await createRuntimeOwner({ directory, profile: 'cognition-village', writable: true }, io);
+  t.after(async () => { releaseGate(); await owner.close().catch(() => {}); });
+  const projections = () => canonicalJson({ snapshot: owner.getSnapshot(), player: owner.getPlayer(),
+    mind: owner.getMindInspector() });
+  const committed = projections();
+  armed = true;
+  const submission = owner.submit(timeDto('m34b-g1-pending', 0, 144));
+  await Promise.race([entered, new Promise(resolve => setTimeout(resolve, 20000))]);
+  try {
+    assert.equal(gateOpened, true, 'the publication must really reach the atomic link step');
+    assert.equal(projections(), committed, 'a suspended publication must not expose a half-swapped candidate');
+    assert.deepEqual([owner.getSnapshot().revision, owner.getPlayer().revision, owner.getMindInspector().revision],
+      [0, 0, 0], 'all three reads stay on the old committed revision while publishing hangs');
+    const during = (await fs.readdir(directory)).sort();
+    assert.ok(!during.includes('service-commit-r144.json'),
+      'the committed target name is not visible before the atomic link completes: ' + during.join(','));
+    // A dot-prefixed staged file plus the owner lock are the expected mid-publication shape.
+    assert.deepEqual(during, ['.runtime-owner.lock',
+      during.find(name => name.endsWith('.tmp')), 'service-commit-r0.json'].filter(Boolean).sort(),
+      'only the committed r0, the staged candidate and the owner lock may exist mid-publication: ' + during.join(','));
+    assert.ok(during.some(name => /^\.service-commit-r144\.json\.\d+\.\d+\.tmp$/.test(name)),
+      'the staged file must be the pending r144 candidate: ' + during.join(','));
+  } finally {
+    releaseGate();
+  }
+  const receipt = await submission;
+  assert.equal(receipt.status, 'committed');
+  const published = projections();
+  assert.notEqual(published, committed, 'the candidate becomes visible once publication finishes');
+  assert.deepEqual([owner.getSnapshot().revision, owner.getPlayer().revision, owner.getMindInspector().revision],
+    [144, 144, 144], 'all three projections move to the same revision together');
+  assert.ok((await fileBytes(directory))['service-commit-r144.json'], 'the durable commit exists after release');
+});
+
+test('G1 合法副本内 config/cognition cursor/决定模式/经验样本实变均被完整重演拒绝', async t => {
+  const directory = path.join(await temporary(t), 'world');
+  const owner = await createRuntimeOwner({ directory, profile: 'cognition-village', writable: true });
+  t.after(() => owner.close());
+  await owner.submit(timeDto('m34b-g1-deep-a', 0, 288));
+  const pristine = JSON.parse((await fileBytes(directory))['service-commit-r288.json']);
+  assert.doesNotThrow(() => validateServiceCommit(structuredClone(pristine)), 'the honest journal validates');
+  const world = record => record.bundle.snapshot.world;
+  const deep = {
+    'experience config flipped': record => { world(record).experienceModel.config.useWorkExperience = false; },
+    'experience config version forged': record => { world(record).experienceModel.config.version = 'experience-config-v9'; },
+    'cognition cursor moved': record => { world(record).cognitionModel.cursor = world(record).cognitionModel.cursor + 3; },
+    'cognition config fingerprint forged': record => { world(record).cognitionModel.configFingerprint = '{}'; },
+    'decision mode flipped': record => {
+      record.bundle.snapshot.world.cognitionModel.actors[0].reviewState.lastEvaluation.decision.mode = 'maintain';
+    },
+    'work samples cleared': record => {
+      world(record).experienceModel.actors[0].workExperienceState.samples = [];
+    },
+    'work sample status forged': record => {
+      const actor = world(record).experienceModel.actors[0];
+      if (actor.workExperienceState.samples.length === 0) actor.workExperienceState.samples = [{
+        simulationId: actor.workExperienceState.simulationId, actorId: 'actor-2', sourceEventSeq: 999,
+        occurrenceTick: 144, decisionId: 'forged-decision', commandId: 'forged-command', action: 'WorkForPay',
+        status: 'rejected', code: 'RULE_REJECTED'
+      }];
+      else actor.workExperienceState.samples[0].status = 'rejected';
+    }
+  };
+  let realised = 0;
+  for (const [label, mutate] of Object.entries(deep)) {
+    const record = structuredClone(pristine);
+    mutate(record);
+    if (canonicalJson(record) === canonicalJson(pristine)) continue;
+    realised++;
+    assert.throws(() => validateServiceCommit(record), error => typeof error.code === 'string',
+      `${label}: the edited world must be refused by full replay`);
+  }
+  assert.ok(realised >= 5, 'the deep edits must really change the canonical bytes, realised ' + realised);
+  // The honest journal still replays to the durable world, so the refusals are not blanket failures.
+  let replay = pristine.anchor;
+  for (const entry of pristine.commands) replay = transitionServiceCommand(replay, entry.dto).bundle;
+  assert.deepEqual(replay, pristine.bundle, 'the untouched world still equals the replayed world');
+});
+
+test('G1 旧格式2保持原行为，认知命名空间不向其扩张', async () => {
+  const { createPlayerVillage } = await import('../../runtime/fixtures/player-village.mjs');
+  const { PLAYER_RULES } = await import('../../runtime/core/player-state.mjs');
+  const bundle = createPlayerVillage(42, 'g1-player-v2').bundle;
+  const profile = runtimeProfile(bundle);
+  assert.deepEqual([profile.serviceFormatVersion, profile.rulesVersion], [2, PLAYER_RULES]);
+  // Format 2 keeps its own namespace rules: a cognition id is still an ordinary external id.
+  assert.equal(transitionServiceCommand(bundle, timeDto('cognition-day-format2', 0, 6)).receipt.toRevision, 6);
+  assert.doesNotThrow(() => transitionServiceCommand(bundle, timeDto('player-day-format2', 0, 6)));
+});
+
+test('G1 HEAD 与 GET 的 content-length 与缓存头一致', async t => {
+  const directory = path.join(await temporary(t), 'world');
+  const server = await startRuntimeServer({ directory, profile: 'cognition-village', port: 0, inspectMind: true });
+  t.after(() => server.close());
+  for (const route of ['/api/runtime/minds', '/api/runtime/snapshot', '/runtime-mind.html']) {
+    const get = await fetch(server.url + route);
+    const body = Buffer.from(await get.arrayBuffer());
+    const head = await fetch(server.url + route, { method: 'HEAD' });
+    assert.equal(head.status, get.status, route + ' status parity');
+    assert.equal(head.headers.get('content-type'), get.headers.get('content-type'), route + ' content-type parity');
+    assert.equal(head.headers.get('content-length'), String(body.length), route + ' content-length matches the GET body');
+    assert.equal(head.headers.get('cache-control'), get.headers.get('cache-control'), route + ' cache-control parity');
+    assert.equal(await head.text(), '', route + ' HEAD carries no body');
+  }
 });
 
 test('G1 旧格式 1-5 行为不变，认知命名空间不反向扩张，经验 profile 不静默升为 format6', async () => {
