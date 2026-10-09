@@ -1,6 +1,10 @@
 # M3-4B：服务与检查器独立验收、完整 M3 收口
 
-合同版本：`m3-closeout-contract-v1`；状态：待派发，未开工。共同 DTO、服务版本、场景输入和业务边界唯一权威见 [M3-4A](M3-4A-COGNITION-INSPECTOR-TASK.md)，本文件只规定独立验收和阶段门槛。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`。
+合同版本：`m3-closeout-contract-v1`；状态：已收到前置实体盘点；尚无B代码/测试交付，G1–G4等待A精确SHA。共同 DTO、服务版本、场景输入和业务边界唯一权威见 [M3-4A](M3-4A-COGNITION-INSPECTOR-TASK.md)，本文件只规定独立验收和阶段门槛。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`。
+
+## 派发更正与前置状态（2026-10-09 13:48 Asia/Shanghai）
+
+唯一B任务书名就是本文件 `M3-4B-M3-CLOSEOUT-ACCEPTANCE-TASK.md`；`M3-4B-REPLICA-ACCEPTANCE-TASK.md` 不存在，不建立别名或第三份合同。A任务树尚不存在、无交付SHA，不预设A已交付/验收；B当前只可按656基准准备独立断言、G0 required gate补丁和负例，待中控派发A精确SHA后再运行G1–G4及最终suite。G0实体存在/指纹相符只记前置盘点，不等于required负例测试或全部G0已通过。新投影依赖路径以A白名单 `runtime/knowledge/cognition-knowledge.mjs` 为准，不猜不存在的service检查器模块。此前M3-1A修正473f608/275b81a已验收且冻结，未变不重复跑。
 
 ## 给用户看
 
@@ -11,7 +15,7 @@
 - 唯一代码起点：`D:\Narraverse-World-Map-m3-cognition-integration @ codex/world-runtime-m3-cognition-integration`，`6562460c2a0610afff6ba49f25524e1ae191b8c5`；其中生产修复 `0e58d5b39286f23e87cab2e978f57b683e90902b` 已包含，不能退回原 A `1b117d8`、旧 a638 或 main。
 - 计划 B 树：`D:\Narraverse-World-Map-m3-closeout @ codex/world-runtime-m3-closeout`。发布前路径/分支不存在；建树前重新核对。独立 worktree/clone 均可，须从精确基准建立，记录实际 git common dir、origin 和 owner；本地 origin 不代表 GitHub 备份，不覆盖/重置/清理已有树。
 - A 交付后由中控派发其精确 SHA，再导入指定生产及 A 测试字节。B 可先写独立期望，但未得 A SHA 不猜导出、不用任意最新树。导入冲突由中控处理。
-- 长文本、机械操作和可拆分测试使用 high 推理子代理；每个测试文件唯一写入者。B 不修 A/生产、UI、core、合同或看板。失败精确报告中控，不为了绿灯改 expected、预算或业务输入。
+- 执行方式优先服从本路会话的用户明确指令；用户指定本人自办时不强制委派。实际使用子代理时推理程度为 high，每个测试文件唯一写入者。B 不修 A/生产、UI、core、合同或看板。失败精确报告中控，不为了绿灯改 expected、预算或业务输入。
 
 ## 精确文件范围
 
