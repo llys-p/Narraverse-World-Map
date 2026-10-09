@@ -124,9 +124,11 @@ test('G3 continuation 前提可独立核对：空请求表使 Work 永远不成�
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { startRuntimeServer } from '../../runtime-server.mjs';
+import http from 'node:http';
+import { createHash } from 'node:crypto';
+import { startRuntimeServer as openRuntimeServer } from '../../runtime-server.mjs';
 import { saveCheckpoint } from '../../runtime/persistence/checkpoint-store.mjs';
-import { createCognitionVillage, cognitionSystems } from '../../runtime/fixtures/cognition-village.mjs';
+import { createCognitionVillage, cognitionSystems, defaultCognitionVillageConfig } from '../../runtime/fixtures/cognition-village.mjs';
 import { createSimulationSession } from '../../runtime/core/command-engine.mjs';
 import { executeCognitionPlayerIntent } from '../../runtime/core/motivation-runtime.mjs';
 import { projectCognitionInspector } from '../../runtime/knowledge/cognition-knowledge.mjs';
@@ -134,6 +136,34 @@ import { COGNITION_RULES } from '../../runtime/service/http-contract.mjs';
 import { canonicalJson } from '../../runtime/core/data-contract.mjs';
 import { createM3CloseoutConfig } from '../../runtime/experiments/m3-closeout-scenario.mjs';
 import { deriveWorkExperience } from '../../runtime/core/work-experience.mjs';
+
+async function startRuntimeServer(options) {
+  const server = await openRuntimeServer(options);
+  console.log(`${new Date().toISOString()} service ${server.url} directory=${options.directory}`);
+  return server;
+}
+
+// Native HTTP keeps this Node integration test independent of Fetch's forbidden-port list
+// (Windows port:0 can allocate 4045) and carries no idle socket across an owner restart.
+// No request, especially a business POST, is retried.
+function request(url, options = {}) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(url, { method: options.method || 'GET', agent: false,
+      headers: { ...options.headers, Connection: 'close' } }, response => {
+      const chunks = [];
+      response.on('data', chunk => chunks.push(chunk));
+      response.on('error', reject);
+      response.on('end', () => resolve({ status: response.statusCode,
+        json: async () => JSON.parse(Buffer.concat(chunks).toString('utf8')) }));
+    });
+    req.on('error', error => {
+      console.error(JSON.stringify({ url, method: options.method || 'GET', stack: error.stack,
+        cause: error.cause?.stack, code: error.code }));
+      reject(error);
+    });
+    req.end(options.body);
+  });
+}
 
 // Only the contract's asserted breakpoints need a full projection read; every DTO is still
 // submitted and receipt-checked, and the final projection is always taken separately.
@@ -165,28 +195,57 @@ const dtoFor = (commandId, kind, amount, revision) => kind === 'time'
     payload: { product: 'herbs', quantity: amount } };
 const letters = state => state.samples.map(sample => sample.status === 'rejected' ? 'F' : 'S');
 const actorOf = projection => projection.actors.find(actor => actor.knowledge.actorId === 'actor-2');
-async function tempDir(t, prefix, keep = false) {
-  const base = path.join(os.tmpdir(), prefix);
-  await fs.mkdir(base, { recursive: true });
-  const dir = await fs.mkdtemp(base + path.sep);
-  // The resumable ON chain must survive to the next step, so its directory is kept on purpose and
-  // reported as leftover evidence instead of being deleted behind the continuation's back.
-  if (!keep) t.after(() => fs.rm(dir, { recursive: true, force: true }));
-  return dir;
+// The fixture is independently transcribed from the frozen contract, before comparing A's helper.
+function contractConfig(useWorkExperience = true, kind = 'work-learning') {
+  const config = structuredClone(defaultCognitionVillageConfig());
+  if (kind === 'continuation') {
+    config.cognition.profiles[0].importancePermille = 400;
+    config.motivation.requests = [];
+  } else {
+    const society = config.memory.society;
+    society.player.initialHerbs = 20; society.player.initialFood = 30;
+    society.estates[1].initialFood = 100; society.estates[2].initialFood = 30;
+    society.actors.market.ecology.resources.resources.herbs.initial = 50;
+    society.actors.market.ecology.resources.resources.gold.initial = 350;
+    config.experience.useWorkExperience = useWorkExperience;
+    config.motivation.requests = Array.from({ length: 12 }, (_, i) => ({
+      requestId: `closeout-duty-${i + 1}`, tick: 200 + 144 * i, expiresTick: 432 + 144 * i,
+      speakerId: 'actor-1', listenerId: 'actor-2', urgencyPermille: 1000
+    }));
+  }
+  assert.deepEqual(createM3CloseoutConfig(kind, useWorkExperience), config, 'A helper must equal every contract input');
+  return config;
 }
-async function checkpointFor(t, useWorkExperience, { keep = false } = {}) {
-  const root = await tempDir(t, 'world-m34b-g2-', keep);
+// Evidence is output only: never read a previous invocation's world or cached PASS.
+// An explicitly chosen path must be new, so a stale or corrupt file fails closed instead of merging.
+const EVIDENCE = process.env.M34B_EVIDENCE || path.join(os.tmpdir(), `m34b-g2-${process.pid}-${Date.now()}.json`);
+const evidenceRoot = path.dirname(EVIDENCE);
+let evidence = {}, initialized = false;
+async function writeEvidence(patch) {
+  if (!initialized) {
+    await fs.mkdir(evidenceRoot, { recursive: true });
+    await fs.writeFile(EVIDENCE, '{}', { flag: 'wx' });
+    initialized = true;
+  }
+  evidence = { ...evidence, ...structuredClone(patch) };
+  await fs.writeFile(EVIDENCE, canonicalJson(evidence));
+}
+async function tempDir(t, prefix) {
+  await writeEvidence({});
+  return fs.mkdtemp(path.join(evidenceRoot, prefix));
+}
+async function checkpointFor(t, useWorkExperience) {
+  const root = await tempDir(t, useWorkExperience ? 'on-' : 'off-');
   const source = path.join(root, 'source'), runtime = path.join(root, 'runtime');
   await fs.mkdir(source); await fs.mkdir(runtime);
-  const bundle = createCognitionVillage(SEED, SIMULATION_ID,
-    createM3CloseoutConfig('work-learning', useWorkExperience)).bundle;
+  const bundle = createCognitionVillage(SEED, SIMULATION_ID, contractConfig(useWorkExperience)).bundle;
   await saveCheckpoint(bundle, { directory: source, rulesVersion: COGNITION_RULES, systems: cognitionSystems() });
   return { runtime, checkpoint: path.join(source, 'checkpoint-r0.json'), root };
 }
 // The service chain reads the real /api/runtime/minds projection after every commit.
 function runOfflineChain(useWorkExperience) {
   let bundle = createCognitionVillage(SEED, SIMULATION_ID,
-    createM3CloseoutConfig('work-learning', useWorkExperience)).bundle;
+    contractConfig(useWorkExperience)).bundle;
   const advance = ticks => {
     const session = createSimulationSession(bundle, cognitionSystems());
     session.advanceTicks(ticks);
@@ -211,61 +270,142 @@ function runOfflineChain(useWorkExperience) {
   return { bundle, commits, tick: bundle.snapshot.tick, revision: bundle.snapshot.revision };
 }
 
-// Each commit replays the whole journal, so one 14-DTO chain cannot fit a single foreground run.
-// The chain is therefore resumable through an evidence file: a step submits a prefix, records its
-// real projection bytes, and the next step reopens the same service directory and continues.
-const EVIDENCE = process.env.M34B_EVIDENCE || path.join(os.tmpdir(), 'm34b-g2-evidence.json');
-const readEvidence = async () => {
-  try { return JSON.parse(await fs.readFile(EVIDENCE, 'utf8')); }
-  catch { return {}; }
-};
-const writeEvidence = async patch => {
-  const merged = { ...await readEvidence(), ...structuredClone(patch) };
-  // canonicalJson fails closed on undefined, so a step only writes the keys it actually holds.
-  for (const key of Object.keys(merged)) if (merged[key] === undefined) delete merged[key];
-  await fs.writeFile(EVIDENCE, canonicalJson(merged));
-  return merged;
-};
-// Submits RECIPE[from,to) against an existing directory, reopening it like any other client.
-async function submitRange(t, label, from, to) {
-  const evidence = await readEvidence();
-  const directory = evidence.directory;
-  assert.ok(typeof directory === 'string' && directory.length > 0,
-    'REQUIRED_EVIDENCE_MISSING: ' + label + ' needs the earlier chain step to have recorded its directory');
-  // The first range must create the world from the recorded checkpoint; a later range reopens the
-  // existing directory, which is the restart path itself. Opening neither way would silently fall
-  // back to a default profile that does not support player actions.
-  const options = from === 0 ? { directory, checkpoint: evidence.checkpoint } : { directory };
-  let server = await startRuntimeServer({ ...options, port: 0, writable: true, inspectMind: true });
-  t.after(() => server.close());
-  if (from > 0) {
-    const carried = evidence.prefixSnapshot;
-    assert.deepEqual(await (await fetch(server.url + '/api/runtime/snapshot')).json(), carried,
-      label + ' must reopen on the exact world the previous step committed');
+async function readCommit(directory, revision) {
+  return JSON.parse(await fs.readFile(path.join(directory, `service-commit-r${revision}.json`), 'utf8'));
+}
+async function runServiceChain(t, label, enabled, restart) {
+  const seed = await checkpointFor(t, enabled);
+  let server = await startRuntimeServer({ directory: seed.runtime, checkpoint: seed.checkpoint,
+    port: 0, writable: true, inspectMind: true });
+  const captured = {}, inputs = [];
+  try {
+    for (const [index, [commandId, kind, amount]] of RECIPE.entries()) {
+      const before = await (await request(server.url + '/api/runtime/snapshot')).json();
+      const dto = dtoFor(commandId, kind, amount, before.revision);
+      const response = await request(server.url + '/api/runtime/commands', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dto) });
+      const receipt = await response.json();
+      assert.equal(response.status, 200, `${label} ${commandId}: ${JSON.stringify(receipt)}`);
+      assert.equal(receipt.toRevision, before.revision + (kind === 'time' ? amount : 1));
+      inputs.push(dto);
+      const commit = await readCommit(seed.runtime, receipt.toRevision);
+      assert.deepEqual(commit.commands.at(-1), { dto, receipt }, 'HTTP receipt equals durable journal');
+      assert.equal(commit.commands.length, index + 1);
+      const actors = commit.bundle.snapshot.world.actorModel.actors;
+      assert.equal(actors.length, 4, 'four named actors');
+      assert.ok(actors.every(actor => actor.alive), `${label} all four survive through ${receipt.tick}`);
+      if (CAPTURE.has(commandId)) captured[commandId] = { receipt, bundle: commit.bundle,
+        minds: await (await request(server.url + '/api/runtime/minds')).json() };
+      if (kind === 'buy') {
+        assert.deepEqual([receipt.result.quantity, receipt.result.unitPrice, receipt.result.amount], [4, 25, 100]);
+        assert.deepEqual([receipt.result.before.communalGold, receipt.result.after.communalGold], [10, 110]);
+      }
+      console.log(`${new Date().toISOString()} ${label} ${index + 1}/14 tick=${receipt.tick}`);
+      await fs.writeFile(path.join(seed.root, 'inputs.json'), canonicalJson(inputs));
+      if (index === 3 && restart) {
+        const snapshot = await (await request(server.url + '/api/runtime/snapshot')).json();
+        const bytes = await fs.readFile(path.join(seed.runtime, 'service-commit-r432.json'));
+        await server.close(); server = null;
+        server = await startRuntimeServer({ directory: seed.runtime, port: 0, writable: true, inspectMind: true });
+        assert.deepEqual(await (await request(server.url + '/api/runtime/snapshot')).json(), snapshot);
+        assert.deepEqual(await (await request(server.url + '/api/runtime/minds')).json(), captured[commandId].minds,
+          'restart preserves failed sample, old decision, and frozen fingerprint');
+        assert.deepEqual(await fs.readFile(path.join(seed.runtime, 'service-commit-r432.json')), bytes);
+      }
+    }
+    const snapshot = await (await request(server.url + '/api/runtime/snapshot')).json();
+    const final = await readCommit(seed.runtime, snapshot.revision);
+    const files = (await fs.readdir(seed.runtime)).filter(name => name.endsWith('.json'));
+    assert.equal(inputs.length, 14); assert.equal(final.commands.length, 14); assert.equal(files.length, 15);
+    assert.equal(snapshot.tick, 1728);
+    await server.close(); server = null;
+    // Loading the final service commit performs the full journal/world replay, not a snapshot-only read.
+    server = await startRuntimeServer({ directory: seed.runtime, port: 0, writable: true, inspectMind: true });
+    assert.deepEqual(await (await request(server.url + '/api/runtime/snapshot')).json(), snapshot);
+    assert.deepEqual(await (await request(server.url + '/api/runtime/minds')).json(), captured['closeout-advance-1728'].minds);
+    await writeEvidence({ [label]: { root: seed.root, inputs, files, finalRevision: snapshot.revision } });
+    return { ...seed, captured, snapshot, bundle: final.bundle, files, inputs };
+  } finally { if (server) await server.close(); }
+}
+// Explicit controller recovery input only. Hashes pin every original byte; the actual
+// service still replays its full journal and all contract assertions run again.
+async function recoverCompletedOn(manifestFile) {
+  const manifest = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
+  assert.equal(manifest.schema, 'm34-controller-completed-on-v1');
+  for (const entry of [...manifest.production, ...manifest.files]) {
+    const bytes = await fs.readFile(entry.path);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), entry.sha256, entry.path);
   }
-  const captured = {};
-  for (const index of Array.from({ length: to - from }, (_, offset) => from + offset)) {
-    const [commandId, kind, amount] = RECIPE[index];
-    const revision = (await (await fetch(server.url + '/api/runtime/snapshot')).json()).revision;
-    const response = await fetch(server.url + '/api/runtime/commands', { method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dtoFor(commandId, kind, amount, revision)) });
-    const receipt = await response.json().catch(() => null);
-    assert.equal(response.status, 200, commandId + ' refused: ' + JSON.stringify(receipt));
-    assert.equal(receipt.toRevision, revision + (kind === 'time' ? amount : 1), commandId + ' landed tick');
-    if (CAPTURE.has(commandId)) captured[commandId] = { receipt,
-      minds: await (await fetch(server.url + '/api/runtime/minds')).json() };
+  const runtime = manifest.runtime, root = path.dirname(runtime);
+  const final = await readCommit(runtime, 1728);
+  const expectedAnchor = createCognitionVillage(SEED, SIMULATION_ID, contractConfig(true)).bundle;
+  assert.deepEqual(final.anchor, expectedAnchor);
+  assert.equal(final.commands.length, 14);
+  const inputs = [], captured = {};
+  let revision = 0;
+  for (const [index, [commandId, kind, amount]] of RECIPE.entries()) {
+    const dto = dtoFor(commandId, kind, amount, revision);
+    revision += kind === 'time' ? amount : 1;
+    const commit = await readCommit(runtime, revision);
+    assert.deepEqual(commit.commands.map(entry => entry.dto), [...inputs, dto]);
+    assert.deepEqual(commit.commands, final.commands.slice(0, index + 1));
+    assert.deepEqual(commit.anchor, expectedAnchor);
+    assert.equal(commit.bundle.snapshot.revision, revision);
+    assert.equal(commit.bundle.snapshot.world.actorModel.actors.length, 4);
+    assert.ok(commit.bundle.snapshot.world.actorModel.actors.every(actor => actor.alive));
+    inputs.push(dto);
+    if (CAPTURE.has(commandId)) captured[commandId] = { receipt: commit.commands.at(-1).receipt,
+      bundle: commit.bundle, minds: projectCognitionInspector(commit.bundle) };
+    if (kind === 'buy') {
+      const result = commit.commands.at(-1).receipt.result;
+      assert.deepEqual([result.quantity, result.unitPrice, result.amount,
+        result.before.communalGold, result.after.communalGold], [4, 25, 100, 10, 110]);
+    }
   }
-  const snapshot = await (await fetch(server.url + '/api/runtime/snapshot')).json();
-  await writeEvidence({ ...captured, prefixSnapshot: snapshot,
-    submittedThrough: to, finalSnapshot: to === RECIPE.length ? snapshot : evidence.finalSnapshot });
-  return { captured, snapshot };
+  const files = (await fs.readdir(runtime)).filter(name => name.endsWith('.json'));
+  assert.equal(files.length, 15);
+  const originalTap = await fs.readFile(manifest.originalTap, 'utf8');
+  assert.match(originalTap, /on-restarted 4\/14 tick=432/);
+  assert.match(originalTap, /on-restarted 5\/14 tick=433/,
+    'original execution passed its 432 close/reopen assertions before submitting DTO5');
+  const server = await startRuntimeServer({ directory: runtime, port: 0, writable: true, inspectMind: true });
+  try {
+    const snapshot = await (await request(server.url + '/api/runtime/snapshot')).json();
+    assert.equal(snapshot.tick, 1728);
+    assert.deepEqual(await (await request(server.url + '/api/runtime/minds')).json(), captured['closeout-advance-1728'].minds);
+    const player = await (await request(server.url + '/api/runtime/player')).json();
+    assert.equal(player.revision, 1728);
+    await writeEvidence({ recoveredOn: { manifestFile, runtime, originalTap: manifest.originalTap, files, inputs } });
+    return { root, runtime, captured, snapshot, bundle: final.bundle, files, inputs };
+  } finally { await server.close(); }
+}
+
+let chainsPromise;
+function chains(t) {
+  return chainsPromise ??= (async () => {
+    await writeEvidence({ recipe: RECIPE, seed: SEED, simulationId: SIMULATION_ID });
+    const on = process.env.M34B_COMPLETED_ON_MANIFEST
+      ? await recoverCompletedOn(process.env.M34B_COMPLETED_ON_MANIFEST)
+      : await runServiceChain(t, 'on-restarted', true, true);
+    const continuous = await runServiceChain(t, 'on-continuous', true, false);
+    assert.equal(canonicalJson(on.bundle), canonicalJson(continuous.bundle), 'restart versus uninterrupted complete bundle bytes');
+    assert.deepEqual(on.inputs, continuous.inputs);
+    const off = await runServiceChain(t, 'off', false, false);
+    assert.deepEqual(on.inputs, off.inputs, 'ON/OFF receive identical DTOs');
+    for (const [enabled, actual, label] of [[true, on, 'on'], [false, off, 'off']]) {
+      console.log(`${new Date().toISOString()} independent offline ${label} start`);
+      const offline = runOfflineChain(enabled);
+      assert.equal(canonicalJson(offline.bundle), canonicalJson(actual.bundle), `${label} independent full business bundle`);
+      await fs.writeFile(path.join(evidenceRoot, `offline-${label}-bundle.json`), canonicalJson(offline.bundle));
+      console.log(`${new Date().toISOString()} independent offline ${label} complete`);
+    }
+    return { on, continuous, off };
+  })();
 }
 
 test('G2 ON 链前段：日2 真实拒付、日3 改选用药，并登记可续跑目录', async t => {
-  const seed = await checkpointFor(t, true, { keep: true });
-  await writeEvidence({ directory: seed.runtime, checkpoint: seed.checkpoint });
-  const { captured } = await submitRange(t, 'ON 前段', 0, 4);
+  const { on: seed } = await chains(t);
+  const { captured } = seed;
   const day2 = actorOf(captured['closeout-advance-288'].minds);
   assert.equal(day2.lastDecision.tick, 288);
   assert.deepEqual([day2.lastDecision.choice, day2.lastDecision.gateReason], ['WorkForPay', 'NEW_MAJOR_DUTY']);
@@ -277,22 +417,27 @@ test('G2 ON 链前段：日2 真实拒付、日3 改选用药，并登记可续�
     [0, 0, null], 'a rejected work pays nothing and books nothing');
   assert.deepEqual(letters(day2.workExperience.state), ['F']);
   assert.equal(day2.workExperience.view.penaltyPermille, HAND_COMPUTED.day2.penalty);
+  const day2Frozen = JSON.parse(day2.lastDecision.knowledgeFingerprint);
+  assert.equal(day2Frozen.experience.penaltyPermille, 0, 'the failure was not known before executing this decision');
+  assert.equal(day2Frozen.experience.sampleCount, 0);
   const day3 = actorOf(captured['closeout-advance-432'].minds);
   assert.equal(day3.lastDecision.candidates.find(c => c.action === 'WorkForPay').score, HAND_COMPUTED.day3On.work,
     'the stored failure raises opposition by exactly 100 permille');
   assert.equal(day3.lastDecision.choice, HAND_COMPUTED.day3On.choice);
+  assert.equal(day3.lastOutcome.status, 'succeeded');
+  assert.deepEqual([day3.lastOutcome.delta.herbs, day3.lastOutcome.delta.health], [-1, 100]);
+  assert.equal(day3.workExperience.view.penaltyPermille, 100);
+  assert.equal(JSON.parse(day3.lastDecision.knowledgeFingerprint).experience.penaltyPermille, 100);
   assert.deepEqual(letters(day3.workExperience.state), ['F'], 'using medicine is not a Work sample');
-  assert.equal((await fs.readdir(seed.runtime)).filter(name => name.endsWith('.json')).length, 5,
-    'the initial commit plus four DTOs at this point');
+  assert.equal((await readCommit(seed.runtime, 432)).commands.length, 4,
+    'the prefix journal contains exactly four DTOs');
 });
 
 test('G2 ON 链后段：重开同一目录续跑，四次真成功把窗口推回全成功', async t => {
-  const existing = await readEvidence();
-  assert.ok(existing.prefixSnapshot,
-    'REQUIRED_EVIDENCE_MISSING: the ON prefix step must run before the continuation step');
-  const { captured, snapshot } = await submitRange(t, 'ON 后段', 4, RECIPE.length);
+  const { on: existing } = await chains(t);
+  const { captured, snapshot } = existing;
   assert.equal(snapshot.tick, 1728);
-  const files = (await fs.readdir(existing.directory)).filter(name => name.endsWith('.json'));
+  const files = (await fs.readdir(existing.runtime)).filter(name => name.endsWith('.json'));
   assert.equal(files.length, 15, 'fourteen business DTOs plus the initial commit make fifteen service files');
   const successCommands = ['closeout-advance-720', 'closeout-advance-864', 'closeout-advance-1152', 'closeout-advance-1440'];
   for (const [index, commandId] of successCommands.entries()) {
@@ -311,6 +456,13 @@ test('G2 ON 链后段：重开同一目录续跑，四次真成功把窗口推�
   const day11 = actorOf(captured['closeout-advance-1584'].minds);
   assert.equal(day11.workExperience.view.penaltyPermille, HAND_COMPUTED.day11.penalty);
   assert.equal(day11.lastDecision.candidates.find(c => c.action === 'WorkForPay').score, HAND_COMPUTED.day11.work);
+  const frozen = JSON.parse(day11.lastDecision.knowledgeFingerprint);
+  assert.equal(workScore(frozen.duty.urgencyPermille, frozen.profile.dutyWeightPermille,
+    frozen.profile.riskAversionPermille, strainOf(frozen.self.fatigue, frozen.self.health)), 730);
+  const day10 = actorOf(captured['closeout-advance-1440'].minds);
+  assert.equal(JSON.parse(day10.lastDecision.knowledgeFingerprint).experience.penaltyPermille, 100,
+    'day10 frozen decision retains the penalty present before its success');
+  assert.equal(day10.workExperience.view.penaltyPermille, 0, 'current window removes the old failure after success');
   // The final window holds four successes, and the served view equals the frozen kernel.
   const finalActor = actorOf(captured['closeout-advance-1728'].minds);
   assert.equal(finalActor.workExperience.view.sampleCount, 4, 'the window holds exactly four samples');
@@ -323,19 +475,8 @@ test('G2 ON 链后段：重开同一目录续跑，四次真成功把窗口推�
 });
 
 test('G2 OFF 对照链：同输入只换开关，日3 仍是 710 并再次被权威拒绝', async t => {
-  const seed = await checkpointFor(t, false);
-  const server = await startRuntimeServer({ directory: seed.runtime, checkpoint: seed.checkpoint,
-    port: 0, writable: true, inspectMind: true });
-  t.after(() => server.close());
-  for (const index of [0, 1, 2, 3]) {
-    const [commandId, kind, amount] = RECIPE[index];
-    const revision = (await (await fetch(server.url + '/api/runtime/snapshot')).json()).revision;
-    const response = await fetch(server.url + '/api/runtime/commands', { method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dtoFor(commandId, kind, amount, revision)) });
-    assert.equal(response.status, 200, commandId + ' refused: ' + JSON.stringify(await response.json().catch(() => null)));
-  }
-  const actor = actorOf(await (await fetch(server.url + '/api/runtime/minds')).json());
+  const { off } = await chains(t);
+  const actor = actorOf(off.captured['closeout-advance-432'].minds);
   assert.deepEqual([actor.lastDecision.tick, actor.lastDecision.choice], [432, 'WorkForPay'],
     'OFF keeps working on day 3 because the penalty is never consumed');
   assert.equal(actor.lastDecision.candidates.find(c => c.action === 'WorkForPay').score, HAND_COMPUTED.day3Off.work);
@@ -348,19 +489,22 @@ test('G2 OFF 对照链：同输入只换开关，日3 仍是 710 并再次被权
     'and still spends none of it on scoring');
 });
 
-test('G2 独立离线直跑链复现服务结果，并核每样本的权威因果链', async () => {
-  const evidence = await readEvidence();
-  assert.ok(evidence.finalMinds,
-    'REQUIRED_EVIDENCE_MISSING: the ON continuation step must have recorded its final projection');
-  const offline = runOfflineChain(true);
-  assert.deepEqual([offline.tick, offline.revision], [1728, 1728], 'the direct chain ends on the same tick');
-  assert.equal(canonicalJson(projectCognitionInspector(offline.bundle)), canonicalJson(evidence.finalMinds),
-    'the independent direct run reproduces the service projection byte for byte');
+test('G2 独立离线直跑链复现服务结果，并核每样本的权威因果链', async t => {
+  const { on: offline } = await chains(t);
   const log = offline.bundle.eventLog;
   const bySeq = new Map(log.map(event => [event.eventSeq, event]));
   const actor = actorOf(projectCognitionInspector(offline.bundle));
   assert.equal(actor.workExperience.state.samples.length, 4);
-  for (const sample of actor.workExperience.state.samples) {
+  const day2 = offline.captured['closeout-advance-288'];
+  assert.equal(canonicalJson(log.filter(event => event.eventSeq <= day2.bundle.eventLog.at(-1).eventSeq)),
+    canonicalJson(day2.bundle.eventLog), 'all earlier facts, decision and fingerprint bytes are preserved');
+  const samples = new Map();
+  for (const capture of Object.values(offline.captured))
+    for (const sample of actorOf(capture.minds).workExperience.state.samples) samples.set(sample.sourceEventSeq, sample);
+  assert.equal([...samples.values()].filter(sample => sample.status === 'rejected').length, 1);
+  assert.deepEqual([...samples.values()].filter(sample => sample.status === 'succeeded').slice(0, 4)
+    .map(sample => sample.occurrenceTick), [720, 864, 1152, 1440], 'the first four true Work successes follow the contract');
+  for (const sample of samples.values()) {
     assert.equal(sample.actorId, 'actor-2', 'samples belong to this actor only');
     assert.equal(sample.action, 'WorkForPay', 'only WorkForPay results are stored');
     assert.equal(sample.commandId, sample.decisionId, 'the wage command is the decision command');
@@ -372,7 +516,27 @@ test('G2 独立离线直跑链复现服务结果，并核每样本的权威因�
       && event.payload.decisionId === sample.decisionId);
     assert.ok(planned, 'the decision was planned before it resolved');
     const committed = log.find(event => event.type === 'SocietyActionCommitted' && event.commandId === sample.commandId);
-    assert.ok(committed, 'a real authority command carries the receipt for ' + sample.commandId);
+    const receipt = offline.bundle.snapshot.commandReceipts[sample.commandId];
+    assert.ok(receipt, 'a real authority receipt is retained');
+    assert.equal(receipt.status, sample.status);
+    assert.equal(resolved.payload.actorId, sample.actorId);
+    assert.equal(planned.payload.actorId, sample.actorId);
+    assert.equal(planned.payload.choice, 'WorkForPay');
+    assert.ok(resolved.causationEventSeqs.includes(planned.eventSeq));
+    if (sample.status === 'succeeded') {
+      assert.ok(committed, 'successful authority command emits a committed fact');
+      assert.ok(receipt.eventSeqs.includes(committed.eventSeq));
+      assert.deepEqual(committed.payload, receipt.result);
+      assert.equal(receipt.result.actorId, sample.actorId);
+      assert.equal(receipt.result.after.wallet - receipt.result.before.wallet, 20);
+      assert.equal(receipt.result.foodProduced, 8);
+      assert.ok(planned.eventSeq < committed.eventSeq && committed.eventSeq < resolved.eventSeq);
+    } else {
+      assert.equal(committed, undefined, 'rejected authority must never fake a committed success');
+      assert.deepEqual(receipt.eventSeqs, []);
+      assert.equal(resolved.payload.code, 'RULE_REJECTED');
+      assert.equal(resolved.payload.delta.wallet, 0);
+    }
     const observed = log.find(event => event.type === 'ExperienceWorkObserved' && event.payload?.actorId === 'actor-2'
       && (event.causationEventSeqs ?? []).includes(sample.sourceEventSeq));
     assert.ok(observed, 'the observation event links back to the resolved event');
@@ -383,41 +547,57 @@ test('G2 独立离线直跑链复现服务结果，并核每样本的权威因�
 
 
 // ---- G3 低频延续：day144 真评审买药 -> 同目录优雅关闭重开 -> day288 maintain 用药 ----
-async function runContinuationChain(t) {
+async function runContinuationChain(t, restart = true) {
   const root = await tempDir(t, 'world-m34b-g3-');
   const source = path.join(root, 'source'), runtime = path.join(root, 'runtime');
   await fs.mkdir(source); await fs.mkdir(runtime);
-  const bundle = createCognitionVillage(SEED, 'm34-continuation-closeout', createM3CloseoutConfig('continuation')).bundle;
+  const bundle = createCognitionVillage(SEED, 'm34-continuation-closeout', contractConfig(true, 'continuation')).bundle;
   await saveCheckpoint(bundle, { directory: source, rulesVersion: COGNITION_RULES, systems: cognitionSystems() });
   const checkpoint = path.join(source, 'checkpoint-r0.json');
   let server = await startRuntimeServer({ directory: runtime, checkpoint, port: 0, writable: true, inspectMind: true });
   t.after(() => server.close());
   const submit = async commandId => {
-    const revision = (await (await fetch(server.url + '/api/runtime/snapshot')).json()).revision;
-    const response = await fetch(server.url + '/api/runtime/commands', { method: 'POST',
+    const revision = (await (await request(server.url + '/api/runtime/snapshot')).json()).revision;
+    const response = await request(server.url + '/api/runtime/commands', { method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(dtoFor(commandId, 'time', 144, revision)) });
     assert.equal(response.status, 200, commandId + ' refused: ' + JSON.stringify(await response.json().catch(() => null)));
-    return (await fetch(server.url + '/api/runtime/minds')).json();
+    return (await request(server.url + '/api/runtime/minds')).json();
   };
   const day1 = await submit('closeout-continuation-144');
-  await server.close();
-  server = await startRuntimeServer({ directory: runtime, port: 0, writable: true, inspectMind: true });
-  t.after(() => server.close());
-  const resumedRevision = (await (await fetch(server.url + '/api/runtime/snapshot')).json()).revision;
+  if (restart) {
+    await server.close();
+    server = await startRuntimeServer({ directory: runtime, port: 0, writable: true, inspectMind: true });
+    assert.deepEqual(await (await request(server.url + '/api/runtime/minds')).json(), day1);
+  }
+  const resumedRevision = (await (await request(server.url + '/api/runtime/snapshot')).json()).revision;
   const day2 = await submit('closeout-continuation-288');
-  return { day1, day2, resumedRevision, files: (await fs.readdir(runtime)).filter(name => name.endsWith('.json')) };
+  const final = await readCommit(runtime, 288);
+  await server.close();
+  return { day1, day2, resumedRevision, bundle: final.bundle, files: (await fs.readdir(runtime)).filter(name => name.endsWith('.json')) };
+}
+
+let continuationPromise;
+function continuation(t) {
+  return continuationPromise ??= (async () => {
+    const restarted = await runContinuationChain(t, true);
+    const continuous = await runContinuationChain(t, false);
+    assert.equal(canonicalJson(restarted.bundle), canonicalJson(continuous.bundle),
+      'continuation restart versus uninterrupted complete bundle bytes');
+    await writeEvidence({ continuation: { fullBundleEqual: true, files: restarted.files } });
+    return restarted;
+  })();
 }
 
 test('G3 低频延续：跨重启保持同一 Goal/Plan 与旧评审锚点，maintain 不造候选', async t => {
-  const chain = await runContinuationChain(t);
+  const chain = await continuation(t);
   const first = actorOf(chain.day1), second = actorOf(chain.day2);
   assert.equal(first.lastDecision.tick, 144);
   assert.equal(first.cognition.reviewState.lastEvaluation.decision.mode, 'review', 'day1 is a real review');
   assert.equal(first.lastDecision.choice, 'BuyMedicine', 'the reviewed actor buys medicine');
   assert.ok(first.knowledge.planState.activePlan !== null, 'the review created a committed plan');
   const planId = first.knowledge.planState.activePlan.planId, goalId = first.knowledge.planState.activePlan.goalId;
-  const nextPlanId = first.knowledge.planState.nextPlanId, nextGoalId = first.knowledge.nextGoalId;
+  const nextPlanId = first.knowledge.planState.nextPlanId, nextGoalId = first.knowledge.self.nextGoalId;
   assert.equal(chain.resumedRevision, 144, 'reopen restores the day-1 revision');
   // Second day: maintain mode, the same identities, and a fresh command id.
   assert.equal(second.lastDecision.tick, 288);
@@ -442,7 +622,7 @@ test('G3 低频延续：跨重启保持同一 Goal/Plan 与旧评审锚点，mai
   assert.notEqual(second.lastDecision.decisionId, first.lastDecision.decisionId, 'day2 issues a new command');
   // No extra goal or plan identifiers were invented across the restart.
   assert.equal(second.knowledge.planState.nextPlanId, nextPlanId, 'nextPlanId must not grow on a maintained step');
-  assert.equal(second.knowledge.nextGoalId, nextGoalId, 'nextGoalId must not grow across the restart');
+  assert.equal(second.knowledge.self.nextGoalId, nextGoalId, 'nextGoalId must not grow across the restart');
   // The authority really treated the actor: one herb out, health up by a hundred.
   assert.deepEqual([second.lastOutcome.status, second.lastOutcome.delta.herbs, second.lastOutcome.delta.health],
     ['succeeded', -1, 100], 'the day-2 use is a real succeeded outcome');
@@ -458,7 +638,7 @@ test('G3 低频延续：跨重启保持同一 Goal/Plan 与旧评审锚点，mai
 });
 
 test('G3 读数语义：当时经验取自冻结指纹，与当前窗口分列', async t => {
-  const chain = await runContinuationChain(t);
+  const chain = await continuation(t);
   const second = actorOf(chain.day2);
   const frozen = JSON.parse(second.lastDecision.knowledgeFingerprint);
   assert.equal(frozen.phase, 'decision', 'the frozen fingerprint is the decision-phase knowledge text');
@@ -467,7 +647,9 @@ test('G3 读数语义：当时经验取自冻结指纹，与当前窗口分列',
   assert.deepEqual(letters(second.workExperience.state), [], 'the current window is reported separately');
   // The served knowledge is the committed own-person projection, and its identity is intact.
   assert.deepEqual([frozen.actorId, frozen.knowledgeVersion], ['actor-2', 'cognition-knowledge-v1']);
-  assert.ok(canonicalJson(second.lastDecision.knowledgeFingerprint).length > 100, 'the fingerprint is the text itself');
+  assert.deepEqual(frozen.experience, actorOf(chain.day1).workExperience.view,
+    'the maintained day retains the actual prior committed experience summary');
+  assert.equal(frozen.useWorkExperience, true);
 });
 
 test('G2 纯推进不是合同反例：省略两笔交易就不会出现日2 拒付', async () => {

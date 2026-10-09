@@ -266,6 +266,7 @@ test('§1: model rejections — version, identity, fingerprint, anchors and base
   assert.throws(() => validateCognitionModel(foreignActor), { code: 'INVALID_INPUT' });
   // baseline shapes.
   for (const signalBaseline of [{}, { keyEvidenceFingerprint: '' }, { keyEvidenceFingerprint: 5 },
+    { keyEvidenceFingerprint: 'fp-1' }, { keyEvidenceFingerprint: 'seed' },
     { keyEvidenceFingerprint: 'a', extra: 1 }]) {
     const bad = model();
     bad.actors[0].signalBaseline = signalBaseline;
@@ -273,7 +274,8 @@ test('§1: model rejections — version, identity, fingerprint, anchors and base
       'baseline ' + canonicalJson(signalBaseline));
   }
   const good = model();
-  good.actors[0].signalBaseline = { keyEvidenceFingerprint: 'fp-1' };
+  good.actors[0].signalBaseline = { keyEvidenceFingerprint: canonicalJson({
+    value: 'available', confidenceEnough: true, penaltyPermille: 0 }) };
   assert.doesNotThrow(() => validateCognitionModel(good));
 });
 
@@ -619,14 +621,15 @@ test('C1: the output is the frozen kernel input plus a one-field baseline', () =
 
 test('C1: the result shares no mutable sub-object with its arguments', () => {
   const source = knowledge();
-  const baseline = { keyEvidenceFingerprint: 'seed' };
+  const fingerprint = canonicalJson({ value: 'available', confidenceEnough: true, penaltyPermille: 0 });
+  const baseline = { keyEvidenceFingerprint: fingerprint };
   const result = sig(source, 700, baseline, null);
   result.input.tick = 99999;
   result.input.actorId = 'actor-3';
   result.baseline.keyEvidenceFingerprint = 'mutated';
   assert.equal(source.tick, TICK);
   assert.equal(source.actorId, ACTOR);
-  assert.equal(baseline.keyEvidenceFingerprint, 'seed');
+  assert.equal(baseline.keyEvidenceFingerprint, fingerprint);
   assert.notEqual(result.input, source.self);
   assert.notEqual(result.baseline.keyEvidenceFingerprint, source.belief);
 });

@@ -362,13 +362,28 @@ test('G1 挂起 durable 发布期间读旧三投影，解除后同一候选一�
 });
 
 test('G1 合法副本内 config/cognition cursor/决定模式/经验样本实变均被完整重演拒绝', async t => {
-  const directory = path.join(await temporary(t), 'world');
-  const owner = await createRuntimeOwner({ directory, profile: 'cognition-village', writable: true });
-  t.after(() => owner.close());
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'world-m34b-g1-deep-'));
+  let owner;
+  t.after(async () => {
+    try { await owner?.close(); }
+    finally { await fs.rm(root, { recursive: true, force: true }); }
+  });
+  const source = path.join(root, 'source'), directory = path.join(root, 'runtime');
+  await fs.mkdir(source); await fs.mkdir(directory);
+  await saveCheckpoint(createCognitionVillage(42, 'm34b-g1-deep', createM3CloseoutConfig('work-learning', true)).bundle,
+    { directory: source, rulesVersion: COGNITION_RULES, systems: cognitionSystems() });
+  owner = await createRuntimeOwner({ directory, checkpoint: path.join(source, 'checkpoint-r0.json'), writable: true });
   await owner.submit(timeDto('m34b-g1-deep-a', 0, 288));
   const pristine = JSON.parse((await fileBytes(directory))['service-commit-r288.json']);
   assert.doesNotThrow(() => validateServiceCommit(structuredClone(pristine)), 'the honest journal validates');
   const world = record => record.bundle.snapshot.world;
+  const samples = world(pristine).experienceModel.actors[0].workExperienceState.samples;
+  assert.ok(samples.length > 0, 'the frozen recipe must produce real work experience before mutations');
+  assert.equal(samples[0].action, 'WorkForPay');
+  assert.equal(samples[0].status, 'succeeded', 'the status forgery starts from a real successful work receipt');
+  assert.equal(world(pristine).cognitionModel.actors[0].reviewState.lastEvaluation.decision.mode, 'review',
+    'the mode forgery must start from an actual review');
+  const pristineBytes = canonicalJson(pristine);
   const deep = {
     'experience config flipped': record => { world(record).experienceModel.config.useWorkExperience = false; },
     'experience config version forged': record => { world(record).experienceModel.config.version = 'experience-config-v9'; },
@@ -381,25 +396,19 @@ test('G1 合法副本内 config/cognition cursor/决定模式/经验样本实变
       world(record).experienceModel.actors[0].workExperienceState.samples = [];
     },
     'work sample status forged': record => {
-      const actor = world(record).experienceModel.actors[0];
-      if (actor.workExperienceState.samples.length === 0) actor.workExperienceState.samples = [{
-        simulationId: actor.workExperienceState.simulationId, actorId: 'actor-2', sourceEventSeq: 999,
-        occurrenceTick: 144, decisionId: 'forged-decision', commandId: 'forged-command', action: 'WorkForPay',
-        status: 'rejected', code: 'RULE_REJECTED'
-      }];
-      else actor.workExperienceState.samples[0].status = 'rejected';
+      const sample = world(record).experienceModel.actors[0].workExperienceState.samples[0];
+      sample.status = 'rejected';
+      sample.code = 'RULE_REJECTED';
     }
   };
-  let realised = 0;
+  assert.equal(Object.keys(deep).length, 7, 'all seven required mutations are present');
   for (const [label, mutate] of Object.entries(deep)) {
     const record = structuredClone(pristine);
     mutate(record);
-    if (canonicalJson(record) === canonicalJson(pristine)) continue;
-    realised++;
+    assert.notEqual(canonicalJson(record), pristineBytes, `${label}: the mutation must change canonical bytes`);
     assert.throws(() => validateServiceCommit(record), error => typeof error.code === 'string',
       `${label}: the edited world must be refused by full replay`);
   }
-  assert.ok(realised >= 5, 'the deep edits must really change the canonical bytes, realised ' + realised);
   // The honest journal still replays to the durable world, so the refusals are not blanket failures.
   let replay = pristine.anchor;
   for (const entry of pristine.commands) replay = transitionServiceCommand(replay, entry.dto).bundle;

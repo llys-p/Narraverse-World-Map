@@ -345,7 +345,9 @@ test('state surface is data-only: no world, memory, mind, runner or service expo
     'MOTIVATION_SELECTION_BLOCK_CODES','MOTIVATION_REASON_CODES','MOTIVATION_OUTCOME_STATUSES',
     'MOTIVATION_MAJOR_DUTY_PERMILLE','MOTIVATION_EMERGENCY_FATIGUE','validateMotivationRequest',
     'validateMotivationConfig','createMotivationModel','validateMotivationDuty','validateMotivationPlan',
-    'validateMotivationCandidate','validateMotivationDecision','validateMotivationOutcome','validateMotivationModel']);
+    'validateMotivationCandidate','validateMotivationDecision','validateMotivationOutcome','validateMotivationModel',
+    'COGNITION_MAINTAIN_GATES','validateCognitionMotivationDecision','validateCognitionMotivationModel',
+    'validateExperienceMotivationDecision','validateExperienceMotivationModel']);
   assert.deepEqual(Object.keys(state).filter(name=>!allowed.has(name)),[],'unexpected motivation export surface');
   for(const name of ['validateMotivationConfig','createMotivationModel','validateMotivationModel'])
     assert.equal(typeof state[name],'function','missing required export '+name);
