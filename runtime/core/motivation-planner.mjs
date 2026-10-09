@@ -7,8 +7,11 @@ import { fields,record,integer,identifier,denseArray,cloneData,canonicalJson,req
 import { MAX_MIND_OBSERVATIONS,validateObservation } from './mind-state.mjs';
 import { MOTIVATION_KNOWLEDGE_VERSION,MOTIVATION_DECISION_VERSION,MAX_MOTIVATION_KNOWLEDGE_BYTES,
   MOTIVATION_ACTOR_IDS,MOTIVATION_MAJOR_DUTY_PERMILLE,MOTIVATION_EMERGENCY_FATIGUE,MAX_MOTIVATION_PERMILLE,
-  validateMotivationDuty,validateMotivationPlan,validateMotivationDecision,validateExperienceMotivationDecision } from './motivation-state.mjs';
+  validateMotivationDuty,validateMotivationPlan,validateMotivationDecision,validateExperienceMotivationDecision,
+  validateCognitionMotivationDecision } from './motivation-state.mjs';
 import { inspectDescriptorTree } from './experience-state.mjs';
+import { COGNITION_KNOWLEDGE_VERSION,COGNITION_DECISION_VERSION,MAX_COGNITION_KNOWLEDGE_BYTES,
+  MAX_COGNITION_EVIDENCE_REFS } from './cognition-state.mjs';
 
 const DAY_TICKS=144;
 const HEALTH_GOAL_TARGET=800;
@@ -46,13 +49,29 @@ const MOTIVATION_KNOWLEDGE_FIELDS=['knowledgeVersion','phase','simulationId','ac
   'observations','belief','profile','duty','planState'];
 const EXPERIENCE_KNOWLEDGE_FIELDS=[...MOTIVATION_KNOWLEDGE_FIELDS,'experience','useWorkExperience'];
 
+// One private knowledge contract shared by the three rule variants; only the version string,
+// byte budget and experience-view presence differ. Cognition reuses the M3-2 experience
+// knowledge shape exactly, including its derived work-experience view.
+const KNOWLEDGE_VARIANTS={
+  motivation:{version:MOTIVATION_KNOWLEDGE_VERSION,bytes:MAX_MOTIVATION_KNOWLEDGE_BYTES,experience:false,
+    fields:MOTIVATION_KNOWLEDGE_FIELDS},
+  experience:{version:'experience-knowledge-v1',bytes:16384,experience:true,fields:EXPERIENCE_KNOWLEDGE_FIELDS},
+  cognition:{version:COGNITION_KNOWLEDGE_VERSION,bytes:MAX_COGNITION_KNOWLEDGE_BYTES,experience:true,
+    fields:EXPERIENCE_KNOWLEDGE_FIELDS}
+};
+
 function validateKnowledgeBase(knowledge, isExperience=false){
+  return validateKnowledgeVariant(knowledge, isExperience?'experience':'motivation');
+}
+
+function validateKnowledgeVariant(knowledge, variant){
+  const spec=KNOWLEDGE_VARIANTS[variant],isExperience=spec.experience;
   const bytes=new TextEncoder().encode(canonicalJson(knowledge)).length;
-  const maxBytes=isExperience?16384:MAX_MOTIVATION_KNOWLEDGE_BYTES;
+  const maxBytes=spec.bytes;
   requireCondition(bytes<=maxBytes,'Motivation knowledge exceeds budget','LIMIT_EXCEEDED');
   record(knowledge);
-  fields(knowledge,isExperience?EXPERIENCE_KNOWLEDGE_FIELDS:MOTIVATION_KNOWLEDGE_FIELDS);
-  const expectedVersion=isExperience?'experience-knowledge-v1':MOTIVATION_KNOWLEDGE_VERSION;
+  fields(knowledge,spec.fields);
+  const expectedVersion=spec.version;
   requireCondition(knowledge.knowledgeVersion===expectedVersion,'Unknown motivation knowledge version','UNSUPPORTED_VERSION');
   requireCondition(knowledge.phase==='decision','Motivation planner only accepts decision-phase knowledge');
   identifier(knowledge.simulationId);
@@ -149,6 +168,11 @@ function validateKnowledge(knowledge){
   return validateKnowledgeBase(knowledge, false);
 }
 
+export function validateCognitionKnowledge(knowledge){
+  inspectDescriptorTree(knowledge);
+  return validateKnowledgeVariant(knowledge, 'cognition');
+}
+
 function rejectDead(){throw fault('RULE_REJECTED','Motivation planner does not decide for the dead');}
 
 const dutyWindowOpen=(duty,tick)=>duty!==null&&duty.status==='pending'&&tick>=duty.observedTick&&tick<duty.expiresTick;
@@ -163,29 +187,67 @@ const scored=(action,reasonCode,support)=>({action,provider:providerOf(action),
 const softBlocked=(action,reasonCode,sourceRef=sourceRefOf(action))=>({action,provider:providerOf(action),
   sourceRef,eligible:false,score:null,support:0,opposition:0,reasonCode});
 
+// One private soft-guard per committed action. The full candidate builders and the M3-3A
+// committed-step eligibility query share them, so continuation can never drift from the rules
+// that produced the plan in the first place.
+function useGuard(hasGoal,self){
+  if(!hasGoal)return 'NO_HEALTH_GOAL';
+  if(self.inventory.herbs===0)return 'PRIVATE_MEDICINE_MISSING';
+  if(self.health>=NEED_LIMIT)return 'HEALTH_ALREADY_FULL';
+  return null;
+}
+
+function buyGuard(hasGoal,self,knowledge){
+  if(!hasGoal)return 'NO_HEALTH_GOAL';
+  if(self.inventory.herbs!==0)return 'PRIVATE_MEDICINE_PRESENT';
+  if(knowledge.belief.value==='unknown')return 'SUPPLY_UNKNOWN';
+  if(knowledge.belief.value==='unavailable')return 'SUPPLY_UNAVAILABLE';
+  if(knowledge.belief.confidencePermille<BUY_CONFIDENCE_FLOOR)return 'SUPPLY_CONFIDENCE_LOW';
+  if(self.wallet<knowledge.quote.price)return 'WALLET_INSUFFICIENT';
+  if(self.inventory.herbs+1>NEED_LIMIT)return 'CAPACITY_UNAVAILABLE';
+  return null;
+}
+
+// requestId binds the guard to one committed duty plan; the shared candidate path passes null.
+function workGuard(self,knowledge,requestId=null){
+  const duty=knowledge.duty;
+  if(!dutyWindowOpen(duty,knowledge.tick))return 'DUTY_UNAVAILABLE';
+  if(requestId!==null&&duty.requestId!==requestId)return 'DUTY_UNAVAILABLE';
+  if(self.health<WORK_HEALTH_FLOOR)return 'HEALTH_TOO_LOW_FOR_WORK';
+  if(self.fatigue>WORK_FATIGUE_CEILING)return 'FATIGUE_TOO_HIGH_FOR_WORK';
+  return null;
+}
+
+function restGuard(self){
+  if(self.fatigue<REST_TRIGGER)return 'FATIGUE_BELOW_REST_THRESHOLD';
+  return null;
+}
+
+function committedGuard(knowledge,plan){
+  const self=knowledge.self,hasGoal=self.currentGoal!==null,action=plan.steps[plan.stepIndex];
+  if(action==='UseMedicine')return useGuard(hasGoal,self);
+  if(action==='BuyMedicine')return buyGuard(hasGoal,self,knowledge);
+  if(action==='WorkForPay')return workGuard(self,knowledge,plan.requestId);
+  if(action==='Rest')return restGuard(self);
+  requireCondition(false,'Committed plan step is not a recognizable action');
+}
+
+const MAINTAIN_REASON_CODES={UseMedicine:'RECOVER_HEALTH',BuyMedicine:'RECOVER_HEALTH',
+  WorkForPay:'DUTY',Rest:'FATIGUE_RELIEF'};
+
 function useCandidate(hasGoal,self){
-  if(!hasGoal)return softBlocked('UseMedicine','NO_HEALTH_GOAL');
-  if(self.inventory.herbs===0)return softBlocked('UseMedicine','PRIVATE_MEDICINE_MISSING');
-  if(self.health>=NEED_LIMIT)return softBlocked('UseMedicine','HEALTH_ALREADY_FULL');
-  return scored('UseMedicine','RECOVER_HEALTH',recoveryOf(self));
+  const reason=useGuard(hasGoal,self);
+  return reason===null?scored('UseMedicine','RECOVER_HEALTH',recoveryOf(self)):softBlocked('UseMedicine',reason);
 }
 
 function buyCandidate(hasGoal,self,knowledge){
-  if(!hasGoal)return softBlocked('BuyMedicine','NO_HEALTH_GOAL');
-  if(self.inventory.herbs!==0)return softBlocked('BuyMedicine','PRIVATE_MEDICINE_PRESENT');
-  if(knowledge.belief.value==='unknown')return softBlocked('BuyMedicine','SUPPLY_UNKNOWN');
-  if(knowledge.belief.value==='unavailable')return softBlocked('BuyMedicine','SUPPLY_UNAVAILABLE');
-  if(knowledge.belief.confidencePermille<BUY_CONFIDENCE_FLOOR)return softBlocked('BuyMedicine','SUPPLY_CONFIDENCE_LOW');
-  if(self.wallet<knowledge.quote.price)return softBlocked('BuyMedicine','WALLET_INSUFFICIENT');
-  if(self.inventory.herbs+1>NEED_LIMIT)return softBlocked('BuyMedicine','CAPACITY_UNAVAILABLE');
-  return scored('BuyMedicine','RECOVER_HEALTH',recoveryOf(self));
+  const reason=buyGuard(hasGoal,self,knowledge);
+  return reason===null?scored('BuyMedicine','RECOVER_HEALTH',recoveryOf(self)):softBlocked('BuyMedicine',reason);
 }
 
 function workCandidate(self,knowledge,experiencePenalty=0){
-  const duty=knowledge.duty;
-  if(!dutyWindowOpen(duty,knowledge.tick))return softBlocked('WorkForPay','DUTY_UNAVAILABLE');
-  if(self.health<WORK_HEALTH_FLOOR)return softBlocked('WorkForPay','HEALTH_TOO_LOW_FOR_WORK',duty.requestId);
-  if(self.fatigue>WORK_FATIGUE_CEILING)return softBlocked('WorkForPay','FATIGUE_TOO_HIGH_FOR_WORK',duty.requestId);
+  const duty=knowledge.duty,reason=workGuard(self,knowledge,null);
+  if(reason!==null)return softBlocked('WorkForPay',reason,reason==='DUTY_UNAVAILABLE'?null:duty.requestId);
   const sourceRef=duty.requestId;
   const support=Math.floor(duty.urgencyPermille*knowledge.profile.dutyWeightPermille/1000);
   const opposition=Math.floor(strainOf(self)*knowledge.profile.riskAversionPermille/1000)+experiencePenalty;
@@ -194,9 +256,24 @@ function workCandidate(self,knowledge,experiencePenalty=0){
 }
 
 function restCandidate(self){
-  if(self.fatigue<REST_TRIGGER)return softBlocked('Rest','FATIGUE_BELOW_REST_THRESHOLD');
+  const reason=restGuard(self);
+  if(reason!==null)return softBlocked('Rest',reason);
   const emergency=self.fatigue>=MOTIVATION_EMERGENCY_FATIGUE;
   return scored('Rest',emergency?'EMERGENCY_FATIGUE':'FATIGUE_RELIEF',emergency?EMERGENCY_REST_SCORE:self.fatigue);
+}
+
+// M3-3A: does the already-committed current step still hold? It never scores, never compares
+// candidates and never touches plan steps, identifiers or duty review markers.
+export function isCommittedStepEligible(knowledge,plan){
+  inspectDescriptorTree({knowledge,plan});
+  const spec=validateKnowledgeVariant(knowledge,'cognition');
+  requireCondition(plan!==null&&typeof plan==='object','Cognition continuation requires a committed plan');
+  const slots=[spec.planState.activePlan,spec.planState.suspendedPlan];
+  const owned=slots.some(slot=>slot!==null&&(slot===plan||canonicalJson(slot)===canonicalJson(plan)));
+  requireCondition(owned,'Cognition continuation plan is not this actor\'s committed plan');
+  validateMotivationPlan(plan);
+  const reason=committedGuard(knowledge,plan);
+  return {eligible:reason===null,reasonCode:reason};
 }
 
 function collectCandidates(knowledge,experiencePenalty=0){
@@ -236,8 +313,15 @@ function repairHealthPlan(plan,self,candidates,keepSuspended){
   return {...plan,steps,stepIndex:0,status:keepSuspended?'suspended':ready?'ready':'blocked'};
 }
 
-function planDecisionInternal(knowledge, isExperience=false){
-  validateKnowledgeBase(knowledge, isExperience);
+const DECISION_VERSIONS={motivation:MOTIVATION_DECISION_VERSION,experience:'experience-decision-v1',
+  cognition:COGNITION_DECISION_VERSION};
+const DECISION_PREFIXES={motivation:'motivation-day-',experience:'experience-day-',cognition:'cognition-day-'};
+const DECISION_VALIDATORS={motivation:validateMotivationDecision,experience:validateExperienceMotivationDecision,
+  cognition:validateCognitionMotivationDecision};
+
+function planDecisionInternal(knowledge, variant='motivation', context=null){
+  const spec=KNOWLEDGE_VARIANTS[variant],isExperience=spec.experience;
+  validateKnowledgeVariant(knowledge, variant);
   const self=knowledge.self,tick=knowledge.tick,day=tick/DAY_TICKS;
   if(!self.alive)rejectDead();
 
@@ -332,30 +416,132 @@ function planDecisionInternal(knowledge, isExperience=false){
   if(isExperience&&knowledge.experience?.evidenceRefs){
     for(const seq of knowledge.experience.evidenceRefs)evidence.add(seq);
   }
+  const cognition=variant==='cognition';
+  if(cognition){
+    // A full review cites its own published evaluation fact, never another actor's.
+    requireCondition(context!==null,'Cognition review requires its evaluation context');
+    evidence.add(context.evaluationEventSeq);
+  }
 
-  const decisionId=(isExperience?'experience-day-':'motivation-day-')+day+'-'+knowledge.actorId;
-  const decisionVersion=isExperience?'experience-decision-v1':MOTIVATION_DECISION_VERSION;
+  const decisionId=DECISION_PREFIXES[variant]+day+'-'+knowledge.actorId;
+  const decisionVersion=DECISION_VERSIONS[variant];
   const decision={version:decisionVersion,decisionId,
     actorId:knowledge.actorId,tick,goalId:boundPlan===null?null:boundPlan.goalId,
     planId:boundPlan===null?null:boundPlan.planId,innerStance,
     committedIntent:currentGoal===null?null:{goalId:currentGoal.goalId,kind:'recover-health'},
     apparentAction:choice,choice,reasonCode:candidates.find(candidate=>candidate.action===choice).reasonCode,
-    gateReason,strainPermille:strainOf(self),candidates,evidenceRefs:[...evidence].sort((a,b)=>a-b),
+    gateReason,strainPermille:strainOf(self),candidates,
+    evidenceRefs:[...evidence].sort((a,b)=>a-b),
     knowledgeFingerprint:canonicalJson(knowledge)};
+  if(cognition){
+    decision.mode='review';
+    decision.sourceReviewDecisionId=null;
+    decision.sourceReviewEventSeq=null;
+  }
 
-  if(isExperience)validateExperienceMotivationDecision(decision);
-  else validateMotivationDecision(decision);
+  DECISION_VALIDATORS[variant](decision);
 
   return {currentGoal,nextGoalId,activePlan,suspendedPlan,nextPlanId,lastReviewedDutyId,decision};
 }
 
 export function planMotivationDecision(knowledge){
-  return planDecisionInternal(knowledge, false);
+  return planDecisionInternal(knowledge, 'motivation');
 }
 
 export function planExperienceMotivationDecision(knowledge){
   inspectDescriptorTree(knowledge);
-  return planDecisionInternal(knowledge, true);
+  return planDecisionInternal(knowledge, 'experience');
+}
+
+function validateCognitionContext(context,maintain){
+  inspectDescriptorTree(context);
+  record(context);
+  fields(context,['evaluationEventSeq','sourceReviewDecisionId','sourceReviewEventSeq']);
+  integer(context.evaluationEventSeq,1);
+  if(maintain){
+    identifier(context.sourceReviewDecisionId);
+    requireCondition(context.sourceReviewDecisionId.startsWith('cognition-day-'),
+      'Cognition maintain source is not a cognition review decision');
+    integer(context.sourceReviewEventSeq,1);
+    requireCondition(context.sourceReviewEventSeq<context.evaluationEventSeq,
+      'Cognition maintain source must strictly precede its evaluation');
+  }else{
+    requireCondition(context.sourceReviewDecisionId===null&&context.sourceReviewEventSeq===null,
+      'Cognition full review carries no maintain source');
+  }
+  return context;
+}
+
+export function planCognitionMotivationDecision(knowledge,context){
+  inspectDescriptorTree({knowledge,context});
+  validateCognitionContext(context,false);
+  return planDecisionInternal(knowledge,'cognition',context);
+}
+
+// M3-3A continuation: execute the already-committed current step, or resume an eligible
+// suspended plan. It never scores, never compares candidates, never edits steps/stepIndex,
+// never builds a Goal or Plan, never consumes a plan identifier and never marks a duty reviewed.
+export function continueCognitionPlan(knowledge,context){
+  inspectDescriptorTree({knowledge,context});
+  validateCognitionContext(context,true);
+  const spec=validateKnowledgeVariant(knowledge,'cognition');
+  const self=spec.self,tick=spec.tick;
+  if(!self.alive)rejectDead();
+  requireCondition(context.sourceReviewDecisionId.endsWith('-'+spec.actorId),
+    'Cognition maintain source belongs to another actor');
+
+  const currentGoal=self.currentGoal===null?null:cloneData(self.currentGoal);
+  const nextGoalId=self.nextGoalId;
+  let activePlan=cloneData(spec.planState.activePlan);
+  let suspendedPlan=cloneData(spec.planState.suspendedPlan);
+  const nextPlanId=spec.planState.nextPlanId;
+  const lastReviewedDutyId=spec.planState.lastReviewedDutyId;
+
+  let gateReason,choice,reasonCode,boundPlan=null;
+  if(activePlan!==null){
+    const action=activePlan.steps[activePlan.stepIndex],guard=isCommittedStepEligible(knowledge,activePlan);
+    if(guard.eligible){
+      gateReason='CONTINUE_MAINTAIN';choice=action;reasonCode=MAINTAIN_REASON_CODES[action];
+      activePlan={...activePlan,status:'ready'};
+    }else{
+      gateReason='WAIT_MAINTAIN';choice='NoAction';reasonCode=guard.reasonCode;
+      activePlan={...activePlan,status:'blocked'};
+    }
+    boundPlan=activePlan;
+  }else if(suspendedPlan!==null){
+    const action=suspendedPlan.steps[suspendedPlan.stepIndex],guard=isCommittedStepEligible(knowledge,suspendedPlan);
+    if(guard.eligible){
+      gateReason='CONTINUE_MAINTAIN';choice=action;reasonCode=MAINTAIN_REASON_CODES[action];
+      activePlan={...suspendedPlan,status:'ready'};suspendedPlan=null;boundPlan=activePlan;
+    }else{
+      gateReason='WAIT_MAINTAIN';choice='NoAction';reasonCode=guard.reasonCode;boundPlan=suspendedPlan;
+    }
+  }else{
+    gateReason='WAIT_MAINTAIN';choice='NoAction';reasonCode='WAIT';
+  }
+
+  const innerStance=self.fatigue>=MOTIVATION_EMERGENCY_FATIGUE?'fatigue-concerned':
+    self.health<=HEALTH_GOAL_TRIGGER||currentGoal!==null?'health-concerned':'balanced';
+  const evidence=new Set([...spec.belief.evidenceRefs,...spec.belief.contradictionRefs]);
+  if(spec.duty!==null)evidence.add(spec.duty.sourceEventSeq);
+  for(const seq of spec.experience.evidenceRefs)evidence.add(seq);
+  evidence.add(context.evaluationEventSeq);
+  evidence.add(context.sourceReviewEventSeq);
+
+  const decision={version:COGNITION_DECISION_VERSION,
+    decisionId:'cognition-day-'+tick/DAY_TICKS+'-'+spec.actorId,
+    actorId:spec.actorId,tick,goalId:boundPlan===null?null:boundPlan.goalId,
+    planId:boundPlan===null?null:boundPlan.planId,innerStance,
+    committedIntent:currentGoal===null?null:{goalId:currentGoal.goalId,kind:'recover-health'},
+    apparentAction:choice,choice,reasonCode,
+    gateReason,strainPermille:strainOf(self),candidates:[],
+    evidenceRefs:[...evidence].sort((a,b)=>a-b),
+    knowledgeFingerprint:canonicalJson(knowledge),
+    mode:'maintain',sourceReviewDecisionId:context.sourceReviewDecisionId,
+    sourceReviewEventSeq:context.sourceReviewEventSeq};
+  validateCognitionMotivationDecision(decision);
+
+  return {currentGoal,nextGoalId,activePlan,suspendedPlan,nextPlanId,lastReviewedDutyId,decision};
 }
 
 function profileProbe(knowledge,changedField,toValue){

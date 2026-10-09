@@ -16,11 +16,17 @@ import {motivationSystems} from '../fixtures/motivation-village.mjs';
 import {EXPERIENCE_RULES,EXPERIENCE_CONFIG_VERSION,EXPERIENCE_RUNTIME_STATE_VERSION,EXPERIENCE_MOTIVATION_STATE_VERSION,
   EXPERIENCE_KNOWLEDGE_VERSION,EXPERIENCE_DECISION_VERSION,MAX_EXPERIENCE_KNOWLEDGE_BYTES,
   inspectDescriptorTree,validateExperienceConfig,createExperienceModel,validateExperienceModel} from './experience-state.mjs';
-import {validateExperienceMotivationDecision,validateExperienceMotivationModel} from './motivation-state.mjs';
-import {planExperienceMotivationDecision} from './motivation-planner.mjs';
+import {validateExperienceMotivationDecision,validateExperienceMotivationModel,
+  validateCognitionMotivationDecision,validateCognitionMotivationModel} from './motivation-state.mjs';
+import {planExperienceMotivationDecision,planCognitionMotivationDecision,continueCognitionPlan} from './motivation-planner.mjs';
 import {deriveWorkExperience,observeWorkOutcome} from './work-experience.mjs';
-import {projectOwnWorkOutcome} from './work-experience-adapter.mjs';
+import {projectOwnWorkOutcome,projectOwnCognitionWorkOutcome} from './work-experience-adapter.mjs';
 import {experienceSystems} from '../fixtures/experience-village.mjs';
+import {cognitionSystems} from '../fixtures/cognition-village.mjs';
+import {COGNITION_RULES,COGNITION_MOTIVATION_STATE_VERSION,COGNITION_KNOWLEDGE_VERSION,
+  MAX_COGNITION_KNOWLEDGE_BYTES,validateCognitionConfig,createCognitionModel,validateCognitionModel} from './cognition-state.mjs';
+import {evaluateCognitiveReview} from './cognitive-review.mjs';
+import {deriveActorCognitionSignals} from './cognition-signals.mjs';
 
 const SOCIETY_KEYS=['resources','resourceModel','ecologyModel','marketModel','actorModel','societyModel','playerModel'];
 const societyProject=w=>Object.fromEntries(SOCIETY_KEYS.map(k=>[k,w[k]]));
@@ -29,17 +35,25 @@ const body=(w,id)=>w.actorModel.actors.find(a=>a.actorId===id);
 const entryOf=(w,id)=>w.motivationModel.actors.find(a=>a.actorId===id);
 const withoutMotivation=w=>{const {motivationModel,...base}=w;return base;};
 const withoutExperienceAndMotivation=w=>{const {experienceModel,motivationModel,...base}=w;return base;};
-const MOTIVATION_PROFILE=Object.freeze({experience:false,rules:MOTIVATION_RULES,knowledgeVersion:MOTIVATION_KNOWLEDGE_VERSION,knowledgeBytes:MAX_MOTIVATION_KNOWLEDGE_BYTES,label:'Motivation'});
-const EXPERIENCE_PROFILE=Object.freeze({experience:true,rules:EXPERIENCE_RULES,knowledgeVersion:EXPERIENCE_KNOWLEDGE_VERSION,knowledgeBytes:MAX_EXPERIENCE_KNOWLEDGE_BYTES,label:'Experience'});
-const lowerWorld=(world,profile)=>profile.experience?withoutExperienceAndMotivation(world):withoutMotivation(world);
+const withoutCognitionExperienceAndMotivation=w=>{const {experienceModel,motivationModel,cognitionModel,...base}=w;return base;};
+const MOTIVATION_PROFILE=Object.freeze({experience:false,cognition:false,rules:MOTIVATION_RULES,knowledgeVersion:MOTIVATION_KNOWLEDGE_VERSION,knowledgeBytes:MAX_MOTIVATION_KNOWLEDGE_BYTES,label:'Motivation'});
+const EXPERIENCE_PROFILE=Object.freeze({experience:true,cognition:false,rules:EXPERIENCE_RULES,knowledgeVersion:EXPERIENCE_KNOWLEDGE_VERSION,knowledgeBytes:MAX_EXPERIENCE_KNOWLEDGE_BYTES,label:'Experience'});
+// Cognition reuses the M3-2 experience knowledge and model in place; only the review cadence
+// model and the decision/motivation state versions are new.
+const COGNITION_PROFILE=Object.freeze({experience:true,cognition:true,rules:COGNITION_RULES,knowledgeVersion:COGNITION_KNOWLEDGE_VERSION,knowledgeBytes:MAX_COGNITION_KNOWLEDGE_BYTES,label:'Cognition'});
+const lowerWorld=(world,profile)=>profile.cognition?withoutCognitionExperienceAndMotivation(world):
+  profile.experience?withoutExperienceAndMotivation(world):withoutMotivation(world);
 function retainModels(base,world,profile){
   const result={...base,motivationModel:cloneData(world.motivationModel)};
   if(profile.experience)result.experienceModel=cloneData(world.experienceModel);
+  if(profile.cognition)result.cognitionModel=cloneData(world.cognitionModel);
   return result;
 }
 const reserved=id=>['society-day-','mind-day-','motivation-day-'].some(p=>id.startsWith(p));
 const experienceReserved=id=>['society-day-','mind-day-','mind-settle-','motivation-day-','experience-day-'].some(p=>id.startsWith(p));
-const reservedFor=(id,profile)=>profile.experience?experienceReserved(id):reserved(id);
+const cognitionReserved=id=>['society-day-','mind-day-','mind-settle-','motivation-day-','experience-day-',
+  'cognition-day-','cognition-eval-'].some(p=>id.startsWith(p));
+const reservedFor=(id,profile)=>profile.cognition?cognitionReserved(id):profile.experience?experienceReserved(id):reserved(id);
 
 function validateInputs(memory,mind,motivation){
   record(mind);record(motivation);denseArray(mind.stimuli,64);denseArray(motivation.requests,64);
@@ -53,30 +67,63 @@ function validateInputs(memory,mind,motivation){
     requireCondition(e[key]===value,'Motivation economics are frozen','UNSUPPORTED_VERSION');
 }
 
-function createWorldFor(memory,mind,motivation,experience,simulationId,profile){
+function createWorldFor(memory,mind,motivation,experience,cognition,simulationId,profile){
   record(memory);record(mind);record(motivation);
-  if(profile.experience){record(experience);identifier(simulationId);canonicalJson({memory,mind,motivation,experience});}
+  if(profile.cognition){record(experience);record(cognition);identifier(simulationId);
+    canonicalJson({memory,mind,motivation,experience,cognition});}
+  else if(profile.experience){record(experience);identifier(simulationId);canonicalJson({memory,mind,motivation,experience});}
   else canonicalJson({memory,mind,motivation});
   validateInputs(memory,mind,motivation);
   if(profile.experience)validateExperienceConfig(experience);
+  if(profile.cognition){validateExperienceConfig(experience);validateCognitionConfig(cognition);}
   const world={...createMindWorld(memory,mind),motivationModel:createMotivationModel(motivation)};
   if(profile.experience){
     world.motivationModel.version=EXPERIENCE_MOTIVATION_STATE_VERSION;
     world.experienceModel=createExperienceModel(simulationId,experience);
   }
+  if(profile.cognition){
+    world.motivationModel.version=COGNITION_MOTIVATION_STATE_VERSION;
+    world.experienceModel=createExperienceModel(simulationId,experience);
+    world.cognitionModel=createCognitionModel(simulationId,cognition);
+  }
   return world;
 }
 
-function createWorld(memory,mind,motivation){return createWorldFor(memory,mind,motivation,null,null,MOTIVATION_PROFILE);}
+function createWorld(memory,mind,motivation){return createWorldFor(memory,mind,motivation,null,null,null,MOTIVATION_PROFILE);}
 function createExperienceWorld(memory,mind,motivation,experience,simulationId){
   inspectDescriptorTree({memory,mind,motivation,experience,simulationId});
-  return createWorldFor(memory,mind,motivation,experience,simulationId,EXPERIENCE_PROFILE);
+  return createWorldFor(memory,mind,motivation,experience,null,simulationId,EXPERIENCE_PROFILE);
+}
+function createCognitionWorld(memory,mind,motivation,experience,cognition,simulationId){
+  inspectDescriptorTree({memory,mind,motivation,experience,cognition,simulationId});
+  return createWorldFor(memory,mind,motivation,experience,cognition,simulationId,COGNITION_PROFILE);
 }
 
 function validateWorldFor(world,sealed,profile){
   record(world);requireCondition(typeof sealed==='boolean',profile.experience?'Invalid experience world seal mode':'Invalid motivation seal mode');
   canonicalJson(world);
-  if(profile.experience){
+  // A cognition model under older rules (or its absence under cognition rules) is a structural
+  // inconsistency of the stored world itself, so it is reported as a structure error rather
+  // than as an unknown-version cross-load.
+  requireCondition(Object.hasOwn(world,'cognitionModel')===profile.cognition,
+    profile.cognition?'Cognition rules require the cognition model':'Cognition model does not belong to these rules');
+  if(profile.cognition){
+    validateExperienceModel(world.experienceModel);validateCognitionModel(world.cognitionModel);
+    validateCognitionMotivationModel(world.motivationModel);
+    validateMindWorld(lowerWorld(world,profile),sealed);
+    if(sealed)requireCondition(world.mindModel.cursor===world.motivationModel.cursor&&
+      world.motivationModel.cursor===world.experienceModel.cursor&&
+      world.experienceModel.cursor===world.cognitionModel.cursor,
+      'Mind, motivation, experience, and cognition cursors must match when sealed');
+    for(const actor of world.cognitionModel.actors){
+      const saved=actor.reviewState.lastEvaluation;
+      if(saved===null||!saved.input.alive)continue;
+      // A day-boundary evaluation made while alive may only be followed by death on that
+      // same tick; the kernel then stays dormant and never re-evaluates with another alive flag.
+      requireCondition(body(world,actor.actorId).alive||body(world,actor.actorId).deathTick===saved.input.tick,
+        'Cognition actor evaluated alive on another tick than its death');
+    }
+  }else if(profile.experience){
     validateExperienceModel(world.experienceModel);validateExperienceMotivationModel(world.motivationModel);
     validateMindWorld(lowerWorld(world,profile),sealed);
     if(sealed)requireCondition(world.mindModel.cursor===world.motivationModel.cursor&&world.motivationModel.cursor===world.experienceModel.cursor,'Mind, motivation, and experience cursors must match when sealed');
@@ -109,6 +156,10 @@ export function validateExperienceWorld(world,sealed=true){
   inspectDescriptorTree(world);
   return validateWorldFor(world,sealed,EXPERIENCE_PROFILE);
 }
+export function validateCognitionWorld(world,sealed=true){
+  inspectDescriptorTree(world);
+  return validateWorldFor(world,sealed,COGNITION_PROFILE);
+}
 
 // A frozen actor-local view; quotes come from previously published facts, never the
 // hidden current public cash or another actor's execution results.
@@ -139,7 +190,11 @@ function transition(list,plan,fromStatus,toStatus,reasonCode){
 }
 function cancel(entry,slot,reason,list){const plan=entry[slot];if(plan!==null){transition(list,plan,plan.status,'cancelled',reason);entry[slot]=null;}}
 function facts(type,payload,causes=[],commandId=null){return {type,sourceSystem:'motivation',commandId,entityIds:[payload.actorId??payload.listenerId],causationEventSeqs:cloneData(causes),payload:cloneData(payload)};}
-function setCursors(world,events,profile){world.mindModel.cursor=events.length;world.motivationModel.cursor=events.length;if(profile.experience)world.experienceModel.cursor=events.length;}
+function setCursors(world,events,profile){
+  world.mindModel.cursor=events.length;world.motivationModel.cursor=events.length;
+  if(profile.experience)world.experienceModel.cursor=events.length;
+  if(profile.cognition)world.cognitionModel.cursor=events.length;
+}
 
 function requestsTick(world,tick,append,context){
   const m=world.motivationModel;
@@ -171,6 +226,43 @@ function proposalTransitions(before,after,tick,list){
   for(const next of allAfter)if(![before.activePlan,before.suspendedPlan].some(p=>p?.planId===next.planId))transition(list,next,null,next.status,'CREATED');
 }
 
+// The trusted runtime projection of this actor's own previous day outcome. Only a real
+// committed decision/outcome pair can feed the signals; nothing is inferred or defaulted.
+function ownPreviousExecution(entry,simulationId){
+  const decision=entry.lastDecision,outcome=entry.lastOutcome;
+  if(decision===null||outcome===null)return null;
+  return {simulationId,actorId:decision.actorId,tick:decision.tick,decisionId:decision.decisionId,
+    choice:decision.choice,status:outcome.status,code:outcome.code,failureOwner:outcome.failureOwner};
+}
+
+// One frozen kernel evaluation per configured actor per real day boundary, including the dead.
+// Both actors' knowledge and signal input are frozen before anything is published, and the
+// review facts are appended in actor-ID order before any proposal is planned.
+function evaluateCognitionDay(snapshot,events,tick,append,profile){
+  const model=snapshot.world.cognitionModel,frozen=[];
+  for(const actor of model.actors){
+    const entry=entryOf(snapshot.world,actor.actorId);
+    const knowledge=decisionKnowledge(snapshot.world,events,actor.actorId,tick,snapshot.simulationId,profile);
+    const importance=model.config.profiles.find(p=>p.actorId===actor.actorId).importancePermille;
+    const signals=deriveActorCognitionSignals(knowledge,importance,actor.signalBaseline,
+      ownPreviousExecution(entry,snapshot.simulationId));
+    const evaluated=evaluateCognitiveReview(actor.reviewState,signals.input);
+    frozen.push({actorId:actor.actorId,knowledge,input:signals.input,kernel:evaluated.decision,
+      nextState:evaluated.state,nextBaseline:signals.baseline,
+      sourceReviewDecisionId:actor.lastReviewDecisionId,sourceReviewEventSeq:actor.lastReviewEventSeq});
+  }
+  for(const item of frozen){
+    const actor=model.actors.find(a=>a.actorId===item.actorId);
+    actor.reviewState=item.nextState;actor.signalBaseline=item.nextBaseline;
+  }
+  for(const item of frozen)
+    item.evalSeq=append({type:'CognitionReviewEvaluated',sourceSystem:'cognition',commandId:null,
+      entityIds:[item.actorId],causationEventSeqs:[],
+      payload:{actorId:item.actorId,input:item.input,decision:item.kernel}});
+  setCursors(snapshot.world,events,profile);
+  return new Map(frozen.map(item=>[item.actorId,item]));
+}
+
 function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
   const context=new Map(snapshot.world.motivationModel.actors.map(e=>[e.actorId,{transitions:[],requestSeqs:[],resolvedSeq:null,decisionId:null}]));
   applyMindStimuliTick(lowerWorld(snapshot.world,profile),tick,append);
@@ -179,6 +271,7 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
   const prepared=prepareMindDay(lowerWorld(snapshot.world,profile),tick);
   snapshot.world=retainModels(prepared.world,snapshot.world,profile);
   for(const fact of prepared.facts)append(fact);setCursors(snapshot.world,events,profile);
+  const cognitionReviews=profile.cognition?evaluateCognitionDay(snapshot,events,tick,append,profile):null;
   const world=cloneData(snapshot.world),day=tick/144;
   const chief=planSocietyDay(societyProject(world),{buyerId:null,price:null},world.memoryModel.config.personalities);
   world.societyModel.agents[0]=chief.world.societyModel.agents[0];
@@ -188,8 +281,16 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
   const proposals=[];
   for(const entry of world.motivationModel.actors){const state=agent(world,entry.actorId);state.lastAction='None';state.lastDecision=null;
     if(!body(world,entry.actorId).alive)continue;
-    const knowledge=decisionKnowledge(world,events,entry.actorId,tick,snapshot.simulationId,profile);
-    proposals.push({entry,knowledge,priorPlan:cloneData(entry.activePlan),proposal:profile.experience?planExperienceMotivationDecision(knowledge):planMotivationDecision(knowledge)});
+    const review=cognitionReviews?cognitionReviews.get(entry.actorId):null;
+    // Maintain never plans from scratch: it continues the frozen review anchor's own plan.
+    const knowledge=review?review.knowledge:decisionKnowledge(world,events,entry.actorId,tick,snapshot.simulationId,profile);
+    const proposal=profile.cognition?(review.kernel.mode==='maintain'?
+      continueCognitionPlan(knowledge,{evaluationEventSeq:review.evalSeq,
+        sourceReviewDecisionId:review.sourceReviewDecisionId,sourceReviewEventSeq:review.sourceReviewEventSeq}):
+      planCognitionMotivationDecision(knowledge,{evaluationEventSeq:review.evalSeq,
+        sourceReviewDecisionId:null,sourceReviewEventSeq:null})):
+      profile.experience?planExperienceMotivationDecision(knowledge):planMotivationDecision(knowledge);
+    proposals.push({entry,knowledge,priorPlan:cloneData(entry.activePlan),proposal});
   }
   for(const {entry,knowledge,priorPlan,proposal} of proposals){const ctx=context.get(entry.actorId),state=agent(world,entry.actorId);
     proposalTransitions(entry,proposal,tick,ctx.transitions);
@@ -202,6 +303,12 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
   }
   snapshot.world=world;
   for(const item of plans)item.plannedSeq=append(facts('MotivationDecisionPlanned',item.decision,item.decision.evidenceRefs));
+  if(profile.cognition)for(const item of plans){
+    if(item.decision.mode!=='review')continue;
+    // The anchor names the most recent complete own review, not the plan's creation event.
+    const actor=snapshot.world.cognitionModel.actors.find(a=>a.actorId===item.actorId);
+    actor.lastReviewDecisionId=item.decision.decisionId;actor.lastReviewEventSeq=item.plannedSeq;
+  }
   for(const command of chief.commands.filter(c=>c.payload.actorId==='actor-1'))commit(command);
   for(const item of plans){const receipt=item.command?commit(item.command):null,entry=entryOf(snapshot.world,item.actorId),ctx=context.get(item.actorId);
     const outcome=resolvedOutcome(item,receipt,snapshot.world);ctx.resolvedSeq=append(facts('MotivationDecisionResolved',outcome,[item.plannedSeq],outcome.commandId));
@@ -230,16 +337,18 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
         plan.status='blocked';
       }
     }
-    if(profile.experience)observeResolvedWork(snapshot,events,item,ctx.resolvedSeq,append);
+    if(profile.experience)observeResolvedWork(snapshot,events,item,ctx.resolvedSeq,append,profile);
     setCursors(snapshot.world,events,profile);
   }
   return context;
 }
 
-function observeResolvedWork(snapshot,events,item,resolvedSeq,append){
+function observeResolvedWork(snapshot,events,item,resolvedSeq,append,profile){
     if(body(snapshot.world,item.actorId).alive){
-      const adapterContext={simulationId:snapshot.simulationId,rulesVersion:EXPERIENCE_RULES,eventLog:events,commandReceipts:snapshot.commandReceipts};
-      const workOutcome=projectOwnWorkOutcome(adapterContext,item.actorId,resolvedSeq);
+      const adapterContext={simulationId:snapshot.simulationId,
+        rulesVersion:profile.cognition?COGNITION_RULES:EXPERIENCE_RULES,eventLog:events,commandReceipts:snapshot.commandReceipts};
+      const workOutcome=profile.cognition?projectOwnCognitionWorkOutcome(adapterContext,item.actorId,resolvedSeq):
+        projectOwnWorkOutcome(adapterContext,item.actorId,resolvedSeq);
       if(workOutcome!==null){
         const expActor=snapshot.world.experienceModel.actors.find(a=>a.actorId===item.actorId);
         const obs=observeWorkOutcome(expActor.workExperienceState,workOutcome);
@@ -256,7 +365,14 @@ function applyActionFor(input,payload,sample,profile){
   const entry=entryOf(input,payload.actorId);
   if(entry){const d=entry.lastDecision,p=entry.activePlan;
     requireCondition(d&&p&&d.choice===payload.action&&p.steps[p.stepIndex]===payload.action&&d.planId===p.planId&&d.goalId===p.goalId&&d.actorId===payload.actorId&&payload.goalId===(d.goalId??0),'Motivation command/decision/plan binding mismatch');
-    if(p.kind==='aid-village')requireCondition(entry.lastDuty?.status==='pending'&&p.requestId===entry.lastDuty.requestId&&d.candidates.find(c=>c.action==='WorkForPay').sourceRef===p.requestId&&d.tick<entry.lastDuty.expiresTick,'Motivation work request provenance mismatch');
+    if(profile.cognition)requireCondition(d.tick===(input.societyModel.day+1)*144,'Cognition authority requires the day decision tick');
+    if(p.kind==='aid-village'){
+      if(profile.cognition&&d.mode==='maintain')
+        // Maintain carries no candidates, so the duty is bound three ways from the world.
+        requireCondition(entry.lastDuty?.status==='pending'&&p.requestId===entry.lastDuty.requestId&&
+          d.sourceReviewDecisionId!==null&&d.tick<entry.lastDuty.expiresTick,'Cognition maintain work request provenance mismatch');
+      else requireCondition(entry.lastDuty?.status==='pending'&&p.requestId===entry.lastDuty.requestId&&d.candidates.find(c=>c.action==='WorkForPay').sourceRef===p.requestId&&d.tick<entry.lastDuty.expiresTick,'Motivation work request provenance mismatch');
+    }
   }
   const temporary=entry&&['aid-village','recover-rest'].includes(entry.activePlan.kind),projection=cloneData(societyProject(input));
   const goal=cloneData(agent(input,payload.actorId).currentGoal);
@@ -309,7 +425,10 @@ function afterSystemsFor(snapshot,events,tick,append,context,profile){
 
 function auditFor(bundle,profile){fields(bundle,['snapshot','eventLog']);record(bundle.snapshot);
   requireCondition(bundle.snapshot.rulesVersion===profile.rules,profile.experience?'Unknown experience rules':'Unknown motivation rules','UNSUPPORTED_VERSION');
-  validateBundle(bundle,{rulesVersion:profile.rules,systems:profile.experience?experienceSystems():motivationSystems()});}
+  validateBundle(bundle,{rulesVersion:profile.rules,systems:cognitionSystemsFor(profile)});}
+function cognitionSystemsFor(profile){
+  return profile.cognition?cognitionSystems():profile.experience?experienceSystems():motivationSystems();
+}
 function audit(bundle){return auditFor(bundle,MOTIVATION_PROFILE);}
 
 function executePlayerIntentFor(bundle,intent,profile){
@@ -321,7 +440,7 @@ function executePlayerIntentFor(bundle,intent,profile){
   requireCondition(Object.keys(s.commandReceipts).length<MAX_COLLECTION,'Player input budget exceeded','LIMIT_EXCEEDED');
   const next=cloneData(bundle);next.snapshot.pendingCommands.push({commandId:intent.commandId,inputSeq:next.snapshot.nextInputSeq++,targetTick:s.tick+durationTicks,
     type:'PlayerAction',payload:{startTick:s.tick,intent:{type:intent.type,payload:cloneData(intent.payload)}}});
-  auditFor(next,profile);const session=createSimulationSession(next,profile.experience?experienceSystems():motivationSystems());session.advanceTicks(durationTicks);
+  auditFor(next,profile);const session=createSimulationSession(next,cognitionSystemsFor(profile));session.advanceTicks(durationTicks);
   const result=session.getBundle(),receipt=result.snapshot.commandReceipts[intent.commandId];requireCondition(receipt,'Missing player completion');
   return {bundle:result,durationTicks,outcome:receipt.status,result:cloneData(receipt.result)};
 }
@@ -353,7 +472,8 @@ function validateHistoryFor(snapshot,events,profile){
   for(const request of config.motivationModel.config.requests)if(request.tick<=snapshot.tick)ticks.add(request.tick);
   for(let day=1;day<=Math.floor(snapshot.tick/144);day++)ticks.add(day*144);
   const replay={world:createWorldFor(config.memoryModel.config,config.mindModel.config,config.motivationModel.config,
-    profile.experience?config.experienceModel.config:null,snapshot.simulationId,profile),simulationId:snapshot.simulationId};
+    profile.experience||profile.cognition?config.experienceModel.config:null,
+    profile.cognition?config.cognitionModel.config:null,snapshot.simulationId,profile),simulationId:snapshot.simulationId};
   if(profile.experience)replay.commandReceipts=receipts;
   const rng=createRng(snapshot.rng.seed),rebuilt=[],seen=new Set();let nextSeq=1,registered=[];
   const expect=(fact,tick)=>{const event={...cloneData(fact),eventSeq:rebuilt.length+1,tick,schemaVersion:1};
@@ -382,6 +502,26 @@ function validateHistoryFor(snapshot,events,profile){
   requireCondition(canonicalJson(registered)===canonicalJson(pending),`${profile.label} pending input mismatch`);
   requireCondition(canonicalJson(replay.world)===canonicalJson(snapshot.world),`${profile.label} final world/identity/assets mismatch`);
   requireCondition(canonicalJson(rng.getState())===canonicalJson(snapshot.rng),`${profile.label} RNG history mismatch`);
+  if(profile.cognition)validateCognitionAnchors(snapshot,events);
+}
+
+// A sealed cognition anchor must resolve to exactly one own review Planned fact with matching
+// identity, tick and sequence. Self-described mode/anchor fields never prove this alone.
+function validateCognitionAnchors(snapshot,events){
+  for(const actor of snapshot.world.cognitionModel.actors){
+    if(actor.lastReviewDecisionId===null){
+      requireCondition(actor.reviewState.lastReviewTick===null,'Cognition review without an anchor');
+      continue;
+    }
+    const planned=events.filter(e=>e.type==='MotivationDecisionPlanned'&&e.payload?.decisionId===actor.lastReviewDecisionId);
+    requireCondition(planned.length===1,'Cognition review anchor does not resolve to a unique planned decision');
+    const fact=planned[0];
+    requireCondition(fact.eventSeq===actor.lastReviewEventSeq&&fact.tick===actor.reviewState.lastReviewTick&&
+      fact.payload.actorId===actor.actorId&&fact.payload.mode==='review'&&
+      fact.payload.decisionId===actor.lastReviewDecisionId,'Cognition review anchor/decision mismatch');
+    const evaluated=events.filter(e=>e.type==='CognitionReviewEvaluated'&&e.entityIds[0]===actor.actorId&&e.tick===fact.tick);
+    requireCondition(evaluated.length===1&&evaluated[0].eventSeq<fact.eventSeq,'Cognition review anchor lacks its own evaluation');
+  }
 }
 
 // Public connection signatures remain fixed; only data inputs are descriptor-checked.
@@ -412,5 +552,32 @@ function validateExperienceHistory(snapshot,events){
   return validateHistoryFor(snapshot,events,EXPERIENCE_PROFILE);
 }
 
+function cognitionBeforeSystems(snapshot,events,tick,append,commit){
+  inspectDescriptorTree({snapshot,events});
+  return beforeSystemsFor(snapshot,events,tick,append,commit,COGNITION_PROFILE);
+}
+function cognitionAfterSystems(snapshot,events,tick,append,context){
+  inspectDescriptorTree({snapshot,events});
+  return afterSystemsFor(snapshot,events,tick,append,context,COGNITION_PROFILE);
+}
+function cognitionApplyAction(input,payload,sample=null){
+  inspectDescriptorTree({input,payload,sample});
+  return applyActionFor(input,payload,sample,COGNITION_PROFILE);
+}
+function cognitionSettleDay(input,sample){
+  inspectDescriptorTree({input,sample});
+  return settleDayFor(input,sample,COGNITION_PROFILE);
+}
+function validateCognitionHistory(snapshot,events){
+  inspectDescriptorTree({snapshot,events});
+  return validateHistoryFor(snapshot,events,COGNITION_PROFILE);
+}
+
+export function executeCognitionPlayerIntent(bundle,intent){
+  inspectDescriptorTree({bundle,intent});
+  return executePlayerIntentFor(bundle,intent,COGNITION_PROFILE);
+}
+
 export const motivationRuntimeHooks=Object.freeze({createWorld,beforeSystems,afterSystems,applyAction,settleDay,validateHistory});
 export const experienceRuntimeHooks=Object.freeze({createWorld:createExperienceWorld,beforeSystems:experienceBeforeSystems,afterSystems:experienceAfterSystems,applyAction:experienceApplyAction,settleDay:experienceSettleDay,validateHistory:validateExperienceHistory});
+export const cognitionRuntimeHooks=Object.freeze({createWorld:createCognitionWorld,beforeSystems:cognitionBeforeSystems,afterSystems:cognitionAfterSystems,applyAction:cognitionApplyAction,settleDay:cognitionSettleDay,validateHistory:validateCognitionHistory});

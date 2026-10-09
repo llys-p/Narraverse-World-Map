@@ -2,6 +2,7 @@
 // Strict descriptor validation precedes any property access or canonical serialization.
 import { fields, record, integer, identifier, denseArray, cloneData, canonicalJson, requireCondition, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 import { createWorkExperienceState, validateWorkExperienceState } from './work-experience.mjs';
+import { COGNITION_RULES } from './cognition-state.mjs';
 
 export const EXPERIENCE_RULES = 'm-experience-v1';
 export const EXPERIENCE_CONFIG_VERSION = 'experience-config-v1';
@@ -66,13 +67,15 @@ export function inspectDescriptorTree(root) {
   visit(root, 0);
 }
 
-// Read the rule discriminator without invoking accessors. Only the experience
-// profile opts into a complete JSON-tree preflight; callbacks stay outside it.
+// Read the rule discriminator without invoking accessors. Only the experience and
+// cognition profiles opt into a complete JSON-tree preflight; callbacks stay outside it.
+// Cognition narrows the same private dispatch; the data contract itself is unchanged.
 export function preflightExperienceData(data, bundled = false) {
   record(data);
   const container = bundled ? Object.getOwnPropertyDescriptor(data, 'snapshot')?.value : data;
   record(container);
-  const experience = Object.getOwnPropertyDescriptor(container, 'rulesVersion')?.value === EXPERIENCE_RULES;
+  const version = Object.getOwnPropertyDescriptor(container, 'rulesVersion')?.value;
+  const experience = version === EXPERIENCE_RULES || version === COGNITION_RULES;
   if (experience) inspectDescriptorTree(data);
   return experience;
 }

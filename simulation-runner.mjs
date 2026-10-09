@@ -28,6 +28,8 @@ import { createMotivationVillage } from './runtime/fixtures/motivation-village.m
 import { projectMotivationInspector } from './runtime/knowledge/motivation-knowledge.mjs';
 import { EXPERIENCE_RULES } from './runtime/core/experience-state.mjs';
 import { createExperienceVillage } from './runtime/fixtures/experience-village.mjs';
+import { COGNITION_RULES } from './runtime/core/cognition-state.mjs';
+import { createCognitionVillage } from './runtime/fixtures/cognition-village.mjs';
 import { createSimulationSession } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition, cloneData } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
@@ -62,6 +64,7 @@ const profiles = new Map([
   ['mind-village',{rulesVersion:MIND_RULES,create:createMindVillage}],
   ['motivation-village',{rulesVersion:MOTIVATION_RULES,create:createMotivationVillage}],
   ['experience-village',{rulesVersion:EXPERIENCE_RULES,create:createExperienceVillage}],
+  ['cognition-village',{rulesVersion:COGNITION_RULES,create:createCognitionVillage}],
 ]);
 const actorPayload=event=>['HunterDaySettled','SocietyDaySettled'].includes(event.type)?event.payload.actors:event.type==='ActorDaySettled'?event.payload:undefined;
 const marketPayload=event=>actorPayload(event)?.market??(event.type==='EconomyDaySettled'?event.payload:undefined);
@@ -315,20 +318,22 @@ export async function runSimulation(options, hooks = {}) {
     checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
     await fs.writeFile(path.join(directory, 'inputs.json'), JSON.stringify(completeInputs(bundle.snapshot), null, 2), { flag: 'wx' });
     await writeEvents(path.join(directory, 'events.csv'), bundle.eventLog);
-    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
-    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
-    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
-    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
+    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
+    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
+    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
+    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
     const hunterConfig=bundle.snapshot.rulesVersion===HUNTER_RULES?bundle.snapshot.world.hunterModel.config:undefined;
-    const societyConfig=[SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.societyModel.config:undefined;
-    const memoryConfig=(isMemoryRules(bundle.snapshot.rulesVersion)||[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(bundle.snapshot.rulesVersion))?bundle.snapshot.world.memoryModel.config:undefined;
-    const mindConfig=[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.mindModel.config:undefined;
+    const societyConfig=[SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.societyModel.config:undefined;
+    const memoryConfig=(isMemoryRules(bundle.snapshot.rulesVersion)||[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion))?bundle.snapshot.world.memoryModel.config:undefined;
+    const mindConfig=[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.mindModel.config:undefined;
     const mindInspector=bundle.snapshot.rulesVersion===MIND_RULES?projectMindInspector(bundle):undefined;
-    const motivationConfig=[MOTIVATION_RULES,EXPERIENCE_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.motivationModel.config:undefined;
+    const motivationConfig=[MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.motivationModel.config:undefined;
     const motivationInspector=bundle.snapshot.rulesVersion===MOTIVATION_RULES?projectMotivationInspector(bundle):undefined;
     const personalityConfig=bundle.snapshot.rulesVersion===PERSONALITY_RULES?{version:'personality-config-v1',personalities:memoryConfig.personalities}:undefined;
-    const experienceConfig=bundle.snapshot.rulesVersion===EXPERIENCE_RULES?bundle.snapshot.world.experienceModel.config:undefined;
-    const workExperience=bundle.snapshot.rulesVersion===EXPERIENCE_RULES?cloneData(bundle.snapshot.world.experienceModel):undefined;
+    const experienceConfig=[EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.experienceModel.config:undefined;
+    const workExperience=[EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?cloneData(bundle.snapshot.world.experienceModel):undefined;
+    const cognitionConfig=bundle.snapshot.rulesVersion===COGNITION_RULES?bundle.snapshot.world.cognitionModel.config:undefined;
+    const cognitionState=bundle.snapshot.rulesVersion===COGNITION_RULES?cloneData(bundle.snapshot.world.cognitionModel):undefined;
     if (resourceConfig) {
       await fs.writeFile(path.join(directory, 'resource-config.json'), JSON.stringify(resourceConfig, null, 2), { flag: 'wx' });
       await writeEconomy(path.join(directory, 'economy.csv'), bundle.eventLog);
@@ -358,6 +363,8 @@ export async function runSimulation(options, hooks = {}) {
     if(personalityConfig)await fs.writeFile(path.join(directory,'personality-config.json'),JSON.stringify(personalityConfig,null,2),{flag:'wx'});
     if(experienceConfig)await fs.writeFile(path.join(directory,'experience-config.json'),JSON.stringify(experienceConfig,null,2),{flag:'wx'});
     if(workExperience)await fs.writeFile(path.join(directory,'work-experience.json'),JSON.stringify(workExperience,null,2),{flag:'wx'});
+    if(cognitionConfig)await fs.writeFile(path.join(directory,'cognition-config.json'),JSON.stringify(cognitionConfig,null,2),{flag:'wx'});
+    if(cognitionState)await fs.writeFile(path.join(directory,'cognition-state.json'),JSON.stringify(cognitionState,null,2),{flag:'wx'});
     const summary = { status: failure ? 'failed' : 'succeeded', ...identity, nodeVersion: process.version,
       fixtureId: bundle.snapshot.fixtureId, fixtureVersion: bundle.snapshot.fixtureVersion,
       rulesVersion: bundle.snapshot.rulesVersion, simulationId: bundle.snapshot.simulationId,
@@ -377,6 +384,8 @@ export async function runSimulation(options, hooks = {}) {
       ...(personalityConfig?{personalityConfigHash:hash(personalityConfig)}:{}),
       ...(experienceConfig?{experienceConfigHash:hash(experienceConfig)}:{}),
       ...(workExperience?{workExperienceHash:hash(workExperience)}:{}),
+      ...(cognitionConfig?{cognitionConfigHash:hash(cognitionConfig)}:{}),
+      ...(cognitionState?{cognitionStateHash:hash(cognitionState)}:{}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       executionStats: session.getStats(),
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,

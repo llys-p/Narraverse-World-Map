@@ -4,8 +4,10 @@ import { fields, record, identifier, integer, denseArray, canonicalJson, command
   inputFingerprint, requireCondition } from './data-contract.mjs';
 import { EXPERIENCE_RULES, EXPERIENCE_DECISION_VERSION, EXPERIENCE_KNOWLEDGE_VERSION,
   inspectDescriptorTree } from './experience-state.mjs';
-import { validateExperienceMotivationDecision, validateMotivationOutcome } from './motivation-state.mjs';
+import { validateExperienceMotivationDecision, validateMotivationOutcome,
+  validateCognitionMotivationDecision } from './motivation-state.mjs';
 import { validateSocietyActionResult } from './society.mjs';
+import { COGNITION_RULES, COGNITION_DECISION_VERSION, COGNITION_KNOWLEDGE_VERSION } from './cognition-state.mjs';
 
 const EVENT_FIELDS = ['eventSeq', 'tick', 'type', 'schemaVersion', 'sourceSystem',
   'commandId', 'causationEventSeqs', 'entityIds', 'payload'];
@@ -20,10 +22,25 @@ function eventIdentity(event, type, source, actorId) {
   denseArray(event.causationEventSeqs, 140000);
 }
 
+const EXPERIENCE_CHAIN = Object.freeze({ rulesVersion: EXPERIENCE_RULES, decisionVersion: EXPERIENCE_DECISION_VERSION,
+  knowledgeVersion: EXPERIENCE_KNOWLEDGE_VERSION, validateDecision: validateExperienceMotivationDecision });
+const COGNITION_CHAIN = Object.freeze({ rulesVersion: COGNITION_RULES, decisionVersion: COGNITION_DECISION_VERSION,
+  knowledgeVersion: COGNITION_KNOWLEDGE_VERSION, validateDecision: validateCognitionMotivationDecision });
+
 export function projectOwnWorkOutcome(context, actorId, resolvedEventSeq) {
+  return projectOwnWorkOutcomeFor(context, actorId, resolvedEventSeq, EXPERIENCE_CHAIN);
+}
+
+// M3-3A: the same trusted chain under the cognition rules. The frozen nine-field projection is
+// unchanged; only the rule/decision/knowledge versions and the decision validator differ.
+export function projectOwnCognitionWorkOutcome(context, actorId, resolvedEventSeq) {
+  return projectOwnWorkOutcomeFor(context, actorId, resolvedEventSeq, COGNITION_CHAIN);
+}
+
+function projectOwnWorkOutcomeFor(context, actorId, resolvedEventSeq, spec) {
   inspectDescriptorTree(context);
   fields(context, ['simulationId', 'rulesVersion', 'eventLog', 'commandReceipts']);
-  requireCondition(context.rulesVersion === EXPERIENCE_RULES, 'Unknown work experience rules', 'UNSUPPORTED_VERSION');
+  requireCondition(context.rulesVersion === spec.rulesVersion, 'Unknown work experience rules', 'UNSUPPORTED_VERSION');
   identifier(context.simulationId); integer(resolvedEventSeq, 1);
   requireCondition(['actor-1', 'actor-2', 'actor-3', 'actor-4'].includes(actorId), 'Unknown actor identity');
   denseArray(context.eventLog, 140000); record(context.commandReceipts);
@@ -42,8 +59,8 @@ export function projectOwnWorkOutcome(context, actorId, resolvedEventSeq) {
   const planned = uniqueEvent(resolved.causationEventSeqs[0]), decision = planned.payload;
   eventIdentity(planned, 'MotivationDecisionPlanned', 'motivation', owner);
   record(decision);
-  requireCondition(decision.version === EXPERIENCE_DECISION_VERSION, 'Invalid experience decision version');
-  validateExperienceMotivationDecision(decision);
+  requireCondition(decision.version === spec.decisionVersion, 'Invalid experience decision version');
+  spec.validateDecision(decision);
   requireCondition(planned.commandId === null && planned.eventSeq < resolved.eventSeq &&
     planned.tick === resolved.tick && decision.tick === resolved.tick &&
     decision.actorId === owner && decision.decisionId === outcome.decisionId &&
@@ -58,7 +75,7 @@ export function projectOwnWorkOutcome(context, actorId, resolvedEventSeq) {
   try { knowledge = JSON.parse(decision.knowledgeFingerprint); }
   catch { requireCondition(false, 'Invalid decision knowledge JSON'); }
   inspectDescriptorTree(knowledge); record(knowledge); record(knowledge.self);
-  requireCondition(knowledge.knowledgeVersion === EXPERIENCE_KNOWLEDGE_VERSION && knowledge.simulationId === context.simulationId &&
+  requireCondition(knowledge.knowledgeVersion === spec.knowledgeVersion && knowledge.simulationId === context.simulationId &&
     knowledge.actorId === owner && knowledge.tick === decision.tick && canonicalJson(knowledge) === decision.knowledgeFingerprint,
   'Decision knowledge identity mismatch');
   integer(knowledge.self.health); integer(knowledge.self.fatigue);

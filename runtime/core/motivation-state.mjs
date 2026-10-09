@@ -5,6 +5,7 @@
 import { fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition } from './data-contract.mjs';
 import { MAX_MIND_OBSERVATIONS } from './mind-state.mjs';
 import { inspectDescriptorTree } from './experience-state.mjs';
+import { COGNITION_DECISION_VERSION, COGNITION_MOTIVATION_STATE_VERSION, MAX_COGNITION_EVIDENCE_REFS } from './cognition-state.mjs';
 
 export const MOTIVATION_RULES='m-motivation-v1';
 export const MOTIVATION_CONFIG_VERSION='motivation-config-v1';
@@ -30,6 +31,9 @@ export const MOTIVATION_PLAN_STATUSES=Object.freeze(['ready','blocked','suspende
 export const MOTIVATION_DUTY_STATUSES=Object.freeze(['pending','fulfilled']);
 export const MOTIVATION_GATES=Object.freeze(['URGENT_FATIGUE','NEW_MAJOR_DUTY','CONTINUE_COMMITTED',
   'RESUME_COMMITTED','LOCAL_REPLAN_BLOCKED','SELECT_NEW_PLAN']);
+// M3-3A maintain carries no candidate comparison, so it uses its own two gates instead of
+// borrowing a full-review gate. Old decision validators never accept these.
+export const COGNITION_MAINTAIN_GATES=Object.freeze(['CONTINUE_MAINTAIN','WAIT_MAINTAIN']);
 export const MOTIVATION_STANCES=Object.freeze(['fatigue-concerned','health-concerned','balanced']);
 export const MOTIVATION_SELECTION_BLOCK_CODES=Object.freeze(['SOFT_PRECONDITION_FAILED','COMMITMENT_PROTECTED','URGENT_OVERRIDE']);
 export const MOTIVATION_REASON_CODES=Object.freeze(['RECOVER_HEALTH','NO_HEALTH_GOAL','PRIVATE_MEDICINE_MISSING',
@@ -179,9 +183,14 @@ export function validateMotivationCandidate(candidate){
   return candidate;
 }
 
-function validateDecisionInternal(decision, expectedVersion, prefix, maxRefs){
+const COGNITION_EXTRA_DECISION_FIELDS=Object.freeze(['mode','sourceReviewDecisionId','sourceReviewEventSeq']);
+
+function validateDecisionInternal(decision, expectedVersion, prefix, maxRefs, variant='motivation'){
+  const cognition=variant==='cognition';
   record(decision);
-  fields(decision,['version','decisionId','actorId','tick','goalId','planId','innerStance','committedIntent',
+  fields(decision,cognition?['version','decisionId','actorId','tick','goalId','planId','innerStance','committedIntent',
+    'apparentAction','choice','reasonCode','gateReason','strainPermille','candidates','evidenceRefs','knowledgeFingerprint',
+    ...COGNITION_EXTRA_DECISION_FIELDS]:['version','decisionId','actorId','tick','goalId','planId','innerStance','committedIntent',
     'apparentAction','choice','reasonCode','gateReason','strainPermille','candidates','evidenceRefs','knowledgeFingerprint']);
   requireCondition(decision.version===expectedVersion,'Unknown motivation decision version','UNSUPPORTED_VERSION');
   identifier(decision.decisionId);
@@ -200,16 +209,37 @@ function validateDecisionInternal(decision, expectedVersion, prefix, maxRefs){
     'Unknown motivation action');
   requireCondition(decision.apparentAction===decision.choice,'Motivation apparent action and choice must agree');
   requireCondition(MOTIVATION_REASON_CODES.includes(decision.reasonCode),'Unknown motivation decision reason');
-  requireCondition(MOTIVATION_GATES.includes(decision.gateReason),'Unknown motivation gate');
   permille(decision.strainPermille,'Motivation strain');
   denseArray(decision.candidates,MAX_MOTIVATION_CANDIDATES);
-  requireCondition(decision.candidates.length===MAX_MOTIVATION_CANDIDATES,'Missing motivation candidates');
-  requireCondition(decision.candidates.every((candidate,index)=>candidate.action===MOTIVATION_ACTIONS[index]),
-    'Out-of-order motivation candidates');
-  for(const candidate of decision.candidates)validateMotivationCandidate(candidate);
-  const chosen=decision.candidates.find(candidate=>candidate.action===decision.choice);
-  requireCondition(chosen.selectable,'Motivation choice must be a selectable candidate');
-  requireCondition(chosen.reasonCode===decision.reasonCode,'Motivation decision reason must be the chosen candidate reason');
+  if(cognition){
+    requireCondition(decision.mode==='review'||decision.mode==='maintain','Unknown cognition decision mode');
+    if(decision.mode==='review'){
+      requireCondition(decision.sourceReviewDecisionId===null&&decision.sourceReviewEventSeq===null,
+        'Cognition review decisions carry no maintain source');
+      requireCondition(decision.candidates.length===MAX_MOTIVATION_CANDIDATES,'Cognition review must compare all candidates');
+      requireCondition(MOTIVATION_GATES.includes(decision.gateReason),'Unknown cognition review gate');
+    }else{
+      requireCondition(decision.candidates.length===0,'Cognition maintain decisions must not carry fabricated candidates');
+      requireCondition(COGNITION_MAINTAIN_GATES.includes(decision.gateReason),'Unknown cognition maintain gate');
+      identifier(decision.sourceReviewDecisionId);
+      requireCondition(decision.sourceReviewDecisionId.startsWith('cognition-day-') &&
+        decision.sourceReviewDecisionId.endsWith('-'+decision.actorId),'Cognition maintain source belongs to another actor');
+      integer(decision.sourceReviewEventSeq,1);
+      requireCondition(decision.gateReason==='CONTINUE_MAINTAIN'?decision.choice!=='NoAction':decision.choice==='NoAction',
+        'Cognition maintain gate/choice mismatch');
+    }
+  }else{
+    requireCondition(MOTIVATION_GATES.includes(decision.gateReason),'Unknown motivation gate');
+    requireCondition(decision.candidates.length===MAX_MOTIVATION_CANDIDATES,'Missing motivation candidates');
+  }
+  if(decision.candidates.length>0){
+    requireCondition(decision.candidates.every((candidate,index)=>candidate.action===MOTIVATION_ACTIONS[index]),
+      'Out-of-order motivation candidates');
+    for(const candidate of decision.candidates)validateMotivationCandidate(candidate);
+    const chosen=decision.candidates.find(candidate=>candidate.action===decision.choice);
+    requireCondition(chosen.selectable,'Motivation choice must be a selectable candidate');
+    requireCondition(chosen.reasonCode===decision.reasonCode,'Motivation decision reason must be the chosen candidate reason');
+  }
   denseArray(decision.evidenceRefs,maxRefs);let previous=0;
   for(const sequence of decision.evidenceRefs){integer(sequence,1);requireCondition(sequence>previous,'Dirty/duplicate motivation evidence');previous=sequence;}
   requireCondition(typeof decision.knowledgeFingerprint==='string'&&
@@ -225,6 +255,11 @@ export function validateMotivationDecision(decision){
 export function validateExperienceMotivationDecision(decision){
   inspectDescriptorTree(decision);
   return validateDecisionInternal(decision, 'experience-decision-v1', 'experience-day-', 69);
+}
+
+export function validateCognitionMotivationDecision(decision){
+  inspectDescriptorTree(decision);
+  return validateDecisionInternal(decision, COGNITION_DECISION_VERSION, 'cognition-day-', MAX_COGNITION_EVIDENCE_REFS, 'cognition');
 }
 
 export function validateMotivationOutcome(outcome){
@@ -303,4 +338,9 @@ export function validateMotivationModel(model){
 export function validateExperienceMotivationModel(model){
   inspectDescriptorTree(model);
   return validateModelInternal(model, 'experience-motivation-state-v1', validateExperienceMotivationDecision);
+}
+
+export function validateCognitionMotivationModel(model){
+  inspectDescriptorTree(model);
+  return validateModelInternal(model, COGNITION_MOTIVATION_STATE_VERSION, validateCognitionMotivationDecision);
 }
