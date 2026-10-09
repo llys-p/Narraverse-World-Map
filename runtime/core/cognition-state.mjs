@@ -32,6 +32,23 @@ function byteLength(value) {
   return new TextEncoder().encode(canonicalJson(value)).length;
 }
 
+export function validateCognitionSignalBaseline(baseline) {
+  inspectDescriptorTree(baseline);
+  if (baseline === null) return null;
+  fields(baseline, BASELINE_FIELDS);
+  const fingerprint = baseline.keyEvidenceFingerprint;
+  requireCondition(typeof fingerprint === 'string', 'Invalid cognition signal baseline');
+  let semantic;
+  try { semantic = JSON.parse(fingerprint); }
+  catch { requireCondition(false, 'Invalid cognition signal baseline JSON'); }
+  fields(semantic, ['value', 'confidenceEnough', 'penaltyPermille']);
+  requireCondition(['available', 'unavailable', 'unknown'].includes(semantic.value) &&
+    typeof semantic.confidenceEnough === 'boolean' && [0, 100, 200, 300].includes(semantic.penaltyPermille),
+    'Invalid cognition signal baseline semantics');
+  requireCondition(fingerprint === canonicalJson(semantic), 'Cognition signal baseline must be canonical');
+  return baseline;
+}
+
 export function validateCognitionConfig(config) {
   inspectDescriptorTree(config);
   record(config);
@@ -96,12 +113,7 @@ export function validateCognitionModel(model) {
     requireCondition(actor.reviewState.version === COGNITIVE_REVIEW_STATE_VERSION, 'Unknown cognitive review state version', 'UNSUPPORTED_VERSION');
     requireCondition(actor.reviewState.simulationId === model.simulationId && actor.reviewState.actorId === actor.actorId,
       'Cognition review kernel identity mismatch');
-    if (actor.signalBaseline !== null) {
-      record(actor.signalBaseline);
-      fields(actor.signalBaseline, BASELINE_FIELDS);
-      requireCondition(typeof actor.signalBaseline.keyEvidenceFingerprint === 'string' &&
-        actor.signalBaseline.keyEvidenceFingerprint.length > 0, 'Invalid cognition signal baseline');
-    }
+    validateCognitionSignalBaseline(actor.signalBaseline);
     // The two review anchors are a pair: both empty or both set, never half-populated.
     const anchored = actor.lastReviewDecisionId !== null;
     requireCondition(anchored === (actor.lastReviewEventSeq !== null), 'Cognition review anchors must be paired');

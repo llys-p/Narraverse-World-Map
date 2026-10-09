@@ -6,7 +6,7 @@
 import { fields, record, identifier, integer, denseArray, cloneData, canonicalJson, requireCondition } from './data-contract.mjs';
 import { TICKS_PER_DAY } from './simulation-clock.mjs';
 import { inspectDescriptorTree } from './experience-state.mjs';
-import { MAX_COGNITION_KNOWLEDGE_BYTES } from './cognition-state.mjs';
+import { MAX_COGNITION_KNOWLEDGE_BYTES, validateCognitionSignalBaseline } from './cognition-state.mjs';
 import { validateCognitionKnowledge, isCommittedStepEligible } from './motivation-planner.mjs';
 import { MOTIVATION_ACTIONS, MOTIVATION_OUTCOME_STATUSES } from './motivation-state.mjs';
 
@@ -24,16 +24,6 @@ const MAX_IMPORTANCE_PERMILLE = 1000;
 
 function dutyWindowOpen(duty, tick) {
   return duty !== null && duty.status === 'pending' && tick >= duty.observedTick && tick < duty.expiresTick;
-}
-
-function validateBaseline(baseline) {
-  if (baseline === null) return null;
-  inspectDescriptorTree(baseline);
-  record(baseline);
-  fields(baseline, ['keyEvidenceFingerprint']);
-  requireCondition(typeof baseline.keyEvidenceFingerprint === 'string' && baseline.keyEvidenceFingerprint.length > 0,
-    'Invalid cognition signal baseline');
-  return baseline;
 }
 
 function validatePreviousExecution(previous, knowledge) {
@@ -75,7 +65,7 @@ export function deriveActorCognitionSignals(knowledge, importancePermille, basel
   integer(importancePermille);
   requireCondition(importancePermille >= 0 && importancePermille <= MAX_IMPORTANCE_PERMILLE,
     'Cognition importance out of range', 'LIMIT_EXCEEDED');
-  const savedBaseline = validateBaseline(baseline);
+  const savedBaseline = validateCognitionSignalBaseline(baseline);
   const previous = validatePreviousExecution(previousExecution, knowledge);
 
   const tick = knowledge.tick, day = tick / TICKS_PER_DAY, alive = self.alive;
@@ -114,7 +104,8 @@ export function deriveActorCognitionSignals(knowledge, importancePermille, basel
       if (day > plan.deadlineDay) { goalOrPlanInvalidated = true; continue; }
       if (plan.kind === 'recover-health') {
         // Unbound or inconsistent: the plan cites a goal this actor no longer carries.
-        if (self.currentGoal === null || self.currentGoal.goalId !== plan.goalId) goalOrPlanInvalidated = true;
+        if (self.currentGoal === null || self.currentGoal.goalId !== plan.goalId ||
+          self.currentGoal.deadlineDay !== plan.deadlineDay) goalOrPlanInvalidated = true;
       } else if (plan.kind === 'aid-village') {
         // A duty plan whose request window is gone, missing or bound to another request.
         if (!dutyWindowOpen(duty, tick) || duty.requestId !== plan.requestId) goalOrPlanInvalidated = true;

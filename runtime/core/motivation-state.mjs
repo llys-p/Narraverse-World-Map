@@ -222,8 +222,12 @@ function validateDecisionInternal(decision, expectedVersion, prefix, maxRefs, va
       requireCondition(decision.candidates.length===0,'Cognition maintain decisions must not carry fabricated candidates');
       requireCondition(COGNITION_MAINTAIN_GATES.includes(decision.gateReason),'Unknown cognition maintain gate');
       identifier(decision.sourceReviewDecisionId);
-      requireCondition(decision.sourceReviewDecisionId.startsWith('cognition-day-') &&
-        decision.sourceReviewDecisionId.endsWith('-'+decision.actorId),'Cognition maintain source belongs to another actor');
+      const sourceIdentity=/^cognition-day-([1-9][0-9]*)-(actor-[23])$/.exec(decision.sourceReviewDecisionId);
+      requireCondition(sourceIdentity!==null&&sourceIdentity[2]===decision.actorId,
+        'Invalid cognition maintain source identity');
+      const sourceDay=Number(sourceIdentity[1]);
+      requireCondition(Number.isSafeInteger(sourceDay)&&sourceDay<decision.tick/144,
+        'Cognition maintain source must be a strictly earlier daily decision');
       integer(decision.sourceReviewEventSeq,1);
       requireCondition(decision.gateReason==='CONTINUE_MAINTAIN'?decision.choice!=='NoAction':decision.choice==='NoAction',
         'Cognition maintain gate/choice mismatch');
