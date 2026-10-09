@@ -1,6 +1,12 @@
 # M3-3A：认知降频与既有计划延续运行时
 
-合同版本：`m3-cognition-runtime-contract-v1`。状态：**实现进行中，尚无交付 SHA**（2026-10-09 08:26 Asia/Shanghai）；指定任务树已在共同基准上产生未提交实现改动，尚未中控验收。本文件是 A/B 共用 DTO、时序与运行时行为的唯一权威；B 仅引用，不另立共同规则。合同本地发布 SHA：`6b02918b60a1a5681fa2194ab362aaf808bceb06`。
+合同版本：`m3-cognition-runtime-contract-v1`。状态：**A 经中控修复与独立复验已 PASS**（2026-10-09 12:41 Asia/Shanghai）；完整M3未验收。本文件是 A/B 共用 DTO、时序与运行时行为的唯一权威；B 仅引用，不另立共同规则。合同本地发布 SHA：`6b02918b60a1a5681fa2194ab362aaf808bceb06`。
+
+## 中控独立验收记录（2026-10-09 12:41 Asia/Shanghai）
+
+原A交付 `1b117d8e65d4d0e6fadb113d8b625472706750e3`；原B6241809与准备修正2fdc895保留。隔离独立克隆 `D:\Narraverse-World-Map-m3-cognition-integration @ codex/world-runtime-m3-cognition-integration` 导入B至8cc9c17，修复三处输入/信号校验提交 `0e58d5b39286f23e87cab2e978f57b683e90902b`，最终仅B测试修正交接 `6562460c2a0610afff6ba49f25524e1ae191b8c5`。生产共61文件、冻结四文件及data-contract不变；合同业务正文未改。
+
+C1-C8按原A与定向修复分次覆盖，C1/C3/C4/C7在修复字节通过；C2/C5原有效未变行为证据保留，C6/C8原A四门及真实CLI6=2+4/25业务文件通过。最终repair存盘1+公共底座22+有界存盘4共27/27，三处修复探针32/32、24合法baseline、getter0；C7最终23实变、两种真实学习后整tick回滚通过。不是一次完整套件，未把作者159自测/14环境失败口述当独立证据。细项与字节归属见集成树 `artifacts/world-runtime-m33-controller-review-20261009/controller-review.json`、acceptance/runner分次记录。完整M3、服务/检查器、真实工作失败被后续真实成功挤出窗口及阶段full suite仍待后续；未push/main/deploy。
 
 ## 给用户看
 
@@ -15,7 +21,7 @@
 
 - 唯一代码起点：`D:\Narraverse-World-Map-m3-integration`，分支 `codex/world-runtime-m3-integration`，HEAD `a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2`。禁止以 `main` 或任意更新的工作树替代。
 - 计划执行树：`D:\Narraverse-World-Map-m3-cognition-runtime`，分支 `codex/world-runtime-m3-cognition-runtime`；发布前核实时目录不存在、分支未占用。收到派发后仍须复核目录、分支和归属；已存在时先核实，不覆盖、不重置、不挪用。
-- A 交付精确 SHA 由中控在派发/交接时填写。交付前不预填未来提交号。
+- A 原交付精确 SHA：`1b117d8e65d4d0e6fadb113d8b625472706750e3`；中控修复生产：`0e58d5b39286f23e87cab2e978f57b683e90902b`；本轮最终交接：`6562460c2a0610afff6ba49f25524e1ae191b8c5`。
 - 已冻结文件不得修改、复制改名或放宽：`runtime/core/work-experience.mjs`、`tests/simulation/work-experience.test.mjs`、`runtime/core/cognitive-review.mjs`、`tests/simulation/cognitive-review.test.mjs`。不重跑其历史已过套件。
 - 只允许改动以下 9 个既有文件：`runtime/core/motivation-runtime.mjs`、`runtime/core/motivation-planner.mjs`、`runtime/core/motivation-state.mjs`、`runtime/core/world-state.mjs`、`runtime/core/command-engine.mjs`、`runtime/core/event-log.mjs`、`runtime/core/work-experience-adapter.mjs`、`runtime/core/experience-state.mjs`、`simulation-runner.mjs`（项目根目录）。
 - 只允许新增以下 6 个文件：`runtime/core/cognition-state.mjs`、`runtime/core/cognition-signals.mjs`、`runtime/fixtures/cognition-village.mjs`、`tests/simulation/cognition-planner.test.mjs`、`tests/simulation/cognition-runtime.test.mjs`、`tests/simulation/cognition-runner.test.mjs`。

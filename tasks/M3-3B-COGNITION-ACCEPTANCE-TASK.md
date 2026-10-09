@@ -1,6 +1,12 @@
 # M3-3B：认知降频与延续运行时独立验收
 
-合同版本：`m3-cognition-runtime-contract-v1`。共同合同唯一权威见 [M3-3A §共同合同](M3-3A-COGNITION-RUNTIME-TASK.md#共同合同唯一权威)。本文件只定义 B 的独立验收。状态：**验收准备已复核修正，等待 A 精确交付 SHA；C1-C7 功能验收未运行，C8 新 A 兼容待跑**（2026-10-09 08:25 Asia/Shanghai）。合同本地发布 SHA：`6b02918b60a1a5681fa2194ab362aaf808bceb06`。准备复核提交：`2fdc895f4bc54ad9507156726a630486094e8722`。
+合同版本：`m3-cognition-runtime-contract-v1`。共同合同唯一权威见 [M3-3A §共同合同](M3-3A-COGNITION-RUNTIME-TASK.md#共同合同唯一权威)。本文件只定义 B 的独立验收。状态：**B 与 M3-3 限定阶段已中控 PASS**（2026-10-09 12:41 Asia/Shanghai）；完整M3未验收。合同本地发布 SHA：`6b02918b60a1a5681fa2194ab362aaf808bceb06`。准备复核提交：`2fdc895f4bc54ad9507156726a630486094e8722`。
+
+## 中控独立验收记录（2026-10-09 12:41 Asia/Shanghai）
+
+原A交付 `1b117d8e65d4d0e6fadb113d8b625472706750e3`；原B6241809与准备修正2fdc895保留。隔离独立克隆 `D:\Narraverse-World-Map-m3-cognition-integration @ codex/world-runtime-m3-cognition-integration` 导入B至8cc9c17，修复三处输入/信号校验提交 `0e58d5b39286f23e87cab2e978f57b683e90902b`，最终仅B测试修正交接 `6562460c2a0610afff6ba49f25524e1ae191b8c5`。生产共61文件、冻结四文件及data-contract不变；合同业务正文未改。
+
+C1-C8按原A与定向修复分次覆盖，C1/C3/C4/C7在修复字节通过；C2/C5原有效未变行为证据保留，C6/C8原A四门及真实CLI6=2+4/25业务文件通过。最终repair存盘1+公共底座22+有界存盘4共27/27，三处修复探针32/32、24合法baseline、getter0；C7最终23实变、两种真实学习后整tick回滚通过。不是一次完整套件，未把作者159自测/14环境失败口述当独立证据。细项与字节归属见集成树 `artifacts/world-runtime-m33-controller-review-20261009/controller-review.json`、acceptance/runner分次记录。完整M3、服务/检查器、真实工作失败被后续真实成功挤出窗口及阶段full suite仍待后续；未push/main/deploy。
 
 ## 给用户看
 
