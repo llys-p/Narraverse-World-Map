@@ -214,7 +214,7 @@ test('C1: Signals/边界独立验证 (relevance, urgentNeed, duty, keyEvidence, 
   assert.equal(deriveActorCognitionSignals(kSusp, 700, null, null).input.relevancePermille, 1000);
 
   // - 存活且有 open pending duty -> 1000
-  const kDuty = makeTestKnowledge({ duty: { requestId: 'd01', sourceEventSeq: 5, observedTick: 100, expiresTick: 432, urgencyPermille: 900, status: 'pending', fulfilledTick: null } });
+  const kDuty = makeTestKnowledge({ duty: { requestId: 'd01', sourceEventSeq: 5, observedTick: 100, expiresTick: 388, urgencyPermille: 900, status: 'pending', fulfilledTick: null } });
   assert.equal(deriveActorCognitionSignals(kDuty, 700, null, null).input.relevancePermille, 1000);
 
   // - 存活且 health <= 700 && day >= cooldownUntilDay -> 1000
@@ -233,7 +233,7 @@ test('C1: Signals/边界独立验证 (relevance, urgentNeed, duty, keyEvidence, 
   assert.equal(deriveActorCognitionSignals(makeTestKnowledge({ alive: false, fatigue: 999 }), 700, null, null).input.urgentNeed, false);
 
   // 1.4 NewMajorDuty 边界
-  const majorDuty = { requestId: 'd01', sourceEventSeq: 5, observedTick: 100, expiresTick: 432, urgencyPermille: 900, status: 'pending', fulfilledTick: null };
+  const majorDuty = { requestId: 'd01', sourceEventSeq: 5, observedTick: 100, expiresTick: 388, urgencyPermille: 900, status: 'pending', fulfilledTick: null };
   assert.equal(deriveActorCognitionSignals(makeTestKnowledge({ duty: majorDuty }), 700, null, null).input.newMajorDuty, true);
   // urgency < 900 不是 major duty
   assert.equal(deriveActorCognitionSignals(makeTestKnowledge({ duty: { ...majorDuty, urgencyPermille: 899 } }), 700, null, null).input.newMajorDuty, false);
@@ -284,6 +284,10 @@ test('C1: Signals/边界独立验证 (relevance, urgentNeed, duty, keyEvidence, 
     currentGoal: { goalId: 1, kind: 'recover-health', step: 'buy', startDay: 1, deadlineDay: 21, failures: 0, target: 800 },
   });
   assert.equal(deriveActorCognitionSignals(kExpired, 700, null, null).input.goalOrPlanInvalidated, true, '过期计划触发失效');
+  const unboundDeadline = makeTestKnowledge({ tick: 288, health: 400, currentGoal: healthGoal(), activePlan: healthPlan() });
+  unboundDeadline.planState.activePlan.deadlineDay = 20;
+  assert.equal(deriveActorCognitionSignals(unboundDeadline, 700, null, null).input.goalOrPlanInvalidated, true,
+    'same Goal ID 的 plan/Goal deadline 不一致仍必须失效');
 
   // - 前一日执行权威拒绝 (status=rejected, code=RULE_REJECTED)
   const prevRejected = {
@@ -326,6 +330,31 @@ test('C1: Signals/边界独立验证 (relevance, urgentNeed, duty, keyEvidence, 
   }
   assertFault(() => deriveActorCognitionSignals({ ...kNormal, knowledgeVersion: 'cognition-knowledge-v0' }, 700, null, null), 'UNSUPPORTED_VERSION');
   assertFault(() => deriveActorCognitionSignals(kNormal, 700, { keyEvidenceFingerprint: 'noncanonical' }, null));
+  const invalidBaselines = [
+    JSON.stringify({ value: 'available', confidenceEnough: true, penaltyPermille: 0 }), // 非 canonical 键序
+    canonicalJson({ value: 'available', confidenceEnough: true }),
+    canonicalJson({ value: 'available', confidenceEnough: true, penaltyPermille: 0, extra: true }),
+    canonicalJson({ value: 'invented', confidenceEnough: true, penaltyPermille: 0 }),
+    canonicalJson({ value: 'available', confidenceEnough: 1, penaltyPermille: 0 }),
+    canonicalJson({ value: 'available', confidenceEnough: true, penaltyPermille: 1 }),
+    canonicalJson({ value: 'available', confidenceEnough: true, penaltyPermille: 400 }),
+  ];
+  for (const keyEvidenceFingerprint of invalidBaselines) {
+    const wrong = { keyEvidenceFingerprint };
+    assert.notEqual(canonicalJson(wrong), canonicalJson(expectedBaseline));
+    assertFault(() => deriveActorCognitionSignals(kNormal, 700, wrong, null));
+    const wrongModel = deps.state.createCognitionModel('test-sim', deps.fixture.defaultCognitionVillageConfig().cognition);
+    wrongModel.actors[0].signalBaseline = cloneData(wrong);
+    assertFault(() => deps.state.validateCognitionModel(wrongModel));
+  }
+  let baselineGetterCalls = 0;
+  const accessorBaseline = Object.defineProperty({}, 'keyEvidenceFingerprint', { enumerable: true,
+    get() { baselineGetterCalls++; return expectedBaseline.keyEvidenceFingerprint; } });
+  assertFault(() => deriveActorCognitionSignals(kNormal, 700, accessorBaseline, null));
+  const accessorModel = deps.state.createCognitionModel('test-sim', deps.fixture.defaultCognitionVillageConfig().cognition);
+  accessorModel.actors[0].signalBaseline = accessorBaseline;
+  assertFault(() => deps.state.validateCognitionModel(accessorModel));
+  assert.equal(baselineGetterCalls, 0, '修复后的 derive/model baseline 路径都必须先拒访问器');
   // 真实 derive output → frozen kernel：只补本次 adapter 的晋升联接，不跑旧 kernel 套件。
   const initialSignals = deriveActorCognitionSignals(makeTestKnowledge(), 700, null, null);
   const initialReview = evaluateCognitiveReview(createCognitiveReviewState('test-sim', 'actor-2'), initialSignals.input);
@@ -334,6 +363,44 @@ test('C1: Signals/边界独立验证 (relevance, urgentNeed, duty, keyEvidence, 
   assert.deepEqual([promoted.decision.score, promoted.decision.tier, promoted.decision.mode], [700000, 'full', 'review']);
   assert.deepEqual(promoted.decision.reasonCodes, ['PROMOTED', 'PERIOD_DUE']); // full interval144：144+144到期，固定reason顺序
 
+});
+
+test('C1: 真实隐藏公共资金配对不污染冻结的本人/他人 signals', (t) => {
+  gate();
+  const config = deps.fixture.defaultCognitionVillageConfig();
+  for (const actor of config.memory.society.actors.initialActors.slice(1, 3))
+    Object.assign(actor, { health: 1000, hunger: 0, fatigue: 0 }); // 两世界共同健康初态，避免买药把私款转回公库。
+  const privateTotal = config.memory.society.estates.reduce((total, estate) => total + estate.initialWallet, 0) +
+    config.memory.society.player.initialWallet;
+  assert.equal(privateTotal, 300, '默认NPC和玩家私账总额固定，两个世界只改变未分配公共资金');
+  const runs = [];
+  for (const publicCash of [0, 1000]) {
+    const pairedConfig = cloneData(config);
+    pairedConfig.memory.society.actors.market.ecology.resources.resources.gold.initial = privateTotal + publicCash;
+    const fixture = deps.fixture.createCognitionVillage(42, 'c1-hidden-cash', pairedConfig);
+    assert.equal(fixture.bundle.snapshot.world.resources.gold - privateTotal, publicCash);
+    const session = createSimulationSession(fixture.bundle, fixture.systems);
+    session.advanceTicks(288);
+    const actual = session.getBundle();
+    const planned = factOf(actual, 'MotivationDecisionPlanned', 288);
+    const resolved = factOf(actual, 'MotivationDecisionResolved', 288);
+    assert.deepEqual([planned.payload.mode, planned.payload.choice], ['review', 'WorkForPay']);
+    assert.deepEqual([resolved.payload.status, resolved.payload.code],
+      publicCash === 0 ? ['rejected', 'RULE_REJECTED'] : ['succeeded', null]);
+    const head = actual.snapshot.nextEventSeq - 1;
+    const cursors = ['mind', 'motivation', 'experience', 'cognition'].map(name => actual.snapshot.world[name + 'Model'].cursor);
+    assert.deepEqual(cursors, [head, head, head, head]);
+    validateBundle(actual, { rulesVersion: deps.state.COGNITION_RULES, systems: fixture.systems });
+    t.diagnostic(JSON.stringify({ scenario: 'hidden-cash', publicCash, tick: actual.snapshot.tick, head, cursors,
+      plannedSeq: planned.eventSeq, resolvedSeq: resolved.eventSeq, status: resolved.payload.status }));
+    runs.push(actual);
+  }
+  for (const actorId of ['actor-2', 'actor-3']) {
+    const inputs = runs.map(bundle => factOf(bundle, 'CognitionReviewEvaluated', 288, actorId).payload.input);
+    assert.deepEqual(inputs[0], inputs[1], actorId + ' 同tick十字段 signals 不能读取隐藏cash或另一人的本日结果');
+    const baselines = runs.map(bundle => bundle.snapshot.world.cognitionModel.actors.find(a => a.actorId === actorId).signalBaseline);
+    assert.deepEqual(baselines[0], baselines[1], actorId + ' semantic baseline 相同');
+  }
 });
 
 // ============================================================================
@@ -582,6 +649,19 @@ test('C4: 阻塞重试、suspended 恢复、Proposal 预冻结与 Work 经验适
   for (const context of [{ ...context288(), sourceReviewDecisionId: 'cognition-day-1-actor-3' },
     { ...context288(), sourceReviewEventSeq: 10 }, { ...context288(), sourceReviewDecisionId: 'cognition-day-2-actor-2' }])
     assertFault(() => continueCognitionPlan(workKnowledge, context));
+  const { validateCognitionMotivationDecision } = extraModules[2][1];
+  for (const sourceReviewDecisionId of ['cognition-day-3-actor-2', 'cognition-day-junk-actor-2',
+    'cognition-day-01-actor-2', 'cognition-day-0-actor-2', 'cognition-day-9007199254740992-actor-2']) {
+    assertFault(() => continueCognitionPlan(workKnowledge, { ...context288(), sourceReviewDecisionId }));
+  }
+  for (const sourceReviewDecisionId of ['cognition-day-2-actor-2', 'cognition-day-3-actor-2',
+    'cognition-day-junk-actor-2', 'cognition-day-01-actor-2', 'cognition-day-0-actor-2',
+    'cognition-day-9007199254740992-actor-2']) {
+    const wrong = cloneData(workContinue.decision);
+    wrong.sourceReviewDecisionId = sourceReviewDecisionId;
+    assert.notEqual(canonicalJson(wrong), canonicalJson(workContinue.decision));
+    assertFault(() => validateCognitionMotivationDecision(wrong));
+  }
 
   // 默认日二有真实重大职责；两 actor proposal 先冻结，review Work 走 authority/receipt/adapter/learning。
   for (const useWorkExperience of [true, false]) {
@@ -607,9 +687,15 @@ test('C4: 阻塞重试、suspended 恢复、Proposal 预冻结与 Work 经验适
     assert.equal(observed.eventSeq, resolved.eventSeq + 1);
     assert.equal(observed.payload.sourceEventSeq, resolved.eventSeq);
     assert.deepEqual(actual.snapshot.world.experienceModel.actors[0].workExperienceState.samples, [expected]);
+    const ownAuthority = actual.eventLog.find(e => e.type === 'SocietyActionCommitted' && e.commandId === expected.commandId);
+    assert.ok(ownAuthority, '重复authority反例必须针对正在核验的本人Work链');
+    t.diagnostic(JSON.stringify({ scenario: 'review-work', useWorkExperience,
+      firstAuthorityActor: firstAuthority.payload.actorId, firstAuthorityCommand: firstAuthority.commandId,
+      ownAuthorityCommand: ownAuthority.commandId, plannedSeq: planned.eventSeq,
+      committedSeq: ownAuthority.eventSeq, resolvedSeq: resolved.eventSeq, observedSeq: observed.eventSeq }));
     for (const mutate of [c => { c.commandReceipts[expected.commandId].input.payload.actorId = 'actor-3'; },
       c => { c.eventLog.find(e => e.eventSeq === resolved.eventSeq).causationEventSeqs = [observed.eventSeq]; },
-      c => { c.eventLog.push(cloneData(firstAuthority)); }]) {
+      c => { c.eventLog.push(cloneData(ownAuthority)); }]) {
       const wrong = cloneData(context); const bytes = canonicalJson(wrong); mutate(wrong);
       assert.notEqual(canonicalJson(wrong), bytes);
       assertFault(() => projectOwnCognitionWorkOutcome(wrong, 'actor-3', resolved.eventSeq), 'INVALID_INPUT');
