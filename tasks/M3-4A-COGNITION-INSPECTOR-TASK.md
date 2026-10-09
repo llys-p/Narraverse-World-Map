@@ -8,7 +8,7 @@ M3-4A与B及完整M3按共同合同裁定PASS，限冻结合同12日情境。81/
 
 最终测试提交：667628166546a3f342873105b93a8684063504c1。生产相对A依赖ad4691f无差异；五个测试文件实测工作区字节保留，CRLF转LF后与提交文本一致，原始字节并非相同。机器索引：controller树artifacts/world-runtime-m34-final-controller-20261009/acceptance-index-final.json。
 
-看板已同步并读回：control artifacts/world-runtime-m34-closeout-20261010/board-readback-result.json。未push、未合并main、未部署；后续有界自主取食/收入规划尚未启动。
+看板已同步并读回：control artifacts/world-runtime-m34-closeout-20261010/board-readback-result.json。2026-10-10 07:26 Asia/Shanghai 用户授权提交推送；源码任务分支已推送并读回精确SHA 667628166546a3f342873105b93a8684063504c1（[远端源码分支](https://github.com/llys-p/Narraverse-World-Map/tree/codex/world-runtime-m3-closeout-controller)），控制记录随本次提交推送至[控制分支](https://github.com/llys-p/Narraverse-World-Map/tree/codex/world-runtime-control)。原始TAP/JSON/截图仍仅本地保留；未合并main、未部署；后续有界自主取食/收入规划尚未启动。
 ## 历史：钉定读取与恢复派发（2026-10-09 14:40 Asia/Shanghai）
 
 文档仓库 `D:\Narraverse-World-Map-control`：创建发布为fb4e500，c9e6bf90d38567b93358a870b1826c69d34861d6只填写第3行发布SHA，业务正文与唯一7改/5新白名单未变。实施合同钉定读取命令为 `git -C D:\Narraverse-World-Map-control show c9e6bf90d38567b93358a870b1826c69d34861d6:tasks/M3-4A-COGNITION-INSPECTOR-TASK.md`；该文件Git blob `7ce12a9bbd9b17cb9eda633903316c2de449c623`，提交UTF-8/LF字节SHA256 `488ec2c8ed3b8d2558ab6c819b4aa6277e7bbc060750dda194e254656ac5b25d`。不要把创建提交头的“待填写”误当后续元数据不合法，也不要在文档仓库查运行时代码对象。

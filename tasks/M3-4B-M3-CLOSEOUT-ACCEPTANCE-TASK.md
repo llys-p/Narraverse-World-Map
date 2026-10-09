@@ -10,7 +10,7 @@
 
 G2恢复链使用已完成ON manifest SHA，重开旧完整ON journal并与不中断ON完整bundle核对，另跑独立OFF及离线对照。G4使用Edge154：6个JSON、9张截图，零page error；唯一console/network error是主动断连预期。最终证据索引见controller树artifacts/world-runtime-m34-final-controller-20261009/acceptance-index-final.json。
 
-测试源提交核验：五个实测工作区文件字节已保留；Git LF文本与工作区混合CRLF/LF仅换行归一后相同，不声称raw blob等于测试原始字节。生产文件未变，源码未push、未合并main、未部署。看板已同步读回，control证据artifacts/world-runtime-m34-closeout-20261010/board-readback-result.json。
+测试源提交核验：五个实测工作区文件字节已保留；Git LF文本与工作区混合CRLF/LF仅换行归一后相同，不声称raw blob等于测试原始字节。生产文件未变，2026-10-10 07:26 Asia/Shanghai 用户授权提交推送；源码任务分支已推送并读回精确SHA 667628166546a3f342873105b93a8684063504c1（[远端源码分支](https://github.com/llys-p/Narraverse-World-Map/tree/codex/world-runtime-m3-closeout-controller)），控制记录随本次提交推送至[控制分支](https://github.com/llys-p/Narraverse-World-Map/tree/codex/world-runtime-control)。原始TAP/JSON/截图仍仅本地保留；未合并main、未部署。看板已同步读回，control证据artifacts/world-runtime-m34-closeout-20261010/board-readback-result.json。
 
 本轮完成即停止；有界自主取食/收入规划尚未启动，待新指令。
 ## 历史：本轮恢复派发（2026-10-09 16:55 Asia/Shanghai）
