@@ -24,7 +24,7 @@
 
 2026-10-09（Asia/Shanghai）：M1/M2 与 M3-1A/B 已验收收口。M3-2A、M3-2B 与 M3-2 限定轮次已中控裁定 PASS/已验收。最终集成 commit `a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2` 基于 A 唯一依赖 `ad8695097b6b974030fd43f4947d7a01f627abf3`，导入 B 原测试提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780` 后，仅修两份 B 测试，生产文件相对 A 零差异；58 个生产文件 SHA256 前后稳定。必需验收按分次命令通过：各分次必需 gate、runner兼容、E1上界、CLI/resume、隔离与恢复门槛均通过，共17项唯一检查覆盖，不表示单次17/17套件。未跑的 optional Inspector/deadline/profile CLI 不计通过。详情、分次结果与未验范围见[当前状态](PROJECT_CONTEXT.md)及两份 M3-2 任务书。
 
-M3-3合同与 A/B 任务书已于控制提交 `6b02918b60a1a5681fa2194ab362aaf808bceb06` 发布。A 工作树基于 a638，已有未提交源码改动但无交付 SHA；B 准备复核修正提交为 `2fdc895f4bc54ad9507156726a630486094e8722`。B 准备数据与当前 a638 C8 基准消费检查通过；C1-C7 功能验收未运行，C8 新 A 兼容待跑。完整 M3 未验收，代码未合并 main、未 push。
+M3-3合同与 A/B 任务书已于控制提交 `6b02918b60a1a5681fa2194ab362aaf808bceb06` 发布。A 工作树基于 a638，12:03 已观察到干净提交 `1b117d8e65d4d0e6fadb113d8b625472706750e3`，尚待交付证据核验；B 准备复核修正提交为 `2fdc895f4bc54ad9507156726a630486094e8722`。B 准备数据与当前 a638 C8 基准消费检查通过；C1-C7 功能验收未运行，C8 新 A 兼容待跑。完整 M3 未验收，代码未合并 main、未 push。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 
@@ -321,6 +321,6 @@ ATB 时间条、奥义 / 极限槽、召唤、队伍与人物切换。另外现�
 - 场景状态不回写世界地图（上下层状态桥是下一步）；
 - 想换场景素材：沙盒三题材的 configs 在 scene.html 顶部，加地点即加 LOCS 数组项 + configs 项。
 
-## 世界运行时进度
+## 世界运行时历史快照（2026-10-07）
 
-Runtime保留在codex/world-runtime-d2b任务分支，代码732103d；A/B/C、D1、D2A及D2B已验收，源码未合并main。D2B新增真实独立玩家及私账、四实名+76匿名总80，当前238/238和真实HTTP/双页签/重启与硬退出恢复通过；丢锁/空档案、checkpoint临时档和非JSON错误容错已修。新实验profile入口见任务分支README，验收证据见[D2B收口](tasks/D2B-PLAYER-CONTRACT.md)。旅行/主动休整/交易与战斗尚未接入，D整体未验收。
+以下是 D2B 收口时的历史记录，不代表当前主线进度：Runtime 当时保留在 `codex/world-runtime-d2b`，代码 `732103d`；A/B/C、D1、D2A 与 D2B 已验收。D2B 新增真实独立玩家及私账、四实名+76匿名总80；当时报告 238/238、真实 HTTP/双页签/重启与硬退出恢复通过，并修复丢锁/空档案、checkpoint 临时档和非 JSON 错误容错。实验 profile 与验收范围见 [D2B 合同及收口记录](tasks/D2B-PLAYER-CONTRACT.md)。当前状态以 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) 为准。

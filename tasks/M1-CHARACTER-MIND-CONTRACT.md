@@ -1,6 +1,6 @@
 # M1 共同合同：最小规则心智闭环与检查器
 
-合同版本：`m1-contract-v1`；冻结：2026-10-08（Asia/Shanghai）。状态：M0 文档交付；M1 待派发，以下新增接口均未实现。
+合同版本：`m1-contract-v1`；冻结：2026-10-08（Asia/Shanghai）。状态：M1 阶段已验收；本文合同正文保持冻结，不随状态更新改写。
 
 本合同是 [M0](M0-CHARACTER-MIND-CONTRACT-TASK.md) 的交付物；[架构 M 主线](../WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md#character-mind-runtime)规定长期方向。实现分为 [M1A 核心](M1A-MIND-CORE-TASK.md)、[M1B 服务与检查器](M1B-MIND-INSPECTOR-TASK.md)、[M1C 独立验收](M1C-MIND-ACCEPTANCE-TASK.md)。公共字段只在本文定义，变更须由中控同步三路合同，不能各自猜补。
 

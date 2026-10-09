@@ -1,6 +1,6 @@
 # E1 预研任务书：Laya 多版本 NPC SocialSignal 对照测试与选型建议
 
-发布时间：2026-10-07 11:23（Asia/Shanghai）。任务状态：已发布，待用户转交执行者；尚未运行模型或开始 E 阶段 Runtime 接入。实际进度见 [PROJECT_CONTEXT.md](../PROJECT_CONTEXT.md)。
+发布时间：2026-10-07 11:23（Asia/Shanghai）。任务状态：旧 E1 预研路线已收档；当前筛查无信号达到继续投入门槛，正式 Runtime 准入为空。此结论不表示任何模型已通过 Runtime 准入；详情见 [PROJECT_CONTEXT.md](../PROJECT_CONTEXT.md)。
 
 ## 1. 交给执行者的目标
 

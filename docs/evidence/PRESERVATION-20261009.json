@@ -1,0 +1,239 @@
+{
+  "schema": "world-runtime-preservation-index-v1",
+  "recordedAt": "2026-10-09T04:03:23.144Z",
+  "timeZone": "Asia/Shanghai",
+  "purpose": "Recovery evidence index; PROJECT_CONTEXT.md remains the unique current-state source",
+  "status": "LOCAL_RECOVERY_VERIFIED_OFFSITE_PENDING",
+  "controlBaseline": "77d2734b5c8750f763994d0c36b64b40e4766496",
+  "scope": {
+    "M2": "historical PASS; 401/401 not rerun",
+    "M3_2": "bounded PASS; 17 unique mandatory checks across separate runs, not one 17/17 suite",
+    "M3_3B": "preparation only; C1-C7 and future A C8 NOT_RUN",
+    "fullM3": "NOT_ACCEPTED",
+    "runtimeBehaviorChanged": false,
+    "existingContractsChanged": false,
+    "uncommittedAIncluded": false
+  },
+  "sourceAnchors": [
+    {
+      "source": "D:/Narraverse-World-Map-m2-core",
+      "sha": "51b99752bceaa1fefa27e298da54f3e8a617efc0",
+      "proposedRef": "refs/heads/codex/preserve-20261009/M2A2-51b9975",
+      "tree": "70c8072c41a3a677e2d42333e643d2e74490d771"
+    },
+    {
+      "source": "D:/Narraverse-World-Map-m2-acceptance",
+      "sha": "574856e9c84c650edebb4ec110cfe806884f4984",
+      "proposedRef": "refs/heads/codex/preserve-20261009/M2C-574856e",
+      "tree": "4a46624aad40d1e7e1351b88302dfe0ad401d56a"
+    },
+    {
+      "source": "D:/Narraverse-World-Map-m2-integration",
+      "sha": "c8d78d4270f3c58ad530fdc8e7d6a2ce4c8b03c9",
+      "proposedRef": "refs/heads/codex/preserve-20261009/M2integration-c8d78d4",
+      "tree": "de38f1f5a2ffa01ee039afb493c2b7361ee49a6b"
+    },
+    {
+      "source": "D:/Narraverse-World-Map-m3-cognition-acceptance-review",
+      "sha": "2fdc895f4bc54ad9507156726a630486094e8722",
+      "proposedRef": "refs/heads/codex/preserve-20261009/M33Breview-2fdc895",
+      "tree": "8b4609d42dd6cca503f0981b516efb4a7be5b580"
+    },
+    {
+      "source": "D:/Narraverse-World-Map-m3-acceptance",
+      "sha": "2387ad38a856a7b6b5bfaada4d062ff5480ad780",
+      "proposedRef": "refs/heads/codex/preserve-20261009/M3B2-2387ad3",
+      "tree": "512e2108a0d1558796c2aca2ca833c22acaba9ae"
+    },
+    {
+      "source": "D:/Narraverse-World-Map-m3-cognition",
+      "sha": "9a4794700234f097be0e1b7cb490dad4341e2e85",
+      "proposedRef": "refs/heads/codex/preserve-20261009/M3cognition-9a47947",
+      "tree": "7dc5083b8c038ab7a102bb551f1123a11a12642a"
+    },
+    {
+      "source": "D:/Narraverse-World-Map-m3-integration",
+      "sha": "a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2",
+      "proposedRef": "refs/heads/codex/preserve-20261009/M3integration-a638e5f",
+      "tree": "88da836d20caf4d3c879525c6e88a86ae2dd67ee"
+    },
+    {
+      "source": "D:/Narraverse-World-Map-control",
+      "sha": "77d2734b5c8750f763994d0c36b64b40e4766496",
+      "proposedRef": "refs/heads/codex/preserve-20261009/control-77d2734",
+      "tree": "3b0bd52a6c204d00de40b79eab64ddc90e360773"
+    },
+    {
+      "source": "D:/Narraverse-World-Map-m2-service",
+      "sha": "2a8eb52a0590017f1d6794e30962034ed31e449f",
+      "proposedRef": "refs/heads/codex/preserve-20261009/m2-service-2a8eb52",
+      "tree": "8e29253b29a2bf40f52a4e823072fd7bd4cf0b29"
+    }
+  ],
+  "packages": {
+    "baseGit": {
+      "path": "artifacts/world-runtime-preservation-20261009-0910/git/world-runtime-preservation-20261009.bundle",
+      "sha256": "7448adfb64789ccc801893def0e9d3a081dfe0b4ec6f06a9c5a7031fb22798a6",
+      "bytes": 1306176,
+      "targetsVerified": 9,
+      "coveredAncestors": 9
+    },
+    "evidence": {
+      "path": "artifacts/world-runtime-preservation-20261009-0910/evidence/world-runtime-evidence-20261009.zip",
+      "sha256": "4b79dfad788e9173e55eee8bc1421638c361f3de52d12c50cdcfd80f8aa58f06",
+      "bytes": 645439,
+      "entities": 218,
+      "rawBytes": 2977117,
+      "locatorSha256": "58791201a86487dadef8bce68065a220c47f378fe0011c1e0ac9861d8fa628a6",
+      "verifierSha256": "1ed819c01efd976899f5ff686353f048cc276a817fc005c8511575956424ac6d",
+      "verificationSha256": "8962a4eb142ef3c59ed0ebce000413fc30798b8c541b70a4befaad5240bada65",
+      "result": "relative-path verification PASS; no source-path I/O",
+      "negativeChecks": [
+        {
+          "case": "negative-missing",
+          "exitCode": 1,
+          "code": "REQUIRED_EVIDENCE_MISSING"
+        },
+        {
+          "case": "negative-corrupt",
+          "exitCode": 1,
+          "code": "EVIDENCE_INTEGRITY_FAILED"
+        },
+        {
+          "case": "negative-version",
+          "exitCode": 1,
+          "code": "UNSUPPORTED_EVIDENCE_VERSION"
+        }
+      ]
+    },
+    "closeout": {
+      "manifest": "artifacts/world-runtime-preservation-20261009-0910/git/closeout-manifest.json",
+      "note": "Final control commit and consolidated bundle are recorded after committing this index; final remote control ref supersedes the baseline control target without deleting it locally"
+    }
+  },
+  "importMappings": [
+    {
+      "task": "M2A2",
+      "original": "51b99752bceaa1fefa27e298da54f3e8a617efc0",
+      "mapped": "520f83c35d9b63a3145e986be4bd4af64fa54f96",
+      "blobCount": 10,
+      "fileListHash": "f60e45ce5eaec1b8ee6b3a88dc44131ff7245726a3ede83e1d3cd56af402121d",
+      "exactBlobs": true,
+      "finalEqual": true
+    },
+    {
+      "task": "M2B",
+      "original": "2a8eb52a0590017f1d6794e30962034ed31e449f",
+      "mapped": "32a3835685cbb1cac864d5a9ec94b022d30d5875",
+      "blobCount": 8,
+      "fileListHash": "160c25f310302d6eab7f853b7fc40ae8256f1d6195db72bc35301af83e210057",
+      "exactBlobs": true,
+      "finalEqual": true
+    },
+    {
+      "task": "M2C",
+      "original": "574856e9c84c650edebb4ec110cfe806884f4984",
+      "mapped": "83826a82fea5c0edfe62aa3d676313eefe2a7790",
+      "blobCount": 3,
+      "fileListHash": "7b4f0a73157d4cb9625fb2f6f401bc5283816326faa20ced4090006c69425ad0",
+      "exactBlobs": true,
+      "finalEqual": true
+    },
+    {
+      "task": "M3-2B import",
+      "original": "2387ad38a856a7b6b5bfaada4d062ff5480ad780",
+      "mapped": "56e2df4d6d95f1fa76fda0af547a41b0c2507763",
+      "blobCount": 2,
+      "fileListHash": "f18b18ca3c6a2f2932d99e27a3baa107010bdf3dcac3baff204c8c1d21d3c40f",
+      "exactBlobs": true,
+      "finalEqual": null
+    }
+  ],
+  "intentionalCorrections": [
+    {
+      "task": "M3-2A production repair",
+      "from": "7cb7615468398041111adec9cdb2ce12395e6cc4",
+      "to": "adee47e1f35fa5105a2dfeecc9265bd62b17cd5d",
+      "files": [
+        "M\truntime/core/command-engine.mjs",
+        "M\truntime/core/event-log.mjs",
+        "M\truntime/core/experience-state.mjs",
+        "M\truntime/core/motivation-runtime.mjs",
+        "M\truntime/core/work-experience-adapter.mjs",
+        "M\truntime/core/world-state.mjs",
+        "M\ttests/simulation/experience-runtime.test.mjs"
+      ]
+    },
+    {
+      "task": "M3-2A test-only correction",
+      "from": "adee47e1f35fa5105a2dfeecc9265bd62b17cd5d",
+      "to": "ad8695097b6b974030fd43f4947d7a01f627abf3",
+      "files": [
+        "M\ttests/simulation/experience-runtime.test.mjs"
+      ]
+    },
+    {
+      "task": "M3-2B test-only correction",
+      "from": "56e2df4d6d95f1fa76fda0af547a41b0c2507763",
+      "to": "a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2",
+      "files": [
+        "M\ttests/simulation/experience-acceptance.test.mjs",
+        "M\ttests/simulation/experience-runner-acceptance.test.mjs"
+      ]
+    },
+    {
+      "task": "M3-3B preparation test-only correction",
+      "from": "6241809f2a9c73273772ea67183cd8487c7fc68c",
+      "to": "2fdc895f4bc54ad9507156726a630486094e8722",
+      "files": [
+        "M\ttests/simulation/cognition-acceptance.test.mjs",
+        "M\ttests/simulation/cognition-runner-acceptance.test.mjs"
+      ]
+    }
+  ],
+  "productionEquality": {
+    "from": "ad8695097b6b974030fd43f4947d7a01f627abf3",
+    "to": "a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2",
+    "count": 58,
+    "scope": "runtime/**/*.mjs plus simulation-runner.mjs; includes runtime/service, excludes root runtime-server and UI"
+  },
+  "mappingProof": {
+    "path": "artifacts/world-runtime-preservation-20261009-0910/evidence/delivery-import-mapping.json",
+    "sha256": "13833593c427adcfb929d352886d690a6559daccf8532bd04bab694a0c544312"
+  },
+  "frozenExpected": {
+    "E7": {
+      "baseline": "87aa9b605f5f509ce3b0daa97e34ded004d22f33",
+      "schemaVersion": 2,
+      "rawSha256": "e7fee8c0bd872a8294615172dd4ee7fef6e6464663d2df9fc4099d9261221b18",
+      "payloadSha256": "1ebe129b1a252434e8b103796778f3b71f9ffc6587cb0578f8ea7828d6c87f67"
+    },
+    "C8": {
+      "baseline": "a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2",
+      "manifestSha256": "8c8abf2feff514f9a1d289b93cf5c64344c56c3817d021c16307c97fa2040346",
+      "stableFiles": 23,
+      "fullBundle": true,
+      "candidateMayGenerateExpected": false
+    }
+  },
+  "pending": {
+    "offsiteBackup": true,
+    "remotePushAuthorization": "Not granted; no push, origin changes, --all or --mirror",
+    "oldE7RequiredSkipPatch": "Next independent acceptance contract must explicitly authorize only the old E7 formal gate and its direct negative checks; no current A/B whitelist expansion",
+    "M33A": {
+      "observedCommit": "1b117d8e65d4d0e6fadb113d8b625472706750e3",
+      "observedAt": "2026-10-09 12:03 Asia/Shanghai",
+      "worktreeClean": true,
+      "deliveryEvidenceReviewed": false,
+      "notIncludedInNineSourceBundle": true
+    },
+    "fullM3": "Real checker experience and final scoped full suite remain required"
+  },
+  "exclusions": [
+    "ModelBench and credentials",
+    "User untracked prototype files",
+    "M3-3A incoming work and newly observed 1b117d8 commit outside the original nine-source scope",
+    "Broad 181MB historical artifact collection"
+  ],
+  "restore": "Extract evidence zip to a new directory, run node verify-evidence.mjs; restore Git bundle only to a new repository and compare manifest refs/full SHAs. Original absolute paths in raw records are provenance metadata, not loader inputs."
+}
