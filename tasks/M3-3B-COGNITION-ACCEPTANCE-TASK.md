@@ -1,6 +1,6 @@
 # M3-3B：认知降频与延续运行时独立验收
 
-合同版本：`m3-cognition-runtime-contract-v1`。共同合同唯一权威见 [M3-3A §共同合同](M3-3A-COGNITION-RUNTIME-TASK.md#共同合同唯一权威)。本文件只定义 B 的独立验收。状态：**本地已发布，待派发、未开工**（2026-10-09 07:41 Asia/Shanghai）。合同本地发布 SHA：`6b02918b60a1a5681fa2194ab362aaf808bceb06`。
+合同版本：`m3-cognition-runtime-contract-v1`。共同合同唯一权威见 [M3-3A §共同合同](M3-3A-COGNITION-RUNTIME-TASK.md#共同合同唯一权威)。本文件只定义 B 的独立验收。状态：**验收准备已复核修正，等待 A 精确交付 SHA；C1-C7 功能验收未运行，C8 新 A 兼容待跑**（2026-10-09 08:25 Asia/Shanghai）。合同本地发布 SHA：`6b02918b60a1a5681fa2194ab362aaf808bceb06`。准备复核提交：`2fdc895f4bc54ad9507156726a630486094e8722`。
 
 ## 给用户看
 
@@ -45,3 +45,17 @@ B 独立核对人物降频后是否仍延续真实承诺，重要本人事实是
 
 - B 不修改 A、不修复 production；发现缺陷时报告最小复现、expected/actual 与 A SHA，停止该验收门等待中控处理。不得自行跳过失败或改写 oracle 迎合实现。
 - 测试由唯一写入者负责；测试/机械任务交 high 推理子代理。测试 commit 后停止：不合并、不 push、不部署、不改 main、不更新状态/看板。给出独立裁定建议，最终验收由中控复核。控制合同发布 SHA 为 `6b02918b60a1a5681fa2194ab362aaf808bceb06`。
+
+## 中控验收准备复核记录
+
+记录时间：2026-10-09 08:25（Asia/Shanghai）。准备复核树 `D:\Narraverse-World-Map-m3-cognition-acceptance-review @ codex/world-runtime-m3-cognition-acceptance-review`，HEAD `2fdc895f4bc54ad9507156726a630486094e8722`，工作区干净。原 B 树 `D:\Narraverse-World-Map-m3-cognition-acceptance @ codex/world-runtime-m3-cognition-acceptance` 保留在干净的原交付提交 `6241809f2a9c73273772ea67183cd8487c7fc68c`；修正树只改两份 B 验收测试，提交测试字节与当前 checkout 相符；58 个生产文件相对共同基准 `a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2` 无 tracked 差异，不 push、不合并 main。
+
+A 计划树 `D:\Narraverse-World-Map-m3-cognition-runtime @ codex/world-runtime-m3-cognition-runtime` 当前 HEAD 为共同基准 a638，工作区已有未提交源码与新模块改动，但还没有可供 B 锁定的提交交付 SHA。建树和未提交实现不等于交付或验收；在取得精确 A SHA 前不运行 C1-C7，也不猜测模块/API。
+
+准备复核修正覆盖：取消永久 skip，将缺少 A 依赖明确报告为 `A_DEPENDENCY_PENDING`，真实语法/export 错误继续失败；严格核对六函数 hooks、合法经验 view/GoalPlan 与计数器、C3 初始 actor 固定索引、C2 时点/原因、C4 缺口与因果、C5 真实死亡历史、C7 日界后学习异常与预算回滚的真实路径，并将 C8 改为消费独立冻结的旧规则期望。
+
+本次实际运行仅为：旧合法 DTO 准备检查 1/1 通过；当前 a638 生产代码的 C8 基准消费者 2/2 通过，0 fail、0 skip、exit 0（约 25.5 秒）。两份验收测试 `node --check` 与 `git diff --check` 通过。C7 自然 day2 配方随后调整后只运行 `node --check` 和 `git diff --check`，未运行该 C7 body；不宣称 C1-C7 或全套验收通过。当前基准消费者结果不代表未来 A 兼容。
+
+C8 冻结基线由干净 a638 独立运行 `experience-village`、`m-experience-v1`、seed 42、4 日（tick 576）生成；原始产物含 23 个稳定文件及完整 bundle，原始 manifest SHA256 `8c8abf2feff514f9a1d289b93cf5c64344c56c3817d021c16307c97fa2040346`，文件见 review 树 `artifacts/world-runtime-m33b-preparation-review-20261009/legacy-baseline/manifest.json`。C8 比对业务摘要、bundle、配置/状态及 23 个稳定文件；candidate 不得自建或更新 expected，缺失缓存即阻塞。已有 M2 default576、D2C 六操作和 C5 四日冻结证明仅复用，不是本轮重跑。证据与逐项范围见 `artifacts/world-runtime-m33b-preparation-review-20261009/test-preparation-verification.json`；该记录的早期 head 字段为基准阶段记录，最终提交以本节精确 SHA 为准。
+
+本轮结论仅为：**B 验收准备已复核修正，可等待 A 精确依赖；M3-3B 功能验收 C1-C7 未运行，C8 新 A 兼容待跑。** M3-2 既有 PASS 保持，完整 M3 未验收。
