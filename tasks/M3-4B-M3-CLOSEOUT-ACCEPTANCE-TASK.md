@@ -1,8 +1,20 @@
 # M3-4B：服务与检查器独立验收、完整 M3 收口
 
-合同版本：`m3-closeout-contract-v1`；状态：B第一轮准备交付2570dbf已收；已交付准备范围经中控小修/复核通过，完整G0/G1–G5未验，A修正依赖已钉定，可继续独立验收。共同 DTO、服务版本、场景输入和业务边界唯一权威见 [M3-4A](M3-4A-COGNITION-INSPECTOR-TASK.md)，本文件只规定独立验收和阶段门槛。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`。
+合同版本：`m3-closeout-contract-v1`；状态：B已恢复执行并交付f1bb8c0；执行者报告G0/准备/G1通过，中控完成提交与用例审查，G1定向缺口及G2–G5待续验。共同 DTO、服务版本、场景输入和业务边界唯一权威见 [M3-4A](M3-4A-COGNITION-INSPECTOR-TASK.md)，本文件只规定独立验收和阶段门槛。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`。
 
-## 本轮恢复派发（2026-10-09 16:55 Asia/Shanghai）
+## 本轮进度核验与续执行（2026-10-09 18:38 Asia/Shanghai）
+
+B当前精确提交 f1bb8c0ea1d1b0164907a9486e5e648f247cc357，原B树干净；caf7b12→合并A修正版ad4691f，merge aa473a7，生产与A完全相同。相对A为4个B测试文件差异，本轮相对caf准备仅新增cognition-service-acceptance.test.mjs，其余3份准备文件字节未变。执行者报告G0 9/9、准备8/8、G1 8/8（96秒）；中控已读实现与核对Git，本轮不重复整套，现有artifacts未定位本次完整TAP，测试数按执行者实测报告记录，不当作中控独立复跑或完整G1裁PASS。G2–G5未完成，B继续原任务，无需新任务书。
+
+继续前补G1直接缺口：真实durable发布挂起期间读取旧public/player/mind三投影，解除后同候选一起可见；在合法service6副本中分别实变config/cognition cursor/decision mode/work samples并证明canonical变化后拒绝，不能只用“最终bundle换成anchor”代替这些边界。旧格式2也应覆盖，HEAD增加content-length/cache-control对照。所有自建owner/server创建后立即注册失败也会执行的清理，避免断言失败留下监听或锁；原8个已过成员未变不重复跑，新增/改变成员定向补验。保留原失败与修复证据，不调整业务expected。
+
+G2/G3正规入口已核：服务主链用startRuntimeServer({port:0,...})的真实HTTP命令或owner.submit，source/runtime目录分开；AdvanceTime DTO1，PlayerSell/PlayerBuy DTO2。独立离线对照用runtime/core/motivation-runtime.mjs导出executeCognitionPlayerIntent(bundle,{commandId,type,payload})，取返回bundle；推进用createSimulationSession(bundle,cognitionSystems())→advanceTicks(n)→getBundle()，交易返回新bundle后重新建立session。没有replaceBundle/adoptBundle，不增加生产API。仍保留合同中的独立直跑、tick432重开与不中断控制链完整业务bundle比较，不以同一条service journal自比替代。
+
+G4可复用现有驱动：C:/Users/11/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright（本轮require成功、chromium.launch为function），Edge可执行文件C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe在位；上一轮已用Edge154真实烟测，本轮未再次launch。采用全新临时浏览器上下文及自建port0服务，用完关闭，不安装工具、不动旧实例。当前/冻结经验、断连/迟到、两页签只读与旧M1/M2等完整G4仍需B独立完成。
+
+G5仍在G0–G4和修复字节冻结后集中一次；记录完整TAP、精确source/test清单hash、exit/pass/fail/skip及各场景配置/有序DTO/重开比较。此前已过检查不因继续派发而重跑；不能把手算8条当真实recipe通过。B按本路用户要求自办；本段只是续执行，不能声称AI当前后台运行。完整M3未验收，不push/main/deploy。
+
+## 历史：本轮恢复派发（2026-10-09 16:55 Asia/Shanghai）
 
 A原交付 `bebb6417e3231d06638b264cb9e8682ff7b38821`；唯一生产依赖改为中控窄修 `ad4691ff0703e1374298e9633f8adee2d1963959`，位于 `D:\Narraverse-World-Map-m3-inspector-review @ codex/world-runtime-m3-inspector-review`。基准656与共同业务合同不变。B从准备修正版 `caf7b12a8a1770443af5e552c03d5514aa62b966` 接续；精确导入A原提交及修复提交，或从A修正版建隔离集成树再导入B原2570dbf及caf7b12。保留原树，不重置、不猜最新HEAD、不重复返修已解决门禁。记录实际导入SHA与文件字节对应关系。
 

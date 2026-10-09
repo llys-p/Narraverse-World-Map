@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-09 17:04（Asia/Shanghai）。
+更新时间：2026-10-09 18:38（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -84,9 +84,9 @@
 - M3-3 A/B/阶段 PASS（限定本轮，不是完整M3）：修复review来源ID的规范/严格过去、baseline canonical语义和plan/Goal deadline错配；修复探针32/32、24种合法baseline、getter0。C1-C8按原A与定向修复分次覆盖：最终C1/C3/C4/C7通过，C7有23种实变和两种真实学习后整tick回滚；C2/C5保留原A未变有效行为证据；C6/C8原A四项及真实CLI6=2+4、25业务文件通过，最终修复后的checkpoint1+公共底座22+有界存盘4共27/27通过。不是一次全套运行，未跑M3 full suite。证据在集成树 `artifacts/world-runtime-m33-controller-review-20261009/controller-review.json`、`source-and-tests-final.json`及acceptance/runner分次记录；61生产文件匹配提交，最终测试字节匹配交接。
 - 作者自报159自测无保留TAP，14项“基准环境同败”无具体路径/日志，本轮不采为独立证据或自动免责。自然maintain Work未实现不欠本合同（只验纯分支/合法adapter链）；mode真伪由完整replay裁定，未新增HTTP/UI或物理LOD。完整M3仍未验收，下一轮最多两份任务书实现服务/检查器并独立验收完整体验；真实Work失败→改选→合法恢复→同人真实工作成功→旧失败退出四样本窗口、低频延续、保存恢复与最终full suite须保留。之后先冻结有界自主取食/收入闭环，再评估D3/D4。
 - M3-4共同合同 `m3-closeout-contract-v1` @fb4e500冻结。A原交付 `bebb6417e3231d06638b264cb9e8682ff7b38821`（inspector原树干净、7改5新），中控隔离复核 `D:\Narraverse-World-Map-m3-inspector-review @ codex/world-runtime-m3-inspector-review` 窄修后依赖 `ad4691ff0703e1374298e9633f8adee2d1963959`。修复loader接受错误/缺失检查器版本与预算常量，成功记录补failure:null，仅http-contract及service测试变更；反例先红，修后12/12、直接fault/checkpoint2/2、旧loader2/2分次通过。原A保留、未push/main；A交付可供B独立验收，尚未正式裁完整PASS。 修正ad4691f真实Edge154 continuation烟测通过：144买药→优雅关闭重开→288 maintain用药，同goal/plan/旧review锚点，药-1/健康+100且Work样本0；切人/键盘/刷新/双页签全GET、磁盘不变、page/console errors0，自建服务/浏览器已关闭。不是完整G4。
-- M3-4B第一轮 `D:\Narraverse-World-Map-m3-closeout @ codex/world-runtime-m3-closeout` 干净交付 `2570dbf550d232d137d99bad972a8264a2e26275`，common dir为cognition-integration独立clone的.git、origin本地路径，3个test文件白名单。实体指纹/手算准备不能当真实service/UI通过；G1–G5全未验；当前A依赖已提供，B尚无恢复开工回执。原树保留，中控复核树 `D:\Narraverse-World-Map-m3-closeout-review @ codex/world-runtime-m3-closeout-review`，修正交接 `caf7b12a8a1770443af5e552c03d5514aa62b966` 干净，仅3test窄修共享oracle权威哈希绕过、依赖/导出guard及外层locator；生产零差异。本人自办按该会话指令，M3-1A未变不再复跑。
+- M3-4B当前树D:\Narraverse-World-Map-m3-closeout干净f1bb8c0ea1d1b0164907a9486e5e648f247cc357；caf7b12合入ad4691f得到aa473a7，生产与A全部相同，相对A为4个B测试文件，本轮仅新增G1测试，原准备3文件未变。执行者报告G0 9/9、准备8/8、G1 8/8（96秒）；中控核提交/用例，未重复整套、未定位本轮完整TAP，不冒充独立复跑或完整G1 PASS。G2–G5未完成，原任务续执行。
 
-- B已交付准备范围PASS，完整G0/G1–G5与M3未验：三个争议按合同接受（传递missing硬失败、版本分类可先RAW、optional消费者仍需合法证据）；原14/14、新增绕过两反例红→修后16/16，最终locator1/1；A缺席项仍预期1fail不计通过。146个源/test当前bytes匹配最终manifest、原oracle不变。证据review树 `artifacts/world-runtime-m34b-preparation-repair-20261009/controller-review.json`；未重跑作者167秒旧回归。B后续从caf7b12接手并导入A原bebb641及修正ad4691f，不自行在2570重复修或从脏树凑依赖。
+- B准备阶段历史窄修caf7b12已保留并导入；完整G1尚需保存挂起GET保旧、config/cursor/mode/samples篡改、格式2及HEAD头对照，新增成员定向验证。G2正规离线入口executeCognitionPlayerIntent返回bundle，再建session推进，禁止臆造replaceBundle/adoptBundle；仍须独立直跑和无重启对照。现有Playwright本轮可require、Edge在位；G4/G5按原合同继续，缺证据不降门。完整M3未验收。
 
 - 本次A配方争议已独立消解：原bebb真实owner ON执行到tick1440，144 Sell7公金150→10、288 Work710拒绝、432 ON Work610<Use700、Buy4付款100恢复10→110，720/864/1152/1440四次真Work使窗口归零且旧失败事件未改；短OFF合法相同输入至432仍Work710拒绝。修正ad4691f离线续跑确认day11 Work730、day12四人存活。完整ON/OFF十四DTO服务长探针在1440后主动停止，已保存文件与遗留锁保留为测试证据，不计整条通过，后续G2交B。 完整M3收口仍须本轮G0–G5及最终相关suite，不能因原回执纯推进不同而降低合同。证据见review树artifacts/world-runtime-m34a-loader-repair-20261009/controller-review.json；基准规划证据另存656树，不当本轮独立验收。
 
@@ -112,7 +112,7 @@
 
 - M3-4B前置回执看板已同步：B仍Todo（未编写交付代码/测试），进度改阻塞（等待A精确交付）；其实体盘点不记正式G0/G1–G4通过。A/阶段仍待派发，其他58卡签名不变、总59，读回证据 `artifacts/world-runtime-m34-dispatch-correction-20261009/readback-result.json`。
 
-- 本轮A交付/窄修看板已同步读回：M3-4阶段InProgress/进行中、A InProgress/待验收、B InProgress/待派发（准备已完成，可接精确A依赖；尚无B恢复开工回执）；简介和五卡正文更新，54非目标签名不变、总59无新卡。证据control artifacts/world-runtime-m34a-acceptance-20261009/board-readback-result.json。原A/B树保留，未push/main。
+- 本轮B进度看板已同步读回：B InProgress/进行中（工作未完成，非后台运行声明），A仍待验收、阶段/M/M3继续。五卡正文和简介更新，54非目标签名不变、总59；证据control artifacts/world-runtime-m34b-progress-20261009/board-readback-result.json。源码不push/main。
 
 - 待派发不代表开工；核实实际开工回执或任务树中的实现/测试改动后进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
