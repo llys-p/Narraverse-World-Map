@@ -1,6 +1,6 @@
 # M3-4B：服务与检查器独立验收、完整 M3 收口
 
-合同版本：`m3-closeout-contract-v1`；状态：待派发，未开工。共同 DTO、服务版本、场景输入和业务边界唯一权威见 [M3-4A](M3-4A-COGNITION-INSPECTOR-TASK.md)，本文件只规定独立验收和阶段门槛。合同发布 SHA 由中控发布后填写，不猜未来 SHA。
+合同版本：`m3-closeout-contract-v1`；状态：待派发，未开工。共同 DTO、服务版本、场景输入和业务边界唯一权威见 [M3-4A](M3-4A-COGNITION-INSPECTOR-TASK.md)，本文件只规定独立验收和阶段门槛。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`。
 
 ## 给用户看
 

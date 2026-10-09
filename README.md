@@ -24,7 +24,7 @@
 
 2026-10-09（Asia/Shanghai）：M1/M2 与 M3-1A/B 已验收收口。M3-2A、M3-2B 与 M3-2 限定轮次已中控裁定 PASS/已验收。最终集成 commit `a638e5f19eaf7bdd9a4f4f3acc2456e62126fbf2` 基于 A 唯一依赖 `ad8695097b6b974030fd43f4947d7a01f627abf3`，导入 B 原测试提交 `2387ad38a856a7b6b5bfaada4d062ff5480ad780` 后，仅修两份 B 测试，生产文件相对 A 零差异；58 个生产文件 SHA256 前后稳定。必需验收按分次命令通过：各分次必需 gate、runner兼容、E1上界、CLI/resume、隔离与恢复门槛均通过，共17项唯一检查覆盖，不表示单次17/17套件。未跑的 optional Inspector/deadline/profile CLI 不计通过。详情、分次结果与未验范围见[当前状态](PROJECT_CONTEXT.md)及两份 M3-2 任务书。
 
-M3-3 A/B与阶段已中控验收，最终本地交接 `6562460c2a0610afff6ba49f25524e1ae191b8c5`，三处输入/信号校验修复生产 `0e58d5b39286f23e87cab2e978f57b683e90902b`；原A `1b117d8e65d4d0e6fadb113d8b625472706750e3` 保留。C1-C8由原提交与定向修复分次证据覆盖，最终直接回归27/27；不声称一次全套或作者159自测独立复跑。完整M3未验收，下一轮服务/检查器与独立验收任务尚未发布；代码未push/合并main。详见 [当前状态](PROJECT_CONTEXT.md)。
+M3-3 A/B与阶段已中控验收，最终本地交接 `6562460c2a0610afff6ba49f25524e1ae191b8c5`，三处输入/信号校验修复生产 `0e58d5b39286f23e87cab2e978f57b683e90902b`；原A `1b117d8e65d4d0e6fadb113d8b625472706750e3` 保留。C1-C8由原提交与定向修复分次证据覆盖，最终直接回归27/27；不声称一次全套或作者159自测独立复跑。完整M3未验收，M3-4两份任务书已发布/待派发、未开工：[A](tasks/M3-4A-COGNITION-INSPECTOR-TASK.md)、[B](tasks/M3-4B-M3-CLOSEOUT-ACCEPTANCE-TASK.md)，合同 `m3-closeout-contract-v1` @`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`；代码未push/合并main。详见 [当前状态](PROJECT_CONTEXT.md)。
 
 ## 原型历史说明（以下路径、端口与测试结论属于原项目阶段）
 

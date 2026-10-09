@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-09 12:41（Asia/Shanghai）。
+更新时间：2026-10-09 13:32（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -83,6 +83,9 @@
 - M3-3 已中控验收收口：合同 m3-cognition-runtime-contract-v1 @6b02918保持冻结；A原交付 1b117d8e65d4d0e6fadb113d8b625472706750e3，白名单9改/6新、四冻结文件及data-contract不变。中控隔离独立克隆 `D:\Narraverse-World-Map-m3-cognition-integration @ codex/world-runtime-m3-cognition-integration`，本地origin指原A；B原6241809→导入af16b4f，准备修正2fdc895→导入8cc9c17，修三处P2生产提交 `0e58d5b39286f23e87cab2e978f57b683e90902b`，最终仅修一份B测试交接 `6562460c2a0610afff6ba49f25524e1ae191b8c5`，工作区干净。原A/B/review树保留，代码未push或合并main。
 - M3-3 A/B/阶段 PASS（限定本轮，不是完整M3）：修复review来源ID的规范/严格过去、baseline canonical语义和plan/Goal deadline错配；修复探针32/32、24种合法baseline、getter0。C1-C8按原A与定向修复分次覆盖：最终C1/C3/C4/C7通过，C7有23种实变和两种真实学习后整tick回滚；C2/C5保留原A未变有效行为证据；C6/C8原A四项及真实CLI6=2+4、25业务文件通过，最终修复后的checkpoint1+公共底座22+有界存盘4共27/27通过。不是一次全套运行，未跑M3 full suite。证据在集成树 `artifacts/world-runtime-m33-controller-review-20261009/controller-review.json`、`source-and-tests-final.json`及acceptance/runner分次记录；61生产文件匹配提交，最终测试字节匹配交接。
 - 作者自报159自测无保留TAP，14项“基准环境同败”无具体路径/日志，本轮不采为独立证据或自动免责。自然maintain Work未实现不欠本合同（只验纯分支/合法adapter链）；mode真伪由完整replay裁定，未新增HTTP/UI或物理LOD。完整M3仍未验收，下一轮最多两份任务书实现服务/检查器并独立验收完整体验；真实Work失败→改选→合法恢复→同人真实工作成功→旧失败退出四样本窗口、低频延续、保存恢复与最终full suite须保留。之后先冻结有界自主取食/收入闭环，再评估D3/D4。
+- 下一轮 M3-4 已发布/待派发：共同合同 `m3-closeout-contract-v1` @`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`，只两份 [A service6/认知检查器](tasks/M3-4A-COGNITION-INSPECTOR-TASK.md) 与 [B 独立体验/完整M3验收](tasks/M3-4B-M3-CLOSEOUT-ACCEPTANCE-TASK.md)。代码唯一基准 `6562460c2a0610afff6ba49f25524e1ae191b8c5`；计划 A `D:\Narraverse-World-Map-m3-inspector @ codex/world-runtime-m3-inspector`、B `D:\Narraverse-World-Map-m3-closeout @ codex/world-runtime-m3-closeout` 均核不存在，未创建/未开工。A七改五新，B四新+旧E7 required gate单文件例外；只新增cognition服务format6，旧1–5与core规则保持。
+- 本次有界规划验证：656基准上合法ON/OFF各12日可达：日2真Work拒付、日3ON610<Use700而OFFWork710；玩家真实Buy恢复公金10→110，日5/6/8/10四次真Work使罚分100→0，日11Work730；日3实际checkpoint恢复一致、四人12日存活。仅离线可行性，不是新服务/browser或未来B oracle；证据基准树 `artifacts/world-runtime-m34-contract-probes-20261009/experience-scenario/report.json`。完整学习修正场景在既有合法权威链可达，不扩写学习/评分。完整M3收口须本轮G0–G5、真实HTTP/browser及最终一次完整相关suite，缺required证据/driver/依赖阻断PASS；两历史根验收预排除理由与替代真实门已冻结，不临时降门槛。
+
 - A 的精确测试边界、source/test SHA256 与忽略产物证据路径见任务书中控验收记录：修复点本路 14/14 通过；测试字节与交接 `275b81a` 一致的 window-order 1/1，以及实际在 `275b81a` 上运行的独立旧失败门 1/1，有各自定向证据。作者原 13 项和先前 7 个通过门未在最终交接重跑，不声称全套复跑。仅两项白名单 tracked file 参与，data-contract 与旧 M2 未改；修复回执 source/test 标签对调已中控核正。
 - M3 源码与近期控制文档未合并 main、未 push；GitHub Project #2 已同步并完成远端读回核对。原有用户文件本轮未读取或操作。
 - E 调整为可选 Provider 支线，正式准入仍为空；M 不依赖 Laya/LLM，旧 E1 不重开，未来按真实消费缺口另发窄合同。F/G 尚未开工；不接正式平台、模型/桥或真实旧存档，不启停旧实例，不自动合并 runtime main。
@@ -96,11 +99,13 @@
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
 - M 主线：M 卡 `PVTI_lAHOEF9IDs4BmADfzg_Q8JY` 与 M3 卡 `PVTI_lAHOEF9IDs4BmADfzg_Q8Sg` 的 Status/进度/阶段保持 In Progress / 进行中 / M，完整 M3 未验收。M3-2A、M3-2B、M3-2 三卡保持 Done / 已验收。此前发布新增 M3-3 阶段、A、B 三张卡，并更新 M/M3 两父卡正文；当时新卡发布时为 Todo / 待派发 / M，父卡字段未变。项目由53项增至56项，三标题各唯一。GraphQL 当前读回、expected/actual、ID 与字段证明见忽略目录 `artifacts/world-runtime-m33-publication-20261009/`；本目录 `before.json` 是上一轮 M3-2 收口快照副本，不是本轮写入前原件，不能据此声称本轮51项签名逐项前后相同。当前状态与本轮 mutation/readback 证据见 `artifacts/world-runtime-m33b-preparation-state-20261009/`。控制文档尚未 push。
 - 新卡定位：M3-1 `PVTI_lAHOEF9IDs4BmADfzg_cvKU`；M3-1A `PVTI_lAHOEF9IDs4BmADfzg_cwwE`；M3-1B `PVTI_lAHOEF9IDs4BmADfzg_cyMQ`；M3-2 `PVTI_lAHOEF9IDs4BmADfzg_cySk`；M3-2A `PVTI_lAHOEF9IDs4BmADfzg_cyZs`；M3-2B `PVTI_lAHOEF9IDs4BmADfzg_cyig`。按稳定ID更新，避免重复建卡。
-- M3-3 卡定位：阶段 `PVTI_lAHOEF9IDs4BmADfzg_hna4`；A `PVTI_lAHOEF9IDs4BmADfzg_hnbE`；B `PVTI_lAHOEF9IDs4BmADfzg_hnbc`。此前准备轮阶段/A为 In Progress / 进行中，B为 In Progress / 阻塞；本轮已完成验收，远端同步待读回。M3 父卡正文更新，Status 仍 In Progress。完整写前/写后 GraphQL 原始响应及 56 项、四目标卡核对证据见 `artifacts/world-runtime-m33b-preparation-state-20261009/`。
-- 本轮保全/后续安排同步：Project #2 简介和 M/M3/M3-3阶段/A/B 五张卡正文已更新，区分本地恢复验证、未完成异地备份、A提交待核验与功能未验；56项读回，51个非目标签名及所有单选字段不变，未新建卡。首 mutation EOF 后先读回旧值，再用同一精确幂等请求重试成功；证据 `artifacts/world-runtime-preservation-20261009-0910/board/readback-result.json`。
+- M3-3 卡定位：阶段 `PVTI_lAHOEF9IDs4BmADfzg_hna4`；A `PVTI_lAHOEF9IDs4BmADfzg_hnbE`；B `PVTI_lAHOEF9IDs4BmADfzg_hnbc`。当前阶段/A/B均 Done / 已验收，M3父卡仍 In Progress；此前准备轮的56项证据保存于 `artifacts/world-runtime-m33b-preparation-state-20261009/`，本次收口证据见后文。
+- 此前保全轮同步：Project #2 简介和 M/M3/M3-3阶段/A/B 五张卡正文已更新，区分本地恢复验证、未完成异地备份、A提交待核验与功能未验；56项读回，51个非目标签名及所有单选字段不变，未新建卡。首 mutation EOF 后先读回旧值，再用同一精确幂等请求重试成功；证据 `artifacts/world-runtime-preservation-20261009-0910/board/readback-result.json`。
 - 当前卡定位：阶段 A `PVTI_lAHOEF9IDs4BmADfzg_Bv9M`；A1 `PVTI_lAHOEF9IDs4BmADfzg_BwKU`；B阶段 `PVTI_lAHOEF9IDs4BmADfzg_Bv-0`、B1 `PVTI_lAHOEF9IDs4BmADfzg_DZNs`、B2 `PVTI_lAHOEF9IDs4BmADfzg_DkN4`、B3 `PVTI_lAHOEF9IDs4BmADfzg_Dvno`、B4 `PVTI_lAHOEF9IDs4BmADfzg_D8HE`；C阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwAs`、C1 `PVTI_lAHOEF9IDs4BmADfzg_ERTg`、C2 `PVTI_lAHOEF9IDs4BmADfzg_EnoU`、C3 `PVTI_lAHOEF9IDs4BmADfzg_FGww`、C4 `PVTI_lAHOEF9IDs4BmADfzg_Fov0`（已验收）、C5 `PVTI_lAHOEF9IDs4BmADfzg_G6Gg`（已验收）；D阶段 `PVTI_lAHOEF9IDs4BmADfzg_BwCU`（进行中）、D1 `PVTI_lAHOEF9IDs4BmADfzg_HMTc`、D2A `PVTI_lAHOEF9IDs4BmADfzg_Hq7Y`（已验收）；D2B `PVTI_lAHOEF9IDs4BmADfzg_IGm4`、三路 `PVTI_lAHOEF9IDs4BmADfzg_IGrM` / `PVTI_lAHOEF9IDs4BmADfzg_IGuY` / `PVTI_lAHOEF9IDs4BmADfzg_IG0Q`（已验收）。更新前用 `gh project field-list 2 --owner llys-p --format json` 与 `gh project item-list 2 --owner llys-p --format json --limit 100` 读取真实字段/状态，按稳定 ID 更新，避免重复建卡。
 - 用户已授权本对话按架构依赖自行实施、测试、复核、提交及同步看板；保留任务书定义范围，阶段门槛通过再推进下一项。源码不自动合并main，仍不接入正式平台。
 - M3-3本轮看板已同步并读回：阶段/A/B三卡 Done / 已验收，M/M3两父卡仍进行中且完整M3未验收；简介与五卡正文更新，新任务未发布。56项、51非目标签名不变，仅三卡Status/进度六字段改为已验收；完整before/after与核对见 control `artifacts/world-runtime-m33-acceptance-state-20261009/readback-result.json`。首次读取EOF后重试取得真实写前快照，不用旧副本充当本轮before。
+- M3-4发布看板已同步/读回：新增阶段 `PVTI_lAHOEF9IDs4BmADfzg_kdUo`、A `PVTI_lAHOEF9IDs4BmADfzg_kdUs`、B `PVTI_lAHOEF9IDs4BmADfzg_kdUw`，均 Todo / 待派发 / M；M/M3两父卡正文更新，字段仍进行中。实际56→59项、三标题各唯一、54非目标签名不变；真实before/after及expected/actual在 control `artifacts/world-runtime-m34-publication-20261009/readback-result.json`。只发布两任务书，未创建执行树/未实施service6，合同本地未push。
+
 - 待派发不代表开工；核实实际开工回执或任务树中的实现/测试改动后进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
 - A1～A4及A/B/C阶段门槛已通过；C1～C5均已验收，D1已验收，D2A已验收，D2B三路已验收，D2C三路已验收，D2门槛通过，D3/D4未开始，D整体未验收，F/G主线未开始。E阶段待开始；E1本轮A/B投入筛查已复验收档，无信号达继续投入门槛、正式准入为空；[合同与保存点](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-DEV30-SCREENING-TASK.md)。停止当前400扩样/微调路线，不开新模型调用/校准/final/CUDA/C/E2/qoder_cron；保留数据环境。D主线不依赖AI，后续模型探索须另发定向合同，不把本轮预研收口当E1正式或E阶段验收。
