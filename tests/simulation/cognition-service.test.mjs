@@ -9,6 +9,7 @@ import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { isDeepStrictEqual } from 'node:util';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRuntimeOwner } from '../../runtime/service/runtime-owner.mjs';
 import { startRuntimeServer } from '../../runtime-server.mjs';
 import { loadCognitionBackend, cognitionBackendState, requireCognitionBackend, COGNITION_RULES,
@@ -25,6 +26,66 @@ import { createMotivationVillage } from '../../runtime/fixtures/motivation-villa
 const intent = (commandId, expectedRevision, type, payload) => ({ version: 2, commandId, expectedRevision, type, payload });
 const time = (commandId, expectedRevision = 0, ticks = 6) => ({ version: 1, commandId, expectedRevision, type: 'AdvanceTime', payload: { ticks } });
 const COGNITION_PREFIXES = ['mind-day-', 'mind-settle-', 'society-day-', 'motivation-day-', 'experience-day-', 'cognition-day-', 'cognition-eval-'];
+
+test('contract §2: cognition backend module boundary rejects incompatible exports and preserves dependency failures', async t => {
+  const directory = await temporary(t);
+  const runtimeSource = fileURLToPath(new URL('../../runtime/', import.meta.url));
+  // Every case loads an independent copy of the actual runtime and only alters the named
+  // knowledge module. Unique URLs isolate loader state and the native ESM module cache.
+  const cases = [
+    { name: 'valid exports', mutate: source => source },
+    { name: 'wrong inspector version', mutate: source => source.replace("'cognition-inspector-v1'", "'incompatible-inspector-v99'"), code: 'UNSUPPORTED_VERSION' },
+    { name: 'missing inspector version export', mutate: source => source.replace('export const COGNITION_INSPECTOR_VERSION', 'const COGNITION_INSPECTOR_VERSION'), code: 'UNSUPPORTED_VERSION' },
+    { name: 'wrong inspector budget', mutate: source => source.replace('MAX_COGNITION_INSPECTOR_BYTES = 131072', 'MAX_COGNITION_INSPECTOR_BYTES = 999999999'), code: 'UNSUPPORTED_VERSION' },
+    { name: 'missing inspector budget export', mutate: source => source.replace('export const MAX_COGNITION_INSPECTOR_BYTES', 'const MAX_COGNITION_INSPECTOR_BYTES'), code: 'UNSUPPORTED_VERSION' },
+    { name: 'missing inspector function export', mutate: source => source.replace('export function projectCognitionInspector', 'function projectCognitionInspector'), code: 'UNSUPPORTED_VERSION' },
+    { name: 'syntax error', mutate: source => `${source}\nconst invalid = ;\n`, errorName: 'SyntaxError' },
+    { name: 'transitive dependency missing', mutate: source => `import './missing-transitive.mjs';\n${source}`, code: 'ERR_MODULE_NOT_FOUND', message: /missing-transitive/ },
+    { name: 'initialization exception', mutate: source => `${source}\nthrow new Error('COGNITION_INIT_SENTINEL');\n`, message: /COGNITION_INIT_SENTINEL/ },
+    { name: 'exact knowledge target missing', pending: true },
+  ];
+  for (const [index, scenario] of cases.entries()) await t.test(scenario.name, async () => {
+    const runtime = path.join(directory, String(index), 'runtime');
+    await fs.cp(runtimeSource, runtime, { recursive: true, force: false, errorOnExist: true });
+    const knowledge = path.join(runtime, 'knowledge', 'cognition-knowledge.mjs');
+    if (scenario.pending) await fs.unlink(knowledge);
+    else {
+      const original = await fs.readFile(knowledge, 'utf8'), changed = scenario.mutate(original);
+      if (index !== 0) assert.notEqual(changed, original, 'the intended fault must actually be installed');
+      await fs.writeFile(knowledge, changed);
+    }
+    const loader = await import(pathToFileURL(path.join(runtime, 'service', 'http-contract.mjs')).href);
+    if (index === 0) {
+      const loaded = await loader.loadCognitionBackend();
+      assert.equal(loader.cognitionBackendState().available, true);
+      assert.equal(loader.requireCognitionBackend(), loaded.backend);
+      assert.equal(loaded.backend.knowledge.COGNITION_INSPECTOR_VERSION, 'cognition-inspector-v1');
+      assert.equal(loaded.backend.knowledge.MAX_COGNITION_INSPECTOR_BYTES, 131072);
+      assert.deepEqual(Object.keys(loaded).sort(), ['backend', 'dependencyPending', 'missingSpecifier', 'error', 'errorCode', 'failure'].sort());
+      assert.equal(loaded.failure, null);
+    } else if (scenario.pending) {
+      const loaded = await loader.loadCognitionBackend();
+      assert.equal(loaded.backend, null);
+      assert.equal(loaded.dependencyPending, true);
+      assert.equal(loaded.missingSpecifier, '../knowledge/cognition-knowledge.mjs');
+      assert.equal(loaded.failure, null);
+      assert.equal(loader.cognitionBackendState().available, false);
+      assert.throws(() => loader.requireCognitionBackend(), error => error.code === 'UNSUPPORTED_VERSION');
+    } else {
+      let failure;
+      try { await loader.loadCognitionBackend(); } catch (error) { failure = error; }
+      assert.ok(failure, `${scenario.name} must fail closed`);
+      if (scenario.code) assert.equal(failure.code, scenario.code);
+      if (scenario.errorName) assert.equal(failure.name, scenario.errorName);
+      if (scenario.message) assert.match(failure.message, scenario.message);
+      const state = loader.cognitionBackendState();
+      assert.deepEqual(state, { available: false, dependencyPending: false, missingSpecifier: null,
+        error: failure.message, errorCode: failure.code ?? null });
+      assert.throws(() => loader.requireCognitionBackend(), error => error === failure, 'require preserves the exact recorded error');
+      await assert.rejects(loader.loadCognitionBackend(), error => error === failure, 'reload preserves the exact recorded error');
+    }
+  });
+});
 async function temporary(t) {
   const prefix = path.join(os.tmpdir(), 'world-cognition-service-');
   const dir = await fs.mkdtemp(prefix);

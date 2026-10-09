@@ -81,6 +81,12 @@ export async function loadCognitionBackend(){
     try{
       module=await import(specifier);
       for(const key of exports)requireCondition(typeof module[key]==='function',`${specifier} is missing cognition export ${key}`,'UNSUPPORTED_VERSION');
+      if(name==='knowledge'){
+        requireCondition(module.COGNITION_INSPECTOR_VERSION==='cognition-inspector-v1',
+          'Incompatible cognition inspector version','UNSUPPORTED_VERSION');
+        requireCondition(module.MAX_COGNITION_INSPECTOR_BYTES===131072,
+          'Incompatible cognition inspector budget','UNSUPPORTED_VERSION');
+      }
     }
     catch(error){
       const dependencyPending=error?.code==='ERR_MODULE_NOT_FOUND' && error.url===new URL(specifier,import.meta.url).href;
@@ -91,7 +97,7 @@ export async function loadCognitionBackend(){
     }
     backend[name]=module;
   }
-  _cognitionBackend={backend,dependencyPending:false,missingSpecifier:null,error:null,errorCode:null};
+  _cognitionBackend={backend,dependencyPending:false,missingSpecifier:null,error:null,errorCode:null,failure:null};
   return _cognitionBackend;
 }
 export function cognitionBackendState(){
