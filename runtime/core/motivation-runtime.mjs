@@ -451,10 +451,19 @@ export function executeExperiencePlayerIntent(bundle,intent){
   return executePlayerIntentFor(bundle,intent,EXPERIENCE_PROFILE);
 }
 
-export function describeMotivationPlayerActions(bundle){
-  audit(bundle);const w=bundle.snapshot.world,a=body(w,'actor-4');
+// Shared read-only player-actions projection; each caller audits the bundle for its own rules
+// first, so the DTO construction stays profile-agnostic and byte-identical for every profile.
+function describePlayerActionsFor(bundle){
+  const w=bundle.snapshot.world,a=body(w,'actor-4');
   return {travelTicks:12,restTicks:6,tradeTicks:1,maxQuantity:10,locations:['village','forest'],
     prices:Object.fromEntries(['food','herbs'].map(id=>[id,{buy:w.marketModel.prices[id],sell:Math.max(1,Math.floor(w.marketModel.prices[id]/2))}])),canTrade:a.alive&&a.location==='village'};
+}
+export function describeMotivationPlayerActions(bundle){
+  audit(bundle);return describePlayerActionsFor(bundle);
+}
+export function describeCognitionPlayerActions(bundle){
+  inspectDescriptorTree(bundle);auditFor(bundle,COGNITION_PROFILE);
+  return describePlayerActionsFor(bundle);
 }
 
 function validateHistoryFor(snapshot,events,profile){

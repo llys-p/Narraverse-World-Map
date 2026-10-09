@@ -14,6 +14,12 @@ const blockCodeLabel={'SOFT_PRECONDITION_FAILED':'软前提未满足','COMMITMEN
 const dutyStatusLabel={pending:'待履约',fulfilled:'已履约'};
 const cfCaseLabel={baseline:'基准（原配置）','duty-minus-200':'假设：职责权重 −200','risk-plus-200':'假设：风险厌恶 +200'};
 const MOTIVATION_BLOCKS=['m2-fact-food','m2-self-extra','m2-profile-row','m2-goal-row','m2-duty-plan','m2-decision-fields','m2-outcome-fatigue','m2-outcome-owner','m2-counterfactual'];
+// M3-4A (cognition-inspector-v1) only: the review-cadence panel and the work-experience window.
+// Everything here is rendered verbatim from the served DTO; the page never re-evaluates the
+// kernel, never borrows candidates for a maintain decision and never invents a counterfactual.
+const COGNITION_BLOCKS=['cognition-review','cognition-experience'];
+const cognitionModeLabel={review:'完整重评',maintain:'维持承诺',dormant:'休眠'};
+const workSampleStatusLabel={succeeded:'成功',rejected:'拒绝（权威）'};
 let selected='actor-2',last=null,refreshing=false;
 const canonicalFingerprint=value=>{
   const encode=item=>item===null||typeof item!=='object'?JSON.stringify(item):Array.isArray(item)?`[${item.map(encode).join(',')}]`:
@@ -27,7 +33,7 @@ function decisionConclusion(decision){
     const fingerprint=decision.knowledgeFingerprint;
     if(typeof fingerprint!=='string')return null;
     const frozen=JSON.parse(fingerprint);
-    if(canonicalFingerprint(frozen)!==fingerprint || !['mind-knowledge-v1','motivation-knowledge-v1'].includes(frozen.knowledgeVersion) || frozen.phase!=='decision' ||
+    if(canonicalFingerprint(frozen)!==fingerprint || !['mind-knowledge-v1','motivation-knowledge-v1','cognition-knowledge-v1'].includes(frozen.knowledgeVersion) || frozen.phase!=='decision' ||
       frozen.actorId!==decision.actorId || frozen.tick!==decision.tick || frozen.revision!==decision.tick-1 ||
       !['available','unavailable','unknown'].includes(frozen.belief?.value))return null;
     return frozen.belief.value;
@@ -40,13 +46,64 @@ function setMotivationMode(on){
   for(const id of MOTIVATION_BLOCKS)byId(id).hidden=!on;
   byId('m1-stance-row').hidden=on;byId('m1-intent-row').hidden=on;
 }
+function setCognitionMode(on){for(const id of COGNITION_BLOCKS)byId(id).hidden=!on;}
+// Display-side parse only: the frozen kernel schedules cognition reviews on whole days and
+// cognition-state validates exactly this id shape against lastReviewTick. This annotates the
+// reported anchor; it recomputes no decision, signal or counterfactual.
+const reviewDayTick=id=>{const match=/^cognition-day-([1-9][0-9]*)-actor-[23]$/.exec(id);return match?Number(match[1])*144:null;};
+// The decision-time frozen knowledge lives inside lastDecision.knowledgeFingerprint. Only an
+// exact canonical cognition decision DTO is accepted; nothing is inferred from the choice.
+function frozenDecisionKnowledge(decision){
+  if(!decision||typeof decision.knowledgeFingerprint!=='string')return null;
+  try{
+    const frozen=JSON.parse(decision.knowledgeFingerprint);
+    if(canonicalFingerprint(frozen)!==decision.knowledgeFingerprint)return null;
+    if(frozen.knowledgeVersion!=='cognition-knowledge-v1'||frozen.phase!=='decision')return null;
+    if(frozen.actorId!==decision.actorId||frozen.tick!==decision.tick||frozen.revision!==decision.tick-1)return null;
+    return frozen;
+  }catch{return null;}
+}
+function clearCognitionReadings(){
+  for(const id of ['cog-eval-input','cog-eval-decision','cog-review-anchors','cog-source-review','cog-frozen-experience','cog-window-summary'])byId(id).textContent='—';
+  byId('cog-maintain-note').hidden=true;byId('cog-window-empty').hidden=true;byId('cog-window-list').replaceChildren();
+}
+function renderCognition(actor){
+  const cog=actor.cognition??null,review=cog?.reviewState??null,ev=review?.lastEvaluation??null,d=actor.lastDecision,w=actor.workExperience;
+  if(ev){
+    const input=ev.input,dec=ev.decision;
+    byId('cog-eval-input').textContent=`关注 ${input.importancePermille}‰ · 相关性 ${input.relevancePermille}‰ · ${input.alive?'存活':'已故'} · 评估 tick ${input.tick}`;
+    byId('cog-eval-decision').textContent=`${cognitionModeLabel[dec.mode]??dec.mode} · ${dec.shouldReview?'应重评':'不重评'} · ${dec.tier} · 分数 ${dec.score} · 原因 [${dec.reasonCodes.join(', ')||'无'}] · 间隔 ${dec.intervalTicks??'—'} · 下次评审 ${dec.nextReviewTick==null?'无':`tick ${dec.nextReviewTick}`}`;
+  }else{byId('cog-eval-input').textContent='尚无评审记录';byId('cog-eval-decision').textContent='尚无评审记录';}
+  byId('cog-review-anchors').textContent=cog?.lastReviewDecisionId==null
+    ?'无（还没有完成过的完整评审）'
+    :`${cog.lastReviewDecisionId} · Planned 事件 ${cog.lastReviewEventSeq} · 实际 tick ${review?.lastReviewTick??'—'}（来源：本人最近一次完整评审锚点）`;
+  const sourceId=d?.sourceReviewDecisionId,sourceTick=typeof sourceId==='string'?reviewDayTick(sourceId):null;
+  byId('cog-source-review').textContent=sourceId==null
+    ?(d?'无（本次为完整重评，候选来自本次比较）':'尚无决策，未引用任何评审锚点')
+    :`${sourceId} · Planned 事件 ${d.sourceReviewEventSeq}${sourceTick==null?'':` · 实际 tick ${sourceTick}`}（来源：上次评审锚点，非本次评分）`;
+  byId('cog-maintain-note').hidden=!(d&&d.mode==='maintain');
+  const frozen=frozenDecisionKnowledge(d);
+  byId('cog-frozen-experience').textContent=frozen?.experience
+    ?`决定时冻结：样本 ${frozen.experience.sampleCount} · 失败 ${frozen.experience.failureCount} · 惩罚 ${frozen.experience.penaltyPermille}‰ · 证据 ${frozen.experience.evidenceRefs.join(', ')||'无'} · 经验开关 ${frozen.useWorkExperience===true?'开':frozen.useWorkExperience===false?'关':'未知'}`
+    :(d?'无法读取合法的当时冻结经验；未从选择或结果推断。':'尚无决策，没有决定时冻结经验。');
+  const state=w?.state??null,view=w?.view??null;
+  byId('cog-window-summary').textContent=view?`当前窗口：样本 ${view.sampleCount} · 失败 ${view.failureCount} · 惩罚 ${view.penaltyPermille}‰ · 证据 ${view.evidenceRefs.join(', ')||'无'}`:'—';
+  const samples=Array.isArray(state?.samples)?state.samples:[],list=byId('cog-window-list');
+  list.replaceChildren();byId('cog-window-empty').hidden=samples.length>0;
+  for(const sample of [...samples].reverse()){
+    const item=document.createElement('li');
+    item.textContent=`tick ${sample.occurrenceTick} · 事件 ${sample.sourceEventSeq} · ${sample.actorId} · 决定 ${sample.decisionId} · 命令 ${sample.commandId} · ${workSampleStatusLabel[sample.status]??sample.status}`;
+    list.append(item);
+  }
+}
 function motivationPlanText(plan){
   if(!plan)return '无';
   const steps=Array.isArray(plan.steps)&&plan.steps.length?`（${plan.steps.join(' → ')}）`:'';
   return `#${plan.planId} ${planKindLabel[plan.kind]??plan.kind} · ${planStatusLabel[plan.status]??plan.status} · 步骤 ${plan.stepIndex}/${plan.steps?.length??'?'}${steps} · 期限 第 ${plan.deadlineDay} 天`;
 }
-function renderCounterfactual(cf){
+function renderCounterfactual(cf,cognition=false){
   const list=byId('cf-list'),empty=byId('cf-empty'),cases=Array.isArray(cf)?cf:[];
+  empty.textContent=cognition?'本轮无反事实。':'暂无反事实记录。';
   empty.hidden=cases.length>0;list.replaceChildren();
   for(const item of cases){
     const li=document.createElement('li');
@@ -59,8 +116,9 @@ function renderCounterfactual(cf){
   }
 }
 
-function renderActor(actor,motivation=false){
-  if(!actor){byId('knowledge-alive').textContent='未纳入心智';return;}
+function renderActor(actor,mode='mind'){
+  const motivation=mode==='motivation'||mode==='cognition';
+  if(!actor){byId('knowledge-alive').textContent='未纳入心智';clearCognitionReadings();return;}
   const k=actor.knowledge,s=k.self,b=k.belief||{},q=k.quote;
   byId('knowledge-title').textContent=`本人所知 · ${s.name}`;
   byId('knowledge-alive').textContent=s.alive?'存活':'已故 · 封存';
@@ -86,7 +144,8 @@ function renderActor(actor,motivation=false){
     byId('plan-active').textContent=motivationPlanText(k.planState?.activePlan);
     byId('plan-suspended').textContent=motivationPlanText(k.planState?.suspendedPlan);
     byId('plan-reviewed').textContent=k.planState?.lastReviewedDutyId??'无';
-    renderCounterfactual(actor.counterfactual);
+    renderCounterfactual(actor.counterfactual,mode==='cognition');
+    if(mode==='cognition')renderCognition(actor);else clearCognitionReadings();
   }
   byId('observations-note').textContent=`已记录的观察 ${k.observations?.length??0} 条`;
   byId('observations-list').replaceChildren();
@@ -163,20 +222,22 @@ function renderActor(actor,motivation=false){
 }
 function renderReading(inspector){
   const motivation=inspector.mindVersion==='motivation-inspector-v1';
-  setMotivationMode(motivation);
+  const cognition=inspector.mindVersion==='cognition-inspector-v1';
+  setMotivationMode(motivation||cognition);
+  setCognitionMode(cognition);
   byId('mind-sim').textContent=inspector.simulationId;
   byId('mind-time').textContent=`tick ${inspector.tick} · revision ${inspector.revision}`;
-  if(motivation)setText('fact-food',inspector.worldFacts?.publicFood);
+  if(motivation||cognition)setText('fact-food',inspector.worldFacts?.publicFood);
   setText('fact-herbs',inspector.worldFacts?.publicHerbs);
   setText('fact-price',inspector.worldFacts?.postedHerbPrice);
-  renderActor(inspector.actors?.find(a=>a.knowledge?.actorId===selected),motivation);
+  renderActor(inspector.actors?.find(a=>a.knowledge?.actorId===selected),motivation?'motivation':cognition?'cognition':'mind');
 }
 async function readInspector(){
   const response=await fetch('/api/runtime/minds',{cache:'no-store',signal:AbortSignal.timeout(6000)});
   if(response.status===404)throw Object.assign(new Error('mind unavailable'),{code:'MIND_UNAVAILABLE'});
   if(!response.ok)throw new Error('读数读取失败');
   const dto=await response.json();
-  if(dto.apiVersion!==1 || !['mind-inspector-v1','motivation-inspector-v1'].includes(dto.mindVersion))throw new Error('未知检查器接口');
+  if(dto.apiVersion!==1 || !['mind-inspector-v1','motivation-inspector-v1','cognition-inspector-v1'].includes(dto.mindVersion))throw new Error('未知检查器接口');
   if(!Number.isSafeInteger(dto.revision) || !Number.isSafeInteger(dto.tick) || !Array.isArray(dto.actors))throw new Error('检查器读数无效');
   return dto;
 }

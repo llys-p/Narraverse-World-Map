@@ -49,6 +49,16 @@
       <div><dt>已开门评估的请求</dt><dd id="plan-reviewed">—</dd></div>
     </dl>
   </section>
+  <section id="cognition-review" class="cognition" aria-label="认知降频评审" hidden>
+    <div class="section-title"><h2>认知降频评审</h2><span>直接展示评审内核保存的输入与决定，页面不重算</span></div>
+    <dl class="knowledge-readings">
+      <div><dt>本次评审输入（原值）</dt><dd id="cog-eval-input">—</dd></div>
+      <div class="wide"><dt>评审决定（模式 / 档位 / 分数 / 原因 / 节奏）</dt><dd id="cog-eval-decision">—</dd></div>
+      <div class="wide"><dt>最近完整评审锚点</dt><dd id="cog-review-anchors">—</dd></div>
+      <div class="wide"><dt>沿用来源（上次评审）</dt><dd id="cog-source-review">—</dd></div>
+    </dl>
+    <p id="cog-maintain-note" hidden>沿用承诺，本次未比较候选。</p>
+  </section>
   <section class="decision" aria-label="当时决策与结果">
     <div class="section-title"><h2>当时决策与结果</h2><span id="decision-seal"></span></div>
     <p id="decision-empty">正在读取决策…</p>
@@ -80,6 +90,15 @@
       <div id="m2-outcome-fatigue" hidden><dt>疲劳变化</dt><dd id="outcome-fatigue">—</dd></div>
       <div id="m2-outcome-owner" hidden><dt>公粮生产记账 / 失败归属</dt><dd id="outcome-owner">—</dd></div>
     </dl>
+  </section>
+  <section id="cognition-experience" class="cognition" aria-label="工作经验窗口" hidden>
+    <div class="section-title"><h2>工作经验窗口</h2><span>开发者只读对照：决定时冻结经验与当前窗口分开显示，窗口只含本人 WorkForPay 权威结果</span></div>
+    <dl class="knowledge-readings">
+      <div><dt>决定时冻结经验（来自 knowledgeFingerprint）</dt><dd id="cog-frozen-experience">—</dd></div>
+      <div><dt>当前经验窗口读数</dt><dd id="cog-window-summary">—</dd></div>
+    </dl>
+    <p id="cog-window-empty">本人经验窗口暂无 Work 结果样本。</p>
+    <ul id="cog-window-list" class="detail-list"></ul>
   </section>
   <section id="m2-counterfactual" class="counterfactual" aria-label="反事实假设" hidden>
     <div class="section-title"><h2>反事实假设</h2><span>只读推演 · 不执行动作 · 不代表世界结果或成功</span></div>
