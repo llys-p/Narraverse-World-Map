@@ -37,10 +37,10 @@ const EXTRA_EXPORTS = [
 const extraModules = await Promise.all(EXTRA_EXPORTS.map(async ([specifier, load, names]) => [specifier, await load(), names]));
 function gate(t) {
   if (depFailure !== null) {
-    if (depFailure.code === 'ERR_MODULE_NOT_FOUND') {
-      t.skip('A 路依赖未导入，待中控派发 SHA 后运行：' + (depFailure.url ?? REQUIRED.join(', ')));
-      return false;
-    }
+    // G0: required evidence comes first. A missing A-lane dependency blocks PASS; it is never a skip.
+    if (depFailure.code === 'ERR_MODULE_NOT_FOUND')
+      assert.fail('REQUIRED_EVIDENCE_MISSING: A 路 required 依赖未导入，本门阻断 PASS：' +
+        (depFailure.url ?? REQUIRED.join(', ')));
     assert.fail('A 路依赖模块加载失败（非缺失）：' + (depFailure.stack ?? String(depFailure)));
   }
   const missing = [];
@@ -59,13 +59,43 @@ function gate(t) {
 
 // ---- 公共工具 ----
 const ORACLE_PATH = 'D:/Narraverse-World-Map-m2-acceptance/artifacts/world-runtime-m2-acceptance-repair-20261008/legacy-oracle-87aa9b6-v2.json';
-// oracle 文件只读：绝不修改/复制/提交该 artifact；缺失时逐测试 skip，指纹不符必须 fail（见指纹门测试）。
-function loadOracle(t) {
-  let raw;
-  try { raw = readFileSync(ORACLE_PATH); }
-  catch { t.skip('oracle 缺失，待中控单独提供'); return null; }
-  return JSON.parse(raw.toString('utf8'));
+// G0: M34_ORACLE_FILE only locates a read-only evidence entity - never world config, business
+// input or an HTTP option. Unset keeps the original control path. Missing entity is a blocker,
+// an unreadable one is never treated as a legitimate absence, and a parseable but unknown
+// schema/baseline is rejected as a version problem before any byte comparison.
+const ORACLE_ENV = 'M34_ORACLE_FILE';
+const ORACLE_BASELINE = '87aa9b605f5f509ce3b0daa97e34ded004d22f33';
+const ORACLE_SCHEMA_VERSION = 2;
+function oraclePath() {
+  const fromEnv = process.env[ORACLE_ENV];
+  return fromEnv && fromEnv.trim() !== '' ? path.resolve(fromEnv) : ORACLE_PATH;
 }
+function readOracleRaw() {
+  try { return readFileSync(oraclePath()); }
+  catch (error) {
+    if (error.code === 'ENOENT')
+      assert.fail('REQUIRED_EVIDENCE_MISSING: required oracle 证据实体缺失 ' + oraclePath());
+    assert.fail('EVIDENCE_INTEGRITY_FAILED: oracle 证据实体不可读（' + error.code + '），' +
+      'I/O 或权限错误不得解释为合法缺文件');
+  }
+}
+function parseOracle(raw) {
+  try { return JSON.parse(raw.toString('utf8')); }
+  catch { assert.fail('EVIDENCE_INTEGRITY_FAILED: oracle RAW 不是合法 JSON，证据已损坏'); }
+}
+function requireOracleProvenance(oracle) {
+  if (oracle === null || typeof oracle !== 'object' || Array.isArray(oracle))
+    assert.fail('EVIDENCE_INTEGRITY_FAILED: oracle 顶层不是 JSON 对象');
+  if (oracle.schemaVersion !== ORACLE_SCHEMA_VERSION || oracle.baselineSHA !== ORACLE_BASELINE)
+    assert.fail('UNSUPPORTED_EVIDENCE_VERSION: oracle schema/baseline 非本轮权威（schema ' +
+      String(oracle.schemaVersion) + ', baseline ' + String(oracle.baselineSHA) + '）');
+  const payload = hash({ scenarioSpecs: oracle.scenarioSpecs, provenance: oracle.provenance, results: oracle.results });
+  if (oracle.payloadHash !== payload)
+    assert.fail('EVIDENCE_INTEGRITY_FAILED: oracle payloadHash 字段与重算 canonical payload 不符');
+  return oracle;
+}
+// oracle 文件只读：绝不修改/复制/提交该 artifact；缺失或损坏现在都是明确阻断（见指纹门）。
+function loadOracle(t) { return requireOracleProvenance(parseOracle(readOracleRaw())); }
 // 与 simulation-runner 完全一致的哈希公式：sha256(canonicalJson(value))，canonical 递归排序键、UTF-8。
 const hash = value => createHash('sha256').update(canonicalJson(value), 'utf8').digest('hex');
 async function temp(t) {
@@ -87,19 +117,19 @@ const bodyOf = (b, id = 'actor-2') => b.snapshot.world.actorModel.actors.find(a 
 const mindOf = (b, id = 'actor-2') => b.snapshot.world.motivationModel.actors.find(a => a.actorId === id);
 
 test('E7 oracle 指纹门：RAW SHA256、canonical payload SHA256、schema/baseline/payloadHash 字段', t => {
-  let raw;
-  try { raw = readFileSync(ORACLE_PATH); }
-  catch { t.skip('oracle 缺失，待中控单独提供'); return; }
+  const raw = readOracleRaw();
+  const oracle = requireOracleProvenance(parseOracle(raw));
   // RAW 指纹（字节级，主控已实测当前匹配）。
   assert.equal(createHash('sha256').update(raw).digest('hex'),
-    'e7fee8c0bd872a8294615172dd4ee7fef6e6464663d2df9fc4099d9261221b18', 'RAW SHA256 不符（证据：文件被改动或非受控版本）');
-  const oracle = JSON.parse(raw.toString('utf8'));
+    'e7fee8c0bd872a8294615172dd4ee7fef6e6464663d2df9fc4099d9261221b18',
+    'EVIDENCE_INTEGRITY_FAILED: RAW SHA256 不符（证据：文件被改动或非受控版本）');
   assert.equal(oracle.schemaVersion, 2);
-  assert.equal(oracle.baselineSHA, '87aa9b605f5f509ce3b0daa97e34ded004d22f33');
+  assert.equal(oracle.baselineSHA, ORACLE_BASELINE);
   // canonical({scenarioSpecs,provenance,results})（递归排序键、UTF-8）payload 指纹。
   const payload = createHash('sha256').update(
     canonicalJson({ scenarioSpecs: oracle.scenarioSpecs, provenance: oracle.provenance, results: oracle.results }), 'utf8').digest('hex');
-  assert.equal(payload, '1ebe129b1a252434e8b103796778f3b71f9ffc6587cb0578f8ea7828d6c87f67', 'canonical payload SHA256 不符');
+  assert.equal(payload, '1ebe129b1a252434e8b103796778f3b71f9ffc6587cb0578f8ea7828d6c87f67',
+    'EVIDENCE_INTEGRITY_FAILED: canonical payload SHA256 不符');
   assert.equal(oracle.payloadHash, payload, 'payloadHash 字段与重算不一致');
 });
 
