@@ -62,6 +62,49 @@ export function requireMotivationBackend(){
   requireCondition(backend,'M2 motivation runtime module is not available in this deployment','UNSUPPORTED_VERSION');
   return backend;
 }
+// M3-4A contract §2: cognition backend loader, same recording shape as the M2 loader. Only an
+// ERR_MODULE_NOT_FOUND for one of the exact target modules themselves may stay pending;
+// anything else (bad exports, syntax, transitive failure, init throw) fails with the cause.
+export const COGNITION_RULES='m-cognition-v1';
+const COGNITION_MODULES={
+  fixture:{specifier:'../fixtures/cognition-village.mjs',exports:['defaultCognitionVillageConfig','createCognitionVillage','cognitionSystems']},
+  runtime:{specifier:'../core/motivation-runtime.mjs',exports:['validateCognitionWorld','executeCognitionPlayerIntent','describeCognitionPlayerActions']},
+  knowledge:{specifier:'../knowledge/cognition-knowledge.mjs',exports:['buildCognitionKnowledge','projectCognitionInspector']},
+};
+let _cognitionBackend=null;
+export async function loadCognitionBackend(){
+  if(_cognitionBackend?.backend)return _cognitionBackend;
+  if(_cognitionBackend?.failure)throw _cognitionBackend.failure;
+  const backend={};
+  for(const [name,{specifier,exports}] of Object.entries(COGNITION_MODULES)){
+    let module;
+    try{
+      module=await import(specifier);
+      for(const key of exports)requireCondition(typeof module[key]==='function',`${specifier} is missing cognition export ${key}`,'UNSUPPORTED_VERSION');
+    }
+    catch(error){
+      const dependencyPending=error?.code==='ERR_MODULE_NOT_FOUND' && error.url===new URL(specifier,import.meta.url).href;
+      _cognitionBackend={backend:null,dependencyPending,missingSpecifier:dependencyPending?specifier:null,
+        error:String(error?.message??error),errorCode:error?.code??null,failure:dependencyPending?null:error};
+      if(!dependencyPending)throw error;
+      return _cognitionBackend;
+    }
+    backend[name]=module;
+  }
+  _cognitionBackend={backend,dependencyPending:false,missingSpecifier:null,error:null,errorCode:null};
+  return _cognitionBackend;
+}
+export function cognitionBackendState(){
+  return _cognitionBackend?{available:Boolean(_cognitionBackend.backend),dependencyPending:_cognitionBackend.dependencyPending,
+    missingSpecifier:_cognitionBackend.missingSpecifier,error:_cognitionBackend.error,errorCode:_cognitionBackend.errorCode}
+    :{available:false,dependencyPending:false,missingSpecifier:null,error:'cognition backend has not been loaded yet',errorCode:null};
+}
+export function requireCognitionBackend(){
+  if(_cognitionBackend?.failure)throw _cognitionBackend.failure;
+  const backend=_cognitionBackend?.backend;
+  requireCondition(backend,'M3 cognition runtime module is not available in this deployment','UNSUPPORTED_VERSION');
+  return backend;
+}
 export function parseCommandBytes(bytes){return validateServiceCommandDto(parseStrictJson(bytes,MAX_COMMAND_BYTES));}
 export function validateServiceCommandDto(dto){
   fields(dto,['version','commandId','expectedRevision','type','payload']);
@@ -96,16 +139,20 @@ export function runtimeProfile(bundle){
   if(s.rulesVersion===MOTIVATION_RULES && s.fixtureId==='motivation-village'){
     return {serviceFormatVersion:5,rulesVersion:MOTIVATION_RULES,systems:requireMotivationBackend().fixture.motivationSystems()};
   }
+  if(s.rulesVersion===COGNITION_RULES && s.fixtureId==='cognition-village'){
+    return {serviceFormatVersion:6,rulesVersion:COGNITION_RULES,systems:requireCognitionBackend().fixture.cognitionSystems()};
+  }
   requireCondition(false,'Runtime service profile is not registered','UNSUPPORTED_VERSION');
 }
 export function projectPlayerSnapshot(bundle){
   const profile=runtimeProfile(bundle);let actions;
-  if(profile.serviceFormatVersion===5){
-    validateBundle(bundle,{rulesVersion:MOTIVATION_RULES,systems:profile.systems});
+  if(profile.serviceFormatVersion===5||profile.serviceFormatVersion===6){
+    validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});
     const s=bundle.snapshot,p=s.world.playerModel,a=s.world.actorModel.actors.find(actor=>actor.actorId==='actor-4');
-    requireCondition(p.actorId==='actor-4' && a,'Motivation player identity is missing');
+    requireCondition(p.actorId==='actor-4' && a,'Player identity is missing');
     const {actorId,name,occupation,location,simulationLevel,alive,deathTick,health,hunger,fatigue,needs}=a;
-    actions=requireMotivationBackend().runtime.describeMotivationPlayerActions(bundle);
+    actions=profile.serviceFormatVersion===6?requireCognitionBackend().runtime.describeCognitionPlayerActions(bundle):
+      requireMotivationBackend().runtime.describeMotivationPlayerActions(bundle);
     return cloneData({apiVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,
       self:{identity:{actorId,name,occupation,location,simulationLevel,alive,deathTick},health,hunger,fatigue,needs,
         wallet:p.wallet,inventory:p.inventory},actions});
@@ -123,10 +170,12 @@ export function projectPublicSnapshot(bundle){
     population:{namedAlive,unnamedAlive,totalAlive:namedAlive+unnamedAlive,deer:w.ecologyModel.populations.deer,wolves:w.ecologyModel.populations.wolves},
     actors:actors.map(a=>({actorId:a.actorId,name:a.name,occupation:a.occupation,location:a.location,alive:a.alive}))});
 }
-// Read-only developer projection (contract M2 §7 Inspector). Format4 keeps the M1 projection;
-// format5 dispatches to A2's projectMotivationInspector. Both entries fully re-validate the
-// bundle before returning detached JSON data, so the served DTO is always one audited candidate.
+// Read-only developer projection. Format4 keeps the M1 projection; format5/6 dispatch to the
+// motivation/cognition inspectors. Every entry fully re-validates the bundle before returning
+// detached JSON data, so the served DTO is always one audited candidate.
 export function projectMindInspector(bundle){
-  if(runtimeProfile(bundle).serviceFormatVersion===5)return cloneData(requireMotivationBackend().knowledge.projectMotivationInspector(bundle));
+  const format=runtimeProfile(bundle).serviceFormatVersion;
+  if(format===5)return cloneData(requireMotivationBackend().knowledge.projectMotivationInspector(bundle));
+  if(format===6)return cloneData(requireCognitionBackend().knowledge.projectCognitionInspector(bundle));
   return cloneData(_mindBackend.knowledge.projectMindInspector(bundle));
 }

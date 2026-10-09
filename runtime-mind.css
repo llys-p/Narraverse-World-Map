@@ -10,3 +10,13 @@
 .candidate-table thead th{background:#e6ecdf;font-weight:600}
 .counterfactual .section-title span{color:#7a5b2c}
 .counterfactual #cf-empty{font-size:13px;color:#788273}
+
+/* M3-4A cognition sections reuse the M1/M2 reading layout; only new class rules below. */
+.cognition{margin:20px 0;background:#faf8f1;border:1px solid #d8ddcf;border-radius:7px;padding:18px}
+.cognition .knowledge-readings{margin-top:16px}
+.cognition .knowledge-readings dd{font-size:15px}
+.cognition .knowledge-readings .wide{grid-column:1/-1}
+#cog-maintain-note{font-size:13px;color:#7a5b2c;margin:12px 0 0}
+#cog-maintain-note:empty{display:none}
+#cog-window-empty{font-size:13px;color:#788273;margin:12px 0 0}
+#cog-window-list li{font-variant-numeric:tabular-nums}
