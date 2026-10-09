@@ -1,6 +1,12 @@
 # M3-4A：认知服务、只读检查器与 M3 体验收口
 
-合同版本：`m3-closeout-contract-v1`。状态：**待派发**；本文件是下一轮 A/B 唯一共同合同，B 只引用本合同并定义独立验收。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`；这是本轮两份合同的发布锚点，不用代码 SHA 代替。最多两份任务书，发布不等于开工，完整 M3 仍未验收。
+合同版本：`m3-closeout-contract-v1`。状态：**执行者停止回执已核；无代码交付，合同读取已核实可重新执行**；本文件是下一轮 A/B 唯一共同合同，B 只引用本合同并定义独立验收。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`；这是本轮两份合同的发布锚点，不用代码 SHA 代替。最多两份任务书，发布不等于开工，完整 M3 仍未验收。
+
+## 钉定读取与恢复派发（2026-10-09 14:40 Asia/Shanghai）
+
+文档仓库 `D:\Narraverse-World-Map-control`：创建发布为fb4e500，c9e6bf90d38567b93358a870b1826c69d34861d6只填写第3行发布SHA，业务正文与唯一7改/5新白名单未变。实施合同钉定读取命令为 `git -C D:\Narraverse-World-Map-control show c9e6bf90d38567b93358a870b1826c69d34861d6:tasks/M3-4A-COGNITION-INSPECTOR-TASK.md`；该文件Git blob `7ce12a9bbd9b17cb9eda633903316c2de449c623`，提交UTF-8/LF字节SHA256 `488ec2c8ed3b8d2558ab6c819b4aa6277e7bbc060750dda194e254656ac5b25d`。不要把创建提交头的“待填写”误当后续元数据不合法，也不要在文档仓库查运行时代码对象。
+
+代码仓库 `D:\Narraverse-World-Map-m3-cognition-integration` 含6562460、0e58d5b、1b117d8及其祖先关系；执行者已建的 `D:\Narraverse-World-Map-m3-inspector @ codex/world-runtime-m3-inspector` 经中控只读核对为干净6562460，可直接复用，不删树、不替执行者提交。本轮未复跑基准110测试，读取/写入通道garbling为执行者报告，原始工具日志未移交，具体原因未独立确认。若工具回显仍不自洽，停止该写入并报告具体命令/真实bytes，不用伪代码交付；不能据工具摘要改白名单。钉定正文、Git blob和Node结构化核对优先于未经核实的自由文本回显。
 
 ## 给用户看
 

@@ -1,10 +1,16 @@
 # M3-4B：服务与检查器独立验收、完整 M3 收口
 
-合同版本：`m3-closeout-contract-v1`；状态：已收到前置实体盘点；尚无B代码/测试交付，G1–G4等待A精确SHA。共同 DTO、服务版本、场景输入和业务边界唯一权威见 [M3-4A](M3-4A-COGNITION-INSPECTOR-TASK.md)，本文件只规定独立验收和阶段门槛。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`。
+合同版本：`m3-closeout-contract-v1`；状态：B第一轮准备交付2570dbf已收；已交付准备范围经中控小修/复核通过，完整G0/G1–G5未验，等待A精确SHA。共同 DTO、服务版本、场景输入和业务边界唯一权威见 [M3-4A](M3-4A-COGNITION-INSPECTOR-TASK.md)，本文件只规定独立验收和阶段门槛。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`。
+
+## 中控准备复核（2026-10-09 14:50 Asia/Shanghai）
+
+B原交付2570dbf（3个test文件）保留；中控隔离复核 `D:\Narraverse-World-Map-m3-closeout-review @ codex/world-runtime-m3-closeout-review`，修正交接 `caf7b12a8a1770443af5e552c03d5514aa62b966`。实证共享loadOracle只做payload自洽、单消费者可绕过权威指纹；修后所有读取均先provenance分类，再核固定RAW/payload。依赖只精确目标缺失标missing，其他import错误保留；未来A函数/常量严格校验，外层G0 pristine也支持M34_ORACLE_FILE。无生产修改，原A/B和oracle未动。
+
+三项说明接受：静态/传递缺失非零且点名、零skip即可，不改生产触发面；schema/baseline分类可先于RAW但成功必须核两权威哈希；optional业务标识不变，使用required证据时缺坏也失败。原2570定向14/14；两个新增绕过反例先红，修后9门禁+7独立准备共16/16；locator增量1/1对应最终字节。A缺席依赖项仍0pass/1fail非零，是正确阻断、不计PASS。167秒旧11项回归不重复，作者结果仅报告；G1–G5、真实helper全面等价和未来错误导出分支待A，完整G0/完整M3均不裁PASS。分次证据及提交字节匹配见review树 `artifacts/world-runtime-m34b-preparation-repair-20261009/controller-review.json`，不能拼成一次全套绿灯。
 
 ## 派发更正与前置状态（2026-10-09 13:48 Asia/Shanghai）
 
-唯一B任务书名就是本文件 `M3-4B-M3-CLOSEOUT-ACCEPTANCE-TASK.md`；`M3-4B-REPLICA-ACCEPTANCE-TASK.md` 不存在，不建立别名或第三份合同。A任务树尚不存在、无交付SHA，不预设A已交付/验收；B当前只可按656基准准备独立断言、G0 required gate补丁和负例，待中控派发A精确SHA后再运行G1–G4及最终suite。G0实体存在/指纹相符只记前置盘点，不等于required负例测试或全部G0已通过。新投影依赖路径以A白名单 `runtime/knowledge/cognition-knowledge.mjs` 为准，不猜不存在的service检查器模块。此前M3-1A修正473f608/275b81a已验收且冻结，未变不重复跑。
+唯一B任务书名就是本文件 `M3-4B-M3-CLOSEOUT-ACCEPTANCE-TASK.md`；`M3-4B-REPLICA-ACCEPTANCE-TASK.md` 不存在，不建立别名或第三份合同。此前前置盘点时A任务树不存在、无交付SHA；现在A树已创建并停止于干净基准656，无交付SHA，不预设A已交付/验收；B当前只可按656基准准备独立断言、G0 required gate补丁和负例，待中控派发A精确SHA后再运行G1–G4及最终suite。G0实体存在/指纹相符只记前置盘点，不等于required负例测试或全部G0已通过。新投影依赖路径以A白名单 `runtime/knowledge/cognition-knowledge.mjs` 为准，不猜不存在的service检查器模块。此前M3-1A修正473f608/275b81a已验收且冻结，未变不重复跑。
 
 ## 给用户看
 
