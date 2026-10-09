@@ -1,17 +1,14 @@
 # M3-4A：认知服务、只读检查器与 M3 体验收口
 
-合同版本：`m3-closeout-contract-v1`。状态：**A已交付bebb641；中控隔离窄修ad4691f，交B独立验收，未裁完整PASS**；本文件是下一轮 A/B 唯一共同合同，B 只引用本合同并定义独立验收。合同本地发布 SHA：`fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b`；这是本轮两份合同的发布锚点，不用代码 SHA 代替。最多两份任务书，发布不等于开工，完整 M3 仍未验收。
+合同版本：m3-closeout-contract-v1。状态：中控已裁定M3-4A/B、M3-4及完整M3 PASS（限冻结合同12日情境）；冻结合同正文保持不变。A实现依赖ad4691ff0703e1374298e9633f8adee2d1963959。合同本地发布SHA：fb4e5007ecde38df0553aa8ccc4d2dbe716f4a2b。
 
-## 本轮交付复核（2026-10-09 16:55 Asia/Shanghai）
+## 中控最终验收记录（2026-10-10 Asia/Shanghai）
 
-原交付 `bebb6417e3231d06638b264cb9e8682ff7b38821` 位于 `D:\Narraverse-World-Map-m3-inspector`，原树干净保留，恰7改5新。中控隔离复核树 `D:\Narraverse-World-Map-m3-inspector-review @ codex/world-runtime-m3-inspector-review`，B应使用修正后精确依赖 `ad4691ff0703e1374298e9633f8adee2d1963959`。只修http-contract的检查器版本/预算常量准入与成功记录failure:null，并在本路service测试补独立模块镜像反例；不改工资、评分、配方、UI或其他核心规则。
+M3-4A与B及完整M3按共同合同裁定PASS，限冻结合同12日情境。81/81必需文件、822 TAP报告项分次覆盖：720历史复用、修复两测试58/58、G1 12/12、E7 11/11、G2/G3 15/15、G4 6/6；不代表本轮全量套件一次跑绿。
 
-反例先红；修后模块边界/合法backend共12/12，真实link故障与checkpoint初始化2/2，旧M2 loader2/2，分次零skip。作者30/38/21自报不当作本次独立复跑。配方争议已确认完整命令序列第2日真实Work拒绝、第3日ON用药；纯推进省略交易，不能证明§4不可复现。
+最终测试提交：667628166546a3f342873105b93a8684063504c1。生产相对A依赖ad4691f无差异；五个测试文件实测工作区字节保留，CRLF转LF后与提交文本一致，原始字节并非相同。机器索引：controller树artifacts/world-runtime-m34-final-controller-20261009/acceptance-index-final.json。
 
-本次A配方争议已独立消解：原bebb真实owner ON执行到tick1440，144 Sell7公金150→10、288 Work710拒绝、432 ON Work610<Use700、Buy4付款100恢复10→110，720/864/1152/1440四次真Work使窗口归零且旧失败事件未改；短OFF合法相同输入至432仍Work710拒绝。修正ad4691f离线续跑确认day11 Work730、day12四人存活。完整ON/OFF十四DTO服务长探针在1440后主动停止，已保存文件与遗留锁保留为测试证据，不计整条通过，后续G2交B。
-
-修正ad4691f真实Edge154 continuation烟测通过：144买药→优雅关闭重开→288 maintain用药，同goal/plan/旧review锚点，药-1/健康+100且Work样本0；切人/键盘/刷新/双页签全GET、磁盘不变、page/console errors0，自建服务/浏览器已关闭。不是完整G4。 B仍须独立G0–G5及最后一次相关suite。证据：复核树artifacts/world-runtime-m34a-loader-repair-20261009/controller-review.json；原真实service轨迹在原A树artifacts/world-runtime-m34a-controller-review-20261009/recipe。A当前可供B验收，完整M3未验收。未push/合并main。
-
+看板已同步并读回：control artifacts/world-runtime-m34-closeout-20261010/board-readback-result.json。未push、未合并main、未部署；后续有界自主取食/收入规划尚未启动。
 ## 历史：钉定读取与恢复派发（2026-10-09 14:40 Asia/Shanghai）
 
 文档仓库 `D:\Narraverse-World-Map-control`：创建发布为fb4e500，c9e6bf90d38567b93358a870b1826c69d34861d6只填写第3行发布SHA，业务正文与唯一7改/5新白名单未变。实施合同钉定读取命令为 `git -C D:\Narraverse-World-Map-control show c9e6bf90d38567b93358a870b1826c69d34861d6:tasks/M3-4A-COGNITION-INSPECTOR-TASK.md`；该文件Git blob `7ce12a9bbd9b17cb9eda633903316c2de449c623`，提交UTF-8/LF字节SHA256 `488ec2c8ed3b8d2558ab6c819b4aa6277e7bbc060750dda194e254656ac5b25d`。不要把创建提交头的“待填写”误当后续元数据不合法，也不要在文档仓库查运行时代码对象。
