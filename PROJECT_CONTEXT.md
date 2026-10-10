@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-10 07:58（Asia/Shanghai）。
+更新时间：2026-10-10 08:09（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -92,12 +92,12 @@
 - 验证按用户约定：只查改动及直接影响；相同提交已过且代码未变不重复；公共时间/重演/存档底座变更才扩大，较大阶段收口集中全量一次。最终生产代码验收 SHA `78303b4ff14af69a8faa1c70847e8b98153cbb69`：既有 simulation+export 与边界共328/328，0失败、0跳过，596911ms，源文件SHA256前后不变；补充目标截止/cooldown边界测试在该运行时 HEAD 上1/1、217534ms（exit 0），生产代码 SHA 未变；测试文件随后归档于 `3be94c6a85d17e0baf7c03583eb62fad9f52f0e9`。38对兼容 checkpoint/导出 SHA 一致；12份冻结合同副本统一换行符为LF后内容一致。真实浏览器用隔离 Edge 154.0.4258.62 验证能力入口、tick0空态、HTTP 24+120至144并刷新；tick144猎人私药为0、当时冻结判断无药并选NoAction，而日末公开信息已使当前判断变为有药；商人成功买药；人物按钮/键盘1和2/手动刷新、来源/候选、双页签读零写、断连保留revision144、关闭开关页面/API均404。证据与截图：`D:\Narraverse-World-Map-m1-integration\artifacts\world-runtime-m1-controller-review-20261008\browser\run-20261008-78303b4`。PageError为0；唯一console error是断连模拟主动拦截GET产生的预期`ERR_FAILED`，请求URL/status已记录；两个自建port0服务已关闭。中控裁定M1及A/B/C通过；runtime代码仍在任务分支，未合并main。
 
 - 本轮本地保全：原九源精确 commit 的 Git bundle 在全新隔离库恢复，9/9 SHA/tree、9条祖先覆盖及对象完整性通过；218个精选原始证据（2,977,117字节）与 E7/C8 必需实体已打包，隔离目录只按包内相对路径校验通过，缺失/损坏/版本反例均非零。精确来源与裁定见 [恢复证据索引](docs/evidence/PRESERVATION-20261009.json)，包在 control `artifacts/world-runtime-preservation-20261009-0910/`。本机同盘恢复包，不是异地备份；未 push/改 origin/main。新 A 提交1b117d8及用户未跟踪文件不在原九源包内。
-- M3-4及完整M3已收口；本轮发布 [M4A：实现/公共合同](tasks/M4A-BOUNDED-SURVIVAL-TASK.md) 与 [M4B：独立验收](tasks/M4B-SURVIVAL-ACCEPTANCE-TASK.md)，合同 m4-survival-contract-v1、唯一代码基准667628166546a3f342873105b93a8684063504c1。仅新profile actor-2的有界取食/收入闭环；A本地提交后由中控给B精确SHA，未开工、不自动push新代码/main/部署，D3/D4未开始。
+- M3-4及完整M3已收口；本轮发布 [M4A：实现/公共合同](tasks/M4A-BOUNDED-SURVIVAL-TASK.md) 与 [M4B：独立验收](tasks/M4B-SURVIVAL-ACCEPTANCE-TASK.md)，合同 m4-survival-contract-v1、文档发布 SHA `70e34d5fcb31cbf95a8f5c31ea2b1b2cce96912e`，唯一代码基准667628166546a3f342873105b93a8684063504c1。仅新profile actor-2的有界取食/收入闭环；A本地提交后由中控给B精确SHA，未开工、不自动push新代码/main/部署，D3/D4未开始。
 
 ## 中控与进度看板
 
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
-- M 主线：M卡仍In Progress；M3及M3-4/A/B四卡均Done/已验收。M3-2A、M3-2B、M3-2 三卡保持 Done / 已验收。此前发布新增 M3-3 阶段、A、B 三张卡，并更新 M/M3 两父卡正文；当时新卡发布时为 Todo / 待派发 / M，父卡字段未变。项目由53项增至56项，三标题各唯一。GraphQL 当前读回、expected/actual、ID 与字段证明见忽略目录 `artifacts/world-runtime-m33-publication-20261009/`；本目录 `before.json` 是上一轮 M3-2 收口快照副本，不是本轮写入前原件，不能据此声称本轮51项签名逐项前后相同。当前状态与本轮 mutation/readback 证据见 `artifacts/world-runtime-m33b-preparation-state-20261009/`。控制文档按本次用户授权随提交推送；远端读回证据见 artifacts/world-runtime-m34-push-20261010/。
+- M 主线仍 In Progress；M3/M3-4/A/B 保持 Done / 已验收。M4 阶段/A/B 三卡均 Todo / 待派发 / M，尚未开工；三标题各唯一、59→62项，M父卡字段不变，其余58旧卡内容/字段逐项保持。新卡ID依次为 `PVTI_lAHOEF9IDs4BmADfzg_xfis`、`PVTI_lAHOEF9IDs4BmADfzg_xfkM`、`PVTI_lAHOEF9IDs4BmADfzg_xfmc`。同步已读回，证据 `artifacts/world-runtime-m4-publication-20261010/board-readback-result.json`；文档发布按本次授权推送控制分支，A/B新源码仍不得自动push/main/部署。
 - 新卡定位：M3-1 `PVTI_lAHOEF9IDs4BmADfzg_cvKU`；M3-1A `PVTI_lAHOEF9IDs4BmADfzg_cwwE`；M3-1B `PVTI_lAHOEF9IDs4BmADfzg_cyMQ`；M3-2 `PVTI_lAHOEF9IDs4BmADfzg_cySk`；M3-2A `PVTI_lAHOEF9IDs4BmADfzg_cyZs`；M3-2B `PVTI_lAHOEF9IDs4BmADfzg_cyig`。按稳定ID更新，避免重复建卡。
 - M3-3 卡定位：阶段 `PVTI_lAHOEF9IDs4BmADfzg_hna4`；A `PVTI_lAHOEF9IDs4BmADfzg_hnbE`；B `PVTI_lAHOEF9IDs4BmADfzg_hnbc`。历史状态：阶段/A/B均 Done / 已验收，M3父卡当时仍 In Progress；此前准备轮的56项证据保存于 `artifacts/world-runtime-m33b-preparation-state-20261009/`，本次收口证据见后文。
 - 此前保全轮同步：Project #2 简介和 M/M3/M3-3阶段/A/B 五张卡正文已更新，区分本地恢复验证、未完成异地备份、A提交待核验与功能未验；56项读回，51个非目标签名及所有单选字段不变，未新建卡。首 mutation EOF 后先读回旧值，再用同一精确幂等请求重试成功；证据 `artifacts/world-runtime-preservation-20261009-0910/board/readback-result.json`。
