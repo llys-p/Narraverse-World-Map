@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-10 06:54（Asia/Shanghai）。
+更新时间：2026-10-10 07:58（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -87,12 +87,12 @@
 - 81/81必需文件覆盖、822 TAP报告项：75个历史文件720项按哈希复用，修复两测试58/58、G1 12/12、E7 11/11、G2/G3 15/15、G4 6/6；这是分次证据，不是本轮全量重跑。当前所需运行fail/skip/cancel/todo均0；原红、初轮G2/G3 9/6及超时保留但不计通过。
 - G4为Edge154真实浏览器验收，6个JSON和9张截图；零page error，唯一console/network error为主动断连预期。机器索引见controller树artifacts/world-runtime-m34-final-controller-20261009/acceptance-index-final.json。
 - 提交核验保留实测工作区字节；五个测试文件经CRLF转LF后与提交全文一致，不能称原始字节相同。2026-10-10 07:26 Asia/Shanghai 用户授权提交推送；源码任务分支已推送并读回精确SHA 667628166546a3f342873105b93a8684063504c1（[远端源码分支](https://github.com/llys-p/Narraverse-World-Map/tree/codex/world-runtime-m3-closeout-controller)），控制记录随本次提交推送至[控制分支](https://github.com/llys-p/Narraverse-World-Map/tree/codex/world-runtime-control)。原始TAP/JSON/截图仍仅本地保留；未合并main、未部署；原B树保留。看板已同步并读回：artifacts/world-runtime-m34-closeout-20261010/board-readback-result.json。
-- 当前阶段完成后停止；有界自主取食/收入规划未启动，等待新指令。额度与路由：简单机械和证据整理默认使用性价比模型，不要求每轮另写任务书；额度过半优先外发合适子任务，复杂逻辑再安排高成本模型。
+- M3 已收口；用户授权发布 M4 有界自主取食/收入任务，本轮只发布不实现。额度与路由：简单机械和证据整理默认使用性价比模型，不要求每轮另写任务书；额度过半优先外发合适子任务，复杂逻辑再安排高成本模型。
 - E 调整为可选 Provider 支线，正式准入仍为空；M 不依赖 Laya/LLM，旧 E1 不重开，未来按真实消费缺口另发窄合同。F/G 尚未开工；不接正式平台、模型/桥或真实旧存档，不启停旧实例，不自动合并 runtime main。
 - 验证按用户约定：只查改动及直接影响；相同提交已过且代码未变不重复；公共时间/重演/存档底座变更才扩大，较大阶段收口集中全量一次。最终生产代码验收 SHA `78303b4ff14af69a8faa1c70847e8b98153cbb69`：既有 simulation+export 与边界共328/328，0失败、0跳过，596911ms，源文件SHA256前后不变；补充目标截止/cooldown边界测试在该运行时 HEAD 上1/1、217534ms（exit 0），生产代码 SHA 未变；测试文件随后归档于 `3be94c6a85d17e0baf7c03583eb62fad9f52f0e9`。38对兼容 checkpoint/导出 SHA 一致；12份冻结合同副本统一换行符为LF后内容一致。真实浏览器用隔离 Edge 154.0.4258.62 验证能力入口、tick0空态、HTTP 24+120至144并刷新；tick144猎人私药为0、当时冻结判断无药并选NoAction，而日末公开信息已使当前判断变为有药；商人成功买药；人物按钮/键盘1和2/手动刷新、来源/候选、双页签读零写、断连保留revision144、关闭开关页面/API均404。证据与截图：`D:\Narraverse-World-Map-m1-integration\artifacts\world-runtime-m1-controller-review-20261008\browser\run-20261008-78303b4`。PageError为0；唯一console error是断连模拟主动拦截GET产生的预期`ERR_FAILED`，请求URL/status已记录；两个自建port0服务已关闭。中控裁定M1及A/B/C通过；runtime代码仍在任务分支，未合并main。
 
 - 本轮本地保全：原九源精确 commit 的 Git bundle 在全新隔离库恢复，9/9 SHA/tree、9条祖先覆盖及对象完整性通过；218个精选原始证据（2,977,117字节）与 E7/C8 必需实体已打包，隔离目录只按包内相对路径校验通过，缺失/损坏/版本反例均非零。精确来源与裁定见 [恢复证据索引](docs/evidence/PRESERVATION-20261009.json)，包在 control `artifacts/world-runtime-preservation-20261009-0910/`。本机同盘恢复包，不是异地备份；未 push/改 origin/main。新 A 提交1b117d8及用户未跟踪文件不在原九源包内。
-- M3-4及完整M3已按本轮冻结合同收口；有界自主取食/收入规划尚未启动，等待新指令。D3/D4未开始。
+- M3-4及完整M3已收口；本轮发布 [M4A：实现/公共合同](tasks/M4A-BOUNDED-SURVIVAL-TASK.md) 与 [M4B：独立验收](tasks/M4B-SURVIVAL-ACCEPTANCE-TASK.md)，合同 m4-survival-contract-v1、唯一代码基准667628166546a3f342873105b93a8684063504c1。仅新profile actor-2的有界取食/收入闭环；A本地提交后由中控给B精确SHA，未开工、不自动push新代码/main/部署，D3/D4未开始。
 
 ## 中控与进度看板
 

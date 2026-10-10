@@ -1,6 +1,6 @@
 # 项目指导书：世界运行时与人物心智
 
-更新时间：2026-10-09 00:09（Asia/Shanghai）
+更新时间：2026-10-10 07:58（Asia/Shanghai）
 
 ## 1. 项目方向与边界
 
@@ -59,19 +59,17 @@ M3-1 已交付的工作经验纯内核处理最近四次本人工作结果记录
 
 ## 5. 推进主线与停止点
 
-当前顺序：M3-2 经验真实闭环 → M3-3 明确 continuation 与 actor-local signals → M3-3 通过后，下一轮最多发布两份任务书，分别实现只读服务/检查器并做独立验收 → 完成 M3 体验收口 → 冻结有界自主取食/收入闭环 → D3/D4 遭遇与场景连续 → F/G 按真实需求规划。E 是可选窄对照，不阻塞主线；旧 E1 不自动重开。当前是否已派发、开工、验收，以 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) 为准。
+已验收主线：A/B/C/D2 → M0/M1/M2 → 完整 M3（工作经验、认知降频、服务/检查器与真实保存恢复）。当前发布 **M4：有界自主取食与收入闭环**；其后才评估 D3/D4 遭遇与场景连续、F/G 的真实消费需求。E 是可选窄对照，不阻塞主线，旧 E1 不自动重开。
 
-M3-2 沿用冻结合同：让真实工作成功或拒绝形成经验模式，影响后续候选选择，并经权威执行、CLI、保存与完整重演闭环；不接认知模块、服务/UI、LLM/平台或千日性能。M3 收口展示的最小体验串起真实拒绝改变后续工作选择、后续成功修正经验、低频期间仍执行承诺及保存恢复一致；这是收口场景，不新开任务或扩张 M3-2 合同。
+本轮只有两份任务书：[M4A：实现与唯一公共合同](tasks/M4A-BOUNDED-SURVIVAL-TASK.md)、[M4B：独立验收](tasks/M4B-SURVIVAL-ACCEPTANCE-TASK.md)。代码基准 667628166546a3f342873105b93a8684063504c1；合同 m4-survival-contract-v1。已发布、待派发不等于已开工，准确发布提交和实际回执见 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)。本轮中控停止于文档发布，不代执行者启动实现，也不自动推进 D3/D4。
 
-下一轮执行合同入口为 [M3-4A：service6与只读检查器](tasks/M3-4A-COGNITION-INSPECTOR-TASK.md) 和 [M3-4B：独立验收与完整M3收口](tasks/M3-4B-M3-CLOSEOUT-ACCEPTANCE-TASK.md)，只有两份任务书；当前派发/开工状态仍以 PROJECT_CONTEXT 为准。
+闭环仅扩展新 survival-village/m-survival-v1 中的 actor-2：本人私粮不足 → 本人可知的有来源报价/合法工作机会 → 买粮或工作后买粮 → 私有库存真实入账 → 原日结真实消费。Work 成功正常关闭职责，后续购粮步骤仍保留承诺；不扫描公共现金来作心智选择。无收入、付不起工资、真实缺粮时等待/失败/死亡都允许，不以 NoAction 越少或永久存活为目标。
 
-M3-3 才冻结 actor-local signals 与 continuation 的接入合同；不得让它跳过既有计划、日结或世界结算。体验检查器需要展示事实、本人可知、主观判断与命令回执的边界。M3-3 通过后，服务/检查器实现与独立验收各限一份任务书；独立验收可在明确授权下补历史 `tests/simulation/experience-runner-acceptance.test.mjs` 的 formal-gate 缺依赖、缺失或损坏 oracle 语义及定向反例。该文件超出当前 M3-3B 两文件白名单，须由下一轮合同明列授权；不得改 A、生产代码或冻结 expected，本轮只记录边界，不改测试。完整体验收口须串起同一人物的真实 Work 拒绝、后续选择改变、合法条件恢复及真实 Work 成功；随后用同人真实工作结果让旧失败退出最近四次窗口；不能用用药成功冒充工作学习。另核对低频期间承诺继续执行及保存/恢复一致，完整 suite 留到 M3 最终收口集中运行一次。
+保持旧 profile/旧存档隔离；不加 Hunt、救济、关系、情绪、模型、通用职业/机会系统或通用多目标。单次买1粮并日结吃1粮不代表能积累储备；本轮是有界能力，不是百日平衡承诺。原始 M3 证据异地保全是独立收尾项，不为发布本轮重跑已验收模拟或安装新工具。
 
-完整 M3 收口后先冻结一个有界自主取食/收入闭环；不得静默扩写正在执行的 M3-3，关系、情绪、通用机会系统和新调度平台暂不开展。
+M3-2、M3-3、[M3-4A](tasks/M3-4A-COGNITION-INSPECTOR-TASK.md)/[M3-4B](tasks/M3-4B-M3-CLOSEOUT-ACCEPTANCE-TASK.md)是已收口历史合同，不再称下一轮，也不静默改正文。历史测试仅在文件及直接依赖均未变化时复用；新增规则的公共分派、重演与服务格式按直接影响扩大验证，不再泛跑旧 M3 全量。
 
-D3/D4 只按真实遭遇需求冻结最小地图上下文、场景结果和 World Runtime 写回。不要因参考库而提前搭建通用商队、国家经济、全自动任务网络或完整场景框架。
-
-F/G 按消费需求与独立合同推进。F 可以按需评估跨区队伍、物流、势力、离线粗模拟和谣言；G 才讨论正式平台身份/版本映射、显式迁移与回滚。任何一阶段都不自动改写正式平台、真实旧存档或旧实例。
+D3/D4 按真实遭遇需求另冻最小地图上下文、场景结果和 World Runtime 写回；不能因参考库提前搭建通用商队、国家经济或全自动任务网络。F/G 只按消费需求推进；正式平台身份映射、真实旧存档迁移、部署与旧实例仍需单独授权。
 
 ## 6. 已知审查关注点与触发条件
 
@@ -95,7 +93,7 @@ F/G 按消费需求与独立合同推进。F 可以按需评估跨区队伍、�
 | **PAT-001/003 / The Sims、RimWorld**；[模式决策][ref-patterns] | Need 是动机输入；Behavior Provider/Affordance 只暴露有限候选 | 不让 Need 直接变命令，不扫描全行为宇宙；不扩大 M3 已冻结候选 | PAT-001 原则沿用；PAT-003 为候选，待真实机会系统消费者出现后评估 |
 | **PAT-004 / Cataclysm: DDA**；[模式决策][ref-patterns] | Goal commitment 与防抖，沿用 M2 已有窄语义 | 不移植完整 NPC AI 或扩张 M3-2 合同 | M2 原则沿用；参考源码有固定提交证据 |
 | **PAT-006/002 / Shadows of Doubt、RimWorld、Oxygen Not Included**；[模式决策][ref-patterns] | 日常 Routine 低成本推进，相关事件唤醒；PAT-002 双通道是紧急/常规参考线索 | 不宣称博客等于最终发行源码；PAT-002 尚未本轮一手复核，不新增紧急通道任务 | 两项均为候选；M3-3 优先研究既有计划的低成本维护，不据此新增日程系统 |
-| **PAT-007 / Veloren rtsim、S.T.A.L.K.E.R. A-Life**；[模式决策][ref-patterns] | 认知 LOD 按重要性×相关性；远端可使用长时 Action 与低频更新 | 重要性×相关性是 Narraverse 设计，不伪称 Veloren 上游公式；STALKER 社区 Mod 资料不作原版一手规格 | 认知分级原则已定，运行时接入待 M3-3；通用远端长时 Action 与物理精度切换仍是后续候选 |
+| **PAT-007 / Veloren rtsim、S.T.A.L.K.E.R. A-Life**；[模式决策][ref-patterns] | 认知 LOD 按重要性×相关性；远端可使用长时 Action 与低频更新 | 重要性×相关性是 Narraverse 设计，不伪称 Veloren 上游公式；STALKER 社区 Mod 资料不作原版一手规格 | 认知分级已由 M3 接入并验收；通用远端长时 Action 与物理精度切换仍是后续候选 |
 | **PAT-011/018 / Bannerlord**；[模块索引][ref-modules]、[世界地图索引][ref-world-index] | Campaign Map 编排地图到遭遇；结构化 Context 进入场景、Outcome 由 World Runtime 校验提交 | 官方 API 只证明移动实体与决策节奏；Context/Outcome 单写者边界是本项目设计 | PAT-018 已采纳设计，D3/D4 实现待合同；PAT-011 地图编排候选，不因此加通用商队 |
 | **PAT-012/013 / Bannerlord、Endless Sky**；[模式决策][ref-patterns]、[世界地图索引][ref-world-index] | 重要 Party 可作为持久地图实体；重要物流批次可实体化 | 不把每单位商品实体化，不提前做完整经济模拟 | F 后续真实需求；当前不实施物流系统 |
 | **PAT-015 / Battle Brothers、Endless Sky**；[模式决策][ref-patterns]、[世界地图索引][ref-world-index] | 真实世界问题派生任务，形成玩家处理到世界后果的因果链 | Battle Brothers 条目尚未独立复核；不做无因果任务或自动生成网络 | 后续任务消费者；Endless Sky 条件/触发文档可核对 |
