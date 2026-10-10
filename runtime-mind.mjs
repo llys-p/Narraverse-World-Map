@@ -4,7 +4,7 @@ const occupationLabel={chief:'村长',hunter:'猎人',merchant:'商人',player:'
 const locationLabel={village:'村庄',forest:'森林'};
 const beliefLabel={available:'有药',unavailable:'无药',unknown:'未知'};
 const stanceLabel={'uncertain-supply':'供给不明','expect-supply':'预期有药','expect-no-supply':'预期无药'};
-const choiceLabel={'UseMedicine':'用药','BuyMedicine':'买药','NoAction':'无动作','WorkForPay':'工作','Rest':'休息'};
+const choiceLabel={'UseMedicine':'用药','BuyMedicine':'买药','NoAction':'无动作','WorkForPay':'工作','Rest':'休息','BuyFood':'买粮'};
 const outcomeLabel={succeeded:'成功',rejected:'拒绝','no-action':'无动作'};
 const motivationGateLabel={'URGENT_FATIGUE':'急迫疲劳 · 只允许休息','NEW_MAJOR_DUTY':'新的重大职责 · 打开完整重评','CONTINUE_COMMITTED':'继续已承诺计划','RESUME_COMMITTED':'恢复挂起的治疗计划','LOCAL_REPLAN_BLOCKED':'受阻 · 就地局部重评','SELECT_NEW_PLAN':'选择新计划'};
 const motivationStanceLabel={'fatigue-concerned':'以疲劳为虑','health-concerned':'以健康为虑','balanced':'平稳'};
@@ -14,6 +14,12 @@ const blockCodeLabel={'SOFT_PRECONDITION_FAILED':'软前提未满足','COMMITMEN
 const dutyStatusLabel={pending:'待履约',fulfilled:'已履约'};
 const cfCaseLabel={baseline:'基准（原配置）','duty-minus-200':'假设：职责权重 −200','risk-plus-200':'假设：风险厌恶 +200'};
 const MOTIVATION_BLOCKS=['m2-fact-food','m2-self-extra','m2-profile-row','m2-goal-row','m2-duty-plan','m2-decision-fields','m2-outcome-fatigue','m2-outcome-owner','m2-counterfactual'];
+// M4A (survival-inspector-v1) only: the food/income loop. Everything here is rendered verbatim
+// from the served DTO; the page never re-evaluates a plan, a quote or a decision.
+const SURVIVAL_BLOCKS=['surv-fact-food-price','surv-self-food','survival-food'];
+const survivalReasonLabel={NO_FOOD_NEED:'暂无取食需求',FOOD_QUOTE_MISSING:'本人没有可知粮价',FOOD_QUOTE_EXPIRED:'可知粮价已过期',
+  FOOD_UNAVAILABLE:'公开无粮',WALLET_INSUFFICIENT:'钱包不足',CAPACITY_UNAVAILABLE:'私粮已满',
+  DUTY_UNAVAILABLE:'没有合法工作机会',BUY_FOOD:'买粮',FOOD_INCOME:'为买粮而工作'};
 // M3-4A (cognition-inspector-v1) only: the review-cadence panel and the work-experience window.
 // Everything here is rendered verbatim from the served DTO; the page never re-evaluates the
 // kernel, never borrows candidates for a maintain decision and never invents a counterfactual.
@@ -47,6 +53,29 @@ function setMotivationMode(on){
   byId('m1-stance-row').hidden=on;byId('m1-intent-row').hidden=on;
 }
 function setCognitionMode(on){for(const id of COGNITION_BLOCKS)byId(id).hidden=!on;}
+function setSurvivalMode(on){for(const id of SURVIVAL_BLOCKS)byId(id).hidden=!on;}
+// The survival inspector shows the actor's own food quote and work offer with their real source
+// and expiry, plus the live step and an honest reason for waiting. Nothing is inferred here.
+function renderSurvival(actor){
+  const k=actor.knowledge,q=k.foodQuote,o=k.workOffer,plan=k.planState?.activePlan??null;
+  byId('surv-food-quote').textContent=q===null?'无（本人没有可知粮价来源）':
+    `粮价 ${q.price} 金币 · ${q.available?'公开有粮':'公开无粮'} · 观测 tick ${q.observedTick} · 有效期至 tick ${q.expiresTick} · 来源事件 ${q.sourceEventSeq}`;
+  byId('surv-work-offer').textContent=o===null?'无（没有本人真实收到且待履约的机会）':
+    `请求 ${o.requestId} · 工资 ${o.wage} · 窗口 tick ${o.observedTick}–${o.expiresTick} · 来源事件 ${o.sourceEventSeq}`;
+  byId('surv-current-step').textContent=plan===null?'无进行中的取食计划':
+    `计划 #${plan.planId} ${plan.kind} · ${plan.steps.join(' → ')} · 当前第 ${plan.stepIndex+1}/${plan.steps.length} 步（${plan.status}）· 期限第 ${plan.deadlineDay} 天`;
+  const d=actor.lastDecision,out=actor.lastOutcome;
+  let reason;
+  if(out&&out.status==='rejected')reason=`权威拒绝：${out.code??'—'}${out.failureOwner?`（失败归属 计划 #${out.failureOwner.planId}${out.failureOwner.goalId===null?'（临时，无长期目标）':''}）`:''}`;
+  else if(d&&d.choice==='NoAction'&&d.candidates?.length){
+    const food=d.candidates.find(c=>c.action==='BuyFood');
+    reason=`等待：${
+      food&&!food.eligible?`${survivalReasonLabel[food.reasonCode]??food.reasonCode}`:`门 ${d.gateReason}`}`;
+  }
+  else if(d)reason=`已执行 ${d.choice}（${d.gateReason}）`;
+  else reason='尚无决定';
+  byId('surv-wait-reason').textContent=reason;
+}
 // Display-side parse only: the frozen kernel schedules cognition reviews on whole days and
 // cognition-state validates exactly this id shape against lastReviewTick. This annotates the
 // reported anchor; it recomputes no decision, signal or counterfactual.
@@ -58,7 +87,7 @@ function frozenDecisionKnowledge(decision){
   try{
     const frozen=JSON.parse(decision.knowledgeFingerprint);
     if(canonicalFingerprint(frozen)!==decision.knowledgeFingerprint)return null;
-    if(frozen.knowledgeVersion!=='cognition-knowledge-v1'||frozen.phase!=='decision')return null;
+    if(!['cognition-knowledge-v1','survival-knowledge-v1'].includes(frozen.knowledgeVersion)||frozen.phase!=='decision')return null;
     if(frozen.actorId!==decision.actorId||frozen.tick!==decision.tick||frozen.revision!==decision.tick-1)return null;
     return frozen;
   }catch{return null;}
@@ -124,6 +153,7 @@ function renderActor(actor,mode='mind'){
   byId('knowledge-alive').textContent=s.alive?'存活':'已故 · 封存';
   setText('self-name',s.name);setText('self-location',locationLabel[s.location]??s.location);
   setText('self-health',s.health);setText('self-wallet',s.wallet);setText('self-herbs',s.inventory?.herbs);
+  setText('self-food',s.inventory?.food);
   byId('self-quote').textContent=q&&Number.isSafeInteger(q.price)?`${q.price} 金币（tick ${q.observedTick}）`:'—';
   byId('belief-value').textContent=beliefLabel[b.value]??'未知';
   byId('belief-confidence').textContent=b.confidencePermille!=null?`${b.confidencePermille}‰`:'—';
@@ -202,7 +232,8 @@ function renderActor(actor,mode='mind'){
   if(o){
     byId('outcome-status').textContent=outcomeLabel[o.status]??o.status;
     byId('outcome-code').textContent=o.code??'—';
-    byId('outcome-delta').textContent=o.delta?`钱包 ${o.delta.wallet} · 药 ${o.delta.herbs} · 健康 ${o.delta.health}`:'—';
+    byId('outcome-delta').textContent=o.delta?
+      `钱包 ${o.delta.wallet}${o.delta.food===undefined?'':` · 私粮 ${o.delta.food}`} · 药 ${o.delta.herbs} · 健康 ${o.delta.health}`:'—';
     setText('outcome-price',o.price);
     if(motivation){
       setText('outcome-fatigue',o.delta?.fatigue);
@@ -223,21 +254,26 @@ function renderActor(actor,mode='mind'){
 function renderReading(inspector){
   const motivation=inspector.mindVersion==='motivation-inspector-v1';
   const cognition=inspector.mindVersion==='cognition-inspector-v1';
-  setMotivationMode(motivation||cognition);
-  setCognitionMode(cognition);
+  const survival=inspector.mindVersion==='survival-inspector-v1';
+  setMotivationMode(motivation||cognition||survival);
+  setCognitionMode(cognition||survival);
+  setSurvivalMode(survival);
   byId('mind-sim').textContent=inspector.simulationId;
   byId('mind-time').textContent=`tick ${inspector.tick} · revision ${inspector.revision}`;
-  if(motivation||cognition)setText('fact-food',inspector.worldFacts?.publicFood);
+  if(motivation||cognition||survival)setText('fact-food',inspector.worldFacts?.publicFood);
+  if(survival)setText('fact-food-price',inspector.worldFacts?.postedFoodPrice);
   setText('fact-herbs',inspector.worldFacts?.publicHerbs);
   setText('fact-price',inspector.worldFacts?.postedHerbPrice);
-  renderActor(inspector.actors?.find(a=>a.knowledge?.actorId===selected),motivation?'motivation':cognition?'cognition':'mind');
+  const actor=inspector.actors?.find(a=>a.knowledge?.actorId===selected);
+  if(survival&&actor)renderSurvival(actor);
+  renderActor(actor,motivation?'motivation':cognition||survival?'cognition':'mind');
 }
 async function readInspector(){
   const response=await fetch('/api/runtime/minds',{cache:'no-store',signal:AbortSignal.timeout(6000)});
   if(response.status===404)throw Object.assign(new Error('mind unavailable'),{code:'MIND_UNAVAILABLE'});
   if(!response.ok)throw new Error('读数读取失败');
   const dto=await response.json();
-  if(dto.apiVersion!==1 || !['mind-inspector-v1','motivation-inspector-v1','cognition-inspector-v1'].includes(dto.mindVersion))throw new Error('未知检查器接口');
+  if(dto.apiVersion!==1 || !['mind-inspector-v1','motivation-inspector-v1','cognition-inspector-v1','survival-inspector-v1'].includes(dto.mindVersion))throw new Error('未知检查器接口');
   if(!Number.isSafeInteger(dto.revision) || !Number.isSafeInteger(dto.tick) || !Array.isArray(dto.actors))throw new Error('检查器读数无效');
   return dto;
 }

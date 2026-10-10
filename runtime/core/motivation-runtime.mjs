@@ -20,13 +20,22 @@ import {validateExperienceMotivationDecision,validateExperienceMotivationModel,
   validateCognitionMotivationDecision,validateCognitionMotivationModel} from './motivation-state.mjs';
 import {planExperienceMotivationDecision,planCognitionMotivationDecision,continueCognitionPlan} from './motivation-planner.mjs';
 import {deriveWorkExperience,observeWorkOutcome} from './work-experience.mjs';
-import {projectOwnWorkOutcome,projectOwnCognitionWorkOutcome} from './work-experience-adapter.mjs';
+import {projectOwnWorkOutcome,projectOwnCognitionWorkOutcome,projectOwnSurvivalWorkOutcome} from './work-experience-adapter.mjs';
 import {experienceSystems} from '../fixtures/experience-village.mjs';
 import {cognitionSystems} from '../fixtures/cognition-village.mjs';
 import {COGNITION_RULES,COGNITION_MOTIVATION_STATE_VERSION,COGNITION_KNOWLEDGE_VERSION,
-  MAX_COGNITION_KNOWLEDGE_BYTES,validateCognitionConfig,createCognitionModel,validateCognitionModel} from './cognition-state.mjs';
+  MAX_COGNITION_KNOWLEDGE_BYTES,validateCognitionConfig,createCognitionModel,validateCognitionModel,
+  SURVIVAL_COGNITION_STATE_VERSION,validateSurvivalCognitionModel} from './cognition-state.mjs';
 import {evaluateCognitiveReview} from './cognitive-review.mjs';
 import {deriveActorCognitionSignals} from './cognition-signals.mjs';
+import {SURVIVAL_RULES,SURVIVAL_MOTIVATION_STATE_VERSION,SURVIVAL_KNOWLEDGE_VERSION,
+  SURVIVAL_DECISION_PREFIX,SURVIVAL_ACTOR_ID,SURVIVAL_FOOD_PLAN_KIND,SURVIVAL_FOOD_QUOTE_EVENT,
+  SURVIVAL_WORK_OFFER_EVENT,MAX_SURVIVAL_KNOWLEDGE_BYTES,MAX_SURVIVAL_EVIDENCE_REFS,
+  survivalFoodQuoteFrom,survivalWorkOfferFrom,
+  validateSurvivalDecision,validateSurvivalOutcome,validateSurvivalMotivationModel} from './survival-state.mjs';
+import {planSurvivalDecision,continueSurvivalPlan,setSurvivalWagePayable} from './survival-planner.mjs';
+import {deriveActorSurvivalSignals} from './survival-signals.mjs';
+import {survivalSystems} from '../fixtures/survival-village.mjs';
 
 const SOCIETY_KEYS=['resources','resourceModel','ecologyModel','marketModel','actorModel','societyModel','playerModel'];
 const societyProject=w=>Object.fromEntries(SOCIETY_KEYS.map(k=>[k,w[k]]));
@@ -41,6 +50,10 @@ const EXPERIENCE_PROFILE=Object.freeze({experience:true,cognition:false,rules:EX
 // Cognition reuses the M3-2 experience knowledge and model in place; only the review cadence
 // model and the decision/motivation state versions are new.
 const COGNITION_PROFILE=Object.freeze({experience:true,cognition:true,rules:COGNITION_RULES,knowledgeVersion:COGNITION_KNOWLEDGE_VERSION,knowledgeBytes:MAX_COGNITION_KNOWLEDGE_BYTES,label:'Cognition'});
+// M4A: the survival profile keeps the cognition models, knowledge shape and review kernel;
+// only the rules/versions, the decision prefix and actor-2's new decision anchors differ.
+const SURVIVAL_PROFILE=Object.freeze({experience:true,cognition:true,survival:true,rules:SURVIVAL_RULES,
+  knowledgeVersion:SURVIVAL_KNOWLEDGE_VERSION,knowledgeBytes:MAX_SURVIVAL_KNOWLEDGE_BYTES,label:'Survival'});
 const lowerWorld=(world,profile)=>profile.cognition?withoutCognitionExperienceAndMotivation(world):
   profile.experience?withoutExperienceAndMotivation(world):withoutMotivation(world);
 function retainModels(base,world,profile){
@@ -53,9 +66,18 @@ const reserved=id=>['society-day-','mind-day-','motivation-day-'].some(p=>id.sta
 const experienceReserved=id=>['society-day-','mind-day-','mind-settle-','motivation-day-','experience-day-'].some(p=>id.startsWith(p));
 const cognitionReserved=id=>['society-day-','mind-day-','mind-settle-','motivation-day-','experience-day-',
   'cognition-day-','cognition-eval-'].some(p=>id.startsWith(p));
-const reservedFor=(id,profile)=>profile.cognition?cognitionReserved(id):profile.experience?experienceReserved(id):reserved(id);
+// Format7 keeps every format6 prefix and adds the survival namespace; formats 1–6 never expand.
+const survivalReserved=id=>['society-day-','mind-day-','mind-settle-','motivation-day-','experience-day-',
+  'cognition-day-','cognition-eval-','survival-day-'].some(p=>id.startsWith(p));
+const reservedFor=(id,profile)=>profile.survival?survivalReserved(id):profile.cognition?cognitionReserved(id):
+  profile.experience?experienceReserved(id):reserved(id);
 
-function validateInputs(memory,mind,motivation){
+// The frozen M2 economics stay exactly as they are for every old profile. M4A §7 requires
+// workFood 0 so that work never produces food; that single value is relaxed for the survival
+// profile only, and every other economic parameter stays frozen.
+const FROZEN_ECONOMICS={wage:20,workFood:8,workFatigue:150,deadlineDays:20,maxFailures:3,cooldownDays:2};
+const SURVIVAL_ECONOMICS={...FROZEN_ECONOMICS,workFood:0};
+function validateInputs(memory,mind,motivation,profile){
   record(mind);record(motivation);denseArray(mind.stimuli,64);denseArray(motivation.requests,64);
   const all=[...mind.stimuli,...motivation.requests];
   requireCondition(all.length<=64,'Combined motivation input budget exceeded','LIMIT_EXCEEDED');
@@ -63,7 +85,7 @@ function validateInputs(memory,mind,motivation){
     requireCondition(count<=8,'Combined motivation per-tick input budget exceeded','LIMIT_EXCEEDED');counts.set(input.tick,count);}
   validateMindConfig(mind);validateMotivationConfig(motivation);
   const e=memory.society.economics;
-  for(const [key,value] of Object.entries({wage:20,workFood:8,workFatigue:150,deadlineDays:20,maxFailures:3,cooldownDays:2}))
+  for(const [key,value] of Object.entries(profile?.survival?SURVIVAL_ECONOMICS:FROZEN_ECONOMICS))
     requireCondition(e[key]===value,'Motivation economics are frozen','UNSUPPORTED_VERSION');
 }
 
@@ -73,7 +95,7 @@ function createWorldFor(memory,mind,motivation,experience,cognition,simulationId
     canonicalJson({memory,mind,motivation,experience,cognition});}
   else if(profile.experience){record(experience);identifier(simulationId);canonicalJson({memory,mind,motivation,experience});}
   else canonicalJson({memory,mind,motivation});
-  validateInputs(memory,mind,motivation);
+  validateInputs(memory,mind,motivation,profile);
   if(profile.experience)validateExperienceConfig(experience);
   if(profile.cognition){validateExperienceConfig(experience);validateCognitionConfig(cognition);}
   const world={...createMindWorld(memory,mind),motivationModel:createMotivationModel(motivation)};
@@ -82,9 +104,10 @@ function createWorldFor(memory,mind,motivation,experience,cognition,simulationId
     world.experienceModel=createExperienceModel(simulationId,experience);
   }
   if(profile.cognition){
-    world.motivationModel.version=COGNITION_MOTIVATION_STATE_VERSION;
+    world.motivationModel.version=profile.survival?SURVIVAL_MOTIVATION_STATE_VERSION:COGNITION_MOTIVATION_STATE_VERSION;
     world.experienceModel=createExperienceModel(simulationId,experience);
     world.cognitionModel=createCognitionModel(simulationId,cognition);
+    if(profile.survival)world.cognitionModel.version=SURVIVAL_COGNITION_STATE_VERSION;
   }
   return world;
 }
@@ -98,6 +121,12 @@ function createCognitionWorld(memory,mind,motivation,experience,cognition,simula
   inspectDescriptorTree({memory,mind,motivation,experience,cognition,simulationId});
   return createWorldFor(memory,mind,motivation,experience,cognition,simulationId,COGNITION_PROFILE);
 }
+// M4A: the survival world is the cognition world with its own rules/versions. No new model, no
+// new configuration block and no restructure of the frozen four M3-1 kernels.
+export function createSurvivalWorld(memory,mind,motivation,experience,cognition,simulationId){
+  inspectDescriptorTree({memory,mind,motivation,experience,cognition,simulationId});
+  return createWorldFor(memory,mind,motivation,experience,cognition,simulationId,SURVIVAL_PROFILE);
+}
 
 function validateWorldFor(world,sealed,profile){
   record(world);requireCondition(typeof sealed==='boolean',profile.experience?'Invalid experience world seal mode':'Invalid motivation seal mode');
@@ -108,8 +137,11 @@ function validateWorldFor(world,sealed,profile){
   requireCondition(Object.hasOwn(world,'cognitionModel')===profile.cognition,
     profile.cognition?'Cognition rules require the cognition model':'Cognition model does not belong to these rules');
   if(profile.cognition){
-    validateExperienceModel(world.experienceModel);validateCognitionModel(world.cognitionModel);
-    validateCognitionMotivationModel(world.motivationModel);
+    validateExperienceModel(world.experienceModel);
+    if(profile.survival)validateSurvivalCognitionModel(world.cognitionModel);
+    else validateCognitionModel(world.cognitionModel);
+    if(profile.survival)validateSurvivalMotivationModel(world.motivationModel);
+    else validateCognitionMotivationModel(world.motivationModel);
     validateMindWorld(lowerWorld(world,profile),sealed);
     if(sealed)requireCondition(world.mindModel.cursor===world.motivationModel.cursor&&
       world.motivationModel.cursor===world.experienceModel.cursor&&
@@ -128,19 +160,38 @@ function validateWorldFor(world,sealed,profile){
     validateMindWorld(lowerWorld(world,profile),sealed);
     if(sealed)requireCondition(world.mindModel.cursor===world.motivationModel.cursor&&world.motivationModel.cursor===world.experienceModel.cursor,'Mind, motivation, and experience cursors must match when sealed');
   }else{validateMindWorld(lowerWorld(world,profile),sealed);validateMotivationModel(world.motivationModel);}
-  const m=world.motivationModel;validateInputs(world.memoryModel.config,world.mindModel.config,m.config);
+  const m=world.motivationModel;validateInputs(world.memoryModel.config,world.mindModel.config,m.config,profile);
   for(const mind of world.mindModel.actors)requireCondition(mind.lastDecision===null&&mind.lastOutcome===null,'M2 mind stores observations only');
   for(const entry of m.actors){const state=agent(world,entry.actorId),actor=body(world,entry.actorId);
     requireCondition(actor&&state,'Missing motivation actor/estate');
     requireCondition(state.currentGoal===null||state.currentGoal.kind==='recover-health','Unexpected motivation canonical goal');
     if(sealed)requireCondition((entry.lastDecision===null)===(entry.lastOutcome===null),'Committed motivation decision has no outcome');
-    requireCondition(!(entry.activePlan?.kind==='recover-health'&&entry.suspendedPlan!==null),'Motivation actor carries two health plans');
+    // A suspension slot may hold the health plan or, under the survival rules, a food plan; it
+    // never holds both, and it never holds two health plans.
+    requireCondition(!(entry.activePlan?.kind==='recover-health'&&entry.suspendedPlan!==null&&
+      entry.suspendedPlan.kind==='recover-health'),'Motivation actor carries two health plans');
+    if(profile.survival){
+      const foodSlots=[entry.activePlan,entry.suspendedPlan].filter(p=>p!==null&&p.kind===SURVIVAL_FOOD_PLAN_KIND);
+      requireCondition(foodSlots.length<=1,'Motivation actor carries two food plans');
+      for(const plan of foodSlots)
+        requireCondition(actor.alive||!sealed,'Dead survival actor retains a food plan');
+      for(const plan of [entry.activePlan,entry.suspendedPlan])if(plan!==null&&plan.kind===SURVIVAL_FOOD_PLAN_KIND){
+        requireCondition(actor.alive,'Dead survival actor retains a plan');
+        // The two-step shape must still point at the request that opened it.
+        if(plan.steps.length===2)requireCondition(entry.lastDuty!==null&&entry.lastDuty.requestId===plan.requestId&&
+          m.config.requests.some(r=>r.requestId===plan.requestId),'Survival food plan cites an unknown request');
+      }
+    }
     if(entry.lastReviewedDutyId!==null){const index=m.config.requests.findIndex(r=>r.requestId===entry.lastReviewedDutyId),r=m.config.requests[index];
       requireCondition(index>=0&&index<m.requestCursor&&r.listenerId===entry.actorId&&r.urgencyPermille>=900,'Reviewed duty is not a consumed major request for this actor');}
     for(const plan of [entry.activePlan,entry.suspendedPlan])if(plan!==null){
       requireCondition(actor.alive,'Dead motivation actor retains a plan');
       if(plan.kind==='recover-health')requireCondition(state.currentGoal!==null&&plan.goalId===state.currentGoal.goalId&&plan.deadlineDay===state.currentGoal.deadlineDay,'Health plan references another goal');
       if(plan.kind==='aid-village')requireCondition(entry.lastDuty!==null&&entry.lastDuty.requestId===plan.requestId&&entry.lastDuty.status==='pending','Duty plan/request mismatch');
+      // A fulfilled or expired duty must not cancel an already-earned purchase step: the two
+      // step plan owns its requestId as a source, not as a live obligation.
+      if(plan.kind===SURVIVAL_FOOD_PLAN_KIND&&plan.steps.length===2)
+        requireCondition(plan.requestId!==null,'Survival two-step plan lost its request source');
     }
     if(entry.lastDuty!==null){const d=entry.lastDuty,request=m.config.requests.find(r=>r.requestId===d.requestId);
       requireCondition(request&&m.config.requests.indexOf(request)<m.requestCursor&&request.listenerId===entry.actorId&&request.tick===d.observedTick&&request.expiresTick===d.expiresTick&&request.urgencyPermille===d.urgencyPermille,'Duty configuration/prefix mismatch');
@@ -160,6 +211,40 @@ export function validateCognitionWorld(world,sealed=true){
   inspectDescriptorTree(world);
   return validateWorldFor(world,sealed,COGNITION_PROFILE);
 }
+export function validateSurvivalWorld(world,sealed=true){
+  inspectDescriptorTree(world);
+  return validateWorldFor(world,sealed,SURVIVAL_PROFILE);
+}
+
+// The decision-time Knowledge frozen inside a committed decision. It is the authoritative
+// record of what this actor could see when it decided; a missing or malformed text fails closed.
+function frozenDecisionKnowledge(decision){
+  if(decision===null||typeof decision.knowledgeFingerprint!=='string')return null;
+  let frozen;
+  try{frozen=JSON.parse(decision.knowledgeFingerprint);}
+  catch{return null;}
+  if(frozen===null||typeof frozen!=='object'||Array.isArray(frozen))return null;
+  if(canonicalJson(frozen)!==decision.knowledgeFingerprint)return null;
+  if(frozen.actorId!==decision.actorId||frozen.tick!==decision.tick)return null;
+  return frozen;
+}
+
+// The Knowledge version and shape follow the actor, not just the profile: under the survival
+// rules actor-2 carries the new survival Knowledge (frozen fields plus its two actor-local
+// views) while actor-3 keeps the original cognition Knowledge shape verbatim.
+function knowledgeVersionFor(runtimeProfile,actorId){
+  // Under the survival rules actor-2 carries the survival Knowledge; actor-3 keeps the frozen
+  // cognition Knowledge version and shape, so the survival profile falls back to cognition.
+  if(runtimeProfile.survival)
+    return actorId===SURVIVAL_ACTOR_ID?SURVIVAL_KNOWLEDGE_VERSION:COGNITION_KNOWLEDGE_VERSION;
+  return runtimeProfile.knowledgeVersion;
+}
+// The same split for the per-actor Knowledge DTO: actor-2 uses the survival validator, actor-3
+// keeps using the frozen cognition validator even under the survival rules.
+function validateKnowledgeFor(knowledge,profile,actorId){
+  return profile.survival&&actorId===SURVIVAL_ACTOR_ID?validateSurvivalKnowledge(knowledge):
+    profile.cognition?validateCognitionKnowledge(knowledge):knowledge;
+}
 
 // A frozen actor-local view; quotes come from previously published facts, never the
 // hidden current public cash or another actor's execution results.
@@ -168,7 +253,7 @@ function decisionKnowledge(world,events,actorId,tick,simulationId,runtimeProfile
   const publicEvents=events.filter(e=>e.eventSeq<=world.mindModel.cursor&&e.type==='SocietyDaySettled'&&(actor.alive||e.tick<actor.deathTick));
   const last=publicEvents.at(-1),observable=last?projectActorEvent(last,actorId).find(p=>p.channel==='public').observable:null;
   const profile=world.motivationModel.config.profiles.find(p=>p.actorId===actorId);
-  const knowledge={knowledgeVersion:runtimeProfile.knowledgeVersion,phase:'decision',simulationId,actorId,tick,revision:tick-1,
+  const knowledge={knowledgeVersion:knowledgeVersionFor(runtimeProfile,actorId),phase:'decision',simulationId,actorId,tick,revision:tick-1,
     self:{name:actor.name,occupation:actor.occupation,location:actor.location,alive:actor.alive,health:actor.health,hunger:actor.hunger,fatigue:actor.fatigue,
       wallet:state.wallet,inventory:cloneData(state.inventory),currentGoal:cloneData(state.currentGoal),nextGoalId:state.nextGoalId,cooldownUntilDay:state.cooldownUntilDay},
     quote:{product:'herbs',price:observable?observable.prices.herbs:world.marketModel.config.products.herbs.basePrice,observedTick:last?.tick??0,sourceEventSeq:last?.eventSeq??null},
@@ -180,8 +265,58 @@ function decisionKnowledge(world,events,actorId,tick,simulationId,runtimeProfile
     knowledge.experience=deriveWorkExperience(expActor.workExperienceState);
     knowledge.useWorkExperience=world.experienceModel.config.useWorkExperience;
   }
+  if(runtimeProfile.survival&&actorId===SURVIVAL_ACTOR_ID){
+    knowledge.foodQuote=survivalFoodQuote(world,events,actorId,tick);
+    knowledge.workOffer=survivalWorkOffer(world,events,actorId,tick,entry.lastDuty);
+  }
+  if(process.env.M4A_DBG)console.log('DK',actorId,'profile',runtimeProfile.label,'surv',runtimeProfile.survival,
+    'ver',knowledge.knowledgeVersion,'has',Object.keys(knowledge).filter(k=>k==='foodQuote'||k==='workOffer').join(','));
   requireCondition(new TextEncoder().encode(canonicalJson(knowledge)).length<=runtimeProfile.knowledgeBytes,`${runtimeProfile.label} knowledge exceeds budget`,'LIMIT_EXCEEDED');
   return knowledge;
+}
+
+// The most recent food quote this actor can actually see: a village-visible announcement or the
+// public market projection of an already published SocietyDaySettled. Both are public facts;
+// neither one reads the hidden current stock, and a missing or expired source stays missing.
+function survivalFoodQuote(world,events,actorId,tick){
+  let best=null;
+  const consider=(seq,observedTick,payload)=>{
+    requireCondition(observedTick<=tick,'Survival food quote observed in the future');
+    const quote=survivalFoodQuoteFrom(payload,observedTick,seq);
+    if(best===null||observedTick>best.observedTick||(observedTick===best.observedTick&&seq>best.sourceEventSeq))best=quote;
+  };
+  for(const event of events){
+    if(event.eventSeq>world.mindModel.cursor||event.tick>tick)continue;
+    if(event.type===SURVIVAL_FOOD_QUOTE_EVENT){consider(event.eventSeq,event.tick,event.payload);continue;}
+    if(event.type!=='SocietyDaySettled')continue;
+    const actor=body(world,actorId);
+    if(!(actor.alive||event.tick<actor.deathTick))continue;
+    const projection=projectActorEvent(event,actorId).find(p=>p.channel==='public');
+    if(!projection)continue;
+    consider(event.eventSeq,event.tick,{product:'food',price:projection.observable.prices.food,
+      available:projection.observable.food>0});
+  }
+  return best;
+}
+
+// Only a real, still-pending Duty of this actor may become a visible work offer, and only when
+// its own announcement names exactly that request on the same tick and expiry.
+function survivalWorkOffer(world,events,actorId,tick,duty){
+  if(duty===null||duty.status!=='pending')return null;
+  let best=null;
+  for(const event of events){
+    if(event.eventSeq>world.mindModel.cursor||event.tick>tick)continue;
+    if(event.type!==SURVIVAL_WORK_OFFER_EVENT)continue;
+    if(event.payload.actorId!==actorId||event.payload.requestId!==duty.requestId)continue;
+    if(event.payload.expiresTick!==duty.expiresTick)continue;
+    const delivered=events.find(e=>e.eventSeq===event.causationEventSeqs[0]&&e.type==='MotivationRequestResolved'&&
+      e.payload.requestId===duty.requestId&&e.payload.listenerId===actorId&&e.tick===event.tick);
+    if(!delivered)continue;
+    const offer=survivalWorkOfferFrom(event.payload,event.tick,event.eventSeq);
+    if(best===null||offer.observedTick>best.observedTick||
+      (offer.observedTick===best.observedTick&&offer.sourceEventSeq>best.sourceEventSeq))best=offer;
+  }
+  return best;
 }
 
 function transition(list,plan,fromStatus,toStatus,reasonCode){
@@ -198,6 +333,13 @@ function setCursors(world,events,profile){
 
 function requestsTick(world,tick,append,context){
   const m=world.motivationModel;
+  // M4A: the new world publishes one public food quote at tick 1, recording the real posted
+  // price and the real "there is food" state of that moment. Later days use the existing public
+  // day-settlement projection; nothing is broadcast every tick.
+  if(tick===1&&Object.hasOwn(world,'cognitionModel')&&world.cognitionModel.version===SURVIVAL_COGNITION_STATE_VERSION){
+    append({type:SURVIVAL_FOOD_QUOTE_EVENT,sourceSystem:'survival',commandId:null,entityIds:[],causationEventSeqs:[],
+      payload:{location:'village',product:'food',price:world.marketModel.prices.food,available:world.resources.food>0}});
+  }
   while(m.requestCursor<m.config.requests.length&&m.config.requests[m.requestCursor].tick===tick){
     const r=m.config.requests[m.requestCursor++],listener=body(world,r.listenerId),speaker=body(world,r.speakerId);
     const delivered=listener.alive&&speaker.alive&&listener.location==='village'&&speaker.location==='village';
@@ -206,6 +348,12 @@ function requestsTick(world,tick,append,context){
     if(delivered){const entry=entryOf(world,r.listenerId),ctx=context.get(r.listenerId);ctx.requestSeqs.push(seq);
       entry.lastDuty={requestId:r.requestId,sourceEventSeq:seq,observedTick:tick,expiresTick:r.expiresTick,urgencyPermille:r.urgencyPermille,status:'pending',fulfilledTick:null};
       if(entry.activePlan?.kind==='aid-village'&&entry.activePlan.requestId!==r.requestId)cancel(entry,'activePlan','REQUEST_SUPERSEDED',ctx.transitions);
+      // M4A: the offer is published explicitly for actor-2 in the new profile. Its wage is the
+      // configured wage of this world, so it is visible information, not a planner shortcut.
+      if(r.listenerId===SURVIVAL_ACTOR_ID&&world.cognitionModel?.version===SURVIVAL_COGNITION_STATE_VERSION)
+        append({type:SURVIVAL_WORK_OFFER_EVENT,sourceSystem:'survival',commandId:null,entityIds:[SURVIVAL_ACTOR_ID],
+          causationEventSeqs:[seq],payload:{actorId:SURVIVAL_ACTOR_ID,requestId:r.requestId,
+            wage:world.memoryModel.config.society.economics.wage,expiresTick:r.expiresTick}});
     }
   }
 }
@@ -244,8 +392,13 @@ function evaluateCognitionDay(snapshot,events,tick,append,profile){
     const entry=entryOf(snapshot.world,actor.actorId);
     const knowledge=decisionKnowledge(snapshot.world,events,actor.actorId,tick,snapshot.simulationId,profile);
     const importance=model.config.profiles.find(p=>p.actorId===actor.actorId).importancePermille;
-    const signals=deriveActorCognitionSignals(knowledge,importance,actor.signalBaseline,
-      ownPreviousExecution(entry,snapshot.simulationId));
+    // M4A: actor-2 uses the survival signal derivation, which adds the food urgentNeed on top
+    // of the frozen kernel need. actor-3 keeps the original cognition derivation unchanged.
+    const signals=profile.survival&&actor.actorId===SURVIVAL_ACTOR_ID?
+      deriveActorSurvivalSignals(knowledge,importance,actor.signalBaseline,
+        ownPreviousExecution(entry,snapshot.simulationId)):
+      deriveActorCognitionSignals(knowledge,importance,actor.signalBaseline,
+        ownPreviousExecution(entry,snapshot.simulationId));
     const evaluated=evaluateCognitiveReview(actor.reviewState,signals.input);
     frozen.push({actorId:actor.actorId,knowledge,input:signals.input,kernel:evaluated.decision,
       nextState:evaluated.state,nextBaseline:signals.baseline,
@@ -284,7 +437,18 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
     const review=cognitionReviews?cognitionReviews.get(entry.actorId):null;
     // Maintain never plans from scratch: it continues the frozen review anchor's own plan.
     const knowledge=review?review.knowledge:decisionKnowledge(world,events,entry.actorId,tick,snapshot.simulationId,profile);
-    const proposal=profile.cognition?(review.kernel.mode==='maintain'?
+    // M4A: the planner may know whether the public purse can pay one wage, but that boolean
+    // never enters the frozen Knowledge the decision records.
+    const wagePayable=world.resources.gold>=world.memoryModel.config.society.economics.wage;
+    const planning=profile.survival&&entry.actorId===SURVIVAL_ACTOR_ID&&review.kernel.mode!=='maintain'?
+      setSurvivalWagePayable(knowledge,wagePayable):knowledge;
+    const proposal=profile.survival&&entry.actorId===SURVIVAL_ACTOR_ID?
+      (review.kernel.mode==='maintain'?
+        continueSurvivalPlan(knowledge,{evaluationEventSeq:review.evalSeq,
+          sourceReviewDecisionId:review.sourceReviewDecisionId,sourceReviewEventSeq:review.sourceReviewEventSeq}):
+        planSurvivalDecision(planning,{evaluationEventSeq:review.evalSeq,
+          sourceReviewDecisionId:null,sourceReviewEventSeq:null})):
+      profile.cognition?(review.kernel.mode==='maintain'?
       continueCognitionPlan(knowledge,{evaluationEventSeq:review.evalSeq,
         sourceReviewDecisionId:review.sourceReviewDecisionId,sourceReviewEventSeq:review.sourceReviewEventSeq}):
       planCognitionMotivationDecision(knowledge,{evaluationEventSeq:review.evalSeq,
@@ -293,6 +457,12 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
     proposals.push({entry,knowledge,priorPlan:cloneData(entry.activePlan),proposal});
   }
   for(const {entry,knowledge,priorPlan,proposal} of proposals){const ctx=context.get(entry.actorId),state=agent(world,entry.actorId);
+    // M4A: cancellations the survival planner produced itself (an expired food plan, or an
+    // earning step whose request is gone) are recorded as real transitions of this day.
+    for(const transition of proposal.transitions??[]){
+      requireCondition(ctx.transitions.length<MAX_MOTIVATION_PLAN_TRANSITIONS,'Motivation transition budget exceeded','LIMIT_EXCEEDED');
+      ctx.transitions.push(cloneData(transition));
+    }
     proposalTransitions(entry,proposal,tick,ctx.transitions);
     state.currentGoal=cloneData(proposal.currentGoal);state.nextGoalId=proposal.nextGoalId;
     for(const key of ['activePlan','suspendedPlan','nextPlanId','lastReviewedDutyId'])entry[key]=cloneData(proposal[key]);
@@ -306,12 +476,14 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
   if(profile.cognition)for(const item of plans){
     if(item.decision.mode!=='review')continue;
     // The anchor names the most recent complete own review, not the plan's creation event.
+    // Under the survival rules actor-2 anchors on `survival-day-` and actor-3 keeps the
+    // `cognition-day-` prefix; both must stay paired with their own latest review tick.
     const actor=snapshot.world.cognitionModel.actors.find(a=>a.actorId===item.actorId);
     actor.lastReviewDecisionId=item.decision.decisionId;actor.lastReviewEventSeq=item.plannedSeq;
   }
   for(const command of chief.commands.filter(c=>c.payload.actorId==='actor-1'))commit(command);
   for(const item of plans){const receipt=item.command?commit(item.command):null,entry=entryOf(snapshot.world,item.actorId),ctx=context.get(item.actorId);
-    const outcome=resolvedOutcome(item,receipt,snapshot.world);ctx.resolvedSeq=append(facts('MotivationDecisionResolved',outcome,[item.plannedSeq],outcome.commandId));
+    const outcome=resolvedOutcome(item,receipt,snapshot.world,profile);ctx.resolvedSeq=append(facts('MotivationDecisionResolved',outcome,[item.plannedSeq],outcome.commandId));
     entry.lastOutcome=cloneData(outcome);
     if(item.decision.choice==='BuyMedicine'&&receipt?.status==='rejected')pushMindObservation(snapshot.world,item.actorId,mindRejectionObservation(ctx.resolvedSeq,tick));
     if(receipt&&entry.activePlan){const plan=entry.activePlan;
@@ -325,6 +497,12 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
           requireCondition(entry.lastDuty?.requestId===plan.requestId&&entry.lastDuty.status==='pending'&&tick<entry.lastDuty.expiresTick,'Work outcome cites the wrong request');
           entry.lastDuty.status='fulfilled';entry.lastDuty.fulfilledTick=tick;
         }
+        // M4A: the same real Work step inside a food plan fulfils the duty on the spot, and the
+        // plan stays active on the same planId so tomorrow can spend the earned wage.
+        if(plan.kind===SURVIVAL_FOOD_PLAN_KIND&&plan.steps[0]==='WorkForPay'&&plan.stepIndex===1){
+          requireCondition(entry.lastDuty?.requestId===plan.requestId&&entry.lastDuty.status==='pending'&&tick<entry.lastDuty.expiresTick,'Food income work outcome cites the wrong request');
+          entry.lastDuty.status='fulfilled';entry.lastDuty.fulfilledTick=tick;
+        }
         if(plan.kind==='recover-health'&&agent(snapshot.world,item.actorId).currentGoal)agent(snapshot.world,item.actorId).currentGoal.step=item.decision.choice==='BuyMedicine'?'use':'wait';
       }else{
         const stillBlocked=item.priorPlan?.planId===plan.planId&&item.priorPlan.status==='blocked'&&
@@ -333,7 +511,11 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
           // A soft-eligible retry rejected again by authority never actually left its
           // blocked state. Keep the outcome/failure ledger, omit a fictitious recovery.
           ctx.transitions=ctx.transitions.filter(t=>!(t.planId===plan.planId&&t.reasonCode==='CONDITION_READY'));
-        }else if(plan.status!=='blocked')transition(ctx.transitions,plan,plan.status,'blocked','EXECUTION_REJECTED');
+        }else if(plan.status!=='blocked'){
+          // A rejected survival Work step stays blocked on the food plan; an already-earned
+          // BuyFood step also stays blocked and keeps the wage, so a later day may retry.
+          transition(ctx.transitions,plan,plan.status,'blocked','EXECUTION_REJECTED');
+        }
         plan.status='blocked';
       }
     }
@@ -346,8 +528,10 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
 function observeResolvedWork(snapshot,events,item,resolvedSeq,append,profile){
     if(body(snapshot.world,item.actorId).alive){
       const adapterContext={simulationId:snapshot.simulationId,
-        rulesVersion:profile.cognition?COGNITION_RULES:EXPERIENCE_RULES,eventLog:events,commandReceipts:snapshot.commandReceipts};
-      const workOutcome=profile.cognition?projectOwnCognitionWorkOutcome(adapterContext,item.actorId,resolvedSeq):
+        rulesVersion:profile.survival?SURVIVAL_RULES:profile.cognition?COGNITION_RULES:EXPERIENCE_RULES,
+        eventLog:events,commandReceipts:snapshot.commandReceipts};
+      const workOutcome=profile.survival?projectOwnSurvivalWorkOutcome(adapterContext,item.actorId,resolvedSeq):
+        profile.cognition?projectOwnCognitionWorkOutcome(adapterContext,item.actorId,resolvedSeq):
         projectOwnWorkOutcome(adapterContext,item.actorId,resolvedSeq);
       if(workOutcome!==null){
         const expActor=snapshot.world.experienceModel.actors.find(a=>a.actorId===item.actorId);
@@ -363,34 +547,88 @@ function observeResolvedWork(snapshot,events,item,resolvedSeq,append,profile){
 function applyActionFor(input,payload,sample,profile){
   validateWorldFor(input,false,profile);
   const entry=entryOf(input,payload.actorId);
+  let purchaseQuote=null,purchaseReject=false;
   if(entry){const d=entry.lastDecision,p=entry.activePlan;
     requireCondition(d&&p&&d.choice===payload.action&&p.steps[p.stepIndex]===payload.action&&d.planId===p.planId&&d.goalId===p.goalId&&d.actorId===payload.actorId&&payload.goalId===(d.goalId??0),'Motivation command/decision/plan binding mismatch');
-    if(profile.cognition)requireCondition(d.tick===(input.societyModel.day+1)*144,'Cognition authority requires the day decision tick');
+    if(profile.cognition||profile.survival)requireCondition(d.tick===(input.societyModel.day+1)*144,'Cognition authority requires the day decision tick');
     if(p.kind==='aid-village'){
-      if(profile.cognition&&d.mode==='maintain')
+      if((profile.cognition||profile.survival)&&d.mode==='maintain')
         // Maintain carries no candidates, so the duty is bound three ways from the world.
         requireCondition(entry.lastDuty?.status==='pending'&&p.requestId===entry.lastDuty.requestId&&
           d.sourceReviewDecisionId!==null&&d.tick<entry.lastDuty.expiresTick,'Cognition maintain work request provenance mismatch');
       else requireCondition(entry.lastDuty?.status==='pending'&&p.requestId===entry.lastDuty.requestId&&d.candidates.find(c=>c.action==='WorkForPay').sourceRef===p.requestId&&d.tick<entry.lastDuty.expiresTick,'Motivation work request provenance mismatch');
     }
+    // M4A: the committed decision's frozen knowledge is the authoritative record of what this
+    // actor actually saw when it decided, so the authority re-checks the source from there
+    // instead of trusting a live lookup.
+    if(profile.survival&&p.kind===SURVIVAL_FOOD_PLAN_KIND){
+      const frozen=frozenDecisionKnowledge(d);
+      requireCondition(frozen!==null,'Survival food step without a frozen decision knowledge');
+      // The first step of a two-step plan must be bound three ways and must not be stale.
+      if(p.steps[p.stepIndex]==='WorkForPay'){
+        const duty=entry.lastDuty;
+        requireCondition(duty!==null&&duty.status==='pending'&&p.requestId===duty.requestId&&
+          d.tick<duty.expiresTick,'Survival food income work request provenance mismatch');
+        requireCondition(d.planId===p.planId&&d.choice==='WorkForPay'&&p.stepIndex===0,
+          'Survival food income decision/plan mismatch');
+        const offer=frozen.workOffer??null;
+        requireCondition(offer!==null&&offer.requestId===p.requestId&&offer.observedTick<=d.tick&&
+          d.tick<offer.expiresTick,'Survival work offer/request provenance mismatch');
+        requireCondition(offer.wage===input.memoryModel.config.society.economics.wage,
+          'Survival announced wage differs from this world economy');
+        if(d.mode==='maintain')requireCondition(d.sourceReviewDecisionId!==null,'Survival maintain work lacks its review anchor');
+        else requireCondition(d.candidates.some(c=>c.action==='WorkForPay'&&c.sourceRef===p.requestId),
+          'Survival review work candidate does not cite the plan request');
+      }else{
+        // The purchase step of an already-earned plan is NOT re-gated by the duty: the wage was
+        // really earned, so a fulfilled or expired request must not cancel the purchase.
+        requireCondition(d.planId===p.planId&&d.choice==='BuyFood','Survival purchase decision/plan mismatch');
+        // A direct purchase is a one-step plan; an earned purchase is the second of two steps.
+        requireCondition(Array.isArray(p.steps)&&(p.steps.length===1?p.stepIndex===0:p.stepIndex===1),
+          'Survival purchase step must be the current step of its own plan');
+        const quote=frozen.foodQuote??null;
+        // The authority re-check: a purchase it cannot honour is a real rejection of a real
+        // command, not a structural error. No invented price, no reliance on the old
+        // "available" flag, and no transfer when the real public stock is gone.
+        if(quote===null)purchaseReject=true;
+        else{
+          if(!(quote.observedTick<=d.tick&&d.tick<quote.expiresTick))purchaseReject=true;
+          if(quote.price!==input.marketModel.prices.food)purchaseReject=true;
+          if(input.resources.food<1)purchaseReject=true;
+        }
+      }
+    }
   }
-  const temporary=entry&&['aid-village','recover-rest'].includes(entry.activePlan.kind),projection=cloneData(societyProject(input));
+  const temporary=entry&&['aid-village','recover-rest',SURVIVAL_FOOD_PLAN_KIND].includes(entry.activePlan.kind),projection=cloneData(societyProject(input));
   const goal=cloneData(agent(input,payload.actorId).currentGoal);
   if(temporary)agent(projection,payload.actorId).currentGoal=null;
+  // A food purchase the authority cannot honour is refused outright: no stock moves, no money
+  // moves, and the failure is reported as a normal rejected command.
+  if(purchaseReject){
+    return {success:false,result:{code:'RULE_REJECTED'},
+      world:retainModels({...cloneData(input),memoryModel:cloneData(input.memoryModel),mindModel:cloneData(input.mindModel)},input,profile)};
+  }
   const result=applySocietyAction(projection,payload,sample,null);
   if(temporary)agent(result.world,payload.actorId).currentGoal=goal;
   return {...result,world:retainModels({...result.world,memoryModel:cloneData(input.memoryModel),mindModel:cloneData(input.mindModel)},input,profile)};
 }
 
-function resolvedOutcome(item,receipt,world){
+function resolvedOutcome(item,receipt,world,profile=MOTIVATION_PROFILE){
   const {decision,command,selfHealth,selfFatigue}=item;
+  // Only actor-2 carries the survival outcome shape; actor-3 keeps the frozen M3-2 delta.
+  const survival=profile.survival&&decision.actorId===SURVIVAL_ACTOR_ID;
+  const delta=survival?{wallet:0,food:0,herbs:0,health:0,fatigue:0}:{wallet:0,herbs:0,health:0,fatigue:0};
   const outcome={decisionId:decision.decisionId,actorId:decision.actorId,commandId:command?.commandId??null,status:receipt===null?'no-action':receipt.status,
-    code:receipt?.status==='rejected'?'RULE_REJECTED':null,delta:{wallet:0,herbs:0,health:0,fatigue:0},price:null,publicFoodProduced:0,failureOwner:null};
+    code:receipt?.status==='rejected'?'RULE_REJECTED':null,delta,price:null,publicFoodProduced:0,failureOwner:null};
   if(receipt?.status==='succeeded'){const r=receipt.result,a=body(world,decision.actorId);
-    outcome.delta={wallet:r.after.wallet-r.before.wallet,herbs:r.after.inventory.herbs-r.before.inventory.herbs,health:a.health-selfHealth,fatigue:a.fatigue-selfFatigue};
-    outcome.price=decision.choice==='BuyMedicine'?r.price:null;outcome.publicFoodProduced=decision.choice==='WorkForPay'?r.foodProduced:0;
+    outcome.delta={...delta,wallet:r.after.wallet-r.before.wallet,herbs:r.after.inventory.herbs-r.before.inventory.herbs,
+      health:a.health-selfHealth,fatigue:a.fatigue-selfFatigue,
+      ...(survival?{food:r.after.inventory.food-r.before.inventory.food}:{})};
+    // Both purchases record the price that was really paid.
+    outcome.price=(decision.choice==='BuyMedicine'||decision.choice==='BuyFood')?r.price:null;
+    outcome.publicFoodProduced=decision.choice==='WorkForPay'?r.foodProduced:0;
   }else if(receipt?.status==='rejected')outcome.failureOwner={planId:decision.planId,goalId:decision.goalId};
-  return validateMotivationOutcome(outcome);
+  return survival?validateSurvivalOutcome(outcome):validateMotivationOutcome(outcome);
 }
 
 function settleDayFor(input,sample,profile){
@@ -406,7 +644,14 @@ function afterSystemsFor(snapshot,events,tick,append,context,profile){
     base=finishMindDay(base,events,tick);snapshot.world=retainModels(base,snapshot.world,profile);
   }
   for(const entry of snapshot.world.motivationModel.actors){const ctx=context.get(entry.actorId),a=body(snapshot.world,entry.actorId),state=agent(snapshot.world,entry.actorId);
-    if(tick%144===0){for(const slot of ['activePlan','suspendedPlan']){
+    if(tick%144===0){const day=tick/144;
+      // M4A: an expired food plan is cancelled at the day boundary that passes its d+3 window,
+      // so the next day never executes a step of a dead plan.
+      for(const slot of ['activePlan','suspendedPlan']){
+        const plan=entry[slot];if(plan===null||plan.kind!==SURVIVAL_FOOD_PLAN_KIND)continue;
+        if(day>plan.deadlineDay)cancel(entry,slot,'DEADLINE_EXPIRED',ctx.transitions);
+      }
+      for(const slot of ['activePlan','suspendedPlan']){
       const plan=entry[slot];if(plan===null)continue;
       if(!a.alive)cancel(entry,slot,'DEAD',ctx.transitions);
       else if(plan.kind==='recover-health'&&(state.currentGoal===null||state.currentGoal.goalId!==plan.goalId)){
@@ -427,7 +672,8 @@ function auditFor(bundle,profile){fields(bundle,['snapshot','eventLog']);record(
   requireCondition(bundle.snapshot.rulesVersion===profile.rules,profile.experience?'Unknown experience rules':'Unknown motivation rules','UNSUPPORTED_VERSION');
   validateBundle(bundle,{rulesVersion:profile.rules,systems:cognitionSystemsFor(profile)});}
 function cognitionSystemsFor(profile){
-  return profile.cognition?cognitionSystems():profile.experience?experienceSystems():motivationSystems();
+  return profile.survival?survivalSystems():profile.cognition?cognitionSystems():
+    profile.experience?experienceSystems():motivationSystems();
 }
 function audit(bundle){return auditFor(bundle,MOTIVATION_PROFILE);}
 
@@ -480,6 +726,8 @@ function validateHistoryFor(snapshot,events,profile){
   const config=snapshot.world;for(const stimulus of config.mindModel.config.stimuli)if(stimulus.tick<=snapshot.tick)ticks.add(stimulus.tick);
   for(const request of config.motivationModel.config.requests)if(request.tick<=snapshot.tick)ticks.add(request.tick);
   for(let day=1;day<=Math.floor(snapshot.tick/144);day++)ticks.add(day*144);
+  // M4A: the public food quote is published at tick 1, so the replay must visit that tick too.
+  if(profile.survival&&snapshot.tick>=1)ticks.add(1);
   const replay={world:createWorldFor(config.memoryModel.config,config.mindModel.config,config.motivationModel.config,
     profile.experience||profile.cognition?config.experienceModel.config:null,
     profile.cognition?config.cognitionModel.config:null,snapshot.simulationId,profile),simulationId:snapshot.simulationId};
@@ -511,17 +759,22 @@ function validateHistoryFor(snapshot,events,profile){
   requireCondition(canonicalJson(registered)===canonicalJson(pending),`${profile.label} pending input mismatch`);
   requireCondition(canonicalJson(replay.world)===canonicalJson(snapshot.world),`${profile.label} final world/identity/assets mismatch`);
   requireCondition(canonicalJson(rng.getState())===canonicalJson(snapshot.rng),`${profile.label} RNG history mismatch`);
-  if(profile.cognition)validateCognitionAnchors(snapshot,events);
+  if(profile.cognition)validateCognitionAnchors(snapshot,events,profile);
 }
 
 // A sealed cognition anchor must resolve to exactly one own review Planned fact with matching
 // identity, tick and sequence. Self-described mode/anchor fields never prove this alone.
-function validateCognitionAnchors(snapshot,events){
+// M4A keeps the same proof; actor-2's anchors carry the survival prefix and actor-3 keeps the
+// cognition prefix, so a cross-profile or cross-actor anchor fails here.
+function validateCognitionAnchors(snapshot,events,profile){
   for(const actor of snapshot.world.cognitionModel.actors){
     if(actor.lastReviewDecisionId===null){
       requireCondition(actor.reviewState.lastReviewTick===null,'Cognition review without an anchor');
       continue;
     }
+    if(profile.survival)requireCondition(
+      actor.lastReviewDecisionId.startsWith(actor.actorId===SURVIVAL_ACTOR_ID?SURVIVAL_DECISION_PREFIX:'cognition-day-'),
+      'Survival review anchor uses another profile prefix');
     const planned=events.filter(e=>e.type==='MotivationDecisionPlanned'&&e.payload?.decisionId===actor.lastReviewDecisionId);
     requireCondition(planned.length===1,'Cognition review anchor does not resolve to a unique planned decision');
     const fact=planned[0];
@@ -586,6 +839,41 @@ export function executeCognitionPlayerIntent(bundle,intent){
   inspectDescriptorTree({bundle,intent});
   return executePlayerIntentFor(bundle,intent,COGNITION_PROFILE);
 }
+
+// M4A bounded survival: the same six hook signatures, the same DTO1 advance / DTO2 player-intent
+// write surface, no new write interface.
+function survivalBeforeSystems(snapshot,events,tick,append,commit){
+  inspectDescriptorTree({snapshot,events});
+  return beforeSystemsFor(snapshot,events,tick,append,commit,SURVIVAL_PROFILE);
+}
+function survivalAfterSystems(snapshot,events,tick,append,context){
+  inspectDescriptorTree({snapshot,events});
+  return afterSystemsFor(snapshot,events,tick,append,context,SURVIVAL_PROFILE);
+}
+function survivalApplyAction(input,payload,sample=null){
+  inspectDescriptorTree({input,payload,sample});
+  return applyActionFor(input,payload,sample,SURVIVAL_PROFILE);
+}
+function survivalSettleDay(input,sample){
+  inspectDescriptorTree({input,sample});
+  return settleDayFor(input,sample,SURVIVAL_PROFILE);
+}
+export function validateSurvivalHistory(snapshot,events){
+  inspectDescriptorTree({snapshot,events});
+  return validateHistoryFor(snapshot,events,SURVIVAL_PROFILE);
+}
+export function executeSurvivalPlayerIntent(bundle,intent){
+  inspectDescriptorTree({bundle,intent});
+  return executePlayerIntentFor(bundle,intent,SURVIVAL_PROFILE);
+}
+export function describeSurvivalPlayerActions(bundle){
+  inspectDescriptorTree(bundle);auditFor(bundle,SURVIVAL_PROFILE);
+  return describePlayerActionsFor(bundle);
+}
+
+export const survivalRuntimeHooks=Object.freeze({createWorld:createSurvivalWorld,beforeSystems:survivalBeforeSystems,
+  afterSystems:survivalAfterSystems,applyAction:survivalApplyAction,settleDay:survivalSettleDay,
+  validateHistory:validateSurvivalHistory});
 
 export const motivationRuntimeHooks=Object.freeze({createWorld,beforeSystems,afterSystems,applyAction,settleDay,validateHistory});
 export const experienceRuntimeHooks=Object.freeze({createWorld:createExperienceWorld,beforeSystems:experienceBeforeSystems,afterSystems:experienceAfterSystems,applyAction:experienceApplyAction,settleDay:experienceSettleDay,validateHistory:validateExperienceHistory});

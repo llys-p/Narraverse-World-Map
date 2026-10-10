@@ -3,6 +3,8 @@
 import { fields, record, integer, identifier, denseArray, cloneData, canonicalJson, requireCondition, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
 import { createWorkExperienceState, validateWorkExperienceState } from './work-experience.mjs';
 import { COGNITION_RULES } from './cognition-state.mjs';
+// Kept as a literal: the survival state module imports this module, so a cycle would be created.
+const SURVIVAL_RULES = 'm-survival-v1';
 
 export const EXPERIENCE_RULES = 'm-experience-v1';
 export const EXPERIENCE_CONFIG_VERSION = 'experience-config-v1';
@@ -75,7 +77,9 @@ export function preflightExperienceData(data, bundled = false) {
   const container = bundled ? Object.getOwnPropertyDescriptor(data, 'snapshot')?.value : data;
   record(container);
   const version = Object.getOwnPropertyDescriptor(container, 'rulesVersion')?.value;
-  const experience = version === EXPERIENCE_RULES || version === COGNITION_RULES;
+  // The survival profile reuses the experience descriptor preflight; a cyclic import of the
+  // survival constants is avoided by the literal above.
+  const experience = version === EXPERIENCE_RULES || version === COGNITION_RULES || version === SURVIVAL_RULES;
   if (experience) inspectDescriptorTree(data);
   return experience;
 }

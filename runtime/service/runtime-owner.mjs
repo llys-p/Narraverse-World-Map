@@ -12,7 +12,7 @@ import { MAX_STATE_FILE_BYTES,readStateFile } from '../persistence/bounded-json-
 import { validateBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { fields,record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
-import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,runtimeProfile,validateServiceCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend,loadCognitionBackend,requireCognitionBackend } from './http-contract.mjs';
+import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,runtimeProfile,validateServiceCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend,loadCognitionBackend,requireCognitionBackend,loadSurvivalBackend,requireSurvivalBackend } from './http-contract.mjs';
 import { saveServiceCommit,loadServiceCommit,transitionServiceCommand,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 async function loadExplicitCheckpoint(file,io){
@@ -62,9 +62,10 @@ export async function createRuntimeOwner(options,io=fs){
   // and rethrown when a motivation/cognition profile or checkpoint actually requires it.
   try{await loadMotivationBackend();}catch(error){if(options.profile==='motivation-village')throw error;}
   try{await loadCognitionBackend();}catch(error){if(options.profile==='cognition-village')throw error;}
+  try{await loadSurvivalBackend();}catch(error){if(options.profile==='survival-village')throw error;}
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
-  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
+  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
   requireCondition(options.profile===undefined || options.checkpoint===undefined,'Profile and checkpoint are mutually exclusive');
   if(options.seed!==undefined){integer(options.seed);requireCondition(options.seed<=0xffffffff,'Invalid runtime seed');}
   if(options.checkpoint!==undefined)requireCondition(typeof options.checkpoint==='string' && options.checkpoint.length>0 && options.seed===undefined,'Checkpoint cannot reset seed');
@@ -92,6 +93,7 @@ export async function createRuntimeOwner(options,io=fs){
       const create=options.profile==='mind-village'?mindBackend().fixture.createMindVillage:
         options.profile==='motivation-village'?requireMotivationBackend().fixture.createMotivationVillage:
         options.profile==='cognition-village'?requireCognitionBackend().fixture.createCognitionVillage:
+        options.profile==='survival-village'?requireSurvivalBackend().fixture.createSurvivalVillage:
         options.profile==='player-play-village'?createPlayerPlayVillage:options.profile==='player-village'?createPlayerVillage:createPersonalityNeutral;
       bundle=options.checkpoint===undefined?create(options.seed??42).bundle:
         await loadExplicitCheckpoint(options.checkpoint,io);
@@ -99,8 +101,8 @@ export async function createRuntimeOwner(options,io=fs){
       if(writable || serviceFormatVersion>=2)state={serviceFormatVersion,anchor:cloneData(bundle),commands:[],bundle};
     }
     const {systems,serviceFormatVersion}=runtimeProfile(bundle),playerAvailable=serviceFormatVersion>=2,
-      playerActionsAvailable=[3,4,5,6].includes(serviceFormatVersion),
-      mindAvailable=[4,5,6].includes(serviceFormatVersion);
+      playerActionsAvailable=[3,4,5,6,7].includes(serviceFormatVersion),
+      mindAvailable=[4,5,6,7].includes(serviceFormatVersion);
     let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(bundle),playerProjection=playerAvailable?projectPlayerSnapshot(bundle):null,
       mindProjection=mindAvailable?projectMindInspector(bundle):null;
     if(!states.length){

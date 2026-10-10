@@ -3,7 +3,7 @@ import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { fields,denseArray,requireCondition,cloneData,fault } from '../core/data-contract.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
-import { projectPublicSnapshot,runtimeProfile,validateServiceCommandDto,mindBackend,requireMotivationBackend,requireCognitionBackend } from './http-contract.mjs';
+import { projectPublicSnapshot,runtimeProfile,validateServiceCommandDto,mindBackend,requireMotivationBackend,requireCognitionBackend,requireSurvivalBackend } from './http-contract.mjs';
 import { executePlayerIntent } from '../core/player-intents.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
@@ -13,17 +13,25 @@ export function timeReceipt(dto,toRevision){return {apiVersion:1,commandId:dto.c
 // existing namespace rules unchanged — format6 rejects all seven internal prefixes on both
 // command DTO versions, formats 1–5 never expand theirs.
 const RESERVED_INTERNAL_PREFIXES={4:['mind-day-','society-day-'],5:['mind-day-','society-day-','motivation-day-'],
-  6:['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-']};
+  6:['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-'],
+  // Format7 keeps every format6 prefix and adds the survival namespace; formats 1–6 never expand.
+  7:['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-',
+    'survival-day-']};
 // Submit and journal audit use this same complete transition; the service owns no world rules.
 export function transitionServiceCommand(bundle,dto){
   dto=validateServiceCommandDto(dto);
-  const profile=runtimeProfile(bundle),mindPlayer=profile.serviceFormatVersion===4,motivation=profile.serviceFormatVersion===5,cognition=profile.serviceFormatVersion===6;
-  const reserved=RESERVED_INTERNAL_PREFIXES[profile.serviceFormatVersion];
+  // The reserved-namespace guard is a pure input check: it must fire before any profile or
+  // backend lookup, so an internal command id is refused even if a backend is unavailable.
+  const format=runtimeProfile(bundle).serviceFormatVersion;
+  const reserved=RESERVED_INTERNAL_PREFIXES[format];
   if(reserved)for(const prefix of reserved)if(dto.commandId.startsWith(prefix))throw fault('INVALID_INPUT','Reserved internal command ID');
-  requireCondition(dto.version===1 || [3,4,5,6].includes(profile.serviceFormatVersion),'Profile does not support player actions','COMMAND_UNSUPPORTED');
+  const profile=runtimeProfile(bundle),mindPlayer=format===4,motivation=format===5,
+    cognition=format===6,survival=format===7;
+  requireCondition(dto.version===1 || [3,4,5,6,7].includes(format),'Profile does not support player actions','COMMAND_UNSUPPORTED');
   if(dto.version===1){const session=createSimulationSession(bundle,profile.systems);session.advanceTicks(dto.payload.ticks);
     const next=session.getBundle();return {bundle:next,receipt:timeReceipt(dto,next.snapshot.revision)};}
-  const execute=mindPlayer?mindBackend().runtime.executeMindPlayerIntent:cognition?requireCognitionBackend().runtime.executeCognitionPlayerIntent:
+  const execute=survival?requireSurvivalBackend().runtime.executeSurvivalPlayerIntent:
+    mindPlayer?mindBackend().runtime.executeMindPlayerIntent:cognition?requireCognitionBackend().runtime.executeCognitionPlayerIntent:
     motivation?requireMotivationBackend().runtime.executeMotivationPlayerIntent:executePlayerIntent;
   const {bundle:next,outcome,result}=execute(bundle,{commandId:dto.commandId,type:dto.type,payload:dto.payload});
   return {bundle:next,receipt:{apiVersion:1,receiptVersion:2,commandId:dto.commandId,status:'committed',fromRevision:dto.expectedRevision,
@@ -31,7 +39,7 @@ export function transitionServiceCommand(bundle,dto){
 }
 export function validateServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
-  requireCondition([1,2,3,4,5,6].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
+  requireCondition([1,2,3,4,5,6,7].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
   const profile=runtimeProfile(envelope.anchor),finalProfile=runtimeProfile(envelope.bundle);
   requireCondition(envelope.serviceFormatVersion===profile.serviceFormatVersion && envelope.serviceFormatVersion===finalProfile.serviceFormatVersion,
     'Service format/profile mismatch','UNSUPPORTED_VERSION');

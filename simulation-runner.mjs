@@ -30,6 +30,8 @@ import { EXPERIENCE_RULES } from './runtime/core/experience-state.mjs';
 import { createExperienceVillage } from './runtime/fixtures/experience-village.mjs';
 import { COGNITION_RULES } from './runtime/core/cognition-state.mjs';
 import { createCognitionVillage } from './runtime/fixtures/cognition-village.mjs';
+import { SURVIVAL_RULES } from './runtime/core/survival-state.mjs';
+import { createSurvivalVillage } from './runtime/fixtures/survival-village.mjs';
 import { createSimulationSession } from './runtime/core/command-engine.mjs';
 import { canonicalJson, fields, integer, record, fault, requireCondition, cloneData } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
@@ -65,6 +67,7 @@ const profiles = new Map([
   ['motivation-village',{rulesVersion:MOTIVATION_RULES,create:createMotivationVillage}],
   ['experience-village',{rulesVersion:EXPERIENCE_RULES,create:createExperienceVillage}],
   ['cognition-village',{rulesVersion:COGNITION_RULES,create:createCognitionVillage}],
+  ['survival-village',{rulesVersion:SURVIVAL_RULES,create:createSurvivalVillage}],
 ]);
 const actorPayload=event=>['HunterDaySettled','SocietyDaySettled'].includes(event.type)?event.payload.actors:event.type==='ActorDaySettled'?event.payload:undefined;
 const marketPayload=event=>actorPayload(event)?.market??(event.type==='EconomyDaySettled'?event.payload:undefined);
@@ -365,6 +368,15 @@ export async function runSimulation(options, hooks = {}) {
     if(workExperience)await fs.writeFile(path.join(directory,'work-experience.json'),JSON.stringify(workExperience,null,2),{flag:'wx'});
     if(cognitionConfig)await fs.writeFile(path.join(directory,'cognition-config.json'),JSON.stringify(cognitionConfig,null,2),{flag:'wx'});
     if(cognitionState)await fs.writeFile(path.join(directory,'cognition-state.json'),JSON.stringify(cognitionState,null,2),{flag:'wx'});
+    // M4A: the survival profile exports its complete config and hashes it in the summary, the
+    // same way every other registered profile exports its own configuration.
+    const survival=bundle.snapshot.rulesVersion===SURVIVAL_RULES;
+    const survivalConfig=survival?{version:'survival-config-v1',
+      memory:bundle.snapshot.world.memoryModel.config,mind:bundle.snapshot.world.mindModel.config,
+      motivation:bundle.snapshot.world.motivationModel.config,
+      experience:bundle.snapshot.world.experienceModel.config,
+      cognition:bundle.snapshot.world.cognitionModel.config}:undefined;
+    if(survivalConfig)await fs.writeFile(path.join(directory,'survival-config.json'),JSON.stringify(survivalConfig,null,2),{flag:'wx'});
     const summary = { status: failure ? 'failed' : 'succeeded', ...identity, nodeVersion: process.version,
       fixtureId: bundle.snapshot.fixtureId, fixtureVersion: bundle.snapshot.fixtureVersion,
       rulesVersion: bundle.snapshot.rulesVersion, simulationId: bundle.snapshot.simulationId,
@@ -386,6 +398,7 @@ export async function runSimulation(options, hooks = {}) {
       ...(workExperience?{workExperienceHash:hash(workExperience)}:{}),
       ...(cognitionConfig?{cognitionConfigHash:hash(cognitionConfig)}:{}),
       ...(cognitionState?{cognitionStateHash:hash(cognitionState)}:{}),
+      ...(survivalConfig?{survivalConfigHash:hash(survivalConfig)}:{}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       executionStats: session.getStats(),
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,

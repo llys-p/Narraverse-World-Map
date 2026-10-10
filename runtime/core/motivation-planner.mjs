@@ -12,6 +12,8 @@ import { MOTIVATION_KNOWLEDGE_VERSION,MOTIVATION_DECISION_VERSION,MAX_MOTIVATION
 import { inspectDescriptorTree } from './experience-state.mjs';
 import { COGNITION_KNOWLEDGE_VERSION,COGNITION_DECISION_VERSION,MAX_COGNITION_KNOWLEDGE_BYTES,
   MAX_COGNITION_EVIDENCE_REFS } from './cognition-state.mjs';
+import { validateSurvivalKnowledgeQuote as validateSurvivalKnowledgeQuoteView,
+  validateSurvivalWorkOffer as validateSurvivalWorkOfferView } from './survival-state.mjs';
 
 const DAY_TICKS=144;
 const HEALTH_GOAL_TARGET=800;
@@ -28,6 +30,8 @@ const COUNTERFACTUAL_SHIFT=200;
 const SELF_FIELDS=['name','occupation','location','alive','health','hunger','fatigue','wallet','inventory',
   'currentGoal','nextGoalId','cooldownUntilDay'];
 const MAX_MOTIVATION_EVIDENCE_REFS=MAX_MIND_OBSERVATIONS*2;
+const SURVIVAL_KNOWLEDGE_VERSION='survival-knowledge-v1';
+const MAX_SURVIVAL_KNOWLEDGE_BYTES=16384;
 
 function permille(value,label){
   integer(value);requireCondition(value<=MAX_MOTIVATION_PERMILLE,label+' must stay within 0..1000 permille','LIMIT_EXCEEDED');
@@ -48,6 +52,7 @@ function validateGoal(goal){
 const MOTIVATION_KNOWLEDGE_FIELDS=['knowledgeVersion','phase','simulationId','actorId','tick','revision','self','quote',
   'observations','belief','profile','duty','planState'];
 const EXPERIENCE_KNOWLEDGE_FIELDS=[...MOTIVATION_KNOWLEDGE_FIELDS,'experience','useWorkExperience'];
+const SURVIVAL_KNOWLEDGE_FIELDS=[...EXPERIENCE_KNOWLEDGE_FIELDS,'foodQuote','workOffer'];
 
 // One private knowledge contract shared by the three rule variants; only the version string,
 // byte budget and experience-view presence differ. Cognition reuses the M3-2 experience
@@ -57,7 +62,9 @@ const KNOWLEDGE_VARIANTS={
     fields:MOTIVATION_KNOWLEDGE_FIELDS},
   experience:{version:'experience-knowledge-v1',bytes:16384,experience:true,fields:EXPERIENCE_KNOWLEDGE_FIELDS},
   cognition:{version:COGNITION_KNOWLEDGE_VERSION,bytes:MAX_COGNITION_KNOWLEDGE_BYTES,experience:true,
-    fields:EXPERIENCE_KNOWLEDGE_FIELDS}
+    fields:EXPERIENCE_KNOWLEDGE_FIELDS},
+  survival:{version:SURVIVAL_KNOWLEDGE_VERSION,bytes:MAX_SURVIVAL_KNOWLEDGE_BYTES,experience:true,
+    fields:SURVIVAL_KNOWLEDGE_FIELDS}
 };
 
 function validateKnowledgeBase(knowledge, isExperience=false){
@@ -66,10 +73,13 @@ function validateKnowledgeBase(knowledge, isExperience=false){
 
 function validateKnowledgeVariant(knowledge, variant){
   const spec=KNOWLEDGE_VARIANTS[variant],isExperience=spec.experience;
+  const isSurvival=variant==='survival';
   const bytes=new TextEncoder().encode(canonicalJson(knowledge)).length;
   const maxBytes=spec.bytes;
   requireCondition(bytes<=maxBytes,'Motivation knowledge exceeds budget','LIMIT_EXCEEDED');
   record(knowledge);
+  if(!Object.keys(knowledge).every(k=>spec.fields.includes(k))||Object.keys(knowledge).length!==spec.fields.length)
+    console.log('DBG',variant,'actual',Object.keys(knowledge).sort().join('|'),'expected',[...spec.fields].sort().join('|'));
   fields(knowledge,spec.fields);
   const expectedVersion=spec.version;
   requireCondition(knowledge.knowledgeVersion===expectedVersion,'Unknown motivation knowledge version','UNSUPPORTED_VERSION');
@@ -161,6 +171,13 @@ function validateKnowledgeVariant(knowledge, variant){
     }
   }
 
+  // M4A: the two actor-local views. They are validated by the survival state module, which is
+  // the single owner of their shapes; a null value is a lawful infeasibility, not an error.
+  if(isSurvival){
+    validateSurvivalKnowledgeQuoteView(knowledge.foodQuote);
+    validateSurvivalWorkOfferView(knowledge.workOffer);
+  }
+
   return knowledge;
 }
 
@@ -170,7 +187,10 @@ function validateKnowledge(knowledge){
 
 export function validateCognitionKnowledge(knowledge){
   inspectDescriptorTree(knowledge);
-  return validateKnowledgeVariant(knowledge, 'cognition');
+  // M4A: actor-2's survival Knowledge is the cognition Knowledge plus two actor-local views, so
+  // the cognition entry accepts either variant instead of demanding the cognition version.
+  const variant=knowledge?.knowledgeVersion===SURVIVAL_KNOWLEDGE_VERSION?'survival':'cognition';
+  return validateKnowledgeVariant(knowledge, variant);
 }
 
 function rejectDead(){throw fault('RULE_REJECTED','Motivation planner does not decide for the dead');}

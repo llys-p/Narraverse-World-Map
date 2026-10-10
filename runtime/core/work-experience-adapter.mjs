@@ -8,6 +8,8 @@ import { validateExperienceMotivationDecision, validateMotivationOutcome,
   validateCognitionMotivationDecision } from './motivation-state.mjs';
 import { validateSocietyActionResult } from './society.mjs';
 import { COGNITION_RULES, COGNITION_DECISION_VERSION, COGNITION_KNOWLEDGE_VERSION } from './cognition-state.mjs';
+import { SURVIVAL_RULES, SURVIVAL_DECISION_VERSION, SURVIVAL_KNOWLEDGE_VERSION, validateSurvivalOutcome,
+  validateSurvivalDecision } from './survival-state.mjs';
 
 const EVENT_FIELDS = ['eventSeq', 'tick', 'type', 'schemaVersion', 'sourceSystem',
   'commandId', 'causationEventSeqs', 'entityIds', 'payload'];
@@ -26,6 +28,10 @@ const EXPERIENCE_CHAIN = Object.freeze({ rulesVersion: EXPERIENCE_RULES, decisio
   knowledgeVersion: EXPERIENCE_KNOWLEDGE_VERSION, validateDecision: validateExperienceMotivationDecision });
 const COGNITION_CHAIN = Object.freeze({ rulesVersion: COGNITION_RULES, decisionVersion: COGNITION_DECISION_VERSION,
   knowledgeVersion: COGNITION_KNOWLEDGE_VERSION, validateDecision: validateCognitionMotivationDecision });
+// M4A: the same trusted nine-field projection under the survival rules. The frozen kernel
+// projection is unchanged; only the rule/decision/knowledge versions and validators differ.
+const SURVIVAL_CHAIN = Object.freeze({ rulesVersion: SURVIVAL_RULES, decisionVersion: SURVIVAL_DECISION_VERSION,
+  knowledgeVersion: SURVIVAL_KNOWLEDGE_VERSION, validateDecision: validateSurvivalDecision });
 
 export function projectOwnWorkOutcome(context, actorId, resolvedEventSeq) {
   return projectOwnWorkOutcomeFor(context, actorId, resolvedEventSeq, EXPERIENCE_CHAIN);
@@ -37,10 +43,18 @@ export function projectOwnCognitionWorkOutcome(context, actorId, resolvedEventSe
   return projectOwnWorkOutcomeFor(context, actorId, resolvedEventSeq, COGNITION_CHAIN);
 }
 
+// M4A: the survival chain for actor-2, and the cognition chain for actor-3, in the same world.
+export function projectOwnSurvivalWorkOutcome(context, actorId, resolvedEventSeq) {
+  const survival = context.rulesVersion === SURVIVAL_RULES && actorId === 'actor-2';
+  return projectOwnWorkOutcomeFor(context, actorId, resolvedEventSeq, survival ? SURVIVAL_CHAIN : COGNITION_CHAIN);
+}
+
 function projectOwnWorkOutcomeFor(context, actorId, resolvedEventSeq, spec) {
   inspectDescriptorTree(context);
   fields(context, ['simulationId', 'rulesVersion', 'eventLog', 'commandReceipts']);
-  requireCondition(context.rulesVersion === spec.rulesVersion, 'Unknown work experience rules', 'UNSUPPORTED_VERSION');
+  requireCondition(context.rulesVersion === spec.rulesVersion ||
+    (context.rulesVersion === SURVIVAL_RULES && spec.rulesVersion === COGNITION_RULES && actorId === 'actor-3'),
+    'Unknown work experience rules', 'UNSUPPORTED_VERSION');
   identifier(context.simulationId); integer(resolvedEventSeq, 1);
   requireCondition(['actor-1', 'actor-2', 'actor-3', 'actor-4'].includes(actorId), 'Unknown actor identity');
   denseArray(context.eventLog, 140000); record(context.commandReceipts);
@@ -51,7 +65,10 @@ function projectOwnWorkOutcomeFor(context, actorId, resolvedEventSeq, spec) {
     return matches[0];
   };
   const resolved = uniqueEvent(resolvedEventSeq), outcome = resolved.payload;
-  validateMotivationOutcome(outcome);
+  // M4A: under the survival rules actor-2's outcome carries the extra private food delta, so it
+  // is checked by the survival validator; every other actor keeps the frozen outcome shape.
+  if (context.rulesVersion === SURVIVAL_RULES && outcome.actorId === 'actor-2') validateSurvivalOutcome(outcome);
+  else validateMotivationOutcome(outcome);
   const owner = outcome.actorId;
   eventIdentity(resolved, 'MotivationDecisionResolved', 'motivation', owner);
   requireCondition(resolved.commandId === outcome.commandId, 'Resolved commandId differs from payload');
@@ -119,8 +136,11 @@ function projectOwnWorkOutcomeFor(context, actorId, resolvedEventSeq, spec) {
       herbs: result.after.inventory.herbs - result.before.inventory.herbs,
       health: decision.choice === 'UseMedicine' ? Math.min(100, 1000 - knowledge.self.health) : 0,
       fatigue: decision.choice === 'WorkForPay' ? Math.min(150, 1000 - knowledge.self.fatigue) : 0 };
+    // M4A: actor-2's survival outcome also carries the private food delta, and records the real
+    // price paid for both purchases.
+    if (context.rulesVersion === SURVIVAL_RULES && outcome.actorId === 'actor-2') delta.food = result.after.inventory.food - result.before.inventory.food;
     requireCondition(outcome.code === null && outcome.failureOwner === null && canonicalJson(outcome.delta) === canonicalJson(delta) &&
-      outcome.price === (decision.choice === 'BuyMedicine' ? result.price : null) &&
+      outcome.price === (['BuyMedicine', 'BuyFood'].includes(decision.choice) ? result.price : null) &&
       outcome.publicFoodProduced === (decision.choice === 'WorkForPay' ? result.foodProduced : 0), 'Resolved result semantics mismatch');
   } else {
     requireCondition(outcome.status === 'rejected' && outcome.code === 'RULE_REJECTED' &&

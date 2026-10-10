@@ -13,7 +13,12 @@ import * as mindFixture from '../fixtures/mind-village.mjs';
 import * as mindRuntime from '../core/mind-runtime.mjs';
 import * as mindKnowledge from '../knowledge/mind-knowledge.mjs';
 import { parseStrictJson } from './strict-json.mjs';
+import { SURVIVAL_RULES } from '../core/survival-state.mjs';
+// The frozen inspector identity lives with the projection that serves it.
+const SURVIVAL_INSPECTOR_VERSION = 'survival-inspector-v1';
+const MAX_SURVIVAL_INSPECTOR_BYTES = 131072;
 export const MAX_COMMAND_BYTES=4096;
+export const SURVIVAL_SERVICE_FORMAT=7;
 export const MAX_SERVICE_ADVANCE_TICKS=1440;
 export { MIND_RULES };
 const _mindBackend={fixture:mindFixture,runtime:mindRuntime,knowledge:mindKnowledge};
@@ -111,6 +116,54 @@ export function requireCognitionBackend(){
   requireCondition(backend,'M3 cognition runtime module is not available in this deployment','UNSUPPORTED_VERSION');
   return backend;
 }
+// M4A contract §3.1: the survival backend loader. Same recording shape as the M2/M3 loaders.
+// Only an ERR_MODULE_NOT_FOUND for one of the exact target modules themselves may stay pending;
+// anything else (bad exports, syntax, transitive failure, init throw) fails with the cause.
+const SURVIVAL_MODULES={
+  fixture:{specifier:'../fixtures/survival-village.mjs',exports:['defaultSurvivalVillageConfig','createSurvivalVillage','survivalSystems']},
+  runtime:{specifier:'../core/motivation-runtime.mjs',exports:['validateSurvivalWorld','executeSurvivalPlayerIntent','describeSurvivalPlayerActions']},
+  knowledge:{specifier:'../knowledge/survival-knowledge.mjs',exports:['buildSurvivalKnowledge','projectSurvivalInspector']},
+};
+let _survivalBackend=null;
+export async function loadSurvivalBackend(){
+  if(_survivalBackend?.backend)return _survivalBackend;
+  if(_survivalBackend?.failure)throw _survivalBackend.failure;
+  const backend={};
+  for(const [name,{specifier,exports}] of Object.entries(SURVIVAL_MODULES)){
+    let module;
+    try{
+      module=await import(specifier);
+      for(const key of exports)requireCondition(typeof module[key]==='function',`${specifier} is missing survival export ${key}`,'UNSUPPORTED_VERSION');
+      if(name==='knowledge'){
+        requireCondition(module.SURVIVAL_INSPECTOR_VERSION===SURVIVAL_INSPECTOR_VERSION,
+          'Incompatible survival inspector version','UNSUPPORTED_VERSION');
+        requireCondition(module.MAX_SURVIVAL_INSPECTOR_BYTES===131072,
+          'Incompatible survival inspector budget','UNSUPPORTED_VERSION');
+      }
+    }
+    catch(error){
+      const dependencyPending=error?.code==='ERR_MODULE_NOT_FOUND' && error.url===new URL(specifier,import.meta.url).href;
+      _survivalBackend={backend:null,dependencyPending,missingSpecifier:dependencyPending?specifier:null,
+        error:String(error?.message??error),errorCode:error?.code??null,failure:dependencyPending?null:error};
+      if(!dependencyPending)throw error;
+      return _survivalBackend;
+    }
+    backend[name]=module;
+  }
+  _survivalBackend={backend,dependencyPending:false,missingSpecifier:null,error:null,errorCode:null,failure:null};
+  return _survivalBackend;
+}
+export function survivalBackendState(){
+  return _survivalBackend?{available:Boolean(_survivalBackend.backend),dependencyPending:_survivalBackend.dependencyPending,
+    missingSpecifier:_survivalBackend.missingSpecifier,error:_survivalBackend.error,errorCode:_survivalBackend.errorCode}
+    :{available:false,dependencyPending:false,missingSpecifier:null,error:'survival backend has not been loaded yet',errorCode:null};
+}
+export function requireSurvivalBackend(){
+  if(_survivalBackend?.failure)throw _survivalBackend.failure;
+  const backend=_survivalBackend?.backend;
+  requireCondition(backend,'M4A survival runtime module is not available in this deployment','UNSUPPORTED_VERSION');
+  return backend;
+}
 export function parseCommandBytes(bytes){return validateServiceCommandDto(parseStrictJson(bytes,MAX_COMMAND_BYTES));}
 export function validateServiceCommandDto(dto){
   fields(dto,['version','commandId','expectedRevision','type','payload']);
@@ -148,16 +201,20 @@ export function runtimeProfile(bundle){
   if(s.rulesVersion===COGNITION_RULES && s.fixtureId==='cognition-village'){
     return {serviceFormatVersion:6,rulesVersion:COGNITION_RULES,systems:requireCognitionBackend().fixture.cognitionSystems()};
   }
+  if(s.rulesVersion===SURVIVAL_RULES && s.fixtureId==='survival-village'){
+    return {serviceFormatVersion:7,rulesVersion:SURVIVAL_RULES,systems:requireSurvivalBackend().fixture.survivalSystems()};
+  }
   requireCondition(false,'Runtime service profile is not registered','UNSUPPORTED_VERSION');
 }
 export function projectPlayerSnapshot(bundle){
   const profile=runtimeProfile(bundle);let actions;
-  if(profile.serviceFormatVersion===5||profile.serviceFormatVersion===6){
+  if([5,6,7].includes(profile.serviceFormatVersion)){
     validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});
     const s=bundle.snapshot,p=s.world.playerModel,a=s.world.actorModel.actors.find(actor=>actor.actorId==='actor-4');
     requireCondition(p.actorId==='actor-4' && a,'Player identity is missing');
     const {actorId,name,occupation,location,simulationLevel,alive,deathTick,health,hunger,fatigue,needs}=a;
-    actions=profile.serviceFormatVersion===6?requireCognitionBackend().runtime.describeCognitionPlayerActions(bundle):
+    actions=profile.serviceFormatVersion===7?requireSurvivalBackend().runtime.describeSurvivalPlayerActions(bundle):
+      profile.serviceFormatVersion===6?requireCognitionBackend().runtime.describeCognitionPlayerActions(bundle):
       requireMotivationBackend().runtime.describeMotivationPlayerActions(bundle);
     return cloneData({apiVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,
       self:{identity:{actorId,name,occupation,location,simulationLevel,alive,deathTick},health,hunger,fatigue,needs,
@@ -183,5 +240,6 @@ export function projectMindInspector(bundle){
   const format=runtimeProfile(bundle).serviceFormatVersion;
   if(format===5)return cloneData(requireMotivationBackend().knowledge.projectMotivationInspector(bundle));
   if(format===6)return cloneData(requireCognitionBackend().knowledge.projectCognitionInspector(bundle));
+  if(format===7)return cloneData(requireSurvivalBackend().knowledge.projectSurvivalInspector(bundle));
   return cloneData(_mindBackend.knowledge.projectMindInspector(bundle));
 }

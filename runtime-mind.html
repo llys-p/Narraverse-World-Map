@@ -18,6 +18,7 @@
       <div id="m2-fact-food" hidden><dt>公仓粮</dt><dd id="fact-food">—</dd></div>
       <div><dt>公仓药材</dt><dd id="fact-herbs">—</dd></div>
       <div><dt>公布药价</dt><dd id="fact-price">—</dd></div>
+      <div id="surv-fact-food-price" hidden><dt>公布粮价</dt><dd id="fact-food-price">—</dd></div>
     </dl>
   </section>
   <section class="knowledge" aria-label="本人所知">
@@ -31,6 +32,7 @@
       <div id="m2-goal-row" hidden><dt>本人所知的健康目标</dt><dd id="self-current-goal">—</dd></div>
       <div><dt>钱包</dt><dd id="self-wallet">—</dd></div>
       <div><dt>私药</dt><dd id="self-herbs">—</dd></div>
+      <div id="surv-self-food" hidden><dt>私粮</dt><dd id="self-food">—</dd></div>
       <div><dt>已知报价</dt><dd id="self-quote">—</dd></div>
       <div><dt>判断（公仓是否有药）</dt><dd id="belief-value">—</dd></div>
       <div><dt>确信程度</dt><dd id="belief-confidence">—</dd></div>
@@ -47,6 +49,15 @@
       <div><dt>当前计划</dt><dd id="plan-active">—</dd></div>
       <div><dt>挂起的治疗计划</dt><dd id="plan-suspended">—</dd></div>
       <div><dt>已开门评估的请求</dt><dd id="plan-reviewed">—</dd></div>
+    </dl>
+  </section>
+  <section id="survival-food" class="survival" aria-label="取食与收入闭环" hidden>
+    <div class="section-title"><h2>取食与收入闭环</h2><span>本人可见的粮价与工作机会，以及权威回执；不等于权威库存</span></div>
+    <dl class="knowledge-readings">
+      <div class="wide"><dt>本人可知粮价（来源与时效）</dt><dd id="surv-food-quote">—</dd></div>
+      <div class="wide"><dt>本人工作机会</dt><dd id="surv-work-offer">—</dd></div>
+      <div class="wide"><dt>当前取食步骤</dt><dd id="surv-current-step">—</dd></div>
+      <div class="wide"><dt>为何等待 / 阻塞</dt><dd id="surv-wait-reason">—</dd></div>
     </dl>
   </section>
   <section id="cognition-review" class="cognition" aria-label="认知降频评审" hidden>

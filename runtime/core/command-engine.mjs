@@ -12,9 +12,10 @@ import { SOCIETY_RULES,applySocietyCommand,planSocietyDay,applySocietyAction,soc
 import { MEMORY_RULE_VERSIONS,isMemoryRules,prepareMemoryDay,planMemoryDay,applyMemoryAction,applyMemoryCommand,settleMemorySocietyDay,finishMemoryDay,validateMemoryDayPayload } from './memory-runtime.mjs';
 import { MIND_RULES,applyMindAction,applyMindCommand,applyMindStimuliTick,planMindDay,finishMindDay,prepareMindDay,settleMindSocietyDay,finishMindMemoryDay,mindDecisionPlannedFact,mindResolvedOutcome,mindResolvedFact,sealMindOutcome,pushMindObservation,mindRejectionObservation } from './mind-runtime.mjs';
 import { MOTIVATION_RULES } from './motivation-state.mjs';
-import { motivationRuntimeHooks, experienceRuntimeHooks, cognitionRuntimeHooks } from './motivation-runtime.mjs';
+import { motivationRuntimeHooks, experienceRuntimeHooks, cognitionRuntimeHooks, survivalRuntimeHooks } from './motivation-runtime.mjs';
 import { EXPERIENCE_RULES, inspectDescriptorTree, preflightExperienceData } from './experience-state.mjs';
 import { COGNITION_RULES } from './cognition-state.mjs';
+import { SURVIVAL_RULES } from './survival-state.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
 import { PLAYER_RULES,PLAY_RULES,playerDayFact,applyPlayerAction,playerActionFact } from './player-state.mjs';
 import { commandInput, inputFingerprint, cloneData, canonicalJson, fields, record, denseArray, own, put, fault,
@@ -67,7 +68,7 @@ function performTick(bundle, systems, mode) {
     const commitInput=(input)=>{
       requireCondition(receiptCount < MAX_COLLECTION, 'Receipt budget exceeded', 'LIMIT_EXCEEDED');
       let success, result, eventSeqs = [];
-      if((rulesVersion===PLAY_RULES||rulesVersion===MIND_RULES||rulesVersion===MOTIVATION_RULES||rulesVersion===EXPERIENCE_RULES||rulesVersion===COGNITION_RULES) && input.type==='PlayerAction'){
+      if((rulesVersion===PLAY_RULES||rulesVersion===MIND_RULES||rulesVersion===MOTIVATION_RULES||rulesVersion===EXPERIENCE_RULES||rulesVersion===COGNITION_RULES||rulesVersion===SURVIVAL_RULES) && input.type==='PlayerAction'){
         const applied=applyPlayerAction(s.world,input);s.world=applied.world;success=applied.success;result=applied.result;
         if(success)eventSeqs=[append(playerActionFact(input,result))];
       }else if(rulesVersion===MOTIVATION_RULES){
@@ -83,6 +84,11 @@ function performTick(bundle, systems, mode) {
       }else if(rulesVersion===COGNITION_RULES){
         requireCondition(input.type==='SocietyAction','Unexpected cognition command');
         const applied=cognitionRuntimeHooks.applyAction(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null);
+        s.world=applied.world;success=applied.success;result=applied.result;
+        if(success)eventSeqs=[append(societyActionFact(input,result))];
+      }else if(rulesVersion===SURVIVAL_RULES){
+        requireCondition(input.type==='SocietyAction','Unexpected survival command');
+        const applied=survivalRuntimeHooks.applyAction(s.world,input.payload,input.payload.action==='Hunt'?rng.next():null);
         s.world=applied.world;success=applied.success;result=applied.result;
         if(success)eventSeqs=[append(societyActionFact(input,result))];
       }else if(rulesVersion===MIND_RULES){
@@ -131,7 +137,7 @@ function performTick(bundle, systems, mode) {
     // daily business; observations only update on activity ticks, never via extra loops.
     if (rulesVersion === MIND_RULES) applyMindStimuliTick(s.world, failedTick, append);
     if (rulesVersion === MIND_RULES) s.world.mindModel.cursor = s.nextEventSeq - 1;
-    const motivationContext=(rulesVersion===MOTIVATION_RULES?motivationRuntimeHooks:rulesVersion===EXPERIENCE_RULES?experienceRuntimeHooks:rulesVersion===COGNITION_RULES?cognitionRuntimeHooks:null)?.beforeSystems(s,candidate.eventLog,failedTick,append,(raw)=>{
+    const motivationContext=(rulesVersion===MOTIVATION_RULES?motivationRuntimeHooks:rulesVersion===EXPERIENCE_RULES?experienceRuntimeHooks:rulesVersion===COGNITION_RULES?cognitionRuntimeHooks:rulesVersion===SURVIVAL_RULES?survivalRuntimeHooks:null)?.beforeSystems(s,candidate.eventLog,failedTick,append,(raw)=>{
       const input=commandInput(raw);requireCondition(input.targetTick===failedTick&&!own(s.commandReceipts,input.commandId),'Motivation/experience internal due tick/ID mismatch');
       requireCondition(s.nextInputSeq<Number.MAX_SAFE_INTEGER,'Motivation/experience input overflow','LIMIT_EXCEEDED');
       commitInput({...input,inputSeq:s.nextInputSeq++});return s.commandReceipts[input.commandId];
@@ -187,17 +193,17 @@ function performTick(bundle, systems, mode) {
     const envelope = () => {
       const { world, nextEntityId, nextEventSeq: eventCounter, ...protectedFields } = s;
       return canonicalJson({ ...protectedFields,
-        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
-        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
-        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
-        ...([ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
+        ...([RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion) ? { resourceConfig: world.resourceModel.config } : {}),
+        ...([ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion) ? { ecologyConfig: world.ecologyModel.config } : {}),
+        ...([MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion) ? { marketConfig: world.marketModel.config } : {}),
+        ...([ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion)?{actorConfig:world.actorModel.config}:{}),
         ...(rulesVersion===HUNTER_RULES?{hunterConfig:world.hunterModel.config}:{}),
-        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion)?{societyConfig:world.societyModel.config}:{}),
-        ...((isMemoryRules(rulesVersion)||[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion))?{memoryConfig:world.memoryModel.config}:{}),
-        ...([MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion)?{mindConfig:world.mindModel.config}:{}),
-        ...([MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion)?{motivationConfig:world.motivationModel.config}:{}),
-        ...([EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion)?{experienceConfig:world.experienceModel.config}:{}),
-        ...(rulesVersion===COGNITION_RULES?{cognitionConfig:world.cognitionModel.config}:{}) });
+        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion)?{societyConfig:world.societyModel.config}:{}),
+        ...((isMemoryRules(rulesVersion)||[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion))?{memoryConfig:world.memoryModel.config}:{}),
+        ...([MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion)?{mindConfig:world.mindModel.config}:{}),
+        ...([MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion)?{motivationConfig:world.motivationModel.config}:{}),
+        ...([EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion)?{experienceConfig:world.experienceModel.config}:{}),
+        ...([COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion)?{cognitionConfig:world.cognitionModel.config}:{}) });
     };
     const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
@@ -205,7 +211,7 @@ function performTick(bundle, systems, mode) {
         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
         ...([MARKET_RULES,ACTOR_RULES].includes(rulesVersion) ? { populationCauses: Object.freeze(marketCauses(candidate.eventLog)) } : {}),
         ...(rulesVersion===HUNTER_RULES?{populationCauses:Object.freeze(hunterCauses(candidate.eventLog))}:{}),
-        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(rulesVersion)?{populationCauses:Object.freeze(societyCauses(candidate.eventLog))}:{}),
+        ...([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion)?{populationCauses:Object.freeze(societyCauses(candidate.eventLog))}:{}),
         emitFact(fact) { return append(validateFact(fact, due.systemId, rulesVersion)); } };
       const returned = systems[due.systemId](context, Object.freeze({ ...due }));
       if (returned && typeof returned.then === 'function') {
@@ -228,6 +234,7 @@ function performTick(bundle, systems, mode) {
     if(rulesVersion===MOTIVATION_RULES)motivationRuntimeHooks.afterSystems(s,candidate.eventLog,failedTick,append,motivationContext);
     if(rulesVersion===EXPERIENCE_RULES)experienceRuntimeHooks.afterSystems(s,candidate.eventLog,failedTick,append,motivationContext);
     if(rulesVersion===COGNITION_RULES)cognitionRuntimeHooks.afterSystems(s,candidate.eventLog,failedTick,append,motivationContext);
+    if(rulesVersion===SURVIVAL_RULES)survivalRuntimeHooks.afterSystems(s,candidate.eventLog,failedTick,append,motivationContext);
     requireCondition(s.nextEventSeq === nextEventSeq, 'System rewrote event counter');
     requireCondition(s.nextEntityId <= Number.MAX_SAFE_INTEGER, 'Entity ID overflow', 'LIMIT_EXCEEDED');
     requireCondition(Number.isSafeInteger(s.nextEntityId) && s.nextEntityId >= previousEntityId, 'System reduced/invalidated entity ID counter');
@@ -260,6 +267,12 @@ function canonicalSystems(rulesVersion) {
     ctx.snapshot.world = result.world;
     ctx.emitFact({ type, sourceSystem: id, commandId: null, causationEventSeqs: ctx.populationCauses ?? [], entityIds: [], payload: result.payload });
   } });
+  // M4A: the survival profile registers the tick-1 publication task. It emits nothing, so the
+  // canonical proof only needs the system id to exist; the quote itself is published by the
+  // runtime's beforeSystems hook from the real world state at that tick.
+  if (rulesVersion === SURVIVAL_RULES)
+    return { society: define('society', 'SocietyDaySettled', survivalRuntimeHooks.settleDay, true).society,
+      survival() {} };
   if (rulesVersion === RESOURCE_RULES) return define('resources', 'ResourceDaySettled', settleResourceDay, false);
   if (rulesVersion === ECOLOGY_RULES) return define('ecology', 'EcologyDaySettled', settleEcologyDay, true);
   if (rulesVersion === MARKET_RULES) return define('market', 'EconomyDaySettled', settleMarketDay, true);
@@ -269,6 +282,7 @@ function canonicalSystems(rulesVersion) {
   if (rulesVersion===MOTIVATION_RULES) return define('society','SocietyDaySettled',motivationRuntimeHooks.settleDay,true);
   if (rulesVersion===EXPERIENCE_RULES) return define('society','SocietyDaySettled',experienceRuntimeHooks.settleDay,true);
   if (rulesVersion===COGNITION_RULES) return define('society','SocietyDaySettled',cognitionRuntimeHooks.settleDay,true);
+  if (rulesVersion===SURVIVAL_RULES) return define('society','SocietyDaySettled',survivalRuntimeHooks.settleDay,true);
   if (rulesVersion===MIND_RULES) return define('society','SocietyDaySettled',settleMindSocietyDay,true);
   if (isMemoryRules(rulesVersion)) return define('society','SocietyDaySettled',settleMemorySocietyDay,true);
   throw fault('UNSUPPORTED_VERSION', 'No canonical transition for these rules');
@@ -288,7 +302,7 @@ export function createSimulationSession(bundle, systems) {
   fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
   const registered = Object.freeze({ ...systems });
   validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
-  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion),
+  requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(bundle.snapshot.rulesVersion),
     'Session rules are not registered', 'UNSUPPORTED_VERSION');
   let current = freezeData(cloneBundle(bundle)), busy = false;
   const stats = { idleTicks: 0, activityTicks: 0 };
@@ -304,12 +318,15 @@ export function createSimulationSession(bundle, systems) {
           let nextActivity = Infinity;
           for (const command of current.snapshot.pendingCommands) nextActivity = Math.min(nextActivity, command.targetTick);
           for (const task of current.snapshot.scheduledTasks) nextActivity = Math.min(nextActivity, task.nextDueTick);
-          if ([MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(current.snapshot.rulesVersion)) {
+          if ([MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(current.snapshot.rulesVersion)) {
+            // Tick 1 is an activity tick under the survival rules so the public food quote is
+            // published with the real opening price/stock instead of a later reconstruction.
+            if (current.snapshot.rulesVersion === SURVIVAL_RULES && current.snapshot.tick === 0) nextActivity = 1;
             const mind = current.snapshot.world.mindModel;
             if (mind.scriptCursor < mind.config.stimuli.length)
               nextActivity = Math.min(nextActivity, mind.config.stimuli[mind.scriptCursor].tick);
           }
-          if([MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(current.snapshot.rulesVersion)){const motivation=current.snapshot.world.motivationModel;
+          if([MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(current.snapshot.rulesVersion)){const motivation=current.snapshot.world.motivationModel;
             if(motivation.requestCursor<motivation.config.requests.length)nextActivity=Math.min(nextActivity,motivation.config.requests[motivation.requestCursor].tick);}
           const idleTarget = Math.min(target, nextActivity - 1);
           if (idleTarget > current.snapshot.tick) {

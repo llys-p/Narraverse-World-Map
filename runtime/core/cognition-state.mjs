@@ -14,6 +14,11 @@ export const COGNITION_RUNTIME_STATE_VERSION = 'cognition-runtime-state-v1';
 export const COGNITION_MOTIVATION_STATE_VERSION = 'cognition-motivation-state-v1';
 export const COGNITION_KNOWLEDGE_VERSION = 'cognition-knowledge-v1';
 export const COGNITION_DECISION_VERSION = 'cognition-decision-v1';
+// M4A: the same frozen cognition runtime model under the bounded survival rules. Only the
+// version string and actor-2's review-anchor prefix differ; fields, budgets, roster and the
+// review kernel are untouched.
+export const SURVIVAL_COGNITION_STATE_VERSION = 'survival-cognition-state-v1';
+export const SURVIVAL_DECISION_ID_PREFIX = 'survival-day-';
 export const MAX_COGNITION_MODEL_BYTES = 32768;
 export const MAX_COGNITION_KNOWLEDGE_BYTES = 16384;
 export const MAX_COGNITION_EVIDENCE_REFS = 71;
@@ -93,11 +98,22 @@ export function createCognitionModel(simulationId, config) {
 }
 
 export function validateCognitionModel(model) {
+  return validateCognitionModelFor(model, COGNITION_RUNTIME_STATE_VERSION, DECISION_ID_PREFIX);
+}
+
+// M4A: the survival profile carries the same model shape and the same frozen review kernel
+// under `survival-cognition-state-v1`, with actor-2's anchors on the `survival-day-` prefix.
+export function validateSurvivalCognitionModel(model) {
+  inspectDescriptorTree(model);
+  return validateCognitionModelFor(model, SURVIVAL_COGNITION_STATE_VERSION, SURVIVAL_DECISION_ID_PREFIX);
+}
+
+function validateCognitionModelFor(model, expectedVersion, prefix) {
   inspectDescriptorTree(model);
   requireCondition(byteLength(model) <= MAX_COGNITION_MODEL_BYTES, 'Cognition model exceeds byte budget', 'LIMIT_EXCEEDED');
   record(model);
   fields(model, MODEL_FIELDS);
-  requireCondition(model.version === COGNITION_RUNTIME_STATE_VERSION, 'Unknown cognition model version', 'UNSUPPORTED_VERSION');
+  requireCondition(model.version === expectedVersion, 'Unknown cognition model version', 'UNSUPPORTED_VERSION');
   identifier(model.simulationId);
   validateCognitionConfig(model.config);
   requireCondition(model.configFingerprint === canonicalJson(model.config), 'Cognition config fingerprint mismatch');
@@ -123,7 +139,11 @@ export function validateCognitionModel(model) {
     } else {
       requireCondition(anchored, 'Completed cognition review without its anchor');
       identifier(actor.lastReviewDecisionId);
-      requireCondition(actor.lastReviewDecisionId === DECISION_ID_PREFIX + reviewTick / TICKS_PER_DAY + '-' + actor.actorId,
+      // Under the survival rules actor-2 anchors on the survival prefix while actor-3 keeps the
+      // cognition prefix; both must match their own latest review tick.
+      const anchorPrefix = expectedVersion === SURVIVAL_COGNITION_STATE_VERSION ?
+        (actor.actorId === 'actor-2' ? SURVIVAL_DECISION_ID_PREFIX : DECISION_ID_PREFIX) : prefix;
+      requireCondition(actor.lastReviewDecisionId === anchorPrefix + reviewTick / TICKS_PER_DAY + '-' + actor.actorId,
         'Cognition review anchor does not match the latest review tick');
       integer(actor.lastReviewEventSeq, 1);
     }
