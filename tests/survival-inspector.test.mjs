@@ -92,8 +92,8 @@ test('§3.2: the food quote names its real source and its real expiry', () => {
   assert.equal(laterKnowledge.foodQuote.observedTick, settled.tick, 'the latest public settlement wins');
   assert.equal(laterKnowledge.foodQuote.sourceEventSeq, settled.eventSeq);
   assert.equal(laterKnowledge.foodQuote.expiresTick, settled.tick + 288);
-  assert.equal(later.eventLog.filter(e => e.type === SURVIVAL_FOOD_QUOTE_EVENT).length, 1,
-    'the announcement is published exactly once');
+  assert.deepEqual(later.eventLog.filter(e => e.type === SURVIVAL_FOOD_QUOTE_EVENT).map(e => e.tick), [1, 144, 288],
+    'local observations occur at arrival and before each daily decision, never every tick');
 });
 
 test('§3.2: the work offer is only ever the actor\'s own pending request', () => {

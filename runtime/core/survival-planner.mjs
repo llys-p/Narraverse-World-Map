@@ -171,21 +171,6 @@ export function collectSurvivalCandidates(knowledge) {
   return collectCandidates(spec, penalty);
 }
 
-function stripWageFlag(knowledge) {
-  if (!Object.hasOwn(knowledge, 'publicCanPayWage')) return knowledge;
-  const { publicCanPayWage, ...rest } = knowledge;
-  return rest;
-}
-
-// Whether the village purse can actually pay one wage, excluding this actor's private wallet.
-// Public cash is deliberately NOT part of Knowledge; the runtime supplies this single boolean
-// so the narrow food path never selects a Work that authority is bound to refuse.
-export function setSurvivalWagePayable(knowledge, payable) {
-  const spec = validateSurvivalKnowledge(knowledge);
-  requireCondition(typeof payable === 'boolean', 'Invalid survival wage affordability flag');
-  return { ...spec, publicCanPayWage: payable };
-}
-
 // ---------------------------------------------------------------------------
 // The narrow food / income rule (§4)
 // ---------------------------------------------------------------------------
@@ -209,9 +194,6 @@ function workForFoodEligible(knowledge, quote) {
   if (offer.requestId !== knowledge.duty.requestId) return false;
   // The genuine Work soft guard: body conditions and the request window are never bypassed.
   if (workGuard(self, knowledge, null) !== null) return false;
-  // A wage the public purse cannot actually pay is not an income opportunity, so the narrow
-  // food path must not select Work that authority is bound to refuse.
-  if (knowledge.publicCanPayWage === false) return false;
   return BigInt(self.wallet) + BigInt(offer.wage) >= BigInt(quote.price);
 }
 
@@ -283,17 +265,18 @@ const canonicalHealthSteps = self => self.inventory.herbs === 0 ? ['BuyMedicine'
 export function planSurvivalDecision(knowledge, context) {
   inspectDescriptorTree({ knowledge, context });
   validateSurvivalContext(context, false);
-  // The wage affordability flag is a planning input, not a Knowledge field: it is read here and
-  // then dropped so the frozen Knowledge recorded in the decision keeps its exact field set.
-  const wagePayable = knowledge.publicCanPayWage;
-  // Rebuild rather than assign: the caller's Knowledge is frozen and must never be mutated.
-  const spec = { ...validateSurvivalKnowledge(stripWageFlag(knowledge)),
-    publicCanPayWage: wagePayable === undefined ? true : wagePayable };
+  const spec = validateSurvivalKnowledge(knowledge);
   if (!spec.self.alive) rejectDead();
 
   const self = spec.self, tick = spec.tick, day = tick / DAY_TICKS;
   let currentGoal = self.currentGoal === null ? null : cloneData(self.currentGoal);
-  const nextGoalId = self.nextGoalId;
+  let nextGoalId = self.nextGoalId;
+  if (currentGoal === null && self.health <= HEALTH_GOAL_TRIGGER && day >= self.cooldownUntilDay) {
+    requireCondition(nextGoalId < Number.MAX_SAFE_INTEGER && day <= Number.MAX_SAFE_INTEGER - HEALTH_GOAL_DEADLINE_DAYS,
+      'Survival health goal counter/deadline overflow', 'LIMIT_EXCEEDED');
+    currentGoal = { goalId: nextGoalId++, kind: 'recover-health', step: 'wait', startDay: day,
+      deadlineDay: day + HEALTH_GOAL_DEADLINE_DAYS, failures: 0, target: HEALTH_GOAL_TARGET };
+  }
   const penalty = spec.useWorkExperience ? spec.experience.penaltyPermille : 0;
   const candidates = collectCandidates(spec, penalty);
   const eligibleOf = action => candidates.find(candidate => candidate.action === action).eligible;
@@ -508,6 +491,14 @@ export function continueSurvivalPlan(knowledge, context) {
 
   let gateReason, choice, reasonCode, boundPlan = null;
   const transitions = [];
+  // Expiry applies even on a reduced-review day, before any committed action is chosen.
+  for (const slot of ['activePlan', 'suspendedPlan']) {
+    const plan = slot === 'activePlan' ? activePlan : suspendedPlan;
+    if (plan === null || plan.kind !== SURVIVAL_FOOD_PLAN_KIND || day <= plan.deadlineDay) continue;
+    transitions.push({ planId: plan.planId, kind: plan.kind, fromStatus: plan.status,
+      toStatus: 'cancelled', reasonCode: 'DEADLINE_EXPIRED' });
+    if (slot === 'activePlan') activePlan = null; else suspendedPlan = null;
+  }
   // Maintain must not start an earning step whose request is gone: the plan is cancelled and
   // the day waits, never working on the strength of a historical requestId.
   const expiredWork = (slot, plan) => {

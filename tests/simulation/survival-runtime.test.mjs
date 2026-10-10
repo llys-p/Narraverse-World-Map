@@ -206,9 +206,8 @@ test('§7 wage-refused: the planner attempts work and authority alone refuses it
   assert.equal(a.entry.lastOutcome.code, 'RULE_REJECTED');
   assert.equal(a.entry.lastOutcome.failureOwner.goalId, null, 'the failure carries no health goal');
   assert.equal(a.entry.lastOutcome.failureOwner.planId, a.entry.activePlan.planId);
-  // The narrow food path never applied: an unpayable wage is not an income opportunity, so this
-  // is the frozen plain-duty Work (aid-village) rather than a secure-food plan.
-  assert.notEqual(a.entry.activePlan.kind, SURVIVAL_FOOD_PLAN_KIND);
+  // Work eligibility follows the actor's visible offer and wallet; public cash is checked only by authority.
+  assert.equal(a.entry.activePlan.kind, SURVIVAL_FOOD_PLAN_KIND);
   assert.equal(a.entry.activePlan.status, 'blocked', 'the plan stays blocked, never pretending to recover');
   assert.equal(a.estate.ledger.wages, 0, 'and no wage was paid');
 });
@@ -246,10 +245,10 @@ test('§7 no-food: real hunger damage kills, and the next day stays dormant', ()
 });
 
 // ---------------------------------------------------------------------------
-// §7 the adversarial variant: a stale quote versus an empty stock
+// §7 the local observation variant: the empty market is visible
 // ---------------------------------------------------------------------------
 
-test('§7 adversarial: authority refuses on the real stock even though the stale quote allows it', () => {
+test('§7 local observation: a previously depleted market is seen before deciding', () => {
   const config = cloneData(defaultSurvivalVillageConfig('affordable'));
   config.memory.society.actors.market.ecology.resources.resources.food.initial = 61;
   config.memory.society.player.initialWallet = 10;
@@ -275,15 +274,18 @@ test('§7 adversarial: authority refuses on the real stock even though the stale
   assert.equal(bundle.snapshot.world.resources.food, 0, 'the public stock is really gone');
   assert.equal(bundle.snapshot.world.playerModel.wallet, 0);
 
-  // At tick 144 actor-2 only has the stale quote, so the soft candidate is feasible but the
-  // authoritative layer must refuse on the real stock.
+  // At tick 144 the nearby market is observed again before proposals are frozen.
   const s2 = createSimulationSession(bundle, fixture.systems);
   s2.advanceTicks(143);
   bundle = s2.getBundle();
   const a = actor2(bundle);
-  assert.equal(a.entry.lastDecision.choice, 'BuyFood', 'the stale quote drives a real attempt');
-  assert.equal(a.entry.lastOutcome.status, 'rejected', 'and authority refuses it');
-  assert.equal(a.entry.lastOutcome.code, 'RULE_REJECTED');
+  assert.equal(a.entry.lastDecision.choice, 'NoAction', 'the actor sees the empty market');
+  assert.equal(a.entry.lastOutcome.status, 'no-action');
+  assert.equal(a.entry.lastOutcome.code, null);
+  assert.equal(a.estate.ledger.failedActions, 0, 'a visible shortage is not a failed command');
+  const visible = JSON.parse(a.entry.lastDecision.knowledgeFingerprint).foodQuote;
+  assert.equal(visible.observedTick, DAY);
+  assert.equal(visible.available, false);
   assert.equal(a.estate.ledger.foodBought, 0, 'no ration was transferred');
   assert.equal(a.estate.ledger.foodUsed, 0, 'and none was consumed');
   assert.equal(a.estate.wallet, 30, 'the wallet was never charged');
@@ -295,10 +297,10 @@ test('§7 adversarial: authority refuses on the real stock even though the stale
 // the published facts themselves
 // ---------------------------------------------------------------------------
 
-test('§3.2: the food quote is published once at tick 1 and the offer with its request', () => {
+test('§3.2: food is observed at tick 1 and each local decision; the offer follows its request', () => {
   const { bundle } = advance('earn-then-buy', 2 * DAY);
   const quotes = bundle.eventLog.filter(e => e.type === SURVIVAL_FOOD_QUOTE_EVENT);
-  assert.equal(quotes.length, 1, 'exactly one public quote');
+  assert.deepEqual(quotes.map(e => e.tick), [1, DAY, 2 * DAY], 'one observation per local decision tick');
   assert.equal(quotes[0].tick, 1);
   assert.deepEqual(quotes[0].payload, { location: 'village', product: 'food', price: 10, available: true });
   assert.equal(quotes[0].sourceSystem, 'survival');
@@ -487,9 +489,9 @@ test('A2: the observed food quote expires exactly two days after it was observed
   const { bundle } = advance('affordable', 2 * DAY);
   const quote = bundle.eventLog.find(e => e.type === SURVIVAL_FOOD_QUOTE_EVENT);
   assert.equal(quote.tick, 1);
-  // Later days use the existing public day-settlement projection instead of new broadcasts.
+  // Each decision observes locally; the day settlement remains another public source.
   const settled = bundle.eventLog.filter(e => e.type === 'SocietyDaySettled');
   assert.equal(settled.length, 2);
-  assert.equal(bundle.eventLog.filter(e => e.type === SURVIVAL_FOOD_QUOTE_EVENT).length, 1);
+  assert.deepEqual(bundle.eventLog.filter(e => e.type === SURVIVAL_FOOD_QUOTE_EVENT).map(e => e.tick), [1, DAY, 2 * DAY]);
   assert.equal(SURVIVAL_QUOTE_TTL_TICKS, 288);
 });

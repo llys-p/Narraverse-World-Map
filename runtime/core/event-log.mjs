@@ -128,10 +128,10 @@ export function validateEventLog(eventLog, snapshot, systems) {
       requireCondition(memoryProfile && event.tick===event.payload.expiresTick,'Invalid announcement profile/clock');
       const {eventSeq,tick,schemaVersion,...fact}=event;validateMedicineAnnouncement(fact);
     }else if(event.type===SURVIVAL_FOOD_QUOTE_EVENT){
-      // The tick-1 public food quote: no command, no entity, published once by the new rules.
+      // Local public food observations: no command/entity, at most once on each allowed tick.
       const {eventSeq,tick,schemaVersion,...fact}=event;validateSurvivalFoodQuoteAnnouncement(fact);
-      requireCondition(survivalProfile && event.tick===1,'Invalid survival food quote profile/clock');
-      requireCondition(events.filter(e=>e.type===SURVIVAL_FOOD_QUOTE_EVENT).length===1,'Repeated survival food quote');
+      requireCondition(survivalProfile && (event.tick===1||event.tick%144===0),'Invalid survival food quote profile/clock');
+      requireCondition(events.filter(e=>e.type===SURVIVAL_FOOD_QUOTE_EVENT&&e.tick===event.tick).length===1,'Repeated survival food quote at one tick');
     }else if(event.type===SURVIVAL_WORK_OFFER_EVENT){
       const {eventSeq,tick,schemaVersion,...fact}=event;validateSurvivalWorkOfferAnnouncement(fact);
       requireCondition(survivalProfile,'Invalid survival work offer profile');

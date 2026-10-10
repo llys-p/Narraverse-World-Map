@@ -78,8 +78,6 @@ function validateKnowledgeVariant(knowledge, variant){
   const maxBytes=spec.bytes;
   requireCondition(bytes<=maxBytes,'Motivation knowledge exceeds budget','LIMIT_EXCEEDED');
   record(knowledge);
-  if(!Object.keys(knowledge).every(k=>spec.fields.includes(k))||Object.keys(knowledge).length!==spec.fields.length)
-    console.log('DBG',variant,'actual',Object.keys(knowledge).sort().join('|'),'expected',[...spec.fields].sort().join('|'));
   fields(knowledge,spec.fields);
   const expectedVersion=spec.version;
   requireCondition(knowledge.knowledgeVersion===expectedVersion,'Unknown motivation knowledge version','UNSUPPORTED_VERSION');
@@ -187,10 +185,7 @@ function validateKnowledge(knowledge){
 
 export function validateCognitionKnowledge(knowledge){
   inspectDescriptorTree(knowledge);
-  // M4A: actor-2's survival Knowledge is the cognition Knowledge plus two actor-local views, so
-  // the cognition entry accepts either variant instead of demanding the cognition version.
-  const variant=knowledge?.knowledgeVersion===SURVIVAL_KNOWLEDGE_VERSION?'survival':'cognition';
-  return validateKnowledgeVariant(knowledge, variant);
+  return validateKnowledgeVariant(knowledge, 'cognition');
 }
 
 function rejectDead(){throw fault('RULE_REJECTED','Motivation planner does not decide for the dead');}

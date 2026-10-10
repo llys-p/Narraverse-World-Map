@@ -33,7 +33,7 @@ import {SURVIVAL_RULES,SURVIVAL_MOTIVATION_STATE_VERSION,SURVIVAL_KNOWLEDGE_VERS
   SURVIVAL_WORK_OFFER_EVENT,MAX_SURVIVAL_KNOWLEDGE_BYTES,MAX_SURVIVAL_EVIDENCE_REFS,
   survivalFoodQuoteFrom,survivalWorkOfferFrom,
   validateSurvivalDecision,validateSurvivalOutcome,validateSurvivalMotivationModel} from './survival-state.mjs';
-import {planSurvivalDecision,continueSurvivalPlan,setSurvivalWagePayable} from './survival-planner.mjs';
+import {planSurvivalDecision,continueSurvivalPlan} from './survival-planner.mjs';
 import {deriveActorSurvivalSignals} from './survival-signals.mjs';
 import {survivalSystems} from '../fixtures/survival-village.mjs';
 
@@ -334,9 +334,10 @@ function setCursors(world,events,profile){
 function requestsTick(world,tick,append,context){
   const m=world.motivationModel;
   // M4A: the new world publishes one public food quote at tick 1, recording the real posted
-  // price and the real "there is food" state of that moment. Later days use the existing public
-  // day-settlement projection; nothing is broadcast every tick.
-  if(tick===1&&Object.hasOwn(world,'cognitionModel')&&world.cognitionModel.version===SURVIVAL_COGNITION_STATE_VERSION){
+  // price and availability. Before each daily decision, an actor present at the market can
+  // observe it again; these public facts reveal neither private wallets nor the village purse.
+  if((tick===1||tick%144===0)&&world.cognitionModel?.version===SURVIVAL_COGNITION_STATE_VERSION&&
+      body(world,SURVIVAL_ACTOR_ID).alive&&body(world,SURVIVAL_ACTOR_ID).location==='village'){
     append({type:SURVIVAL_FOOD_QUOTE_EVENT,sourceSystem:'survival',commandId:null,entityIds:[],causationEventSeqs:[],
       payload:{location:'village',product:'food',price:world.marketModel.prices.food,available:world.resources.food>0}});
   }
@@ -437,16 +438,11 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
     const review=cognitionReviews?cognitionReviews.get(entry.actorId):null;
     // Maintain never plans from scratch: it continues the frozen review anchor's own plan.
     const knowledge=review?review.knowledge:decisionKnowledge(world,events,entry.actorId,tick,snapshot.simulationId,profile);
-    // M4A: the planner may know whether the public purse can pay one wage, but that boolean
-    // never enters the frozen Knowledge the decision records.
-    const wagePayable=world.resources.gold>=world.memoryModel.config.society.economics.wage;
-    const planning=profile.survival&&entry.actorId===SURVIVAL_ACTOR_ID&&review.kernel.mode!=='maintain'?
-      setSurvivalWagePayable(knowledge,wagePayable):knowledge;
     const proposal=profile.survival&&entry.actorId===SURVIVAL_ACTOR_ID?
       (review.kernel.mode==='maintain'?
         continueSurvivalPlan(knowledge,{evaluationEventSeq:review.evalSeq,
           sourceReviewDecisionId:review.sourceReviewDecisionId,sourceReviewEventSeq:review.sourceReviewEventSeq}):
-        planSurvivalDecision(planning,{evaluationEventSeq:review.evalSeq,
+        planSurvivalDecision(knowledge,{evaluationEventSeq:review.evalSeq,
           sourceReviewDecisionId:null,sourceReviewEventSeq:null})):
       profile.cognition?(review.kernel.mode==='maintain'?
       continueCognitionPlan(knowledge,{evaluationEventSeq:review.evalSeq,
@@ -547,7 +543,7 @@ function observeResolvedWork(snapshot,events,item,resolvedSeq,append,profile){
 function applyActionFor(input,payload,sample,profile){
   validateWorldFor(input,false,profile);
   const entry=entryOf(input,payload.actorId);
-  let purchaseQuote=null,purchaseReject=false;
+  let purchaseReject=false;
   if(entry){const d=entry.lastDecision,p=entry.activePlan;
     requireCondition(d&&p&&d.choice===payload.action&&p.steps[p.stepIndex]===payload.action&&d.planId===p.planId&&d.goalId===p.goalId&&d.actorId===payload.actorId&&payload.goalId===(d.goalId??0),'Motivation command/decision/plan binding mismatch');
     if(profile.cognition||profile.survival)requireCondition(d.tick===(input.societyModel.day+1)*144,'Cognition authority requires the day decision tick');
@@ -605,8 +601,13 @@ function applyActionFor(input,payload,sample,profile){
   // A food purchase the authority cannot honour is refused outright: no stock moves, no money
   // moves, and the failure is reported as a normal rejected command.
   if(purchaseReject){
-    return {success:false,result:{code:'RULE_REJECTED'},
-      world:retainModels({...cloneData(input),memoryModel:cloneData(input.memoryModel),mindModel:cloneData(input.mindModel)},input,profile)};
+    const world=cloneData(input),state=agent(world,payload.actorId),actor=body(world,payload.actorId);
+    // Same personal-action refusal bookkeeping, preserving the suspended health goal.
+    if(actor.alive&&state.lastActionDay<state.day+1){
+      requireCondition(state.ledger.failedActions<Number.MAX_SAFE_INTEGER,'Survival failure counter overflow','LIMIT_EXCEEDED');
+      state.lastActionDay=state.day+1;state.lastAction=payload.action;state.ledger.failedActions++;
+    }
+    return {success:false,result:{code:'RULE_REJECTED'},world};
   }
   const result=applySocietyAction(projection,payload,sample,null);
   if(temporary)agent(result.world,payload.actorId).currentGoal=goal;
