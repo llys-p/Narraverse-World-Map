@@ -1,6 +1,8 @@
 # M4B：有界自主取食与收入闭环独立验收
 
-任务版本：`m4-survival-acceptance-v1`。本文件是独立验收任务书，不复制或改写公共合同；行为期望唯一引用 [M4A 有界自主取食与收入闭环](M4A-BOUNDED-SURVIVAL-TASK.md)。
+任务版本：`m4-survival-acceptance-v2`。本文件是独立验收任务书，不复制或改写公共合同；行为期望唯一引用 [M4A 有界自主取食与收入闭环](M4A-BOUNDED-SURVIVAL-TASK.md)。
+
+本轮中控精确代码交付：`520e838b162edae7419fcb69a4edb32c79bdb65e`，源码 `D:\Narraverse-World-Map-m4-controller @ codex/world-runtime-m4-controller`，仅本地。B 以此 SHA 导入，原 A 0bf08dd 不替代修正候选；159 项定向通过是中控证据，B 必须独立完成自己的门。
 
 ## 1. 坐标、依赖与停止点
 
@@ -9,6 +11,8 @@
 - A 交付 SHA 必须由中控精确派发。收到前只可准备不依赖 A 产物的独立期望；没有 SHA 不可检验 A 交付、不可宣称通过。缺少依赖时 required gate 非零阻断；skip/timeout/加载失败均不通过。
 - 只新增本文件 §2 列出的三份验收测试。测试证据可写入 ignored artifacts。不可修改生产、A 测试、既有 oracle、任何其他任务书/项目文档/看板。A 未到时可先编写独立断言，依赖门须非零报告“未交付”，不能给 PASS；中控提供精确 A SHA 后才导入并实跑真实链。
 - 仅本地精确提交测试文件，不 push、不合并 main、不部署、不推进 D3/D4。B 完成当前范围即停止，交中控独立审查。
+
+执行公共合同 m4-survival-contract-v2；原 A 0bf08dd 不是本轮验收目标，以中控修正候选精确 SHA 为准。
 
 公共合同的派发前疑点已由中控在 A §3～§5 钉定，见本任务末尾的执行口径。B 执行者只按钉定合同和收到的 A 精确交付 SHA 验收，不私自改写期望。
 
@@ -28,7 +32,7 @@
 
 ### S1：Knowledge 可见性与报价来源
 
-证明 actor-2 Knowledge 只有 A 指定字段；无公共现金、其他人私账、隐藏市场对象、原始回执。报价来自本人可见的 tick 1 公告或公开 `SocietyDaySettled` 投影，核对真实价格、available、来源序号、TTL 边界、未来/错主体拒绝及缺失/过期不可行。纯 DTO 只验形状和输入内绑定；错事件 seq/伪造报价真伪在 trusted projection、权威入口与 bundle 完整重演层验拒绝，不能要求不读事件的纯函数认证外部事实。以 descriptor/getter 反例确认 getter 调用数为 0，并覆盖额外键、稀疏数组、symbol、环和非 JSON 值。actor-3 仍得到 cognition Knowledge。
+证明 actor-2 Knowledge 只有 A 指定字段；无公共现金、其他人私账、隐藏市场对象、原始回执。报价来自本人在场时的 tick1 / 每日决策前现场公告或公开 `SocietyDaySettled` 投影；核对活着/在 village 的可见边界、每 tick 至多一次，以及观察→全体 proposal 冻结→命令执行的顺序，核对真实价格、available、来源序号、TTL 边界、未来/错主体拒绝及缺失/过期不可行。纯 DTO 只验形状和输入内绑定；错事件 seq/伪造报价真伪在 trusted projection、权威入口与 bundle 完整重演层验拒绝，不能要求不读事件的纯函数认证外部事实。以 descriptor/getter 反例确认 getter 调用数为 0，并覆盖额外键、稀疏数组、symbol、环和非 JSON 值。actor-3 仍得到 cognition Knowledge。
 
 ### S2：纯规划、锚点、健康计划与失败归属
 
@@ -40,7 +44,7 @@
 
 ### S4：无机会、工资拒绝与真实缺粮
 
-按 A `no-opportunity`、`wage-refused`、`no-food` 配置核对独立手算结果。区分合法等待、authoritative RULE_REJECTED、库存不足拒绝及真实死亡；工资拒绝不得发工资/产粮/买粮，只记一次本人失败与 Work 经验，过期请求不得重试；真实缺粮不得凭 wallet/报价造粮，死亡后 dormant 且历史保留。再按 A 明确授权的 affordable 对抗变体（分配前 food=61、player wallet=10）先证明 tick1 公告为 1 份/available=true，再通过原合法 PlayerBuy 在 tick1→2 买走最后一份；tick144 仅凭旧报价作软可行决定，权威拒绝且不转移/消费私粮、不产生 Work 经验。不得用篡改 world、报价或 receipt 代替此链。
+按 A `no-opportunity`、`wage-refused`、`no-food` 配置核对独立手算结果。区分合法等待、authoritative RULE_REJECTED、库存不足拒绝及真实死亡；工资拒绝不得发工资/产粮/买粮，只记一次本人失败与 Work 经验，过期请求不得重试；真实缺粮不得凭 wallet/报价造粮，死亡后 dormant 且历史保留。再分别执行 A §7 两个对抗变体：玩家于 tick2 买光后，tick144 必须观察到缺货并合法等待（无失败账）；同日最后一粮竞争时，先看到有粮、后被 actor-1 合法买走，actor-2 真提交被拒，failedActions 恰加1且不转移/消费私粮、不产生 Work 经验。不得用篡改 world、报价或 receipt 代替此链。
 
 ### S5：资产、幂等与生命边界
 
@@ -59,6 +63,12 @@
 ### S8：真实浏览器检查器与旧 cognition 对照
 
 隔离启动当前 A checkout 的临时服务，在真实浏览器通过 GET/HEAD 验证 `/runtime-mind.html`、`/api/runtime/mind`：actor-2 展示本人钱包/私粮、报价来源与时效、workOffer、当前步骤、等待原因、真实回执和日结消费；静态公开事实与本人账分开，旧决定不被改写，反事实诚实为 null。验证断连、低 revision 不回退已显示数据、用户文本不执行；旧 cognition UI 路径/字段保持。禁止浏览器发写请求、调用不存在的 endpoint 或连接旧实例。
+
+## 中控修正后的重点交接
+
+中控原 A 反例包括隐藏工资支付布尔值进入规划器、首次健康目标漏建、真实购粮拒绝漏记失败、maintain 超期执行、旧 cognition validator 错收 survival 输入。验收以中控修正提交为目标；现有中控测试只是定向佐证，不能代替 B 的独立期望。额外核对 §S2 的真实健康目标保护链、报价未来时间/请求绑定，以及旧三 profile 完整 bundle/业务导出的基准对照；只报告实际执行过的消费者与浏览器证据。
+
+B 计划路径已有 .m4b-tasks 目录且尚未被中控确认是 Git 工作树，开工必须先清点归属，保留现有内容；不得删目录后重建或猜一个浮动分支。代码仅本地，不因文档远端发布就声称代码可从 GitHub 取得。
 
 ## 4. 完成条件与交付
 

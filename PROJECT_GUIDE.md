@@ -61,7 +61,7 @@ M3-1 已交付的工作经验纯内核处理最近四次本人工作结果记录
 
 已验收主线：A/B/C/D2 → M0/M1/M2 → 完整 M3（工作经验、认知降频、服务/检查器与真实保存恢复）。当前发布 **M4：有界自主取食与收入闭环**；其后才评估 D3/D4 遭遇与场景连续、F/G 的真实消费需求。E 是可选窄对照，不阻塞主线，旧 E1 不自动重开。
 
-本轮只有两份任务书：[M4A：实现与唯一公共合同](tasks/M4A-BOUNDED-SURVIVAL-TASK.md)、[M4B：独立验收](tasks/M4B-SURVIVAL-ACCEPTANCE-TASK.md)。代码基准 667628166546a3f342873105b93a8684063504c1；合同 m4-survival-contract-v1。已发布、待派发不等于已开工，准确发布提交和实际回执见 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)。本轮中控停止于文档发布，不代执行者启动实现，也不自动推进 D3/D4。
+本轮只有两份任务书：[M4A：实现与唯一公共合同](tasks/M4A-BOUNDED-SURVIVAL-TASK.md)、[M4B：独立验收](tasks/M4B-SURVIVAL-ACCEPTANCE-TASK.md)。代码基准 667628166546a3f342873105b93a8684063504c1；合同 m4-survival-contract-v2。A 已交付，中控在独立树修正；B 尚待精确候选验收，详见 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)。NPC 可观察身处地点的公开情况，仍不能偷读公共现金、他人私账或全知世界。中控可按用户授权修订不合理规则并同步独立期望，不自动推进 D3/D4。
 
 闭环仅扩展新 survival-village/m-survival-v1 中的 actor-2：本人私粮不足 → 本人可知的有来源报价/合法工作机会 → 买粮或工作后买粮 → 私有库存真实入账 → 原日结真实消费。Work 成功正常关闭职责，后续购粮步骤仍保留承诺；不扫描公共现金来作心智选择。无收入、付不起工资、真实缺粮时等待/失败/死亡都允许，不以 NoAction 越少或永久存活为目标。
 

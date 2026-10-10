@@ -1,12 +1,16 @@
 # M4A：有界自主取食与收入闭环（含唯一公共合同）
 
-合同版本：`m4-survival-contract-v1`。状态：已发布、待派发；发布不代表开工。发布时间：2026-10-10（Asia/Shanghai）。合同来源以中控派发提示词中的完整文档发布 SHA 钉定；不拿文档仓库查运行时代码对象，不拿浮动 HEAD 替代发布版本。
+合同版本：`m4-survival-contract-v2`。状态：原 A 已交付，中控修正候选待 B 独立验收；M4 未通过。发布时间：2026-10-10（Asia/Shanghai）。合同来源以中控派发提示词中的完整文档发布 SHA 钉定；不拿文档仓库查运行时代码对象，不拿浮动 HEAD 替代发布版本。
+
+修订依据（2026-10-10）：用户允许修改不合理规则，并明确 NPC 至少能看到周围情况。v1 发布提交 70e34d5fcb31cbf95a8f5c31ea2b1b2cce96912e 保留；v2 将原来的陈旧报价反例拆为现场缺货观察与同日竞争反例，不降低权威拒绝、守恒、重演或浏览器门槛。原 A 提交 0bf08dd7414494d945f683ef44ffb2a93d2df7e7 保持原树不动；中控修正树 D:\Narraverse-World-Map-m4-controller，分支 codex/world-runtime-m4-controller，交接以中控最终精确 SHA 为准。
 
 ## 给用户看
 
 让 actor-2 在一个短期村庄场景中，因为私粮不足而直接买粮，或先接受本人收到的合法工作机会、取得工资，再买粮。粮食真实进入私有库存，吃饭仍由既有日结执行。无供给、无合法收入或工资付不出时，允许等待、失败乃至死亡。
 
 本轮只实现这个小闭环和现有检查器的必要展示，不承诺永久生存、百日平衡、全人口智能或新遭遇系统。M3 已验收，不能改写其合同、旧轨迹或旧存档。
+
+本轮中控精确代码交付：`520e838b162edae7419fcb69a4edb32c79bdb65e`，源码 `D:\Narraverse-World-Map-m4-controller @ codex/world-runtime-m4-controller`，仅本地。B 以此 SHA 导入，原 A 0bf08dd 不替代修正候选；159 项定向通过是中控证据，B 必须独立完成自己的门。
 
 ## 1. 坐标、所有权与停止点
 
@@ -40,6 +44,8 @@
 | inspector mindVersion | `survival-inspector-v1`，apiVersion `1` |
 | ServiceCommit format | `7`，仅对应本 profile/rules |
 
+M4 原 A 尚未验收，v2 仍使用下表新规则标识；原 A 实验存档不承诺迁移，修订后的事件流应按新候选从头创建或完整重演验证，不混用旧实验快照。已验收 M1/M2/M3 的版本与存档合同不变。
+
 不得让这些版本落入旧 profile，或以旧版本存新增字段。无需修改 checkpoint 容器版本；它保存显式新规则的完整 bundle。未知版本或交叉 profile 必须显式拒绝，没有自动迁移。
 
 冻结公共导出（内部拆分不另建泛型插件）：
@@ -60,7 +66,7 @@ Config 外层沿用 cognition 的 `{memory,mind,motivation,experience,cognition}
 actor-2 Knowledge 沿用 cognition Knowledge 字段，额外恰为 `foodQuote`、`workOffer`；两者可为 null。不携带公共现金、他人私账、全知 bundle、完整市场对象或原始回执。
 
 - `foodQuote`：`{product:'food', price, available, observedTick, expiresTick, sourceEventSeq}`。price 是正安全整数；available 是公开“有粮”布尔值，不携带隐藏精确库存；`expiresTick=observedTick+288`（先检查溢出）。来源只能是本人在 village 可见的公开食物公告，或既有 SocietyDaySettled 的公开市场投影。选择最近的有效来源，不能从隐藏 world/config 补缺失值。
-- 新世界 tick1 发布一条 `SurvivalFoodQuoteAnnounced`：sourceSystem=`survival`，commandId=null，entityIds=[]，causationEventSeqs=[]；payload 恰为 `{location:'village',product:'food',price,available}`，记录的是当时真实挂牌价格和公开有粮状态。其 event.tick 是 observedTick；当前 sourceEventSeq 来自日志，不由输入伪造。之后采用既有公开日结报价，不额外逐 tick 广播。
+- actor-2 活着且身处 village 时，在 tick1 以及每个世界日决策前（tick 为144的倍数）至多发布一条 `SurvivalFoodQuoteAnnounced`：sourceSystem=`survival`，commandId=null，entityIds=[]，causationEventSeqs=[]；payload 恰为 `{location:'village',product:'food',price,available}`，记录的是当时真实挂牌价格和公开有粮状态。其 event.tick 是 observedTick；当前 sourceEventSeq 来自日志，不由输入伪造。它表示在场人物看见公开挂牌和有无粮，不表示知道精确库存、公库现金或他人私账。先完成观察，再冻结各人的当日 proposal，随后依次执行真实命令；交易时库存仍可能被先行动者耗尽。缺席或死亡不新增现场观察；旧事实仍按 TTL 判定。既有公开日结报价继续可作为较新的来源，不逐 tick 广播、不引入通用空间感知框架。
 - 有效时间为 `observedTick <= decisionTick < expiresTick`；未来 observedTick、本人/请求绑定不符等 DTO 可证明的错误为 INVALID_INPUT；缺失或过期来源是合法不可行，不偷读真库存来“修好”输入。纯 DTO 校验只证形状与输入内约束，不宣称任意正整数 seq 真存在；真实 seq 对应的事件类型、公开可见性及报价真伪由 trusted projection、权威入口及 bundle 完整重演核对，错事件引用/伪造来源整次拒绝。
 - `workOffer`：`{requestId, wage, observedTick, expiresTick, sourceEventSeq}`；wage 为正安全整数。仅本人真实收到且尚 pending 的 Duty 可提供此机会。
 - 本人原请求投递时，新 profile 为 actor-2 同时发布 `SurvivalWorkOfferAnnounced`：sourceSystem=`survival`，commandId=null，entityIds=[actor-2]；payload 恰为 `{actorId:'actor-2',requestId,wage,expiresTick}`，causationEventSeqs 恰指该次 delivered 的 `MotivationRequestResolved`。公告工资等于该世界经济配置的真实工资；它是显式可见信息，不是 planner 偷读配置。公告/请求须同 tick、同本人、同 requestId/到期点；Knowledge 中只保留最新本人机会，不把请求配置数组当已收到的事实。
@@ -123,7 +129,10 @@ secure-food 属临时计划：下层 SocietyAction 执行期间隔离本人保�
 
 请求合法与工资公告按本合同公开生成，不注入假 receipt。初始总资源、私有分配和真实剩余公共量不可混淆。每份测试先证明 recipe 的输入与禁止补给项成立，再验行为，不从模块输出抄 expected。
 
-另授权一个明确对抗变体（不是第六个默认 recipe）：从 affordable 完整合法 config 深副本改分配前 food=61、player.initialWallet=10，其他私粮分配仍合计60。tick1 公告时公共粮1且available=true；通过原合法玩家接口提交 `{commandId:'supply-drain-1',type:'PlayerBuy',payload:{product:'food',quantity:1}}`，tick2 玩家买走最后1粮。tick144 仍只有可知的旧报价，actor-2 的购买软候选可行，但权威因真实库存0拒绝；没有私粮转入或消费，不产生 Work 经验。不篡改 bundle、报价或回执；不依赖常规 recipe 下没钱的玩家耗尽540粮。
+另授权两种合法对抗变体（不是新增默认 recipe），不得篡改 bundle、报价或回执：
+
+1. 现场发现缺货：affordable 改分配前 food=61、player.initialWallet=10，其他私粮合计60。tick1 公共粮1、available=true；原合法 PlayerBuy 命令 supply-drain-1 在 tick2 买走最后1粮。tick144 actor-2 在现场观察到 available=false，BuyFood 软不可行并合法等待；没有真实拒绝、失败账或 Work 经验。这替换 v1 的“仍只能看到旧报价”期望。
+2. 同日竞争：affordable 改 actor-1 initialFood=0、initialWallet=10、hunger=400，分配前 food=41；actor-3/player 各20粮，actor-2 私粮0/钱包30，其余保持原配方。tick144 先观察公共粮1/available=true，冻结本人购买 proposal；actor-1 先经原合法 BuyFood 买走最后一份，actor-2 随后真实提交 BuyFood 被权威拒绝。本人钱包仍30、买入/消费0、failedActions 恰加1且占用本日动作；不产生 Work 经验。观察事件必须早于 actor-1 购买提交事件，不让 planner 偷读执行后的真库存改写既定选择。
 
 ## 8. A 里程碑与白名单
 
@@ -147,7 +156,7 @@ A3：format7 与旧检查器最小消费、事务/只读/UI检查。三个里程
 
 允许窄修改既有文件：runtime/core/motivation-state.mjs、motivation-planner.mjs、motivation-runtime.mjs、cognition-state.mjs、experience-state.mjs、work-experience-adapter.mjs、world-state.mjs、command-engine.mjs、event-log.mjs、memory-observer.mjs；runtime/service/http-contract.mjs、service-commit.mjs、runtime-owner.mjs；simulation-runner.mjs；runtime-mind.html/.mjs/.css。只增新版本有界分派和必需验证/展示，不重构全部旧分支。
 
-白名单以本列表为准，不声称“恰好 N 文件”后另加清单。若某文件无需改，不改。禁止修改 data-contract、rng/clock/scheduler、hunter/society/actors/ecology/market/resource-ledger、checkpoint底层、M3-1四份冻结文件、旧fixture/旧测试、B白名单和任何控制文档。实现发现白名单缺口或合同矛盾，给最小反例/具体文件，停止该依赖处，不能任意扩大。
+白名单以本列表为准，不声称“恰好 N 文件”后另加清单。若某文件无需改，不改。禁止修改 data-contract、rng/clock/scheduler、hunter/society/actors/ecology/market/resource-ledger、checkpoint底层、M3-1四份冻结文件、旧fixture/旧测试、B白名单和任何控制文档。执行者发现白名单缺口或合同矛盾须报告最小反例与具体文件。中控按用户授权可修订不合理规则，并同步版本、理由和独立验收期望；不得靠放宽断言隐藏实现错误。中控修正额外允许 tests/simulation/survival-controller-regression.test.mjs 与本树 PROJECT_CONTEXT.md；A 原提交附带的 PROJECT_CONTEXT.md 两行属已报告的白名单偏差，不据此认可整路通过。
 
 ## 9. 定向验证、交付与未验边界
 
