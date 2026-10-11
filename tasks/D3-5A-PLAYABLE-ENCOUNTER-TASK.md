@@ -50,7 +50,7 @@ CLI 参数解析器现有入口仅有 `--fixture`、`--resume`、`--days`、`--s
 
 一场遭遇恰含：`encounterId='encounter-N'`、`actorId='actor-4'`、`location='forest'`、`status`（active/closed）、`resolution`（null/win/lose/flee/cancel/player-died）、`startTick`、`endTick`（null 或终态 tick）、`initialPlayerHealth`（历史锚点）、`wolfHealth`（300/150/0）、`attackCount`（0/1/2）、`elapsedTicks`（active 时为当前 tick-startTick，closed 时为 endTick-startTick，含日结前置死亡的实际停止 tick）、`beginCommandId`、`lastCommandId`、`reserved`。不得另存 `wolfDied`；其值由狼 HP 派生。人物当前 HP 唯一来自权威 actor body，不能把初始 HP 改成当前 HP。
 
-ACTIVE 必须对应存活且位于 forest 的 actor-4、恰一只预留狼和 `ecologyModel.reservedWolves=1`。总活狼存于 `ecologyModel.wolves`；累计 `battleDeaths` 仅存于 `ecologyModel.ledger.wolves.battleDeaths`，不可给其它 species 增加此账。available 为总活狼减预留。终态同一提交归还预留；win 才将一只狼记为战斗死亡，其他终态狼仍活着。closed 后可开始下一场，ID 仅在服务成功 Begin 后递增，旧结局留在 events/inputHistory。完整 validator 和 replay 必须复算所有状态、游标、账本、command/event；DTO validator 不代表真实性。输入 preflight 必须 descriptor-first、getter 调用为零、严格 JSON，接受 null-prototype/冻结输入；输入 UTF-8 预算 4096 字节，整体超限拒绝。
+ACTIVE 必须对应存活且位于 forest 的 actor-4、恰一只预留狼和 `ecologyModel.reservedWolves=1`。总活狼存于 `ecologyModel.populations.wolves`；累计 `battleDeaths` 仅存于 `ecologyModel.ledger.wolves.battleDeaths`，不可给其它 species 增加此账。available 为总活狼减预留。终态同一提交归还预留；win 才将一只狼记为战斗死亡，其他终态狼仍活着。closed 后可开始下一场，ID 仅在服务成功 Begin 后递增，旧结局留在 events/inputHistory。完整 validator 和 replay 必须复算所有状态、游标、账本、command/event；DTO validator 不代表真实性。输入 preflight 必须 descriptor-first、getter 调用为零、严格 JSON，接受 null-prototype/冻结输入；输入 UTF-8 预算 4096 字节，整体超限拒绝。
 
 如实现需要本节未列出的新增公开 adapter 字段，先停在冻结审查并向中控提交真实消费者证据；不可自行扩 schema。
 
@@ -74,9 +74,9 @@ format 8 新 profile service 的 `GET/HEAD /api/runtime/encounter` 返回只读�
 
 ## 世界、狼账与 actor 规则
 
-`ecologyModel` 沿用旧字段结构，但新 v2 的 `ecologyModel.ledger.wolves` 增加 `battleDeaths`，`ecologyModel` 增加 `reservedWolves`（仅 0/1）。`ecologyModel.wolves` 永远表示总活狼；可用数为总活狼减 `ecologyModel.reservedWolves`。D3-2 frame 不得成为权威 bundle。旧 ecology v1 拒绝新键；不在其它 species ledger 增加 `battleDeaths`。
+`ecologyModel` 沿用旧字段结构，但新 v2 的 `ecologyModel.ledger.wolves` 增加 `battleDeaths`，`ecologyModel` 增加 `reservedWolves`（仅 0/1）。`ecologyModel.populations.wolves` 永远表示总活狼；可用数为总活狼减 `ecologyModel.reservedWolves`。D3-2 frame 不得成为权威 bundle。旧 ecology v1 拒绝新键；不在其它 species ledger 增加 `battleDeaths`。
 
-新账本须恒等于：`ecologyModel.wolves = initial + births - naturalDeaths - starvationDeaths - predation(固定为0) - hunted - removed - ecologyModel.ledger.wolves.battleDeaths`。预留不算死亡；战斗胜利才使狼账 `battleDeaths += 1`、`ecologyModel.wolves -= 1`。不得改 `initialPopulation`，不得把战斗死亡塞进 removed/hunted/predation。
+新账本须恒等于：`ecologyModel.populations.wolves = initial + births - naturalDeaths - starvationDeaths - predation(固定为0) - hunted - removed - ecologyModel.ledger.wolves.battleDeaths`。预留不算死亡；战斗胜利才使狼账 `battleDeaths += 1`、`ecologyModel.populations.wolves -= 1`。不得改 `initialPopulation`，不得把战斗死亡塞进 removed/hunted/predation。
 
 ACTIVE 时日结只对 `wolves - reservedWolves` 的 available 狼运行出生、捕食、自然死亡、饥饿/狩猎及余量计算；reserved 个体不参与这些群体变动。一次日结原子更新群体账、预留和其他实体。新日结 payload 在原 payload 上仅附加恰六字段 `encounterOwnership`：`reservedOpening`、`reservedClosing`、`battleDeathsOpening`、`battleDeathsClosing`、`totalLivingOpening`、`totalLivingClosing`，opening/closing 的普通 wolves 统计含义为可用群体。旧 payload 不扩。
 
@@ -129,3 +129,11 @@ ACTIVE 期间关闭/重开须保留 reservation、已经过的真实时间、角
 - hooks 须对齐真实现存底座签名与消费链；工人“不得 import/简化 bundle”不是本合同。使用已有 data-contract/descriptor 预检工具和真实 World Bundle，不能把自造 fixture 的绿测当接入完成。
 - 首轮简化核心及其30项测试标需修正，只作历史过程证据；完整 CLI/service/UI/B 的 required 门不降低。
 本补充精确提交由中控状态和派发消息钉定；B 继续依据公共合同和本解释检验，不得改独立期望凑绿。
+
+## 2026-10-12 中控字段勘误与死亡反例（rev3）
+
+- §3/§6 总活狼的唯一真实路径为 `world.ecologyModel.populations.wolves`；前文描述及公式漏写 populations 已一并勘误。不得添加 ecologyModel.wolves 别名/影子账，字段形状仍按真实 ecology model，仅增加原合同的 reservedWolves 和 wolves.battleDeaths。
+- rev2 的死亡裁定须落到实际 validator：新 actor-config-v4 的 actor-4 在 day0、deathTick=6 的深层中间候选不得再被 deathTick<=day*144 误拒；该专属路径可采用下一日界安全上界，顶层仍要求 deathTick<=snapshot.tick，并由完整重演认证来源。旧 v3 同构非日界死亡、其它 NPC 非日界死亡以及顶层未来死亡继续拒绝。
+- 中控仅以进程内深层探针核实旧 v3 拒绝符合旧规则、新 v4 同时拒绝违背本合同；这不是合法命令链或 A/B 验收通过。完整消费者须在真实 fixture 到位后补证。
+- 预留狼日结探针已核实 reserved=1、totalLiving=1 的个体不参与当日自然死亡/饥饿，battleDeaths 保持0；不据此代替真实战斗/完整日结验收。
+- 本勘误不增模型字段或白名单、不改变耗时与旧规则，不允许移动独立期望凑绿。中控源码未改；包工头等旧写者结束后在原授权内安排精准修正。

@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-12 07:45（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-12 07:56（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -35,7 +35,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- D3-5当前核心段需内部修正（2026-10-12）：初版新runtime及30项绿测采用简化影子世界，未消费真实snapshot/actorModel/日结/重演；中控拒绝将其记为核心接入PASS，包工头已亲核P0属实。先修正为真实消费者再对接service/UI，合同d13a897不降低；具体审查 artifacts/world-runtime-d35-hour-review-20261012/core-review.json。
+- D3-5当前核心段需内部修正（2026-10-12）：初版新runtime及30项绿测采用简化影子世界，未消费真实snapshot/actorModel/日结/重演；中控拒绝将其记为核心接入PASS，包工头已亲核P0属实。先修正为真实消费者再对接service/UI，合同d13a897不降低；具体审查 artifacts/world-runtime-d35-hour-review-20261012/core-review.json。 追加深层反例：v4玩家tick6死亡仍被旧日界上界误拒，证据actor-v4-midday-probe.json；预留狼日结边界探针通过。A合同rev3只勘误总活狼路径为ecologyModel.populations.wolves并明确死亡约束，未改源码或验收门。
 
 - D3-5实施与独立验收两份任务已发布，合同d3-playable-encounter-v1；现有DSH包工头已派首波两路，当前尚无完整交付/验收。
   精确任务发布SHA `d13a89768c652f74c0c4278eea4f227cf4660a98`，代码基准 `f335abf`；完整窄场景A内部三消费者检查点，B独立验收。
