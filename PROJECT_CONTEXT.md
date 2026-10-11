@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-12 00:35（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-12 07:15（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -39,6 +39,7 @@
   精确任务发布SHA `d13a89768c652f74c0c4278eea4f227cf4660a98`，代码基准 `f335abf`；完整窄场景A内部三消费者检查点，B独立验收。
 - [D3-5A 实现与公共合同](tasks/D3-5A-PLAYABLE-ENCOUNTER-TASK.md) · [D3-5B 独立验收](tasks/D3-5B-INDEPENDENT-ACCEPTANCE-TASK.md)。
   字段、接口、版本号、白名单与跨日/幂等/发布边界已冻结；B真实运行等待中控给出A精确交付SHA，不使用浮动HEAD。
+- D4：骑砍式村庄人物连续体验仅作后续预规划，未发布、未开工；须待 D3-5 实现及独立验收收口后再冻结合同，见[架构 D4 预规划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md#d4-scene-continuity-plan)。
 - 本轮冻结新profile `encounter-survival-village` / rules `d-encounter-survival-v1`；snapshot3/服务format8/DTO3/receipt3，尚未实现或验收。
   保留旧 profiles 与旧存档行为，不自动迁移；集成基准候选为 `f335abf`。
   两份实施任务书已发布；旧版本行为/存档保持，M4当前体验实例不改动。
