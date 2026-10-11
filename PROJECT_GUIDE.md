@@ -59,13 +59,11 @@ M3-1 已交付的工作经验纯内核处理最近四次本人工作结果记录
 
 ## 5. 推进主线与停止点
 
-已验收主线：A/B/C/D2 → M0/M1/M2 → 完整 M3（工作经验、认知降频、服务/检查器与真实保存恢复）。当前发布 **M4：有界自主取食与收入闭环**；其后才评估 D3/D4 遭遇与场景连续、F/G 的真实消费需求。E 是可选窄对照，不阻塞主线，旧 E1 不自动重开。
-
-本轮只有两份任务书：[M4A：实现与唯一公共合同](tasks/M4A-BOUNDED-SURVIVAL-TASK.md)、[M4B：独立验收](tasks/M4B-SURVIVAL-ACCEPTANCE-TASK.md)。代码基准 667628166546a3f342873105b93a8684063504c1；合同 m4-survival-contract-v2。A 已交付，中控在独立树修正；B 尚待精确候选验收，详见 [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)。NPC 可观察身处地点的公开情况，仍不能偷读公共现金、他人私账或全知世界。中控可按用户授权修订不合理规则并同步独立期望，不自动推进 D3/D4。
+主线阶段依赖与稳定边界见本指南后续章节；阶段通过情况、源码/分支基准和接手事项只维护在 [当前状态](PROJECT_CONTEXT.md)。冻结合同仍以 `tasks/` 对应文件为准。M4 完成与 D3 后续集成边界以当前状态文件和原合同证据为准，不把历史摘要当作现状。
 
 闭环仅扩展新 survival-village/m-survival-v1 中的 actor-2：本人私粮不足 → 本人可知的有来源报价/合法工作机会 → 买粮或工作后买粮 → 私有库存真实入账 → 原日结真实消费。Work 成功正常关闭职责，后续购粮步骤仍保留承诺；不扫描公共现金来作心智选择。无收入、付不起工资、真实缺粮时等待/失败/死亡都允许，不以 NoAction 越少或永久存活为目标。
 
-保持旧 profile/旧存档隔离；不加 Hunt、救济、关系、情绪、模型、通用职业/机会系统或通用多目标。单次买1粮并日结吃1粮不代表能积累储备；本轮是有界能力，不是百日平衡承诺。原始 M3 证据异地保全是独立收尾项，不为发布本轮重跑已验收模拟或安装新工具。
+保持旧 profile/旧存档隔离；不加 Hunt、救济、关系、情绪、模型、通用职业/机会系统或通用多目标。单次买1粮并日结吃1粮不代表能积累储备；M4 合同仅定义有界能力，不承诺百日平衡。原始 M3 证据异地保全是独立收尾项，不为发布本轮重跑已验收模拟或安装新工具。
 
 M3-2、M3-3、[M3-4A](tasks/M3-4A-COGNITION-INSPECTOR-TASK.md)/[M3-4B](tasks/M3-4B-M3-CLOSEOUT-ACCEPTANCE-TASK.md)是已收口历史合同，不再称下一轮，也不静默改正文。历史测试仅在文件及直接依赖均未变化时复用；新增规则的公共分派、重演与服务格式按直接影响扩大验证，不再泛跑旧 M3 全量。
 
@@ -92,15 +90,15 @@ D3/D4 按真实遭遇需求另冻最小地图上下文、场景结果和 World R
 |---|---|---|---|
 | **PAT-001/003 / The Sims、RimWorld**；[模式决策][ref-patterns] | Need 是动机输入；Behavior Provider/Affordance 只暴露有限候选 | 不让 Need 直接变命令，不扫描全行为宇宙；不扩大 M3 已冻结候选 | PAT-001 原则沿用；PAT-003 为候选，待真实机会系统消费者出现后评估 |
 | **PAT-004 / Cataclysm: DDA**；[模式决策][ref-patterns] | Goal commitment 与防抖，沿用 M2 已有窄语义 | 不移植完整 NPC AI 或扩张 M3-2 合同 | M2 原则沿用；参考源码有固定提交证据 |
-| **PAT-006/002 / Shadows of Doubt、RimWorld、Oxygen Not Included**；[模式决策][ref-patterns] | 日常 Routine 低成本推进，相关事件唤醒；PAT-002 双通道是紧急/常规参考线索 | 不宣称博客等于最终发行源码；PAT-002 尚未本轮一手复核，不新增紧急通道任务 | 两项均为候选；M3-3 优先研究既有计划的低成本维护，不据此新增日程系统 |
+| **PAT-006/002 / Shadows of Doubt、RimWorld、Oxygen Not Included**；[模式决策][ref-patterns] | 日常 Routine 低成本推进，相关事件唤醒；PAT-002 双通道是紧急/常规参考线索 | 不宣称博客等于最终发行源码；PAT-002 尚未本轮一手复核，不新增紧急通道任务 | 两项均为候选；M3-3 沿用既有计划的低成本维护；新通用 Routine 仍属后续，不据此新增日程系统 |
 | **PAT-007 / Veloren rtsim、S.T.A.L.K.E.R. A-Life**；[模式决策][ref-patterns] | 认知 LOD 按重要性×相关性；远端可使用长时 Action 与低频更新 | 重要性×相关性是 Narraverse 设计，不伪称 Veloren 上游公式；STALKER 社区 Mod 资料不作原版一手规格 | 认知分级已由 M3 接入并验收；通用远端长时 Action 与物理精度切换仍是后续候选 |
-| **PAT-011/018 / Bannerlord**；[模块索引][ref-modules]、[世界地图索引][ref-world-index] | Campaign Map 编排地图到遭遇；结构化 Context 进入场景、Outcome 由 World Runtime 校验提交 | 官方 API 只证明移动实体与决策节奏；Context/Outcome 单写者边界是本项目设计 | PAT-018 已采纳设计，D3/D4 实现待合同；PAT-011 地图编排候选，不因此加通用商队 |
+| **PAT-011/018 / Bannerlord**；[模块索引][ref-modules]、[世界地图索引][ref-world-index] | Campaign Map 编排地图到遭遇；结构化 Context 进入场景、Outcome 由 World Runtime 校验提交 | 官方 API 只证明移动实体与决策节奏；Context/Outcome 单写者边界是本项目设计 | PAT-018 设计已采纳、窄内核已验；真实场景消费待接入，以当前状态文件为准；PAT-011 地图编排候选，不因此加通用商队 |
 | **PAT-012/013 / Bannerlord、Endless Sky**；[模式决策][ref-patterns]、[世界地图索引][ref-world-index] | 重要 Party 可作为持久地图实体；重要物流批次可实体化 | 不把每单位商品实体化，不提前做完整经济模拟 | F 后续真实需求；当前不实施物流系统 |
 | **PAT-015 / Battle Brothers、Endless Sky**；[模式决策][ref-patterns]、[世界地图索引][ref-world-index] | 真实世界问题派生任务，形成玩家处理到世界后果的因果链 | Battle Brothers 条目尚未独立复核；不做无因果任务或自动生成网络 | 后续任务消费者；Endless Sky 条件/触发文档可核对 |
 | **PAT-009/016 / Shadows of Doubt、Starsector、Caves of Qud**；[模式决策][ref-patterns]、[世界地图索引][ref-world-index] | 世界事实与主观状态分开；地图情报可有来源、时效、不完整或错误 | NPC 输入与面向玩家的情报界面按可知性过滤；开发者检查器可独立展示全知对照，不向前两者透传 | 两项原则已定；地图侧情报实现待后续合同，不要求本轮改造已验收调试页 |
 | **PAT-008 / Wildermyth**；[模式决策][ref-patterns] | Director 可按人格、关系与历史 hook 选择适合事件的人物，由角色心智回应 | 不预定人物结局；本轮未核对 Wildermyth 原站，参考库摘录仍属线索 | 选角原则已定，实现留后续专题，不属于当前 D3/D4 必做 |
 
-本轮复核的上游证据：CDDA 的 [npcmove.cpp 固定提交](https://github.com/CleverRaven/Cataclysm-DDA/blob/1d0db7c75849d762808637f9b9517d809c2f7437/src/npcmove.cpp#L1708-L1715) 显示目标承诺防抖相关代码；[Veloren 0.18.0 NPC AI 文档](https://docs.veloren.net/veloren_rtsim/rule/npc_ai/index.html) 说明长时 Action/controller 与 `SIMULATED_TICK_SKIP`；[Shadows of Doubt 2018 年城市模拟开发博客](https://colepowered.com/shadows-of-doubt-devblog-8-simulating-a-city/) 说明当时的日常预规划和异常重算设计，不作为最终发行实现的证明；[Bannerlord MobilePartyAi 官方 API](https://apidoc.bannerlord.com/v/1.3.4/class_tale_worlds_1_1_campaign_system_1_1_party_1_1_mobile_party_ai.html) 可见 `RethinkAtNextHourlyTick` 与 `DoNotMakeNewDecisions`；[Endless Sky Creating Missions](https://github.com/endless-sky/endless-sky/wiki/CreatingMissions) 描述条件、期限与动作触发。
+2026-10-09 整理时复核的上游证据（本轮不重复核对以下全部来源）：CDDA 的 [npcmove.cpp 固定提交](https://github.com/CleverRaven/Cataclysm-DDA/blob/1d0db7c75849d762808637f9b9517d809c2f7437/src/npcmove.cpp#L1708-L1715) 显示目标承诺防抖相关代码；[Veloren 0.18.0 NPC AI 文档](https://docs.veloren.net/veloren_rtsim/rule/npc_ai/index.html) 说明长时 Action/controller 与 `SIMULATED_TICK_SKIP`；[Shadows of Doubt 2018 年城市模拟开发博客](https://colepowered.com/shadows-of-doubt-devblog-8-simulating-a-city/) 说明当时的日常预规划和异常重算设计，不作为最终发行实现的证明；[Bannerlord MobilePartyAi 官方 API](https://apidoc.bannerlord.com/v/1.3.4/class_tale_worlds_1_1_campaign_system_1_1_party_1_1_mobile_party_ai.html) 可见 `RethinkAtNextHourlyTick` 与 `DoNotMakeNewDecisions`；[Endless Sky Creating Missions](https://github.com/endless-sky/endless-sky/wiki/CreatingMissions) 描述条件、期限与动作触发。
 
 参考库建议的其他模式保留为远期线索：Kenshi World State/Town Override、Factorio 区域压力场、Caves of Qud 历史痕迹。它们不构成当前实施授权；不得据此提前搭建完整派系覆盖、全地图扩散场或程序历史系统。
 
@@ -109,6 +107,13 @@ D3/D4 按真实遭遇需求另冻最小地图上下文、场景结果和 World R
 每次具体设计只选 **1 个主参考，最多 2 个辅助参考**。按固定快照核对原文来源与证据类型，先说明本项目适配点和拒绝照搬点，再写可体验场景、必要反例与成本预算；中控冻结任务合同后才实施，验收后更新唯一状态入口。
 
 任务链应短而可验证：具体问题 → 定向参考 → 本项目适配/拒绝理由 → 可体验场景与反例 → 冻结合同 → 有界实现 → 独立验收 → 更新 `PROJECT_CONTEXT.md`。长文本整理、机械操作和可拆分测试可委派；复杂核心设计由中控复核。只做与改动风险相称的定向检查，阶段收口再按合同做一次完整验证；不以测试数量代替真实消费者链。
+稳定工作原则：
+
+- 每阶段优先一轮交付完整窄场景，可在实现任务内设置真实消费者 checkpoint；仅确有集成阻塞才拆独立片，不以小内核数量替代体验。
+- 规则交叉场景与最小反例先于用例数量扩张，优先证明边界不会被相邻规则绕过。
+- 计划、实现、独立验收分别记录；一项工作最多保留两份相互引用的合同，同一文件同一时段只有一名写入者。
+- 交接包写明集成基准 SHA、启动入口、必要证据索引和停止点；远端保存仅按既有授权执行，未授权不推送。
+- 复用既有 DSH 包工头与体验线，避免重复派工或把内核测试误当实际体验。
 
 引用外部代码前，先确定固定 commit、文件与许可证，并按许可证处理；本指导书不作法律结论，也不授权复制代码、公开仓库、部署或付费调用。不要把分支名称、游戏宣传文案、社区 Wiki 或开发博客写成内部源码证明。
 
@@ -130,7 +135,7 @@ D3/D4 按真实遭遇需求另冻最小地图上下文、场景结果和 World R
 
 交付状态分清：方向已采纳、合同已冻结、实现已提交、独立验收已通过是不同状态。报告引用证据时说明提交、文件、运行范围和未测项；不以旧阶段通过、外部游戏表现或执行者数量汇报替代本阶段证据。恢复包在本机的完整性/恢复验证不等于异地备份。`required` 成员缺失、损坏或与声明不符时必须阻断 PASS；`sourceHash` 只覆盖明示的源文件集合，须与独立的包成员/归档 manifest 分开核验。未提交的 A 工作区改动不自动包含在恢复包中，须明确列为包外内容。执行者遵守任务合同的推送边界，未获明确授权不自行 push。
 
-本地保全的精确来源、裁定范围和必需 expected 指纹见 [恢复证据索引](docs/evidence/PRESERVATION-20261009.json)；该索引不另作进度状态源。本轮只验证包完整性与恢复，未推送远端。
+本地保全的精确来源、裁定范围和必需 expected 指纹见 [恢复证据索引](docs/evidence/PRESERVATION-20261009.json)；该索引不另作进度状态源。该保全记录当时只验证包完整性与恢复，不代表后续源码/文档的推送状态；当前推送状态见 `PROJECT_CONTEXT.md`。
 
 ## 11. 资料快照与稳定链接
 
