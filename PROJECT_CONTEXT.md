@@ -1,8 +1,10 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-11 20:40（Asia/Shanghai）。
+更新时间：2026-10-11 21:15（Asia/Shanghai）。
 
 ## 当前D3施工树
+
+- D3-4源码cb03e1afd3900b6748d729aaa345bfed590f90e9已中控限定PASS：新战斗测试18/18、0 fail/skip/todo，语法/diff与前后哈希通过；旧直接回归复用不重跑。固定攻击/逃跑/取消只输出候选生命/结果/局部耗时，未写回世界、会话或页面。源码未push/main/部署，本片结束；见tasks/D3-4-ENCOUNTER-COMBAT-TASK.md收口。
 
 - 实际目录D:/Narraverse-World-Map/hds-reservation，分支codex/world-runtime-d3-reservation；D3-3源码4947adddddbca8f7a0478b845c8c960af2e4cda3，基准6790b4d。仅新增encounter-session模块与独立测试。
 - 中控限定PASS：标准三文件69/69（19新+36世界适配+14预留），0 fail/skip/todo、10.1秒；语法/diff通过、测试前后哈希一致。证据control artifacts/world-runtime-d3-session-20261011/controller-validation.json与controller-final.tap。
