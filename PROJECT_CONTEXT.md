@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-11 20:52（Asia/Shanghai）。
+更新时间：2026-10-11 21:15（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -100,14 +100,14 @@
 
 ## 中控与进度看板
 
-- D3-4已发布/派入包工头：[最小单狼战斗内核](tasks/D3-4-ENCOUNTER-COMBAT-TASK.md)，合同d3-combat-kernel-v1，发布0fb1831、基准05117e0，派工run4035bd18已返回，原生测试工人99e534e8已启动/task10进行中，待其finished→红测→实现路；尚未交付。仅新增实现/测试两文件，攻击/逃跑/取消固定规则，仍是候选，世界/存档/UI未接；Codex最终验收。另建体验对话01a12aff-2703-71c2-ab00-cc7ae733ca2a，只核现有功能与独立实验入口，不改源码。
+- D3-4已限定PASS：[最小单狼战斗内核及收口](tasks/D3-4-ENCOUNTER-COMBAT-TASK.md)，源码cb03e1afd3900b6748d729aaa345bfed590f90e9、基准05117e0。中控标准combat18/18、0 fail/skip/todo、543ms；语法/diff/前后哈希通过，旧未变化session19/reservation14复用D3-3证据。包工头收齐工人finished并内部修正测试，task10/11/12完成；亲改少量断言而未另派工的流程偏差留痕。攻击/逃跑/取消、HP与候选狼死亡归属已验；世界身体/时间/存档/UI未接，完整D3未验收。证据artifacts/world-runtime-d3-combat-20261011/controller-validation.json。源码本地未push/main/部署，本片停止；体验对话01a12aff-2703-71c2-ab00-cc7ae733ca2a使用独立M4世界，入口http://127.0.0.1:18324/。
 
 - D3-3有界遭遇命令会话已限定PASS：源码4947adddddbca8f7a0478b845c8c960af2e4cda3，代码基准6790b4d；中控标准三文件69/69、0 fail/skip/todo，语法/diff和测试前后哈希一致。[任务与收口](tasks/D3-3-ENCOUNTER-SESSION-TASK.md)。内存开始/取消、回执/幂等/版本冲突/100项预算已验；后置故障未注入，旧SimulationSession/EventLog/存档/HTTP/UI/战斗未接，完整D3未验收。证据 artifacts/world-runtime-d3-session-20261011/controller-validation.json、controller-final.tap、foreman-delivery.json。源码本地提交、未push/main/部署；本片完成停止。
 
 - D3前置完成；D3-1预留守恒内核8478bce已限定PASS，D3-2世界候选适配 b94d71d08da808de53eb7f23f64fae95847d034d 已限定PASS（36新+14直接回归=50/50；语法/diff通过）。真实玩家/狼候选预留与归还可用，尚未接权威提交、事件/存档、UI或战斗；完整D3未验收。[D3-2任务与收口](tasks/D3-2-ENCOUNTER-WORLD-TASK.md)，证据 artifacts/world-runtime-d3-world-20261011/acceptance.json。源码未push/main/部署。
 - DSH施工团队沿用唯一[包工头对话](http://127.0.0.1:19387/?sessionId=session-2564efe0-949b-48ed-90a5-f7f7feb9cbce)。用户授权额度耗尽后更换模型：国内workbuddy/deepseek-v4-pro high带队，执行优先免费Global DeepSeek V4.1 Flash high，HY4限流暂避。run145eb92b终态succeeded、工人均结束；原生task6/7/8完成、父task5经中控裁定completed（原生回执，未另做浏览器核验）。Codex发布/最终验收，包工头派工/监督/原生看板；最多两路同时、同文件单写者。实际树hds-reservation @ codex/world-runtime-d3-reservation；源码停止，effective路线/实际费用未返回。
 
-- 2026-10-11 D3-3看板收口已同步读回：D卡标题/正文匹配、全部单选字段与其它61卡完全不变，D整体继续进行中。DSH原生task5完成，历史卡保留；证据 artifacts/world-runtime-d3-session-20261011/board-closeout-verification.json 与 native-board-closeout.json。
+- 2026-10-11 D3-4看板收口已读回：D卡标题/正文匹配、全部单选字段及其它61卡完全不变，D整体继续进行中。原生task10/11/12完成由包工头回执；证据 artifacts/world-runtime-d3-combat-20261011/board-closeout-verification.json、foreman-test-repair.json。
 
 - 2026-10-11 最终看板已读回：M4阶段/A/B Done/已验收，M父卡继续进行中；4卡正文/6字段匹配，其余58卡完全不变。证据 artifacts/world-runtime-m4b-review-20261011/board-closeout-verification.json。历史B需修正保留记录。
 - 2026-10-11 已同步读回：M4进行中、A待验收、B需修正，三路内部补验已开工；M父卡及项目简介同步。62卡中4张正文匹配，其余58卡完整不变；证据 artifacts/world-runtime-m4b-review-20261011/board-verification.json。下列10月10日记录为历史状态。

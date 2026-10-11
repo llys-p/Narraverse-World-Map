@@ -56,3 +56,10 @@ attack先扣狼150并rounds+1/ticks+6；狼0→win不反击；否则玩家扣80�
 原生新任务卡关联已完成D3-3 task5，保留历史；约20分钟，同问题3轮失败或状态不可观测则具体报告停止，不无限重开。
 任务相关公开查证允许并给URL；禁止凭据/运行数据/DSH配置/外部写入/破坏清理；不得commit/push/main/部署或改白名单外。
 普通边界问题请求Codex裁定，别停在等待用户。交付两文件、真实命令/退出码、工人ID/终态、任务板/git状态/未验项；全部写者结束即停，不进入世界写回/持久化/服务UI。文档与提交由Codex负责。
+
+## 中控收口（2026-10-11，Asia/Shanghai）
+
+- 限定PASS：源码cb03e1afd3900b6748d729aaa345bfed590f90e9；中控标准仅combat新测试18/18、0 fail/skip/todo、约543ms，语法/diff与前后哈希通过。旧session19/reservation14未变化，复用D3-3标准69项证据；DSH前轮三文件51/51仅作历史初审，不称本轮新跑51。
+- 独立测试99e534e8-6594-4765-a45c-f826f6ca3f27、实现2504f71a-f0f4-4deb-ac7a-83408fd35b04均finished；原生task10/11/12及goal已完成（包工头回执，未另浏览器读回）。三处测试修正由包工头亲改，未按本次要求另派工；只收紧既有合同，不修改实现，保留该流程偏差记录。
+- 核实1000首攻920/150、次攻920/0胜；80首攻0/150败；首攻后逃跑/取消保伤。round1 JSON往返后次攻与连续结果相等，狼是否死亡决定D3-1预留归还或记死亡一次。只是候选消费，未写回会话、世界身体或全局时间。
+- 证据control artifacts/world-runtime-d3-combat-20261011/controller-validation.json、controller-final.tap、foreman-delivery.json和foreman-test-repair.json。旧模块/测试未改，源码本地、未push/main/部署；世界/存档/HTTP/UI未接，完整D3未验收。本片完成停止，下一片另冻接入合同。
