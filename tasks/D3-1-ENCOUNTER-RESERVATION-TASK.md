@@ -7,10 +7,10 @@
 本轮短周期：约20分钟；到预算尚未完成就交回实物、证据和最小缺口，不无限排障。
 
 ## 给DSH监督者
-- 施工树D:/Narraverse-World-Map/hds-runtime @ codex/world-runtime-d3-hds；实际代码基准dea29161b7765d26f30e9cf175a1ca669b0958b4。
+- 施工树D:/Narraverse-World-Map/hds-reservation @ codex/world-runtime-d3-reservation；实际代码基准dea29161b7765d26f30e9cf175a1ca669b0958b4。
 - 父登记目录D:/Narraverse-World-Map仍旧A1；stickman-engine.js已有修改，禁止读取/改动。
 - 主监督workbuddy-global/gpt-6.1-sol high；测试/独立复核workbuddy-global/hy4-preview-f high；实现workbuddy-global/deepseek-v4.1-flash high。
-- 测试代理先独立写测试并跑RED，再派实现代理填GREEN；各自唯一写者，不能改对方文件。监督者可运行命令并复核，不擅自改合同或替代理改生产。
+- 测试代理先独立写测试并跑RED，再派实现代理填GREEN；各自唯一写者，不能改对方文件。监督者可运行命令并复核，不擅自改合同或替代理改生产。原生子代理任务状态脱钩，本单由Codex通过原生Relay独立执行对话持续监控，DSH监督对话只读收口复核；不把这些独立会话伪称原生子代理。
 - 只有两个可写文件：runtime/core/encounter-reservation.mjs、tests/simulation/encounter-reservation.test.mjs。中控预建空目标仅供路径校验，不是别人代码。
 - 可读本任务、AGENTS/README/PROJECT_CONTEXT必要部分、团队规则、遭遇草案、data-contract.mjs及一份相邻work-experience.test.mjs；超出列明依赖先上报。
 - 不改状态文档、旧测试、生态模块、依赖、配置或其他代码；提交/push/main/部署及最后裁定归Codex。
@@ -66,3 +66,11 @@ node --test tests/simulation/encounter-reservation.test.mjs：测试代理先记
 最终回执：目录/branch/实际HEAD、两文件、实际命令/计数、RED原因、未验范围、子代理ID与指定路线、是否超范围。
 不提交/push，不发布下一阶段，完整D3不记PASS；完成当前切片立即停。免费失败不得自动付费回退，交Codex具体问题。
 约20分钟或同问题3轮无实质进展时收口已完成部分并上报，不靠弱化合同延长。
+
+## 中控收口（2026-10-11）
+
+本合同PASS仅限同步单次预留DTO内核。Global HY4负责独立测试，Global DeepSeek仅写内核；HY4修正四处被helper覆盖的ID fixture并加自身断言，无弱化拒绝要求。中控标准node --test实跑14/14、0 fail/skip/todo（123.9845ms），两文件语法、导入边界与Git差异通过；没有生产调用者，不复跑旧全量。
+
+代码提交8478bce5d608e8bde4ab1516a0893ad44be48271，分支codex/world-runtime-d3-reservation，施工树D:/Narraverse-World-Map/hds-reservation；任务书和团队规则另为文档提交。原hds-runtime仅保留状态未知代理迟到测试，不作为交付树；不得自动整合。
+
+原生DSH子代理链未完成可控交付，改用独立可监控Relay执行对话完成同一功能合同。Supervisor复核请求因session忙失败，steer/cancel也未清理该不一致；Codex亲读代码/合同并运行最终标准测试，不伪称DSH复核通过。尚未接入真实事件、世界种群、日界、服务存档或UI；完整D3未验收，源码未push/main/部署。证据artifacts/world-runtime-d3-first-kernel-20261011/acceptance.json与controller-final.tap。

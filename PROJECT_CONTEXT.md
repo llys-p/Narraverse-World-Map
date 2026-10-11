@@ -100,8 +100,8 @@
 
 ## 中控与进度看板
 
-- D3前置短任务：混元4 D3-P0a 旧战斗入口静态核对已交付，中控复核关键定位；未写代码或运行测试。下一单 [D3-P0b Runtime命令入口核对](tasks/D3-P0B-RUNTIME-ENTRY-TASK.md) 经用户授权后已由混元4交付，中控逐行复核通过；只读核对，无代码修改或测试复跑；施工树 D:/Narraverse-World-Map/hds-runtime @ codex/world-runtime-d3-hds，基准115e256，旧A1不改。D3实现未开工。 P0c单页草案已由混元4交付并经中控修正；本地文档SHA3394a53，完整D3仍未冻结/未实现。下一片仅新预留守恒纯内核+测试两文件，不改冻结生态。
-- DSH施工团队（2026-10-11）：用户另开监督对话并指定Global GPT-6.1 Sol（high），界面已由用户确认；新session-2564efe0-949b-48ed-90a5-f7f7feb9cbce，三名原生子代理已完成纯文字接手后待命，代码/脚本用Global DeepSeek V4.1 Flash，页面/交互与默认复核用Global HY4 Preview。均按零倍率路线派发，effectiveModel/计费及原ID复用未完全验证，不称永久常驻团队。后续由Codex短任务派发/最后验收，DSH拆分监控纠偏；不自动付费回退。团队规则施工树docs/runtime/DSH-CONSTRUCTION-TEAM.md，本地文档SHAdea29161b7765d26f30e9cf175a1ca669b0958b4；未读新私有源码、未开发D3或改HDS配置，停止待派工。 用户已授权首单 [D3-1预留守恒内核](tasks/D3-1-ENCOUNTER-RESERVATION-TASK.md)，合同d3-reservation-kernel-v1、基准dea2916，已派发新监督对话（run 9e671a27-3576-4dc8-8ea8-0dd1bfb4e149），运行中，仅新内核+测试两文件；未验收。
+- D3前置已完成：P0a旧战斗入口/P0b Runtime命令入口已静态核对，P0c单页遭遇边界经中控修正（原文档3394a53，完整D3未冻结）。首片D3-1预留守恒内核已限定验收，当前实际交付树与阶段边界见下条；下一步才定义真实遭遇开始/归还的世界适配。
+- DSH施工团队（2026-10-11）：监督对话session-2564efe0-949b-48ed-90a5-f7f7feb9cbce，Global GPT-6.1 Sol high，用户界面确认；免费Global HY4/DeepSeek执行优先。原生子代理状态脱钩并迟到写入，原父run终态而session仍忙，steer/cancel未解决；停止在该树堆任务。D3-1转隔离hds-reservation @ codex/world-runtime-d3-reservation，由原生Relay独立HY4测试/修正及DeepSeek实现，中控最后静态/标准测试14/14 PASS，仅预留守恒DTO纯内核；[任务与收口](tasks/D3-1-ENCOUNTER-RESERVATION-TASK.md)。代码SHA8478bce5d608e8bde4ab1516a0893ad44be48271，完整D3未接入/未验收，未push源码/main/部署；原hds-runtime保留，下一单暂用可持续监控执行会话。
 
 - 2026-10-11 最终看板已读回：M4阶段/A/B Done/已验收，M父卡继续进行中；4卡正文/6字段匹配，其余58卡完全不变。证据 artifacts/world-runtime-m4b-review-20261011/board-closeout-verification.json。历史B需修正保留记录。
 - 2026-10-11 已同步读回：M4进行中、A待验收、B需修正，三路内部补验已开工；M父卡及项目简介同步。62卡中4张正文匹配，其余58卡完整不变；证据 artifacts/world-runtime-m4b-review-20261011/board-verification.json。下列10月10日记录为历史状态。
@@ -121,6 +121,6 @@
 
 - 待派发不代表开工；核实实际开工回执或任务树中的实现/测试改动后进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
-- A1～A4及A/B/C阶段门槛已通过；C1～C5均已验收，D1已验收，D2A已验收，D2B三路已验收，D2C三路已验收，D2门槛通过，D3/D4未开始，D整体未验收，F/G主线未开始。E阶段待开始；E1本轮A/B投入筛查已复验收档，无信号达继续投入门槛、正式准入为空；[合同与保存点](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-DEV30-SCREENING-TASK.md)。停止当前400扩样/微调路线，不开新模型调用/校准/final/CUDA/C/E2/qoder_cron；保留数据环境。D主线不依赖AI，后续模型探索须另发定向合同，不把本轮预研收口当E1正式或E阶段验收。
+- A1～A4及A/B/C阶段门槛已通过；C1～C5均已验收，D1已验收，D2A已验收，D2B三路已验收，D2C三路已验收，D2门槛通过，D3仅完成首个预留守恒纯内核、实际遭遇/战斗尚未接入，D4未开始，D整体未验收，F/G主线未开始。E阶段待开始；E1本轮A/B投入筛查已复验收档，无信号达继续投入门槛、正式准入为空；[合同与保存点](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-DEV30-SCREENING-TASK.md)。停止当前400扩样/微调路线，不开新模型调用/校准/final/CUDA/C/E2/qoder_cron；保留数据环境。D主线不依赖AI，后续模型探索须另发定向合同，不把本轮预研收口当E1正式或E阶段验收。
 
 - M4最终本地增量Git保全包：artifacts/world-runtime-m4b-review-20261011/m4-final-from-6676281.bundle，bundle verify通过，SHA256 faa28a8b4524b451cf20e7eeb7f0f4973ccb32ac8d3d952e997ab58028230326；依赖已保全/远端可取得的基准6676281，不是独立恢复包或异地备份。最终原始日志/截图仍在修复树ignored artifacts；源码已推送115e256并读回，日志/截图未上传。
