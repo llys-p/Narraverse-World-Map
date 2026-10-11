@@ -1,6 +1,6 @@
 # DSH 施工团队协作规则
 
-> 2026-10-11（Asia/Shanghai）；新监督对话已接任，三名原生子代理已完成纯文字接手验证并停止待命。项目代码尚未交给新团队执行。
+> 2026-10-11（Asia/Shanghai）；新监督对话已接任，三名原生子代理已完成纯文字接手验证并停止待命。D3-1已通过可监控的独立Global执行对话完成并由Codex验收；原生子代理通道实测不可靠。
 
 ## 监督入口与分工
 - [DSH监督对话](http://127.0.0.1:19387/?sessionId=session-2564efe0-949b-48ed-90a5-f7f7feb9cbce)。主路线workbuddy-global/gpt-6.1-sol，high；Relay读回选择一致，用户在HDS界面确认GPT-6.1 Sol。
@@ -18,7 +18,7 @@
 - 三名均按functions.subagent原生工具创建并收到finished通知；完成仅文字ACK，无文件读取、代码或测试执行。
 - 创建工具接受provider/model/reasoning_effort参数，但未返回effectiveModel；本表是实际请求的路线，不能据此声称免费线路实际计费已核实。
 - 子代理sessionId和parentSessionId未由原生工具返回，不猜填。Relay项目会话列表未暴露这些子代理。
-- 旧agentId经functions.send_message复用是监督对话所述支持能力，未实测；后续按原生能力唤醒或重新创建短任务代理。
+- 旧agentId续用实测返回not found；新子代理也出现“started后状态不可查、父run结束后迟到写入”。不能用started或父run结束判断子任务终态。
 - 子代理是按任务临时启用的角色，不是永久运行团队；完成停止以节约额度。
 
 ## 模型路由
@@ -56,3 +56,10 @@
 ## 证据
 建队runId 9ced6262-5016-499a-bc88-14ad77159ec6；元数据核对e4e13dac-6aa7-4415-ad08-7788e8b8aa91；监督接任9b8da22d-f4ba-48ac-9d98-785459158c3b，均终态succeeded。
 本地机器结果artifacts/dsh-team-setup-20261011/team-setup-result.json，用户原方案同目录user-scheduling-plan-v1.txt。
+
+## 首单实测与过渡执行方式
+- D3-1：Global HY4独立测试/fixture修正，Global DeepSeek实现，中控标准命令14/14；代码8478bce，仅预留守恒纯内核，完整D3未接入。
+- 首个原生子代理4e6c0ac1-cadd-4141-aa25-3fa376139423状态脱钩并迟到写hds-runtime；该树保留不整合，不抢写、不删除。
+- 隔离交付树D:/Narraverse-World-Map/hds-reservation @ codex/world-runtime-d3-reservation；两个独立Relay执行对话有稳定runId和终态，不能伪称原生子代理。
+- 原监督run显示succeeded而session仍running，原生steer拒绝terminal、cancel返回无操作；只读复核无法派发。最后验收由Codex独立完成，尚未修复HDS平台状态。
+- 在原生通道修复前先用Codex原生Relay持续监控短执行会话，不在状态未知的工作树重试，也不自动开启更多并行链。
