@@ -42,3 +42,11 @@
 2026-10-11（Asia/Shanghai）：本轮运行成功结束，复用原施工对话。已逐行复核 runtime-owner.mjs:113–134 与 service-commit.mjs:21–61：去重在版本检查之前；串行提交；保存成功后更新三个投影；服务恢复按相同 transition 重演并核对回执及完整 bundle。施工树 HEAD 仍115e256、工作区干净，父目录仍只有原stickman-engine.js修改和新增hds-runtime目录。
 
 本轮仅静态核对，未运行测试、模拟或服务。未接受报告中对未读底层文件“tmp→rename”的推测；本轮没有证实底层发布方式，也不为此重跑未变化存储层的已有验收。下一小步应固定一次遭遇的命令/权威裁决边界，再开首个实现切片，不直接让旧浏览器存档承担最终事实。
+
+## 后续短任务 D3-P0c：一页遭遇边界草案
+
+用户继续后，混元4仅获准写hds-runtime/docs/runtime/D3-ENCOUNTER-BOUNDARY-DRAFT.md；读取玩家状态、生态、HTTP及已核对服务模块的必要部分。runId b79a77fd-1ba7-49ce-95f2-a492a0b928eb，模型/会话不变；原回复自报63行，磁盘实际37行，以实体为准。中控保存原稿至ignored证据后修正日界重复结算、wolves捕食账违规、不必要客户端字段及冻结ecology修改范围。
+
+最终42行草案，完整D3未冻结/未实现；施工树本地文档提交3394a530d3c3965da3e458c64bdafc8be29a88d4，唯一新增该文档，工作区干净，未push/main/部署。关键边界是一次预留1只wolves、Runtime裁决结果、预留不参加聚合日结、死亡与归还仅一次转移。下一首个实现片限定新增纯encounter-reservation内核和一份测试两文件；精确DTO/导出另派任务，不自动进入战斗回合。
+
+只做文档检查与源码约束复核，未运行测试/模拟；记录artifacts/world-runtime-d3-preflight-20261011/p0c-review.json及p0c-hy4-original.md。路径校验首次尝试扩大docs父目录被自动审批拒绝，已按其建议在本地预建精确空目标文件，再以单文件读写范围成功派发；不存在剩余审批阻断。

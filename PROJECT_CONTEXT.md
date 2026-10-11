@@ -100,7 +100,7 @@
 
 ## 中控与进度看板
 
-- D3前置短任务：混元4 D3-P0a 旧战斗入口静态核对已交付，中控复核关键定位；未写代码或运行测试。下一单 [D3-P0b Runtime命令入口核对](tasks/D3-P0B-RUNTIME-ENTRY-TASK.md) 经用户授权后已由混元4交付，中控逐行复核通过；只读核对，无代码修改或测试复跑；施工树 D:/Narraverse-World-Map/hds-runtime @ codex/world-runtime-d3-hds，基准115e256，旧A1不改。D3实现未开工。
+- D3前置短任务：混元4 D3-P0a 旧战斗入口静态核对已交付，中控复核关键定位；未写代码或运行测试。下一单 [D3-P0b Runtime命令入口核对](tasks/D3-P0B-RUNTIME-ENTRY-TASK.md) 经用户授权后已由混元4交付，中控逐行复核通过；只读核对，无代码修改或测试复跑；施工树 D:/Narraverse-World-Map/hds-runtime @ codex/world-runtime-d3-hds，基准115e256，旧A1不改。D3实现未开工。 P0c单页草案已由混元4交付并经中控修正；本地文档SHA3394a53，完整D3仍未冻结/未实现。下一片仅新预留守恒纯内核+测试两文件，不改冻结生态。
 
 - 2026-10-11 最终看板已读回：M4阶段/A/B Done/已验收，M父卡继续进行中；4卡正文/6字段匹配，其余58卡完全不变。证据 artifacts/world-runtime-m4b-review-20261011/board-closeout-verification.json。历史B需修正保留记录。
 - 2026-10-11 已同步读回：M4进行中、A待验收、B需修正，三路内部补验已开工；M父卡及项目简介同步。62卡中4张正文匹配，其余58卡完整不变；证据 artifacts/world-runtime-m4b-review-20261011/board-verification.json。下列10月10日记录为历史状态。
