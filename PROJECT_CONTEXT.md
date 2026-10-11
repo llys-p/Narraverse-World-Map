@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-12 07:22（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-12 07:45（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -41,13 +41,13 @@
   精确任务发布SHA `d13a89768c652f74c0c4278eea4f227cf4660a98`，代码基准 `f335abf`；完整窄场景A内部三消费者检查点，B独立验收。
 - [D3-5A 实现与公共合同](tasks/D3-5A-PLAYABLE-ENCOUNTER-TASK.md) · [D3-5B 独立验收](tasks/D3-5B-INDEPENDENT-ACCEPTANCE-TASK.md)。
   字段、接口、版本号、白名单与跨日/幂等/发布边界已冻结；B真实运行等待中控给出A精确交付SHA，不使用浮动HEAD。
-- D4：骑砍式村庄人物连续体验仅作后续预规划，未发布、未开工；须待 D3-5 实现及独立验收收口后再冻结合同，见[架构 D4 预规划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md#d4-scene-continuity-plan)。
+- D4：预规划已细化为村庄赠粮→本人立即记忆→保存/返回→双页签验收；只有 A 实现/B 独立验收两份未来任务。补充同地点可见性、赠粮不自动涨 trust、双边资产来源账与六检查点，未发布、未开工；待 D3-5 完整验收后钉定 SHA 与版本，见[架构 D4 预规划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md#d4-scene-continuity-plan)。
 - 本轮冻结新profile `encounter-survival-village` / rules `d-encounter-survival-v1`；snapshot3/服务format8/DTO3/receipt3，尚未实现或验收。
   保留旧 profiles 与旧存档行为，不自动迁移；集成基准候选为 `f335abf`。
   两份实施任务书已发布；旧版本行为/存档保持，M4当前体验实例不改动。
-- 首波原生工人：`43d0aa94`独占五个底层配置模块；`f8b71872`独占B三份验收期望文件。
-  task13/14进行中，指定免费Global DeepSeek High；实际effective模型/费用未返回。后台工人待finished，父run结束不代表A交付。
-  原生启动回执及GitHub读回：`artifacts/world-runtime-d35-dispatch-20261012/native-worker-started.json`、`board-started-verification.json`。
+- 按包工头 2026-10-12 07:42 原生回执，旧首波工人已结束；修正工人 `e617810b` 负责真实 fixture/Runtime 六文件，`7d81bbbe` 负责真实消费者测试，尚未收到 finished；这不是当前整单交付。
+  父 run `fa0a5038-382b-468e-ae92-9bb7348e10b9` 已结束且全文已消费；后台工人状态不能由父 run succeeded 推定。
+  范围补充发布 SHA `f667adfcc47e1c470df9687eb2053906d83c3230` 仅增加 mind-runtime 对新 memory v5 的兼容；旧 ACTOR/HUNTER 规则版本门仍冻结。
 - 旧候选 `520e838` 不作为当前 M4 反例。
   最终证据还需确认“已承诺购粮计划与紧急休息相遇”的跨规则覆盖；
   此前两条相邻用例不能单独证明组合场景通过。
