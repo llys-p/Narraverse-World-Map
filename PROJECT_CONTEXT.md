@@ -100,6 +100,8 @@
 
 ## 中控与进度看板
 
+- D3前置短任务：混元4 D3-P0a 旧战斗入口静态核对已交付，中控复核关键定位；未写代码或运行测试。下一单 [D3-P0b Runtime命令入口核对](tasks/D3-P0B-RUNTIME-ENTRY-TASK.md) 经用户授权后已由混元4交付，中控逐行复核通过；只读核对，无代码修改或测试复跑；施工树 D:/Narraverse-World-Map/hds-runtime @ codex/world-runtime-d3-hds，基准115e256，旧A1不改。D3实现未开工。
+
 - 2026-10-11 最终看板已读回：M4阶段/A/B Done/已验收，M父卡继续进行中；4卡正文/6字段匹配，其余58卡完全不变。证据 artifacts/world-runtime-m4b-review-20261011/board-closeout-verification.json。历史B需修正保留记录。
 - 2026-10-11 已同步读回：M4进行中、A待验收、B需修正，三路内部补验已开工；M父卡及项目简介同步。62卡中4张正文匹配，其余58卡完整不变；证据 artifacts/world-runtime-m4b-review-20261011/board-verification.json。下列10月10日记录为历史状态。
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
@@ -120,4 +122,4 @@
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
 - A1～A4及A/B/C阶段门槛已通过；C1～C5均已验收，D1已验收，D2A已验收，D2B三路已验收，D2C三路已验收，D2门槛通过，D3/D4未开始，D整体未验收，F/G主线未开始。E阶段待开始；E1本轮A/B投入筛查已复验收档，无信号达继续投入门槛、正式准入为空；[合同与保存点](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-DEV30-SCREENING-TASK.md)。停止当前400扩样/微调路线，不开新模型调用/校准/final/CUDA/C/E2/qoder_cron；保留数据环境。D主线不依赖AI，后续模型探索须另发定向合同，不把本轮预研收口当E1正式或E阶段验收。
 
-- M4最终本地增量Git保全包：artifacts/world-runtime-m4b-review-20261011/m4-final-from-6676281.bundle，bundle verify通过，SHA256 faa28a8b4524b451cf20e7eeb7f0f4973ccb32ac8d3d952e997ab58028230326；依赖已保全/远端可取得的基准6676281，不是独立恢复包或异地备份。最终原始日志/截图仍在修复树ignored artifacts，源码未push。
+- M4最终本地增量Git保全包：artifacts/world-runtime-m4b-review-20261011/m4-final-from-6676281.bundle，bundle verify通过，SHA256 faa28a8b4524b451cf20e7eeb7f0f4973ccb32ac8d3d952e997ab58028230326；依赖已保全/远端可取得的基准6676281，不是独立恢复包或异地备份。最终原始日志/截图仍在修复树ignored artifacts；源码已推送115e256并读回，日志/截图未上传。
