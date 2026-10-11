@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-11 23:32（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-12 00:12（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -35,11 +35,13 @@
 
 ## 活动工作、阻塞与下一步
 
-- 本轮只整理文档并准备边界方案；不开发生产功能、不启停服务、不处理存档或密钥。
-- 下一步按 [D3-5 接入边界方案](tasks/D3-5-INTEGRATION-BOUNDARY-PLAN.md) 推进；方向方案已完成中控复核，具体字段、接口、版本号与白名单待冻结，尚未发布实施合同或派工。
-- 方案候选命名为 `encounter-survival-village` / `d-encounter-survival-v1`，名称仍待合同冻结。
+- D3-5实施与独立验收两份任务已发布，合同d3-playable-encounter-v1；现有DSH包工头已接收派工，当前尚无交付/验收。
+  精确任务发布SHA `d13a89768c652f74c0c4278eea4f227cf4660a98`，代码基准 `f335abf`；完整窄场景A内部三消费者检查点，B独立验收。
+- [D3-5A 实现与公共合同](tasks/D3-5A-PLAYABLE-ENCOUNTER-TASK.md) · [D3-5B 独立验收](tasks/D3-5B-INDEPENDENT-ACCEPTANCE-TASK.md)。
+  字段、接口、版本号、白名单与跨日/幂等/发布边界已冻结；B真实运行等待中控给出A精确交付SHA，不使用浮动HEAD。
+- 本轮冻结新profile `encounter-survival-village` / rules `d-encounter-survival-v1`；snapshot3/服务format8/DTO3/receipt3，尚未实现或验收。
   保留旧 profiles 与旧存档行为，不自动迁移；集成基准候选为 `f335abf`。
-  冻结后最多两份实施任务书：A 完整窄场景实现，B 独立验收。
+  两份实施任务书已发布；旧版本行为/存档保持，M4当前体验实例不改动。
 - 旧候选 `520e838` 不作为当前 M4 反例。
   最终证据还需确认“已承诺购粮计划与紧急休息相遇”的跨规则覆盖；
   此前两条相邻用例不能单独证明组合场景通过。
