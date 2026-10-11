@@ -238,6 +238,3 @@ for (const fixture of ['motivation-village', 'experience-village', 'cognition-vi
   assert.equal(baseSummary.status, 'succeeded'); assert.equal(baseSummary.tick, 288); assert.equal(baseSummary.seed, 42);
   await evidence(`legacy-${fixture}`, { commands, fixture, ticks: 288, seed: 42, files: fileHashes, businessSummaryHashes: Object.fromEntries(hashKeys.map(k => [k, baseSummary[k]])), fullArtifactCount: files.length - 1 });
 });
-
-
-
