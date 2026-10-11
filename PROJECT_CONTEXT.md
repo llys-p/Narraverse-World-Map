@@ -1,6 +1,13 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-08 17:40（Asia/Shanghai）。
+更新时间：2026-10-11 09:27（Asia/Shanghai）。
+
+## 当前独立修复树
+
+- 本树 codex/world-runtime-m4-ui-review 自 M4 中控候选 520e838 创建，仅修复检查器 actor-3 页签崩溃：个人取食信息按所选人物 Knowledge 类型显示，世界公开粮价保留。原 A/B 树未改动。
+- 独立真实 Edge 测试先红（actor-3 undefined.price），修复后最终测试 1/1 通过，含 survival/cognition 两 profile、tick0/144、actor2→actor3→actor2 共12次选择断言；pageerror 0，浏览器请求仅 GET，临时服务/浏览器/目录全部清理。node --check 与 diff check 通过；未重跑模拟。
+- 证据：artifacts/m4-ui-review-20261011/ 的 red.log、green.log 与逐轮 result.json/截图。B 原交付 7a7bf3d 的36项是历史提交者实跑，不是本树验收；中控整体裁定 M4B NEED REVISION，M4 尚未完成，补验矩阵在控制树 docs/runtime/M4B-REVIEW-20261011.md。
+- 本树仅本地提交，不 push/main/部署。下方为继承的历史上下文；最新主线状态以 D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md 为准。
 
 ## 项目定位
 

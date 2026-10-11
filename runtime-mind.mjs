@@ -265,7 +265,10 @@ function renderReading(inspector){
   setText('fact-herbs',inspector.worldFacts?.publicHerbs);
   setText('fact-price',inspector.worldFacts?.postedHerbPrice);
   const actor=inspector.actors?.find(a=>a.knowledge?.actorId===selected);
-  if(survival&&actor)renderSurvival(actor);
+  const actorSurvival=survival&&actor?.knowledge?.knowledgeVersion==='survival-knowledge-v1';
+  setSurvivalMode(actorSurvival);
+  byId('surv-fact-food-price').hidden=!survival;
+  if(actorSurvival)renderSurvival(actor);
   renderActor(actor,motivation?'motivation':cognition||survival?'cognition':'mind');
 }
 async function readInspector(){
