@@ -101,9 +101,9 @@ test('§3.2: a missing or expired quote is a lawful infeasibility, not an error'
   validateSurvivalKnowledge(base({ foodQuote: null }));
   validateSurvivalKnowledge(base({ workOffer: null }));
   // An expired quote still validates as data; it is simply not fresh at decision time.
-  const stale = base({ foodQuote: quote({ observedTick: 288, expiresTick: 576 }) });
+  const stale = base({ tick: 432, foodQuote: quote({ observedTick: 144, expiresTick: 432 }) });
   validateSurvivalKnowledge(stale);
-  assert.equal(isSurvivalQuoteFresh(stale.foodQuote, DAY), false);
+  assert.equal(isSurvivalQuoteFresh(stale.foodQuote, 432), false);
   assert.equal(isSurvivalQuoteFresh(quote(), DAY), true);
   // The TTL boundary is exclusive at the far end.
   assert.equal(isSurvivalQuoteFresh(quote(), 289), false);
@@ -113,8 +113,8 @@ test('§3.2: a missing or expired quote is a lawful infeasibility, not an error'
 });
 
 test('§3.2: a future observation, a bad TTL or a wrong product is INVALID_INPUT', () => {
-  assert.throws(() => validateSurvivalKnowledge(base({ foodQuote: quote({ observedTick: DAY + 144 }) })),
-    /Survival quote expiry does not match/);
+  assert.throws(() => validateSurvivalKnowledge(base({ foodQuote: quote({ observedTick: DAY + 144, expiresTick: DAY + 144 + 288 }) })),
+    error => error?.code === 'INVALID_INPUT');
   assert.throws(() => validateSurvivalKnowledge(base({ foodQuote: quote({ expiresTick: 999 }) })),
     /Survival quote expiry does not match/);
   assert.throws(() => validateSurvivalKnowledge(base({ foodQuote: { ...quote(), product: 'herbs' } })),
@@ -314,13 +314,16 @@ test('§4: the body soft guard and the window are never bypassed by the food pat
   assert.notEqual(c.decision.reasonCode, 'FOOD_INCOME');
 });
 
-test('§4: an offer that does not match the pending duty is not an opportunity', () => {
-  const r = planSurvivalDecision(base({ foodQuote: quote(), workOffer: offer({ requestId: 'other' }),
-    duty: dutyOf(), self: { wallet: 0, inventory: { food: 0, herbs: 0 } } }), ctx());
-  assert.notEqual(r.activePlan?.kind, SURVIVAL_FOOD_PLAN_KIND);
-  assert.notEqual(r.decision.reasonCode, 'FOOD_INCOME');
-  // A fulfilled duty is no longer an opportunity either.
-  const done = planSurvivalDecision(base({ foodQuote: quote(), workOffer: offer(),
+test('§4: mismatched or fulfilled-duty offers are invalid input, null offer is lawful', () => {
+  assert.throws(() => planSurvivalDecision(base({ foodQuote: quote(), workOffer: offer({ requestId: 'other' }),
+    duty: dutyOf(), self: { wallet: 0, inventory: { food: 0, herbs: 0 } } }), ctx()),
+    error => error?.code === 'INVALID_INPUT');
+  assert.throws(() => planSurvivalDecision(base({ foodQuote: quote(), workOffer: offer(),
+    duty: dutyOf({ status: 'fulfilled', fulfilledTick: 144 }),
+    self: { wallet: 0, inventory: { food: 0, herbs: 0 } } }), ctx()),
+    error => error?.code === 'INVALID_INPUT');
+  // The legitimate projection removes the offer after fulfillment.
+  const done = planSurvivalDecision(base({ foodQuote: quote(), workOffer: null,
     duty: dutyOf({ status: 'fulfilled', fulfilledTick: 144 }),
     self: { wallet: 0, inventory: { food: 0, herbs: 0 } } }), ctx());
   assert.notEqual(done.activePlan?.kind, SURVIVAL_FOOD_PLAN_KIND);
@@ -373,9 +376,12 @@ test('§4: at most one recover-health plan is suspended and it keeps its identit
   const health = { planId: 2, goalId: 5, kind: 'recover-health', steps: ['BuyMedicine', 'UseMedicine'],
     stepIndex: 0, status: 'ready', createdDay: 1, deadlineDay: 21, requestId: null };
   const r = planSurvivalDecision(base({ foodQuote: quote(), planState: { activePlan: health, suspendedPlan: null,
-    nextPlanId: 3, lastReviewedDutyId: null }, self: { wallet: 30, inventory: { food: 0, herbs: 0 } } }), ctx());
+    nextPlanId: 3, lastReviewedDutyId: null }, self: { wallet: 30, inventory: { food: 0, herbs: 0 },
+      currentGoal: { goalId: 5, kind: 'recover-health', step: 'buy', startDay: 1, deadlineDay: 21, failures: 3, target: 800 },
+      nextGoalId: 6 } }), ctx());
   assert.equal(r.decision.choice, 'BuyFood');
   assert.equal(r.activePlan.kind, SURVIVAL_FOOD_PLAN_KIND);
+  assert.deepEqual(r.currentGoal, { goalId: 5, kind: 'recover-health', step: 'buy', startDay: 1, deadlineDay: 21, failures: 3, target: 800 });
   // The health plan is parked with every one of its own fields intact.
   assert.deepEqual(r.suspendedPlan, { ...health, status: 'suspended' });
   assert.equal(r.suspendedPlan.planId, 2);
@@ -520,13 +526,12 @@ test('§4 signals: the baseline stays the three semantic values, never a quote s
 });
 
 test('§4 signals: only actor-2 is served, and the previous-execution identity is checked', () => {
-  // A well-formed Knowledge for actor-3 still survives the field checks, so the refusal is the
-  // survival actor rule itself rather than a downstream mismatch.
+  // Actor-3 keeps cognition Knowledge; every new survival-only entry refuses it.
   const foreign = base({ foodQuote: quote() });
   foreign.actorId = 'actor-3';
   foreign.experience = deriveWorkExperience(createWorkExperienceState(SIM, 'actor-3'));
-  validateSurvivalKnowledge(foreign);
-  assert.throws(() => deriveActorSurvivalSignals(foreign, 700, null, null), /only serve actor-2/);
+  assert.throws(() => validateSurvivalKnowledge(foreign), error => error?.code === 'MIND_UNAVAILABLE');
+  assert.throws(() => deriveActorSurvivalSignals(foreign, 700, null, null), error => error?.code === 'MIND_UNAVAILABLE');
   // A strictly earlier tick keeps the shape valid, so this fails on the decision id itself.
   assert.throws(() => deriveActorSurvivalSignals(base({ tick: 2 * DAY, foodQuote: quote() }), 700, null,
     { simulationId: SIM, actorId: ACTOR, tick: DAY, decisionId: 'cognition-day-1-actor-2', choice: 'NoAction',

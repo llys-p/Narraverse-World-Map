@@ -219,7 +219,7 @@ export function validateSurvivalKnowledge(knowledge) {
     'Unknown survival knowledge version', 'UNSUPPORTED_VERSION');
   requireCondition(knowledge.phase === 'decision', 'Survival planner only accepts decision-phase knowledge');
   identifier(knowledge.simulationId);
-  requireCondition(SURVIVAL_ACTOR_IDS.includes(knowledge.actorId), 'Survival planner actor unavailable', 'MIND_UNAVAILABLE');
+  requireCondition(knowledge.actorId === SURVIVAL_ACTOR_ID, 'Survival planner actor unavailable', 'MIND_UNAVAILABLE');
   integer(knowledge.tick, 1);
   requireCondition(knowledge.tick % TICKS_PER_DAY === 0, 'Survival decisions sit on a daily tick');
   integer(knowledge.revision);
@@ -283,6 +283,8 @@ export function validateSurvivalKnowledge(knowledge) {
     requireCondition(suspended.status === 'suspended', 'Only suspended plans occupy the suspension slot');
     requireCondition(suspended.kind === 'recover-health', 'Only the health plan may be suspended');
   }
+  requireCondition(!(active?.kind === 'recover-health' && suspended?.kind === 'recover-health'),
+    'Survival actor cannot carry two health plans');
   if (active !== null && suspended !== null) requireCondition(active.planId !== suspended.planId,
     'Active and suspended plans must be distinct');
   integer(knowledge.planState.nextPlanId, 1);
@@ -311,6 +313,19 @@ export function validateSurvivalKnowledge(knowledge) {
 
   validateSurvivalKnowledgeQuote(knowledge.foodQuote);
   validateSurvivalWorkOffer(knowledge.workOffer);
+  if (knowledge.foodQuote !== null) requireCondition(knowledge.foodQuote.observedTick <= knowledge.tick,
+    'Survival food quote observation is in the future');
+  if (knowledge.workOffer !== null) {
+    const offer = knowledge.workOffer, duty = knowledge.duty;
+    requireCondition(offer.observedTick <= knowledge.tick, 'Survival work offer observation is in the future');
+    requireCondition(duty !== null && duty.status === 'pending' && offer.requestId === duty.requestId &&
+      offer.observedTick === duty.observedTick && offer.expiresTick === duty.expiresTick,
+      'Survival work offer must match the pending duty');
+  }
+  for (const plan of [active, suspended]) if (plan !== null && plan.kind === 'recover-health')
+    requireCondition(self.currentGoal !== null && plan.goalId === self.currentGoal.goalId &&
+      plan.deadlineDay === self.currentGoal.deadlineDay,
+      'Survival health plan must remain bound to the current health goal');
   return knowledge;
 }
 

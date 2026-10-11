@@ -302,7 +302,7 @@ function survivalFoodQuote(world,events,actorId,tick){
 // Only a real, still-pending Duty of this actor may become a visible work offer, and only when
 // its own announcement names exactly that request on the same tick and expiry.
 function survivalWorkOffer(world,events,actorId,tick,duty){
-  if(duty===null||duty.status!=='pending')return null;
+  if(duty===null||duty.status!=='pending'||tick>=duty.expiresTick)return null;
   let best=null;
   for(const event of events){
     if(event.eventSeq>world.mindModel.cursor||event.tick>tick)continue;
