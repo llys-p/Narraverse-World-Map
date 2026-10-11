@@ -1,6 +1,15 @@
 # DSH 施工团队协作规则
 
-> 2026-10-11（Asia/Shanghai）；新监督对话已接任，三名原生子代理已完成纯文字接手验证并停止待命。D3-1已通过可监控的独立Global执行对话完成并由Codex验收；原生子代理通道实测不可靠。
+> 2026-10-11 19:47（Asia/Shanghai）；D3-2已限定验收。以下包工头流程为当前生效约定，旧通道问题保留为历史证据。
+
+## 当前生效的包工头流程
+
+- Codex → 唯一DSH包工头主对话 → 包工头自行创建/管理原生子代理和原生任务板 → 交付Codex验收。用户在任务板看任务状态、负责人及父子分工。
+- 延续下方监督入口，不另开平级施工对话；Codex不直接给工人发修补提示。包工头负责拆分、派工、进度、纠偏和汇总。
+- 包工头主模型为用户指定的Global GPT-6.1 Sol high；子代理优先免费Global DeepSeek V4.1 Flash/HY4，按独立文件并行，通常最多两路。付费升级先提出理由。
+- 原生任务板应包含任务名、负责人、依赖、待办/执行/阻塞/待验收/完成状态与交付证据；不能只列角色名或凭started/父run终态声称子任务完成。
+- 当前D3-2代码 b94d71d08da808de53eb7f23f64fae95847d034d，仅候选DTO世界适配，50/50通过。当前树D:/Narraverse-World-Map/hds-reservation @ codex/world-runtime-d3-reservation。后续真实提交/事件/存档/战斗须另发有界合同。
+- 原生团队状态异常时，包工头上报具体卡点和已完成动作；Codex不绕开它无限增开独立执行聊天，也不为此擅自改DSH配置。
 
 ## 监督入口与分工
 - [DSH监督对话](http://127.0.0.1:19387/?sessionId=session-2564efe0-949b-48ed-90a5-f7f7feb9cbce)。主路线workbuddy-global/gpt-6.1-sol，high；Relay读回选择一致，用户在HDS界面确认GPT-6.1 Sol。
@@ -8,7 +17,7 @@
 - 保留旧混元4对话历史，后续施工由上述新监督对话承接；不复制常驻架构团队。
 - 无具体任务时待命，不自行推进D3、不后台循环。
 
-## 已创建的原生子代理
+## 历史文字接手验证的子代理
 | 角色 | 原生agentId | 本轮指定provider/model |
 |---|---|---|
 | 代码/脚本 | 25a3aaa2-1f7f-40b3-a259-1dc95a335e8f | workbuddy-global/deepseek-v4.1-flash high |
@@ -62,4 +71,4 @@
 - 首个原生子代理4e6c0ac1-cadd-4141-aa25-3fa376139423状态脱钩并迟到写hds-runtime；该树保留不整合，不抢写、不删除。
 - 隔离交付树D:/Narraverse-World-Map/hds-reservation @ codex/world-runtime-d3-reservation；两个独立Relay执行对话有稳定runId和终态，不能伪称原生子代理。
 - 原监督run显示succeeded而session仍running，原生steer拒绝terminal、cancel返回无操作；只读复核无法派发。最后验收由Codex独立完成，尚未修复HDS平台状态。
-- 在原生通道修复前先用Codex原生Relay持续监控短执行会话，不在状态未知的工作树重试，也不自动开启更多并行链。
+- 以上为D3-1/D3-2的过渡历史；用户已要求改用唯一包工头与其原生子代理任务板，不沿用Codex直派平级执行会话。
