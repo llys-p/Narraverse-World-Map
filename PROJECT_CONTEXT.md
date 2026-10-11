@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-11 09:30（Asia/Shanghai）。
+更新时间：2026-10-11 12:23（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -95,11 +95,12 @@
 - 当前 M4：原 A `0bf08dd7414494d945f683ef44ffb2a93d2df7e7` 保留；中控修正候选 `520e838b162edae7419fcb69a4edb32c79bdb65e` 在 D:\Narraverse-World-Map-m4-controller @ codex/world-runtime-m4-controller，本地干净、未push/main/部署。两份任务书更新至 [A 公共合同](tasks/M4A-BOUNDED-SURVIVAL-TASK.md) m4-survival-contract-v2 / [B 独立验收](tasks/M4B-SURVIVAL-ACCEPTANCE-TASK.md) v2；v2 文档发布 fe939fb30a7800ecb2910dd68e74117f24ae1344，v1 发布70e34d5保留。代码基准6676281不变，D3/D4未开始。
 - 修正：现场活人 tick1/每天决策前看公开粮价/有无粮；禁止私账/公库支付信息进入 planner。补健康目标建立、真实购粮失败记账、maintain超期取消、旧cognition版本隔离。玩家提前买光→次日看见缺货合法等待；同日最后一粮竞争→真提交拒绝且只计1失败；真实健康计划→拒付不扣健康失败数。定向去重159项通过（91 survival/中控 +68旧规划器），不是全量；证据修正树 artifacts/world-runtime-m4-controller-review-20261010/review-index.json。
 - B 已交付 7a7bf3d896a43ddf465bf91a8b6f60c006ca33e0（三份测试，原A绝对路径520e838）；中控核对提交/哈希和既有36/36日志，未复跑36项。按v2合同裁定 NEED REVISION：健康计划保护场景未建立健康计划、两固定recipe不全、边界/持久化/兼容及部分页面证据不足。原报告v1锚点需改正。详见 [M4B复核与补验清单](docs/runtime/M4B-REVIEW-20261011.md)。
-- 已内部修复 actor-3 页签崩溃：独立树 D:/Narraverse-World-Map-m4-ui-review @ codex/world-runtime-m4-ui-review，本地提交2c689a71d2d8b69511bcf4f879ba77e06bc11530；真实浏览器先红后绿，最终1/1含两profile/两tick共12次选择，pageerror0、清理完整；仅UI及直接回归，未重跑模拟。原A/B不动，未push/main/部署。用户要求三路子代理内部补验，已开工：知识/计划、保存/兼容、页面展示/注入；M4仍未通过。
+- 已内部修复 actor-3 页签崩溃：独立树 D:/Narraverse-World-Map-m4-ui-review @ codex/world-runtime-m4-ui-review，本地提交2c689a71d2d8b69511bcf4f879ba77e06bc11530；真实浏览器先红后绿，最终1/1含两profile/两tick共12次选择，pageerror0、清理完整；仅UI及直接回归，未重跑模拟。原A/B不动，未push/main/部署。三路子代理补验已完成；最终修复树115e256eec196ffcf73f3e3010da5324ab101439，中控裁定M4实现修正/B补验/阶段PASS，限v2取食收入闭环。内部89个唯一检查按分次证据覆盖，最终源selected10/10；旧三profile288tick完整业务导出/hash一致。容量拒绝/合法离村不可达如实说明，未复跑M3全量。最终证据control artifacts/world-runtime-m4b-review-20261011/final-acceptance-index.json；源码本地，未push/main/部署，停在M4结束。
 - M4并行保全（2026-10-10 20:09 Asia/Shanghai）：源码520e838、v2合同fe939fb和11份中控证据已打为本机同盘恢复包；19成员校验、全新TEMP裸库恢复/fsck、精确commit/tree与篡改失败检测通过。包1,307,390字节，SHA256 acff9e5e08d09312741fd4e09f4e0f5178f9c3fc584f26cd18bd88e106a89278；目录 artifacts/world-runtime-m4-preservation-20261010-1791634018204，证据 restoration-verification.json。未重跑模拟/浏览器、未动B材料；不含B待交付证据及旧E7/C8外置实体，不称完整验收环境包或异地备份。
 
 ## 中控与进度看板
 
+- 2026-10-11 最终看板已读回：M4阶段/A/B Done/已验收，M父卡继续进行中；4卡正文/6字段匹配，其余58卡完全不变。证据 artifacts/world-runtime-m4b-review-20261011/board-closeout-verification.json。历史B需修正保留记录。
 - 2026-10-11 已同步读回：M4进行中、A待验收、B需修正，三路内部补验已开工；M父卡及项目简介同步。62卡中4张正文匹配，其余58卡完整不变；证据 artifacts/world-runtime-m4b-review-20261011/board-verification.json。下列10月10日记录为历史状态。
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)；owner `llys-p`，number `2`，Project ID `PVT_kwHOEF9IDs4BmADf`。与正式平台 Project #1 分开维护。
 - 看板已同步读回：M4阶段 In Progress/进行中，A In Progress/待验收，B In Progress/进行中（准备/探针）；M父卡正文同步，M3卡已验收保持。62卡中4张目标正文更新，其余58卡内容/字段完全不变；证据 artifacts/world-runtime-m4-review-20261010/board-verification.json 及 board-readback-result.json。控制文档可远端读取，修正代码仍仅本地。B本次状态更新单卡读回、其余61卡不变，证据 artifacts/world-runtime-m4-preservation-20261010-1791634018204/board-readback.json。
@@ -118,3 +119,5 @@
 - 待派发不代表开工；核实实际开工回执或任务树中的实现/测试改动后进入进行中，交付进入待验收。中控复核通过后标已验收，失败标需修正并保留原因。
 - 每个任务/阶段收口同步看板与本文件；阶段需所有必需任务及阶段门槛通过。收到回执后触发更新，远端失败明确记录待同步，不凭执行者自报测试数量判定完成。
 - A1～A4及A/B/C阶段门槛已通过；C1～C5均已验收，D1已验收，D2A已验收，D2B三路已验收，D2C三路已验收，D2门槛通过，D3/D4未开始，D整体未验收，F/G主线未开始。E阶段待开始；E1本轮A/B投入筛查已复验收档，无信号达继续投入门槛、正式准入为空；[合同与保存点](https://github.com/llys-p/Narraverse-World-Map/blob/main/tasks/E1-DEV30-SCREENING-TASK.md)。停止当前400扩样/微调路线，不开新模型调用/校准/final/CUDA/C/E2/qoder_cron；保留数据环境。D主线不依赖AI，后续模型探索须另发定向合同，不把本轮预研收口当E1正式或E阶段验收。
+
+- M4最终本地增量Git保全包：artifacts/world-runtime-m4b-review-20261011/m4-final-from-6676281.bundle，bundle verify通过，SHA256 faa28a8b4524b451cf20e7eeb7f0f4973ccb32ac8d3d952e997ab58028230326；依赖已保全/远端可取得的基准6676281，不是独立恢复包或异地备份。最终原始日志/截图仍在修复树ignored artifacts，源码未push。
