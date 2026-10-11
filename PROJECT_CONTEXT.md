@@ -100,7 +100,7 @@
 
 ## 中控与进度看板
 
-- D3-3短任务已冻结待派发：[有界遭遇命令会话](tasks/D3-3-ENCOUNTER-SESSION-TASK.md)，合同d3-encounter-session-v1，代码基准6790b4d。仅新增会话模块/独立测试两文件；单写者内存事务、回执、幂等和冲突，固定sourceTick，不接旧bundle/存档/HTTP/UI。由唯一DSH包工头管理原生子代理与任务板，交付后Codex复验。
+- D3-3已派发并产出两文件，尚未验收：[有界遭遇命令会话](tasks/D3-3-ENCOUNTER-SESSION-TASK.md)，合同d3-encounter-session-v1/发布5e3e407，代码基准6790b4d。DSH包工头run7ce1ae1d于2026-10-11 20:21（Asia/Shanghai）因429 quota_exceeded终止；中断前自报65通过/4失败并派出返修，替补工人终态未收齐，不能据父run结束抢写。两文件留在hds-reservation未提交，中控未验收；待用户选择主对话模型后在同一包工头恢复。证据 artifacts/world-runtime-d3-session-20261011/foreman-quota-stop.json；原生任务板由包工头维护。
 
 - D3前置完成；D3-1预留守恒内核8478bce已限定PASS，D3-2世界候选适配 b94d71d08da808de53eb7f23f64fae95847d034d 已限定PASS（36新+14直接回归=50/50；语法/diff通过）。真实玩家/狼候选预留与归还可用，尚未接权威提交、事件/存档、UI或战斗；完整D3未验收。[D3-2任务与收口](tasks/D3-2-ENCOUNTER-WORLD-TASK.md)，证据 artifacts/world-runtime-d3-world-20261011/acceptance.json。源码未push/main/部署。
 - DSH施工团队：唯一包工头[监督对话](http://127.0.0.1:19387/?sessionId=session-2564efe0-949b-48ed-90a5-f7f7feb9cbce)，用户指定Global GPT-6.1 Sol high；它自行开免费Global HY4/DeepSeek原生子代理、维护原生任务板、监控纠偏并交付。Codex只发布任务/最终验收，不继续直派平级工人。实际交付树D:/Narraverse-World-Map/hds-reservation @ codex/world-runtime-d3-reservation；原hds-runtime保留。旧原生状态脱钩记录保留，当前主会话已核空闲；包工头run21c052f5终态，原生两名子代理finished、5卡4完成/1待合同；卡owner为lead，工人ID记录正文，effective路线/子会话关系未返回。证据 artifacts/world-runtime-d3-world-20261011/foreman-handoff-result.json（任务板实体由包工头原生工具回执，未另做浏览器读回）。
