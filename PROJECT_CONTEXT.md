@@ -1,15 +1,14 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-11 12:20（Asia/Shanghai）。
+更新时间：2026-10-11 20:40（Asia/Shanghai）。
 
-## 当前独立修复树
+## 当前D3施工树
 
-- 本树 codex/world-runtime-m4-ui-review 自520e838创建；UI修复提交2c689a7。最终窄修：按人物能力渲染；生存Knowledge仅actor-2；未来来源/工作请求绑定/健康Goal绑定及双计划拒绝；工作机会到期在生产与只读投影归空。旧profile规则不改。
-- 中控裁定M4实现修正、B补验与M4阶段 PASS（仅 m4-survival-contract-v2 有界村庄取食/收入闭环）。原A520e838、B7a7bf3d及各原树保留；B原36项历史日志已核，未在本树重跑。
-- 内部89个唯一检查按分次证据覆盖：知识/计划与直接回归71项、保存兼容15项、浏览器3项；最终源码另补10项selected保存/loader/旧三profile兼容。不是单次89/89；当前必需片段0 fail/skip/timeout，历史RED及测试fixture失败保留不计PASS。浏览器12次人物切换、真实挣工资后买粮和3类恶意文本不执行，pageerror0、清理完整。
-- 最终代码与测试哈希、原运行命令/旧证据复用边界见 artifacts/m4-final-controller-20261011/acceptance-index.json；源码指纹5d67a6e1f751a76486049582de3869494e0f49615dc3f605bcf782f1f5d9615f。完整收口说明在控制树 docs/runtime/M4B-REVIEW-20261011.md。
-- 合法BuyFood容量拒绝与actor-2自由离村当前不可达，已验合法容量界限/非法位置拒绝及死亡零公告；不宣称通用周围感知、自由移动或长期生态平衡。未跑旧M3全量，未push/main/部署；结束当前阶段，不开后续任务。
-- 下方为继承历史；最新主线状态以 D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md 为准。
+- 实际目录D:/Narraverse-World-Map/hds-reservation，分支codex/world-runtime-d3-reservation；D3-3源码4947adddddbca8f7a0478b845c8c960af2e4cda3，基准6790b4d。仅新增encounter-session模块与独立测试。
+- 中控限定PASS：标准三文件69/69（19新+36世界适配+14预留），0 fail/skip/todo、10.1秒；语法/diff通过、测试前后哈希一致。证据control artifacts/world-runtime-d3-session-20261011/controller-validation.json与controller-final.tap。
+- 内存会话开始/取消、回执、幂等、版本冲突、100项预算和原子发布已验。后置故障未注入；旧SimulationSession/EventLog/存档/服务/UI/战斗未接，完整D3未验收。
+- 唯一DSH包工头使用国内DeepSeek V4 Pro high，执行优先免费Global DeepSeek V4.1 Flash high；原生工人已结束，Codex完成最终验收。源码未push/main/部署，本片结束停止；下一片另定合同。
+- 下方继承历史仅作背景，主线唯一状态以D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md为准。
 
 ## 项目定位
 
