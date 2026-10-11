@@ -101,7 +101,7 @@
 ## 中控与进度看板
 
 - D3前置短任务：混元4 D3-P0a 旧战斗入口静态核对已交付，中控复核关键定位；未写代码或运行测试。下一单 [D3-P0b Runtime命令入口核对](tasks/D3-P0B-RUNTIME-ENTRY-TASK.md) 经用户授权后已由混元4交付，中控逐行复核通过；只读核对，无代码修改或测试复跑；施工树 D:/Narraverse-World-Map/hds-runtime @ codex/world-runtime-d3-hds，基准115e256，旧A1不改。D3实现未开工。 P0c单页草案已由混元4交付并经中控修正；本地文档SHA3394a53，完整D3仍未冻结/未实现。下一片仅新预留守恒纯内核+测试两文件，不改冻结生态。
-- DSH施工团队（2026-10-11）：用户另开监督对话并指定Global GPT-6.1 Sol（high），界面已由用户确认；新session-2564efe0-949b-48ed-90a5-f7f7feb9cbce，三名原生子代理已完成纯文字接手后待命，代码/脚本用Global DeepSeek V4.1 Flash，页面/交互与默认复核用Global HY4 Preview。均按零倍率路线派发，effectiveModel/计费及原ID复用未完全验证，不称永久常驻团队。后续由Codex短任务派发/最后验收，DSH拆分监控纠偏；不自动付费回退。团队规则施工树docs/runtime/DSH-CONSTRUCTION-TEAM.md，本地文档SHAdea29161b7765d26f30e9cf175a1ca669b0958b4；未读新私有源码、未开发D3或改HDS配置，停止待派工。
+- DSH施工团队（2026-10-11）：用户另开监督对话并指定Global GPT-6.1 Sol（high），界面已由用户确认；新session-2564efe0-949b-48ed-90a5-f7f7feb9cbce，三名原生子代理已完成纯文字接手后待命，代码/脚本用Global DeepSeek V4.1 Flash，页面/交互与默认复核用Global HY4 Preview。均按零倍率路线派发，effectiveModel/计费及原ID复用未完全验证，不称永久常驻团队。后续由Codex短任务派发/最后验收，DSH拆分监控纠偏；不自动付费回退。团队规则施工树docs/runtime/DSH-CONSTRUCTION-TEAM.md，本地文档SHAdea29161b7765d26f30e9cf175a1ca669b0958b4；未读新私有源码、未开发D3或改HDS配置，停止待派工。 用户已授权首单 [D3-1预留守恒内核](tasks/D3-1-ENCOUNTER-RESERVATION-TASK.md)，合同d3-reservation-kernel-v1、基准dea2916，已派发新监督对话（run 9e671a27-3576-4dc8-8ea8-0dd1bfb4e149），运行中，仅新内核+测试两文件；未验收。
 
 - 2026-10-11 最终看板已读回：M4阶段/A/B Done/已验收，M父卡继续进行中；4卡正文/6字段匹配，其余58卡完全不变。证据 artifacts/world-runtime-m4b-review-20261011/board-closeout-verification.json。历史B需修正保留记录。
 - 2026-10-11 已同步读回：M4进行中、A待验收、B需修正，三路内部补验已开工；M父卡及项目简介同步。62卡中4张正文匹配，其余58卡完整不变；证据 artifacts/world-runtime-m4b-review-20261011/board-verification.json。下列10月10日记录为历史状态。
