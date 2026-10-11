@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-11 20:01（Asia/Shanghai）。
+更新时间：2026-10-11 20:40（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -100,12 +100,12 @@
 
 ## 中控与进度看板
 
-- D3-3已派发并产出两文件，尚未验收：[有界遭遇命令会话](tasks/D3-3-ENCOUNTER-SESSION-TASK.md)，合同d3-encounter-session-v1/发布5e3e407，代码基准6790b4d。DSH包工头run7ce1ae1d于2026-10-11 20:21（Asia/Shanghai）因429 quota_exceeded终止；中断前自报65通过/4失败并派出返修，替补工人终态未收齐，不能据父run结束抢写。两文件留在hds-reservation未提交，中控未验收；待用户选择主对话模型后在同一包工头恢复。证据 artifacts/world-runtime-d3-session-20261011/foreman-quota-stop.json；原生任务板由包工头维护。
+- D3-3有界遭遇命令会话已限定PASS：源码4947adddddbca8f7a0478b845c8c960af2e4cda3，代码基准6790b4d；中控标准三文件69/69、0 fail/skip/todo，语法/diff和测试前后哈希一致。[任务与收口](tasks/D3-3-ENCOUNTER-SESSION-TASK.md)。内存开始/取消、回执/幂等/版本冲突/100项预算已验；后置故障未注入，旧SimulationSession/EventLog/存档/HTTP/UI/战斗未接，完整D3未验收。证据 artifacts/world-runtime-d3-session-20261011/controller-validation.json、controller-final.tap、foreman-delivery.json。源码本地提交、未push/main/部署；本片完成停止。
 
 - D3前置完成；D3-1预留守恒内核8478bce已限定PASS，D3-2世界候选适配 b94d71d08da808de53eb7f23f64fae95847d034d 已限定PASS（36新+14直接回归=50/50；语法/diff通过）。真实玩家/狼候选预留与归还可用，尚未接权威提交、事件/存档、UI或战斗；完整D3未验收。[D3-2任务与收口](tasks/D3-2-ENCOUNTER-WORLD-TASK.md)，证据 artifacts/world-runtime-d3-world-20261011/acceptance.json。源码未push/main/部署。
-- DSH施工团队：唯一包工头[监督对话](http://127.0.0.1:19387/?sessionId=session-2564efe0-949b-48ed-90a5-f7f7feb9cbce)，用户指定Global GPT-6.1 Sol high；它自行开免费Global HY4/DeepSeek原生子代理、维护原生任务板、监控纠偏并交付。Codex只发布任务/最终验收，不继续直派平级工人。实际交付树D:/Narraverse-World-Map/hds-reservation @ codex/world-runtime-d3-reservation；原hds-runtime保留。旧原生状态脱钩记录保留，当前主会话已核空闲；包工头run21c052f5终态，原生两名子代理finished、5卡4完成/1待合同；卡owner为lead，工人ID记录正文，effective路线/子会话关系未返回。证据 artifacts/world-runtime-d3-world-20261011/foreman-handoff-result.json（任务板实体由包工头原生工具回执，未另做浏览器读回）。
+- DSH施工团队沿用唯一[包工头对话](http://127.0.0.1:19387/?sessionId=session-2564efe0-949b-48ed-90a5-f7f7feb9cbce)。用户授权额度耗尽后更换模型：国内workbuddy/deepseek-v4-pro high带队，执行优先免费Global DeepSeek V4.1 Flash high，HY4限流暂避。run145eb92b终态succeeded、工人均结束；原生task6/7/8完成、父task5经中控裁定completed（原生回执，未另做浏览器核验）。Codex发布/最终验收，包工头派工/监督/原生看板；最多两路同时、同文件单写者。实际树hds-reservation @ codex/world-runtime-d3-reservation；源码停止，effective路线/实际费用未返回。
 
-- 2026-10-11 D3-2看板已同步读回：D阶段卡标题/正文及项目简介匹配，全部单选字段与其它61卡完全不变；D整体仍进行中。证据 artifacts/world-runtime-d3-world-20261011/board-verification.json。
+- 2026-10-11 D3-3看板收口已同步读回：D卡标题/正文匹配、全部单选字段与其它61卡完全不变，D整体继续进行中。DSH原生task5完成，历史卡保留；证据 artifacts/world-runtime-d3-session-20261011/board-closeout-verification.json 与 native-board-closeout.json。
 
 - 2026-10-11 最终看板已读回：M4阶段/A/B Done/已验收，M父卡继续进行中；4卡正文/6字段匹配，其余58卡完全不变。证据 artifacts/world-runtime-m4b-review-20261011/board-closeout-verification.json。历史B需修正保留记录。
 - 2026-10-11 已同步读回：M4进行中、A待验收、B需修正，三路内部补验已开工；M父卡及项目简介同步。62卡中4张正文匹配，其余58卡完整不变；证据 artifacts/world-runtime-m4b-review-20261011/board-verification.json。下列10月10日记录为历史状态。

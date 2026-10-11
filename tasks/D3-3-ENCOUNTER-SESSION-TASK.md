@@ -50,3 +50,10 @@ Cancel无遭遇：rejected/ENCOUNTER_UNAVAILABLE；异ID：rejected/ENCOUNTER_ID
 预算约20分钟；有明确进展可给一次简短估计，遇同问题三轮失败或工具状态不可观测时停止并汇报，不无限重开代理。只在实质进度/阻塞变化时更新，禁止反复重述开工计划。
 允许任务相关公开资料查证并给来源；不得读凭据/运行数据或改DSH配置。禁止提交、push、main、部署和越界改文件；付费子模型升级先请求Codex裁定。
 交付：两文件、真实命令结果、任务板/子代理ID及终态、未验项和git status；到交付停止。完成本片不代表完整D3或持久化通过。
+
+## 中控收口（2026-10-11，Asia/Shanghai）
+
+- 限定PASS：源码4947adddddbca8f7a0478b845c8c960af2e4cda3；中控标准node --test三文件69/69（19新+36世界适配+14预留），0 fail/skip/todo、约10.1秒；语法/diff通过，测试前后哈希一致。未重复旧全量。
+- 唯一DSH包工头在原对话恢复，国内workbuddy/deepseek-v4-pro high带队；本轮测试返修由免费Global deepseek-v4.1-flash high子代理26193003-7e06-4377-aa04-4f39cb7c84ff完成。包工头run145eb92b-5a81-4df4-9e81-8261a13e8fe7终态succeeded；报告全部写入者结束、原生task6/7/8完成、父task5经中控验收后completed。子代理实际计费与effective路线未返回，不称已实测费用。
+- 内存会话开始/取消、回执、幂等、100项预算和单次发布已验；未注入后置故障，合同允许且已明示。未接旧SimulationSession/EventLog/checkpoint/HTTP/UI/战斗；完整D3未验收。
+- 证据位于control artifacts/world-runtime-d3-session-20261011/controller-final.tap、controller-validation.json及foreman-delivery.json；源码本地提交、未push/main/部署。本片完成停止，下一片另定合同。
