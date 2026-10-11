@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-11 20:40（Asia/Shanghai）。
+更新时间：2026-10-11 20:52（Asia/Shanghai）。
 
 ## 项目定位
 
@@ -99,6 +99,8 @@
 - M4并行保全（2026-10-10 20:09 Asia/Shanghai）：源码520e838、v2合同fe939fb和11份中控证据已打为本机同盘恢复包；19成员校验、全新TEMP裸库恢复/fsck、精确commit/tree与篡改失败检测通过。包1,307,390字节，SHA256 acff9e5e08d09312741fd4e09f4e0f5178f9c3fc584f26cd18bd88e106a89278；目录 artifacts/world-runtime-m4-preservation-20261010-1791634018204，证据 restoration-verification.json。未重跑模拟/浏览器、未动B材料；不含B待交付证据及旧E7/C8外置实体，不称完整验收环境包或异地备份。
 
 ## 中控与进度看板
+
+- D3-4已发布/派入包工头：[最小单狼战斗内核](tasks/D3-4-ENCOUNTER-COMBAT-TASK.md)，合同d3-combat-kernel-v1，发布0fb1831、基准05117e0，run4035bd18运行中、尚未交付。仅新增实现/测试两文件，攻击/逃跑/取消固定规则，仍是候选，世界/存档/UI未接；Codex最终验收。另建体验对话01a12aff-2703-71c2-ab00-cc7ae733ca2a，只核现有功能与独立实验入口，不改源码。
 
 - D3-3有界遭遇命令会话已限定PASS：源码4947adddddbca8f7a0478b845c8c960af2e4cda3，代码基准6790b4d；中控标准三文件69/69、0 fail/skip/todo，语法/diff和测试前后哈希一致。[任务与收口](tasks/D3-3-ENCOUNTER-SESSION-TASK.md)。内存开始/取消、回执/幂等/版本冲突/100项预算已验；后置故障未注入，旧SimulationSession/EventLog/存档/HTTP/UI/战斗未接，完整D3未验收。证据 artifacts/world-runtime-d3-session-20261011/controller-validation.json、controller-final.tap、foreman-delivery.json。源码本地提交、未push/main/部署；本片完成停止。
 
