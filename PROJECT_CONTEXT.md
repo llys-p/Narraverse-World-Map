@@ -100,7 +100,7 @@
 
 ## 中控与进度看板
 
-- D3-4已发布/派入包工头：[最小单狼战斗内核](tasks/D3-4-ENCOUNTER-COMBAT-TASK.md)，合同d3-combat-kernel-v1，发布0fb1831、基准05117e0，run4035bd18运行中、尚未交付。仅新增实现/测试两文件，攻击/逃跑/取消固定规则，仍是候选，世界/存档/UI未接；Codex最终验收。另建体验对话01a12aff-2703-71c2-ab00-cc7ae733ca2a，只核现有功能与独立实验入口，不改源码。
+- D3-4已发布/派入包工头：[最小单狼战斗内核](tasks/D3-4-ENCOUNTER-COMBAT-TASK.md)，合同d3-combat-kernel-v1，发布0fb1831、基准05117e0，派工run4035bd18已返回，原生测试工人99e534e8已启动/task10进行中，待其finished→红测→实现路；尚未交付。仅新增实现/测试两文件，攻击/逃跑/取消固定规则，仍是候选，世界/存档/UI未接；Codex最终验收。另建体验对话01a12aff-2703-71c2-ab00-cc7ae733ca2a，只核现有功能与独立实验入口，不改源码。
 
 - D3-3有界遭遇命令会话已限定PASS：源码4947adddddbca8f7a0478b845c8c960af2e4cda3，代码基准6790b4d；中控标准三文件69/69、0 fail/skip/todo，语法/diff和测试前后哈希一致。[任务与收口](tasks/D3-3-ENCOUNTER-SESSION-TASK.md)。内存开始/取消、回执/幂等/版本冲突/100项预算已验；后置故障未注入，旧SimulationSession/EventLog/存档/HTTP/UI/战斗未接，完整D3未验收。证据 artifacts/world-runtime-d3-session-20261011/controller-validation.json、controller-final.tap、foreman-delivery.json。源码本地提交、未push/main/部署；本片完成停止。
 
