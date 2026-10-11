@@ -19,7 +19,7 @@
 
 A 只改以下明确文件；按阶段顺序单写，不能以“补模块”扩大范围：
 
-- 可作新 profile 版本兼容/领域处理的既有文件：`runtime/core/world-state.mjs`、`command-engine.mjs`、`event-log.mjs`、`data-contract.mjs`、`ecology.mjs`、`market.mjs`、`actors.mjs`、`hunter.mjs`、`society.mjs`、`memory-runtime.mjs`、`memory-observer.mjs`、`motivation-runtime.mjs`、`survival-planner.mjs`、`survival-state.mjs`、`player-state.mjs`；`runtime/persistence/checkpoint-store.mjs` 仅改新 rules 的结构与恢复分派；`runtime/service/http-contract.mjs`（`projectEncounterSnapshot(bundle)` 从此导出，可必要时使用独立 helper）、`service-commit.mjs`、`runtime-owner.mjs`；根 `runtime-server.mjs`、`simulation-runner.mjs`、`runtime-map.html`、`runtime-map.mjs`、`runtime-map.css`、`runtime-mind.mjs`（仅新 profile 投影能力，旧页面行为不变）。
+- 可作新 profile 版本兼容/领域处理的既有文件：`runtime/core/world-state.mjs`、`runtime/core/mind-runtime.mjs`（仅新 memory-config-v5 兼容）、`command-engine.mjs`、`event-log.mjs`、`data-contract.mjs`、`ecology.mjs`、`market.mjs`、`actors.mjs`、`hunter.mjs`、`society.mjs`、`memory-runtime.mjs`、`memory-observer.mjs`、`motivation-runtime.mjs`、`survival-planner.mjs`、`survival-state.mjs`、`player-state.mjs`；`runtime/persistence/checkpoint-store.mjs` 仅改新 rules 的结构与恢复分派；`runtime/service/http-contract.mjs`（`projectEncounterSnapshot(bundle)` 从此导出，可必要时使用独立 helper）、`service-commit.mjs`、`runtime-owner.mjs`；根 `runtime-server.mjs`、`simulation-runner.mjs`、`runtime-map.html`、`runtime-map.mjs`、`runtime-map.css`、`runtime-mind.mjs`（仅新 profile 投影能力，旧页面行为不变）。
 - 新增文件：`runtime/core/encounter-runtime.mjs`、`runtime/fixtures/encounter-survival-village.mjs`、`runtime/knowledge/encounter-knowledge.mjs`（仅确有隔离只读投影依赖时使用，不需要就不新增）、`runtime-encounter.html`、`runtime-encounter.mjs`、`runtime-encounter.css`；新增测试 `tests/simulation/encounter-runtime.test.mjs`、`tests/simulation/encounter-replay.test.mjs`、`tests/simulation/encounter-service.test.mjs`、`tests/encounter-ui.test.mjs`。
 - B 独占 `tests/simulation/encounter-integration-acceptance.test.mjs`、`tests/simulation/encounter-service-acceptance.test.mjs`、`tests/encounter-ui-acceptance.test.mjs`。A 不碰这些文件。
 - 冻结文件：旧 D3-1～4 的模块和测试、其余旧测试、`runtime/core/rng.mjs`、clock/scheduler/checkpoint 底层、strict JSON helper。不得读取外层 stickman 改动、根 `.env`、model key 或配置秘密。若真实依赖要求额外文件，先交最小引用链/消费者和字段，等中控裁定后再改。
@@ -117,3 +117,15 @@ ACTIVE 期间关闭/重开须保留 reservation、已经过的真实时间、角
 按 B 任务定义的 8 个独立门交付运行证据，并记录基准/A SHA、源和测试 SHA、实际命令/退出码/计数、临时服务 PID/端口/data-dir、浏览器消费路径、历史复用范围、失败与未验项。只改公共时间、确定性重演、schema 等共享底座才扩相关直接回归；同 SHA 未变的历史证据不重复跑，阶段收口只完整运行本合同一次，不重跑旧 822 项全量。
 
 任务限一轮窄场景，短运行遇阻据实交回，不无限重开。所有执行者结束立即停止；不 push、合 main、部署、接正式平台或启动其他阶段。源码 push 未授权；控制文档发布不等于源码发布。
+
+## 2026-10-12 中控范围补充与执行解释（rev2）
+
+本补充不改 d3-playable-encounter-v1 的行为/字段/验收门，只解除真实创建链的一个漏列文件。
+- A 既有文件白名单补充 runtime/core/mind-runtime.mjs。仅支持新 memory-config-v5 的 createMindWorld/validateMindWorld 版本兼容，复用既有创建与日结；不得另造简化世界。
+- 旧 ACTOR/HUNTER/MIND 等 profile 的顶层 rules/config 匹配保持原样：world-state 原 ACTOR/HUNTER 分支仍要求 actor-config-v1，旧 Mind 仍要求 memory-config-v4；新 v4/v5 数据只走 D3-5 显式分支，不能全局放宽旧 guard。
+- 狼账 predation=0 仅针对 wolves，鹿继续旧捕食。新生态日结六个 ownership 字段记录该次聚合输入/输出；身体日结致死后的 EncounterTerminated 归还属于后续事实，不篡改先前日结 payload。
+- 新 actor-v4 的 actor-4 deathTick<=真实提交 snapshot.tick 在上层审计，并由完整重演证明。深层可在该专属路径接受 day 内死亡和日界动作先于日结的中间候选；旧版本/其他人物不放宽，不引入另一套时钟。
+- 死者 needs 三字段归0，alive 伤害仅同步真实派生需求；死亡 ledger、tombstone、lastNeedsTick 按原合同一次更新。无新增心理字段或复活。
+- hooks 须对齐真实现存底座签名与消费链；工人“不得 import/简化 bundle”不是本合同。使用已有 data-contract/descriptor 预检工具和真实 World Bundle，不能把自造 fixture 的绿测当接入完成。
+- 首轮简化核心及其30项测试标需修正，只作历史过程证据；完整 CLI/service/UI/B 的 required 门不降低。
+本补充精确提交由中控状态和派发消息钉定；B 继续依据公共合同和本解释检验，不得改独立期望凑绿。
