@@ -72,3 +72,6 @@
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)，
   owner `llys-p`，project #2；状态变化需读回并链接证据。
   正式平台 Project #1 独立维护。
+- 本轮文档与接入方向主提交 `106defb86247194240c70d5e6b943773f16a0fd4` 已推送并读回。
+  D卡与项目简介已同步为“D3-5方向已定，未实施”；D仍进行中，全部单选字段及其它61卡不变。
+  文档/历史保全检查与看板读回索引：`artifacts/world-runtime-route-refresh-20261011/documentation-check.json`、`board-verification.json`。
