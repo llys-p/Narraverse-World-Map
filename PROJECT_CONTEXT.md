@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-12 07:56（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-12 08:05（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -80,6 +80,7 @@
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)，
   owner `llys-p`，project #2；状态变化需读回并链接证据。
   正式平台 Project #1 独立维护。
-- 本轮文档与接入方向主提交 `106defb86247194240c70d5e6b943773f16a0fd4` 已推送并读回。
-  D卡与项目简介已同步为“D3-5方向已定，未实施”；D仍进行中，全部单选字段及其它61卡不变。
-  文档/历史保全检查与看板读回索引：`artifacts/world-runtime-route-refresh-20261011/documentation-check.json`、`board-verification.json`。
+- 本轮合同 rev3 勘误 `c83492dfb56b98bfdd1976196929c2d97f1f35db` 已推送并读回；D4 预规划 `cb0067a` 已保存，未派发。
+  D卡正文已同步核心内部修正、v4死亡反例与D4预规划；D仍进行中，全部单选字段及其它61卡不变，项目简介本轮未改。
+  最新看板读回：`artifacts/world-runtime-d35-hour-review-20261012/board-wording-verification.json`；同目录保存反例与原生修正回执。
+  旧接入边界方案标为冻结前历史，不以其“待冻结”措辞阻塞正式A/B合同；源任务副本与控制树逐文件指纹相等。
