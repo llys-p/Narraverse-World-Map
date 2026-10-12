@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-12 21:29（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-12 21:53（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -35,7 +35,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- 最新R3：DSH返修因WorkBuddy429额度耗尽失败，已落新事件分派与统一校验门；用户确认停DSH，原生session已核false。Codex性价比只读代理复跑当前replay7/7通过且指纹前后相同，但DTO↔session两合法续跑仍被重演误拒。用户授权临时兜底：r3_partial_readonly_verify独占runtime/replay两文件修补时重演，r3_b_harness_shape_fix独占B适配文件；均gpt-6-luna high，零重叠。当前A未验收/service-CLI-UI未开工，JSON往返不算磁盘恢复；证据artifacts/world-runtime-d35-r3-review-20261012/codex-takeover.json。此前活动记录仅为历史。
+- 最新R3：用户停止DSH并授权Codex性价比子代理兜底。统一事件门+补时重演已验证replay10/10、双合法混合续跑、锚点篡改；实际TEMP checkpoint ACTIVE保存/load/续攻的完整bundle相等（format1），目录已清，HTTP重开仍未验。源码/test/B适配三指纹已读回；B仅准备完成。另只读真实三日probe确认新profile临时Rest误取消food plan1、后续另建plan3，原A需补；已批准worker独占survival-planner/motivation-runtime/新runtime测试修正，旧profile默认保持。A未验收，service/CLI/UI未开工。证据artifacts/world-runtime-d35-r3-review-20261012/codex-replay-result.json。下列旧活动记录仅历史。
 
 - 用户反馈核心任务陷入反复读取/压缩后的重新分析；已准备[上下文恢复短卡](tasks/D3-5-RECOVERY-CARD.md)，只作为既有A内部指令，尚未确认送达。优先新短上下文工人和最小真实依赖闭包，旧写者终态前不重派；完整集成范围与B门不减。最新深层探针确认v4玩家tick6死亡已接受、旧v3仍拒绝；顶层与真实遭遇未验。
 
