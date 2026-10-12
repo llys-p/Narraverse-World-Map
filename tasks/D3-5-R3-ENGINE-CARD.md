@@ -56,3 +56,33 @@ tests/simulation/encounter-replay.test.mjs（原A测试白名单），独立手�
 首个consumer通过即保存证据，再推进剩余门；不得内核绿即声称整A完成。
 R3只交精确diff/指纹、真实命令与反例结果；不提交源码/push/main/部署，不做service/CLI/UI、
 D4、安装或模型/Laya/旧18324运行数据。后续service/CLI/UI仍是原A必须交付，不在本R3抢做。
+## 中控复验：R3 短返修（2026-10-12）
+
+中控读取当前文件并运行独立消费者，R3不得按七绿直接收口。
+已复现：合法Travel后的bundle、DTO后session idle、session后DTO、
+以及真实870跨日完整validateBundle均报 INVALID_INPUT/System fact identity mismatch。
+event-log 尚未在统一事实校验中识别 EncounterCommandResolved/EncounterTerminated，
+落入旧系统事实分支要求commandId=null。领域validateHistory绿不能替代统一Bundle审计。
+
+先完成这一最小修正，再进下一检查点：
+1. event-log 在新 ENCOUNTER_RULES 专属分派校验两类领域事实与journal/真实day因果；
+   旧系统事实身份门保持，不删除、catch忽略、跳过或以领域校验替代统一校验。
+2. replay测试helper的validateHistory必须同时调用真实validateBundle(options)；
+   保留七项手算与篡改期望。先记录新增统一门失败，再修生产，不能把坏日志当合法期望。
+3. 补合规DTO结果→session idle与session推进→DTO的混合续跑直接检查；
+   统一审计失败时修真实重演，不能禁止原已注册消费者或造额外DTO历史凑绿。
+4. 主验收B的Harness.create只取fixture返回值.bundle，worldOf读bundle.snapshot.world、
+   eventLog读bundle.eventLog、总狼读ecologyModel.populations.wolves。
+   删除猜测多形状locator fallback；只改适配/明确路径，不改业务期望、篡改正文或skip门。
+   生产fixture/execute保持原接口，不接受两形状，不给world加alias。
+5. gate5 当前是JSON内存往返，不是磁盘checkpoint保存/重开。
+   更正报告和该测试注释；不谎称保存恢复通过。真实checkpoint/store/reopen留下一消费者。
+
+包工头先确认task22/23及返修写者已结束；新增写域仅 event-log、encounter-runtime、
+tests/simulation/encounter-replay.test.mjs、
+tests/simulation/encounter-integration-acceptance.test.mjs（均原A/B白名单）。
+先单独补统一门与最小反例，别重读所有模板/重派完整六文件包。
+可把B机械适配交另一独占写者；免费路由耗尽报确切原生错误，不无限重试/自动付费升级。
+本次无source commit/push/main/部署，无scratch清理，旧probe文件保留。
+停止于全部关键最终bundle统一校验接受、四类合法组合/七手算与篡改门维持；
+实际checkpoint/服务/CLI/UI仍未验，B形状修正只能报准备完成，不报独立验收通过。

@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-12 13:43（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-12 20:56（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -35,7 +35,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- 最新R2：真实创建链已核schema3/14狼，执行者报29/29与旧回归41/41，未机械重跑；中控五条独立探针揭示session未注册、Travel未调度、RNG篡改接受、旧规则接新配置。仅创建链限定通过，整A未验收。已准备[R3真实引擎与重演短工单](tasks/D3-5-R3-ENGINE-CARD.md)，R3已实际派发：生产0dbfbf82独占六文件、测试54db580e独占encounter-replay.test.mjs；task22/23进行中，均指定免费Global Flash high，effective/cost未知。父run8e7a0fe0已终态并消费回执，非工人交付；证据artifacts/world-runtime-d35-r2-review-20261012/review.json。下列早期阻塞/在途记录为此前快照，不作为当前活动状态。
+- 最新R3：执行者报7/29/41绿，lead亲写测试属自测。中控四条独立probe确认初始RNG篡改已拒，但合法Travel/DTO↔session/870链最终统一validateBundle报System fact identity mismatch，R3需短返修。已补[R3卡中控校正](tasks/D3-5-R3-ENGINE-CARD.md)：新事件专属分派+统一验证门、B准确解包/路径；不放宽生产接口。gate5仅JSON内存往返，真实磁盘恢复未验。证据artifacts/world-runtime-d35-r3-review-20261012/review.json；A/service/CLI/UI/B未收口。下列旧活动记录仅为历史快照。
 
 - 用户反馈核心任务陷入反复读取/压缩后的重新分析；已准备[上下文恢复短卡](tasks/D3-5-RECOVERY-CARD.md)，只作为既有A内部指令，尚未确认送达。优先新短上下文工人和最小真实依赖闭包，旧写者终态前不重派；完整集成范围与B门不减。最新深层探针确认v4玩家tick6死亡已接受、旧v3仍拒绝；顶层与真实遭遇未验。
 
