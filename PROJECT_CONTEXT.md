@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-12 22:30（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-13 07:43（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -34,6 +34,8 @@
   `SURVIVAL_RULES` / `m-survival-v1`。
 
 ## 活动工作、阻塞与下一步
+
+- 当前服务检查点已开工（2026-10-13）：Codex d35_service_core（gpt-6-luna high）独占 http-contract/service-commit/runtime-owner/runtime-server，必要时新增只读 encounter-knowledge helper；d35_service_tests 同模型独占新增 encounter-service.test.mjs。先真实 RED，再格式8/DTO3/四投影/save-then-swap/ACTIVE close-reopen/HTTP 门；沿用已冻结 A 合同，核心/CLI/UI/B 文件不改。只有启动记录，尚未交付/验收，不复跑已过且未变的核心测试。
 
 - 最新R3：DSH 已停止，用户授权的 Codex 性价比子代理临时返修已结束。补时重演 replay10/10、合法混合续跑/锚点篡改通过；实际 TEMP checkpoint ACTIVE 保存/load/续攻完整 bundle 相等（format1），HTTP owner 重开未验。临时 Rest 保留本人 food plan 修正，真实三日链与新 health Goal 同日组合2/2通过，旧 planner36/36通过；旧profile继续原取消/新建计划链。六文件最终 SHA256 中控读回相等，源码仍未提交。B只修fixture解包/真实路径并通过语法，未完整验收。service/CLI/UI尚未开工，A/D3-5未验收。证据 artifacts/world-runtime-d35-r3-review-20261012/codex-rest-result.json；下列旧活动记录仅历史。
 
@@ -88,5 +90,5 @@
   正式平台 Project #1 独立维护。
 - 本轮合同 rev3 勘误 `c83492dfb56b98bfdd1976196929c2d97f1f35db` 已推送并读回；D4 预规划 `cb0067a` 已保存，未派发。
   D卡正文已同步核心内部修正、v4死亡反例与D4预规划；D仍进行中，全部单选字段及其它61卡不变，项目简介本轮未改。
-  最新看板读回：`artifacts/world-runtime-d35-r3-review-20261012/board-rest-verification.json`；同目录保存反例与原生修正回执。
+  最新看板读回：`artifacts/world-runtime-d35-r3-review-20261012/board-service-verification.json`；同目录保存反例与原生修正回执。
   旧接入边界方案标为冻结前历史，不以其“待冻结”措辞阻塞正式A/B合同；源任务副本与控制树逐文件指纹相等。
