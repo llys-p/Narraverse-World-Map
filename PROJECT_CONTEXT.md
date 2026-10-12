@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-12 08:34（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-12 10:00（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -34,6 +34,8 @@
   `SURVIVAL_RULES` / `m-survival-v1`。
 
 ## 活动工作、阻塞与下一步
+
+- 用户反馈核心任务陷入反复读取/压缩后的重新分析；已准备[上下文恢复短卡](tasks/D3-5-RECOVERY-CARD.md)，只作为既有A内部指令，尚未确认送达。优先新短上下文工人和最小真实依赖闭包，旧写者终态前不重派；完整集成范围与B门不减。最新深层探针确认v4玩家tick6死亡已接受、旧v3仍拒绝；顶层与真实遭遇未验。
 
 - 观察在途施工：用户已确认包工头仍在输出或使用工具，继续原会话/原工人，目标保持active，不因等待重启未知写者。Relay仍无该会话的活动run（旧67fc8b67已终态），无法追加管理消息；这是受管接口缺口，不证明工人停止。自动审批拒绝将目标blocked，故只作有界观察，待真实finished/可接回管理轮后再续派。核心fixture仍缺，A/B未交付/未验收。模型目录复核Global DeepSeek V4.1 Flash标注x0.00，实际工人费用仍未返回。
   本地接手证据：`artifacts/world-runtime-d35-hour-review-20261012/repair-workers-latest.json`；新增旧五配方初始化边界5/5通过仅覆盖tick0，证据`legacy-five-recipe-initialization.json`，不代替D3-5验收。
