@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-12 08:05（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-12 08:19（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -35,6 +35,8 @@
 
 ## 活动工作、阻塞与下一步
 
+- 中控管理接口阻塞（连续三轮复核）：原 DSH 会话仍报 running，但最后受管 run `67fc8b67` 已 succeeded，Relay 列表无该会话的活动 run。续派报 session already running，追加校正报 run is terminal；未新建或重启未知写者。核心 fixture 仍缺失，A/B未交付/未验收；DSH会话和既有文件保留原样，不能把本对话阻塞解释为施工队已停止。待原生会话可接回或用户确认页面状态后再安全续派。
+  本地接手证据：`artifacts/world-runtime-d35-hour-review-20261012/repair-workers-latest.json`；新增旧五配方初始化边界5/5通过仅覆盖tick0，证据`legacy-five-recipe-initialization.json`，不代替D3-5验收。
 - D3-5当前核心段需内部修正（2026-10-12）：初版新runtime及30项绿测采用简化影子世界，未消费真实snapshot/actorModel/日结/重演；中控拒绝将其记为核心接入PASS，包工头已亲核P0属实。先修正为真实消费者再对接service/UI，合同d13a897不降低；具体审查 artifacts/world-runtime-d35-hour-review-20261012/core-review.json。 追加深层反例：v4玩家tick6死亡仍被旧日界上界误拒，证据actor-v4-midday-probe.json；预留狼日结边界探针通过。A合同rev3只勘误总活狼路径为ecologyModel.populations.wolves并明确死亡约束，未改源码或验收门。
 
 - D3-5实施与独立验收两份任务已发布，合同d3-playable-encounter-v1；现有DSH包工头已派首波两路，当前尚无完整交付/验收。
