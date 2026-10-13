@@ -21,7 +21,7 @@ export function defaultActorConfig(market=calibratedMarketConfig()) {
 }
 
 function validateConfig(config){
-  fields(config,['version','market','initialActors']);requireCondition(['actor-config-v1','actor-config-v2','actor-config-v3'].includes(config.version),'Unknown Actor configuration','UNSUPPORTED_VERSION');
+  fields(config,['version','market','initialActors']);requireCondition(['actor-config-v1','actor-config-v2','actor-config-v3','actor-config-v4'].includes(config.version),'Unknown Actor configuration','UNSUPPORTED_VERSION');
   denseArray(config.initialActors,MAX_PERSISTENT_ACTORS);
   for(const actor of config.initialActors){fields(actor,INITIAL_FIELDS);identifier(actor.name);
     requireCondition(['chief','hunter','merchant',...(config.version!=='actor-config-v1'?['player']:[])].includes(actor.occupation),'Unknown Actor occupation');
@@ -54,6 +54,8 @@ export function validateActorWorld(world,privateFoodConsumed=0){
   integer(privateFoodConsumed);
   fields(world,['resources','resourceModel','ecologyModel','marketModel','actorModel']);
   const m=world.actorModel;fields(m,['config','configFingerprint','day','actors','ledger']);
+  // actor-config-v4 lets the player body die on the tick a real action completes, not only on a day boundary.
+  const v4=m.config.version==='actor-config-v4';
   denseArray(m.actors,MAX_PERSISTENT_ACTORS);validateConfig(m.config);validateMarketWorld(marketPart(world));
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.market)===canonicalJson(world.marketModel.config),'Actor/market configuration mismatch');
   integer(m.day);requireCondition(m.day===world.marketModel.day && m.day<=MAX_RESOURCE_DAYS,'Actor day mismatch');
@@ -62,12 +64,19 @@ export function validateActorWorld(world,privateFoodConsumed=0){
   for(const [index,actor] of m.actors.entries()){
     fields(actor,ACTOR_FIELDS);const initial=m.config.initialActors[index];
     requireCondition(actor.actorId==='actor-'+(index+1) && actor.name===initial.name && actor.occupation===initial.occupation &&
-      (m.config.version==='actor-config-v3' && actor.actorId==='actor-4'?['village','forest'].includes(actor.location):actor.location==='village') && actor.simulationLevel==='L1','Actor identity changed');
+      (['actor-config-v3','actor-config-v4'].includes(m.config.version) && actor.actorId==='actor-4'?['village','forest'].includes(actor.location):actor.location==='village') && actor.simulationLevel==='L1','Actor identity changed');
     for(const key of ['health','hunger','fatigue'])value1000(actor[key]);
     requireCondition(typeof actor.alive==='boolean' && actor.alive===(actor.health>0),'Actor life/health mismatch');
     integer(actor.lastNeedsTick);
     if(actor.alive)requireCondition(actor.deathTick===null && actor.lastNeedsTick===m.day*144,'Living Actor tick/death mismatch');
-    else {integer(actor.deathTick);requireCondition(actor.deathTick<=m.day*144 && actor.deathTick%144===0 && actor.lastNeedsTick===actor.deathTick,'Invalid Actor tombstone');dead++;}
+    else {integer(actor.deathTick);
+      // Only the v4 player body may die mid-day, on the tick a real action completes; every other tombstone stays on a day boundary.
+      const midDayDeath=v4 && actor.actorId==='actor-4';
+      // D3-5A m01607③: the deep validator admits a v4 player-body tombstone up to the next day
+      // boundary (a mid-day death may complete just as the current day settles); the upper layer
+      // (world-state / encounter-runtime) still enforces deathTick <= the real committed tick.
+      requireCondition(actor.deathTick<=(midDayDeath?(m.day+1)*144:m.day*144) && (midDayDeath || actor.deathTick%144===0) &&
+        actor.lastNeedsTick===actor.deathTick,'Invalid Actor tombstone');dead++;}
     fields(actor.needs,['food','healing','rest']);requireCondition(canonicalJson(actor.needs)===canonicalJson(needsOf(actor)),'Actor needs disagree with actual state');
   }
   fields(m.ledger,['foodConsumed','herbsConsumed','deaths']);for(const value of Object.values(m.ledger))integer(value);

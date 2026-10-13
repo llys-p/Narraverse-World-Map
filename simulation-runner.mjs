@@ -32,12 +32,20 @@ import { COGNITION_RULES } from './runtime/core/cognition-state.mjs';
 import { createCognitionVillage } from './runtime/fixtures/cognition-village.mjs';
 import { SURVIVAL_RULES } from './runtime/core/survival-state.mjs';
 import { createSurvivalVillage } from './runtime/fixtures/survival-village.mjs';
+import { createEncounterVillage } from './runtime/fixtures/encounter-survival-village.mjs';
+import { ENCOUNTER_RULES, executeEncounterIntent } from './runtime/core/encounter-runtime.mjs';
+import { validateServiceCommandDto, MAX_COMMAND_BYTES } from './runtime/service/http-contract.mjs';
+import { parseStrictJson } from './runtime/service/strict-json.mjs';
+import { inspectDescriptorTree } from './runtime/core/experience-state.mjs';
+import { projectEncounterInspector } from './runtime/knowledge/encounter-knowledge.mjs';
 import { createSimulationSession } from './runtime/core/command-engine.mjs';
-import { canonicalJson, fields, integer, record, fault, requireCondition, cloneData } from './runtime/core/data-contract.mjs';
+import { canonicalJson, fields, integer, record, fault, requireCondition, cloneData, denseArray } from './runtime/core/data-contract.mjs';
 import { saveCheckpoint, loadCheckpoint } from './runtime/persistence/checkpoint-store.mjs';
 
 const root = fileURLToPath(new URL('./', import.meta.url));
 const hash = (value) => createHash('sha256').update(canonicalJson(value), 'utf8').digest('hex');
+const MAX_ENCOUNTER_INPUTS = 128;
+const MAX_ENCOUNTER_INPUT_BYTES = MAX_COMMAND_BYTES * MAX_ENCOUNTER_INPUTS;
 const profiles = new Map([
   ['clock-smoke', { rulesVersion: CLOCK_SMOKE_RULES, create: createClockSmoke }],
   ['resource-village', { rulesVersion: RESOURCE_RULES, create: createResourceVillage }],
@@ -68,6 +76,7 @@ const profiles = new Map([
   ['experience-village',{rulesVersion:EXPERIENCE_RULES,create:createExperienceVillage}],
   ['cognition-village',{rulesVersion:COGNITION_RULES,create:createCognitionVillage}],
   ['survival-village',{rulesVersion:SURVIVAL_RULES,create:createSurvivalVillage}],
+  ['encounter-survival-village',{rulesVersion:ENCOUNTER_RULES,create:createEncounterVillage}],
 ]);
 const actorPayload=event=>['HunterDaySettled','SocietyDaySettled'].includes(event.type)?event.payload.actors:event.type==='ActorDaySettled'?event.payload:undefined;
 const marketPayload=event=>actorPayload(event)?.market??(event.type==='EconomyDaySettled'?event.payload:undefined);
@@ -93,7 +102,7 @@ async function selectSimulation(options) {
 
 export function parseArguments(argv) {
   requireCondition(Array.isArray(argv) && argv.every((value) => typeof value === 'string'), 'Expected argument strings');
-  const flags = new Map(); const allowed = new Set(['--fixture', '--resume', '--days', '--seed', '--out']);
+  const flags = new Map(); const allowed = new Set(['--fixture', '--resume', '--days', '--seed', '--out', '--encounter-inputs']);
   for (let index = 0; index < argv.length; index += 2) {
     const flag = argv[index], value = argv[index + 1];
     requireCondition(allowed.has(flag) && !flags.has(flag) && value && !value.startsWith('--'), 'Unknown/duplicate/missing argument');
@@ -103,15 +112,49 @@ export function parseArguments(argv) {
     requireCondition(typeof value === 'string' && /^(0|[1-9]\d*)$/.test(value), 'Expected decimal integer');
     const result = Number(value); integer(result); return result;
   };
-  const days = decimal(flags.get('--days')); requireCondition(days >= 1, 'Days must be positive');
-  requireCondition(days <= 1000, 'Advance budget exceeded', 'LIMIT_EXCEEDED');
+  const days = decimal(flags.get('--days'));
   const fixture = flags.get('--fixture'), resume = flags.get('--resume'), out = flags.get('--out');
+  const encounterInputs = flags.get('--encounter-inputs');
+  requireCondition(days >= (fixture === 'encounter-survival-village' || resume ? 0 : 1), 'Days must be positive for this profile');
+  requireCondition(days <= 1000, 'Advance budget exceeded', 'LIMIT_EXCEEDED');
+  requireCondition(encounterInputs === undefined || encounterInputs.length > 0, 'Encounter input file required');
   requireCondition(typeof out === 'string' && out.length > 0, 'New output directory required');
   requireCondition(Boolean(fixture) !== Boolean(resume), 'Select exactly one of fixture or resume');
   requireCondition(!resume || !flags.has('--seed'), 'Resume cannot supply seed');
   const seed = resume ? undefined : decimal(flags.get('--seed') ?? '42');
   if (!resume) requireCondition(seed <= 0xffffffff, 'Seed must be uint32');
-  return { fixture, resume, days, ticks: days * 144, seed, out };
+  return { fixture, resume, days, ticks: days * 144, seed, out,
+    ...(encounterInputs === undefined ? {} : { encounterInputs }) };
+}
+
+async function readEncounterInputs(file) {
+  let handle;
+  let bytes;
+  try {
+    handle = await fs.open(path.resolve(file), 'r');
+    const stat = await handle.stat();
+    requireCondition(stat.isFile(), 'Encounter inputs must be a regular file');
+    requireCondition(stat.size <= MAX_ENCOUNTER_INPUT_BYTES, 'Encounter input file exceeds budget', 'LIMIT_EXCEEDED');
+    bytes = Buffer.alloc(stat.size);
+    let offset = 0;
+    while (offset < bytes.length) {
+      const { bytesRead } = await handle.read(bytes, offset, bytes.length - offset, offset);
+      requireCondition(bytesRead > 0, 'Encounter input file truncated');
+      offset += bytesRead;
+    }
+    requireCondition((await handle.read(Buffer.alloc(1), 0, 1, offset)).bytesRead === 0,
+      'Encounter input file grew', 'LIMIT_EXCEEDED');
+  } finally {
+    if (handle) await handle.close();
+  }
+  const inputs = parseStrictJson(bytes, MAX_ENCOUNTER_INPUT_BYTES);
+  inspectDescriptorTree(inputs);
+  denseArray(inputs, MAX_ENCOUNTER_INPUTS);
+  return inputs.map((dto) => {
+    const validated = validateServiceCommandDto(dto);
+    requireCondition(validated.version === 3, 'Encounter inputs require DTO version 3', 'UNSUPPORTED_VERSION');
+    return validated;
+  });
 }
 
 async function codeIdentity() {
@@ -294,10 +337,16 @@ async function writeMemory(directory,events){
 }
 
 export async function runSimulation(options, hooks = {}) {
-  fields(options, ['fixture', 'resume', 'days', 'ticks', 'seed', 'out']);
+  record(options);
+  const hasEncounterInputs = Object.hasOwn(options, 'encounterInputs');
+  fields(options, hasEncounterInputs
+    ? ['fixture', 'resume', 'days', 'ticks', 'seed', 'out', 'encounterInputs']
+    : ['fixture', 'resume', 'days', 'ticks', 'seed', 'out']);
+  if (hasEncounterInputs) requireCondition(typeof options.encounterInputs === 'string' && options.encounterInputs.length > 0,
+    'Encounter input file required');
   record(hooks); requireCondition(Object.keys(hooks).every((key) => key === 'transformSystems'), 'Unknown test hook');
   requireCondition(hooks.transformSystems === undefined || typeof hooks.transformSystems === 'function', 'Invalid system hook');
-  integer(options.days, 1);
+  integer(options.days, 0);
   requireCondition(options.days <= 1000 && options.ticks === options.days * 144, 'Invalid advance budget', 'LIMIT_EXCEEDED');
   requireCondition(typeof options.out === 'string' && options.out.length > 0, 'New output directory required');
   requireCondition(Boolean(options.fixture) !== Boolean(options.resume), 'Select fixture or resume');
@@ -305,38 +354,62 @@ export async function runSimulation(options, hooks = {}) {
   else { integer(options.seed); requireCondition(options.seed <= 0xffffffff, 'Seed must be uint32'); }
   const started = performance.now(), identity = await codeIdentity();
   let { bundle, systems } = await selectSimulation(options);
+  const encounterProfile = bundle.snapshot.rulesVersion === ENCOUNTER_RULES;
+  requireCondition(encounterProfile || !hasEncounterInputs, 'Encounter inputs require encounter profile', 'UNSUPPORTED_VERSION');
+  requireCondition(encounterProfile || options.days >= 1, 'Days must be positive for this profile');
+  requireCondition(!encounterProfile || !hooks.transformSystems,
+    'System transform hook is unsupported for the encounter profile', 'UNSUPPORTED_VERSION');
   if (hooks.transformSystems) systems = hooks.transformSystems(systems);
+  const encounterDtos = encounterProfile && hasEncounterInputs ? await readEncounterInputs(options.encounterInputs) : [];
   const startTick = bundle.snapshot.tick, directory = path.resolve(options.out);
   try {
     await fs.mkdir(path.dirname(directory), { recursive: true });
     await fs.mkdir(directory); // Exclusive creation: even an existing empty directory is refused.
   } catch (cause) { throw Object.assign(fault('SAVE_FAILED', 'Output directory must be new'), { cause }); }
   let failure;
-  const session = createSimulationSession(bundle, systems);
-  try { session.advanceTicks(options.ticks); }
-  catch (cause) { failure = cause; }
-  bundle = session.getBundle();
+  let session = createSimulationSession(bundle, systems);
+  if (encounterProfile) {
+    try {
+      for (const dto of encounterDtos) bundle = executeEncounterIntent(bundle, dto).bundle;
+      if (options.days > 0) {
+        const dto = validateServiceCommandDto({ version: 3, commandId: `runner-advance-${bundle.snapshot.revision}`,
+          expectedRevision: bundle.snapshot.revision, type: 'AdvanceTime', payload: { ticks: options.ticks } });
+        bundle = executeEncounterIntent(bundle, dto).bundle;
+      }
+    } catch (cause) { failure = cause; }
+    session = createSimulationSession(bundle, systems);
+  } else {
+    try { session.advanceTicks(options.ticks); }
+    catch (cause) { failure = cause; }
+    bundle = session.getBundle();
+  }
   let checkpointPath;
   try {
     checkpointPath = await saveCheckpoint(bundle, { directory, rulesVersion: bundle.snapshot.rulesVersion, systems });
     await fs.writeFile(path.join(directory, 'inputs.json'), JSON.stringify(completeInputs(bundle.snapshot), null, 2), { flag: 'wx' });
+    const encounterState = encounterProfile ? cloneData(bundle.snapshot.world.encounterModel) : undefined;
+    const encounterInputsHistory = encounterProfile ? cloneData(bundle.snapshot.world.encounterModel.inputHistory) : undefined;
+    if (encounterProfile) {
+      await fs.writeFile(path.join(directory, 'encounter-state.json'), JSON.stringify(encounterState, null, 2), { flag: 'wx' });
+      await fs.writeFile(path.join(directory, 'encounter-inputs.json'), JSON.stringify(encounterInputsHistory, null, 2), { flag: 'wx' });
+    }
     await writeEvents(path.join(directory, 'events.csv'), bundle.eventLog);
-    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
-    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
-    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
-    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
+    const resourceConfig = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.resourceModel.config : undefined;
+    const ecologyConfig = [ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.ecologyModel.config : undefined;
+    const marketConfig = [MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion) ? bundle.snapshot.world.marketModel.config : undefined;
+    const actorConfig = [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.actorModel.config:undefined;
     const hunterConfig=bundle.snapshot.rulesVersion===HUNTER_RULES?bundle.snapshot.world.hunterModel.config:undefined;
-    const societyConfig=[SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.societyModel.config:undefined;
-    const memoryConfig=(isMemoryRules(bundle.snapshot.rulesVersion)||[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion))?bundle.snapshot.world.memoryModel.config:undefined;
-    const mindConfig=[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.mindModel.config:undefined;
-    const mindInspector=bundle.snapshot.rulesVersion===MIND_RULES?projectMindInspector(bundle):undefined;
-    const motivationConfig=[MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.motivationModel.config:undefined;
+    const societyConfig=[SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.societyModel.config:undefined;
+    const memoryConfig=(isMemoryRules(bundle.snapshot.rulesVersion)||[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion))?bundle.snapshot.world.memoryModel.config:undefined;
+    const mindConfig=[MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.mindModel.config:undefined;
+    const mindInspector=bundle.snapshot.rulesVersion===MIND_RULES?projectMindInspector(bundle):encounterProfile?projectEncounterInspector(bundle):undefined;
+    const motivationConfig=[MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.motivationModel.config:undefined;
     const motivationInspector=bundle.snapshot.rulesVersion===MOTIVATION_RULES?projectMotivationInspector(bundle):undefined;
     const personalityConfig=bundle.snapshot.rulesVersion===PERSONALITY_RULES?{version:'personality-config-v1',personalities:memoryConfig.personalities}:undefined;
-    const experienceConfig=[EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.experienceModel.config:undefined;
-    const workExperience=[EXPERIENCE_RULES,COGNITION_RULES].includes(bundle.snapshot.rulesVersion)?cloneData(bundle.snapshot.world.experienceModel):undefined;
-    const cognitionConfig=bundle.snapshot.rulesVersion===COGNITION_RULES?bundle.snapshot.world.cognitionModel.config:undefined;
-    const cognitionState=bundle.snapshot.rulesVersion===COGNITION_RULES?cloneData(bundle.snapshot.world.cognitionModel):undefined;
+    const experienceConfig=[EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.experienceModel.config:undefined;
+    const workExperience=[EXPERIENCE_RULES,COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion)?cloneData(bundle.snapshot.world.experienceModel):undefined;
+    const cognitionConfig=[COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion)?bundle.snapshot.world.cognitionModel.config:undefined;
+    const cognitionState=[COGNITION_RULES,ENCOUNTER_RULES].includes(bundle.snapshot.rulesVersion)?cloneData(bundle.snapshot.world.cognitionModel):undefined;
     if (resourceConfig) {
       await fs.writeFile(path.join(directory, 'resource-config.json'), JSON.stringify(resourceConfig, null, 2), { flag: 'wx' });
       await writeEconomy(path.join(directory, 'economy.csv'), bundle.eventLog);
@@ -399,6 +472,7 @@ export async function runSimulation(options, hooks = {}) {
       ...(cognitionConfig?{cognitionConfigHash:hash(cognitionConfig)}:{}),
       ...(cognitionState?{cognitionStateHash:hash(cognitionState)}:{}),
       ...(survivalConfig?{survivalConfigHash:hash(survivalConfig)}:{}),
+      ...(encounterProfile?{encounterStateHash:hash(encounterState),encounterInputsHash:hash(encounterInputsHistory)}:{}),
       systemOverride: Boolean(hooks.transformSystems), failedTick: failure?.failedTick ?? null,
       executionStats: session.getStats(),
       error: failure ? { code: failure.code ?? 'SIMULATION_FAILED', message: failure.cause?.message ?? failure.message } : null,

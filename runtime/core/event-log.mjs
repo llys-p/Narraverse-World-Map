@@ -25,10 +25,11 @@ import { SURVIVAL_RULES, SURVIVAL_FOOD_QUOTE_EVENT, SURVIVAL_WORK_OFFER_EVENT, M
 import { COGNITIVE_REVIEW_STATE_VERSION, validateCognitiveReviewState } from './cognitive-review.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
 import { PLAYER_RULES,PLAY_RULES,validatePlayerDayPayload,validatePlayerActionResult } from './player-state.mjs';
+import { ENCOUNTER_RULES, validateEncounterWorldState, encounterRuntimeHooks } from './encounter-runtime.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
 export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
-  if (rulesVersion === EXPERIENCE_RULES || rulesVersion === COGNITION_RULES || rulesVersion === SURVIVAL_RULES)
+  if (rulesVersion === EXPERIENCE_RULES || rulesVersion === COGNITION_RULES || rulesVersion === SURVIVAL_RULES || rulesVersion === ENCOUNTER_RULES)
     inspectDescriptorTree(raw);
   const fact = cloneData(raw);
   fields(fact, ['type', 'sourceSystem', 'commandId', 'causationEventSeqs', 'entityIds', 'payload']);
@@ -49,7 +50,7 @@ export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
     requireCondition(fact.type==='ActorDaySettled' && systemId==='actors','Invalid Actor fact');validateActorPayload(fact.payload);
   }else if(rulesVersion===HUNTER_RULES){
     requireCondition(fact.type==='HunterDaySettled' && systemId==='hunter','Invalid Hunter daily fact');validateHunterPayload(fact.payload);
-  }else if ([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(rulesVersion)) {
+  }else if ([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES].includes(rulesVersion)) {
     requireCondition(fact.type==='SocietyDaySettled' && systemId==='society','Invalid Society daily fact');validateSocietyPayload(fact.payload);
   } else {
     requireCondition(fact.type === 'FixturePulse', 'Unknown system fact');
@@ -78,6 +79,9 @@ export function validateEventLog(eventLog, snapshot, systems) {
     denseArray(eventLog,MAX_RESOURCE_DAYS*4+100000);validateCognitionWorld(snapshot.world);
   } else if (snapshot.rulesVersion === SURVIVAL_RULES) {
     denseArray(eventLog,MAX_RESOURCE_DAYS*4+100000);validateSurvivalWorld(snapshot.world);
+  } else if (snapshot.rulesVersion === ENCOUNTER_RULES) {
+    denseArray(eventLog,MAX_EVENTS);const{encounterModel,...part}=snapshot.world;validateSurvivalWorld(part);
+    validateEncounterWorldState(snapshot.world,{tick:snapshot.tick});
   } else if (snapshot.rulesVersion === MIND_RULES) {
     denseArray(eventLog, MAX_RESOURCE_DAYS*4 + 100000); validateMindWorld(snapshot.world);
   } else if (snapshot.rulesVersion===ACTOR_RULES) {
@@ -99,20 +103,28 @@ export function validateEventLog(eventLog, snapshot, systems) {
   const mindProfile=state.rulesVersion===MIND_RULES;
   const cognitionProfile=state.rulesVersion===COGNITION_RULES;
   const survivalProfile=state.rulesVersion===SURVIVAL_RULES;
+  const encounterProfile=state.rulesVersion===ENCOUNTER_RULES;
+  // The encounter profile extends survival: it carries the same cognition/experience/motivation
+  // models and publishes the same fact family, so it shares the survival gates. Legacy rules keep
+  // their own gates unchanged.
+  const survivalFamilyProfile=survivalProfile||encounterProfile;
   // Cognition keeps the M3-2 experience model in place, so experience facts still apply.
-  const experienceProfile=state.rulesVersion===EXPERIENCE_RULES||cognitionProfile||survivalProfile;
+  const experienceProfile=state.rulesVersion===EXPERIENCE_RULES||cognitionProfile||survivalFamilyProfile;
   const motivationProfile=state.rulesVersion===MOTIVATION_RULES||experienceProfile;
   const memoryProfile=isMemoryRules(state.rulesVersion)||mindProfile||motivationProfile;
   const societyProfile=state.rulesVersion===SOCIETY_RULES || memoryProfile;
   const marketProfile = state.rulesVersion === MARKET_RULES || actorProfile || hunterProfile || societyProfile;
-  if (!resourceProfile && !ecologyProfile && !marketProfile) fields(state.world, ['resources']);
+  if (!resourceProfile && !ecologyProfile && !marketProfile && !encounterProfile) fields(state.world, ['resources']);
   integer(state.tick); integer(state.nextEventSeq, 1);
   requireCondition(state.nextEventSeq === events.length + 1, 'Event counter mismatch');
   const commandEvents = new Map(), resourcePayloads = []; let previousTick = 0;
   for (let index = 0; index < events.length; index++) {
     const event = events[index]; fields(event, EVENT_FIELDS);
     requireCondition(event.eventSeq === index + 1, 'Event sequence gap');
-    integer(event.tick, 1);
+    // The encounter profile publishes one fact per accepted DTO3, including accepted zero-tick
+    // commands taken before the world clock has ever moved, so tick 0 is a legal stamp there.
+    // Legacy profiles keep their original floor of 1.
+    integer(event.tick, encounterProfile ? 0 : 1);
     requireCondition(event.tick >= previousTick && event.tick <= state.tick, 'Invalid event tick');
     previousTick = event.tick;
     requireCondition(event.schemaVersion === 1, 'Unknown event schema version', 'UNSUPPORTED_VERSION');
@@ -130,11 +142,11 @@ export function validateEventLog(eventLog, snapshot, systems) {
     }else if(event.type===SURVIVAL_FOOD_QUOTE_EVENT){
       // Local public food observations: no command/entity, at most once on each allowed tick.
       const {eventSeq,tick,schemaVersion,...fact}=event;validateSurvivalFoodQuoteAnnouncement(fact);
-      requireCondition(survivalProfile && (event.tick===1||event.tick%144===0),'Invalid survival food quote profile/clock');
+      requireCondition(survivalFamilyProfile && (event.tick===1||event.tick%144===0),'Invalid survival food quote profile/clock');
       requireCondition(events.filter(e=>e.type===SURVIVAL_FOOD_QUOTE_EVENT&&e.tick===event.tick).length===1,'Repeated survival food quote at one tick');
     }else if(event.type===SURVIVAL_WORK_OFFER_EVENT){
       const {eventSeq,tick,schemaVersion,...fact}=event;validateSurvivalWorkOfferAnnouncement(fact);
-      requireCondition(survivalProfile,'Invalid survival work offer profile');
+      requireCondition(survivalFamilyProfile,'Invalid survival work offer profile');
       // The offer must be published on the same tick as the delivered request it cites, for
       // this same actor and with the same expiry.
       const delivered=events.find(e=>e.eventSeq===event.causationEventSeqs[0]);
@@ -144,17 +156,17 @@ export function validateEventLog(eventLog, snapshot, systems) {
       requireCondition(events.filter(e=>e.type===SURVIVAL_WORK_OFFER_EVENT && e.payload.requestId===event.payload.requestId).length===1,
         'Repeated survival work offer for one request');
     }else if(event.type==='PlayerActionCommitted'){
-      requireCondition([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(state.rulesVersion) && event.sourceSystem==='command-engine' && event.entityIds.length===1 && event.entityIds[0]==='actor-4' && event.causationEventSeqs.length===0,'Invalid player action source');
+      requireCondition([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES].includes(state.rulesVersion) && event.sourceSystem==='command-engine' && event.entityIds.length===1 && event.entityIds[0]==='actor-4' && event.causationEventSeqs.length===0,'Invalid player action source');
       identifier(event.commandId);validatePlayerActionResult(event.payload);requireCondition(event.tick===event.payload.endTick && !commandEvents.has(event.commandId),'Invalid player action clock/duplicate');commandEvents.set(event.commandId,event);
     }else if(event.type==='PlayerDaySettled'){
-      requireCondition([PLAYER_RULES,PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(state.rulesVersion) && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player daily source');
+      requireCondition([PLAYER_RULES,PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES].includes(state.rulesVersion) && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player daily source');
       validatePlayerDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Player closing clock mismatch');
     }else if(event.type==='MindStimulusResolved'){
       requireCondition((mindProfile||motivationProfile) && event.sourceSystem==='mind' && event.commandId===null && event.causationEventSeqs.length===0,'Invalid mind stimulus fact source');
       validateMindStimulusPayload(event.payload);
       requireCondition(event.entityIds.length===1 && event.entityIds[0]===event.payload.listenerId,'Mind stimulus identity mismatch');
     }else if(event.type==='CognitionReviewEvaluated'){
-      requireCondition((cognitionProfile||survivalProfile) && event.sourceSystem==='cognition' && event.commandId===null &&
+      requireCondition((cognitionProfile||survivalFamilyProfile) && event.sourceSystem==='cognition' && event.commandId===null &&
         event.entityIds.length===1 && event.causationEventSeqs.length===0,'Invalid cognition review source');
       const p=event.payload;
       record(p);fields(p,['actorId','input','decision']);
@@ -172,13 +184,13 @@ export function validateEventLog(eventLog, snapshot, systems) {
       if(event.type==='MotivationDecisionPlanned'){
         // Under the survival rules actor-2 carries the survival decision and actor-3 keeps the
         // frozen cognition decision; the actor identity, not the profile alone, selects it.
-        if(survivalProfile&&event.entityIds[0]==='actor-2')validateSurvivalDecision(event.payload);
-        else if(cognitionProfile||survivalProfile)validateCognitionMotivationDecision(event.payload);
+        if(survivalFamilyProfile&&event.entityIds[0]==='actor-2')validateSurvivalDecision(event.payload);
+        else if(cognitionProfile||survivalFamilyProfile)validateCognitionMotivationDecision(event.payload);
         else if(experienceProfile)validateExperienceMotivationDecision(event.payload);
         else validateMotivationDecision(event.payload);
         requireCondition(event.commandId===null&&event.entityIds[0]===event.payload.actorId&&event.tick===event.payload.tick&&canonicalJson(event.causationEventSeqs)===canonicalJson(event.payload.evidenceRefs),'Invalid motivation planned provenance');
       }else if(event.type==='MotivationDecisionResolved'){
-        if(survivalProfile&&event.entityIds[0]==='actor-2')validateSurvivalOutcome(event.payload);
+        if(survivalFamilyProfile&&event.entityIds[0]==='actor-2')validateSurvivalOutcome(event.payload);
         else validateMotivationOutcome(event.payload);
         requireCondition(event.entityIds[0]===event.payload.actorId&&event.commandId===event.payload.commandId&&event.causationEventSeqs.length===1,'Invalid motivation resolved provenance');
       }else if(event.type==='MotivationRequestResolved'){
@@ -267,6 +279,39 @@ export function validateEventLog(eventLog, snapshot, systems) {
       requireCondition(event.entityIds.length === 2 && event.entityIds[0] === from && event.entityIds[1] === to, 'Transfer entity IDs mismatch');
       requireCondition(!commandEvents.has(event.commandId), 'Repeated transfer fact');
       commandEvents.set(event.commandId, event);
+    } else if (event.type === 'EncounterCommandResolved') {
+      // D3-5A L69: one resolved fact per accepted DTO3, published by the encounter
+      // system. Its commandId is a DTO3 id (not an engine receipt id), so it must
+      // not enter commandEvents; the journal correspondence is replayed in
+      // encounterRuntimeHooks.validateHistory, not reconciled against state.commandReceipts.
+      requireCondition(encounterProfile && event.sourceSystem === 'encounter',
+        'Invalid encounter resolved fact source');
+      identifier(event.commandId);
+      requireCondition(event.entityIds.length === 1 && event.entityIds[0] === 'actor-4',
+        'Invalid encounter resolved entity');
+      fields(event.payload, ['dto', 'receipt']);
+      record(event.payload.dto); record(event.payload.receipt);
+      requireCondition(event.payload.dto.commandId === event.commandId &&
+        event.payload.receipt.commandId === event.commandId,
+        'Encounter resolved identity mismatch');
+    } else if (event.type === 'EncounterTerminated') {
+      // D3-5A L71: the settlement-death fact. commandId is null and the single cause is
+      // the killing SocietyDaySettled on the death tick (the "real day causation").
+      requireCondition(encounterProfile && event.sourceSystem === 'encounter' && event.commandId === null,
+        'Invalid encounter terminated fact source');
+      requireCondition(event.entityIds.length === 1 && event.entityIds[0] === 'actor-4',
+        'Invalid encounter terminated entity');
+      fields(event.payload, ['encounterId', 'actorId', 'reason', 'deathTick', 'wolfHealth',
+        'reservedBefore', 'reservedAfter']);
+      requireCondition(event.payload.reason === 'player-died' && event.payload.actorId === 'actor-4' &&
+        event.payload.reservedBefore === 1 && event.payload.reservedAfter === 0,
+        'Invalid encounter terminated payload');
+      requireCondition(event.causationEventSeqs.length === 1,
+        'Encounter terminated must cite exactly one cause');
+      const terminatingCause = events.find((e) => e.eventSeq === event.causationEventSeqs[0]);
+      requireCondition(terminatingCause !== undefined && terminatingCause.type === 'SocietyDaySettled' &&
+        terminatingCause.tick === event.tick,
+        'Encounter terminated cause must be the killing settlement');
     } else {
       requireCondition(own(systems, event.sourceSystem), 'Unknown fact system');
       const { eventSeq, tick, schemaVersion, ...fact } = event;
@@ -286,7 +331,7 @@ export function validateEventLog(eventLog, snapshot, systems) {
     if (receipt.status === 'succeeded') {
       const event = commandEvents.get(id);
       requireCondition(event && receipt.eventSeqs.length === 1 && receipt.eventSeqs[0] === event.eventSeq, 'Success receipt missing its fact');
-      if([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(state.rulesVersion) && receipt.input.type==='PlayerAction'){
+      if([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES].includes(state.rulesVersion) && receipt.input.type==='PlayerAction'){
         validatePlayerActionResult(receipt.result);requireCondition(event.tick===receipt.input.targetTick && event.type==='PlayerActionCommitted' && canonicalJson(event.payload)===canonicalJson(receipt.result),'Player input/receipt/fact mismatch');
       }else if(societyProfile && receipt.input.type==='SocietyAction'){
         validateSocietyActionResult(receipt.result);
@@ -324,7 +369,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
   requireCondition(commandEvents.size === 0, 'Fact references missing receipt');
   if (resourceProfile) validateResourceHistory(state.world, resourcePayloads);
   if (ecologyProfile) validateEcologyHistory(state, events);
-  if(survivalProfile)survivalRuntimeHooks.validateHistory(state,events);
+  if(encounterProfile)encounterRuntimeHooks.validateHistory(state,events);
+  else if(survivalProfile)survivalRuntimeHooks.validateHistory(state,events);
   else if(cognitionProfile)cognitionRuntimeHooks.validateHistory(state,events);
   else if(experienceProfile)experienceRuntimeHooks.validateHistory(state,events);
   else if(motivationProfile)motivationRuntimeHooks.validateHistory(state,events);

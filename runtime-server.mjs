@@ -11,6 +11,8 @@ const staticFiles=new Map([['/',['runtime-map.html','text/html; charset=utf-8']]
   ['/runtime-map.mjs',['runtime-map.mjs','text/javascript; charset=utf-8']],['/runtime-map.css',['runtime-map.css','text/css; charset=utf-8']]]);
 const mindStaticFiles=new Map([['/runtime-mind.html',['runtime-mind.html','text/html; charset=utf-8']],
   ['/runtime-mind.mjs',['runtime-mind.mjs','text/javascript; charset=utf-8']],['/runtime-mind.css',['runtime-mind.css','text/css; charset=utf-8']]]);
+const encounterStaticFiles=new Map([['/runtime-encounter.html',['runtime-encounter.html','text/html; charset=utf-8']],
+  ['/runtime-encounter.mjs',['runtime-encounter.mjs','text/javascript; charset=utf-8']],['/runtime-encounter.css',['runtime-encounter.css','text/css; charset=utf-8']]]);
 const mindRoutes=['/api/runtime/minds',...mindStaticFiles.keys()];
 const envelope=(code,message)=>({apiVersion:1,error:{code,message}});
 function readCommandBody(req){
@@ -32,9 +34,15 @@ export async function startRuntimeServer(options){
   const assets=new Map();for(const [url,[file,type]] of staticFiles)assets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
   const mindAssets=new Map();for(const [url,[file,type]] of mindStaticFiles)mindAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
   const {port:ignored,inspectMind:ignoredInspector,...ownerOptions}=options,owner=await createRuntimeOwner(ownerOptions);let actualPort=port,closed=false,pendingRequests=0;
+  const encounterAssets=new Map();if(owner.encounterAvailable)for(const [url,[file,type]] of encounterStaticFiles){
+    try{encounterAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});}
+    catch(error){await owner.close();throw error;}
+  }
   const writable=options.writable??false,capabilities=Object.freeze({apiVersion:1,writes:writable,playerAvailable:owner.playerAvailable,
     playerActionsAvailable:owner.playerActionsAvailable,mindAvailable:inspectMind && owner.mindAvailable,
-    commandDtoVersion:1,maxCommandBytes:MAX_COMMAND_BYTES,maxAdvanceTicks:MAX_SERVICE_ADVANCE_TICKS});
+    commandDtoVersion:owner.commandDtoVersion,maxCommandBytes:MAX_COMMAND_BYTES,
+    maxAdvanceTicks:owner.commandDtoVersion===3?144000:MAX_SERVICE_ADVANCE_TICKS,
+    ...(owner.encounterAvailable?{encounterAvailable:true}:{})});
   const server=http.createServer({maxHeaderSize:8192,requestTimeout:5000,headersTimeout:5000},async(req,res)=>{
     const send=(status,data,type='application/json; charset=utf-8',extra={})=>{
       const bytes=Buffer.isBuffer(data)?data:Buffer.from(JSON.stringify(data));
@@ -59,16 +67,22 @@ export async function startRuntimeServer(options){
         else{const asset=mindAssets.get(route);send(200,asset.bytes,asset.type);}
         return;
       }
+      if(route==='/api/runtime/encounter'){
+        if(!owner.encounterAvailable){send(404,envelope('ENCOUNTER_UNAVAILABLE','当前世界没有遭遇投影。'));return;}
+        if(!['GET','HEAD'].includes(req.method)){send(405,envelope('WRITE_DISABLED','当前接口只支持读取。'),undefined,{Allow:'GET, HEAD',Connection:'close'});return;}
+        if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
+        send(200,owner.getEncounter());return;
+      }
       if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
       if(route==='/api/runtime/commands'){
         if(!writable || req.method!=='POST'){send(405,envelope('WRITE_DISABLED','当前入口不接受此方法。'),undefined,{Allow:writable?'POST':'',Connection:'close'});return;}
         if(!/^application\/json(?:;\s*charset=utf-8)?$/i.test(req.headers['content-type']??'')){send(415,envelope('INVALID_INPUT','请使用UTF8 JSON。'),undefined,{Connection:'close'});return;}
         requireCondition(pendingRequests<MAX_PENDING_REQUESTS,'Command requests exceed budget','LIMIT_EXCEEDED');pendingRequests++;
-        try{const dto=parseCommandBytes(await readCommandBody(req));send(200,await owner.submit(dto));}
+        try{const dto=parseCommandBytes(await readCommandBody(req),owner.commandDtoVersion);send(200,await owner.submit(dto));}
         finally{pendingRequests--;}
         return;
       }
-      const known=staticFiles.has(route) || ['/healthz','/api/runtime/snapshot','/api/runtime/player','/api/runtime/capabilities'].includes(route);
+      const known=staticFiles.has(route) || encounterAssets.has(route) || ['/healthz','/api/runtime/snapshot','/api/runtime/player','/api/runtime/capabilities'].includes(route);
       if(!known){send(404,envelope('ROUTE_NOT_FOUND','未找到页面或接口。'));return;}
       if(!['GET','HEAD'].includes(req.method)){send(405,envelope('WRITE_DISABLED','当前接口只支持读取。'),undefined,{Allow:'GET, HEAD',Connection:'close'});return;}
       if(route==='/api/runtime/snapshot')send(200,owner.getSnapshot());
@@ -78,7 +92,7 @@ export async function startRuntimeServer(options){
       }
       else if(route==='/api/runtime/capabilities')send(200,capabilities);
       else if(route==='/healthz')send(200,{apiVersion:1,status:'ready',revision:owner.getSnapshot().revision});
-      else{const asset=assets.get(route);send(200,asset.bytes,asset.type);}
+      else{const asset=assets.get(route)??encounterAssets.get(route);send(200,asset.bytes,asset.type);}
     }catch(error){
       const codes={INVALID_INPUT:400,UNSUPPORTED_VERSION:400,COMMAND_UNSUPPORTED:400,RULE_REJECTED:422,LIMIT_EXCEEDED:413,
         REVISION_CONFLICT:409,COMMAND_ID_CONFLICT:409,SAVE_FAILED:503,OWNER_BUSY:503,INVALID_SERVICE_COMMIT:503,

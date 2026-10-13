@@ -15,6 +15,7 @@ import { validateMotivationWorld, validateExperienceWorld, validateCognitionWorl
 import { EXPERIENCE_RULES, inspectDescriptorTree, preflightExperienceData } from './experience-state.mjs';
 import { COGNITION_RULES } from './cognition-state.mjs';
 import { SURVIVAL_RULES } from './survival-state.mjs';
+import { ENCOUNTER_RULES, validateEncounterWorldState } from './encounter-runtime.mjs';
 import { PLAYER_RULES,PLAY_RULES,playerIntentDuration,validatePlayerActionResult } from './player-state.mjs';
 import { cloneData, fields, record, identifier, integer, denseArray, normalizeSystems,
   commandInput, inputFingerprint, requireCondition, fault, MAX_EVENTS } from './data-contract.mjs';
@@ -57,6 +58,9 @@ function checkBudgets(snapshot, events) {
     denseArray(events,MAX_RESOURCE_DAYS*4+100000);validateCognitionWorld(snapshot.world);
   }else if(snapshot.rulesVersion===SURVIVAL_RULES){
     denseArray(events,MAX_RESOURCE_DAYS*4+100000);validateSurvivalWorld(snapshot.world);
+  }else if(snapshot.rulesVersion===ENCOUNTER_RULES){
+    denseArray(events,MAX_EVENTS);const{encounterModel,...part}=snapshot.world;validateSurvivalWorld(part);
+    validateEncounterWorldState(snapshot.world,{tick:snapshot.tick});
   }else if(snapshot.rulesVersion===MIND_RULES){
     denseArray(events,MAX_RESOURCE_DAYS*4+100000);validateMindWorld(snapshot.world);
   }
@@ -77,11 +81,12 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
   fields(options, ['rulesVersion', 'systems']); identifier(options.rulesVersion); normalizeSystems(options.systems);
   checkBudgets(snapshot, []); integer(eventCount);
   requireCondition(eventCount <= MAX_EVENTS, 'Event budget exceeded', 'LIMIT_EXCEEDED');
-  const s = cloneData(snapshot); fields(s, SNAPSHOT_FIELDS);
-  requireCondition(s.schemaVersion === 2 && s.rulesVersion === options.rulesVersion, 'Unsupported snapshot/rules version', 'UNSUPPORTED_VERSION');
+  const s = cloneData(snapshot); fields(s, [...SNAPSHOT_FIELDS, ...(s.rulesVersion === ENCOUNTER_RULES ? ['instantCommits'] : [])]);
+  requireCondition(s.schemaVersion === (s.rulesVersion === ENCOUNTER_RULES ? 3 : 2) && s.rulesVersion === options.rulesVersion, 'Unsupported snapshot/rules version', 'UNSUPPORTED_VERSION');
   for (const key of ['rulesVersion', 'simulationId', 'fixtureId', 'fixtureVersion']) identifier(s[key]);
   restoreClock({ tick: s.tick, tickMinutes: s.tickMinutes }); restoreRng(s.rng);
-  integer(s.revision); requireCondition(s.revision === s.tick, 'Revision does not match committed tick');
+  if (s.rulesVersion === ENCOUNTER_RULES) integer(s.instantCommits);
+  integer(s.revision); requireCondition(s.revision === s.tick + (s.rulesVersion === ENCOUNTER_RULES ? s.instantCommits : 0), 'Revision does not match committed tick');
   for (const key of ['nextEntityId', 'nextEventSeq', 'nextInputSeq']) integer(s[key], 1);
   requireCondition(s.nextEventSeq === eventCount + 1, 'Event counter mismatch');
   restoreScheduler({ currentTick: s.tick, tasks: s.scheduledTasks }, Object.keys(options.systems));
@@ -132,18 +137,24 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
       m.observer.actors.every(a=>a.alive===s.world.actorModel.actors.find(p=>p.actorId===a.actorId).alive) &&
       m.announcements.every(a=>a.payload.expiresTick===day*144) && s.world.societyModel.agents.every(a=>a.state.lastActionDay<=day) &&
       s.scheduledTasks.length===1 && task.taskId==='daily-memory' && task.systemId==='society' && task.intervalTicks===144 && task.priority===10 && task.nextDueTick===(day+1)*144,'Invalid Memory schedule/identity/observation boundary');
-  }else if([MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(s.rulesVersion)){
+  }else if([MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES].includes(s.rulesVersion)){
     const isExp=s.rulesVersion===EXPERIENCE_RULES;
     const isMot=s.rulesVersion===MOTIVATION_RULES;
     const isCog=s.rulesVersion===COGNITION_RULES;
     const isSur=s.rulesVersion===SURVIVAL_RULES;
+    const isEnc=s.rulesVersion===ENCOUNTER_RULES;
     if(isSur)validateSurvivalWorld(s.world);
+    else if(isEnc){const{encounterModel,...part}=s.world;validateSurvivalWorld(part);}
     else if(isCog)validateCognitionWorld(s.world);
     else if(isExp)validateExperienceWorld(s.world);
     else if(isMot)validateMotivationWorld(s.world);
     else validateMindWorld(s.world);
-    requireCondition(s.world.memoryModel.config.version==='memory-config-v4','Mind rules/config mismatch','UNSUPPORTED_VERSION');
-    requireCondition(s.fixtureId===(isSur?'survival-village':isCog?'cognition-village':isExp?'experience-village':isMot?'motivation-village':'mind-village') && s.fixtureVersion==='1','Unknown Mind fixture','UNSUPPORTED_VERSION');
+    if(isEnc)validateEncounterWorldState(s.world,{tick:s.tick});
+    // Only the encounter profile (the D3-5 playable slice) may carry the new five-version
+    // configuration set (memory-config-v5 and friends). Every older Mind/Survival profile keeps
+    // its original frozen version gate so a mismatched config cannot masquerade as a valid world.
+    requireCondition(isEnc?(s.world.memoryModel.config.version==='memory-config-v5'):(s.world.memoryModel.config.version==='memory-config-v4'),'Mind rules/config mismatch','UNSUPPORTED_VERSION');
+    requireCondition(s.fixtureId===(isSur?'survival-village':isEnc?'encounter-survival-village':isCog?'cognition-village':isExp?'experience-village':isMot?'motivation-village':'mind-village') && s.fixtureVersion==='1','Unknown Mind fixture','UNSUPPORTED_VERSION');
     const day=Math.floor(s.tick/144),m=s.world.memoryModel,mind=s.world.mindModel;
     // M4A adds a tick-1 publication task alongside the daily settlement, so the survival
     // profile carries two scheduled tasks instead of one. Every other boundary is unchanged.
@@ -151,18 +162,18 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
     requireCondition(m.day===day && m.observer.lastObservedTick===day*144 && s.nextEntityId===5 &&
       m.observer.actors.every(a=>a.alive===s.world.actorModel.actors.find(p=>p.actorId===a.actorId).alive) &&
       m.announcements.every(a=>a.payload.expiresTick===day*144) && s.world.societyModel.agents.every(a=>a.state.lastActionDay<=day) &&
-      (isSur?s.scheduledTasks.length===2:s.scheduledTasks.length===1) && daily &&
+      (isSur||isEnc?s.scheduledTasks.length===2:s.scheduledTasks.length===1) && daily &&
       daily.taskId==='daily-memory' && daily.intervalTicks===144 && daily.priority===10 &&
       daily.nextDueTick===(day+1)*144,'Invalid Mind schedule/identity/observation boundary');
-    if(isSur)requireCondition(s.scheduledTasks.some(t=>t.systemId==='survival' && t.taskId==='survival-quote'),
+    if(isSur||isEnc)requireCondition(s.scheduledTasks.some(t=>t.systemId==='survival' && t.taskId==='survival-quote'),
       'Survival profile must carry its public food quote publication task');
     requireCondition(mind.cursor===s.nextEventSeq-1,'Mind cursor differs from the committed event log');
     const dueStimuli=mind.config.stimuli.filter(stimulus=>stimulus.tick<=s.tick).length;
     requireCondition(mind.scriptCursor===dueStimuli,'Mind stimulus cursor disagrees with the committed tick');
-    if(isMot||isExp||isCog||isSur){const m2=s.world.motivationModel;requireCondition(m2.cursor===s.nextEventSeq-1,'Motivation cursor differs from committed history');
+    if(isMot||isExp||isCog||isSur||isEnc){const m2=s.world.motivationModel;requireCondition(m2.cursor===s.nextEventSeq-1,'Motivation cursor differs from committed history');
       requireCondition(m2.requestCursor===m2.config.requests.filter(r=>r.tick<=s.tick).length,'Motivation request cursor disagrees with tick');}
-    if(isExp||isCog||isSur){const exp=s.world.experienceModel;requireCondition(exp.cursor===s.nextEventSeq-1,'Experience cursor differs from committed history');}
-    if(isCog||isSur){const cog=s.world.cognitionModel;requireCondition(cog.cursor===s.nextEventSeq-1,'Cognition cursor differs from committed history');}
+    if(isExp||isCog||isSur||isEnc){const exp=s.world.experienceModel;requireCondition(exp.cursor===s.nextEventSeq-1,'Experience cursor differs from committed history');}
+    if(isCog||isSur||isEnc){const cog=s.world.cognitionModel;requireCondition(cog.cursor===s.nextEventSeq-1,'Cognition cursor differs from committed history');}
   }else if(s.rulesVersion===SOCIETY_RULES){
     validateSocietyWorld(s.world);
     requireCondition(['society-village','society-medicine-race','society-peer-sale'].includes(s.fixtureId) && s.fixtureVersion==='1','Unknown Society fixture','UNSUPPORTED_VERSION');
@@ -180,7 +191,7 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
   for (const entry of s.pendingCommands) {
     fields(entry, ['commandId', 'inputSeq', 'targetTick', 'type', 'payload']);
     const { inputSeq, ...input } = entry; commandInput(input);
-    requireCondition([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(s.rulesVersion)?input.type==='PlayerAction':[MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(input.type) :
+    requireCondition([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES].includes(s.rulesVersion)?input.type==='PlayerAction':[MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(input.type) :
       input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Command does not belong to this rules version');
     requireCondition(s.rulesVersion!==HUNTER_RULES || !input.commandId.startsWith('hunter-day-'),'External input claimed internal command namespace');
     requireCondition(![SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES].includes(s.rulesVersion) || !input.commandId.startsWith('society-day-'),'External input claimed internal command namespace');
@@ -204,7 +215,7 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
     fields(receipt, ['inputSeq', 'input', 'fingerprint', 'status', 'result', 'eventSeqs']);
     fields(receipt.input, ['type', 'payload', 'targetTick']);
     commandInput({ commandId: id, ...receipt.input }); remember(id, receipt.inputSeq);
-    requireCondition([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(s.rulesVersion)?['PlayerAction','SocietyAction'].includes(receipt.input.type):[SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion)?['RemovePopulation','SetTradeRoute','SocietyAction'].includes(receipt.input.type):
+    requireCondition([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES].includes(s.rulesVersion)?['PlayerAction','SocietyAction'].includes(receipt.input.type):[SOCIETY_RULES,...MEMORY_RULE_VERSIONS].includes(s.rulesVersion)?['RemovePopulation','SetTradeRoute','SocietyAction'].includes(receipt.input.type):
       s.rulesVersion===HUNTER_RULES?['RemovePopulation','SetTradeRoute','ActorAction'].includes(receipt.input.type):
       [MARKET_RULES,ACTOR_RULES].includes(s.rulesVersion) ? ['RemovePopulation', 'SetTradeRoute'].includes(receipt.input.type) :
       receipt.input.type === (s.rulesVersion === ECOLOGY_RULES ? 'RemovePopulation' : 'TransferResource'), 'Receipt does not belong to this rules version');
@@ -227,7 +238,7 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
 export function createInitialBundle(config, systems) {
   preflightExperienceData(config);
   record(config);
-  const worldField = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(config.rulesVersion) ? 'world' : 'resources';
+  const worldField = [RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES].includes(config.rulesVersion) ? 'world' : 'resources';
   fields(config, ['rulesVersion', 'simulationId', 'fixtureId', 'fixtureVersion', 'seed', worldField, 'scheduledTasks', 'commands']);
   normalizeSystems(systems); denseArray(config.commands); denseArray(config.scheduledTasks); record(config[worldField]);
   const c = cloneData(config);
@@ -242,9 +253,10 @@ export function createInitialBundle(config, systems) {
     seen.set(input.commandId, fingerprint); commands.push({ ...input, inputSeq: nextInputSeq++ });
   }
   const result = { snapshot: {
-    schemaVersion: 2, rulesVersion: c.rulesVersion, simulationId: c.simulationId,
+    schemaVersion: c.rulesVersion===ENCOUNTER_RULES?3:2, rulesVersion: c.rulesVersion, simulationId: c.simulationId,
     fixtureId: c.fixtureId, fixtureVersion: c.fixtureVersion, tick: 0, tickMinutes: 10, revision: 0,
-    rng: createRng(c.seed).getState(), nextEntityId: [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES].includes(c.rulesVersion) ? c.world.actorModel.actors.length+1 : 1, nextEventSeq: 1, nextInputSeq,
+    ...(c.rulesVersion===ENCOUNTER_RULES?{instantCommits:0}:{}),
+    rng: createRng(c.seed).getState(), nextEntityId: [ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES].includes(c.rulesVersion) ? c.world.actorModel.actors.length+1 : 1, nextEventSeq: 1, nextInputSeq,
     scheduledTasks: createScheduler({ tasks: c.scheduledTasks }, Object.keys(systems)).tasks,
     pendingCommands: commands, commandReceipts: {}, world: worldField === 'world' ? c.world : { resources: c.resources },
   }, eventLog: [] };

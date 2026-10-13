@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>森林 · 遭遇记录</title>
+  <link rel="stylesheet" href="/runtime-encounter.css">
+  <script type="module" src="/runtime-encounter.mjs"></script>
+</head>
+<body>
+<main>
+  <header>
+    <div><p class="eyebrow">NARRAVERSE · 地点场景</p><h1>森林边缘</h1><p class="intro">查看狼群与当前遭遇。所有状态以同一世界回执为准。</p></div>
+    <div class="toolbar"><p>森林 · 实时世界</p><a id="scene-exit" href="/runtime-map.html">返回世界地图</a></div>
+  </header>
+  <p id="scene-status" role="status" aria-live="polite">正在读取森林与玩家状态…</p>
+  <section class="readings" aria-label="当前世界状态">
+    <article><h2>世界版本</h2><p>修订 <strong id="scene-revision">—</strong></p><small>世界时刻 <span id="scene-tick">—</span> tick</small></article>
+    <article><h2>我的健康</h2><p><strong id="scene-player-health">—</strong> <span>/ 1000</span></p><small id="scene-player-state">正在读取人物…</small></article>
+    <article><h2>狼群健康</h2><p><strong id="scene-wolf-health">—</strong> <span>/ 300</span></p><small>遭遇狼只当前健康</small></article>
+    <article><h2>可遇狼群</h2><p><strong id="scene-wolf-count">—</strong> <span>只</span></p><small>真实可用种群</small></article>
+  </section>
+  <section class="encounter" aria-labelledby="encounter-title">
+    <div class="section-title"><h2 id="encounter-title">遭遇操作</h2><span id="encounter-state">正在读取…</span></div>
+    <p class="note">攻击或逃跑会推进 6 tick；取消和开始不推进时间。狼群与健康由世界服务裁决。</p>
+    <div class="actions">
+      <button id="encounter-begin" type="button" disabled>查看狼群并发起遭遇</button>
+      <button id="encounter-attack" type="button" disabled>攻击</button>
+      <button id="encounter-flee" type="button" disabled>逃跑</button>
+      <button id="encounter-cancel" type="button" disabled>取消遭遇</button>
+    </div>
+    <p id="world-action-block" class="note" hidden>遭遇进行中，旅行、休整、交易和世界时间操作已暂停。</p>
+  </section>
+  <section class="toolbar-row" aria-label="读取与重试控制">
+    <button id="encounter-refresh" type="button">刷新世界读数</button>
+    <button id="encounter-retry" type="button" hidden>重试同一请求</button>
+    <p id="scene-command-status" role="status" aria-live="polite">只读读取不会推进世界时间。</p>
+  </section>
+  <section class="log-section" aria-labelledby="log-title">
+    <div class="section-title"><h2 id="log-title">遭遇记录</h2><span>真实回执与持久场景状态</span></div>
+    <ol id="scene-log" aria-label="遭遇日志"><li>正在读取遭遇记录…</li></ol>
+  </section>
+</main>
+</body>
+</html>

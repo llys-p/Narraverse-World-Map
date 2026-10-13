@@ -262,7 +262,9 @@ const canonicalHealthSteps = self => self.inventory.herbs === 0 ? ['BuyMedicine'
 // Full review: compare all six candidates, then apply the narrow food priority rule.
 // ---------------------------------------------------------------------------
 
-export function planSurvivalDecision(knowledge, context) {
+export function planSurvivalDecision(knowledge, context, preserveFoodPlanOnUrgentRest = false) {
+  requireCondition(typeof preserveFoodPlanOnUrgentRest === 'boolean',
+    'Temporary food Rest policy must be boolean', 'INVALID_INPUT');
   inspectDescriptorTree({ knowledge, context });
   validateSurvivalContext(context, false);
   const spec = validateSurvivalKnowledge(knowledge);
@@ -368,6 +370,9 @@ export function planSurvivalDecision(knowledge, context) {
     else { gateReason = 'SELECT_NEW_PLAN'; commitment = null; }
   }
 
+  const temporaryFoodRest = preserveFoodPlanOnUrgentRest && gateReason === 'URGENT_FATIGUE' &&
+    choice === 'Rest' && committed?.slot === 'activePlan' && activePlan !== null &&
+    activePlan.kind === SURVIVAL_FOOD_PLAN_KIND && activePlan.planId === committed.plan.planId;
   // A chosen Work step keeps its frozen score; only the stated reason becomes the food income.
   const selected = candidates.map(candidate => candidate.action === 'WorkForPay' && commitment === 'WorkForPay' ?
     { ...candidate, reasonCode: 'FOOD_INCOME' } : candidate);
@@ -420,6 +425,9 @@ export function planSurvivalDecision(knowledge, context) {
     // At most one recover-health plan may be suspended; it keeps its identity, goal, failures
     // and deadline so a food detour never costs the health goal its history.
     if (suspendedPlan === null) suspendHealth();
+  } else if (choice === 'Rest' && temporaryFoodRest) {
+    // An emergency Rest is an action for this day, not a replacement for the committed food plan.
+    boundPlan = null;
   } else if (choice === 'WorkForPay' || choice === 'Rest') {
     // The frozen M3-2 temporary plan for a plain duty or an emergency rest. A duty Work chosen
     // by the general gate stays an aid-village plan, never a secure-food plan.

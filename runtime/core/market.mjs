@@ -22,8 +22,9 @@ function validateProduct(product) {
   for(const key of PRODUCT_FIELDS) bounded(product[key], ['targetStock','maxOrder','maxDailyChange'].includes(key)?0:1);
   requireCondition(product.minPrice<=product.basePrice && product.basePrice<=product.maxPrice, 'Invalid price bounds');
 }
+const MARKET_VERSIONS = ['market-config-v1', 'market-config-v2'];
 function validateConfig(config) {
-  fields(config, CONFIG_FIELDS); requireCondition(config.version==='market-config-v1', 'Unknown market configuration', 'UNSUPPORTED_VERSION');
+  fields(config, CONFIG_FIELDS); requireCondition(MARKET_VERSIONS.includes(config.version), 'Unknown market configuration', 'UNSUPPORTED_VERSION');
   fields(config.products, IDS); for(const id of IDS) validateProduct(config.products[id]);
   bounded(config.transportCapacity); bounded(config.delayDays,1,30);
   for(const key of ['routeRiskPermille','riskPremiumPermille','scarcityGainPermille']) bounded(config[key],0,1000);
@@ -59,7 +60,7 @@ export function createMarketWorld(config=defaultMarketConfig()) {
 export function quotePrice(stock,previous,product,config) {
   integer(stock); validateProduct(product); bounded(previous,product.minPrice,product.maxPrice);
   fields(config,CONFIG_FIELDS);
-  requireCondition(config.version==='market-config-v1','Unknown price configuration','UNSUPPORTED_VERSION');
+  requireCondition(MARKET_VERSIONS.includes(config.version),'Unknown price configuration','UNSUPPORTED_VERSION');
   for(const key of ['routeRiskPermille','riskPremiumPermille','scarcityGainPermille']) bounded(config[key],0,1000);
   let gap=(BigInt(product.targetStock)-BigInt(stock))*1000n/BigInt(Math.max(1,product.targetStock));
   gap=gap>1000n?1000n:gap< -1000n? -1000n:gap;

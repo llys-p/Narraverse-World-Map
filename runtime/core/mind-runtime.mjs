@@ -24,7 +24,7 @@ export { MIND_RULES };
 
 export function createMindWorld(memoryConfig,mindConfig){
   record(memoryConfig);record(mindConfig);
-  requireCondition(memoryConfig.version==='memory-config-v4','Mind requires the play memory configuration','UNSUPPORTED_VERSION');
+  requireCondition(memoryConfig.version==='memory-config-v4'||memoryConfig.version==='memory-config-v5','Mind requires the play memory configuration','UNSUPPORTED_VERSION');
   const economics=memoryConfig.society.economics;
   requireCondition(economics.deadlineDays===20 && economics.maxFailures===3 && economics.cooldownDays===2,
     'Mind goal economics are frozen for this experiment','UNSUPPORTED_VERSION');
@@ -37,7 +37,7 @@ export function createMindWorld(memoryConfig,mindConfig){
 export function validateMindWorld(world,sealed=true){
   record(world);
   requireCondition(typeof sealed==='boolean','Invalid mind world seal mode');
-  requireCondition(world.memoryModel?.config?.version==='memory-config-v4','Mind requires the play memory world','UNSUPPORTED_VERSION');
+  requireCondition(world.memoryModel?.config?.version==='memory-config-v4'||world.memoryModel?.config?.version==='memory-config-v5','Mind requires the play memory world','UNSUPPORTED_VERSION');
   const {mindModel,...base}=world;validateMemoryWorld(base);
   validateMindModel(mindModel,sealed);
   requireCondition(mindModel.config.actorIds.every(id=>base.actorModel.actors.some(a=>a.actorId===id)),'Mind bodies are missing');

@@ -8,10 +8,16 @@ const PARAMETERS = ['deerCapacity', 'deerBirthPermille', 'deerDeathPermille', 'w
   'wolfStarvationPermille', 'wolfDemandDenominator', 'maxHunters', 'huntersPerKill', 'foodPerDeer',
   'foodReserveDays', 'farmLossPerHungryWolf', 'injuryBasePermille', 'injuryPressurePermille'];
 const ACCOUNTS = ['births', 'naturalDeaths', 'starvationDeaths', 'predation', 'hunted', 'removed'];
+// ecology-config-v2 books real battle deaths separately; no other species gains this account.
+const WOLF_ACCOUNTS = [...ACCOUNTS, 'battleDeaths'];
 const REMAINDERS = ['deerBirth', 'deerDeath', 'wolfDemand', 'wolfBirth', 'wolfDeath', 'wolfStarvation'];
 const PAYLOAD_FIELDS = ['day', 'deer', 'wolves', 'predationDemand', 'unmetPredation', 'pressurePermille', 'hungryWolves',
   'farmLossRequested', 'farmLoss', 'hunters', 'huntTarget', 'foodWorkers', 'herbWorkers', 'injuredOpening',
   'newInjuries', 'healed', 'injuredClosing', 'sample', 'resources'];
+const OWNERSHIP_FIELDS = ['reservedOpening', 'reservedClosing', 'battleDeathsOpening', 'battleDeathsClosing',
+  'totalLivingOpening', 'totalLivingClosing'];
+const isV2 = config => config.version === 'ecology-config-v2';
+const accountsOf = (version, id) => (id === 'wolves' && version === 'ecology-config-v2' ? WOLF_ACCOUNTS : ACCOUNTS);
 const populationRow = opening => ({ opening, births: 0, naturalDeaths: 0, starvationDeaths: 0, predation: 0, hunted: 0, closing: opening });
 const resourcePart = world => ({ resources: world.resources, resourceModel: world.resourceModel });
 function safe(value) {
@@ -29,7 +35,7 @@ export function defaultEcologyConfig() {
 
 function validateConfig(config) {
   fields(config, ['version','resources',...PARAMETERS]);
-  requireCondition(config.version === 'ecology-config-v1', 'Unknown ecology configuration', 'UNSUPPORTED_VERSION');
+  requireCondition(['ecology-config-v1','ecology-config-v2'].includes(config.version), 'Unknown ecology configuration', 'UNSUPPORTED_VERSION');
   for (const key of PARAMETERS) {
     integer(config[key], ['deerCapacity','wolfDemandDenominator','huntersPerKill'].includes(key) ? 1 : 0);
     requireCondition(config[key] <= MAX_POPULATION, 'Ecology parameter budget exceeded', 'LIMIT_EXCEEDED');
@@ -49,24 +55,30 @@ export function createEcologyWorld(config = defaultEcologyConfig()) {
   return { ...resources, ecologyModel: { config:copy, configFingerprint:canonicalJson(copy),day:0,
     populations:cloneData(copy.resources.populations), injuredCount:copy.resources.settlement.injuredCount,
     remainders:Object.fromEntries(REMAINDERS.map(key=>[key,0])),
-    ledger:Object.fromEntries(['deer','wolves'].map(id=>[id,Object.fromEntries(ACCOUNTS.map(key=>[key,0]))])) } };
+    ledger:Object.fromEntries(['deer','wolves'].map(id=>[id,Object.fromEntries(accountsOf(copy.version,id).map(key=>[key,0]))])),
+    // v1 keeps its exact old shape; only v2 owns an explicit held-wolf reservation.
+    ...(isV2(copy)?{reservedWolves:0}:{}) } };
 }
 
 export function validateEcologyWorld(world, currencySpent = 0) {
   fields(world,['resources','resourceModel','ecologyModel']); validateResourceWorld(resourcePart(world), currencySpent);
-  const m=world.ecologyModel;fields(m,['config','configFingerprint','day','populations','injuredCount','remainders','ledger']);
+  const m=world.ecologyModel,v2=isV2(m.config);
+  fields(m,['config','configFingerprint','day','populations','injuredCount','remainders','ledger',...(v2?['reservedWolves']:[])]);
   validateConfig(m.config);requireCondition(m.configFingerprint===canonicalJson(m.config) &&
     canonicalJson(m.config.resources)===canonicalJson(world.resourceModel.config),'Ecology/resource configuration mismatch');
   integer(m.day);requireCondition(m.day===world.resourceModel.day && m.day<=MAX_RESOURCE_DAYS,'Ecology day mismatch');
   integer(m.injuredCount);requireCondition(m.injuredCount<=m.config.resources.settlement.humanCount,'Invalid injury count');
   fields(m.populations,['deer','wolves']);fields(m.ledger,['deer','wolves']);fields(m.remainders,REMAINDERS);
+  if(v2){integer(m.reservedWolves);requireCondition(m.reservedWolves<=1,'Wolf reservation is only ever 0 or 1');
+    requireCondition(m.reservedWolves<=m.populations.wolves,'Reserved wolves exceed the living population');}
   for(const id of ['deer','wolves']){
     integer(m.populations[id]);requireCondition(m.populations[id]<=MAX_POPULATION,'Population budget exceeded','LIMIT_EXCEEDED');
     if(id==='deer')requireCondition(m.populations[id]<=m.config.deerCapacity,'Deer exceed environmental capacity');
-    fields(m.ledger[id],ACCOUNTS);for(const value of Object.values(m.ledger[id]))integer(value);
+    const accounts=accountsOf(m.config.version,id);fields(m.ledger[id],accounts);for(const value of Object.values(m.ledger[id]))integer(value);
     const account=m.ledger[id];
     requireCondition(BigInt(m.populations[id])===BigInt(m.config.resources.populations[id])+BigInt(account.births)
-      -BigInt(account.naturalDeaths)-BigInt(account.starvationDeaths)-BigInt(account.predation)-BigInt(account.hunted)-BigInt(account.removed),'Population ledger mismatch');
+      -BigInt(account.naturalDeaths)-BigInt(account.starvationDeaths)-BigInt(account.predation)-BigInt(account.hunted)-BigInt(account.removed)
+      -(id==='wolves'&&v2?BigInt(account.battleDeaths):0n),'Population ledger mismatch');
     requireCondition(id==='deer' ? account.starvationDeaths===0 : account.predation===0,'Invalid species ledger');
   }
   const denominators={deerBirth:mul(m.config.deerCapacity,1000),deerDeath:1000,wolfDemand:m.config.wolfDemandDenominator,
@@ -78,7 +90,9 @@ export function removePopulation(input,payload,currencySpent=0) {
   validateEcologyWorld(input,currencySpent);fields(payload,['species','amount']);integer(payload.amount,1);
   requireCondition(['deer','wolves'].includes(payload.species),'Unknown population species');
   const world=cloneData(input),m=world.ecologyModel,before=m.populations[payload.species];
-  if(before<payload.amount)return {world,success:false,result:{code:'RULE_REJECTED'}};
+  // A held wolf is not available to an external removal; v1 has no reservation and keeps its exact old path.
+  const available=before-(isV2(m.config)&&payload.species==='wolves'?m.reservedWolves:0);
+  if(available<payload.amount)return {world,success:false,result:{code:'RULE_REJECTED'}};
   const after=before-payload.amount;m.populations[payload.species]=after;
   m.ledger[payload.species].removed=safe(BigInt(m.ledger[payload.species].removed)+BigInt(payload.amount));
   validateEcologyWorld(world,currencySpent);return {world,success:true,result:{...cloneData(payload),before,after}};
@@ -104,7 +118,9 @@ export function settleEcologyDay(input,sample,trade,namedShares) {
     const total=BigInt(numerator)+BigInt(m.remainders[key]),den=BigInt(denominator);
     m.remainders[key]=safe(total%den);return safe(total/den);
   };
-  const deer=populationRow(m.populations.deer),wolves=populationRow(m.populations.wolves);
+  const v2=isV2(m.config),reservedOpening=v2?m.reservedWolves:0,battleDeathsOpening=v2?m.ledger.wolves.battleDeaths:0;
+  const totalLivingOpening=m.populations.wolves,availableOpening=totalLivingOpening-reservedOpening;
+  const deer=populationRow(m.populations.deer),wolves=populationRow(availableOpening);
   // Empty populations have no reproductive remainder capable of reviving a species.
   deer.births=Math.min(c.deerCapacity-deer.opening,fraction('deerBirth',BigInt(deer.opening)*BigInt(c.deerBirthPermille)*BigInt(c.deerCapacity-deer.opening),mul(c.deerCapacity,1000)));
   let d=safe(BigInt(deer.opening)+BigInt(deer.births));
@@ -137,17 +153,29 @@ export function settleEcologyDay(input,sample,trade,namedShares) {
   const healed=Math.min(injuredOpening+newInjuries,result.payload.entries[1].consumption);
   world.resources=result.world.resources;world.resourceModel=result.world.resourceModel;
   m.day++;m.injuredCount=injuredOpening+newInjuries-healed;deer.closing=d;wolves.closing=w;
-  m.populations={deer:d,wolves:w};
+  // A daily settlement never wins a fight: the reservation and the battle-death account are carried
+  // unchanged across the day, so the six ownership numbers reconcile against the available pool.
+  const reservedClosing=reservedOpening,battleDeathsClosing=m.ledger.wolves.battleDeaths,totalLivingClosing=w+reservedClosing;
+  m.populations={deer:d,wolves:totalLivingClosing};
   for(const [id,row] of [['deer',deer],['wolves',wolves]]) for(const key of ACCOUNTS.filter(k=>k!=='removed'))
-    m.ledger[id][key]=safe(BigInt(m.ledger[id][key])+BigInt(row[key]));
-  validateEcologyWorld(world,currencySpent);
+    m.ledger[id][key]=safe(BigInt(m.ledger[id][key])+BigInt(row[key]));  validateEcologyWorld(world,currencySpent);
   return {world,payload:{day:m.day,deer,wolves,predationDemand,unmetPredation,pressurePermille,hungryWolves,farmLossRequested,farmLoss,
     hunters,huntTarget,foodWorkers,herbWorkers,injuredOpening,newInjuries,healed,injuredClosing:m.injuredCount,sample,resources:result.payload,
+    ...(v2?{encounterOwnership:{reservedOpening,reservedClosing,battleDeathsOpening,battleDeathsClosing,totalLivingOpening,totalLivingClosing}}:{}),
     ...(namedShares!==undefined?{namedShares:{...cloneData(namedShares),healed:result.payload.entries[1].consumption-healed}}:{})}};
 }
 
 export function validateEcologyPayload(payload) {
-  fields(payload,Object.hasOwn(payload,'namedShares')?[...PAYLOAD_FIELDS,'namedShares']:PAYLOAD_FIELDS);integer(payload.day,1);
+  const ownership=Object.hasOwn(payload,'encounterOwnership'),named=Object.hasOwn(payload,'namedShares');
+  fields(payload,[...PAYLOAD_FIELDS,...(ownership?['encounterOwnership']:[]),...(named?['namedShares']:[])]);
+  if(ownership){
+    fields(payload.encounterOwnership,OWNERSHIP_FIELDS);
+    for(const value of Object.values(payload.encounterOwnership))integer(value);
+    const o=payload.encounterOwnership;
+    requireCondition(o.reservedOpening===o.reservedClosing && o.battleDeathsOpening===o.battleDeathsClosing &&
+      o.totalLivingOpening===payload.wolves.opening+o.reservedOpening &&
+      o.totalLivingClosing===payload.wolves.closing+o.reservedClosing,'Invalid encounter ownership settlement');
+  }integer(payload.day,1);
   if(Object.hasOwn(payload,'namedShares')){
     fields(payload.namedShares,Object.hasOwn(payload.namedShares,'managedFood')?['registered','alive','injured','healed','managedFood']:['registered','alive','injured','healed']);for(const value of Object.values(payload.namedShares))integer(value);
     requireCondition(payload.namedShares.alive<=payload.namedShares.registered && payload.namedShares.injured<=payload.namedShares.alive &&

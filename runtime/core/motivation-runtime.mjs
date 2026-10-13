@@ -6,7 +6,8 @@ import {planSocietyDay,applySocietyAction,societyActionFact,societyCauses} from 
 import {projectActorEvent} from './memory-observer.mjs';
 import {deriveMindBelief,validateMindConfig} from './mind-state.mjs';
 import {MOTIVATION_RULES,MOTIVATION_KNOWLEDGE_VERSION,MAX_MOTIVATION_KNOWLEDGE_BYTES,MAX_MOTIVATION_PLAN_TRANSITIONS,
-  validateMotivationConfig,createMotivationModel,validateMotivationModel,validateMotivationDecision,validateMotivationOutcome} from './motivation-state.mjs';
+  validateMotivationConfig,createMotivationModel,validateMotivationModel,validateMotivationDecision,validateMotivationOutcome,
+  MOTIVATION_EMERGENCY_FATIGUE} from './motivation-state.mjs';
 import {planMotivationDecision} from './motivation-planner.mjs';
 import {createRng} from './rng.mjs';
 import {playerIntentDuration,canPlayerIntent,applyPlayerAction,playerActionFact,playerDayFact} from './player-state.mjs';
@@ -433,6 +434,7 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
   // Every proposal sees this same candidate; no proposed goal or execution result of
   // the other M2 actor has been applied when Knowledge is built.
   const proposals=[];
+  const encounterTemporaryRest = profile.survival && snapshot.rulesVersion === 'd-encounter-survival-v1';
   for(const entry of world.motivationModel.actors){const state=agent(world,entry.actorId);state.lastAction='None';state.lastDecision=null;
     if(!body(world,entry.actorId).alive)continue;
     const review=cognitionReviews?cognitionReviews.get(entry.actorId):null;
@@ -443,16 +445,25 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
         continueSurvivalPlan(knowledge,{evaluationEventSeq:review.evalSeq,
           sourceReviewDecisionId:review.sourceReviewDecisionId,sourceReviewEventSeq:review.sourceReviewEventSeq}):
         planSurvivalDecision(knowledge,{evaluationEventSeq:review.evalSeq,
-          sourceReviewDecisionId:null,sourceReviewEventSeq:null})):
+          sourceReviewDecisionId:null,sourceReviewEventSeq:null},encounterTemporaryRest)):
       profile.cognition?(review.kernel.mode==='maintain'?
       continueCognitionPlan(knowledge,{evaluationEventSeq:review.evalSeq,
         sourceReviewDecisionId:review.sourceReviewDecisionId,sourceReviewEventSeq:review.sourceReviewEventSeq}):
       planCognitionMotivationDecision(knowledge,{evaluationEventSeq:review.evalSeq,
         sourceReviewDecisionId:null,sourceReviewEventSeq:null})):
       profile.experience?planExperienceMotivationDecision(knowledge):planMotivationDecision(knowledge);
-    proposals.push({entry,knowledge,priorPlan:cloneData(entry.activePlan),proposal});
+    const priorPlan=cloneData(entry.activePlan);
+    const temporaryFoodRest=encounterTemporaryRest&&entry.actorId===SURVIVAL_ACTOR_ID&&
+      priorPlan?.kind===SURVIVAL_FOOD_PLAN_KIND&&tick/144<=priorPlan.deadlineDay&&
+      knowledge.self.fatigue>=MOTIVATION_EMERGENCY_FATIGUE&&proposal.decision.mode==='review'&&
+      proposal.decision.gateReason==='URGENT_FATIGUE'&&proposal.decision.choice==='Rest'&&
+      proposal.decision.goalId===null&&proposal.decision.planId===null&&
+      canonicalJson(proposal.activePlan)===canonicalJson(priorPlan)&&
+      canonicalJson(proposal.suspendedPlan)===canonicalJson(entry.suspendedPlan)&&
+      proposal.nextPlanId===entry.nextPlanId;
+    proposals.push({entry,knowledge,priorPlan,proposal,temporaryFoodRest});
   }
-  for(const {entry,knowledge,priorPlan,proposal} of proposals){const ctx=context.get(entry.actorId),state=agent(world,entry.actorId);
+  for(const {entry,knowledge,priorPlan,proposal,temporaryFoodRest} of proposals){const ctx=context.get(entry.actorId),state=agent(world,entry.actorId);
     // M4A: cancellations the survival planner produced itself (an expired food plan, or an
     // earning step whose request is gone) are recorded as real transitions of this day.
     for(const transition of proposal.transitions??[]){
@@ -465,7 +476,7 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
     entry.lastDecision=cloneData(proposal.decision);entry.lastOutcome=null;ctx.decisionId=proposal.decision.decisionId;
     const decision=proposal.decision,command=decision.choice==='NoAction'?null:{commandId:decision.decisionId,targetTick:tick,type:'SocietyAction',
       payload:{actorId:entry.actorId,goalId:decision.goalId??0,action:decision.choice,targetActorId:null}};
-    plans.push({actorId:entry.actorId,decision,command,priorPlan,selfHealth:knowledge.self.health,selfFatigue:knowledge.self.fatigue});
+    plans.push({actorId:entry.actorId,decision,command,priorPlan,selfHealth:knowledge.self.health,selfFatigue:knowledge.self.fatigue,temporaryFoodRest});
   }
   snapshot.world=world;
   for(const item of plans)item.plannedSeq=append(facts('MotivationDecisionPlanned',item.decision,item.decision.evidenceRefs));
@@ -478,11 +489,16 @@ function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
     actor.lastReviewDecisionId=item.decision.decisionId;actor.lastReviewEventSeq=item.plannedSeq;
   }
   for(const command of chief.commands.filter(c=>c.payload.actorId==='actor-1'))commit(command);
-  for(const item of plans){const receipt=item.command?commit(item.command):null,entry=entryOf(snapshot.world,item.actorId),ctx=context.get(item.actorId);
+  for(const item of plans){
+    if(item.temporaryFoodRest)requireCondition(item.command?.commandId===item.decision.decisionId&&
+      item.command.type==='SocietyAction'&&item.command.targetTick===item.decision.tick&&
+      item.command.payload.actorId===item.actorId&&item.command.payload.action==='Rest'&&item.command.payload.goalId===0,
+      'Temporary Rest command/decision binding mismatch');
+    const receipt=item.command?commit(item.command):null,entry=entryOf(snapshot.world,item.actorId),ctx=context.get(item.actorId);
     const outcome=resolvedOutcome(item,receipt,snapshot.world,profile);ctx.resolvedSeq=append(facts('MotivationDecisionResolved',outcome,[item.plannedSeq],outcome.commandId));
     entry.lastOutcome=cloneData(outcome);
     if(item.decision.choice==='BuyMedicine'&&receipt?.status==='rejected')pushMindObservation(snapshot.world,item.actorId,mindRejectionObservation(ctx.resolvedSeq,tick));
-    if(receipt&&entry.activePlan){const plan=entry.activePlan;
+    if(receipt&&entry.activePlan&&!item.temporaryFoodRest){const plan=entry.activePlan;
       requireCondition(plan.planId===item.decision.planId,'Outcome plan mismatch');
       if(receipt.status==='succeeded'){
         plan.stepIndex++;
@@ -545,7 +561,14 @@ function applyActionFor(input,payload,sample,profile){
   const entry=entryOf(input,payload.actorId);
   let purchaseReject=false;
   if(entry){const d=entry.lastDecision,p=entry.activePlan;
-    requireCondition(d&&p&&d.choice===payload.action&&p.steps[p.stepIndex]===payload.action&&d.planId===p.planId&&d.goalId===p.goalId&&d.actorId===payload.actorId&&payload.goalId===(d.goalId??0),'Motivation command/decision/plan binding mismatch');
+    const temporaryFoodRest=profile.survival&&d?.mode==='review'&&d.choice==='Rest'&&
+      d.gateReason==='URGENT_FATIGUE'&&d.goalId===null&&d.planId===null&&p?.kind===SURVIVAL_FOOD_PLAN_KIND&&
+      d.actorId===SURVIVAL_ACTOR_ID&&d.actorId===payload.actorId&&d.tick===(input.societyModel.day+1)*144&&
+      input.memoryModel.config.version==='memory-config-v5'&&input.societyModel.day+1<=p.deadlineDay&&
+      payload.action==='Rest'&&payload.goalId===0;
+    const normalBinding=d&&p&&d.choice===payload.action&&p.steps[p.stepIndex]===payload.action&&
+      d.planId===p.planId&&d.goalId===p.goalId&&d.actorId===payload.actorId&&payload.goalId===(d.goalId??0);
+    requireCondition(temporaryFoodRest||normalBinding,'Motivation command/decision/plan binding mismatch');
     if(profile.cognition||profile.survival)requireCondition(d.tick===(input.societyModel.day+1)*144,'Cognition authority requires the day decision tick');
     if(p.kind==='aid-village'){
       if((profile.cognition||profile.survival)&&d.mode==='maintain')
@@ -557,7 +580,7 @@ function applyActionFor(input,payload,sample,profile){
     // M4A: the committed decision's frozen knowledge is the authoritative record of what this
     // actor actually saw when it decided, so the authority re-checks the source from there
     // instead of trusting a live lookup.
-    if(profile.survival&&p.kind===SURVIVAL_FOOD_PLAN_KIND){
+    if(profile.survival&&p.kind===SURVIVAL_FOOD_PLAN_KIND&&!temporaryFoodRest){
       const frozen=frozenDecisionKnowledge(d);
       requireCondition(frozen!==null,'Survival food step without a frozen decision knowledge');
       // The first step of a two-step plan must be bound three ways and must not be stale.

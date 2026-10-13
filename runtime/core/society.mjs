@@ -28,13 +28,13 @@ function unitConfig(config,index){return {...defaultHunterConfig(),actors:cloneD
   initialFood:config.estates[index].initialFood,initialHerbs:config.estates[index].initialHerbs,initialWallet:config.estates[index].initialWallet};}
 function validateConfig(c){
   record(c);
-  const player=['society-config-v2','society-config-v3'].includes(c.version),play=c.version==='society-config-v3';
-  fields(c,['version','actors','estates','economics','saleMarkup','reserveFoodDays',...(player?['player']:[])]);requireCondition(['society-config-v1','society-config-v2','society-config-v3'].includes(c.version),'Unknown Society configuration','UNSUPPORTED_VERSION');
+  const player=['society-config-v2','society-config-v3','society-config-v4'].includes(c.version),play=['society-config-v3','society-config-v4'].includes(c.version);
+  fields(c,['version','actors','estates','economics','saleMarkup','reserveFoodDays',...(player?['player']:[])]);requireCondition(['society-config-v1','society-config-v2','society-config-v3','society-config-v4'].includes(c.version),'Unknown Society configuration','UNSUPPORTED_VERSION');
   denseArray(c.estates,3);requireCondition(c.estates.length===3,'Society needs exactly three estates');
   fields(c.economics,ECONOMICS);integer(c.saleMarkup);requireCondition(c.saleMarkup<=1000,'Sale markup budget exceeded','LIMIT_EXCEEDED');
   integer(c.reserveFoodDays,1);requireCondition(c.reserveFoodDays<=10,'Public reserve goal budget exceeded');
   const world=createActorWorld(c.actors);
-  requireCondition(c.actors.version===(play?'actor-config-v3':player?'actor-config-v2':'actor-config-v1') && world.actorModel.actors.length===(player?4:3) && world.actorModel.actors.every((a,i)=>a.occupation===[...ROLES,...(player?['player']:[])][i]) &&
+  requireCondition(c.actors.version===(c.version==='society-config-v4'?'actor-config-v4':play?'actor-config-v3':player?'actor-config-v2':'actor-config-v1') && world.actorModel.actors.length===(player?4:3) && world.actorModel.actors.every((a,i)=>a.occupation===[...ROLES,...(player?['player']:[])][i]) &&
     c.actors.market.ecology.resources.settlement.humanCount===80,'Society roster/population differs from fixed contract');
   for(const [i,e] of c.estates.entries()){
     fields(e,['actorId','initialFood','initialHerbs','initialWallet']);requireCondition(e.actorId==='actor-'+(i+1),'Estate identity/order mismatch');
@@ -51,7 +51,7 @@ export function createSocietyWorld(config=defaultSocietyConfig()){
   for(const id of ['food','herbs']){
     const key=id==='food'?'initialFood':'initialHerbs',quantity=sum(copy.estates,e=>e[key])+(copy.player?copy.player[key]:0);world.resources[id]-=quantity;world.resourceModel.ledger[id].outflow+=quantity;
   }
-  return {...world,societyModel:{config:copy,configFingerprint:canonicalJson(copy),day:0,agents},...(copy.player?{playerModel:(copy.version==='society-config-v3'?createPlayerPlayState:createPlayerState)(copy.player)}:{})};
+  return {...world,societyModel:{config:copy,configFingerprint:canonicalJson(copy),day:0,agents},...(copy.player?{playerModel:(['society-config-v3','society-config-v4'].includes(copy.version)?createPlayerPlayState:createPlayerState)(copy.player)}:{})};
 }
 
 function ownership(w,id){const a=agent(w,id),others=w.societyModel.agents.filter(a=>a.state.actorId!==id);

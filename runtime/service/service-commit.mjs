@@ -3,8 +3,9 @@ import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { fields,denseArray,requireCondition,cloneData,fault } from '../core/data-contract.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
-import { projectPublicSnapshot,runtimeProfile,validateServiceCommandDto,mindBackend,requireMotivationBackend,requireCognitionBackend,requireSurvivalBackend } from './http-contract.mjs';
+import { projectPublicSnapshot,projectEncounterSnapshot,runtimeProfile,validateServiceCommandDto,mindBackend,requireMotivationBackend,requireCognitionBackend,requireSurvivalBackend } from './http-contract.mjs';
 import { executePlayerIntent } from '../core/player-intents.mjs';
+import { executeEncounterIntent } from '../core/encounter-runtime.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
 export const MAX_SERVICE_COMMANDS=128,MAX_SERVICE_FILES=128,MAX_PENDING_REQUESTS=16;
@@ -16,20 +17,24 @@ const RESERVED_INTERNAL_PREFIXES={4:['mind-day-','society-day-'],5:['mind-day-',
   6:['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-'],
   // Format7 keeps every format6 prefix and adds the survival namespace; formats 1–6 never expand.
   7:['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-',
-    'survival-day-']};
+    'survival-day-'],8:['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-','survival-day-']};
 // Submit and journal audit use this same complete transition; the service owns no world rules.
 export function transitionServiceCommand(bundle,dto){
   dto=validateServiceCommandDto(dto);
   // The reserved-namespace guard is a pure input check: it must fire before any profile or
   // backend lookup, so an internal command id is refused even if a backend is unavailable.
   const format=runtimeProfile(bundle).serviceFormatVersion;
+  if(format===8)requireCondition(dto.version===3,'Encounter profile requires command DTO version 3','UNSUPPORTED_VERSION');
+  else requireCondition(dto.version!==3,'Profile does not support command DTO version 3','COMMAND_UNSUPPORTED');
   const reserved=RESERVED_INTERNAL_PREFIXES[format];
   if(reserved)for(const prefix of reserved)if(dto.commandId.startsWith(prefix))throw fault('INVALID_INPUT','Reserved internal command ID');
   const profile=runtimeProfile(bundle),mindPlayer=format===4,motivation=format===5,
     cognition=format===6,survival=format===7;
-  requireCondition(dto.version===1 || [3,4,5,6,7].includes(format),'Profile does not support player actions','COMMAND_UNSUPPORTED');
+  requireCondition(dto.version===1 || (dto.version===2 && [3,4,5,6,7].includes(format)) || (dto.version===3 && format===8),
+    'Profile does not support player actions','COMMAND_UNSUPPORTED');
   if(dto.version===1){const session=createSimulationSession(bundle,profile.systems);session.advanceTicks(dto.payload.ticks);
     const next=session.getBundle();return {bundle:next,receipt:timeReceipt(dto,next.snapshot.revision)};}
+  if(dto.version===3)return executeEncounterIntent(bundle,dto);
   const execute=survival?requireSurvivalBackend().runtime.executeSurvivalPlayerIntent:
     mindPlayer?mindBackend().runtime.executeMindPlayerIntent:cognition?requireCognitionBackend().runtime.executeCognitionPlayerIntent:
     motivation?requireMotivationBackend().runtime.executeMotivationPlayerIntent:executePlayerIntent;
@@ -39,16 +44,18 @@ export function transitionServiceCommand(bundle,dto){
 }
 export function validateServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
-  requireCondition([1,2,3,4,5,6,7].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
+  requireCondition([1,2,3,4,5,6,7,8].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
   const profile=runtimeProfile(envelope.anchor),finalProfile=runtimeProfile(envelope.bundle);
   requireCondition(envelope.serviceFormatVersion===profile.serviceFormatVersion && envelope.serviceFormatVersion===finalProfile.serviceFormatVersion,
     'Service format/profile mismatch','UNSUPPORTED_VERSION');
   denseArray(envelope.commands,MAX_SERVICE_COMMANDS);
   projectPublicSnapshot(envelope.anchor);projectPublicSnapshot(envelope.bundle);
+  if(envelope.serviceFormatVersion===8){projectEncounterSnapshot(envelope.anchor);projectEncounterSnapshot(envelope.bundle);}
   const seen=new Set();let replay=envelope.anchor,revision=envelope.anchor.snapshot.revision;
   for(const entry of envelope.commands){
     fields(entry,['dto','receipt']);const dto=validateServiceCommandDto(entry.dto);
     fields(entry.receipt,dto.version===1?['apiVersion','commandId','status','fromRevision','toRevision','tick']:
+      dto.version===3?['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result']:
       ['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','tick','type','outcome','result']);
     requireCondition(!seen.has(dto.commandId) && dto.expectedRevision===revision,'Invalid service command sequence');seen.add(dto.commandId);
     const next=transitionServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;

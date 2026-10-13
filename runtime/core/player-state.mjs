@@ -64,7 +64,9 @@ export function createPlayerState(config){
 export function createPlayerPlayState(config){const p=createPlayerState(config);p.version='player-state-v2';p.ledger=Object.fromEntries(PLAY_LEDGER.map(k=>[k,0]));return p;}
 export function validatePlayerState(world){
  const p=world.playerModel,c=world.societyModel.config.player;validatePlayerAllocation(c);
- const play=world.societyModel.config.version==='society-config-v3';
+ // D3-5A: society-config-v4 carries the same play profile forward (player-state-v2), so the
+ // identity/version gate accepts it too; v1/v2/v3 keep their exact old meanings.
+ const play=['society-config-v3','society-config-v4'].includes(world.societyModel.config.version);
  fields(p,['version','actorId','wallet','inventory','ledger']);requireCondition(p.version===(play?'player-state-v2':'player-state-v1') && p.actorId===c.actorId,'Player identity/version mismatch');
  fields(p.inventory,['food','herbs']);fields(p.ledger,play?PLAY_LEDGER:['foodUsed']);for(const n of [p.wallet,...Object.values(p.inventory),...Object.values(p.ledger)])integer(n);
  if(play){requireCondition(p.inventory.food<=1000 && p.inventory.herbs<=1000 && p.ledger.herbsUsed===0,'Player inventory/use outside contract');
