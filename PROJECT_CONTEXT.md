@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-13 13:41（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-13 14:30（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -19,7 +19,7 @@
 ## 集成基准与实际位置
 
 - 控制文档树：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`；
-  本轮改写前 HEAD `fbd128be5dfc36008717caa13026ceaef70875e7`；改写前完整状态见上方保留的 `3361d653` 快照链接。
+  本轮改写前 HEAD `d4f866e880bb576e601d99a00d52be712c720fce`；改写前完整状态见上方保留的 `3361d653` 快照链接。
 - D3 施工树：`D:\Narraverse-World-Map\hds-reservation`，分支 `codex/world-runtime-d3-reservation`；A生产冻结为 `d22c730707646eabe8c68b4d2c739e09f942fbab`（主体祖先 `2ecfc0cd5c8991d57053e2e04c17a312469ef96f`，仅含 owner 队列修复和A回归测试）。B测试提交为 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb`（父3c、仅新增/扩展B2测试）；源码未推送、未合入main、未部署。
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
@@ -27,10 +27,12 @@
 
 - D3-5A 生产候选在 `2ecfc0c` 主体上已有真实服务、CLI、持久化预算及浏览器消费者证据：服务6/6、旧parser窄回归3/3；CLI窄测4/4、旧clock-smoke 1/1、有界reader 1/1；Edge组合1/1（92.5秒）；新profile metadata负例1/1。format8 128输入/129正式service文件边界1/1（269秒）；旧profile 128文件上限1/1（127条真实命令，887.98秒）。这些是既有定向回执，不代表新候选整体验收。
 - B1 15项、B2 7项（2+3+2）、B3 6项共28个独立成员已分批通过、无skip；并非一次28/28。B2新增 owner durable-failure 与G7共11种checkpoint变体均通过。原失败记录与定向补验保留，见[D3-5B复核](docs/runtime/D3-5B-REVIEW-20261013.md)。A唯一源码行为修复为 `d22c730` 的 owner queue 幂等优先级及回归；B测试候选提交 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb` 仅改B2测试。源码未推送、未合入main、未部署；D3整体未验收。
-- D4 合同 `d4-scene-continuity-v1` 已冻结：基准 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb`；[A 村庄赠粮与本人记忆](tasks/D4A-SCENE-GIFT-MEMORY-TASK.md)、[B 独立验收](tasks/D4B-SCENE-CONTINUITY-ACCEPTANCE-TASK.md)。A 待派发、B 等待 A 精确交付；尚无 D4 生产实现或验收证据。任务书共同发布提交见本轮控制 Git 及看板链接，不引用未提交源码。
+- D4 合同 `d4-scene-continuity-v1` 已冻结：基准 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb`；[A 村庄赠粮与本人记忆](tasks/D4A-SCENE-GIFT-MEMORY-TASK.md)、[B 独立验收](tasks/D4B-SCENE-CONTINUITY-ACCEPTANCE-TASK.md)。A 已派发内部CP1a资产/版本小单，后台测试工人执行中，尚无验收结论；B 等待 A 精确交付。任务书共同发布提交见本轮控制 Git 及看板链接，不引用未提交源码。
+- D4A 实际树 `D:\Narraverse-World-Map\hds-d4-scene` @ `codex/world-runtime-d4-scene`，从冻结 `f7699fb` 新建；为复用已注册工作区改用其内独立worktree，任务书建议外部路径不是实际目录。包工头派发run `7ce9cc18-b560-4f59-a81f-2d79612e6d9e` 已结束（仅派工完成）；后台测试工人 `bed77884-fa98-47a1-a7cb-d338f1778683` / task-26在执行，Global DeepSeek Flash high为请求路由，实际子路由unknown；CP1a仅hunter/society/player-state和一个A底层测试，先RED后GREEN，无提交/push。内部卡在执行树 `artifacts/controller-input-d4/`，不另发业务合同。
+- 流程优化已分给独立Codex对话 `01a133e5-db80-7e81-af05-941188b1598e`（DSH｜流程优化与中断恢复）；任务书/修复/实验全部在 `E:\codex\2026-10-13\dsh-workflow-optimization`，本项目仅只读参考，禁止改活动STATE/源码/合同/看板或续派业务。当前对话继续业务派工验收；两路不得共用包工头写入会话。
 - D4 体验目标：给同村猎人一份私粮→立即记得本人收粮→日结实际吃粮→去森林完成遭遇→返回/刷新/关闭重开仍是同一人。局部知识展示同地点公开人物，不泄漏他人私账，不加信任或模型。合同版本、文件范围与手算见任务书，D 整体仍待体验收口。
 - DSH 流程优化已落地：原包工头会话 `session-2564efe0-949b-48ed-90a5-f7f7feb9cbce` 使用Global DeepSeek Flash完成复盘与两名顺序工人接续演练；Codex独立核对并修正停止证明/证据归属。运行册 `D:\Narraverse-World-Map\docs\operations\DSH-TEAM-RUNBOOK.md`，持久检查点 `.dsh-team/STATE.json`；原生任务task-24/25完成，当前无活动写租约。
-- 流程默认短工单/并发1、额度与502分流、最多一次重试及一个获准免费备选探测、工人和包工头各自落盘检查点；同文件换写者须可引用停止证据。当前仅验证顺序读取接续，实际子代理路由/额度未知、自动额度切换及进程强杀接管未验证。D4仍待派发；本轮未改运行时源码或启停用户实例。
+- 流程默认短工单/并发1、额度与502分流、最多一次重试及一个获准免费备选探测、工人和包工头各自落盘检查点；同文件换写者须可引用停止证据。当前仅验证顺序读取接续，实际子代理路由/额度未知、自动额度切换及进程强杀接管未验证。D4A当前CP1a已开工、B待依赖；该历史流程优化轮没有改运行时源码或启停用户实例。
 - 更早的R3、DSH停工与接管过程、旧候选拒收和上下文恢复等活动流水压缩为历史；本地证据相对路径：`artifacts/world-runtime-d35-hour-review-20261012/repair-workers-latest.json`、`artifacts/world-runtime-d35-r3-review-20261012/`。历史状态不代表当前验收结论。
 
 ## 证据入口
