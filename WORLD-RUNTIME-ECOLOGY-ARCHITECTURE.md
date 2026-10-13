@@ -400,7 +400,15 @@ Persistent Actor 身份独立于 simulationLevel。离开视野可降频，不�
 **D 验收**：真实交易/狩猎改变库存/种群，重启后仍一致；重复结算无额外奖励；过期写入明确拒绝/重读；真实浏览器消费链通过，不能只交付按钮或类型。
 
 <a id="d4-scene-continuity-plan"></a>
-#### D3-5之后的 D4 预规划（未发布、未开工）
+#### D4 村庄赠粮与本人记忆（合同冻结，待派发）
+
+2026-10-13（Asia/Shanghai）：D3-5 已限定验收通过，D4 冻结在源码 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb`，仍只发布 [D4A 实现](tasks/D4A-SCENE-GIFT-MEMORY-TASK.md) 与 [D4B 独立验收](tasks/D4B-SCENE-CONTINUITY-ACCEPTANCE-TASK.md) 两份任务书。本轮是合同发布，不代表实现开工。
+
+采用 `scene-survival-village / d-scene-survival-v1` 的隔离规则、service format 9；沿用 schema3、DTO3、receipt3 和既有遭遇/日结。赠粮是零 tick 的真实私粮转移；双边来源账、本人即时记忆、完整重演及保存发布共同提交。新 memory-config-v6 / society-config-v5 / player-state-v3 / observer-v3 仅作用于新 profile；旧档不迁移。人物可以看到同地点的公开身份与可观察状态，别人的私账不进入局部知识。
+
+执行先完成 A 内三个检查点（转移与记忆、服务与恢复、真实页面）；B 依明确合同准备独立期望，等 A 精确提交后验收。最后用同一份世界走村庄与森林两条路线；D 阶段整体另按体验门裁定。具体字段、守恒、版本、测试与停止点以两份任务书为准。
+
+##### 2026-10-12 预规划记录（历史，不作为当前执行合同）
 
 本节只确定方向与验收问题，不是冻结合同、任务书或开工信号。D3-5A/B
 完成实现、独立验收、集成基准和证据收口前，不派发 D4；当前交付缺口先补齐。
