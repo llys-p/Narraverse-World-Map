@@ -901,7 +901,7 @@ export function describeEncounterActions(bundle) {
 // validation
 // ---------------------------------------------------------------------------
 
-export function validateEncounterWorldState(world, snapshotContext = {}) {
+function validateEncounterWorldStateFor(world, snapshotContext = {}, modelVersion=MODEL_VERSION) {
   // The snapshot context is exactly { tick }: a missing, negative, fractional or extra-keyed
   // context is an invalid call, never a silent tick 0.
   requireCondition(isPlainObject(snapshotContext), 'snapshotContext must be exactly { tick }', 'INVALID_INPUT');
@@ -921,7 +921,7 @@ export function validateEncounterWorldState(world, snapshotContext = {}) {
     if (!sortedKeysEqual(model, ENCOUNTER_MODEL_KEYS)) {
       errors.push(`encounterModel must have exactly the ${ENCOUNTER_MODEL_KEYS.length} contract fields (found ${Object.keys(model).length})`);
     }
-    if (model.version !== MODEL_VERSION) errors.push(`encounterModel.version must be ${MODEL_VERSION}`);
+    if (model.version !== modelVersion) errors.push(`encounterModel.version must be ${modelVersion}`);
     if (!isInteger(model.nextEncounterId) || model.nextEncounterId < 1 || model.nextEncounterId > 17) {
       errors.push('encounterModel.nextEncounterId must be an integer in 1..17');
     }
@@ -1090,10 +1090,10 @@ export function validateEncounterWorldState(world, snapshotContext = {}) {
 // runtime hooks (six responsibilities)
 // ---------------------------------------------------------------------------
 
-function hooksCreateWorld(memory, mind, motivation, experience, cognition, simulationId) {
-  const world = createSurvivalWorld(memory, mind, motivation, experience, cognition, simulationId);
+function hooksCreateWorld(memory, mind, motivation, experience, cognition, simulationId, baseHooks=survivalRuntimeHooks, modelVersion=MODEL_VERSION) {
+  const world = baseHooks.createWorld(memory, mind, motivation, experience, cognition, simulationId);
   world.encounterModel = {
-    version: MODEL_VERSION,
+    version: modelVersion,
     nextEncounterId: 1,
     encounter: null,
     inputHistory: [],
@@ -1121,14 +1121,14 @@ function withEncounterDetached(snapshot, run) {
   }
 }
 
-function hooksBeforeSystems(snapshot, events, tick, append, commit) {
+function hooksBeforeSystems(snapshot, events, tick, append, commit, baseHooks=survivalRuntimeHooks) {
   return withEncounterDetached(snapshot,
-    () => survivalRuntimeHooks.beforeSystems(snapshot, events, tick, append, commit));
+    () => baseHooks.beforeSystems(snapshot, events, tick, append, commit));
 }
 
-function hooksAfterSystems(snapshot, events, tick, append, context) {
+function hooksAfterSystems(snapshot, events, tick, append, context, baseHooks=survivalRuntimeHooks) {
   const result = withEncounterDetached(snapshot,
-    () => survivalRuntimeHooks.afterSystems(snapshot, events, tick, append, context));
+    () => baseHooks.afterSystems(snapshot, events, tick, append, context));
   // L91: when a settlement truly kills the player, the active encounter is terminated
   // at the death tick and an EncounterTerminated fact cites the killing settlement.
   const world = snapshot.world;
@@ -1195,14 +1195,14 @@ function hooksAfterSystems(snapshot, events, tick, append, context) {
  * itself is *not* reached here: DTO3 intents go through the exported `executeEncounterIntent`
  * entry point, so a tick can never both advance the world and re-run the intent journal.
  */
-function hooksApplyAction(input, payload, sample = null) {
+function hooksApplyAction(input, payload, sample = null, baseHooks=survivalRuntimeHooks) {
   const model = input.encounterModel;
   const stripped = {};
   for (const key of Object.keys(input)) {
     if (key === 'encounterModel') continue;
     stripped[key] = input[key];
   }
-  const applied = survivalRuntimeHooks.applyAction(stripped, payload, sample);
+  const applied = baseHooks.applyAction(stripped, payload, sample);
   if (model === undefined) return applied;
   const nextWorld = {};
   for (const key of Object.keys(applied.world)) nextWorld[key] = applied.world[key];
@@ -1217,7 +1217,7 @@ function hooksApplyAction(input, payload, sample = null) {
  * detached for the settlement and re-attached to the fresh result world. The
  * input world is never mutated.
  */
-function hooksSettleDay(world, sample) {
+function hooksSettleDay(world, sample, baseHooks=survivalRuntimeHooks) {
   requireCondition(isPlainObject(world), 'settleDay expects a world', 'INVALID_INPUT');
   const model = world.encounterModel;
   const stripped = {};
@@ -1225,7 +1225,7 @@ function hooksSettleDay(world, sample) {
     if (key === 'encounterModel') continue;
     stripped[key] = world[key];
   }
-  const settled = survivalRuntimeHooks.settleDay(stripped, sample);
+  const settled = baseHooks.settleDay(stripped, sample);
   requireCondition(isPlainObject(settled) && isPlainObject(settled.world),
     'the survival settlement must return { world, payload }', 'INVALID_INPUT');
   const nextWorld = {};
@@ -1240,7 +1240,7 @@ function hooksSettleDay(world, sample) {
  * journal receipts. Structural facts (source system, entity ids, payload shape,
  * causation ordering) are checked directly so a tampered log cannot survive.
  */
-function hooksValidateHistory(snapshot, events) {
+function hooksValidateHistory(snapshot, events, profile=null) {
   requireCondition(isPlainObject(snapshot), 'validateHistory expects a snapshot', 'INVALID_INPUT');
   requireCondition(isPlainObject(snapshot.world), 'validateHistory expects snapshot.world', 'INVALID_INPUT');
   requireCondition(Array.isArray(events), 'validateHistory expects the event log', 'INVALID_INPUT');
@@ -1250,12 +1250,13 @@ function hooksValidateHistory(snapshot, events) {
   integer(actorDay);
   requireCondition(actorDay === Math.floor(snapshot.tick / TICKS_PER_DAY) && actorDay <= MAX_RESOURCE_DAYS,
     'Encounter snapshot clock/day is outside the supported replay range', 'INVALID_INPUT');
-  validateEncounterWorldState(snapshot.world, { tick: snapshot.tick });
+  (profile?.validateWorld??validateEncounterWorldState)(snapshot.world, { tick: snapshot.tick });
   requireCondition(snapshot.nextEventSeq === events.length + 1,
     'nextEventSeq must equal the published event count plus one', 'INVALID_INPUT');
 
   const model = snapshot.world.encounterModel;
   const history = model.inputHistory;
+  if(profile?.emptyOnly)requireCondition(history.length===0&&snapshot.instantCommits===0&&model.encounter===null&&model.nextEncounterId===1,'Scene external commands are unavailable in CP1c','UNSUPPORTED_VERSION');
   const recorded = events.filter((event) => isPlainObject(event) && event.type === FACT_TYPE);
   requireCondition(recorded.length === history.length,
     'every encounter input must publish exactly one fact', 'INVALID_INPUT');
@@ -1291,7 +1292,7 @@ function hooksValidateHistory(snapshot, events) {
   requireCondition(worldFacts.length + recorded.length === events.length,
     'the event log must contain only world and encounter facts', 'INVALID_INPUT');
 
-  const replayWorld = hooksCreateWorld(
+  const replayWorld = (profile?.createWorld??hooksCreateWorld)(
     snapshot.world.memoryModel.config,
     snapshot.world.mindModel.config,
     snapshot.world.motivationModel.config,
@@ -1320,7 +1321,7 @@ function hooksValidateHistory(snapshot, events) {
     }));
   }
 
-  const systems = encounterSystems();
+  const systems = profile?.systems??encounterSystems();
   let replay = { snapshot: replaySnapshot, eventLog: [] };
   if (history.length === 0) {
     // Engine-driven bundle: no encounter input was ever accepted, so every world fact was
@@ -1430,6 +1431,20 @@ function hooksValidateHistory(snapshot, events) {
   return { valid: true, errors: [] };
 }
 
+export function validateEncounterWorldState(world,snapshotContext={}){return validateEncounterWorldStateFor(world,snapshotContext);}
+export function validateSceneEncounterWorldState(world,snapshotContext={}){return validateEncounterWorldStateFor(world,snapshotContext,'encounter-runtime-v2');}
+// Scene opt-in shares the encounter engine. CP1c has no accepted external commands.
+export function createSceneEncounterRuntimeHooks(baseHooks){
+ const hooks={
+  createWorld:(memory,mind,motivation,experience,cognition,id)=>hooksCreateWorld(memory,mind,motivation,experience,cognition,id,baseHooks,'encounter-runtime-v2'),
+  beforeSystems:(snapshot,events,tick,append,commit)=>hooksBeforeSystems(snapshot,events,tick,append,commit,baseHooks),
+  afterSystems:(snapshot,events,tick,append,context)=>hooksAfterSystems(snapshot,events,tick,append,context,baseHooks),
+  applyAction:(input,payload,sample=null)=>hooksApplyAction(input,payload,sample,baseHooks),
+  settleDay:(world,sample)=>hooksSettleDay(world,sample,baseHooks),
+  validateHistory:(snapshot,events)=>hooksValidateHistory(snapshot,events,{createWorld:hooks.createWorld,validateWorld:validateSceneEncounterWorldState,systems:canonicalSystems('d-scene-survival-v1'),emptyOnly:true})
+ };
+ return Object.freeze(hooks);
+}
 export const encounterRuntimeHooks = {
   createWorld: hooksCreateWorld,
   beforeSystems: hooksBeforeSystems,

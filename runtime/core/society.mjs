@@ -214,14 +214,16 @@ export function validateSocietyActionResult(result){
     result.after.sellerWallet-result.before.sellerWallet===result.price && result.before.buyerWallet-result.after.buyerWallet===result.price &&
     result.before.sellerHerbs-result.after.sellerHerbs===1 && result.after.buyerHerbs-result.before.buyerHerbs===1,'Peer trade quantities/cash mismatch');
 }
-export function validateSocietyPayload(payload){
+export function validateSocietyPayload(payload){return validateSocietyPayloadFor(payload,false);}
+export function validateSceneSocietyPayload(payload){return validateSocietyPayloadFor(payload,true);}
+function validateSocietyPayloadFor(payload,scene){
   fields(payload,['day','actors','agents','communalGold']);integer(payload.day,1);integer(payload.communalGold);validateActorPayload(payload.actors);
   requireCondition(payload.actors.day===payload.day,'Society/Actor day mismatch');denseArray(payload.agents,3);requireCondition(payload.agents.length===3,'Missing personal daily accounts');
   for(const [i,a] of payload.agents.entries()){
     fields(a,['actorId','decision','currentGoal','goalOutcome','privateFood','wallet','inventory','ledger','trade']);
     requireCondition(a.actorId==='actor-'+(i+1) && ['ongoing','completed','failed','idle'].includes(a.goalOutcome),'Invalid person daily identity/outcome');
     integer(a.privateFood);integer(a.wallet);requireCondition(a.privateFood<=1,'Invalid private consumption');fields(a.inventory,['food','herbs']);integer(a.inventory.food);integer(a.inventory.herbs);
-    fields(a.trade,TRADE_FIELDS);for(const n of Object.values(a.trade))integer(n);
+    fields(a.trade,scene?[...TRADE_FIELDS,'foodReceived']:TRADE_FIELDS);for(const n of Object.values(a.trade))integer(n);
   }
 }
 

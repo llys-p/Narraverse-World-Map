@@ -5,7 +5,7 @@
 import { fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,inputFingerprint,MAX_COLLECTION } from './data-contract.mjs';
 import { createMemoryWorld,validateMemoryWorld,prepareMemoryDay,settleMemorySocietyDay,finishMemoryDay } from './memory-runtime.mjs';
 import { planSocietyDay,applySocietyAction,applySocietyCommand,societyActionFact,societyCauses } from './society.mjs';
-import { projectActorEvent } from './memory-observer.mjs';
+import { projectActorEvent,projectSceneActorEvent } from './memory-observer.mjs';
 import { createRng } from './rng.mjs';
 import { playerIntentDuration,canPlayerIntent,applyPlayerAction,playerActionFact,playerDayFact } from './player-state.mjs';
 import { createSimulationSession } from './command-engine.mjs';
@@ -21,10 +21,27 @@ const SOCIETY_KEYS=['resources','resourceModel','ecologyModel','marketModel','ac
 const societyProject=w=>{const base={};for(const k of SOCIETY_KEYS)base[k]=w[k];return base;};
 
 export { MIND_RULES };
+export function createMindWorld(memory,mind){return createMindWorldFor(memory,mind);}
+export function validateMindWorld(world,sealed=true){return validateMindWorldFor(world,sealed);}
+export function applyMindStimuliTick(world,tick,append){return applyMindStimuliTickFor(world,tick,append);}
+export function prepareMindDay(input,tick){return prepareMindDayFor(input,tick);}
+export function settleMindSocietyDay(input,sample){return settleMindSocietyDayFor(input,sample);}
+export function finishMindMemoryDay(input,events,tick){return finishMindMemoryDayFor(input,events,tick);}
+export function finishMindDay(input,events,tick){return finishMindDayFor(input,events,tick);}
+// Explicit opt-in: old public mind creation and validation retain their version gates.
+export const sceneMindRuntimeHooks=Object.freeze({
+ createWorld:(memory,mind)=>createMindWorldFor(memory,mind,true),
+ validateWorld:(world,sealed=true)=>validateMindWorldFor(world,sealed,true),
+ applyMindStimuliTick:(world,tick,append)=>applyMindStimuliTickFor(world,tick,append,true),
+ prepareMindDay:(input,tick)=>prepareMindDayFor(input,tick,true),
+ settleMindSocietyDay:(input,sample)=>settleMindSocietyDayFor(input,sample,true),
+ finishMindMemoryDay:(input,events,tick)=>finishMindMemoryDayFor(input,events,tick,true),
+ finishMindDay:(input,events,tick)=>finishMindDayFor(input,events,tick,true)
+});
 
-export function createMindWorld(memoryConfig,mindConfig){
+function createMindWorldFor(memoryConfig,mindConfig,scene=false){
   record(memoryConfig);record(mindConfig);
-  requireCondition(memoryConfig.version==='memory-config-v4'||memoryConfig.version==='memory-config-v5','Mind requires the play memory configuration','UNSUPPORTED_VERSION');
+  requireCondition(scene?memoryConfig.version==='memory-config-v6':(memoryConfig.version==='memory-config-v4'||memoryConfig.version==='memory-config-v5'),'Mind requires the play memory configuration','UNSUPPORTED_VERSION');
   const economics=memoryConfig.society.economics;
   requireCondition(economics.deadlineDays===20 && economics.maxFailures===3 && economics.cooldownDays===2,
     'Mind goal economics are frozen for this experiment','UNSUPPORTED_VERSION');
@@ -34,10 +51,10 @@ export function createMindWorld(memoryConfig,mindConfig){
   return {...world,mindModel:createMindModel(mindConfig)};
 }
 
-export function validateMindWorld(world,sealed=true){
+function validateMindWorldFor(world,sealed=true,scene=false){
   record(world);
   requireCondition(typeof sealed==='boolean','Invalid mind world seal mode');
-  requireCondition(world.memoryModel?.config?.version==='memory-config-v4'||world.memoryModel?.config?.version==='memory-config-v5','Mind requires the play memory world','UNSUPPORTED_VERSION');
+  requireCondition(scene?world.memoryModel?.config?.version==='memory-config-v6':(world.memoryModel?.config?.version==='memory-config-v4'||world.memoryModel?.config?.version==='memory-config-v5'),'Mind requires the play memory world','UNSUPPORTED_VERSION');
   const {mindModel,...base}=world;validateMemoryWorld(base);
   validateMindModel(mindModel,sealed);
   requireCondition(mindModel.config.actorIds.every(id=>base.actorModel.actors.some(a=>a.actorId===id)),'Mind bodies are missing');
@@ -84,8 +101,8 @@ function mindStimulusDelivery(world,stimulus,tick){
   return {fact,observation};
 }
 
-export function applyMindStimuliTick(world,tick,append){
-  validateMindWorld(world);const m=world.mindModel;
+function applyMindStimuliTickFor(world,tick,append,scene=false){
+  validateMindWorldFor(world,true,scene);const m=world.mindModel;
   while(m.scriptCursor<m.config.stimuli.length && m.config.stimuli[m.scriptCursor].tick===tick){
     const stimulus=m.config.stimuli[m.scriptCursor];
     const delivery=mindStimulusDelivery(world,stimulus,tick);
@@ -180,20 +197,20 @@ export function planMindDay(input,events,tick,simulationId){
 
 // Day-boundary announcements run exactly as in the old profile; the mind world is only
 // projected down to its memory fields for the shared runtime and re-attached afterwards.
-export function prepareMindDay(input,tick){
-  validateMindWorld(input);const {mindModel,...base}=input;
+function prepareMindDayFor(input,tick,scene=false){
+  validateMindWorldFor(input,true,scene);const {mindModel,...base}=input;
   const prepared=prepareMemoryDay(base,tick);
   return {world:{...prepared.world,mindModel:cloneData(mindModel)},facts:prepared.facts};
 }
 
-export function settleMindSocietyDay(input,sample){
-  validateMindWorld(input);const {mindModel,...base}=input;
+function settleMindSocietyDayFor(input,sample,scene=false){
+  validateMindWorldFor(input,true,scene);const {mindModel,...base}=input;
   const result=settleMemorySocietyDay(base,sample);
   return {world:{...result.world,mindModel:cloneData(mindModel)},payload:result.payload};
 }
 
-export function finishMindMemoryDay(input,events,tick){
-  validateMindWorld(input);const {mindModel,...base}=input;
+function finishMindMemoryDayFor(input,events,tick,scene=false){
+  validateMindWorldFor(input,true,scene);const {mindModel,...base}=input;
   const result=finishMemoryDay(base,events,tick);
   return {world:{...result.world,mindModel:cloneData(mindModel)},fact:result.fact};
 }
@@ -214,8 +231,8 @@ export function applyMindCommand(input,command){
 
 // §6.5 closing: after the settled daily fact the two still-living minds each observe the
 // public closing stock once; the mind cursor advances to the last committed eventSeq.
-export function finishMindDay(input,events,tick){
-  validateMindWorld(input);integer(tick,1);denseArray(events,140000);
+function finishMindDayFor(input,events,tick,scene=false){
+  validateMindWorldFor(input,true,scene);integer(tick,1);denseArray(events,140000);
   requireCondition(events.length>0,'Mind closing lacks committed facts');
   const world=cloneData(input);
   const daily=events.findLast(e=>e.type==='SocietyDaySettled'&&e.tick===tick);
@@ -224,14 +241,14 @@ export function finishMindDay(input,events,tick){
     const actor=world.actorModel.actors.find(a=>a.actorId===entry.actorId);
     requireCondition(actor,'Missing mind body');
     if(!actor.alive)continue;
-    const observable=projectActorEvent(daily,entry.actorId).find(p=>p.channel==='public');
+    const observable=(scene?projectSceneActorEvent:projectActorEvent)(daily,entry.actorId).find(p=>p.channel==='public');
     requireCondition(observable,'Missing visible public daily projection');
     pushMindObservation(world,entry.actorId,{sourceEventSeq:daily.eventSeq,occurrenceTick:daily.tick,observedTick:tick,
       channel:'daily-public',sourceActorId:null,available:observable.observable.herbs>0,confidencePermille:900,
       expiresTick:observationExpiryTick(tick)});
   }
   world.mindModel.cursor=events[events.length-1].eventSeq;
-  validateMindWorld(world);
+  validateMindWorldFor(world,true,scene);
   return world;
 }
 

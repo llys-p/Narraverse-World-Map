@@ -79,7 +79,7 @@ export function preflightExperienceData(data, bundled = false) {
   const version = Object.getOwnPropertyDescriptor(container, 'rulesVersion')?.value;
   // The survival profile reuses the experience descriptor preflight; a cyclic import of the
   // survival constants is avoided by the literal above.
-  const experience = version === EXPERIENCE_RULES || version === COGNITION_RULES || version === SURVIVAL_RULES;
+  const experience = version === EXPERIENCE_RULES || version === COGNITION_RULES || version === SURVIVAL_RULES || version === 'd-scene-survival-v1';
   if (experience) inspectDescriptorTree(data);
   return experience;
 }

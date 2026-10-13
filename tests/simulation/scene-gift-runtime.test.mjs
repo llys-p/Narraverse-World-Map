@@ -572,3 +572,368 @@ test('CP1b-R11 observer-v3 retains v2 travel location projection', () => {
   const state = advanceActorMemory(controllerBoundaryFresh(), [travel], 12);
   assert.equal(controllerBoundaryActor(state, 'actor-4').location, 'forest');
 });
+
+// ---------------------------------------------------------------- CP1c — real scene bundle and no-op runtime closure
+// New modules are imported only inside these required tests so a missing scene module is an
+// explicit missingSCENE failure here and cannot prevent the existing 37 tests from loading.
+async function cp1cImport(specifier, label, missingPrefix = 'missingSCENE') {
+  try { return await import(specifier); }
+  catch (error) {
+    if (error?.code === 'ERR_MODULE_NOT_FOUND') {
+      throw new Error(`${missingPrefix} ${label}: ${error.message}`, {cause: error});
+    }
+    throw error;
+  }
+}
+
+const CP1C_RECIPES = ['affordable', 'earn-then-buy', 'no-opportunity', 'wage-refused', 'no-food'];
+
+function cp1cExperience(world, actorId) {
+  return world.experienceModel.actors.find((actor) => actor.actorId === actorId).workExperienceState;
+}
+
+test('CP1c-R1 five scene recipes differ from encounter config only at memory and society versions', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  assert.equal(typeof fixture.defaultSceneVillageConfig, 'function', 'missingSCENE defaultSceneVillageConfig export');
+  for (const recipe of CP1C_RECIPES) {
+    const sceneConfig = fixture.defaultSceneVillageConfig(recipe);
+    const expected = defaultEncounterVillageConfig(recipe);
+    assert.equal(sceneConfig.memory.version, 'memory-config-v6');
+    assert.equal(sceneConfig.memory.society.version, 'society-config-v5');
+    const normalized = structuredClone(sceneConfig);
+    normalized.memory.version = expected.memory.version;
+    normalized.memory.society.version = expected.memory.society.version;
+    assert.deepEqual(normalized, expected, `${recipe}: only the two D4A versions may differ`);
+  }
+  assert.deepEqual(fixture.defaultSceneVillageConfig(), fixture.defaultSceneVillageConfig('no-opportunity'));
+  assert.throws(() => fixture.defaultSceneVillageConfig('no-such-recipe'), (error) => error.code === 'UNSUPPORTED_VERSION');
+});
+
+test('CP1c-R2 scene fixture creates a real schema3 bundle and validates its complete versions', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  assert.equal(runtime.SCENE_PROFILE, 'scene-survival-village');
+  assert.equal(runtime.SCENE_RULES, 'd-scene-survival-v1');
+  assert.equal(typeof fixture.sceneSystems, 'function');
+  assert.equal(typeof fixture.createSceneVillage, 'function');
+  assert.equal(typeof runtime.validateSceneWorldState, 'function');
+  assert.equal(typeof runtime.sceneRuntimeHooks, 'object', 'missingSCENE sceneRuntimeHooks export');
+  for (const hook of ['createWorld', 'beforeSystems', 'afterSystems', 'applyAction', 'settleDay', 'validateHistory']) {
+    assert.equal(typeof runtime.sceneRuntimeHooks[hook], 'function', `missingSCENE sceneRuntimeHooks.${hook}`);
+  }
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1c-scene-bundle');
+  assert.deepEqual(Object.keys(systems).sort(), ['encounter', 'scene', 'society', 'survival']);
+  assert.equal(bundle.snapshot.schemaVersion, 3);
+  assert.equal(bundle.snapshot.rulesVersion, runtime.SCENE_RULES);
+  assert.equal(bundle.snapshot.fixtureId, 'scene-survival-village');
+  assert.equal(bundle.snapshot.fixtureVersion, '1');
+  assert.equal(bundle.snapshot.tick, 0);
+  assert.equal(bundle.snapshot.instantCommits, 0);
+  assert.equal(bundle.snapshot.revision, bundle.snapshot.tick + bundle.snapshot.instantCommits);
+  assert.equal(bundle.snapshot.world.memoryModel.config.version, 'memory-config-v6');
+  assert.equal(bundle.snapshot.world.societyModel.config.version, 'society-config-v5');
+  assert.equal(bundle.snapshot.world.memoryModel.observer.version, 'memory-observer-v3');
+  assert.equal(bundle.snapshot.world.playerModel.version, 'player-state-v3');
+  assert.equal(bundle.snapshot.world.encounterModel.version, 'encounter-runtime-v2');
+  assert.equal(Object.hasOwn(bundle.snapshot.world, 'sceneModel'), false);
+  runtime.validateSceneWorldState(bundle.snapshot.world, {tick: 0});
+  worldState.validateBundle(bundle, {rulesVersion: runtime.SCENE_RULES, systems});
+});
+
+test('CP1c-R3 old and scene rules, config, observer, player, and encounter model versions reject cross-pairing', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const oldFixture = await import('../../runtime/fixtures/encounter-survival-village.mjs');
+  const oldRuntime = await import('../../runtime/core/encounter-runtime.mjs');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const scene = fixture.createSceneVillage(42, 'cp1c-version-scene');
+  const old = oldFixture.createEncounterVillage(42, 'cp1c-version-old');
+  assert.throws(() => worldState.validateBundle(scene.bundle,
+    {rulesVersion: oldRuntime.ENCOUNTER_RULES, systems: scene.systems}));
+  assert.throws(() => worldState.validateBundle(old.bundle,
+    {rulesVersion: runtime.SCENE_RULES, systems: old.systems}));
+
+  const oldConfig = oldFixture.defaultEncounterVillageConfig('no-opportunity');
+  assert.throws(() => fixture.createSceneVillage(42, 'cp1c-old-config', oldConfig));
+  const staleObserver = structuredClone(scene.bundle);
+  staleObserver.snapshot.world.memoryModel.observer.version = 'memory-observer-v2';
+  assert.throws(() => worldState.validateBundle(staleObserver,
+    {rulesVersion: runtime.SCENE_RULES, systems: scene.systems}));
+  const stalePlayer = structuredClone(scene.bundle);
+  stalePlayer.snapshot.world.playerModel.version = 'player-state-v2';
+  assert.throws(() => worldState.validateBundle(stalePlayer,
+    {rulesVersion: runtime.SCENE_RULES, systems: scene.systems}));
+  const staleEncounter = structuredClone(scene.bundle);
+  staleEncounter.snapshot.world.encounterModel.version = 'encounter-runtime-v1';
+  assert.throws(() => worldState.validateBundle(staleEncounter,
+    {rulesVersion: runtime.SCENE_RULES, systems: scene.systems}));
+});
+
+test('CP1c-R4 tick1 publication and tick144 no-op preserve the hand-computed village state', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const engine = await import('../../runtime/core/command-engine.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1c-no-opportunity',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const session = engine.createSimulationSession(bundle, systems);
+  session.advanceTicks(1);
+  const atOne = session.getBundle();
+  const quote = atOne.eventLog.find((event) => event.type === 'SurvivalFoodQuoteAnnounced');
+  assert.ok(quote, 'the real tick1 public food quote must be present');
+  assert.equal(quote.tick, 1);
+  assert.deepEqual(quote.payload, {location: 'village', product: 'food', price: 10, available: true});
+  assert.equal(atOne.snapshot.world.resources.food, 540, 'opening public food stock remains a world-state value');
+  session.advanceTicks(143);
+  const day = session.getBundle();
+  assert.equal(day.snapshot.tick, 144);
+  assert.equal(day.snapshot.revision, 144);
+  assert.equal(day.snapshot.world.resources.food, 464);
+  assert.equal(day.snapshot.world.playerModel.inventory.food, 19);
+  assert.equal(day.snapshot.world.actorModel.actors.find((actor) => actor.actorId === 'actor-2').hunger, 300);
+  assert.deepEqual(day.eventLog.filter((event) => event.type === 'FoodGiftCommitted'), []);
+  assert.equal(day.eventLog.filter((event) => event.type === 'SocietyDaySettled').length, 1);
+  assert.ok(day.snapshot.world.societyModel.agents.every((agent) => agent.state.wallet === 0), 'no wage is paid');
+  assert.deepEqual(cp1cExperience(day.snapshot.world, 'actor-2').samples, [], 'no Work experience is invented');
+  runtime.validateSceneWorldState(day.snapshot.world, {tick: 144});
+});
+
+test('CP1c-R5 advancing 144 ticks at once equals 1 plus 143 ticks byte-for-byte', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const engine = await import('../../runtime/core/command-engine.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1c-partition-equivalence',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const oneShot = engine.createSimulationSession(bundle, systems);
+  oneShot.advanceTicks(144);
+  const split = engine.createSimulationSession(bundle, systems);
+  split.advanceTicks(1);
+  split.advanceTicks(143);
+  assert.equal(canonicalJson(split.getBundle()), canonicalJson(oneShot.getBundle()));
+});
+
+test('CP1c-R6 scene bundle saves and restores through the existing checkpoint API', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const engine = await import('../../runtime/core/command-engine.mjs');
+  const checkpoint = await import('../../runtime/persistence/checkpoint-store.mjs');
+  const fs = await import('node:fs/promises');
+  const path = await import('node:path');
+  const {fileURLToPath} = await import('node:url');
+  const evidence = fileURLToPath(new URL('../../artifacts/world-runtime-d4-cp1c-controller/', import.meta.url));
+  await fs.mkdir(evidence, {recursive: true});
+  const directory = await fs.mkdtemp(path.join(evidence, 'checkpoint-'));
+  try {
+    const {bundle, systems} = fixture.createSceneVillage(42, 'cp1c-checkpoint');
+    const session = engine.createSimulationSession(bundle, systems);
+    session.advanceTicks(144);
+    const expected = session.getBundle();
+    const file = await checkpoint.saveCheckpoint(expected,
+      {directory, rulesVersion: runtime.SCENE_RULES, systems});
+    const restored = await checkpoint.loadCheckpoint(file,
+      {rulesVersion: runtime.SCENE_RULES, systems});
+    assert.deepEqual(restored, expected);
+  } finally {
+    await fs.rm(directory, {recursive: true, force: true});
+  }
+});
+
+async function cp1cRunOldFixture(fixtureModule, engineModule, recipe, simulationId) {
+  const config = fixtureModule[recipe.config](recipe.name);
+  const {bundle, systems} = fixtureModule[recipe.create](42, simulationId, config);
+  const session = engineModule.createSimulationSession(bundle, systems);
+  session.advanceTicks(144);
+  return session.getBundle();
+}
+
+// Archived compatibility baselines were generated from c4ac067a3debe6d104a7b0d85672c442184e4972
+// (archive SHA256 a4ae7587b602d32fb46af4b90ab4287aa7f600ea4fffffa79243d189f20111bf), seed 42,
+// recipe no-opportunity, 144 ticks, with the simulation IDs below. Rebuild from that immutable
+// archive using `node artifacts/world-runtime-d4-cp1c-controller/baseline-144.mjs`; the tracked
+// tests intentionally need only these fixed whole-bundle hashes, not the ignored archive files.
+test('CP1c-R7 old encounter 144tick complete bundle retains the c4ac067 canonical baseline', async () => {
+  const currentFixture = await import('../../runtime/fixtures/encounter-survival-village.mjs');
+  const currentEngine = await import('../../runtime/core/command-engine.mjs');
+  const data = await import('../../runtime/core/data-contract.mjs');
+  const crypto = await import('node:crypto');
+  const options = {config: 'defaultEncounterVillageConfig', create: 'createEncounterVillage', name: 'no-opportunity'};
+  const actual = await cp1cRunOldFixture(currentFixture, currentEngine, options, 'encounter-survival-village');
+  const canonical = data.canonicalJson(actual);
+  assert.equal(crypto.createHash('sha256').update(canonical, 'utf8').digest('hex'),
+    '1e56e2d60191251037375fd55ee6c50f6fb6e75758054c2551b72729e4116dce');
+});
+
+test('CP1c-R8 old survival 144tick complete bundle retains the c4ac067 canonical baseline', async () => {
+  const currentFixture = await import('../../runtime/fixtures/survival-village.mjs');
+  const currentEngine = await import('../../runtime/core/command-engine.mjs');
+  const data = await import('../../runtime/core/data-contract.mjs');
+  const crypto = await import('node:crypto');
+  const options = {config: 'defaultSurvivalVillageConfig', create: 'createSurvivalVillage', name: 'no-opportunity'};
+  const actual = await cp1cRunOldFixture(currentFixture, currentEngine, options, 'survival-village');
+  const canonical = data.canonicalJson(actual);
+  assert.equal(crypto.createHash('sha256').update(canonical, 'utf8').digest('hex'),
+    '0e6ea2759e11cf12567720f355b571ce809cb4eb28abe1cc231f7bb5f317d95a');
+});
+
+test('CP1c-R9 a late 144tick scene failure rolls back the whole batch, history, schedule, RNG, and stats', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const engine = await import('../../runtime/core/command-engine.mjs');
+  const {bundle, systems: normalSystems} = fixture.createSceneVillage(42, 'cp1c-batch-rollback',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const initial = structuredClone(bundle);
+  let injectedHandlerCalled = false;
+  let failOnce = true;
+  const systems = {...normalSystems, society() {
+    if (failOnce) {
+      failOnce = false;
+      injectedHandlerCalled = true;
+      throw Object.assign(new Error('CP1c injected day-144 failure'), {code: 'TICK_FAILED'});
+    }
+    return normalSystems.society(...arguments);
+  }};
+  const session = engine.createSimulationSession(bundle, systems);
+  assert.throws(() => session.advanceTicks(144),
+    (error) => error.code === 'TICK_FAILED' && error.cause?.message === 'CP1c injected day-144 failure',
+    'the wrapped TICK_FAILED error must preserve the injected day-144 cause');
+  assert.equal(injectedHandlerCalled, true, 'the daily settlement handler must be reached after tick 1');
+  assert.equal(canonicalJson(session.getBundle()), canonicalJson(initial),
+    'failure after tick 1 must publish no quote, clock, RNG, event, or schedule prefix');
+  assert.deepEqual(session.getStats(), {idleTicks: 0, activityTicks: 0},
+    'failed scene batch must restore public activity statistics too');
+
+  session.advanceTicks(144);
+  const retry = engine.createSimulationSession(initial, normalSystems);
+  retry.advanceTicks(144);
+  assert.equal(canonicalJson(session.getBundle()), canonicalJson(retry.getBundle()),
+    'the same failed session can retry and match a fresh session from the untouched input');
+});
+
+test('CP1c-R10 scene validation rejects instant commits and generic external PlayerAction inputs', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1c-external-input-boundary',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const committed = structuredClone(bundle);
+  committed.snapshot.instantCommits = 1;
+  committed.snapshot.revision = committed.snapshot.tick + committed.snapshot.instantCommits;
+  assert.throws(() => worldState.validateBundle(committed,
+    {rulesVersion: runtime.SCENE_RULES, systems}),
+  'an empty-history scene cannot claim an external instant commit');
+
+  const externalRest = {
+    commandId: 'cp1c-external-rest', type: 'PlayerAction', targetTick: 6,
+    payload: {startTick: 0, intent: {commandId: 'cp1c-external-rest', type: 'PlayerRest', payload: {}}},
+  };
+  assert.throws(() => worldState.createInitialBundle({
+    rulesVersion: runtime.SCENE_RULES,
+    simulationId: 'cp1c-external-input-boundary',
+    fixtureId: bundle.snapshot.fixtureId,
+    fixtureVersion: bundle.snapshot.fixtureVersion,
+    seed: 42,
+    world: bundle.snapshot.world,
+    scheduledTasks: bundle.snapshot.scheduledTasks,
+    commands: [externalRest],
+  }, systems),
+  'scene profile has no external intent/journal support before complete replay exists');
+});
+
+test('CP1c-R11 scene world validator rejects malformed values and accessor-bearing context before reads', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const world = fixture.createSceneVillage(42, 'cp1c-validator-input',
+    fixture.defaultSceneVillageConfig('no-opportunity')).bundle.snapshot.world;
+  const violations = [];
+  let nullError;
+  try { runtime.validateSceneWorldState(null, {}); } catch (error) { nullError = error; }
+  if (nullError?.code !== 'INVALID_INPUT')
+    violations.push(`null world returned ${nullError?.code ?? nullError?.name ?? 'no error'}, expected INVALID_INPUT`);
+  let reads = 0;
+  const context = {get tick() { reads++; return 0; }};
+  let accessorError;
+  try { runtime.validateSceneWorldState(world, context); } catch (error) { accessorError = error; }
+  if (accessorError?.code !== 'INVALID_INPUT')
+    violations.push(`accessor context returned ${accessorError?.code ?? accessorError?.name ?? 'no error'}, expected INVALID_INPUT`);
+  if (reads !== 0) violations.push(`context getter invoked ${reads} time(s), expected zero`);
+  assert.deepEqual(violations, [], 'scene validator must reject invalid values before property reads');
+});
+
+test('CP1c-R12 runtime entry modules import in fresh Node processes without top-level failures', async () => {
+  const {spawnSync} = await import('node:child_process');
+  const path = await import('node:path');
+  const {fileURLToPath, pathToFileURL} = await import('node:url');
+  const root = fileURLToPath(new URL('../../', import.meta.url));
+  const failures = [];
+  for (const entry of [
+    'runtime/core/scene-runtime.mjs',
+    'runtime/core/motivation-runtime.mjs',
+    'runtime/core/command-engine.mjs',
+    'runtime/core/world-state.mjs',
+  ]) {
+    const moduleUrl = pathToFileURL(path.resolve(root, entry)).href;
+    const probe = spawnSync(process.execPath, ['--input-type=module', '-e', `await import(${JSON.stringify(moduleUrl)});`],
+      {cwd: root, encoding: 'utf8'});
+    if (probe.error) failures.push(`${entry}: child process failed to start: ${probe.error.message}`);
+    else if (probe.status !== 0) failures.push(`${entry}: fresh import exit=${probe.status}; stderr=${probe.stderr}`);
+  }
+  assert.deepEqual(failures, [], 'each entry must import in a separate fresh process');
+});
+
+test('CP1c-R13 affordable scene consumes one successful day-one BuyFood purchase', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const engine = await import('../../runtime/core/command-engine.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1c-affordable-seed42',
+    fixture.defaultSceneVillageConfig('affordable'));
+  const session = engine.createSimulationSession(bundle, systems);
+  session.advanceTicks(144);
+
+  const day = session.getBundle();
+  const world = day.snapshot.world;
+  const actor = world.actorModel.actors.find((entry) => entry.actorId === 'actor-2');
+  const estate = world.societyModel.agents.find((entry) => entry.state.actorId === 'actor-2').state;
+  const fact = day.eventLog.find((event) => event.type === 'SocietyActionCommitted' &&
+    event.payload?.actorId === 'actor-2' && event.payload?.action === 'BuyFood');
+  const receipt = fact && day.snapshot.commandReceipts[fact.commandId];
+
+  assert.equal(actor.hunger, 100, 'one ration is consumed after reducing hunger from 200');
+  assert.equal(estate.wallet, 20, 'the 10-coin purchase leaves the initial 30-coin wallet at 20');
+  assert.equal(estate.ledger.foodBought, 1);
+  assert.equal(estate.ledger.foodUsed, 1);
+  assert.ok(fact, 'a successful BuyFood must produce its committed society fact');
+  assert.ok(receipt, 'the committed fact must have its persisted command receipt');
+  assert.equal(receipt.status, 'succeeded');
+  assert.equal(receipt.result.price, 10);
+  assert.deepEqual(receipt.result.before, {communalGold: 970, inventory: {food: 0, herbs: 0}, wallet: 30});
+  assert.deepEqual(receipt.result.after, {communalGold: 980, inventory: {food: 1, herbs: 0}, wallet: 20});
+  assert.equal(canonicalJson(receipt.result), canonicalJson(fact.payload));
+});
+
+test('CP1c-R14 earn-then-buy pays once and a later-day purchase succeeds after the request window', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const engine = await import('../../runtime/core/command-engine.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1c-earn-then-buy-seed42',
+    fixture.defaultSceneVillageConfig('earn-then-buy'));
+  const session = engine.createSimulationSession(bundle, systems);
+  session.advanceTicks(288);
+
+  const day = session.getBundle();
+  const world = day.snapshot.world;
+  const estate = world.societyModel.agents.find((entry) => entry.state.actorId === 'actor-2').state;
+  const facts = day.eventLog.filter((event) => event.type === 'SocietyActionCommitted' &&
+    event.payload?.actorId === 'actor-2');
+  const work = facts.find((event) => event.tick === 144 && event.payload.action === 'WorkForPay');
+  const buy = facts.find((event) => event.tick === 288 && event.payload.action === 'BuyFood');
+
+  assert.ok(work, 'the first day must commit the available paid work');
+  assert.ok(buy, 'the day-two food purchase must remain available after the earlier request window');
+  for (const fact of [work, buy]) {
+    const receipt = day.snapshot.commandReceipts[fact.commandId];
+    assert.ok(receipt, `${fact.payload.action} must have a persisted command receipt`);
+    assert.equal(receipt.status, 'succeeded');
+    assert.equal(canonicalJson(receipt.result), canonicalJson(fact.payload));
+  }
+  assert.equal(estate.ledger.wages, 20);
+  assert.equal(estate.ledger.foodBought, 1);
+  assert.equal(estate.ledger.foodUsed, 1);
+  assert.equal(estate.wallet, 10, 'the 20-coin wage funds the 10-coin food purchase');
+  assert.equal(estate.inventory.food, 0, 'the purchased ration is consumed by the end of day two');
+});

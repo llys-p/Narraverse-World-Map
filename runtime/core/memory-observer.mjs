@@ -1,7 +1,7 @@
 // C4 pure projection/retention over committed Society and announcement facts.
 // This module does not authenticate a bundle or replace the engine's full replay audit.
 import { fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,payloadBudget } from './data-contract.mjs';
-import { validateSocietyActionResult,validateSocietyPayload } from './society.mjs';
+import { validateSocietyActionResult,validateSocietyPayload,validateSceneSocietyPayload } from './society.mjs';
 import { MAX_PERSISTENT_ACTORS } from './actors.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
@@ -20,7 +20,7 @@ const chronological=(a,b)=>a.sourceEventSeq-b.sourceEventSeq || byId(a.memoryId,
 const entry=(event,actorId,channel,importance,observable)=>({memoryId:'memory-'+event.eventSeq+'-'+actorId+'-'+channel,
   sourceEventSeq:event.eventSeq,occurrenceTick:event.tick,channel,importance,observable});
 
-function checkEvent(event){
+function checkEvent(event,version=MEMORY_OBSERVER_VERSION){
   fields(event,['schemaVersion','eventSeq','tick','type','sourceSystem','commandId','causationEventSeqs','entityIds','payload']);
   requireCondition(event.schemaVersion===1,'Unsupported memory source schema','UNSUPPORTED_VERSION');
   integer(event.eventSeq,1);integer(event.tick);identifier(event.type);identifier(event.sourceSystem);
@@ -34,7 +34,7 @@ function checkEvent(event){
     requireCondition(canonicalJson(ids)===canonicalJson(event.entityIds),'Personal source identity mismatch');
   }else if(event.type==='SocietyDaySettled'){
     requireCondition(event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0,'Invalid daily source');
-    validateSocietyPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Daily source clock mismatch');
+    (version==='memory-observer-v3'?validateSceneSocietyPayload:validateSocietyPayload)(event.payload);requireCondition(event.tick===event.payload.day*144,'Daily source clock mismatch');
   }else if(event.type==='PlayerDaySettled'){
     requireCondition(event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player source');
     validatePlayerDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Player daily clock mismatch');
@@ -68,8 +68,9 @@ function validateFoodGiftSource(event){
 export function projectActorEvent(raw,actorId,location='village'){
   return projectVersionedActorEvent(raw,actorId,location,MEMORY_OBSERVER_VERSION);
 }
+export function projectSceneActorEvent(raw,actorId,location='village'){return projectVersionedActorEvent(raw,actorId,location,'memory-observer-v3');}
 function projectVersionedActorEvent(raw,actorId,location,version){
-  identifier(actorId);requireCondition(OBSERVER_VERSIONS.includes(version),'Unknown observer version','UNSUPPORTED_VERSION');checkEvent(raw);
+  identifier(actorId);requireCondition(OBSERVER_VERSIONS.includes(version),'Unknown observer version','UNSUPPORTED_VERSION');checkEvent(raw,version);
   const event=cloneData(raw),p=event.payload;
   // D4A-CP1b: the gift projection is the donor's/recipient's own view only, channel self / importance 1.
   // Old callers pass no version and default to v1, so they keep their old [] output verbatim.
@@ -148,7 +149,7 @@ export function validateMemoryState(state){
 function sourceLog(events,observedTick,offset=0,initialActors=[],version=MEMORY_OBSERVER_VERSION){
   denseArray(events,EVENT_LIMIT);let tick=0;const commands=new Set();
   for(const [i,e] of events.entries()){
-    checkEvent(e);requireCondition(e.eventSeq===offset+i+1 && e.tick>=tick && e.tick<=observedTick,'Disordered/future memory source');tick=e.tick;
+    checkEvent(e,version);requireCondition(e.eventSeq===offset+i+1 && e.tick>=tick && e.tick<=observedTick,'Disordered/future memory source');tick=e.tick;
     if(e.type==='PlayerDaySettled')requireCondition(initialActors.some(a=>a.actorId===e.payload.actorId),'Player daily fact references unregistered observer identity');
     if(e.type==='PlayerActionCommitted')requireCondition(isLocatedObserver(version) && initialActors.some(a=>a.actorId==='actor-4'),'Player action outside observer version/roster');
     if(e.type==='SocietyActionCommitted'){
