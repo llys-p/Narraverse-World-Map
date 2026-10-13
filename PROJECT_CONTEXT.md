@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-13 08:35（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-13 09:40（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -14,57 +14,21 @@
   证据按合同分次覆盖，非旧全量重跑。
 - D3-1、D3-2、D3-3、D3-4 各自限定 PASS；D3 整体未验收。
   现有范围仅含遭遇预留内核、世界候选适配、命令会话和单狼战斗内核。
-- 当前半成品体验主要集中于旅行、买卖、休整与时间推进，以及检查器；遭遇仍没有完整的真实消费者链。
-  D3-5 未提交候选已接入真实世界推进、事件、M4 生存规则及通用 checkpoint；服务持久提交候选已接入且有有限消费者验证，CLI 候选已通过有限保存/恢复消费者验证，页面消费者候选已通过有限真实浏览器链；128命令服务预算边界与正式独立验收仍未收口；
-  不得称为完整世界遭遇、存档或 UI 接入。
+- D3-5 候选已接入真实世界推进、M4 生存规则、服务持久提交、CLI 保存/恢复及页面消费者；真实 Edge 组合链和128输入服务预算边界均有定向证据。A内部施工已结束，但独立B验收未通过，故不称D3-5已验收或正式产品接入。
 
 ## 集成基准与实际位置
 
 - 控制文档树：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`；
-  本轮起始 HEAD `3361d653a61d0ee7901426f3edd41b951017e2d6`。
-- D3 施工树：`D:\Narraverse-World-Map\hds-reservation`，
-  分支 `codex/world-runtime-d3-reservation`。
-  源码提交 `cb03e1afd3900b6748d729aaa345bfed590f90e9`；
-  交接基准 `f335abf30e3eef9d1b40a99a791a6c3c6ae962ab`。
-  源码未推送、未合入 main。
-- `f335abf` 的历史祖先关系包含 M4 最终提交 `115e256`；只读核对发现相对 M4 基线新增四个 `runtime/core/encounter*.mjs` 文件，M4 生产 Git blob 相同。
-  部分检出文件因 CRLF 无法直接比较原始字节，三模块 normalized-LF 指纹相符；这仍是候选基线，不代表 D3 已接入或整体验收。
-  此前接入缺口是规则/快照版本不兼容（D3-5 核心段已新增专属规则/schema3，服务仍待接入）：D3-3 使用 `PLAY_RULES` / `d-player-v2`，
-  frame 使用 `memory-config-v4`、`player-state-v2`；M4 服务使用
-  `SURVIVAL_RULES` / `m-survival-v1`。
+  本轮改写前 HEAD `9baf3d636b0c6e30e678aeacf754904e93225e35`；改写前完整状态见上方保留的 `3361d653` 快照链接。
+- D3 施工树：`D:\Narraverse-World-Map\hds-reservation`，分支 `codex/world-runtime-d3-reservation`；A基准 `f335abf30e3eef9d1b40a99a791a6c3c6ae962ab`，当前冻结源码 HEAD `2ecfc0cd5c8991d57053e2e04c17a312469ef96f`，未推送、未合入 main、未部署。
+- 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
 
-- 当前收口：UI 真实 Edge 组合用例1/1通过、0 fail/skip、92.5s，涵盖地图交易拒绝后新意图、旅行/Begin/攻击、刷新导航/同目录重开、双页409、丢响应刷新后原DTO重试、取消及旧profile DTO2；八个源/test指纹已读回，原始二攻receipt与投影相符，PageError0、仅两项精确故意网络事件，四TEMP目录/测试PID已清。新风险为格式8初始存档占1文件使128输入限额少1，已安排原service两代理仅owner与A service-test红绿返修（UI代码冻结）。CLI4/4+旧clock1/1及reader补丁后预算门1/1、服务6项及旧parser修复窄复验3/3证据保留。源码未提交/推送，正式B未开工，D3-5未整体验收。
-
-- 最新R3：DSH 已停止，用户授权的 Codex 性价比子代理临时返修已结束。补时重演 replay10/10、合法混合续跑/锚点篡改通过；实际 TEMP checkpoint ACTIVE 保存/load/续攻完整 bundle 相等（format1），HTTP owner 重开未验。临时 Rest 保留本人 food plan 修正，真实三日链与新 health Goal 同日组合2/2通过，旧 planner36/36通过；旧profile继续原取消/新建计划链。六文件最终 SHA256 中控读回相等，源码仍未提交。B只修fixture解包/真实路径并通过语法，未完整验收。后续service/CLI/UI见当期活动记录，正式B尚未开工，A/D3-5未验收。证据 artifacts/world-runtime-d35-r3-review-20261012/codex-rest-result.json；下列旧活动记录仅历史。
-
-- 用户反馈核心任务陷入反复读取/压缩后的重新分析；已准备[上下文恢复短卡](tasks/D3-5-RECOVERY-CARD.md)，只作为既有A内部指令，尚未确认送达。优先新短上下文工人和最小真实依赖闭包，旧写者终态前不重派；完整集成范围与B门不减。最新深层探针确认v4玩家tick6死亡已接受、旧v3仍拒绝；顶层与真实遭遇未验。
-
-- 观察在途施工：用户已确认包工头仍在输出或使用工具，继续原会话/原工人，目标保持active，不因等待重启未知写者。Relay仍无该会话的活动run（旧67fc8b67已终态），无法追加管理消息；这是受管接口缺口，不证明工人停止。自动审批拒绝将目标blocked，故只作有界观察，待真实finished/可接回管理轮后再续派。核心fixture仍缺，A/B未交付/未验收。模型目录复核Global DeepSeek V4.1 Flash标注x0.00，实际工人费用仍未返回。
-  本地接手证据：`artifacts/world-runtime-d35-hour-review-20261012/repair-workers-latest.json`；新增旧五配方初始化边界5/5通过仅覆盖tick0，证据`legacy-five-recipe-initialization.json`，不代替D3-5验收。
-- D3-5当前核心段需内部修正（2026-10-12）：初版新runtime及30项绿测采用简化影子世界，未消费真实snapshot/actorModel/日结/重演；中控拒绝将其记为核心接入PASS，包工头已亲核P0属实。先修正为真实消费者再对接service/UI，合同d13a897不降低；具体审查 artifacts/world-runtime-d35-hour-review-20261012/core-review.json。 追加深层反例：v4玩家tick6死亡仍被旧日界上界误拒，证据actor-v4-midday-probe.json；预留狼日结边界探针通过。A合同rev3只勘误总活狼路径为ecologyModel.populations.wolves并明确死亡约束，未改源码或验收门。
-
-- D3-5实施与独立验收两份任务已发布，合同d3-playable-encounter-v1；现有DSH包工头已派首波两路，当前尚无完整交付/验收。
-  精确任务发布SHA `d13a89768c652f74c0c4278eea4f227cf4660a98`，代码基准 `f335abf`；完整窄场景A内部三消费者检查点，B独立验收。
-- [D3-5A 实现与公共合同](tasks/D3-5A-PLAYABLE-ENCOUNTER-TASK.md) · [D3-5B 独立验收](tasks/D3-5B-INDEPENDENT-ACCEPTANCE-TASK.md)。
-  字段、接口、版本号、白名单与跨日/幂等/发布边界已冻结；B真实运行等待中控给出A精确交付SHA，不使用浮动HEAD。
-- D4：预规划已细化为村庄赠粮→本人立即记忆→保存/返回→双页签验收；只有 A 实现/B 独立验收两份未来任务。补充同地点可见性、赠粮不自动涨 trust、双边资产来源账与六检查点，未发布、未开工；待 D3-5 完整验收后钉定 SHA 与版本，见[架构 D4 预规划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md#d4-scene-continuity-plan)。
-- 本轮冻结新profile `encounter-survival-village` / rules `d-encounter-survival-v1`；snapshot3/DTO3/receipt3 核心候选已实现；服务 format8 候选已接入且限定验证，整体未验收。
-  保留旧 profiles 与旧存档行为，不自动迁移；集成基准候选为 `f335abf`。
-  两份实施任务书已发布；旧版本行为/存档保持，M4当前体验实例不改动。
-- 按包工头 2026-10-12 07:42 原生回执，旧首波工人已结束；修正工人 `e617810b` 负责真实 fixture/Runtime 六文件，`7d81bbbe` 负责真实消费者测试，尚未收到 finished；这不是当前整单交付。
-  父 run `fa0a5038-382b-468e-ae92-9bb7348e10b9` 已结束且全文已消费；后台工人状态不能由父 run succeeded 推定。
-  范围补充发布 SHA `f667adfcc47e1c470df9687eb2053906d83c3230` 仅增加 mind-runtime 对新 memory v5 的兼容；旧 ACTOR/HUNTER 规则版本门仍冻结。
-- 旧候选 `520e838` 不作为当前 M4 反例。
-  最终证据还需确认“已承诺购粮计划与紧急休息相遇”的跨规则覆盖；
-  此前两条相邻用例不能单独证明组合场景通过。
-- D3-4 冻结 HP 与 M4 角色死亡日界规则还有边界：现 validator 只允许
-  `deathTick % 144 === 0`；接入方案需隔离新规则 profile，不能把当前冻结 HP
-  状态直接用于跨日权威状态。
-- 体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 M4 独立实验入口
-  `http://127.0.0.1:18324/`。端口运行状态可能变化，由体验线现场核实；
-  控制文档工作不启停该入口。
+- D3-5A 生产候选在冻结源码 `2ecfc0c` 上已有真实服务、CLI、持久化预算及浏览器消费者证据：服务6/6、旧parser窄回归3/3；CLI窄测4/4、旧clock-smoke 1/1、有界reader 1/1；Edge组合用例1/1（92.5秒）；新profile metadata负例1/1。format8 128条输入/129个正式service文件边界1/1（269秒），第129个新ID拒绝、幂等重试与关闭重开通过；旧profile 128文件上限1/1（127条真实命令，887.98秒）。相关源文件哈希和原始证据在各执行回执与测试文件中核验。
+- A 服务/CLI/UI内部施工已结束；B1完整独立验收15项中10通过、5失败、0跳过（503.788秒）；五个失败正在核对测试构造与字段口径，当前仍未通过。B2仍在运行，B3只有helper语法准备，尚未验收。下一步为定向补验B1五红，再完成B2、B3及整体门槛；D3-5和D3整体均未验收，源码未推送、未合入main、未部署。
+- D4仍是预规划：村庄赠粮→本人立即记忆→保存/返回→双页签验收；仅有未来A实现/B独立验收任务构想，未发布、未开工。须等D3-5验收后再钉定SHA与版本，见[架构 D4 预规划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md#d4-scene-continuity-plan)。
+- 更早的R3、DSH停工与接管过程、旧候选拒收和上下文恢复等活动流水压缩为历史；本地证据相对路径：`artifacts/world-runtime-d35-hour-review-20261012/repair-workers-latest.json`、`artifacts/world-runtime-d35-r3-review-20261012/`。历史状态不代表当前验收结论。
 
 ## 证据入口
 
@@ -75,6 +39,7 @@
   [D3-2 世界候选](tasks/D3-2-ENCOUNTER-WORLD-TASK.md) ·
   [D3-3 命令会话](tasks/D3-3-ENCOUNTER-SESSION-TASK.md) ·
   [D3-4 战斗内核](tasks/D3-4-ENCOUNTER-COMBAT-TASK.md)
+- [D3-5A 实现与公共合同](tasks/D3-5A-PLAYABLE-ENCOUNTER-TASK.md) · [D3-5B 独立验收](tasks/D3-5B-INDEPENDENT-ACCEPTANCE-TASK.md)；发布SHA：A `d13a89768c652f74c0c4278eea4f227cf4660a98`、范围补充 `f667adfcc47e1c470df9687eb2053906d83c3230`、合同rev3 `c83492dfb56b98bfdd1976196929c2d97f1f35db`。
 - 本轮前旧版完整历史与细节：控制仓库快照 [3361d653](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
   历史日期结论只代表当时证据范围，不替代当前合同或源码核验。
 
@@ -83,12 +48,11 @@
 - 总方向与架构由“GPT6 Astra world Map总负责人”对话负责；
   日常派工、回执与验收由“世界运行 主线 发布任务”对话负责。
   具体交接使用当前源码 SHA、合同和证据索引。
-- DSH 沿用既有包工头会话：[包工头](http://127.0.0.1:19387/?sessionId=session-2564efe0-949b-48ed-90a5-f7f7feb9cbce)。
-  体验结论由上列体验对话核实。
+- DSH 包工头链接仅作历史交接入口，当前 D3-5 施工已由授权的 Codex 子代理完成；体验结论仍由对应体验对话核实。
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)，
   owner `llys-p`，project #2；状态变化需读回并链接证据。
   正式平台 Project #1 独立维护。
 - 本轮合同 rev3 勘误 `c83492dfb56b98bfdd1976196929c2d97f1f35db` 已推送并读回；D4 预规划 `cb0067a` 已保存，未派发。
-  D卡正文已同步核心内部修正、v4死亡反例与D4预规划；D仍进行中，全部单选字段及其它61卡不变，项目简介本轮未改。
-  最新看板读回：`artifacts/world-runtime-d35-r3-review-20261012/board-service-verification.json`；同目录保存反例与原生修正回执。
+  D卡正文同步A冻结与B待验状态；D仍进行中，全部单选字段及其它61卡不变，项目简介本轮未改。
+  最新看板读回：`artifacts/world-runtime-d35-r3-review-20261012/board-b-start-verification.json`；同目录保存反例与原生修正回执。
   旧接入边界方案标为冻结前历史，不以其“待冻结”措辞阻塞正式A/B合同；源任务副本与控制树逐文件指纹相等。
