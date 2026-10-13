@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-13 08:03（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-13 08:05（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -15,7 +15,7 @@
 - D3-1、D3-2、D3-3、D3-4 各自限定 PASS；D3 整体未验收。
   现有范围仅含遭遇预留内核、世界候选适配、命令会话和单狼战斗内核。
 - 当前半成品体验主要集中于旅行、买卖、休整与时间推进，以及检查器；遭遇仍没有完整的真实消费者链。
-  D3-5 未提交候选已接入真实世界推进、事件、M4 生存规则及通用 checkpoint；服务持久提交候选已接入且有有限消费者验证，CLI、页面消费者仍未完成；
+  D3-5 未提交候选已接入真实世界推进、事件、M4 生存规则及通用 checkpoint；服务持久提交候选已接入且有有限消费者验证，CLI 候选已通过有限保存/恢复消费者验证，页面消费者仍未完成；
   不得称为完整世界遭遇、存档或 UI 接入。
 
 ## 集成基准与实际位置
@@ -35,9 +35,9 @@
 
 ## 活动工作、阻塞与下一步
 
-- 当前 CLI 检查点开工：同一 Codex core 工人只写 simulation-runner.mjs，测试工人只追加 encounter-replay.test.mjs（保留原10项）；新flag/days0红门已实测，继续真实输入、ACTIVE保存/恢复及连续路线对照。服务候选四投影/format8/owner重开新测试6/6先绿；直接旧服务21项20过1红，通用parser默认版本边界已修，旧红点及新parser/HTTP窄复验3/3通过（未重复其余旧绿项）。服务代码当前冻结，源码未提交，UI及正式B待完成，A/D3-5未验收。
+- 当前 UI 检查点已派工：新短上下文 d35_ui_core（gpt-6-luna high）负责场景三文件、地图窄接入与新profile静态白名单；d35_ui_tests 同模型仅新增 encounter-ui.test.mjs，使用既有隔离 Edge/Playwright、port0/TEMP。先真实静态 RED，后地图→遭遇/刷新导航/重开/双页签409/丢响应同ID重试。CLI 新消费者4/4、旧clock1/1通过，有界读取补丁后错误/预算窄复验1/1通过；原10重演未重复跑，runner/test最终指纹已读回。服务6项先绿、旧parser红点修复后3项窄复验通过。UI未交付/验证，正式B待精确完整A SHA，施工源码未提交或推送。
 
-- 最新R3：DSH 已停止，用户授权的 Codex 性价比子代理临时返修已结束。补时重演 replay10/10、合法混合续跑/锚点篡改通过；实际 TEMP checkpoint ACTIVE 保存/load/续攻完整 bundle 相等（format1），HTTP owner 重开未验。临时 Rest 保留本人 food plan 修正，真实三日链与新 health Goal 同日组合2/2通过，旧 planner36/36通过；旧profile继续原取消/新建计划链。六文件最终 SHA256 中控读回相等，源码仍未提交。B只修fixture解包/真实路径并通过语法，未完整验收。后续service/CLI见当期活动记录，UI/正式B尚未开工，A/D3-5未验收。证据 artifacts/world-runtime-d35-r3-review-20261012/codex-rest-result.json；下列旧活动记录仅历史。
+- 最新R3：DSH 已停止，用户授权的 Codex 性价比子代理临时返修已结束。补时重演 replay10/10、合法混合续跑/锚点篡改通过；实际 TEMP checkpoint ACTIVE 保存/load/续攻完整 bundle 相等（format1），HTTP owner 重开未验。临时 Rest 保留本人 food plan 修正，真实三日链与新 health Goal 同日组合2/2通过，旧 planner36/36通过；旧profile继续原取消/新建计划链。六文件最终 SHA256 中控读回相等，源码仍未提交。B只修fixture解包/真实路径并通过语法，未完整验收。后续service/CLI/UI见当期活动记录，正式B尚未开工，A/D3-5未验收。证据 artifacts/world-runtime-d35-r3-review-20261012/codex-rest-result.json；下列旧活动记录仅历史。
 
 - 用户反馈核心任务陷入反复读取/压缩后的重新分析；已准备[上下文恢复短卡](tasks/D3-5-RECOVERY-CARD.md)，只作为既有A内部指令，尚未确认送达。优先新短上下文工人和最小真实依赖闭包，旧写者终态前不重派；完整集成范围与B门不减。最新深层探针确认v4玩家tick6死亡已接受、旧v3仍拒绝；顶层与真实遭遇未验。
 
