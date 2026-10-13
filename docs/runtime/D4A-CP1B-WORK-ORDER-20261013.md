@@ -30,13 +30,14 @@
 - getter=0、稀疏/异类/非 JSON 等按现有 descriptor-first 路径拒绝；不要先调用 getter 再补校验。
 - 停止：记忆层空状态 + 新赠粮事实的 reducer/历史投影 + 最小反例全通过。此轮不创建 scene fixture / bundle，不接 executeSceneIntent、Gift 资产提交、世界事件分派、CLI/HTTP/UI；这些属于后继最小闭包，不写桩伪装通过。
 
-## 测试和团队
+## 执行方式：用户指定新独立对话，无子代理
 
-- 包工头负责两个可见板卡：CP1b-T 独立期望测试、CP1b-C 两个记忆模块实现。优先真实子代理，免费 workbuddy-global/deepseek-v4.1-flash high；另一免费路由只按运行册获准探测一次，不转 SG/付费/Astra。
-- 测试先加在现有 scene-gift-runtime.test.mjs，保留 14 条原断言，仅新增本卡断言，先跑并保存真 RED；独立手算 expected，不复制实现输出。测试作者单独拥有测试文件。
-- 核心写者只拥有两个 memory 文件，测试作者已完成后核心开始；核心不得修改测试凑绿。包工头核真实文件与日志，不把 spawn started 当 finished。
-- subagent 无可用终态时记录 workerId/路由 unknown 和具体故障，不默默亲任两个角色、不连续重复创建。完成已知证据后向 Codex 返回阻碍。
+- 用户于2026-10-13明确改为 workbuddy-global/hy4-preview-f High，在一个新 DSH 对话直接执行。不复用旧包工头长上下文，不创建/调用任何子代理；此条覆盖母合同与旧工单的测试工人/核心工人分离要求，仅调整执行组织，不降低业务验收。
+- 同一主对话顺序完成：先写新增测试并保留真 RED → 冻结测试 hash → 修改两个 memory 模块 → 跑 GREEN 与直接回归。独立验收仍由 Codex 进行，禁止自称独立作者测试。
+- 测试只追加现有 scene-gift-runtime.test.mjs 的 CP1b 用例，原14条不删改/skip；expected依据合同独立手算。实现后如确需修 fixture 错误，记录原失败、具体错误及新旧测试hash，不改期望凑绿。
+- 每次阶段转换或工具失败，在本单证据目录保存 CP1B-CHECKPOINT.md：目录/分支/基准、当前文件hash、已做/未做、读过路径、下一条具体命令、错误原文、测试进程是否仍活。避免压缩后从头读；额度/502时不自动换模型或开新代理，保留当前对话，用户可手动切模型在同一对话继续。
+- 原生任务板可登记一个 CP1b 主任务，阶段清单留在该卡；没有原生板能力则不伪造 task ID。工单路径和会话链接作为可见入口。
 - 同一写域没有 verified stopped 不换写者。最多并发1。连续两轮重复阅读/15分钟无实质进展则保存检查点并报告具体缺口，不重新全文分析。
 - 默认仅跑新增 CP1b 名称成员及 memory-observer.test.mjs / memory-runtime.test.mjs；若本单触及旅行分派，再加 memory-engine 的相关旅行成员。可 node 文件直接运行以避免 --test 进程 EPERM；不要降级断言或 skip required。
-- RED/GREEN 精确代码与测试 hash、原始 TAP/exit/count、各任务原生 ID 与 stopped/finished 证据写本单证据目录。停止时报告目录/分支/基准/精确 diff/读过路径/下一具体命令/PID 活性。测试没有失败不等于完整 Gift 或 D4A 完成。
+- RED/GREEN 精确代码与测试 hash、原始 TAP/exit/count、本主对话原生 run/session ID 与 stopped/finished 证据写本单证据目录。停止时报告目录/分支/基准/精确 diff/读过路径/下一具体命令/PID 活性。测试没有失败不等于完整 Gift 或 D4A 完成。
 - 不 commit/push/merge/deploy/reset/clean，不启停18324/用户Edge，不读凭据。额外白名单缺口带最小调用链报 Codex裁定。任务相关公共研究可用，但不登录/上传/外部写入。
