@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-13 22:21（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-13 22:32（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -17,6 +17,8 @@
 - D3-5 候选已接入真实世界推进、M4 生存规则、服务持久提交、CLI 保存/恢复及页面消费者。A施工及 B1/B2/B3 共28个独立验收成员已分批覆盖：B2按2项既绿+原3红补验+本轮2项新增/扩展门=7项；root限定裁定D3-5 G1–G8 PASS。非一次28/28运行，不代表D3整体或正式平台接入。见[D3-5B复核](docs/runtime/D3-5B-REVIEW-20261013.md)。
 
 ## 集成基准与实际位置
+
+- 最新源码已按用户要求推送至 GitHub 分支 `codex/world-runtime-d4-cp1a-review`：提交 [ba43118f096dabdc877a5ac39f7af3fa154becea](https://github.com/llys-p/Narraverse-World-Map/commit/ba43118f096dabdc877a5ac39f7af3fa154becea)，远端 SHA 读回一致；CP1c/CP1d及其祖先已随该分支可达。没有合入main或部署。执行树 `origin` 仍指本机clone，本次以 GitHub HTTPS URL 显式推送。旧报告中的未推送措辞是各次验收时的历史状态。
 
 - 控制文档树：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`；
   本轮改写前 HEAD `664b8ef3b598a1cf41fe86bba537f51a5101c3de`；改写前完整状态见上方保留的 `3361d653` 快照链接。
