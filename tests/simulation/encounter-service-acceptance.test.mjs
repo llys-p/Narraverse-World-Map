@@ -956,6 +956,93 @@ test('G6 输入预算 MAX_SERVICE_COMMANDS=128：128 条领域拒绝 receipt，1
   }
 });
 
+test('G6 owner link EACCES：真实日结候选失败不泄漏四投影或磁盘，原 DTO 重试恰提交一次', { timeout: GATE_TIMEOUT_MS }, async () => {
+  const directory = path.join(tempDir('owner-durable-failure'), 'world');
+  fs.mkdirSync(directory, { recursive: true });
+  let injectLinkFailure = false;
+  let failureInjected = false;
+  let candidateAtLink = null;
+  const io = new Proxy(fs.promises, {
+    get(target, property) {
+      if (property === 'link') return async (temporary, official) => {
+        if (injectLinkFailure && !failureInjected) {
+          const candidate = JSON.parse(await fs.promises.readFile(temporary, 'utf8'));
+          candidateAtLink = { temporary, official, envelope: candidate };
+          failureInjected = true;
+          const error = Object.assign(new Error('injected owner link failure'), { code: 'EACCES' });
+          throw error;
+        }
+        return Reflect.get(target, property, target)(temporary, official);
+      };
+      const value = Reflect.get(target, property, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    },
+  });
+  let owner = await createRuntimeOwner({ directory, profile: PROFILE, seed: 42, writable: true }, io);
+  const officialBytes = () => {
+    const names = fs.readdirSync(directory)
+      .filter((name) => /^(?:checkpoint|service-commit)-r(?:0|[1-9][0-9]*)\.json$/.test(name)).sort();
+    return Object.fromEntries(names.map((name) => [name, fs.readFileSync(path.join(directory, name))]));
+  };
+  const views = () => ({
+    snapshot: owner.getSnapshot(), player: owner.getPlayer(), mind: owner.getMindInspector(), encounter: owner.getEncounter(),
+  });
+  const beforeViews = views();
+  const beforeDisk = officialBytes();
+  const r0 = JSON.parse(beforeDisk['service-commit-r0.json'].toString('utf8'));
+  const originalDto = dto('d35b-owner-link-eacces-day144', 0, 'AdvanceTime', { ticks: 144 });
+  try {
+    injectLinkFailure = true;
+    await assert.rejects(owner.submit(originalDto), (error) => error.code === 'SAVE_FAILED' && error.cause?.code === 'EACCES',
+      'owner 提交必须将真实 link EACCES 作为 durable SAVE_FAILED 返回');
+    assert.equal(failureInjected, true, '故障只能在已初始化后、真实候选发布 link 时注入');
+    assert.ok(candidateAtLink && candidateAtLink.official.endsWith('service-commit-r144.json'),
+      '注入发生在真实 AdvanceTime 144 候选 commit 的正式发布路径');
+    const candidate = candidateAtLink.envelope;
+    assert.equal(candidate.bundle.snapshot.tick, 144, 'pre-link 候选必须来自真实 tick 144 推进');
+    assert.ok(candidate.bundle.eventLog.length > r0.bundle.eventLog.length, 'pre-link 候选必须包含新增世界事件');
+    const npcFacts = candidate.bundle.eventLog.filter((event) =>
+      event.type === 'SocietyDaySettled' && event.tick === 144);
+    assert.equal(npcFacts.length, 1, '候选必须含真实 day-1 日结/NPC 决策事实');
+    assert.ok(JSON.stringify(npcFacts[0].payload).length > 2, '真实日结事实必须带业务 payload');
+    const npcDecisions = npcFacts[0].payload.agents.filter((agent) => agent.decision && typeof agent.decision.action === 'string');
+    assert.ok(npcDecisions.length > 0, '真实 day-1 SocietyDaySettled payload 必须包含至少一条 NPC decision/action');
+    assert.ok(!r0.bundle.eventLog.some((event) => event.type === 'SocietyDaySettled' && event.tick === 144),
+      '旧 r0 必须尚无候选 day-1 日结/NPC 决策事实');
+    assert.notDeepEqual(candidate.bundle, r0.bundle, '候选完整世界必须确实不同于 r0');
+    assert.notDeepEqual(candidate.bundle.snapshot.rng, r0.bundle.snapshot.rng, '候选 RNG 必须已真实推进');
+    assert.deepEqual(views(), beforeViews, 'link 失败后四个缓存投影必须逐字段保持 r0');
+    assert.deepEqual(officialBytes(), beforeDisk, 'link 失败后所有正式磁盘文件字节必须仍是 r0');
+    const stillR0 = JSON.parse(officialBytes()['service-commit-r0.json'].toString('utf8'));
+    assert.deepEqual(stillR0.bundle, r0.bundle, '失败后完整旧 r0 bundle/NPC/RNG 仍不变');
+    assert.deepEqual(stillR0.commands, r0.commands, '失败后完整旧 r0 receipt/journal 仍不变');
+
+    injectLinkFailure = false;
+    const receipt = await owner.submit(originalDto);
+    assert.equal(receipt.status, 'committed');
+    assert.equal(receipt.outcome, 'succeeded');
+    assert.deepEqual(receipt, candidate.commands.at(-1).receipt,
+      '修复 I/O 后必须用同一原始 DTO 提交候选 receipt');
+    const committedViews = views();
+    const published = JSON.parse(fs.readFileSync(path.join(directory, 'service-commit-r144.json'), 'utf8'));
+    assert.deepEqual(published.bundle, candidate.bundle, '重试发布完整候选世界');
+    assert.equal(published.commands.length, 1, '真实 AdvanceTime DTO 只记入一次 receipt');
+    await owner.close();
+    owner = await createRuntimeOwner({ directory, writable: true }, io);
+    assert.deepEqual(views(), committedViews, '同目录重开必须恢复成功提交后的完整四个投影');
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(directory, 'service-commit-r144.json'), 'utf8')).bundle,
+      candidate.bundle, '同目录重开后的正式 world bundle 必须完整相等');
+    console.log('[D3-5B evidence][service] ' + JSON.stringify({
+      gate: 'G6-owner-link-eacces', pid: process.pid, dataDir: directory,
+      candidateTick: candidate.bundle.snapshot.tick, npcDayFacts: npcFacts.length, npcDecisionFacts: npcDecisions.length,
+      originalDto: originalDto.commandId, retryReceipt: receipt, reopenedRevision: owner.getSnapshot().revision,
+    }));
+  } finally {
+    injectLinkFailure = false;
+    await owner.close();
+  }
+});
+
 test('G6 format-8 owner queue 满时 prior DTO 仍幂等，new DTO 受限且 ID conflict 优先', { timeout: GATE_TIMEOUT_MS }, async (t) => {
   const directory = path.join(tempDir('owner-full-queue'), 'world');
   fs.mkdirSync(directory, { recursive: true });
@@ -1088,6 +1175,53 @@ test('G7 checkpoint 固定路径重开完整 snapshot/eventLog、业务文件字
     ['wolf-150-to-0-full-replay', (envelope) => { modelOf(envelope).encounter.wolfHealth = 0; }],
     ['reservation', (envelope) => { ecologyOf(envelope).reservedWolves = 0; }],
     ['rules-version', (envelope) => { modelOf(envelope).version = 'encounter-runtime-v0-unknown'; }],
+    ['input-history-dto', (envelope) => {
+      const travel = envelope.snapshot.world.encounterModel.inputHistory.find((entry) => entry.dto.commandId === inputs[0].commandId);
+      assert.ok(travel, '正式 snapshot.world.encounterModel.inputHistory 必须包含 Travel DTO');
+      travel.dto.payload.destination = 'village';
+    }],
+    ['journal-receipt-number', (envelope) => {
+      const travel = envelope.snapshot.world.encounterModel.inputHistory.find((entry) => entry.dto.commandId === inputs[0].commandId);
+      assert.ok(travel, '正式 inputHistory 必须包含 Travel receipt');
+      travel.receipt.tick += 1;
+    }],
+    ['earlier-wrong-cause-reference', (envelope) => {
+      const travelFact = envelope.eventLog.find((event) => event.commandId === inputs[0].commandId);
+      const attackFact = envelope.eventLog.find((event) => event.commandId === inputs[2].commandId);
+      assert.ok(travelFact && attackFact && attackFact.eventSeq > travelFact.eventSeq,
+        '正式 eventLog 必须有先行 Travel 与后续 Attack 事实');
+      assert.ok(Array.isArray(attackFact.causationEventSeqs), 'Attack 事实必须具有正式 causationEventSeqs 数组');
+      assert.ok(!attackFact.causationEventSeqs.includes(travelFact.eventSeq), 'Travel 事实不是 Attack 的合法语义 cause');
+      attackFact.causationEventSeqs = [travelFact.eventSeq];
+    }],
+    ['event-payload-legal-shape', (envelope) => {
+      const attackFact = envelope.eventLog.find((event) => event.commandId === inputs[2].commandId);
+      assert.ok(attackFact?.payload?.receipt?.result?.after, '正式 Attack event payload 必须含 receipt.result.after');
+      assert.equal(attackFact.payload.receipt.result.after.wolfHealth, 150, '合法基线 attack wolfHealth 为 150');
+      attackFact.payload.receipt.result.after.wolfHealth = 300;
+    }],
+    ['snapshot-rules-version-legal-old', (envelope) => {
+      assert.equal(typeof envelope.snapshot.rulesVersion, 'string', '正式 snapshot 必须含 rulesVersion');
+      envelope.snapshot.rulesVersion = 'm-survival-v1';
+    }],
+    ['memory-config-version-legal-old', (envelope) => {
+      const config = envelope.snapshot.world.memoryModel.config;
+      assert.ok(config && Object.hasOwn(config, 'version'), '正式 world.memoryModel.config 必须有 version 字段');
+      assert.equal(typeof config.version, 'string');
+      config.version = 'memory-config-v4';
+    }],
+    ['rng-state-valid-uint32-wrong', (envelope) => {
+      const state = envelope.snapshot.rng.state;
+      envelope.snapshot.rng.state = (state + 1) >>> 0;
+      assert.ok(Number.isInteger(envelope.snapshot.rng.state) && envelope.snapshot.rng.state >= 0 && envelope.snapshot.rng.state <= 0xffffffff);
+      assert.notEqual(envelope.snapshot.rng.state, state);
+    }],
+    ['scheduler-next-due-tick-valid-integer-wrong', (envelope) => {
+      const task = envelope.snapshot.scheduledTasks[0];
+      assert.ok(task && Number.isSafeInteger(task.nextDueTick) && task.nextDueTick > envelope.snapshot.tick);
+      task.nextDueTick += 1;
+      assert.ok(Number.isSafeInteger(task.nextDueTick) && task.nextDueTick > envelope.snapshot.tick);
+    }],
   ];
   const tamperResults = {};
   for (const [label, mutate] of cases) {
@@ -1100,6 +1234,8 @@ test('G7 checkpoint 固定路径重开完整 snapshot/eventLog、业务文件字
     const result = runCli({ outDir: tamperOut, resume: tamperPath });
     tamperResults[label] = { exit: result.status, stderrTail: (result.stderr || '').slice(-200) };
     assert.notEqual(result.status, 0, `G7: ${label} 必须被 checkpoint 完整 replay 拒绝。${cliEvidence(label, result)}`);
+    assert.match(`${result.stdout}\n${result.stderr}`, /ERROR (?:INVALID_CHECKPOINT|UNSUPPORTED_VERSION):/,
+      `G7: ${label} 必须明确报告 checkpoint/version 错误码，不能只依赖任意非零退出。${cliEvidence(label, result)}`);
   }
   console.log('[D3-5B evidence][service] ' + JSON.stringify({
     gate: 'G7-checkpoint', pid: null, port: null, dataDir: outDir, checkpoint, reopenExit: run2.status, tamperResults,
