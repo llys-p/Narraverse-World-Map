@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-13 17:50（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-13 19:02（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -27,14 +27,14 @@
 
 - D3-5A 生产候选在 `2ecfc0c` 主体上已有真实服务、CLI、持久化预算及浏览器消费者证据：服务6/6、旧parser窄回归3/3；CLI窄测4/4、旧clock-smoke 1/1、有界reader 1/1；Edge组合1/1（92.5秒）；新profile metadata负例1/1。format8 128输入/129正式service文件边界1/1（269秒）；旧profile 128文件上限1/1（127条真实命令，887.98秒）。这些是既有定向回执，不代表新候选整体验收。
 - B1 15项、B2 7项（2+3+2）、B3 6项共28个独立成员已分批通过、无skip；并非一次28/28。B2新增 owner durable-failure 与G7共11种checkpoint变体均通过。原失败记录与定向补验保留，见[D3-5B复核](docs/runtime/D3-5B-REVIEW-20261013.md)。A唯一源码行为修复为 `d22c730` 的 owner queue 幂等优先级及回归；B测试候选提交 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb` 仅改B2测试。源码未推送、未合入main、未部署；D3整体未验收。
-- D4 合同 `d4-scene-continuity-v1` 已冻结：基准 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb`；[A 村庄赠粮与本人记忆](tasks/D4A-SCENE-GIFT-MEMORY-TASK.md)、[B 独立验收](tasks/D4B-SCENE-CONTINUITY-ACCEPTANCE-TASK.md)。CP1a原交付NEED REVISION，经中控隔离修正/补验后限定PASS；D4A整体未完成，CP1b工单已按用户要求改为新DSH主对话直接施工（无子代理）；HY4首轮明确额度耗尽，待用户在同一对话切模型续作；B仍等完整A交付。任务书共同发布提交见本轮控制 Git 及看板链接，不引用未提交源码。
-- D4A 当前基准树 `D:\Narraverse-World-Map\hds-d4-cp1a-review` @ `codex/world-runtime-d4-cp1a-review`，本地检查点 `c84d57d5b5fc4628fe5cb59986528574e924c4de`（父f7699fb，恰3core+1A测试，未push/main/deploy）。修复收粮库存恒等式/非actor-2接收限制/ownership预检；新14/14、hunter9/9、society8/8及旧6组初态/日结完整组件字节配对通过。见[D4A CP1a复核](docs/runtime/D4A-CP1A-REVIEW-20261013.md)。
+- D4 合同 `d4-scene-continuity-v1` 已冻结：基准 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb`；[A 村庄赠粮与本人记忆](tasks/D4A-SCENE-GIFT-MEMORY-TASK.md)、[B 独立验收](tasks/D4B-SCENE-CONTINUITY-ACCEPTANCE-TASK.md)。CP1a原交付NEED REVISION，经中控隔离修正/补验后限定PASS；D4A整体未完成，CP1b原候选经独立反例发现缺口，中控修正后记忆层限定PASS；D4A整体仍未完成；B仍等完整A交付。任务书共同发布提交见本轮控制 Git 及看板链接，不引用未提交源码。
+- D4A 当前基准树 `D:\Narraverse-World-Map\hds-d4-cp1a-review` @ `codex/world-runtime-d4-cp1a-review`，CP1a检查点 `c84d57d5b5fc4628fe5cb59986528574e924c4de`（父f7699fb，恰3core+1A测试，未push/main/deploy）。修复收粮库存恒等式/非actor-2接收限制/ownership预检；新14/14、hunter9/9、society8/8及旧6组初态/日结完整组件字节配对通过。见[D4A CP1a复核](docs/runtime/D4A-CP1A-REVIEW-20261013.md)。
 - 原DSH执行树 `hds-d4-scene`及交付/evidence保留，lead自办测试和源码已报偏差，task-27不存在；旧worker bed77884无核实终态，同文件写权不移交。后续只从隔离修正SHA接续；CP1b限定memory/observer新版本与记忆层空态/事实投影（不等于完整bundle或真实Gift），再世界创建与真实Gift/记忆，不重启旧写者或擅修回执中的旧页面问题。
-- CP1b内部工单见[记忆层短单](docs/runtime/D4A-CP1B-WORK-ORDER-20261013.md)。2026-10-13用户改为HY4新主对话直接写测，不开子代理，Codex仍独立验收；会话 `session-6cf8399a-8195-4893-9c2f-38d62238e2d3`，[可切模型续作入口](http://127.0.0.1:19387/?sessionId=session-6cf8399a-8195-4893-9c2f-38d62238e2d3)。run `2539e6c3-75dc-465f-a23b-5ca30b0dcf6b` 已accepted后failed，原生code14018/Credits exhausted；无新交付或源码改动。旧Flash失败/Step-5审批拒绝为历史，Step-5未调用。原生会话已创建；内置浏览器阻止localhost，页面可视状态未核实。
+- CP1b已限定PASS：[记忆层复核](docs/runtime/D4A-CP1B-REVIEW-20261013.md)。新基准同一独占树 `c4ac067a3debe6d104a7b0d85672c442184e4972`（父c84，恰2memory+已有A测试，未push/main/deploy）。修正即时gift时间/时间篡改拒绝、v3旅行/位置、容量及死亡/森林矛盾事实，公开投影恢复三参数。最终37/37、直接旧回归19/19，均无skip；新11独立反例由6红转全绿后移入37，不重复累计。原交付/原检查点和复现RED保留。DSH主对话已停止，Codex经济型测试代理已完成；完整scene世界/真实Gift/服务/UI未实现，后继待派发。
 - 流程优化已分给独立Codex对话 `01a133e5-db80-7e81-af05-941188b1598e`（DSH｜流程优化与中断恢复）；任务书/修复/实验全部在 `E:\codex\2026-10-13\dsh-workflow-optimization`，本项目仅只读参考，禁止改活动STATE/源码/合同/看板或续派业务。当前对话继续业务派工验收；两路不得共用包工头写入会话。
 - D4 体验目标：给同村猎人一份私粮→立即记得本人收粮→日结实际吃粮→去森林完成遭遇→返回/刷新/关闭重开仍是同一人。局部知识展示同地点公开人物，不泄漏他人私账，不加信任或模型。合同版本、文件范围与手算见任务书，D 整体仍待体验收口。
 - DSH 流程优化已落地：原包工头会话 `session-2564efe0-949b-48ed-90a5-f7f7feb9cbce` 使用Global DeepSeek Flash完成复盘与两名顺序工人接续演练；Codex独立核对并修正停止证明/证据归属。运行册 `D:\Narraverse-World-Map\docs\operations\DSH-TEAM-RUNBOOK.md`，持久检查点 `.dsh-team/STATE.json`；原生任务task-24/25为历史演练完成；当前CP1b写域以本轮工单为准。
-- 流程默认短工单/并发1、额度与502分流、最多一次重试及一个获准免费备选探测、工人和包工头各自落盘检查点；同文件换写者须可引用停止证据。当前仅验证顺序读取接续，实际子代理路由/额度未知、自动额度切换及进程强杀接管未验证。D4A当前CP1a修正已收口、CP1b新HY4主对话额度耗尽待手动换模型、B待依赖；该历史流程优化轮没有改运行时源码或启停用户实例。
+- 流程默认短工单/并发1、额度与502分流、最多一次重试及一个获准免费备选探测、工人和包工头各自落盘检查点；同文件换写者须可引用停止证据。当前仅验证顺序读取接续，实际子代理路由/额度未知、自动额度切换及进程强杀接管未验证。D4A当前CP1a修正已收口、CP1b记忆层修正已收口、后继待派发、B待依赖；该历史流程优化轮没有改运行时源码或启停用户实例。
 - 更早的R3、DSH停工与接管过程、旧候选拒收和上下文恢复等活动流水压缩为历史；本地证据相对路径：`artifacts/world-runtime-d35-hour-review-20261012/repair-workers-latest.json`、`artifacts/world-runtime-d35-r3-review-20261012/`。历史状态不代表当前验收结论。
 
 ## 证据入口
