@@ -165,7 +165,7 @@ export function validateSnapshotStructure(snapshot, options, eventCount) {
     // M4A adds a tick-1 publication task alongside the daily settlement, so the survival
     // profile carries two scheduled tasks instead of one. Every other boundary is unchanged.
     const daily=s.scheduledTasks.find(t=>t.systemId==='society');
-    requireCondition(m.day===day && m.observer.lastObservedTick===day*144 && s.nextEntityId===5 &&
+    requireCondition(m.day===day && (isScene?m.observer.lastObservedTick>=day*144&&m.observer.lastObservedTick<=s.tick:m.observer.lastObservedTick===day*144) && s.nextEntityId===5 &&
       m.observer.actors.every(a=>a.alive===s.world.actorModel.actors.find(p=>p.actorId===a.actorId).alive) &&
       m.announcements.every(a=>a.payload.expiresTick===day*144) && s.world.societyModel.agents.every(a=>a.state.lastActionDay<=day) &&
       (isSur||isEnc||isScene?s.scheduledTasks.length===2:s.scheduledTasks.length===1) && daily &&

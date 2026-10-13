@@ -937,3 +937,427 @@ test('CP1c-R14 earn-then-buy pays once and a later-day purchase succeeds after t
   assert.equal(estate.wallet, 10, 'the 20-coin wage funds the 10-coin food purchase');
   assert.equal(estate.inventory.food, 0, 'the purchased ration is consumed by the end of day two');
 });
+
+// ---------------------------------------------------------------- CP1d — scene Gift transaction and complete journal replay
+test('CP1d-R1 a real scene Gift commits assets, one fact, and immediate private memories', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1d-r1-gift',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const original = canonicalJson(bundle);
+  const before = bundle.snapshot.world;
+  const commandId = 'cp1d-r1-gift-once';
+  const dto = {version: 3, commandId, expectedRevision: 0, type: 'PlayerGiftFood',
+    payload: {recipientId: 'actor-2'}};
+
+  const out = runtime.executeSceneIntent(bundle, dto);
+  assert.deepEqual(Object.keys(out).sort(), ['bundle', 'receipt'],
+    'scene intent retains the existing DTO3 executor return shape');
+  assert.equal(canonicalJson(bundle), original, 'the input bundle must remain immutable');
+  const next = out.bundle;
+  const snapshot = next.snapshot;
+  const world = snapshot.world;
+  const donor = world.playerModel;
+  const recipient = world.societyModel.agents.find((entry) => entry.state.actorId === 'actor-2');
+  assert.ok(recipient, 'actor-2 is the configured receiver');
+
+  assert.equal(snapshot.tick, 0, 'Gift is an instant commit, not a time advance');
+  assert.equal(snapshot.instantCommits, 1);
+  assert.equal(snapshot.revision, 1);
+  assert.equal(canonicalJson(snapshot.rng), canonicalJson(bundle.snapshot.rng), 'Gift consumes no RNG');
+  assert.equal(donor.inventory.food, 19);
+  assert.equal(donor.ledger.foodGiven, 1);
+  assert.equal(recipient.state.inventory.food, 1);
+  assert.equal(recipient.trade.foodReceived, 1);
+  const expectedPlayer = structuredClone(before.playerModel);
+  expectedPlayer.inventory.food -= 1;
+  expectedPlayer.ledger.foodGiven += 1;
+  assert.deepEqual(donor, expectedPlayer, 'only donor food and the dedicated gift ledger may change');
+  const expectedSociety = structuredClone(before.societyModel);
+  const expectedRecipient = expectedSociety.agents.find((entry) => entry.state.actorId === 'actor-2');
+  expectedRecipient.state.inventory.food += 1;
+  expectedRecipient.trade.foodReceived += 1;
+  assert.deepEqual(world.societyModel, expectedSociety,
+    'only the recipient food and dedicated received-gift ledger may change across society');
+  assert.equal(world.resources.food, before.resources.food, 'private transfer does not debit public food');
+  assert.equal(world.resources.gold, before.resources.gold, 'Gift does not move communal cash');
+  for (const key of ['resourceModel', 'ecologyModel', 'marketModel', 'actorModel']) {
+    assert.equal(canonicalJson(world[key]), canonicalJson(before[key]), `Gift leaves ${key} unchanged`);
+  }
+  for (const key of ['mindModel', 'motivationModel', 'experienceModel', 'cognitionModel']) {
+    const withoutCursor = (value) => { const copy = structuredClone(value); delete copy.cursor; return copy; };
+    assert.equal(canonicalJson(withoutCursor(world[key])), canonicalJson(withoutCursor(before[key])),
+      `Gift does not rewrite ${key} decisions, plans, or historical samples`);
+    assert.equal(world[key].cursor, next.snapshot.nextEventSeq - 1, `${key} cursor matches the final committed event`);
+  }
+
+  const gifts = next.eventLog.filter((event) => event.type === 'FoodGiftCommitted');
+  assert.equal(gifts.length, 1);
+  const gift = gifts[0];
+  assert.equal(gift.eventSeq, bundle.snapshot.nextEventSeq);
+  assert.equal(gift.tick, 0);
+  assert.equal(gift.commandId, commandId);
+  assert.equal(gift.sourceSystem, 'scene');
+  assert.deepEqual(gift.entityIds, ['actor-4', 'actor-2']);
+  assert.deepEqual(gift.causationEventSeqs, []);
+  assert.deepEqual(gift.payload, {donorId: 'actor-4', recipientId: 'actor-2', product: 'food', quantity: 1,
+    location: 'village', donorFoodBefore: 20, donorFoodAfter: 19, recipientFoodBefore: 0, recipientFoodAfter: 1});
+  assert.deepEqual(Object.keys(out.receipt).sort(),
+    ['apiVersion', 'commandId', 'durationTicks', 'fromRevision', 'fromTick', 'outcome', 'receiptVersion', 'result', 'status', 'tick', 'toRevision', 'type'].sort());
+  assert.equal(out.receipt.status, 'committed');
+  assert.equal(out.receipt.outcome, 'succeeded');
+  assert.equal(out.receipt.durationTicks, 0);
+  assert.deepEqual(out.receipt.result,
+    {donorId: 'actor-4', recipientId: 'actor-2', product: 'food', quantity: 1,
+      sourceEventSeq: gift.eventSeq, reasonCode: null});
+  const resolved = next.eventLog.filter((event) => event.type === 'EncounterCommandResolved' && event.commandId === commandId);
+  assert.equal(resolved.length, 1);
+  assert.deepEqual(resolved[0].payload, {dto, receipt: out.receipt});
+  assert.deepEqual(gift.causationEventSeqs, [], 'Gift source fact has no parents');
+  assert.deepEqual(resolved[0].causationEventSeqs, [gift.eventSeq], 'resolved fact cites the Gift source');
+  assert.deepEqual(world.encounterModel.inputHistory, [{dto, receipt: out.receipt}]);
+
+  const observer = world.memoryModel.observer;
+  const memoryByActor = (actorId) => observer.actors.find((entry) => entry.actorId === actorId).memories
+    .filter((memory) => memory.observable?.commandId === commandId);
+  const donorMemory = memoryByActor('actor-4');
+  const recipientMemory = memoryByActor('actor-2');
+  assert.equal(donorMemory.length, 1);
+  assert.equal(recipientMemory.length, 1);
+  for (const [memory, direction] of [[donorMemory[0], 'given'], [recipientMemory[0], 'received']]) {
+    assert.equal(memory.sourceEventSeq, gift.eventSeq);
+    assert.equal(memory.occurrenceTick, 0);
+    assert.equal(memory.observedTick, 0);
+    assert.equal(memory.channel, 'self');
+    assert.equal(memory.importance, 1);
+    assert.deepEqual(memory.observable, {type: 'food-gift', donorId: 'actor-4', recipientId: 'actor-2',
+      product: 'food', quantity: 1, direction, commandId});
+  }
+  assert.deepEqual(observer.actors.filter((entry) => !['actor-4', 'actor-2'].includes(entry.actorId))
+    .map((entry) => entry.memories), [[], []]);
+  assert.deepEqual(observer.actors.map((entry) => entry.relationships),
+    before.memoryModel.observer.actors.map((entry) => entry.relationships), 'Gift does not alter trust');
+  worldState.validateBundle(next, {rulesVersion: runtime.SCENE_RULES, systems});
+});
+
+function cp1dDto(type, payload, commandId, expectedRevision) {
+  return {version: 3, commandId, expectedRevision, type, payload};
+}
+
+function cp1dGift(commandId, expectedRevision, payload = {recipientId: 'actor-2'}) {
+  return cp1dDto('PlayerGiftFood', payload, commandId, expectedRevision);
+}
+
+test('CP1d-R2 exact retries are free, changed same-id input conflicts, and a fresh revision succeeds', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1d-r2-idempotency',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const dto = cp1dGift('cp1d-r2-once', 0);
+  const first = runtime.executeSceneIntent(bundle, dto);
+  const once = canonicalJson(first.bundle);
+
+  const retry = runtime.executeSceneIntent(first.bundle, dto);
+  assert.deepEqual(retry.receipt, first.receipt, 'the original canonical DTO returns its original receipt');
+  assert.equal(canonicalJson(retry.bundle), once, 'an idempotent retry does not append another commit');
+  assert.throws(() => runtime.executeSceneIntent(first.bundle,
+    cp1dGift(dto.commandId, 999)), (error) => error.code === 'COMMAND_ID_CONFLICT',
+  'same ID with changed expectedRevision conflicts before the stale-revision check');
+  assert.throws(() => runtime.executeSceneIntent(first.bundle,
+    cp1dGift('cp1d-r2-stale', 0)), (error) => error.code === 'REVISION_CONFLICT');
+  assert.equal(canonicalJson(first.bundle), once, 'conflict and stale requests do not mutate accepted state');
+
+  const second = runtime.executeSceneIntent(first.bundle, cp1dGift('cp1d-r2-second', 1));
+  assert.equal(second.receipt.fromRevision, 1);
+  assert.equal(second.receipt.toRevision, 2);
+  assert.equal(second.bundle.snapshot.world.playerModel.inventory.food, 18);
+  assert.equal(second.bundle.snapshot.world.playerModel.ledger.foodGiven, 2);
+  assert.equal(second.bundle.snapshot.world.encounterModel.inputHistory.length, 2);
+  worldState.validateBundle(second.bundle, {rulesVersion: runtime.SCENE_RULES, systems});
+});
+
+test('CP1d-R3 unknown recipient, extra fields, and accessors reject without consuming an ID', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const {bundle} = fixture.createSceneVillage(42, 'cp1d-r3-preflight',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const original = canonicalJson(bundle);
+  const commandId = 'cp1d-r3-reusable';
+  assert.throws(() => runtime.executeSceneIntent(bundle, cp1dGift(commandId, 0, {recipientId: 'actor-99'})),
+    (error) => error.code === 'INVALID_INPUT', 'unknown recipient is malformed, not an accepted refusal');
+  assert.throws(() => runtime.executeSceneIntent(bundle, cp1dGift(commandId, 0,
+    {recipientId: 'actor-2', quantity: 1})), (error) => error.code === 'INVALID_INPUT',
+  'the client cannot choose Gift quantity');
+  let getterReads = 0;
+  const accessorPayload = {};
+  Object.defineProperty(accessorPayload, 'recipientId', {enumerable: true, get() { getterReads++; return 'actor-2'; }});
+  assert.throws(() => runtime.executeSceneIntent(bundle, cp1dGift(commandId, 0, accessorPayload)),
+    (error) => error.code === 'INVALID_INPUT', 'descriptor-bearing intent input is rejected');
+  assert.equal(getterReads, 0, 'preflight rejects the getter before invoking it');
+  assert.equal(canonicalJson(bundle), original, 'malformed DTOs leave all bundle bytes untouched');
+
+  const valid = runtime.executeSceneIntent(bundle, cp1dGift(commandId, 0));
+  assert.equal(valid.receipt.commandId, commandId, 'malformed attempts did not consume the command ID');
+  assert.equal(valid.bundle.snapshot.revision, 1, 'malformed attempts did not consume a revision');
+});
+
+test('CP1d-R4 forest and busy Gift refusals are accepted, private, and asset-atomic', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1d-r4-domain-refusals',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const donorBefore = structuredClone(bundle.snapshot.world.playerModel);
+  const receiverBefore = structuredClone(bundle.snapshot.world.societyModel.agents
+    .find((entry) => entry.state.actorId === 'actor-2'));
+  const travel = runtime.executeSceneIntent(bundle,
+    cp1dDto('PlayerTravel', {destination: 'forest'}, 'cp1d-r4-travel', 0));
+  assert.equal(travel.receipt.outcome, 'succeeded');
+  assert.equal(travel.receipt.tick, 12, 'legacy travel keeps its real twelve-tick duration');
+
+  const atForest = travel.bundle;
+  const forestRng = canonicalJson(atForest.snapshot.rng);
+  const forestMemories = canonicalJson(atForest.snapshot.world.memoryModel.observer.actors.map((entry) => entry.memories));
+  const forestGift = runtime.executeSceneIntent(atForest,
+    cp1dGift('cp1d-r4-forest-gift', atForest.snapshot.revision));
+  assert.equal(forestGift.receipt.outcome, 'rejected');
+  assert.equal(forestGift.receipt.result.reasonCode, 'NOT_COLOCATED');
+  assert.equal(forestGift.receipt.result.sourceEventSeq, null);
+  assert.deepEqual(Object.keys(forestGift.receipt.result).sort(),
+    ['donorId', 'recipientId', 'product', 'quantity', 'sourceEventSeq', 'reasonCode'].sort());
+  assert.equal(forestGift.receipt.durationTicks, 0);
+  assert.equal(forestGift.bundle.snapshot.tick, 12);
+  assert.equal(forestGift.bundle.snapshot.instantCommits, atForest.snapshot.instantCommits + 1);
+  assert.equal(canonicalJson(forestGift.bundle.snapshot.rng), forestRng);
+  assert.equal(canonicalJson(forestGift.bundle.snapshot.world.memoryModel.observer.actors.map((entry) => entry.memories)),
+    forestMemories, 'the rejected Gift creates no participant memories');
+
+  const begin = runtime.executeSceneIntent(forestGift.bundle,
+    cp1dDto('EncounterBegin', {}, 'cp1d-r4-begin', forestGift.bundle.snapshot.revision));
+  assert.equal(begin.receipt.outcome, 'succeeded');
+  const active = begin.bundle;
+  const activeRng = canonicalJson(active.snapshot.rng);
+  const activeMemories = canonicalJson(active.snapshot.world.memoryModel.observer.actors.map((entry) => entry.memories));
+  const busyGift = runtime.executeSceneIntent(active,
+    cp1dGift('cp1d-r4-busy-gift', active.snapshot.revision));
+  assert.equal(busyGift.receipt.outcome, 'rejected');
+  assert.equal(busyGift.receipt.result.reasonCode, 'ENCOUNTER_BUSY',
+    'busy takes precedence over the player being away from the receiver');
+  assert.equal(busyGift.receipt.result.sourceEventSeq, null);
+  assert.equal(busyGift.receipt.durationTicks, 0);
+  assert.equal(busyGift.bundle.snapshot.tick, active.snapshot.tick);
+  assert.equal(busyGift.bundle.snapshot.revision, active.snapshot.revision + 1);
+  assert.equal(canonicalJson(busyGift.bundle.snapshot.rng), activeRng);
+  assert.deepEqual(busyGift.bundle.snapshot.world.playerModel.inventory, donorBefore.inventory);
+  assert.deepEqual(busyGift.bundle.snapshot.world.playerModel.ledger, donorBefore.ledger);
+  assert.deepEqual(busyGift.bundle.snapshot.world.societyModel.agents
+    .find((entry) => entry.state.actorId === 'actor-2'), receiverBefore);
+  assert.equal(canonicalJson(busyGift.bundle.snapshot.world.memoryModel.observer.actors.map((entry) => entry.memories)),
+    activeMemories, 'the busy refusal creates no participant memories');
+
+  for (const id of ['cp1d-r4-forest-gift', 'cp1d-r4-busy-gift']) {
+    const matching = busyGift.bundle.eventLog.filter((event) => event.commandId === id);
+    assert.equal(matching.length, 1, `${id} has only its accepted-command resolution`);
+    assert.equal(matching[0].type, 'EncounterCommandResolved');
+    assert.deepEqual(matching[0].causationEventSeqs, []);
+  }
+  assert.equal(busyGift.bundle.eventLog.filter((event) => event.type === 'FoodGiftCommitted').length, 0);
+  worldState.validateBundle(busyGift.bundle, {rulesVersion: runtime.SCENE_RULES, systems});
+});
+
+test('CP1d-R5 a day settlement consumes the gifted ration and retains occurrence-time memories', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const engine = await import('../../runtime/core/command-engine.mjs');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1d-r5-day-settlement',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const initialSession = engine.createSimulationSession(bundle, systems);
+  initialSession.advanceTicks(1);
+  const atTickOne = initialSession.getBundle();
+  const gift = runtime.executeSceneIntent(atTickOne,
+    cp1dGift('cp1d-r5-gift', atTickOne.snapshot.revision));
+  assert.equal(gift.receipt.tick, 1, 'the test gift occurs away from a day boundary');
+  const session = engine.createSimulationSession(gift.bundle, systems);
+  session.advanceTicks(143);
+  const day = session.getBundle();
+  const world = day.snapshot.world;
+  const recipient = world.societyModel.agents.find((entry) => entry.state.actorId === 'actor-2');
+  assert.equal(day.snapshot.tick, 144);
+  assert.equal(world.resources.food, 464);
+  assert.equal(world.playerModel.inventory.food, 18, 'player still consumes its regular daily ration');
+  assert.equal(world.playerModel.ledger.foodGiven, 1);
+  assert.equal(world.playerModel.ledger.foodUsed, 1);
+  assert.equal(recipient.state.inventory.food, 0, 'the gifted ration is actually consumed at settlement');
+  assert.equal(recipient.trade.foodReceived, 1);
+  assert.equal(recipient.state.ledger.foodUsed, 1);
+  assert.equal(world.actorModel.actors.find((actor) => actor.actorId === 'actor-2').hunger, 100);
+  assert.equal(recipient.state.ledger.wages, 0);
+  assert.deepEqual(cp1cExperience(world, 'actor-2').samples, []);
+  for (const id of ['actor-4', 'actor-2']) {
+    const memories = world.memoryModel.observer.actors.find((entry) => entry.actorId === id).memories
+      .filter((memory) => memory.observable?.commandId === 'cp1d-r5-gift');
+    assert.equal(memories.length, 1);
+    assert.equal(memories[0].occurrenceTick, 1);
+    assert.equal(memories[0].observedTick, 1, 'later batch observation never rewrites the Gift occurrence time');
+  }
+  assert.equal(day.eventLog.filter((event) => event.type === 'FoodGiftCommitted').length, 1);
+  worldState.validateBundle(day, {rulesVersion: runtime.SCENE_RULES, systems});
+});
+
+test('CP1d-R6 Gift and legacy DTO3 travel/encounter commands share one replayable journal', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1d-r6-shared-journal',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const gift = runtime.executeSceneIntent(bundle, cp1dGift('cp1d-r6-gift', 0));
+  const travel = runtime.executeSceneIntent(gift.bundle,
+    cp1dDto('PlayerTravel', {destination: 'forest'}, 'cp1d-r6-travel', gift.bundle.snapshot.revision));
+  const begin = runtime.executeSceneIntent(travel.bundle,
+    cp1dDto('EncounterBegin', {}, 'cp1d-r6-begin', travel.bundle.snapshot.revision));
+  const attack = runtime.executeSceneIntent(begin.bundle,
+    cp1dDto('EncounterAction', {encounterId: 'encounter-1', action: 'attack'},
+      'cp1d-r6-attack', begin.bundle.snapshot.revision));
+  assert.deepEqual(attack.bundle.snapshot.world.encounterModel.inputHistory.map((entry) => entry.dto.type),
+    ['PlayerGiftFood', 'PlayerTravel', 'EncounterBegin', 'EncounterAction']);
+  assert.equal(attack.receipt.outcome, 'succeeded');
+  assert.equal(attack.receipt.tick, 18, 'gift/begin are instant while travel/attack keep their legacy durations');
+  assert.equal(attack.receipt.result.after.playerHealth, 920);
+  assert.equal(attack.bundle.eventLog.filter((event) => event.type === 'FoodGiftCommitted').length, 1);
+  worldState.validateBundle(attack.bundle, {rulesVersion: runtime.SCENE_RULES, systems});
+});
+
+test('CP1d-R7 a saved Gift history restores byte-for-byte and validates in the scene profile', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const engine = await import('../../runtime/core/command-engine.mjs');
+  const checkpoint = await import('../../runtime/persistence/checkpoint-store.mjs');
+  const fs = await import('node:fs/promises');
+  const path = await import('node:path');
+  const {fileURLToPath} = await import('node:url');
+  const evidence = fileURLToPath(new URL('../../artifacts/world-runtime-d4-cp1d-controller/', import.meta.url));
+  await fs.mkdir(evidence, {recursive: true});
+  const directory = await fs.mkdtemp(path.join(evidence, 'gift-checkpoint-'));
+  try {
+    const {bundle, systems} = fixture.createSceneVillage(42, 'cp1d-r7-checkpoint',
+      fixture.defaultSceneVillageConfig('no-opportunity'));
+    const gift = runtime.executeSceneIntent(bundle, cp1dGift('cp1d-r7-gift', 0));
+    const session = engine.createSimulationSession(gift.bundle, systems);
+    session.advanceTicks(1);
+    const expected = session.getBundle();
+    const file = await checkpoint.saveCheckpoint(expected,
+      {directory, rulesVersion: runtime.SCENE_RULES, systems});
+    const restored = await checkpoint.loadCheckpoint(file,
+      {rulesVersion: runtime.SCENE_RULES, systems});
+    assert.equal(canonicalJson(restored), canonicalJson(expected));
+  } finally {
+    await fs.rm(directory, {recursive: true, force: true});
+  }
+});
+
+test('CP1d-R8 complete replay rejects six materially changed Gift history or ownership layers', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp1d-r8-journal-tamper',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const gift = runtime.executeSceneIntent(bundle, cp1dGift('cp1d-r8-gift', 0)).bundle;
+  worldState.validateBundle(gift, {rulesVersion: runtime.SCENE_RULES, systems});
+  const mutations = [
+    (candidate) => { candidate.eventLog.find((event) => event.type === 'FoodGiftCommitted').sourceSystem = 'command-engine'; },
+    (candidate) => { candidate.eventLog.find((event) => event.type === 'FoodGiftCommitted').payload.donorFoodAfter = 20; },
+    (candidate) => { candidate.eventLog.find((event) => event.type === 'EncounterCommandResolved').causationEventSeqs = []; },
+    (candidate) => { candidate.snapshot.world.encounterModel.inputHistory[0].receipt.result.sourceEventSeq += 1; },
+    (candidate) => { candidate.snapshot.world.playerModel.ledger.foodGiven += 1; },
+    (candidate) => { candidate.snapshot.world.memoryModel.observer.actors.find((entry) => entry.actorId === 'actor-2')
+      .memories.find((memory) => memory.observable.commandId === 'cp1d-r8-gift').observable.direction = 'given'; },
+  ];
+  for (const mutate of mutations) {
+    const candidate = structuredClone(gift);
+    mutate(candidate);
+    assert.notEqual(canonicalJson(candidate), canonicalJson(gift), 'each tamper changes canonical saved state');
+    assert.throws(() => worldState.validateBundle(candidate,
+      {rulesVersion: runtime.SCENE_RULES, systems}), 'complete source/history/ownership/memory replay must reject tampering');
+  }
+});
+
+test('CP1d-R9 the legacy encounter executor still rejects Gift DTO3 without changing its bundle', async () => {
+  const fixture = await import('../../runtime/fixtures/encounter-survival-village.mjs');
+  const runtime = await import('../../runtime/core/encounter-runtime.mjs');
+  const {bundle} = fixture.createEncounterVillage(42, 'cp1d-r9-legacy-profile',
+    fixture.defaultEncounterVillageConfig('no-opportunity'));
+  const before = canonicalJson(bundle);
+  assert.throws(() => runtime.executeEncounterIntent(bundle,
+    cp1dGift('cp1d-r9-not-a-legacy-intent', 0)), (error) => error.code === 'INVALID_INPUT');
+  assert.equal(canonicalJson(bundle), before, 'old encounter history and bundle bytes remain unchanged');
+});
+
+test('CP1d-R10 reachable dead/no-food/full refusals are valid, ordered, and atomic', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const fullConfig = fixture.defaultSceneVillageConfig('no-opportunity');
+  fullConfig.memory.society.estates.find((estate) => estate.actorId === 'actor-2').initialFood = 1000;
+  const foodSpec = fullConfig.memory.society.actors.market.ecology.resources.resources.food;
+  foodSpec.initial = 1100;
+  foodSpec.capacity = Math.max(foodSpec.capacity, foodSpec.initial);
+
+  const cases = [
+    {name: 'player dead wins first', reason: 'PLAYER_DEAD', config: (() => {
+      const config = fixture.defaultSceneVillageConfig('no-opportunity');
+      config.memory.society.actors.initialActors[3].health = 0;
+      return config;
+    })(), preflight: (world) => assert.equal(world.actorModel.actors.find((actor) => actor.actorId === 'actor-4').alive, false)},
+    {name: 'recipient dead', reason: 'RECIPIENT_DEAD', config: (() => {
+      const config = fixture.defaultSceneVillageConfig('no-opportunity');
+      config.memory.society.actors.initialActors[1].health = 0;
+      return config;
+    })(), preflight: (world) => assert.equal(world.actorModel.actors.find((actor) => actor.actorId === 'actor-2').alive, false)},
+    {name: 'donor has no food', reason: 'NO_FOOD', config: fixture.defaultSceneVillageConfig('no-food'),
+      preflight: (world) => assert.equal(world.playerModel.inventory.food, 0)},
+    {name: 'recipient is at the private inventory limit', reason: 'RECIPIENT_FULL', config: fullConfig,
+      preflight: (world) => assert.equal(world.societyModel.agents.find((agent) => agent.state.actorId === 'actor-2').state.inventory.food, 1000)},
+  ];
+
+  for (const [index, scenario] of cases.entries()) {
+    const commandId = `cp1d-r10-${index}`;
+    const {bundle, systems} = fixture.createSceneVillage(42, `cp1d-r10-${index}`, scenario.config);
+    worldState.validateBundle(bundle, {rulesVersion: runtime.SCENE_RULES, systems});
+    scenario.preflight(bundle.snapshot.world);
+    const before = structuredClone(bundle);
+    const actor = (world, id) => world.societyModel.agents.find((agent) => agent.state.actorId === id);
+    const rejected = runtime.executeSceneIntent(bundle, cp1dGift(commandId, bundle.snapshot.revision));
+    const after = rejected.bundle;
+    assert.equal(rejected.receipt.status, 'committed', scenario.name);
+    assert.equal(rejected.receipt.outcome, 'rejected', scenario.name);
+    assert.equal(rejected.receipt.result.reasonCode, scenario.reason, scenario.name);
+    assert.deepEqual(Object.keys(rejected.receipt.result).sort(),
+      ['donorId', 'recipientId', 'product', 'quantity', 'sourceEventSeq', 'reasonCode'].sort());
+    assert.equal(rejected.receipt.result.sourceEventSeq, null);
+    assert.equal(rejected.receipt.durationTicks, 0);
+    assert.equal(after.snapshot.tick, before.snapshot.tick);
+    assert.equal(after.snapshot.revision, before.snapshot.revision + 1);
+    assert.equal(after.snapshot.instantCommits, before.snapshot.instantCommits + 1);
+    assert.equal(canonicalJson(after.snapshot.rng), canonicalJson(before.snapshot.rng));
+    assert.equal(canonicalJson(after.snapshot.world.playerModel), canonicalJson(before.snapshot.world.playerModel));
+    assert.equal(canonicalJson(actor(after.snapshot.world, 'actor-2')), canonicalJson(actor(before.snapshot.world, 'actor-2')));
+    const observerBefore = structuredClone(before.snapshot.world.memoryModel.observer);
+    const observerAfter = after.snapshot.world.memoryModel.observer;
+    delete observerBefore.cursor;
+    const observerWithoutCursor = structuredClone(observerAfter);
+    delete observerWithoutCursor.cursor;
+    assert.equal(canonicalJson(observerWithoutCursor), canonicalJson(observerBefore),
+      'accepted refusal preserves actor states, memories, and observed ticks');
+    assert.equal(observerAfter.cursor, after.snapshot.nextEventSeq - 1,
+      'observer cursor includes the accepted refusal resolution');
+    assert.equal(after.eventLog.filter((event) => event.type === 'FoodGiftCommitted').length, 0);
+    const resolved = after.eventLog.filter((event) => event.commandId === commandId);
+    assert.equal(resolved.length, 1);
+    assert.equal(resolved[0].type, 'EncounterCommandResolved');
+    assert.equal(after.snapshot.world.encounterModel.inputHistory.at(-1).receipt.result.reasonCode, scenario.reason);
+    worldState.validateBundle(after, {rulesVersion: runtime.SCENE_RULES, systems});
+  }
+});

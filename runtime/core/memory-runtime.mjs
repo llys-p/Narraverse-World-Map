@@ -102,6 +102,13 @@ export function settleMemorySocietyDay(input,sample){
   const result=settleSocietyDay(society(world),sample);m.day++;
   return {world:{...result.world,memoryModel:m},payload:result.payload};
 }
+// A scene command observes its newly committed suffix immediately. Existing observation times stay sealed.
+export function observeSceneCommand(world,events,tick){
+ requireCondition(world.memoryModel.config.version==='memory-config-v6'&&world.memoryModel.observer.version==='memory-observer-v3','Scene observation version mismatch','UNSUPPORTED_VERSION');
+ const m=world.memoryModel;
+ m.observer=reduceMemoryFacts(m.observer,events.slice(m.observer.cursor),tick);
+ return world;
+}
 export function finishMemoryDay(input,events,tick){
   validateMemoryWorld(input);integer(tick,1);requireCondition(tick===input.memoryModel.day*144,'Memory closing clock mismatch');
   const world=cloneData(input),m=world.memoryModel,oldCursor=m.observer.cursor;

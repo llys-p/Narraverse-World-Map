@@ -26,7 +26,7 @@ import { COGNITIVE_REVIEW_STATE_VERSION, validateCognitiveReviewState } from './
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
 import { PLAYER_RULES,PLAY_RULES,validatePlayerDayPayload,validatePlayerActionResult } from './player-state.mjs';
 import { ENCOUNTER_RULES, validateEncounterWorldState, encounterRuntimeHooks } from './encounter-runtime.mjs';
-import {SCENE_RULES,validateSceneWorldState,sceneRuntimeHooks} from './scene-runtime.mjs';
+import {SCENE_RULES,validateSceneWorldState,sceneRuntimeHooks,validateSceneGiftEvent} from './scene-runtime.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
 export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
@@ -284,6 +284,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
       requireCondition(event.entityIds.length === 2 && event.entityIds[0] === from && event.entityIds[1] === to, 'Transfer entity IDs mismatch');
       requireCondition(!commandEvents.has(event.commandId), 'Repeated transfer fact');
       commandEvents.set(event.commandId, event);
+    } else if(event.type==='FoodGiftCommitted'){
+      requireCondition(sceneProfile,'Gift fact requires scene rules','UNSUPPORTED_VERSION');validateSceneGiftEvent(event);
     } else if (event.type === 'EncounterCommandResolved') {
       // D3-5A L69: one resolved fact per accepted DTO3, published by the encounter
       // system. Its commandId is a DTO3 id (not an engine receipt id), so it must

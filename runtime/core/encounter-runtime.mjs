@@ -40,6 +40,7 @@ import {
   integer,
   record,
   requireCondition,
+  MAX_EVENTS,
 } from './data-contract.mjs';
 import { TICKS_PER_DAY } from './simulation-clock.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
@@ -689,14 +690,16 @@ function requireEncounterProfileMetadata(snapshot) {
   'Unsupported encounter profile', 'UNSUPPORTED_VERSION');
 }
 
-export function executeEncounterIntent(bundle, dto) {
+export function executeEncounterIntent(bundle,dto){return executeIntentFor(bundle,dto);}
+function executeIntentFor(bundle,dto,profile=null) {
   requireCondition(isPlainObject(bundle), 'bundle must be { snapshot, eventLog }', 'INVALID_INPUT');
   fields(bundle, ['eventLog', 'snapshot']);
   const snapshot = bundle.snapshot;
   requireCondition(isPlainObject(snapshot), 'bundle.snapshot must be an object', 'INVALID_INPUT');
   record(snapshot);
-  preflightIntent(dto);
-  requireEncounterProfileMetadata(snapshot);
+  (profile?.preflight??preflightIntent)(dto);
+  if(profile)requireCondition(snapshot.rulesVersion===profile.rules&&snapshot.fixtureId===profile.fixture&&snapshot.fixtureVersion==='1'&&snapshot.schemaVersion===3,'Unsupported scene profile','UNSUPPORTED_VERSION');
+  else requireEncounterProfileMetadata(snapshot);
   const world = snapshot.world;
   requireCondition(isPlainObject(world), 'bundle.snapshot.world must be an object', 'INVALID_INPUT');
   record(world);
@@ -726,7 +729,13 @@ export function executeEncounterIntent(bundle, dto) {
   // Step 4 — candidate audit (pure).
   const fromTick = snapshot.tick;
   const fromRevision = snapshot.revision;
-  const plan = auditIntent(dto, world);
+  const plan = profile&&dto.type==='PlayerGiftFood'?profile.auditGift(world):auditIntent(dto,world);
+  if(profile){
+    requireCondition(snapshot.pendingCommands.length<16,'Scene pending queue budget exhausted','LIMIT_EXCEEDED');
+    requireCondition(fromTick<=Number.MAX_SAFE_INTEGER-plan.durationTicks&&fromRevision<=Number.MAX_SAFE_INTEGER-Math.max(1,plan.durationTicks)&&snapshot.instantCommits<Number.MAX_SAFE_INTEGER,'Scene clock/revision budget exhausted','LIMIT_EXCEEDED');
+    requireCondition(eventLog.length<=MAX_EVENTS-(dto.type==='PlayerGiftFood'&&plan.outcome==='succeeded'?2:1)&&snapshot.nextEventSeq<=Number.MAX_SAFE_INTEGER-(dto.type==='PlayerGiftFood'&&plan.outcome==='succeeded'?2:1),'Scene event budget exhausted','LIMIT_EXCEEDED');
+    if(dto.type===TYPE_BEGIN&&plan.outcome==='succeeded')requireCondition(model.nextEncounterId<=16,'Scene encounter budget exhausted','LIMIT_EXCEEDED');
+  }
   const tick = fromTick + plan.durationTicks;
   const instantCommit = plan.durationTicks === 0;
   const toRevision = fromRevision + (instantCommit ? 1 : plan.durationTicks);
@@ -735,7 +744,7 @@ export function executeEncounterIntent(bundle, dto) {
   // Step 5 — real progression (L87-92) through the registered engine ticks, then
   // atomic publication. A non-zero-duration command drives the world forward with
   // performTick so that mid-flight quotes, settlements and player deaths are real.
-  const systems = encounterSystems();
+  const systems = profile?.systems??encounterSystems();
   const initialEventCount = eventLog.length;
   let working = { snapshot: cloneData(snapshot), eventLog: eventLog.map((event) => cloneData(event)) };
   if (plan.outcome === 'succeeded' && !instantCommit && plan.worldCommand === true && dto.type !== TYPE_ADVANCE) {
@@ -776,10 +785,18 @@ export function executeEncounterIntent(bundle, dto) {
   requireCondition(finalSnapshot.tick === tick, 'the real progression must end at the target tick', 'INVALID_INPUT');
   const nextWorld = cloneData(finalSnapshot.world);
   if (instantCommit) applyIntent(nextWorld, dto, plan, tick);
+  if(profile)requireCondition(finalSnapshot.nextEventSeq<=Number.MAX_SAFE_INTEGER-(dto.type==='PlayerGiftFood'&&plan.outcome==='succeeded'?2:1),'Scene event counter budget exhausted','LIMIT_EXCEEDED');
+  let giftFact=null;
+  if(profile&&dto.type==='PlayerGiftFood'&&plan.outcome==='succeeded'){
+    giftFact=profile.commitGift(nextWorld,dto,tick,finalSnapshot.nextEventSeq);
+    working.eventLog.push(giftFact);finalSnapshot.nextEventSeq++;
+  }
 
   let outcome = plan.outcome;
   let result;
-  if (plan.worldCommand === true) {
+  if(profile&&dto.type==='PlayerGiftFood'){
+    result={donorId:ACTOR_ID,recipientId:'actor-2',product:'food',quantity:1,sourceEventSeq:giftFact?.eventSeq??null,reasonCode:plan.reasonCode};
+  } else if (plan.worldCommand === true) {
     if (plan.outcome === 'succeeded' && dto.type === TYPE_ADVANCE) {
       result = null;
     } else if (plan.outcome === 'succeeded') {
@@ -818,7 +835,7 @@ export function executeEncounterIntent(bundle, dto) {
   nextWorld.encounterModel.inputHistory.push({ dto: historyDto, receipt: historyReceipt });
 
   const progressionCauses = collectProgressionCauses(working.eventLog, initialEventCount);
-  let causationEventSeqs = [];
+  let causationEventSeqs = giftFact?[giftFact.eventSeq]:[];
   if ((dto.type === TYPE_ACTION || dto.type === TYPE_CANCEL) &&
     isPlainObject(nextWorld.encounterModel.encounter)) {
     const beginCommandId = nextWorld.encounterModel.encounter.beginCommandId;
@@ -850,6 +867,7 @@ export function executeEncounterIntent(bundle, dto) {
     schemaVersion: 1,
   };
 
+  if(profile)profile.observe(nextWorld,[...working.eventLog,event],tick);
   const nextSnapshot = cloneSnapshotWith(finalSnapshot, nextWorld);
   nextSnapshot.tick = tick;
   nextSnapshot.revision = toRevision;
@@ -1256,7 +1274,6 @@ function hooksValidateHistory(snapshot, events, profile=null) {
 
   const model = snapshot.world.encounterModel;
   const history = model.inputHistory;
-  if(profile?.emptyOnly)requireCondition(history.length===0&&snapshot.instantCommits===0&&model.encounter===null&&model.nextEncounterId===1,'Scene external commands are unavailable in CP1c','UNSUPPORTED_VERSION');
   const recorded = events.filter((event) => isPlainObject(event) && event.type === FACT_TYPE);
   requireCondition(recorded.length === history.length,
     'every encounter input must publish exactly one fact', 'INVALID_INPUT');
@@ -1368,7 +1385,7 @@ function hooksValidateHistory(snapshot, events, profile=null) {
       replay.snapshot.revision === receipt.fromRevision,
       'Encounter receipt start anchor does not match replayed time', 'INVALID_INPUT');
 
-    const outcome = executeEncounterIntent(replay, entry.dto);
+    const outcome = (profile?.executeIntent??executeEncounterIntent)(replay, entry.dto);
     replay = outcome.bundle;
     const published = byCommandId.get(entry.dto.commandId);
     requireCondition(published !== undefined,
@@ -1428,20 +1445,25 @@ function hooksValidateHistory(snapshot, events, profile=null) {
       canonicalJson(replay.snapshot.pendingCommands) === canonicalJson(snapshot.pendingCommands),
       'the replayed encounter input history does not match the committed counters', 'INVALID_INPUT');
   }
+  if(profile)requireCondition(canonicalJson(replay.snapshot)===canonicalJson(snapshot),'Scene full snapshot/replay mismatch','INVALID_INPUT');
   return { valid: true, errors: [] };
 }
 
 export function validateEncounterWorldState(world,snapshotContext={}){return validateEncounterWorldStateFor(world,snapshotContext);}
 export function validateSceneEncounterWorldState(world,snapshotContext={}){return validateEncounterWorldStateFor(world,snapshotContext,'encounter-runtime-v2');}
 // Scene opt-in shares the encounter engine. CP1c has no accepted external commands.
-export function createSceneEncounterRuntimeHooks(baseHooks){
+export function createSceneEncounterRuntimeHooks(baseHooks,scenePolicy){
+ const profile=()=>({...scenePolicy,rules:'d-scene-survival-v1',fixture:'scene-survival-village',
+  systems:canonicalSystems('d-scene-survival-v1'),createWorld:hooks.createWorld,
+  validateWorld:validateSceneEncounterWorldState,executeIntent:hooks.executeIntent});
  const hooks={
+  executeIntent:(bundle,dto)=>executeIntentFor(bundle,dto,profile()),
   createWorld:(memory,mind,motivation,experience,cognition,id)=>hooksCreateWorld(memory,mind,motivation,experience,cognition,id,baseHooks,'encounter-runtime-v2'),
   beforeSystems:(snapshot,events,tick,append,commit)=>hooksBeforeSystems(snapshot,events,tick,append,commit,baseHooks),
   afterSystems:(snapshot,events,tick,append,context)=>hooksAfterSystems(snapshot,events,tick,append,context,baseHooks),
   applyAction:(input,payload,sample=null)=>hooksApplyAction(input,payload,sample,baseHooks),
   settleDay:(world,sample)=>hooksSettleDay(world,sample,baseHooks),
-  validateHistory:(snapshot,events)=>hooksValidateHistory(snapshot,events,{createWorld:hooks.createWorld,validateWorld:validateSceneEncounterWorldState,systems:canonicalSystems('d-scene-survival-v1'),emptyOnly:true})
+  validateHistory:(snapshot,events)=>hooksValidateHistory(snapshot,events,profile())
  };
  return Object.freeze(hooks);
 }

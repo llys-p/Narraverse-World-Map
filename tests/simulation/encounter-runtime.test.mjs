@@ -413,16 +413,22 @@ function isValidWorld(world, context) {
 // G1 — public export surface (L40-45, L47)
 // ---------------------------------------------------------------------------
 
-test('G1 runtime exports exactly the six public names with the frozen rules/profile identifiers', () => {
+test('G1 runtime keeps six legacy names and the two scene-profile helper exports', () => {
   assert.deepEqual(Object.keys(encounterRuntime).sort(),
     ['ENCOUNTER_PROFILE', 'ENCOUNTER_RULES', 'describeEncounterActions', 'encounterRuntimeHooks',
-      'executeEncounterIntent', 'validateEncounterWorldState'].sort(),
-    'L40-45: the module publishes exactly these six names');
+      'executeEncounterIntent', 'validateEncounterWorldState', 'createSceneEncounterRuntimeHooks',
+      'validateSceneEncounterWorldState'].sort(),
+    'the six legacy names remain alongside the two CP1c scene-profile helpers');
   assert.equal(ENCOUNTER_RULES, 'd-encounter-survival-v1', 'L33');
   assert.equal(ENCOUNTER_PROFILE, 'encounter-survival-village', 'L33');
   assert.equal(typeof executeEncounterIntent, 'function');
+  assert.equal(executeEncounterIntent.length, 2, 'the legacy executor keeps its two-argument signature');
   assert.equal(typeof describeEncounterActions, 'function');
+  assert.equal(describeEncounterActions.length, 1, 'the legacy descriptor keeps its one-argument signature');
   assert.equal(typeof validateEncounterWorldState, 'function');
+  assert.equal(validateEncounterWorldState.length, 1, 'the legacy validator keeps its one-argument signature');
+  assert.equal(typeof encounterRuntime.createSceneEncounterRuntimeHooks, 'function');
+  assert.equal(typeof encounterRuntime.validateSceneEncounterWorldState, 'function');
   for (const duty of ['createWorld', 'beforeSystems', 'afterSystems', 'applyAction', 'settleDay', 'validateHistory']) {
     assert.equal(typeof encounterRuntimeHooks[duty], 'function', `L45: encounterRuntimeHooks.${duty} must be a function`);
   }
