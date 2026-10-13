@@ -19,10 +19,15 @@ function increment(object,key){requireCondition(object[key]<Number.MAX_SAFE_INTE
 export function defaultMemoryConfig(){return {version:'memory-config-v1',society:defaultSocietyConfig(),discountEnabled:true};}
 export function defaultPersonalityConfig(){return {...defaultMemoryConfig(),version:'memory-config-v2',personalities:neutralPersonalities()};}
 // memory-config-v5 carries the play profile forward from v4: same fields, society-config-v4 and player-state-v2.
-const MEMORY_VERSIONS=['memory-config-v1','memory-config-v2','memory-config-v3','memory-config-v4','memory-config-v5'];
+// D4A-CP1b: memory-config-v6 is the gift profile. It keeps the play fields and is the only memory
+// version that pairs with society-config-v5 (player-state-v3) and memory-observer-v3.
+const MEMORY_VERSIONS=['memory-config-v1','memory-config-v2','memory-config-v3','memory-config-v4','memory-config-v5','memory-config-v6'];
 const isPlayConfig=version=>version==='memory-config-v4' || version==='memory-config-v5';
-const isPlayerConfig=version=>version==='memory-config-v3' || isPlayConfig(version);
-const societyVersionOf=version=>version==='memory-config-v5'?'society-config-v4':version==='memory-config-v4'?'society-config-v3':version==='memory-config-v3'?'society-config-v2':'society-config-v1';
+const isGiftConfig=version=>version==='memory-config-v6';
+const isLocatedConfig=version=>isPlayConfig(version) || isGiftConfig(version);
+const isPlayerConfig=version=>version==='memory-config-v3' || isLocatedConfig(version);
+const societyVersionOf=version=>isGiftConfig(version)?'society-config-v5':version==='memory-config-v5'?'society-config-v4':version==='memory-config-v4'?'society-config-v3':version==='memory-config-v3'?'society-config-v2':'society-config-v1';
+const observerVersionOf=version=>isGiftConfig(version)?'memory-observer-v3':isPlayConfig(version)?'memory-observer-v2':'memory-observer-v1';
 function validateConfig(config){
   record(config);requireCondition(MEMORY_VERSIONS.includes(config.version),'Unknown memory configuration','UNSUPPORTED_VERSION');
   fields(config,['version','society','discountEnabled',...(config.version!=='memory-config-v1'?['personalities']:[])]);
@@ -33,7 +38,7 @@ function validateConfig(config){
 export function createMemoryWorld(config=defaultMemoryConfig()){
   const world=validateConfig(config),copy=cloneData(config);
   return {...world,memoryModel:{config:copy,configFingerprint:canonicalJson(copy),day:0,
-    observer:createMemoryState(world.actorModel.actors.map(a=>({actorId:a.actorId,alive:a.alive,...(isPlayConfig(copy.version)?{location:a.location}:{})})),isPlayConfig(copy.version)?'memory-observer-v2':'memory-observer-v1'),announcements:[],waitingActorId:null,waitingOutcome:null}};
+    observer:createMemoryState(world.actorModel.actors.map(a=>({actorId:a.actorId,alive:a.alive,...(isLocatedConfig(copy.version)?{location:a.location}:{})})),observerVersionOf(copy.version)),announcements:[],waitingActorId:null,waitingOutcome:null}};
 }
 export function validateMemoryWorld(world){
   record(world);record(world.memoryModel);record(world.memoryModel.config);
@@ -41,7 +46,7 @@ export function validateMemoryWorld(world){
   fields(m,['config','configFingerprint','day','observer','announcements','waitingActorId','waitingOutcome']);const initial=validateConfig(m.config);
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.society)===canonicalJson(world.societyModel.config),'Memory/Society configuration mismatch');
   integer(m.day);requireCondition(m.day===world.societyModel.day,'Memory day mismatch');validateMemoryState(m.observer);
-  const play=isPlayConfig(m.config.version),version=play?'memory-observer-v2':'memory-observer-v1';
+  const play=isLocatedConfig(m.config.version),version=observerVersionOf(m.config.version);
   requireCondition(m.observer.version===version && canonicalJson(m.observer.initialActors)===canonicalJson(createMemoryState(initial.actorModel.actors.map(a=>({actorId:a.actorId,alive:a.alive,...(play?{location:a.location}:{})})),version).initialActors),'Memory initial identity/version mismatch');
   denseArray(m.announcements,6);const seen=new Set();
   for(const f of m.announcements){validateMedicineAnnouncement(f);const key=f.type+'-'+f.payload.actorId;

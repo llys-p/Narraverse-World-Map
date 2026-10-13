@@ -6,6 +6,8 @@ import {createSocietyWorld, validateSocietyWorld, defaultSocietyConfig} from '..
 import {createPlayerPlayState} from '../../runtime/core/player-state.mjs';
 import {validateHunterWorld} from '../../runtime/core/hunter.mjs';
 import {canonicalJson} from '../../runtime/core/data-contract.mjs';
+import {createMemoryWorld,validateMemoryWorld} from '../../runtime/core/memory-runtime.mjs';
+import {createMemoryState,validateMemoryState,reduceMemoryFacts,validateMemoryHistory,projectActorEvent,advanceActorMemory} from '../../runtime/core/memory-observer.mjs';
 
 const PLAY_LEDGER = ['foodUsed', 'herbsUsed', 'foodBought', 'herbsBought', 'foodSold', 'herbsSold', 'spent', 'earned'];
 
@@ -204,4 +206,369 @@ test('CP1a-10b hunter ownership null 是 INVALID_INPUT，版本访问器在读�
   });
   assert.throws(() => validateHunterWorld(view, ownership), (error) => error.code === 'INVALID_INPUT');
   assert.equal(versionReads, 0);
+});
+
+// ---------------------------------------------------------------- CP1b 记忆层（memory-config-v6 / memory-observer-v3）---
+// 期望值按 D4A-CP1B-MEMORY-LAYER-CARD.md 与 D4A-SCENE-GIFT-MEMORY-TASK.md §2/§5/§6 独立手算。
+function memoryConfigV6() {
+  const cfg = defaultEncounterVillageConfig('no-opportunity');
+  return {...cfg.memory, version: 'memory-config-v6', society: {...cfg.memory.society, version: 'society-config-v5'}};
+}
+
+const GIFT_ROSTER = [
+  {actorId: 'actor-1', alive: true, location: 'village'},
+  {actorId: 'actor-2', alive: true, location: 'village'},
+  {actorId: 'actor-3', alive: true, location: 'village'},
+  {actorId: 'actor-4', alive: true, location: 'village'},
+];
+
+function giftFact(seq, tick, commandId, donorBefore = 20, donorAfter = 19, recipientBefore = 0, recipientAfter = 1) {
+  return {schemaVersion: 1, eventSeq: seq, tick, type: 'FoodGiftCommitted', sourceSystem: 'scene', commandId,
+    causationEventSeqs: [], entityIds: ['actor-4', 'actor-2'],
+    payload: {donorId: 'actor-4', recipientId: 'actor-2', product: 'food', quantity: 1, location: 'village',
+      donorFoodBefore: donorBefore, donorFoodAfter: donorAfter, recipientFoodBefore: recipientBefore, recipientFoodAfter: recipientAfter}};
+}
+
+// 旧的 SellMedicine 事实：用于验证赠粮不改动关系而 medicine-trade 仍是 trust+10。
+function medicineSaleFact(seq, tick) {
+  return {schemaVersion: 1, eventSeq: seq, tick, type: 'SocietyActionCommitted', sourceSystem: 'command-engine',
+    commandId: 'cmd-sale-1', causationEventSeqs: [], entityIds: ['actor-1', 'actor-3'],
+    payload: {actorId: 'actor-1', goalId: 1, action: 'SellMedicine', targetActorId: 'actor-3', day: 1, buyerId: 'actor-3', price: 5,
+      before: {sellerWallet: 0, buyerWallet: 10, sellerHerbs: 1, buyerHerbs: 0},
+      after: {sellerWallet: 5, buyerWallet: 5, sellerHerbs: 0, buyerHerbs: 1}}};
+}
+
+const giftState = () => createMemoryState(GIFT_ROSTER, 'memory-observer-v3');
+
+test('CP1b-1 memory-config-v6 显式配 society-config-v5，空世界带 player-state-v3 与 memory-observer-v3', () => {
+  const world = createMemoryWorld(memoryConfigV6());
+  validateMemoryWorld(world);
+  assert.equal(world.memoryModel.config.version, 'memory-config-v6');
+  assert.equal(world.societyModel.config.version, 'society-config-v5');
+  assert.equal(world.playerModel.version, 'player-state-v3');
+  assert.equal(world.memoryModel.observer.version, 'memory-observer-v3');
+  assert.deepEqual(world.memoryModel.observer.initialActors.map((a) => a.actorId), ['actor-1', 'actor-2', 'actor-3', 'actor-4']);
+  assert.deepEqual(world.memoryModel.observer.initialActors.map((a) => a.location), ['village', 'village', 'village', 'village']);
+  assert.equal(world.memoryModel.observer.cursor, 0);
+  assert.equal(world.memoryModel.observer.lastObservedTick, 0);
+  assert.deepEqual(world.memoryModel.observer.actors.map((a) => a.memories.length), [0, 0, 0, 0]);
+  assert.deepEqual(Object.keys(world.playerModel.ledger).sort(),
+    ['earned', 'foodBought', 'foodGiven', 'foodSold', 'foodUsed', 'herbsBought', 'herbsSold', 'herbsUsed', 'spent']);
+});
+
+test('CP1b-2 v6 只接受 society-config-v5，旧 memory 不接受 society-config-v5，未知版本被拒', () => {
+  const base = memoryConfigV6();
+  validateMemoryWorld(createMemoryWorld(base));
+  assert.throws(() => createMemoryWorld({...base, society: {...base.society, version: 'society-config-v4'}}),
+    (error) => error.code === 'UNSUPPORTED_VERSION');
+  assert.throws(() => createMemoryWorld({...base, version: 'memory-config-v5'}),
+    (error) => error.code === 'UNSUPPORTED_VERSION');
+  assert.throws(() => createMemoryWorld({...base, version: 'memory-config-v7'}),
+    (error) => error.code === 'UNSUPPORTED_VERSION');
+});
+
+test('CP1b-3 v6 世界拒绝旧 observer 版本、缺 location 的名单与旧 player 版本', () => {
+  const world = createMemoryWorld(memoryConfigV6());
+  validateMemoryWorld(world);
+
+  const staleObserver = JSON.parse(JSON.stringify(world));
+  staleObserver.memoryModel.observer.version = 'memory-observer-v2';
+  assert.throws(() => validateMemoryWorld(staleObserver), (error) => error.code === 'INVALID_INPUT');
+
+  const noLocation = JSON.parse(JSON.stringify(world));
+  for (const a of noLocation.memoryModel.observer.initialActors) delete a.location;
+  assert.throws(() => validateMemoryWorld(noLocation), (error) => error.code === 'INVALID_INPUT');
+
+  const stalePlayer = JSON.parse(JSON.stringify(world));
+  stalePlayer.playerModel.version = 'player-state-v2';
+  assert.throws(() => validateMemoryWorld(stalePlayer), (error) => error.code === 'INVALID_INPUT');
+});
+
+test('CP1b-4 赠粮只投影 donor/recipient 本人的 self 记忆，observable 严格、不改关系', () => {
+  const tick = 144;
+  const next = reduceMemoryFacts(giftState(), [giftFact(1, tick, 'gift-1')], tick);
+  validateMemoryState(next);
+  assert.equal(next.cursor, 1);
+  assert.equal(next.lastObservedTick, tick);
+
+  const by = (id) => next.actors.find((a) => a.actorId === id);
+  const donor = by('actor-4').memories[0], recipient = by('actor-2').memories[0];
+  assert.equal(donor.memoryId, 'memory-1-actor-4-self');
+  assert.equal(recipient.memoryId, 'memory-1-actor-2-self');
+  for (const m of [donor, recipient]) {
+    assert.equal(m.sourceEventSeq, 1);
+    assert.equal(m.occurrenceTick, tick);
+    assert.equal(m.observedTick, tick);
+    assert.equal(m.channel, 'self');
+    assert.equal(m.importance, 1);
+    assert.deepEqual(Object.keys(m.observable).sort(),
+      ['commandId', 'direction', 'donorId', 'product', 'quantity', 'recipientId', 'type']);
+  }
+  assert.deepEqual(donor.observable, {type: 'food-gift', donorId: 'actor-4', recipientId: 'actor-2', product: 'food',
+    quantity: 1, direction: 'given', commandId: 'gift-1'});
+  assert.deepEqual(recipient.observable, {type: 'food-gift', donorId: 'actor-4', recipientId: 'actor-2', product: 'food',
+    quantity: 1, direction: 'received', commandId: 'gift-1'});
+  assert.deepEqual(by('actor-1').memories, []);
+  assert.deepEqual(by('actor-3').memories, []);
+  assert.deepEqual(next.actors.map((a) => a.relationships), [[], [], [], []]);
+});
+
+test('CP1b-4b v6 空世界的 observer 消费赠粮事实后仍通过 validateMemoryWorld', () => {
+  const world = createMemoryWorld(memoryConfigV6());
+  const observer = reduceMemoryFacts(world.memoryModel.observer, [giftFact(1, 144, 'gift-1')], 144);
+  const next = {...world, memoryModel: {...world.memoryModel, observer}};
+  validateMemoryWorld(next);
+  assert.equal(next.memoryModel.observer.cursor, 1);
+  assert.equal(next.memoryModel.observer.lastObservedTick, 144);
+});
+
+test('CP1b-5 v1/v2 reducer 不接受赠粮来源，缺 donor/recipient 的名单也被拒', () => {
+  const tick = 144, facts = [giftFact(1, tick, 'gift-1')];
+  const v1Roster = GIFT_ROSTER.map(({actorId, alive}) => ({actorId, alive}));
+  assert.throws(() => reduceMemoryFacts(createMemoryState(v1Roster), facts, tick), (error) => error.code === 'INVALID_INPUT');
+  assert.throws(() => reduceMemoryFacts(createMemoryState(GIFT_ROSTER, 'memory-observer-v2'), facts, tick),
+    (error) => error.code === 'INVALID_INPUT');
+  assert.throws(() => advanceActorMemory(createMemoryState(GIFT_ROSTER, 'memory-observer-v2'), facts, tick),
+    (error) => error.code === 'INVALID_INPUT');
+  const partial = [{actorId: 'actor-4', alive: true, location: 'village'}];
+  assert.throws(() => reduceMemoryFacts(createMemoryState(partial, 'memory-observer-v3'), facts, tick),
+    (error) => error.code === 'INVALID_INPUT');
+  // v3 接受同一事实
+  assert.equal(reduceMemoryFacts(giftState(), facts, tick).cursor, 1);
+});
+
+test('CP1b-6 赠粮的来源、字段集、方向、地点与转移恒等式反例全被拒', () => {
+  const tick = 144, base = giftFact(1, tick, 'gift-1');
+  const reject = (fact) => assert.throws(
+    () => reduceMemoryFacts(giftState(), [fact], tick), (error) => error.code === 'INVALID_INPUT');
+  const withPayload = (extra) => ({...base, payload: {...base.payload, ...extra}});
+
+  reject({...base, sourceSystem: 'command-engine'});
+  reject({...base, commandId: null});
+  reject({...base, entityIds: ['actor-4']});
+  reject({...base, entityIds: ['actor-2', 'actor-4']});
+  reject({...base, entityIds: ['actor-4', 'actor-3']});
+  reject({...base, causationEventSeqs: [1]});
+  reject({...base, eventSeq: 2, causationEventSeqs: [2]});
+  const missing = {...base.payload};
+  delete missing.location;
+  reject({...base, payload: missing});
+  reject(withPayload({excess: 1}));
+  reject(withPayload({quantity: 2}));
+  reject(withPayload({product: 'herbs'}));
+  reject(withPayload({location: 'forest'}));
+  reject(withPayload({donorId: 'actor-2', recipientId: 'actor-4'}));
+  reject(withPayload({donorId: 'actor-1'}));
+  reject(withPayload({donorFoodAfter: base.payload.donorFoodBefore - 2}));
+  reject(withPayload({recipientFoodAfter: base.payload.recipientFoodBefore + 2}));
+  reject(withPayload({donorFoodBefore: 1.5}));
+  reject(withPayload({donorFoodAfter: -1}));
+  reject(withPayload({recipientFoodBefore: Number.NaN}));
+  // 同一 commandId 的重复赠粮来源被拒
+  assert.throws(() => reduceMemoryFacts(giftState(), [base, giftFact(2, tick, 'gift-1', 19, 18, 1, 2)], tick),
+    (error) => error.code === 'INVALID_INPUT');
+});
+
+test('CP1b-7 重复 suffix 不新增记忆，cursor/观察时点与 seq、tick 门保持', () => {
+  const tick = 144, facts = [giftFact(1, tick, 'gift-1')];
+  const first = reduceMemoryFacts(giftState(), facts, tick);
+  const again = advanceActorMemory(first, facts, tick);
+  assert.deepEqual(again, first);
+  assert.deepEqual(reduceMemoryFacts(first, [], tick), first);
+  assert.equal(first.cursor, 1);
+  assert.equal(first.lastObservedTick, tick);
+  assert.throws(() => advanceActorMemory(first, facts, tick - 1), (error) => error.code === 'INVALID_INPUT');
+  assert.throws(() => reduceMemoryFacts(first, [giftFact(3, tick, 'gift-2', 19, 18, 1, 2)], tick),
+    (error) => error.code === 'INVALID_INPUT');
+  assert.throws(() => reduceMemoryFacts(first, [giftFact(2, tick + 1, 'gift-2', 19, 18, 1, 2)], tick),
+    (error) => error.code === 'INVALID_INPUT');
+  // 观察时点前进后追加的新事实正常落账
+  const later = reduceMemoryFacts(first, [giftFact(2, tick + 1, 'gift-2', 19, 18, 1, 2)], tick + 1);
+  assert.equal(later.cursor, 2);
+  assert.equal(later.lastObservedTick, tick + 1);
+  assert.equal(later.actors.find((a) => a.actorId === 'actor-4').memories.length, 2);
+});
+
+test('CP1b-8 赠粮不增信任、旧 medicine-trade 仍 trust+10，v3 保留32条留存与排序', () => {
+  const tick = 144, events = [medicineSaleFact(1, tick)];
+  for (let i = 1; i <= 33; i++) events.push(giftFact(i + 1, tick, 'gift-' + i, 100 - (i - 1), 99 - (i - 1), i - 1, i));
+  const state = reduceMemoryFacts(giftState(), events, tick);
+  validateMemoryState(state);
+  validateMemoryHistory(state, events);
+  assert.equal(state.cursor, 34);
+
+  const by = (id) => state.actors.find((a) => a.actorId === id);
+  assert.equal(by('actor-4').memories.length, 32);
+  assert.equal(by('actor-2').memories.length, 32);
+  assert.deepEqual(by('actor-4').memories.map((m) => m.sourceEventSeq), Array.from({length: 32}, (_, i) => i + 3));
+  assert.equal(by('actor-4').memories.at(-1).memoryId, 'memory-34-actor-4-self');
+  assert.equal(by('actor-2').memories.at(-1).memoryId, 'memory-34-actor-2-self');
+  assert.equal(by('actor-1').memories.length, 1);
+  assert.equal(by('actor-3').memories.length, 1);
+  // 赠粮不改关系；旧 medicine-trade 仍是双方 trust+10
+  assert.deepEqual(by('actor-4').relationships, []);
+  assert.deepEqual(by('actor-2').relationships, []);
+  assert.deepEqual(by('actor-1').relationships, [{actorId: 'actor-3', trust: 10, lastSourceEventSeq: 1}]);
+  assert.deepEqual(by('actor-3').relationships, [{actorId: 'actor-1', trust: 10, lastSourceEventSeq: 1}]);
+});
+
+test('CP1b-9 赠粮 getter/稀疏/异类结构在读取前被拒（descriptor-first）', () => {
+  const tick = 144, base = giftFact(1, tick, 'gift-1');
+  const reject = (fact) => assert.throws(
+    () => reduceMemoryFacts(giftState(), [fact], tick), (error) => error.code === 'INVALID_INPUT');
+
+  let quantityReads = 0;
+  const payloadWithGetter = {...base.payload};
+  Object.defineProperty(payloadWithGetter, 'quantity', {enumerable: true, get() { quantityReads += 1; return 1; }});
+  reject({...base, payload: payloadWithGetter});
+  assert.equal(quantityReads, 0);
+
+  const sparseIds = {...base, entityIds: ['actor-4', 'actor-2']};
+  sparseIds.entityIds.length = 3;
+  reject(sparseIds);
+
+  const accessorIds = {...base, entityIds: ['actor-4', 'actor-2']};
+  Object.defineProperty(accessorIds.entityIds, '1', {enumerable: true, get() { return 'actor-2'; }});
+  reject(accessorIds);
+
+  reject({...base, payload: {...base.payload, donorFoodBefore: undefined}});
+  reject({...base, payload: {...base.payload, donorFoodBefore: () => 1}});
+  reject({...base, causationEventSeqs: [1, undefined]});
+  reject({...base, entityIds: ['actor-4', 2]});
+});
+
+test('CP1b-10 validateMemoryHistory 复算一致，篡改记忆/错版本/缺来源被拒', () => {
+  const tick = 144, events = [giftFact(1, tick, 'gift-1')];
+  const state = reduceMemoryFacts(giftState(), events, tick);
+  validateMemoryHistory(state, events);
+
+  const tampered = JSON.parse(JSON.stringify(state));
+  tampered.actors[3].memories[0].observable.direction = 'received';
+  assert.throws(() => validateMemoryHistory(tampered, events), (error) => error.code === 'INVALID_INPUT');
+
+  const dropped = JSON.parse(JSON.stringify(state));
+  dropped.actors[1].memories = [];
+  assert.throws(() => validateMemoryHistory(dropped, events), (error) => error.code === 'INVALID_INPUT');
+
+  assert.throws(() => validateMemoryHistory(state, []), (error) => error.code === 'INVALID_INPUT');
+  assert.throws(() => validateMemoryState({...state, version: 'memory-observer-v9'}),
+    (error) => error.code === 'UNSUPPORTED_VERSION');
+  assert.throws(() => createMemoryState(GIFT_ROSTER.map(({actorId, alive}) => ({actorId, alive})), 'memory-observer-v3'),
+    (error) => error.code === 'INVALID_INPUT');
+  assert.throws(() => createMemoryState([{actorId: 'actor-4', alive: true, location: 'forest'}], 'memory-observer-v3'),
+    (error) => error.code === 'INVALID_INPUT');
+});
+
+test('CP1b-11 projectActorEvent 旧类型输出不变，赠粮对无关 actor 零投影', () => {
+  const sale = medicineSaleFact(1, 144);
+  const [projection] = projectActorEvent(sale, 'actor-1', 'village');
+  assert.deepEqual(projection.observable,
+    {type: 'medicine-trade', sellerId: 'actor-1', buyerId: 'actor-3', herbs: 1, price: 5, cashDelta: 5});
+  assert.equal(projection.channel, 'interaction');
+  assert.equal(projection.importance, 2);
+  assert.equal(projection.memoryId, 'memory-1-actor-1-interaction');
+  assert.deepEqual(projectActorEvent(sale, 'actor-2', 'village'), []);
+  assert.deepEqual(projectActorEvent(giftFact(1, 144, 'gift-1'), 'actor-1', 'village'), []);
+  assert.deepEqual(projectActorEvent(giftFact(1, 144, 'gift-1'), 'actor-3', 'village'), []);
+});
+
+// ---------------------------------------------------------------- Controller boundary cases (CP1b-R)
+// These observer checks validate structure/projection consistency, not authoritative asset commits.
+const controllerBoundaryRoster = [
+  {actorId: 'actor-1', alive: true, location: 'village'},
+  {actorId: 'actor-2', alive: true, location: 'village'},
+  {actorId: 'actor-3', alive: true, location: 'village'},
+  {actorId: 'actor-4', alive: true, location: 'village'},
+];
+const controllerBoundaryFresh = () => createMemoryState(controllerBoundaryRoster, 'memory-observer-v3');
+const controllerBoundaryGift = (eventSeq, tick, commandId, donorFoodBefore = 20, recipientFoodBefore = 0) => ({
+  schemaVersion: 1, eventSeq, tick, type: 'FoodGiftCommitted', sourceSystem: 'scene', commandId,
+  causationEventSeqs: [], entityIds: ['actor-4', 'actor-2'],
+  payload: {donorId: 'actor-4', recipientId: 'actor-2', product: 'food', quantity: 1, location: 'village',
+    donorFoodBefore, donorFoodAfter: donorFoodBefore - 1,
+    recipientFoodBefore, recipientFoodAfter: recipientFoodBefore + 1},
+});
+const controllerBoundaryActor = (state, id) => state.actors.find((row) => row.actorId === id);
+
+test('CP1b-R1 delayed history replay observes a gift at its occurrence tick', () => {
+  const fact = controllerBoundaryGift(1, 10, 'gift-delayed');
+  const state = advanceActorMemory(controllerBoundaryFresh(), [fact], 20);
+  for (const id of ['actor-4', 'actor-2']) {
+    assert.equal(controllerBoundaryActor(state, id).memories[0].occurrenceTick, 10);
+    assert.equal(controllerBoundaryActor(state, id).memories[0].observedTick, 10);
+  }
+  assert.equal(state.lastObservedTick, 20);
+});
+
+test('CP1b-R2 full-history validation rejects a changed gift observation tick', () => {
+  const fact = controllerBoundaryGift(1, 10, 'gift-tamper');
+  const state = advanceActorMemory(controllerBoundaryFresh(), [fact], 12);
+  controllerBoundaryActor(state, 'actor-4').memories[0].observedTick = 11;
+  assert.throws(() => validateMemoryHistory(state, [fact]));
+});
+
+test('CP1b-R3 forest donor contradicts village gift and rejects without changing input', () => {
+  const state = controllerBoundaryFresh();
+  controllerBoundaryActor(state, 'actor-4').location = 'forest';
+  const before = structuredClone(state);
+  assert.throws(() => reduceMemoryFacts(state, [controllerBoundaryGift(1, 10, 'gift-forest')], 10),
+    (error) => error.code === 'INVALID_INPUT');
+  assert.deepEqual(state, before);
+});
+
+test('CP1b-R4 dead donor contradicts gift and rejects without changing input', () => {
+  const state = controllerBoundaryFresh();
+  controllerBoundaryActor(state, 'actor-4').alive = false;
+  const before = structuredClone(state);
+  assert.throws(() => reduceMemoryFacts(state, [controllerBoundaryGift(1, 10, 'gift-dead')], 10),
+    (error) => error.code === 'INVALID_INPUT');
+  assert.deepEqual(state, before);
+});
+
+test('CP1b-R5 gift observer enforces recipient capacity 1000', () => {
+  assert.throws(() => reduceMemoryFacts(controllerBoundaryFresh(),
+    [controllerBoundaryGift(1, 10, 'gift-full-recipient', 20, 1000)], 10));
+});
+
+test('CP1b-R6 recipient capacity allows the 999-to-1000 boundary', () => {
+  const next = reduceMemoryFacts(controllerBoundaryFresh(),
+    [controllerBoundaryGift(1, 10, 'gift-capacity-boundary', 20, 999)], 10);
+  assert.equal(next.cursor, 1);
+  assert.equal(controllerBoundaryActor(next, 'actor-2').memories.length, 1);
+  assert.equal(controllerBoundaryActor(next, 'actor-4').memories.length, 1);
+});
+
+test('CP1b-R7 gift observer rejects a donor transfer below zero', () => {
+  assert.throws(() => reduceMemoryFacts(controllerBoundaryFresh(),
+    [controllerBoundaryGift(1, 10, 'gift-empty-donor', 0, 0)], 10));
+});
+
+test('CP1b-R8 gift observer rejects arithmetic crossing safe-integer bounds', () => {
+  const max = Number.MAX_SAFE_INTEGER;
+  assert.throws(() => reduceMemoryFacts(controllerBoundaryFresh(),
+    [controllerBoundaryGift(1, 10, 'gift-recipient-overflow', 20, max)], 10));
+});
+
+test('CP1b-R9 full-log audit rejects repeated gift command IDs across incremental suffixes', () => {
+  const facts = [controllerBoundaryGift(1, 10, 'gift-once'), controllerBoundaryGift(2, 20, 'gift-once')];
+  assert.throws(() => advanceActorMemory(controllerBoundaryFresh(), facts, 20));
+});
+
+test('CP1b-R10 legacy three-argument projection keeps its no-gift output', () => {
+  assert.deepEqual(projectActorEvent(controllerBoundaryGift(1, 10, 'gift-legacy'), 'actor-4', 'village'), []);
+});
+
+test('CP1b-R11 observer-v3 retains v2 travel location projection', () => {
+  const travel = {
+    schemaVersion: 1, eventSeq: 1, tick: 12, type: 'PlayerActionCommitted',
+    sourceSystem: 'command-engine', commandId: 'travel-to-forest', causationEventSeqs: [], entityIds: ['actor-4'],
+    payload: {
+      actorId: 'actor-4', type: 'PlayerTravel', startTick: 0, endTick: 12,
+      product: null, quantity: 0, unitPrice: 0, amount: 0,
+      before: {location: 'village', fatigue: 0, wallet: 100, inventory: {food: 3, herbs: 1}, publicStock: {food: 10, herbs: 10}, communalGold: 0},
+      after: {location: 'forest', fatigue: 100, wallet: 100, inventory: {food: 3, herbs: 1}, publicStock: {food: 10, herbs: 10}, communalGold: 0},
+    },
+  };
+  const state = advanceActorMemory(controllerBoundaryFresh(), [travel], 12);
+  assert.equal(controllerBoundaryActor(state, 'actor-4').location, 'forest');
 });
