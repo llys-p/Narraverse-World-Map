@@ -138,6 +138,14 @@ export async function createRuntimeOwner(options,io=fs){
           if(dto.version===3)requireCondition(false,'Profile does not support command DTO version 3','COMMAND_UNSUPPORTED');
           else requireCondition(dto.version===1 || playerActionsAvailable,'Profile does not support player actions','COMMAND_UNSUPPORTED');
         }
+        if(serviceFormatVersion===8){
+          const committed=state.commands.find(c=>c.dto.commandId===dto.commandId)||
+            state.bundle.snapshot.world.encounterModel.inputHistory.find(entry=>entry.dto.commandId===dto.commandId);
+          if(committed){
+            requireCondition(canonicalJson(committed.dto)===canonicalJson(dto),'Command ID has different input','COMMAND_ID_CONFLICT');
+            return Promise.resolve(cloneData(committed.receipt));
+          }
+        }
         requireCondition(pending<MAX_PENDING_REQUESTS,'Command queue exceeds budget','LIMIT_EXCEEDED');pending++;
         const operation=tail.then(async()=>{
           const old=state.commands.find(c=>c.dto.commandId===dto.commandId);

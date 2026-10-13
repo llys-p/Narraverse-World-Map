@@ -367,3 +367,75 @@ test('D3-5 §service: legacy personality owner keeps the 128-file cap after 127 
   assert.deepEqual(reopened.getSnapshot(), atLimit, 'no-profile reopen loads the complete 128-file legacy chain');
   assert.equal(Object.keys(await storedBytes(directory)).filter(name => name.startsWith('service-commit-r')).length, 128);
 });
+
+test('D3-5 §service: committed encounter command retries remain idempotent when the format-8 queue is full', async t => {
+  const directory = path.join(await temporary(t), 'full-queue-world');
+  let holdNextLink = false;
+  let linkHeld = false;
+  let releaseHeldLink;
+  let signalLinkHeld;
+  const heldLink = new Promise(resolve => { signalLinkHeld = resolve; });
+  const io = new Proxy(fs, { get(target, property) {
+    if (property === 'link') return async (...args) => {
+      if (holdNextLink && !linkHeld) {
+        holdNextLink = false;
+        linkHeld = true;
+        signalLinkHeld();
+        await new Promise(resolve => { releaseHeldLink = resolve; });
+      }
+      return Reflect.get(target, property, target)(...args);
+    };
+    const value = Reflect.get(target, property, target);
+    return typeof value === 'function' ? value.bind(target) : value;
+  }});
+  const owner = trackOwner(t, await createRuntimeOwner({ directory, profile: PROFILE, seed: 42, writable: true }, io));
+  const officialBytes = async () => {
+    const names = (await fs.readdir(directory)).filter(name => /^(?:checkpoint|service-commit)-r(?:0|[1-9][0-9]*)\.json$/.test(name)).sort();
+    return Object.fromEntries(await Promise.all(names.map(async name => [name, await fs.readFile(path.join(directory, name))])));
+  };
+
+  const originalDto = begin('queue-full-original', 0);
+  const originalReceipt = await owner.submit(originalDto);
+  assert.equal(originalReceipt.status, 'committed');
+  assert.equal(originalReceipt.outcome, 'rejected', 'the original receipt is a durable village-domain rejection');
+  const beforeViews = four(owner);
+  const beforeDisk = await officialBytes();
+
+  holdNextLink = true;
+  const queued = [];
+  let settled;
+  try {
+    for (let index = 0; index < 16; index += 1) {
+      queued.push(owner.submit(begin(`queue-full-${index}`, index + 1)));
+    }
+    await heldLink;
+    assert.equal(linkHeld, true, 'a post-initialization publication is blocked while all 16 requests become pending');
+
+    assert.deepEqual(await owner.submit(originalDto), originalReceipt,
+      'retrying an already committed identical DTO returns its original receipt before the pending limit');
+    await assert.rejects(owner.submit(begin('queue-full-17', 17)), error => error.code === 'LIMIT_EXCEEDED',
+      'a new seventeenth request is still rejected at the queue limit');
+    await assert.rejects(owner.submit(dto('queue-full-original', 999, 'EncounterAction', {
+      encounterId: 'encounter-1', action: 'attack',
+    })), error => error.code === 'COMMAND_ID_CONFLICT',
+    'a changed DTO under the committed ID conflicts before stale-revision and queue-limit checks');
+
+    assert.deepEqual(four(owner), beforeViews, 'retry and rejected submissions do not alter any of the four cached projections');
+    assert.deepEqual(await officialBytes(), beforeDisk, 'retry and rejected submissions publish no additional official files');
+  } finally {
+    releaseHeldLink?.();
+    settled = await Promise.allSettled(queued);
+  }
+  assert.equal(settled.length, 16, 'all pending submissions settle after releasing publication');
+  assert(settled.every(result => result.status === 'fulfilled'), 'all 16 queued commands commit successfully');
+  const queuedReceipts = settled.map(result => result.value);
+  assert.deepEqual(queuedReceipts.map(receipt => receipt.commandId), Array.from({ length: 16 }, (_, index) => `queue-full-${index}`));
+  assert.equal(new Set(queuedReceipts.map(receipt => receipt.commandId)).size, 16);
+  assert.equal(owner.getSnapshot().revision, 17);
+  assert.equal(owner.getSnapshot().tick, 0);
+  const diskAfter = await officialBytes();
+  assert.equal(Object.keys(diskAfter).filter(name => name.startsWith('service-commit-r')).length, 18, 'r0 plus the original and all queued receipts are published');
+  const latest = await loadServiceCommit(path.join(directory, 'service-commit-r17.json'));
+  assert.equal(latest.commands.length, 17);
+  assert.equal(latest.bundle.snapshot.world.encounterModel.inputHistory.length, 17);
+});
