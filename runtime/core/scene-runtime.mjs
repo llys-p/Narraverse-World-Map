@@ -75,6 +75,19 @@ export function validateSceneGiftEvent(event){
  for(const key of ['donorFoodBefore','donorFoodAfter','recipientFoodBefore','recipientFoodAfter'])integer(p[key]);
  requireCondition(p.donorFoodBefore>0&&p.donorFoodAfter===p.donorFoodBefore-1&&p.recipientFoodBefore<1000&&p.recipientFoodAfter===p.recipientFoodBefore+1,'Gift fact transfer mismatch');
 }
+function auditSceneProjection(bundle){
+ inspectDescriptorTree(bundle);
+ validateBundle(bundle,{rulesVersion:SCENE_RULES,systems:canonicalSystems(SCENE_RULES)});
+}
+export function describeSceneEncounterActions(bundle){
+ auditSceneProjection(bundle);
+ return cloneData(hooks().describeActions(bundle));
+}
+export function describeSceneGiftAvailability(bundle){
+ auditSceneProjection(bundle);
+ const {outcome,reasonCode}=auditGift(bundle.snapshot.world);
+ return {available:outcome==='succeeded',reasonCode};
+}
 export function executeSceneIntent(bundle,dto){
  inspectDescriptorTree({bundle,dto});preflightSceneIntent(dto);
  const systems=canonicalSystems(SCENE_RULES);

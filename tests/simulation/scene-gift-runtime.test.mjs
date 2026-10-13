@@ -1361,3 +1361,155 @@ test('CP1d-R10 reachable dead/no-food/full refusals are valid, ordered, and atom
     worldState.validateBundle(after, {rulesVersion: runtime.SCENE_RULES, systems});
   }
 });
+
+test('CP2a-K1 scene knowledge is a strict, cloned local projection of the real scene and observer', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const knowledgeModule = await cp1cImport('../../runtime/knowledge/scene-knowledge.mjs', 'scene knowledge');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const config = fixture.defaultSceneVillageConfig('no-opportunity');
+  config.memory.society.actors.initialActors[0].health = 850;
+  config.memory.society.actors.initialActors[2].health = 0;
+  const {bundle: initial, systems} = fixture.createSceneVillage(42, 'cp2a-knowledge-real-scene', config);
+  worldState.validateBundle(initial, {rulesVersion: runtime.SCENE_RULES, systems});
+  const gift = runtime.executeSceneIntent(initial,
+    cp1dGift('cp2a-knowledge-gift', initial.snapshot.revision)).bundle;
+  worldState.validateBundle(gift, {rulesVersion: runtime.SCENE_RULES, systems});
+  const observerBefore = canonicalJson(gift.snapshot.world.memoryModel.observer);
+
+  const view = knowledgeModule.projectSceneKnowledge(gift, 'actor-2');
+  assert.deepEqual(Object.keys(view).sort(),
+    ['knowledgeVersion', 'simulationId', 'revision', 'tick', 'actorId', 'self', 'visibleActors', 'giftMemories'].sort());
+  assert.deepEqual(view, {
+    knowledgeVersion: 'scene-knowledge-v1',
+    simulationId: 'cp2a-knowledge-real-scene',
+    revision: 1,
+    tick: 0,
+    actorId: 'actor-2',
+    self: {name: '猎人', occupation: 'hunter', location: 'village', alive: true, condition: 'healthy'},
+    visibleActors: [
+      {actorId: 'actor-1', name: '村长', occupation: 'chief', location: 'village', alive: true, condition: 'wounded'},
+      {actorId: 'actor-3', name: '商人', occupation: 'merchant', location: 'village', alive: false, condition: 'dead'},
+      {actorId: 'actor-4', name: '玩家', occupation: 'player', location: 'village', alive: true, condition: 'healthy'},
+    ],
+    giftMemories: gift.snapshot.world.memoryModel.observer.actors.find((entry) => entry.actorId === 'actor-2')
+      .memories.filter((memory) => memory.observable?.type === 'food-gift'),
+  });
+  assert.equal(view.giftMemories.length, 1);
+  assert.deepEqual(view.giftMemories[0].observable,
+    {type: 'food-gift', donorId: 'actor-4', recipientId: 'actor-2', product: 'food', quantity: 1,
+      direction: 'received', commandId: 'cp2a-knowledge-gift'});
+  for (const actor of view.visibleActors) {
+    assert.deepEqual(Object.keys(actor).sort(), ['actorId', 'name', 'occupation', 'location', 'alive', 'condition'].sort());
+    assert.equal(Object.hasOwn(actor, 'health'), false, 'public condition must not reveal exact health');
+  }
+  const assertNoPrivateFields = (value) => {
+    if (Array.isArray(value)) { for (const item of value) assertNoPrivateFields(item); return; }
+    if (value && typeof value === 'object') {
+      for (const [key, child] of Object.entries(value)) {
+        assert.equal(['health', 'inventory', 'wallet', 'receipt', 'plan', 'currentGoal'].includes(key), false,
+          `scene knowledge must not expose ${key}`);
+        assertNoPrivateFields(child);
+      }
+    }
+  };
+  assertNoPrivateFields(view);
+  view.visibleActors[0].name = 'mutated projection';
+  view.giftMemories[0].observable.direction = 'given';
+  const reread = knowledgeModule.projectSceneKnowledge(gift, 'actor-2');
+  assert.equal(reread.visibleActors[0].name, '村长', 'projection does not leak mutable references');
+  assert.equal(reread.giftMemories[0].observable.direction, 'received');
+  assert.equal(canonicalJson(gift.snapshot.world.memoryModel.observer), observerBefore,
+    'reading knowledge does not write to the persistent observer');
+});
+
+test('CP2a-K2 scene knowledge is local, rejects unknown actors, and rejects accessors before reading them', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const knowledgeModule = await cp1cImport('../../runtime/knowledge/scene-knowledge.mjs', 'scene knowledge');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle, systems} = fixture.createSceneVillage(42, 'cp2a-knowledge-locality',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  worldState.validateBundle(bundle, {rulesVersion: runtime.SCENE_RULES, systems});
+  assert.throws(() => knowledgeModule.projectSceneKnowledge(bundle, 'actor-99'),
+    (error) => error.code === 'INVALID_INPUT', 'unknown actor identifiers are rejected');
+
+  const traveled = runtime.executeSceneIntent(bundle,
+    {version: 3, commandId: 'cp2a-knowledge-travel', expectedRevision: 0, type: 'PlayerTravel',
+      payload: {destination: 'forest'}}).bundle;
+  worldState.validateBundle(traveled, {rulesVersion: runtime.SCENE_RULES, systems});
+  const playerView = knowledgeModule.projectSceneKnowledge(traveled, 'actor-4');
+  assert.equal(playerView.self.location, 'forest');
+  assert.equal(playerView.visibleActors.length, 0, 'actors at the village are not visible from the forest');
+  const villageView = knowledgeModule.projectSceneKnowledge(traveled, 'actor-2');
+  assert.equal(villageView.self.location, 'village');
+  assert.equal(villageView.visibleActors.some((actor) => actor.actorId === 'actor-4'), false,
+    'a traveler is not visible to actors remaining in the village');
+
+  let reads = 0;
+  const accessorBundle = {...bundle};
+  Object.defineProperty(accessorBundle, 'snapshot', {enumerable: true, get() { reads++; return bundle.snapshot; }});
+  assert.throws(() => knowledgeModule.projectSceneKnowledge(accessorBundle, 'actor-2'),
+    (error) => error.code === 'INVALID_INPUT');
+  assert.equal(reads, 0, 'descriptor validation rejects accessors without invoking them');
+});
+
+test('CP2a-K3 scene snapshot is a bounded local projection and exposes Gift only on its real recipient', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const contract = await cp1cImport('../../runtime/service/http-contract.mjs', 'scene service projection');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle: initial, systems} = fixture.createSceneVillage(42, 'cp2a-scene-projection',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  worldState.validateBundle(initial, {rulesVersion: runtime.SCENE_RULES, systems});
+  const initialView = contract.projectSceneSnapshot(initial);
+  assert.deepEqual(Object.keys(initialView).sort(),
+    ['apiVersion', 'sceneViewVersion', 'simulationId', 'revision', 'tick', 'location', 'self', 'actors'].sort());
+  assert.deepEqual(Object.keys(initialView.self).sort(), ['actorId', 'alive', 'food'].sort());
+  assert.deepEqual(initialView.self, {actorId: 'actor-4', alive: true, food: 20});
+  const target = initialView.actors.find((actor) => actor.actorId === 'actor-2');
+  assert.ok(target);
+  assert.deepEqual(Object.keys(target).sort(),
+    ['actorId', 'name', 'occupation', 'location', 'alive', 'condition', 'receivedGifts', 'gift'].sort());
+  assert.deepEqual(target.receivedGifts, []);
+  assert.equal(typeof target.gift.available, 'boolean');
+  for (const actor of initialView.actors.filter((entry) => entry.actorId !== 'actor-2')) {
+    assert.deepEqual(actor.gift, {available: false, reasonCode: 'INVALID_INPUT'});
+  }
+  const afterGift = runtime.executeSceneIntent(initial,
+    {version: 3, commandId: 'cp2a-scene-projection-gift', expectedRevision: 0, type: 'PlayerGiftFood',
+      payload: {recipientId: 'actor-2'}}).bundle;
+  worldState.validateBundle(afterGift, {rulesVersion: runtime.SCENE_RULES, systems});
+  const giftView = contract.projectSceneSnapshot(afterGift);
+  assert.equal(giftView.revision, 1);
+  const giftRecipient = giftView.actors.find((actor) => actor.actorId === 'actor-2');
+  assert.equal(giftRecipient.receivedGifts.length, 1);
+  assert.equal(giftRecipient.receivedGifts[0].observable.commandId, 'cp2a-scene-projection-gift');
+  assert.deepEqual(giftRecipient.gift, {available: true, reasonCode: null},
+    'the recipient view audits the player donor, who still has food after gifting one unit');
+});
+
+test('CP2a-K4 only the donor and recipient receive their own directional Gift memories', async () => {
+  const fixture = await cp1cImport('../../runtime/fixtures/scene-survival-village.mjs', 'scene fixture');
+  const knowledge = await cp1cImport('../../runtime/knowledge/scene-knowledge.mjs', 'scene knowledge');
+  const runtime = await cp1cImport('../../runtime/core/scene-runtime.mjs', 'scene runtime');
+  const worldState = await import('../../runtime/core/world-state.mjs');
+  const {bundle: initial, systems} = fixture.createSceneVillage(42, 'cp2a-directional-memories',
+    fixture.defaultSceneVillageConfig('no-opportunity'));
+  const gift = runtime.executeSceneIntent(initial,
+    {version: 3, commandId: 'cp2a-directional-gift', expectedRevision: 0, type: 'PlayerGiftFood',
+      payload: {recipientId: 'actor-2'}}).bundle;
+  worldState.validateBundle(gift, {rulesVersion: runtime.SCENE_RULES, systems});
+  const donor = knowledge.projectSceneKnowledge(gift, 'actor-4');
+  const recipient = knowledge.projectSceneKnowledge(gift, 'actor-2');
+  const bystander = knowledge.projectSceneKnowledge(gift, 'actor-1');
+  assert.equal(donor.giftMemories.length, 1);
+  assert.equal(donor.giftMemories[0].observable.direction, 'given');
+  assert.equal(recipient.giftMemories.length, 1);
+  assert.equal(recipient.giftMemories[0].observable.direction, 'received');
+  assert.deepEqual(bystander.giftMemories, [], 'unrelated actors receive no private Gift memory');
+  for (const entry of [...donor.giftMemories, ...recipient.giftMemories]) {
+    assert.equal(entry.occurrenceTick, 0);
+    assert.equal(entry.observable.commandId, 'cp2a-directional-gift');
+  }
+});

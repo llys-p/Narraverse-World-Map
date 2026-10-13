@@ -884,13 +884,15 @@ function executeIntentFor(bundle,dto,profile=null) {
 // capability description
 // ---------------------------------------------------------------------------
 
-export function describeEncounterActions(bundle) {
+export function describeEncounterActions(bundle){return describeActionsFor(bundle);}
+function describeActionsFor(bundle,profile=null) {
   requireCondition(isPlainObject(bundle), 'describeEncounterActions expects a bundle', 'INVALID_INPUT');
   record(bundle);
   const snapshot = bundle.snapshot;
   requireCondition(isPlainObject(snapshot), 'describeEncounterActions expects a bundle snapshot', 'INVALID_INPUT');
   record(snapshot);
-  requireEncounterProfileMetadata(snapshot);
+  if(profile)requireCondition(snapshot.rulesVersion===profile.rules&&snapshot.fixtureId===profile.fixture&&snapshot.fixtureVersion==='1'&&snapshot.schemaVersion===3,'Unsupported scene profile','UNSUPPORTED_VERSION');
+  else requireEncounterProfileMetadata(snapshot);
   const world = snapshot.world;
   requireCondition(isPlainObject(world), 'describeEncounterActions expects bundle.snapshot.world', 'INVALID_INPUT');
   record(world);
@@ -901,8 +903,8 @@ export function describeEncounterActions(bundle) {
   const inForest = isPlainObject(player) && player.location === ENCOUNTER_LOCATION;
 
   return {
-    profile: ENCOUNTER_PROFILE,
-    rulesVersion: ENCOUNTER_RULES,
+    profile: profile?.fixture??ENCOUNTER_PROFILE,
+    rulesVersion: profile?.rules??ENCOUNTER_RULES,
     beginTicks: BEGIN_TICKS,
     attackTicks: ATTACK_TICKS,
     fleeTicks: FLEE_TICKS,
@@ -1458,6 +1460,7 @@ export function createSceneEncounterRuntimeHooks(baseHooks,scenePolicy){
   validateWorld:validateSceneEncounterWorldState,executeIntent:hooks.executeIntent});
  const hooks={
   executeIntent:(bundle,dto)=>executeIntentFor(bundle,dto,profile()),
+  describeActions:bundle=>describeActionsFor(bundle,profile()),
   createWorld:(memory,mind,motivation,experience,cognition,id)=>hooksCreateWorld(memory,mind,motivation,experience,cognition,id,baseHooks,'encounter-runtime-v2'),
   beforeSystems:(snapshot,events,tick,append,commit)=>hooksBeforeSystems(snapshot,events,tick,append,commit,baseHooks),
   afterSystems:(snapshot,events,tick,append,context)=>hooksAfterSystems(snapshot,events,tick,append,context,baseHooks),

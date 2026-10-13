@@ -18,13 +18,17 @@ import { parseStrictJson } from './strict-json.mjs';
 import { SURVIVAL_RULES } from '../core/survival-state.mjs';
 import { ENCOUNTER_RULES, ENCOUNTER_PROFILE, describeEncounterActions } from '../core/encounter-runtime.mjs';
 import { encounterSystems } from '../fixtures/encounter-survival-village.mjs';
-import { projectEncounterInspector } from '../knowledge/encounter-knowledge.mjs';
+import { projectEncounterInspector, projectSceneMindInspector } from '../knowledge/encounter-knowledge.mjs';
+import { SCENE_RULES, SCENE_PROFILE, describeSceneEncounterActions, describeSceneGiftAvailability } from '../core/scene-runtime.mjs';
+import { sceneSystems } from '../fixtures/scene-survival-village.mjs';
+import { projectSceneKnowledge } from '../knowledge/scene-knowledge.mjs';
 // The frozen inspector identity lives with the projection that serves it.
 const SURVIVAL_INSPECTOR_VERSION = 'survival-inspector-v1';
 const MAX_SURVIVAL_INSPECTOR_BYTES = 131072;
 export const MAX_COMMAND_BYTES=4096;
 export const SURVIVAL_SERVICE_FORMAT=7;
 export const ENCOUNTER_SERVICE_FORMAT=8;
+export const SCENE_SERVICE_FORMAT=9;
 export const MAX_SERVICE_ADVANCE_TICKS=1440;
 export { MIND_RULES };
 const _mindBackend={fixture:mindFixture,runtime:mindRuntime,knowledge:mindKnowledge};
@@ -177,7 +181,7 @@ export function parseCommandBytes(bytes,commandDtoVersion=1){
     commandDtoVersion===3?'Encounter service requires command DTO version 3':'Command DTO version is unsupported by this service','UNSUPPORTED_VERSION');
   return dto;
 }
-function validateEncounterCommandDto(dto){
+function validateEncounterCommandDto(dto,scene=false){
   inspectDescriptorTree(dto);
   requireCondition(new TextEncoder().encode(canonicalJson(dto)).length<=MAX_COMMAND_BYTES,'Command exceeds budget','LIMIT_EXCEEDED');
   fields(dto,['version','commandId','expectedRevision','type','payload']);
@@ -193,6 +197,8 @@ function validateEncounterCommandDto(dto){
   else if(['PlayerBuy','PlayerSell'].includes(dto.type)){
     fields(dto.payload,['product','quantity']);requireCondition(['food','herbs'].includes(dto.payload.product),'Invalid product');
     integer(dto.payload.quantity,1);requireCondition(dto.payload.quantity<=10,'Quantity exceeds budget','LIMIT_EXCEEDED');
+  }else if(scene && dto.type==='PlayerGiftFood'){
+    fields(dto.payload,['recipientId']);requireCondition(dto.payload.recipientId==='actor-2','Unknown food gift recipient');
   }else if(dto.type==='EncounterBegin')fields(dto.payload,[]);
   else if(dto.type==='EncounterAction'){
     fields(dto.payload,['encounterId','action']);requireCondition(typeof dto.payload.encounterId==='string' && dto.payload.encounterId.length>0 &&
@@ -202,6 +208,15 @@ function validateEncounterCommandDto(dto){
       dto.payload.encounterId.length<=64,'Invalid encounter ID');
   }else requireCondition(false,'Unknown action type');
   return cloneData(dto);
+}
+export function validateSceneCommandDto(dto){
+  const command=validateEncounterCommandDto(dto,true);
+  for(const prefix of ['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-','survival-day-'])
+    requireCondition(!command.commandId.startsWith(prefix),'Reserved internal command ID');
+  return command;
+}
+export function parseSceneCommandBytes(bytes){
+  return validateSceneCommandDto(parseStrictJson(bytes,MAX_COMMAND_BYTES));
 }
 export function validateServiceCommandDto(dto){
   record(dto);
@@ -247,16 +262,19 @@ export function runtimeProfile(bundle){
   if(s.rulesVersion===ENCOUNTER_RULES && s.fixtureId===ENCOUNTER_PROFILE){
     return {serviceFormatVersion:ENCOUNTER_SERVICE_FORMAT,rulesVersion:ENCOUNTER_RULES,systems:encounterSystems()};
   }
+  if(s.rulesVersion===SCENE_RULES && s.fixtureId===SCENE_PROFILE){
+    return {serviceFormatVersion:SCENE_SERVICE_FORMAT,rulesVersion:SCENE_RULES,systems:sceneSystems()};
+  }
   requireCondition(false,'Runtime service profile is not registered','UNSUPPORTED_VERSION');
 }
 export function projectPlayerSnapshot(bundle){
   const profile=runtimeProfile(bundle);let actions;
-  if([5,6,7,8].includes(profile.serviceFormatVersion)){
+  if([5,6,7,8,9].includes(profile.serviceFormatVersion)){
     validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});
     const s=bundle.snapshot,p=s.world.playerModel,a=s.world.actorModel.actors.find(actor=>actor.actorId==='actor-4');
     requireCondition(p.actorId==='actor-4' && a,'Player identity is missing');
     const {actorId,name,occupation,location,simulationLevel,alive,deathTick,health,hunger,fatigue,needs}=a;
-    actions=profile.serviceFormatVersion===8?describeEncounterWorldActions(bundle):profile.serviceFormatVersion===7?requireSurvivalBackend().runtime.describeSurvivalPlayerActions(bundle):
+    actions=[8,9].includes(profile.serviceFormatVersion)?describeEncounterWorldActions(bundle):profile.serviceFormatVersion===7?requireSurvivalBackend().runtime.describeSurvivalPlayerActions(bundle):
       profile.serviceFormatVersion===6?requireCognitionBackend().runtime.describeCognitionPlayerActions(bundle):
       requireMotivationBackend().runtime.describeMotivationPlayerActions(bundle);
     return cloneData({apiVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,
@@ -288,7 +306,7 @@ export function projectPublicSnapshot(bundle){
 export function projectEncounterSnapshot(bundle){
   inspectDescriptorTree(bundle);
   const profile=runtimeProfile(bundle);
-  requireCondition(profile.serviceFormatVersion===ENCOUNTER_SERVICE_FORMAT,'Encounter projection requires the encounter profile','UNSUPPORTED_VERSION');
+  requireCondition([ENCOUNTER_SERVICE_FORMAT,SCENE_SERVICE_FORMAT].includes(profile.serviceFormatVersion),'Encounter projection requires the encounter profile','UNSUPPORTED_VERSION');
   validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});
   const s=bundle.snapshot,w=s.world,actor=w.actorModel.actors.find(entry=>entry.actorId==='actor-4');
   requireCondition(actor,'Encounter actor is missing');
@@ -297,7 +315,24 @@ export function projectEncounterSnapshot(bundle){
     self:{alive:actor.alive,health:actor.health,location:actor.location,deathTick:actor.deathTick},
     encounter:w.encounterModel.encounter===null?null:cloneData(w.encounterModel.encounter),
     population:{totalLivingWolves:wolves,availableWolves:wolves-reserved,reservedWolves:reserved,
-      battleDeaths:w.ecologyModel.ledger.wolves.battleDeaths},actions:describeEncounterActions(bundle)});
+      battleDeaths:w.ecologyModel.ledger.wolves.battleDeaths},actions:profile.serviceFormatVersion===SCENE_SERVICE_FORMAT?describeSceneEncounterActions(bundle):describeEncounterActions(bundle)});
+}
+export function projectSceneSnapshot(bundle){
+  inspectDescriptorTree(bundle);
+  const profile=runtimeProfile(bundle);
+  requireCondition(profile.serviceFormatVersion===SCENE_SERVICE_FORMAT,'Scene projection requires the scene profile','UNSUPPORTED_VERSION');
+  validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});
+  const s=bundle.snapshot,w=s.world,player=w.actorModel.actors.find(actor=>actor.actorId==='actor-4');
+  requireCondition(player && w.playerModel.actorId==='actor-4','Scene player identity is missing');
+  const knowledge=projectSceneKnowledge(bundle,'actor-4'),gift=describeSceneGiftAvailability(bundle);
+  const actors=player.location==='village'?knowledge.visibleActors.map(actor=>({...actor,
+    receivedGifts:projectSceneKnowledge(bundle,actor.actorId).giftMemories.filter(entry=>
+      entry.observable.donorId==='actor-4' && entry.observable.direction==='received'),
+    gift:actor.actorId==='actor-2'?gift:{available:false,reasonCode:'INVALID_INPUT'}})):[];
+  const projection={apiVersion:1,sceneViewVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,
+    location:player.location,self:{actorId:'actor-4',alive:player.alive,food:w.playerModel.inventory.food},actors};
+  requireCondition(new TextEncoder().encode(canonicalJson(projection)).length<=65536,'Scene projection exceeds budget','LIMIT_EXCEEDED');
+  return cloneData(projection);
 }
 // Read-only developer projection. Format4 keeps the M1 projection; format5/6 dispatch to the
 // motivation/cognition inspectors. Every entry fully re-validates the bundle before returning
@@ -308,5 +343,6 @@ export function projectMindInspector(bundle){
   if(format===6)return cloneData(requireCognitionBackend().knowledge.projectCognitionInspector(bundle));
   if(format===7)return cloneData(requireSurvivalBackend().knowledge.projectSurvivalInspector(bundle));
   if(format===8)return cloneData(projectEncounterInspector(bundle));
+  if(format===9)return cloneData(projectSceneMindInspector(bundle));
   return cloneData(_mindBackend.knowledge.projectMindInspector(bundle));
 }

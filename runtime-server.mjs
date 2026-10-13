@@ -3,7 +3,7 @@ import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRuntimeOwner } from './runtime/service/runtime-owner.mjs';
-import { MAX_COMMAND_BYTES,MAX_SERVICE_ADVANCE_TICKS,parseCommandBytes } from './runtime/service/http-contract.mjs';
+import { MAX_COMMAND_BYTES,MAX_SERVICE_ADVANCE_TICKS,parseCommandBytes,parseSceneCommandBytes } from './runtime/service/http-contract.mjs';
 import { MAX_PENDING_REQUESTS } from './runtime/service/service-commit.mjs';
 import { record,integer,requireCondition,fault } from './runtime/core/data-contract.mjs';
 const root=fileURLToPath(new URL('./',import.meta.url));
@@ -33,7 +33,7 @@ export async function startRuntimeServer(options){
   const inspectMind=options.inspectMind??false;requireCondition(typeof inspectMind==='boolean','Invalid mind inspector mode');
   const assets=new Map();for(const [url,[file,type]] of staticFiles)assets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
   const mindAssets=new Map();for(const [url,[file,type]] of mindStaticFiles)mindAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
-  const {port:ignored,inspectMind:ignoredInspector,...ownerOptions}=options,owner=await createRuntimeOwner(ownerOptions);let actualPort=port,closed=false,pendingRequests=0;
+  const {port:ignored,inspectMind:ignoredInspector,...ownerOptions}=options,owner=await createRuntimeOwner(ownerOptions);let actualPort=port,closed=false,pendingRequests=0,sceneBodyReads=0;
   const encounterAssets=new Map();if(owner.encounterAvailable)for(const [url,[file,type]] of encounterStaticFiles){
     try{encounterAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});}
     catch(error){await owner.close();throw error;}
@@ -42,7 +42,7 @@ export async function startRuntimeServer(options){
     playerActionsAvailable:owner.playerActionsAvailable,mindAvailable:inspectMind && owner.mindAvailable,
     commandDtoVersion:owner.commandDtoVersion,maxCommandBytes:MAX_COMMAND_BYTES,
     maxAdvanceTicks:owner.commandDtoVersion===3?144000:MAX_SERVICE_ADVANCE_TICKS,
-    ...(owner.encounterAvailable?{encounterAvailable:true}:{})});
+    ...(owner.encounterAvailable?{encounterAvailable:true}:{}),...(owner.sceneAvailable?{sceneAvailable:true}:{})});
   const server=http.createServer({maxHeaderSize:8192,requestTimeout:5000,headersTimeout:5000},async(req,res)=>{
     const send=(status,data,type='application/json; charset=utf-8',extra={})=>{
       const bytes=Buffer.isBuffer(data)?data:Buffer.from(JSON.stringify(data));
@@ -67,6 +67,12 @@ export async function startRuntimeServer(options){
         else{const asset=mindAssets.get(route);send(200,asset.bytes,asset.type);}
         return;
       }
+      if(route==='/api/runtime/scene'){
+        if(!owner.sceneAvailable){send(404,envelope('SCENE_UNAVAILABLE','当前世界没有场景投影。'));return;}
+        if(!['GET','HEAD'].includes(req.method)){send(405,envelope('WRITE_DISABLED','当前接口只支持读取。'),undefined,{Allow:'GET, HEAD',Connection:'close'});return;}
+        if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
+        send(200,owner.getScene());return;
+      }
       if(route==='/api/runtime/encounter'){
         if(!owner.encounterAvailable){send(404,envelope('ENCOUNTER_UNAVAILABLE','当前世界没有遭遇投影。'));return;}
         if(!['GET','HEAD'].includes(req.method)){send(405,envelope('WRITE_DISABLED','当前接口只支持读取。'),undefined,{Allow:'GET, HEAD',Connection:'close'});return;}
@@ -77,6 +83,13 @@ export async function startRuntimeServer(options){
       if(route==='/api/runtime/commands'){
         if(!writable || req.method!=='POST'){send(405,envelope('WRITE_DISABLED','当前入口不接受此方法。'),undefined,{Allow:writable?'POST':'',Connection:'close'});return;}
         if(!/^application\/json(?:;\s*charset=utf-8)?$/i.test(req.headers['content-type']??'')){send(415,envelope('INVALID_INPUT','请使用UTF8 JSON。'),undefined,{Connection:'close'});return;}
+        if(owner.sceneAvailable){
+          requireCondition(sceneBodyReads<MAX_PENDING_REQUESTS,'Command body reads exceed budget','LIMIT_EXCEEDED');sceneBodyReads++;
+          let dto;
+          try{dto=parseSceneCommandBytes(await readCommandBody(req));}
+          finally{sceneBodyReads--;}
+          send(200,await owner.submit(dto));return;
+        }
         requireCondition(pendingRequests<MAX_PENDING_REQUESTS,'Command requests exceed budget','LIMIT_EXCEEDED');pendingRequests++;
         try{const dto=parseCommandBytes(await readCommandBody(req),owner.commandDtoVersion);send(200,await owner.submit(dto));}
         finally{pendingRequests--;}

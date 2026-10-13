@@ -5,6 +5,7 @@ import { createPersonalityNeutral } from '../fixtures/personality-village.mjs';
 import { createPlayerVillage } from '../fixtures/player-village.mjs';
 import { createPlayerPlayVillage } from '../fixtures/player-play-village.mjs';
 import { createEncounterVillage } from '../fixtures/encounter-survival-village.mjs';
+import { createSceneVillage } from '../fixtures/scene-survival-village.mjs';
 import { memorySystems } from '../fixtures/memory-village.mjs';
 import { PERSONALITY_RULES } from '../core/memory-runtime.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
@@ -13,11 +14,11 @@ import { MAX_STATE_FILE_BYTES,readStateFile } from '../persistence/bounded-json-
 import { validateBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { fields,record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
-import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,projectEncounterSnapshot,runtimeProfile,validateServiceCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend,loadCognitionBackend,requireCognitionBackend,loadSurvivalBackend,requireSurvivalBackend } from './http-contract.mjs';
+import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,projectEncounterSnapshot,projectSceneSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend,loadCognitionBackend,requireCognitionBackend,loadSurvivalBackend,requireSurvivalBackend } from './http-contract.mjs';
 import { saveServiceCommit,loadServiceCommit,transitionServiceCommand,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 const MAX_ENCOUNTER_SERVICE_FILES=MAX_SERVICE_FILES+1;
-const serviceFileLimit=format=>format===8?MAX_ENCOUNTER_SERVICE_FILES:MAX_SERVICE_FILES;
+const serviceFileLimit=format=>[8,9].includes(format)?MAX_ENCOUNTER_SERVICE_FILES:MAX_SERVICE_FILES;
 async function loadExplicitCheckpoint(file,io){
   requireCondition(!/\.tmp$/i.test(file),'Temporary file is not a checkpoint','INVALID_CHECKPOINT');
   try{
@@ -62,7 +63,7 @@ async function inspectDirectory(directory,io){
     let envelope;
     try{envelope=parseStrictJson(await readStateFile(ordered[0].file,io),MAX_STATE_FILE_BYTES);}
     catch{throw fault('LIMIT_EXCEEDED','Runtime directory exceeds file budget');}
-    requireCondition(envelope?.serviceFormatVersion===8,'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
+    requireCondition([8,9].includes(envelope?.serviceFormatVersion),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
   }
   return ordered;
 }
@@ -76,7 +77,7 @@ export async function createRuntimeOwner(options,io=fs){
   try{await loadSurvivalBackend();}catch(error){if(options.profile==='survival-village')throw error;}
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
-  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village','encounter-survival-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
+  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village','encounter-survival-village','scene-survival-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
   requireCondition(options.profile===undefined || options.checkpoint===undefined,'Profile and checkpoint are mutually exclusive');
   if(options.seed!==undefined){integer(options.seed);requireCondition(options.seed<=0xffffffff,'Invalid runtime seed');}
   if(options.checkpoint!==undefined)requireCondition(typeof options.checkpoint==='string' && options.checkpoint.length>0 && options.seed===undefined,'Checkpoint cannot reset seed');
@@ -108,6 +109,7 @@ export async function createRuntimeOwner(options,io=fs){
         options.profile==='cognition-village'?requireCognitionBackend().fixture.createCognitionVillage:
         options.profile==='survival-village'?requireSurvivalBackend().fixture.createSurvivalVillage:
         options.profile==='encounter-survival-village'?createEncounterVillage:
+        options.profile==='scene-survival-village'?createSceneVillage:
         options.profile==='player-play-village'?createPlayerPlayVillage:options.profile==='player-village'?createPlayerVillage:createPersonalityNeutral;
       bundle=options.checkpoint===undefined?create(options.seed??42).bundle:
         await loadExplicitCheckpoint(options.checkpoint,io);
@@ -115,10 +117,11 @@ export async function createRuntimeOwner(options,io=fs){
       if(writable || serviceFormatVersion>=2)state={serviceFormatVersion,anchor:cloneData(bundle),commands:[],bundle};
     }
     const {systems,serviceFormatVersion}=runtimeProfile(bundle),playerAvailable=serviceFormatVersion>=2,
-      playerActionsAvailable=[3,4,5,6,7,8].includes(serviceFormatVersion),
-      mindAvailable=[4,5,6,7,8].includes(serviceFormatVersion),encounterAvailable=serviceFormatVersion===8;
+      playerActionsAvailable=[3,4,5,6,7,8,9].includes(serviceFormatVersion),
+      mindAvailable=[4,5,6,7,8,9].includes(serviceFormatVersion),encounterAvailable=[8,9].includes(serviceFormatVersion),sceneAvailable=serviceFormatVersion===9;
     let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(bundle),playerProjection=playerAvailable?projectPlayerSnapshot(bundle):null,
-      mindProjection=mindAvailable?projectMindInspector(bundle):null,encounterProjection=encounterAvailable?projectEncounterSnapshot(bundle):null;
+      mindProjection=mindAvailable?projectMindInspector(bundle):null,encounterProjection=encounterAvailable?projectEncounterSnapshot(bundle):null,
+      sceneProjection=sceneAvailable?projectSceneSnapshot(bundle):null;
     if(!states.length){
       if(state)await saveServiceCommit(state,directory,io);
       else await saveCheckpoint(bundle,{directory,rulesVersion:PERSONALITY_RULES,systems},io);
@@ -128,7 +131,10 @@ export async function createRuntimeOwner(options,io=fs){
       try{
         requireCondition(!closing && session!==null,'Runtime owner is closed','OWNER_CLOSED');
         let dto;
-        if(serviceFormatVersion===8){
+        if(sceneAvailable){
+          dto=validateSceneCommandDto(raw);
+          requireCondition(writable,'Runtime is read only','WRITE_DISABLED');
+        }else if(serviceFormatVersion===8){
           dto=validateServiceCommandDto(raw);
           requireCondition(dto.version===3,'Encounter profile requires command DTO version 3','UNSUPPORTED_VERSION');
           requireCondition(writable,'Runtime is read only','WRITE_DISABLED');
@@ -138,7 +144,7 @@ export async function createRuntimeOwner(options,io=fs){
           if(dto.version===3)requireCondition(false,'Profile does not support command DTO version 3','COMMAND_UNSUPPORTED');
           else requireCondition(dto.version===1 || playerActionsAvailable,'Profile does not support player actions','COMMAND_UNSUPPORTED');
         }
-        if(serviceFormatVersion===8){
+        if(encounterAvailable){
           const committed=state.commands.find(c=>c.dto.commandId===dto.commandId)||
             state.bundle.snapshot.world.encounterModel.inputHistory.find(entry=>entry.dto.commandId===dto.commandId);
           if(committed){
@@ -149,11 +155,12 @@ export async function createRuntimeOwner(options,io=fs){
         requireCondition(pending<MAX_PENDING_REQUESTS,'Command queue exceeds budget','LIMIT_EXCEEDED');pending++;
         const operation=tail.then(async()=>{
           const old=state.commands.find(c=>c.dto.commandId===dto.commandId);
-          const anchored=serviceFormatVersion===8?state.bundle.snapshot.world.encounterModel.inputHistory.find(entry=>entry.dto.commandId===dto.commandId):null;
+          const anchored=encounterAvailable?state.bundle.snapshot.world.encounterModel.inputHistory.find(entry=>entry.dto.commandId===dto.commandId):null;
           const prior=old??anchored;
           if(prior){requireCondition(canonicalJson(prior.dto)===canonicalJson(dto),'Command ID has different input','COMMAND_ID_CONFLICT');return cloneData(prior.receipt);}
           if(dto.expectedRevision!==projection.revision)throw Object.assign(fault('REVISION_CONFLICT','World revision has changed'),{currentRevision:projection.revision});
           requireCondition(state.commands.length<MAX_SERVICE_COMMANDS,'Command history exceeds budget','LIMIT_EXCEEDED');
+          if(sceneAvailable)requireCondition(state.bundle.snapshot.world.encounterModel.inputHistory.length<MAX_SERVICE_COMMANDS,'Scene command history exceeds budget','LIMIT_EXCEEDED');
           requireCondition(await ownsLock(lockPath,token,io),'Runtime ownership changed','OWNER_BUSY');
           const inventory=await inspectDirectory(directory,io);
           requireCondition(inventory.length<serviceFileLimit(serviceFormatVersion),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
@@ -161,12 +168,13 @@ export async function createRuntimeOwner(options,io=fs){
           const {bundle:nextBundle,receipt}=transitionServiceCommand(state.bundle,dto),candidate=createSimulationSession(nextBundle,systems),
             nextProjection=projectPublicSnapshot(nextBundle),nextPlayerProjection=playerAvailable?projectPlayerSnapshot(nextBundle):null,
             nextMindProjection=mindAvailable?projectMindInspector(nextBundle):null,
-            nextEncounterProjection=encounterAvailable?projectEncounterSnapshot(nextBundle):null;
+            nextEncounterProjection=encounterAvailable?projectEncounterSnapshot(nextBundle):null,
+            nextSceneProjection=sceneAvailable?projectSceneSnapshot(nextBundle):null;
           const next={serviceFormatVersion,anchor:state.anchor,commands:[...state.commands,{dto,receipt}],bundle:nextBundle};
           await saveServiceCommit(next,directory,io);
           // The complete service file is the commit point. No fallible work precedes publication of the audited DTO.
           state=next;session=candidate;projection=nextProjection;playerProjection=nextPlayerProjection;mindProjection=nextMindProjection;
-          encounterProjection=nextEncounterProjection;return cloneData(receipt);
+          encounterProjection=nextEncounterProjection;sceneProjection=nextSceneProjection;return cloneData(receipt);
         }).finally(()=>{pending--;});
         tail=operation.catch(()=>{});return operation;
       }catch(error){return Promise.reject(error);}
@@ -176,6 +184,8 @@ export async function createRuntimeOwner(options,io=fs){
       getPlayer(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(playerAvailable,'Current world has no player','PLAYER_UNAVAILABLE');return cloneData(playerProjection);},
       getMindInspector(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(mindAvailable,'Current world has no mind inspector','MIND_UNAVAILABLE');return cloneData(mindProjection);},
       getEncounter(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(encounterAvailable,'Current world has no encounter projection','ENCOUNTER_UNAVAILABLE');return cloneData(encounterProjection);},
+      ...(sceneAvailable?{sceneAvailable:true,
+        getScene(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(sceneProjection);}}:{}),
       submit,
       close(){if(!closePromise){closing=true;closePromise=tail.then(async()=>{session=null;await release();});}return closePromise;}});
   }catch(cause){await release();throw cause;}

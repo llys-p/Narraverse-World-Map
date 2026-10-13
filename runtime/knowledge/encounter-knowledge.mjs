@@ -2,7 +2,7 @@
 // derives Knowledge from persisted mind, motivation and experience state without presenting
 // the bundle as the legacy survival profile.
 import { validateBundle } from '../core/world-state.mjs';
-import { projectActorEvent } from '../core/memory-observer.mjs';
+import { projectActorEvent,projectSceneActorEvent } from '../core/memory-observer.mjs';
 import { deriveMindBelief } from '../core/mind-state.mjs';
 import { cloneData, fields, record, canonicalJson, requireCondition } from '../core/data-contract.mjs';
 import { inspectDescriptorTree } from '../core/experience-state.mjs';
@@ -13,16 +13,19 @@ import { SURVIVAL_ACTOR_ID, SURVIVAL_KNOWLEDGE_VERSION, SURVIVAL_INSPECTOR_VERSI
 import { deriveWorkExperience } from '../core/work-experience.mjs';
 import { ENCOUNTER_RULES } from '../core/encounter-runtime.mjs';
 import { encounterSystems } from '../fixtures/encounter-survival-village.mjs';
+import {SCENE_RULES} from '../core/scene-runtime.mjs';
+import {canonicalSystems} from '../core/command-engine.mjs';
 
 export const MAX_ENCOUNTER_INSPECTOR_BYTES = 131072;
 
-function audit(bundle) {
+function audit(bundle,scene=false) {
   inspectDescriptorTree(bundle);
   fields(bundle, ['snapshot', 'eventLog']);
   record(bundle.snapshot);
-  requireCondition(bundle.snapshot.rulesVersion === ENCOUNTER_RULES,
+  const rules=scene?SCENE_RULES:ENCOUNTER_RULES;
+  requireCondition(bundle.snapshot.rulesVersion === rules,
     'Unknown encounter projection rules', 'UNSUPPORTED_VERSION');
-  validateBundle(bundle, { rulesVersion: ENCOUNTER_RULES, systems: encounterSystems() });
+  validateBundle(bundle, { rulesVersion: rules, systems: scene?canonicalSystems(SCENE_RULES):encounterSystems() });
 }
 
 function budget(value) {
@@ -31,7 +34,7 @@ function budget(value) {
   return value;
 }
 
-function ownFoodQuote(world,eventLog,actorId,tick){
+function ownFoodQuote(world,eventLog,actorId,tick,scene=false){
   const cursor=world.mindModel.cursor;let best=null;
   for(const event of eventLog){
     if(event.eventSeq>cursor || event.tick>tick)continue;
@@ -43,7 +46,7 @@ function ownFoodQuote(world,eventLog,actorId,tick){
     if(event.type!=='SocietyDaySettled')continue;
     const actor=world.actorModel.actors.find(entry=>entry.actorId===actorId);
     if(!(actor.alive || event.tick<actor.deathTick))continue;
-    const projection=projectActorEvent(event,actorId).find(entry=>entry.channel==='public');
+    const projection=(scene?projectSceneActorEvent:projectActorEvent)(event,actorId).find(entry=>entry.channel==='public');
     if(!projection)continue;
     const market=projection.observable,candidate={seq:event.eventSeq,tick:event.tick,
       quote:survivalFoodQuoteFrom({product:'food',price:market.prices.food,available:market.food>0},event.tick,event.eventSeq)};
@@ -67,18 +70,18 @@ function ownWorkOffer(world,eventLog,actorId,tick,duty){
   return best?.offer??null;
 }
 
-function knowledge(bundle, motivation) {
+function knowledge(bundle, motivation,scene=false) {
   const s = bundle.snapshot, w = s.world;
   const actor = w.actorModel.actors.find(entry => entry.actorId === motivation.actorId);
   const state = w.societyModel.agents.find(entry => entry.state.actorId === motivation.actorId).state;
   const mind = w.mindModel.actors.find(entry => entry.actorId === motivation.actorId);
   const last = bundle.eventLog.findLast(event => event.eventSeq <= w.mindModel.cursor &&
     event.type === 'SocietyDaySettled' && (actor.alive || event.tick < actor.deathTick));
-  const publicValue = last ? projectActorEvent(last, motivation.actorId).find(entry => entry.channel === 'public')?.observable : null;
+  const publicValue = last ? (scene?projectSceneActorEvent:projectActorEvent)(last, motivation.actorId).find(entry => entry.channel === 'public')?.observable : null;
   const profile = w.motivationModel.config.profiles.find(entry => entry.actorId === motivation.actorId);
   const experience = w.experienceModel.actors.find(entry => entry.actorId === motivation.actorId);
   const survival=motivation.actorId===SURVIVAL_ACTOR_ID;
-  const extra=survival?{foodQuote:ownFoodQuote(w,bundle.eventLog,motivation.actorId,s.tick),
+  const extra=survival?{foodQuote:ownFoodQuote(w,bundle.eventLog,motivation.actorId,s.tick,scene),
     workOffer:ownWorkOffer(w,bundle.eventLog,motivation.actorId,s.tick,motivation.lastDuty)}:{};
   return budget({
     knowledgeVersion: survival?SURVIVAL_KNOWLEDGE_VERSION:COGNITION_KNOWLEDGE_VERSION, phase: 'committed', simulationId: s.simulationId,
@@ -100,15 +103,17 @@ function knowledge(bundle, motivation) {
   }, MAX_SURVIVAL_KNOWLEDGE_BYTES);
 }
 
-export function projectEncounterInspector(bundle) {
-  audit(bundle);
+export function projectEncounterInspector(bundle){return projectInspectorFor(bundle);}
+export function projectSceneMindInspector(bundle){return projectInspectorFor(bundle,true);}
+function projectInspectorFor(bundle,scene=false) {
+  audit(bundle,scene);
   const s = bundle.snapshot, w = s.world;
   const actors = w.cognitionModel.actors.map(entry => {
     const motivation = w.motivationModel.actors.find(actor => actor.actorId === entry.actorId);
     const experience = w.experienceModel.actors.find(actor => actor.actorId === entry.actorId);
     const profile = w.cognitionModel.config.profiles.find(actor => actor.actorId === entry.actorId);
     const state = experience.workExperienceState;
-    return { knowledge: knowledge(bundle, motivation), lastDecision: cloneData(motivation.lastDecision),
+    return { knowledge: knowledge(bundle, motivation,scene), lastDecision: cloneData(motivation.lastDecision),
       lastOutcome: cloneData(motivation.lastOutcome), counterfactual: null,
       workExperience: { state: cloneData(state), view: deriveWorkExperience(state) },
       cognition: { importancePermille: profile.importancePermille, reviewState: cloneData(entry.reviewState),
