@@ -1,4 +1,4 @@
-import { fields,integer,cloneData,canonicalJson,requireCondition,identifier,denseArray,inputFingerprint,MAX_COLLECTION } from './data-contract.mjs';
+import { fields,integer,cloneData,canonicalJson,requireCondition,identifier,denseArray,inputFingerprint,MAX_COLLECTION,record } from './data-contract.mjs';
 import { defaultActorConfig,createActorWorld,validateActorWorld,settleActorDay,populationShares,applyActorCommand,validateActorPayload } from './actors.mjs';
 import { createRng } from './rng.mjs';
 import { marketCommandFact } from './market.mjs';
@@ -39,8 +39,13 @@ export function createHunterWorld(config=defaultHunterConfig()){
 
 export function communalGold(world){validateHunterWorld(world);return world.resources.gold-world.hunterModel.wallet;}
 export function validateHunterWorld(world,ownership){
-  if(ownership!==undefined){fields(ownership,['actorId','foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived']);identifier(ownership.actorId);
-    for(const key of ['foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived'])integer(ownership[key]);}
+  if(ownership!==undefined){
+    record(ownership);
+    // D4A-CP1a: ownership-v2 (society-config-v5) adds version+foodReceived; the old six-field shape is preserved verbatim.
+    const v2=Object.hasOwn(ownership,'version');
+    if(v2)requireCondition(ownership.version==='society-ownership-v2','Unknown ownership version','UNSUPPORTED_VERSION');
+    fields(ownership,v2?['actorId','foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived','version','foodReceived']:['actorId','foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived']);identifier(ownership.actorId);
+    for(const key of (v2?['foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived','foodReceived']:['foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived']))integer(ownership[key]);}
   fields(world,['resources','resourceModel','ecologyModel','marketModel','actorModel','hunterModel']);
   const m=world.hunterModel;fields(m,['config','configFingerprint','actorId','day','wallet','inventory','ledger','currentGoal','nextGoalId','cooldownUntilDay','lastActionDay','lastAction','lastDecision']);
   validateConfig(m.config);fields(m.ledger,LEDGER_FIELDS);for(const n of Object.values(m.ledger))integer(n);
@@ -53,7 +58,7 @@ export function validateHunterWorld(world,ownership){
   requireCondition(BigInt(m.ledger.wages)===BigInt(m.ledger.workDays)*BigInt(m.config.wage) &&
     BigInt(m.ledger.foodProduced)===BigInt(m.ledger.workDays)*BigInt(m.config.workFood)+BigInt(m.ledger.hunts)*BigInt(m.config.huntFood), 'Work/hunt production ledger mismatch');
   fields(m.inventory,['food','herbs']);for(const n of Object.values(m.inventory)){integer(n);requireCondition(n<=1000,'Private inventory limit exceeded','LIMIT_EXCEEDED');}
-  requireCondition(BigInt(m.inventory.food)===BigInt(m.config.initialFood)+BigInt(m.ledger.foodBought)+BigInt(m.ledger.hunts)*BigInt(m.config.huntFood)-BigInt(m.ledger.foodUsed),'Private food ledger mismatch');
+  requireCondition(BigInt(m.inventory.food)===BigInt(m.config.initialFood)+BigInt(m.ledger.foodBought)+BigInt(m.ledger.hunts)*BigInt(m.config.huntFood)+BigInt(ownership!==undefined && Object.hasOwn(ownership,'version')?ownership.foodReceived:0)-BigInt(m.ledger.foodUsed),'Private food ledger mismatch');
   requireCondition(BigInt(m.inventory.herbs)===BigInt(m.config.initialHerbs)+BigInt(m.ledger.herbsBought)-BigInt(m.ledger.herbsUsed)-BigInt(ownership?.herbsSold??0),'Private medicine ledger mismatch');
   requireCondition(BigInt(world.resourceModel.ledger.food.outflow)>=BigInt(m.config.initialFood)+BigInt(m.ledger.foodBought)+BigInt(m.ledger.hunts)*BigInt(m.config.huntFood) &&
     BigInt(world.resourceModel.ledger.herbs.outflow)>=BigInt(m.config.initialHerbs)+BigInt(m.ledger.herbsBought)-BigInt(ownership?.herbsReceived??0),'Private transfer exceeds actual warehouse outflow');
