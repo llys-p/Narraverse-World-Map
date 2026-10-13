@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-13 07:43（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-13 08:03（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -15,7 +15,7 @@
 - D3-1、D3-2、D3-3、D3-4 各自限定 PASS；D3 整体未验收。
   现有范围仅含遭遇预留内核、世界候选适配、命令会话和单狼战斗内核。
 - 当前半成品体验主要集中于旅行、买卖、休整与时间推进，以及检查器；遭遇仍没有完整的真实消费者链。
-  D3-5 未提交候选已接入真实世界推进、事件、M4 生存规则及通用 checkpoint；服务持久提交、CLI、页面消费者仍未完成；
+  D3-5 未提交候选已接入真实世界推进、事件、M4 生存规则及通用 checkpoint；服务持久提交候选已接入且有有限消费者验证，CLI、页面消费者仍未完成；
   不得称为完整世界遭遇、存档或 UI 接入。
 
 ## 集成基准与实际位置
@@ -35,9 +35,9 @@
 
 ## 活动工作、阻塞与下一步
 
-- 当前服务检查点已开工（2026-10-13）：Codex d35_service_core（gpt-6-luna high）独占 http-contract/service-commit/runtime-owner/runtime-server，必要时新增只读 encounter-knowledge helper；d35_service_tests 同模型独占新增 encounter-service.test.mjs。先真实 RED，再格式8/DTO3/四投影/save-then-swap/ACTIVE close-reopen/HTTP 门；沿用已冻结 A 合同，核心/CLI/UI/B 文件不改。只有启动记录，尚未交付/验收，不复跑已过且未变的核心测试。
+- 当前 CLI 检查点开工：同一 Codex core 工人只写 simulation-runner.mjs，测试工人只追加 encounter-replay.test.mjs（保留原10项）；新flag/days0红门已实测，继续真实输入、ACTIVE保存/恢复及连续路线对照。服务候选四投影/format8/owner重开新测试6/6先绿；直接旧服务21项20过1红，通用parser默认版本边界已修，旧红点及新parser/HTTP窄复验3/3通过（未重复其余旧绿项）。服务代码当前冻结，源码未提交，UI及正式B待完成，A/D3-5未验收。
 
-- 最新R3：DSH 已停止，用户授权的 Codex 性价比子代理临时返修已结束。补时重演 replay10/10、合法混合续跑/锚点篡改通过；实际 TEMP checkpoint ACTIVE 保存/load/续攻完整 bundle 相等（format1），HTTP owner 重开未验。临时 Rest 保留本人 food plan 修正，真实三日链与新 health Goal 同日组合2/2通过，旧 planner36/36通过；旧profile继续原取消/新建计划链。六文件最终 SHA256 中控读回相等，源码仍未提交。B只修fixture解包/真实路径并通过语法，未完整验收。service/CLI/UI尚未开工，A/D3-5未验收。证据 artifacts/world-runtime-d35-r3-review-20261012/codex-rest-result.json；下列旧活动记录仅历史。
+- 最新R3：DSH 已停止，用户授权的 Codex 性价比子代理临时返修已结束。补时重演 replay10/10、合法混合续跑/锚点篡改通过；实际 TEMP checkpoint ACTIVE 保存/load/续攻完整 bundle 相等（format1），HTTP owner 重开未验。临时 Rest 保留本人 food plan 修正，真实三日链与新 health Goal 同日组合2/2通过，旧 planner36/36通过；旧profile继续原取消/新建计划链。六文件最终 SHA256 中控读回相等，源码仍未提交。B只修fixture解包/真实路径并通过语法，未完整验收。后续service/CLI见当期活动记录，UI/正式B尚未开工，A/D3-5未验收。证据 artifacts/world-runtime-d35-r3-review-20261012/codex-rest-result.json；下列旧活动记录仅历史。
 
 - 用户反馈核心任务陷入反复读取/压缩后的重新分析；已准备[上下文恢复短卡](tasks/D3-5-RECOVERY-CARD.md)，只作为既有A内部指令，尚未确认送达。优先新短上下文工人和最小真实依赖闭包，旧写者终态前不重派；完整集成范围与B门不减。最新深层探针确认v4玩家tick6死亡已接受、旧v3仍拒绝；顶层与真实遭遇未验。
 
@@ -50,7 +50,7 @@
 - [D3-5A 实现与公共合同](tasks/D3-5A-PLAYABLE-ENCOUNTER-TASK.md) · [D3-5B 独立验收](tasks/D3-5B-INDEPENDENT-ACCEPTANCE-TASK.md)。
   字段、接口、版本号、白名单与跨日/幂等/发布边界已冻结；B真实运行等待中控给出A精确交付SHA，不使用浮动HEAD。
 - D4：预规划已细化为村庄赠粮→本人立即记忆→保存/返回→双页签验收；只有 A 实现/B 独立验收两份未来任务。补充同地点可见性、赠粮不自动涨 trust、双边资产来源账与六检查点，未发布、未开工；待 D3-5 完整验收后钉定 SHA 与版本，见[架构 D4 预规划](WORLD-RUNTIME-ECOLOGY-ARCHITECTURE.md#d4-scene-continuity-plan)。
-- 本轮冻结新profile `encounter-survival-village` / rules `d-encounter-survival-v1`；snapshot3/DTO3/receipt3 核心候选已实现；服务 format8 尚未接入，整体未验收。
+- 本轮冻结新profile `encounter-survival-village` / rules `d-encounter-survival-v1`；snapshot3/DTO3/receipt3 核心候选已实现；服务 format8 候选已接入且限定验证，整体未验收。
   保留旧 profiles 与旧存档行为，不自动迁移；集成基准候选为 `f335abf`。
   两份实施任务书已发布；旧版本行为/存档保持，M4当前体验实例不改动。
 - 按包工头 2026-10-12 07:42 原生回执，旧首波工人已结束；修正工人 `e617810b` 负责真实 fixture/Runtime 六文件，`7d81bbbe` 负责真实消费者测试，尚未收到 finished；这不是当前整单交付。
