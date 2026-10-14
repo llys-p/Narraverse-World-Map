@@ -66,6 +66,7 @@ async function refresh(){
     render(dto);renderPlayer(player);renderActions(player);last=dto;lastPlayer=player;lastEncounter=encounter;lastCapabilities=capabilities;
     actionsAvailable=capabilities.playerActionsAvailable===true;writable=capabilities.writes===true;readingsFresh=true;
     byId('time-controls').hidden=!writable;byId('mind-link').hidden=capabilities.mindAvailable!==true;
+    if(capabilities.sceneAvailable===true){const villageLink=byId('village-scene-link');if(villageLink)villageLink.hidden=false;}
     const sceneLink=byId('forest-scene-link'),inForest=player?.self?.identity?.location==='forest' && encounterAvailable;
     sceneLink.hidden=!inForest;if(inForest)sceneLink.textContent=player.self.identity.alive?'进入森林场景':'查看森林场景（玩家已逝）';
     byId('map-note').textContent=writable?'世界时间仅在明确提交后推进':'只读观察 · 世界时间不会自动流逝';
@@ -138,7 +139,7 @@ function validReceipt(receipt,dto){
   if(!pending)pending=dto;if(!pending)return;
   submitting=true;controls();commandStatus.dataset.state='loading';commandStatus.textContent='正在提交世界请求…';
   try{
-    const response=await fetch('/api/runtime/commands',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pending),signal:AbortSignal.timeout(15000)});
+    const response=await fetch('/api/runtime/commands',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pending)});
     if(response.status===409){pending=null;commandStatus.dataset.state='error';commandStatus.textContent='世界已变化或请求冲突，已重新读取。请确认读数后再次操作。';await refresh();return;}
     if(!response.ok){if([400,405,413,415,422].includes(response.status))pending=null;
       commandStatus.dataset.state='error';commandStatus.textContent=pending?'请求未能完成，可重试同一请求。':'请求被拒绝，请检查输入或重新读取世界。';return;}

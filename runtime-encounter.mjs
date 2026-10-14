@@ -179,7 +179,7 @@ async function sendPending() {
   const command = pending;
   try {
     const response = await fetch('/api/runtime/commands', {method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(command), cache:'no-store', signal:AbortSignal.timeout(10000)});
+      body:JSON.stringify(command), cache:'no-store'});
     const text = await response.text(), body = readJsonResponse(response, text);
     if (response.status === 409) {
       clearPending(); nodes['scene-command-status'].textContent = '世界版本冲突；已清除旧请求，请刷新后发起新操作。';
@@ -220,4 +220,7 @@ nodes['encounter-cancel'].addEventListener('click', () => start('cancel'));
 nodes['encounter-retry'].addEventListener('click', () => { pending = restorePending() ?? pending; void sendPending(); });
 nodes['encounter-refresh'].addEventListener('click', refresh);
 if (pending) nodes['scene-command-status'].textContent = '发现一项结果未确认；准备按原请求恢复。';
-void refresh().then(() => { if (pending) void sendPending(); });
+void refresh().then(() => {
+  if (pending && capabilities && capabilities.sceneAvailable !== true) void sendPending();
+  else if (pending) nodes['scene-command-status'].textContent = '请求结果尚未确认；只有点击重试才会再次发送原请求。';
+});

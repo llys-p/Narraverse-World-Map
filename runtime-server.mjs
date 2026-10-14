@@ -13,6 +13,8 @@ const mindStaticFiles=new Map([['/runtime-mind.html',['runtime-mind.html','text/
   ['/runtime-mind.mjs',['runtime-mind.mjs','text/javascript; charset=utf-8']],['/runtime-mind.css',['runtime-mind.css','text/css; charset=utf-8']]]);
 const encounterStaticFiles=new Map([['/runtime-encounter.html',['runtime-encounter.html','text/html; charset=utf-8']],
   ['/runtime-encounter.mjs',['runtime-encounter.mjs','text/javascript; charset=utf-8']],['/runtime-encounter.css',['runtime-encounter.css','text/css; charset=utf-8']]]);
+const villageStaticFiles=new Map([['/runtime-village.html',['runtime-village.html','text/html; charset=utf-8']],
+  ['/runtime-village.mjs',['runtime-village.mjs','text/javascript; charset=utf-8']],['/runtime-village.css',['runtime-village.css','text/css; charset=utf-8']]]);
 const mindRoutes=['/api/runtime/minds',...mindStaticFiles.keys()];
 const envelope=(code,message)=>({apiVersion:1,error:{code,message}});
 function readCommandBody(req){
@@ -36,6 +38,10 @@ export async function startRuntimeServer(options){
   const {port:ignored,inspectMind:ignoredInspector,...ownerOptions}=options,owner=await createRuntimeOwner(ownerOptions);let actualPort=port,closed=false,pendingRequests=0,sceneBodyReads=0;
   const encounterAssets=new Map();if(owner.encounterAvailable)for(const [url,[file,type]] of encounterStaticFiles){
     try{encounterAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});}
+    catch(error){await owner.close();throw error;}
+  }
+  const villageAssets=new Map();if(owner.sceneAvailable)for(const [url,[file,type]] of villageStaticFiles){
+    try{villageAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});}
     catch(error){await owner.close();throw error;}
   }
   const writable=options.writable??false,capabilities=Object.freeze({apiVersion:1,writes:writable,playerAvailable:owner.playerAvailable,
@@ -67,11 +73,13 @@ export async function startRuntimeServer(options){
         else{const asset=mindAssets.get(route);send(200,asset.bytes,asset.type);}
         return;
       }
-      if(route==='/api/runtime/scene'){
+      if(route==='/api/runtime/scene' || villageStaticFiles.has(route)){
         if(!owner.sceneAvailable){send(404,envelope('SCENE_UNAVAILABLE','当前世界没有场景投影。'));return;}
         if(!['GET','HEAD'].includes(req.method)){send(405,envelope('WRITE_DISABLED','当前接口只支持读取。'),undefined,{Allow:'GET, HEAD',Connection:'close'});return;}
         if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
-        send(200,owner.getScene());return;
+        if(route==='/api/runtime/scene')send(200,owner.getScene());
+        else{const asset=villageAssets.get(route);send(200,asset.bytes,asset.type);}
+        return;
       }
       if(route==='/api/runtime/encounter'){
         if(!owner.encounterAvailable){send(404,envelope('ENCOUNTER_UNAVAILABLE','当前世界没有遭遇投影。'));return;}
@@ -116,6 +124,8 @@ export async function startRuntimeServer(options){
     }
   });
   server.on('clientError',(error,socket)=>{
+    // An unused browser preconnection has no HTTP request to reject.
+    if(owner.sceneAvailable && error.code==='ERR_HTTP_REQUEST_TIMEOUT' && socket.bytesRead===0 && socket.bytesWritten===0){socket.destroy();return;}
     if(!socket.writable)return;const status=error.code==='HPE_HEADER_OVERFLOW'?431:400,body=JSON.stringify(envelope(status===431?'LIMIT_EXCEEDED':'INVALID_INPUT','请求格式不合法。'));
     socket.end(`HTTP/1.1 ${status} Error\r\nConnection: close\r\nContent-Type: application/json\r\nContent-Length: ${Buffer.byteLength(body)}\r\n\r\n${body}`);
   });
