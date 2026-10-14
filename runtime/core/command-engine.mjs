@@ -270,6 +270,7 @@ export function performTick(bundle, systems, mode) {
   }
 }
 
+let canonicalSceneSystems;
 export function canonicalSystems(rulesVersion) {
   const define = (id, type, settle, usesRng) => ({ [id](ctx) {
     const result = usesRng ? settle(ctx.snapshot.world, ctx.rng.next()) : settle(ctx.snapshot.world);
@@ -284,7 +285,10 @@ export function canonicalSystems(rulesVersion) {
       survival() {} };
   // The encounter profile extends survival: the same day settlement plus an inert encounter
   // system (encounter actions are committed through the DTO3 entry, not a scheduled task).
-  if(rulesVersion===SCENE_RULES)return {society:define('society','SocietyDaySettled',sceneRuntimeHooks.settleDay,true).society,survival(){},encounter(){},scene(){}};
+  if(rulesVersion===SCENE_RULES){
+    canonicalSceneSystems??=Object.freeze({society:define('society','SocietyDaySettled',sceneRuntimeHooks.settleDay,true).society,survival(){},encounter(){},scene(){}});
+    return {...canonicalSceneSystems};
+  }
   if (rulesVersion === ENCOUNTER_RULES)
     return { society: define('society', 'SocietyDaySettled', encounterRuntimeHooks.settleDay, true).society,
       survival() {}, encounter() {} };

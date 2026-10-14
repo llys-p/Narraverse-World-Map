@@ -26,6 +26,31 @@ const SNAPSHOT_FIELDS = ['schemaVersion', 'rulesVersion', 'simulationId', 'fixtu
   'tick', 'tickMinutes', 'revision', 'rng', 'nextEntityId', 'nextEventSeq', 'nextInputSeq',
   'scheduledTasks', 'pendingCommands', 'commandReceipts', 'world'];
 
+// Only private, deeply frozen clones that completed the full scene audit are certified.
+// Mutable inputs and parsed checkpoints never acquire a certificate by object identity.
+const auditedSceneBundles = new WeakMap();
+const sameSystems = (cached, systems) => {
+  const keys = Object.keys(systems);
+  return keys.length === Object.keys(cached).length && keys.every(key => Object.hasOwn(cached, key) && cached[key] === systems[key]);
+};
+function freezeData(value) {
+  if (value && typeof value === 'object') {
+    for (const child of Object.values(value)) freezeData(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+export function createAuditedBundle(bundle, options) {
+  fields(options, ['rulesVersion', 'systems']); identifier(options.rulesVersion); normalizeSystems(options.systems);
+  const cached = auditedSceneBundles.get(bundle);
+  if (cached && cached.rulesVersion === options.rulesVersion && sameSystems(cached.systems, options.systems)) return bundle;
+  const immutable = freezeData(cloneBundle(bundle));
+  validateBundle(immutable, options);
+  if (options.rulesVersion === SCENE_RULES) auditedSceneBundles.set(immutable,
+    {rulesVersion: options.rulesVersion, systems: Object.freeze({...options.systems})});
+  return immutable;
+}
+
 export function cloneBundle(bundle) {
   preflightExperienceData(bundle, true);
   fields(bundle, ['snapshot', 'eventLog']);
@@ -71,9 +96,13 @@ function checkBudgets(snapshot, events) {
 }
 
 export function validateBundle(bundle, options) {
-  preflightExperienceData(bundle, true);
+  const cached = auditedSceneBundles.get(bundle);
+  if (!cached) preflightExperienceData(bundle, true);
   fields(options, ['rulesVersion', 'systems']); identifier(options.rulesVersion);
-  normalizeSystems(options.systems); fields(bundle, ['snapshot', 'eventLog']);
+  normalizeSystems(options.systems);
+  if (cached && cached.rulesVersion === options.rulesVersion && sameSystems(cached.systems, options.systems)) return;
+  if (cached) preflightExperienceData(bundle, true);
+  fields(bundle, ['snapshot', 'eventLog']);
   checkBudgets(bundle.snapshot, bundle.eventLog);
   const { snapshot: s, eventLog } = cloneBundle(bundle);
   validateSnapshotStructure(s, options, eventLog.length);

@@ -4,7 +4,7 @@ import {inspectDescriptorTree} from './experience-state.mjs';
 import {sceneBaseRuntimeHooks,validateSceneBaseWorld} from './motivation-runtime.mjs';
 import {createSceneEncounterRuntimeHooks,validateSceneEncounterWorldState} from './encounter-runtime.mjs';
 import {observeSceneCommand} from './memory-runtime.mjs';
-import {validateBundle} from './world-state.mjs';
+import {validateBundle,createAuditedBundle} from './world-state.mjs';
 import {canonicalSystems} from './command-engine.mjs';
 export const SCENE_RULES='d-scene-survival-v1';
 export const SCENE_PROFILE='scene-survival-village';
@@ -88,11 +88,14 @@ export function describeSceneGiftAvailability(bundle){
  const {outcome,reasonCode}=auditGift(bundle.snapshot.world);
  return {available:outcome==='succeeded',reasonCode};
 }
-export function executeSceneIntent(bundle,dto){
+export function executeAuditedSceneIntent(bundle,dto){
  inspectDescriptorTree({bundle,dto});preflightSceneIntent(dto);
  const systems=canonicalSystems(SCENE_RULES);
  validateBundle(bundle,{rulesVersion:SCENE_RULES,systems});
  const result=hooks().executeIntent(bundle,dto);
- validateBundle(result.bundle,{rulesVersion:SCENE_RULES,systems});
+ return {bundle:createAuditedBundle(result.bundle,{rulesVersion:SCENE_RULES,systems}),receipt:cloneData(result.receipt)};
+}
+export function executeSceneIntent(bundle,dto){
+ const result=executeAuditedSceneIntent(bundle,dto);
  return {bundle:cloneData(result.bundle),receipt:cloneData(result.receipt)};
 }

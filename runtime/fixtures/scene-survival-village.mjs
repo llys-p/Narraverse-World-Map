@@ -1,6 +1,7 @@
 import {createInitialBundle} from '../core/world-state.mjs';
 import {fields,cloneData} from '../core/data-contract.mjs';
 import {inspectDescriptorTree} from '../core/experience-state.mjs';
+import {canonicalSystems} from '../core/command-engine.mjs';
 import {defaultEncounterVillageConfig} from './encounter-survival-village.mjs';
 import {SCENE_RULES,SCENE_PROFILE,sceneRuntimeHooks} from '../core/scene-runtime.mjs';
 export function defaultSceneVillageConfig(recipe='no-opportunity'){
@@ -8,11 +9,7 @@ export function defaultSceneVillageConfig(recipe='no-opportunity'){
  config.memory.version='memory-config-v6';config.memory.society.version='society-config-v5';
  return config;
 }
-export function sceneSystems(){return {
- society(ctx){const result=sceneRuntimeHooks.settleDay(ctx.snapshot.world,ctx.rng.next());ctx.snapshot.world=result.world;
- ctx.emitFact({type:'SocietyDaySettled',sourceSystem:'society',commandId:null,entityIds:[],causationEventSeqs:ctx.populationCauses,payload:result.payload});},
- survival(){},encounter(){},scene(){}
-};}
+export function sceneSystems(){return canonicalSystems(SCENE_RULES);}
 export function createSceneVillage(seed=42,simulationId=SCENE_PROFILE,config=defaultSceneVillageConfig()){
  inspectDescriptorTree(config);fields(config,['memory','mind','motivation','experience','cognition']);
  const input=cloneData(config),systems=sceneSystems();

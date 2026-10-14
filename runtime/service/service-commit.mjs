@@ -6,7 +6,8 @@ import { createSimulationSession } from '../core/command-engine.mjs';
 import { projectPublicSnapshot,projectEncounterSnapshot,projectSceneSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,requireMotivationBackend,requireCognitionBackend,requireSurvivalBackend } from './http-contract.mjs';
 import { executePlayerIntent } from '../core/player-intents.mjs';
 import { executeEncounterIntent } from '../core/encounter-runtime.mjs';
-import { SCENE_RULES,executeSceneIntent } from '../core/scene-runtime.mjs';
+import { SCENE_RULES,executeAuditedSceneIntent } from '../core/scene-runtime.mjs';
+import { createAuditedBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
 export const MAX_SERVICE_COMMANDS=128,MAX_SERVICE_FILES=128,MAX_PENDING_REQUESTS=16;
@@ -22,10 +23,10 @@ const RESERVED_INTERNAL_PREFIXES={4:['mind-day-','society-day-'],5:['mind-day-',
 function transitionSceneCommand(bundle,dto){
   dto=validateSceneCommandDto(dto);
   requireCondition(runtimeProfile(bundle).serviceFormatVersion===9,'Scene service profile mismatch','UNSUPPORTED_VERSION');
-  return executeSceneIntent(bundle,dto);
+  return executeAuditedSceneIntent(bundle,dto);
 }
 // Submit and journal audit use this same complete transition; the service owns no world rules.
-export function transitionServiceCommand(bundle,dto){
+export function transitionAuditedServiceCommand(bundle,dto){
   // Select only the new rules using data descriptors; old DTO/profile validation order stays intact.
   const snapshot=bundle!==null && typeof bundle==='object'?Object.getOwnPropertyDescriptor(bundle,'snapshot')?.value:null;
   if(snapshot!==null && typeof snapshot==='object' && Object.getOwnPropertyDescriptor(snapshot,'rulesVersion')?.value===SCENE_RULES)
@@ -52,6 +53,12 @@ export function transitionServiceCommand(bundle,dto){
   return {bundle:next,receipt:{apiVersion:1,receiptVersion:2,commandId:dto.commandId,status:'committed',fromRevision:dto.expectedRevision,
     toRevision:next.snapshot.revision,tick:next.snapshot.tick,type:dto.type,outcome,result}};
 }
+// Preserve detached mutable results for library consumers; only the owner/replay use the frozen path.
+export function transitionServiceCommand(bundle,dto){
+  const result=transitionAuditedServiceCommand(bundle,dto);
+  return result.bundle.snapshot.rulesVersion===SCENE_RULES?
+    {bundle:cloneData(result.bundle),receipt:cloneData(result.receipt)}:result;
+}
 export function validateServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
   requireCondition([1,2,3,4,5,6,7,8,9].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
@@ -59,17 +66,19 @@ export function validateServiceCommit(envelope){
   requireCondition(envelope.serviceFormatVersion===profile.serviceFormatVersion && envelope.serviceFormatVersion===finalProfile.serviceFormatVersion,
     'Service format/profile mismatch','UNSUPPORTED_VERSION');
   denseArray(envelope.commands,MAX_SERVICE_COMMANDS);
-  projectPublicSnapshot(envelope.anchor);projectPublicSnapshot(envelope.bundle);
-  if([8,9].includes(envelope.serviceFormatVersion)){projectEncounterSnapshot(envelope.anchor);projectEncounterSnapshot(envelope.bundle);}
-  if(envelope.serviceFormatVersion===9){projectSceneSnapshot(envelope.anchor);projectSceneSnapshot(envelope.bundle);}
-  const seen=new Set();let replay=envelope.anchor,revision=envelope.anchor.snapshot.revision;
+  const anchor=envelope.serviceFormatVersion===9?createAuditedBundle(envelope.anchor,{rulesVersion:profile.rulesVersion,systems:profile.systems}):envelope.anchor;
+  const final=envelope.serviceFormatVersion===9?createAuditedBundle(envelope.bundle,{rulesVersion:finalProfile.rulesVersion,systems:finalProfile.systems}):envelope.bundle;
+  projectPublicSnapshot(anchor);projectPublicSnapshot(final);
+  if([8,9].includes(envelope.serviceFormatVersion)){projectEncounterSnapshot(anchor);projectEncounterSnapshot(final);}
+  if(envelope.serviceFormatVersion===9){projectSceneSnapshot(anchor);projectSceneSnapshot(final);}
+  const seen=new Set();let replay=anchor,revision=anchor.snapshot.revision;
   for(const entry of envelope.commands){
     fields(entry,['dto','receipt']);const dto=envelope.serviceFormatVersion===9?validateSceneCommandDto(entry.dto):validateServiceCommandDto(entry.dto);
     fields(entry.receipt,dto.version===1?['apiVersion','commandId','status','fromRevision','toRevision','tick']:
       dto.version===3?['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result']:
       ['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','tick','type','outcome','result']);
     requireCondition(!seen.has(dto.commandId) && dto.expectedRevision===revision,'Invalid service command sequence');seen.add(dto.commandId);
-    const next=transitionServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;
+    const next=transitionAuditedServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;
     requireCondition(isDeepStrictEqual(entry.receipt,next.receipt),'Service receipt does not match replay');
   }
   requireCondition(isDeepStrictEqual(replay,envelope.bundle),'Service world does not match command replay');

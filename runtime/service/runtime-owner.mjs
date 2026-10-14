@@ -11,11 +11,11 @@ import { PERSONALITY_RULES } from '../core/memory-runtime.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
 import { saveCheckpoint,loadCheckpoint } from '../persistence/checkpoint-store.mjs';
 import { MAX_STATE_FILE_BYTES,readStateFile } from '../persistence/bounded-json-file.mjs';
-import { validateBundle } from '../core/world-state.mjs';
+import { validateBundle,createAuditedBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { fields,record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
 import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,projectEncounterSnapshot,projectSceneSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend,loadCognitionBackend,requireCognitionBackend,loadSurvivalBackend,requireSurvivalBackend } from './http-contract.mjs';
-import { saveServiceCommit,loadServiceCommit,transitionServiceCommand,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
+import { saveServiceCommit,loadServiceCommit,transitionAuditedServiceCommand,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 const MAX_ENCOUNTER_SERVICE_FILES=MAX_SERVICE_FILES+1;
 const serviceFileLimit=format=>[8,9].includes(format)?MAX_ENCOUNTER_SERVICE_FILES:MAX_SERVICE_FILES;
@@ -119,6 +119,11 @@ export async function createRuntimeOwner(options,io=fs){
     const {systems,serviceFormatVersion}=runtimeProfile(bundle),playerAvailable=serviceFormatVersion>=2,
       playerActionsAvailable=[3,4,5,6,7,8,9].includes(serviceFormatVersion),
       mindAvailable=[4,5,6,7,8,9].includes(serviceFormatVersion),encounterAvailable=[8,9].includes(serviceFormatVersion),sceneAvailable=serviceFormatVersion===9;
+    if(sceneAvailable){
+      const auditOptions={rulesVersion:bundle.snapshot.rulesVersion,systems};
+      bundle=createAuditedBundle(bundle,auditOptions);
+      state={...state,anchor:createAuditedBundle(state.anchor,auditOptions),bundle};
+    }
     let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(bundle),playerProjection=playerAvailable?projectPlayerSnapshot(bundle):null,
       mindProjection=mindAvailable?projectMindInspector(bundle):null,encounterProjection=encounterAvailable?projectEncounterSnapshot(bundle):null,
       sceneProjection=sceneAvailable?projectSceneSnapshot(bundle):null;
@@ -165,7 +170,7 @@ export async function createRuntimeOwner(options,io=fs){
           const inventory=await inspectDirectory(directory,io);
           requireCondition(inventory.length<serviceFileLimit(serviceFormatVersion),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
           requireCondition(inventory.length>0 && inventory[0].kind==='service-commit' && inventory[0].revision===projection.revision,'Runtime state files changed','INVALID_SERVICE_COMMIT');
-          const {bundle:nextBundle,receipt}=transitionServiceCommand(state.bundle,dto),candidate=createSimulationSession(nextBundle,systems),
+          const {bundle:nextBundle,receipt}=transitionAuditedServiceCommand(state.bundle,dto),candidate=createSimulationSession(nextBundle,systems),
             nextProjection=projectPublicSnapshot(nextBundle),nextPlayerProjection=playerAvailable?projectPlayerSnapshot(nextBundle):null,
             nextMindProjection=mindAvailable?projectMindInspector(nextBundle):null,
             nextEncounterProjection=encounterAvailable?projectEncounterSnapshot(nextBundle):null,
