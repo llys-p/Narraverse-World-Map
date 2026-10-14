@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-14 09:07（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-14 09:41（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,11 +31,11 @@
 - B1 15项、B2 7项（2+3+2）、B3 6项共28个独立成员已分批通过、无skip；并非一次28/28。B2新增 owner durable-failure 与G7共11种checkpoint变体均通过。原失败记录与定向补验保留，见[D3-5B复核](docs/runtime/D3-5B-REVIEW-20261013.md)。A唯一源码行为修复为 `d22c730` 的 owner queue 幂等优先级及回归；B测试候选提交 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb` 仅改B2测试。源码未推送、未合入main、未部署；D3整体未验收。
 - D4 合同 `d4-scene-continuity-v1` 已冻结：基准 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb`；[A 村庄赠粮与本人记忆](tasks/D4A-SCENE-GIFT-MEMORY-TASK.md)、[B 独立验收](tasks/D4B-SCENE-CONTINUITY-ACCEPTANCE-TASK.md)。CP1a原交付NEED REVISION，经中控隔离修正/补验后限定PASS；D4A整体未完成，CP1b原候选经独立反例发现缺口，中控修正后记忆层限定PASS；D4A整体仍未完成；B仍等完整A交付。任务书共同发布提交见本轮控制 Git 及看板链接，不引用未提交源码。
 - D4A 当前基准树 `D:\Narraverse-World-Map\hds-d4-cp1a-review` @ `codex/world-runtime-d4-cp1a-review`，CP1a检查点 `c84d57d5b5fc4628fe5cb59986528574e924c4de`（父f7699fb，恰3core+1A测试，未push/main/deploy）。修复收粮库存恒等式/非actor-2接收限制/ownership预检；新14/14、hunter9/9、society8/8及旧6组初态/日结完整组件字节配对通过。见[D4A CP1a复核](docs/runtime/D4A-CP1A-REVIEW-20261013.md)。
-- CP1b记忆层限定PASS：[复核](docs/runtime/D4A-CP1B-REVIEW-20261013.md)。CP1c、CP1d、CP2a、CP2b、CP2c各自限定PASS，细节及历史分批证据见各复核报告。CP2b CLI范围：[复核](docs/runtime/D4A-CP2B-REVIEW-20261014.md)；CP2c村庄UI/static及真实浏览器消费者范围：[复核](docs/runtime/D4A-CP2C-REVIEW-20261014.md)。CP2c源码树 `D:\Narraverse-World-Map\hds-d4-cp1a-review`，本地提交 `970471ab38b196c4f2f1e39d0bed026006ce2ff8`（父 `aea035f5b11311f70efd343cfbab78eb42251ff4`，8 paths=7生产+1测试，727+/6-，工作区干净）；11个新成员分批通过，另有1个只读补证和1个旧 encounter UI 组合复验，非一次13/13。最终选中证据0失败/0跳过，初轮失败原始记录保留。源码尚未推送、合入main或部署；D4A整体与母合同未PASS，B仍待完整A交付。
+- CP1b记忆层限定PASS：[复核](docs/runtime/D4A-CP1B-REVIEW-20261013.md)。CP1c、CP1d、CP2a、CP2b、CP2c各自限定PASS，细节及历史分批证据见各复核报告。CP2b CLI范围：[复核](docs/runtime/D4A-CP2B-REVIEW-20261014.md)；CP2c村庄UI/static及真实浏览器消费者范围：[复核](docs/runtime/D4A-CP2C-REVIEW-20261014.md)。CP2c源码树 `D:\Narraverse-World-Map\hds-d4-cp1a-review`，本地提交 `970471ab38b196c4f2f1e39d0bed026006ce2ff8`（父 `aea035f5b11311f70efd343cfbab78eb42251ff4`，8 paths=7生产+1测试，727+/6-）；提交时工作区干净，当前仅CP3追加的两个测试文件有未提交改动、生产文件冻结；11个新成员分批通过，另有1个只读补证和1个旧 encounter UI 组合复验，非一次13/13。最终选中证据0失败/0跳过，初轮失败原始记录保留。源码尚未推送、合入main或部署；D4A整体与母合同未PASS，B仍待完整A交付。
 - 流程优化已分给独立Codex对话 `01a133e5-db80-7e81-af05-941188b1598e`（DSH｜流程优化与中断恢复）；任务书/修复/实验全部在 `E:\codex\2026-10-13\dsh-workflow-optimization`，本项目仅只读参考，禁止改活动STATE/源码/合同/看板或续派业务。当前对话继续业务派工验收；两路不得共用包工头写入会话。
 - D4 体验目标：给同村猎人一份私粮→立即记得本人收粮→日结实际吃粮→去森林完成遭遇→返回/刷新/关闭重开仍是同一人。局部知识展示同地点公开人物，不泄漏他人私账，不加信任或模型。合同版本、文件范围与手算见任务书，D 整体仍待体验收口。
 - DSH 流程优化已落地：原包工头会话 `session-2564efe0-949b-48ed-90a5-f7f7feb9cbce` 使用Global DeepSeek Flash完成复盘与两名顺序工人接续演练；Codex独立核对并修正停止证明/证据归属。运行册 `D:\Narraverse-World-Map\docs\operations\DSH-TEAM-RUNBOOK.md`，持久检查点 `.dsh-team/STATE.json`；原生任务task-24/25为历史演练完成；当前业务状态以CP2c复核及A/B验收记录为准。
-- 流程默认短工单/并发1、额度与502分流、最多一次重试及一个获准免费备选探测、工人和包工头各自落盘检查点；同文件换写者须可引用停止证据。当前仅验证顺序读取接续，实际子代理路由/额度未知、自动额度切换及进程强杀接管未验证。CP2c门已限定PASS；下一步CP3按合同核完整赠粮→advance144→Travel forest12→Begin0→attack6×2 win→Return12/tick180，并验证 graceful service reopen 与129个真实format9服务文件压力。完整A及B仍未验收；浏览器本轮未覆盖新scene完整战斗/日结链，失败与篡改/迟到/torn/name/dead-display注入也不代表权威世界死亡。该历史流程优化轮没有改运行时源码或启停用户实例。
+- 流程默认短工单/并发1、额度与502分流、最多一次重试及一个获准免费备选探测、工人和包工头各自落盘检查点；同文件换写者须可引用停止证据。当前仅验证顺序读取接续，实际子代理路由/额度未知、自动额度切换及进程强杀接管未验证。CP2c门已限定PASS；CP3进行中：唯一FULL首轮真实完成赠粮及日结144，但森林旅行计算耗时触发测试守卫，正式响应/最终r157未采集，该门不计通过；服务退出与资源清理已确认。已保存真实day144正式文件，严格续接成员仅准备、尚未运行；129文件预算成员仍在顺序执行，最新状态须从其checkpoint/HTTP原始响应核实。详见[D4A CP3进度](docs/runtime/D4A-CP3-REVIEW-20261014.md)。完整A及B仍未验收；完整遭遇返程、graceful reopen与真实format-9 129文件压力均待验。历史流程优化轮没有改运行时源码或启停用户实例。
 - 更早的R3、DSH停工与接管过程、旧候选拒收和上下文恢复等活动流水压缩为历史；本地证据相对路径：`artifacts/world-runtime-d35-hour-review-20261012/repair-workers-latest.json`、`artifacts/world-runtime-d35-r3-review-20261012/`。历史状态不代表当前验收结论。
 
 ## 证据入口
