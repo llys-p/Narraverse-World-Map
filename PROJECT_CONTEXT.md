@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-14 17:23（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-14 17:30（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -25,7 +25,7 @@
 - GitHub 分支 `codex/world-runtime-d4-cp1a-review` 当前已读回提交 `ba43118f096dabdc877a5ac39f7af3fa154becea`；CP1c/CP1d及其祖先可达。其后 CP2a、CP2b、CP2c 提交仅在本地源码树，尚未推送；均未合入 main 或部署。执行树 `origin` 仍指本机clone。
 
 - 控制文档树：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`；
-  本轮CP2c改写前 HEAD `ae8abf0f931baba2a7100e58d7dcd56d0e7370a4`；改写前完整状态见上方保留的 `3361d653` 快照链接。
+  本轮D4B收口前 HEAD `491d6498b74fadc64554e5d09b6bed5d6007206e`；规则/验收摘要提交 `8f002553fa31d701892f275b0f83627d848beb70` 已推送并读回。更早完整状态见上方保留的 `3361d653` 快照链接。
 - D3 施工树：`D:\Narraverse-World-Map\hds-reservation`，分支 `codex/world-runtime-d3-reservation`；A生产冻结为 `d22c730707646eabe8c68b4d2c739e09f942fbab`（主体祖先 `2ecfc0cd5c8991d57053e2e04c17a312469ef96f`，仅含 owner 队列修复和A回归测试）。B测试提交为 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb`（父3c、仅新增/扩展B2测试）；源码未推送、未合入main、未部署。
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
@@ -66,5 +66,5 @@
   正式平台 Project #1 独立维护。
 - 本轮合同 rev3 勘误 `c83492dfb56b98bfdd1976196929c2d97f1f35db` 已推送并读回；D4 原预规划 `cb0067a` 保留为历史；历史发布时A/B任务待派。
   D卡正文保留D3-5限定PASS并登记D4发布；D阶段仍进行中。A候选提交 `254c27d` 已就绪，B独立验收H1–H7功能合同限定PASS；D4功能范围已限定PASS，不等于性能通过或D阶段整体收口。原D4状态卡与证据保留，项目简介未改。
-  本轮看板待root同步并读回；CP2b看板读回入口：`artifacts/world-runtime-d4-cp2b-review-20261014/board-verification.json`；CP2c看板验证预定 `artifacts/world-runtime-d4-cp2c-review-20261014/board-verification.json`，须以root完成后的读回为准；此前合同发布证据保留于 `artifacts/world-runtime-d4-contract-20261013/`。
+  本轮看板已同步并按字段ID读回：D4A与D4B为Done/已验收，D为In Progress/进行中；三正文逐字匹配，证据 `artifacts/world-runtime-d4b-review-20261014/board-verification.json`。此前CP2b/CP2c与合同发布证据目录保留，均只代表当时范围。
   旧接入边界方案标为冻结前历史，不以其“待冻结”措辞阻塞正式A/B合同；源任务副本与控制树逐文件指纹相等。
