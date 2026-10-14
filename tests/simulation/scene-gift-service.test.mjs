@@ -501,3 +501,226 @@ test('CP2a-S14 a full scene commit queue still serves the original receipt befor
     await fs.rm(root, {recursive: true, force: true});
   }
 });
+
+test('CP3-BUDGET format9 real HTTP accepts journal128 and files129 before atomic limit and earliest DTO replay', async (t) => {
+  const {startRuntimeServer} = await import('../../runtime-server.mjs');
+  const {createHash} = await import('node:crypto');
+  const {createConnection} = await import('node:net');
+  const evidenceBase = path.resolve('artifacts/world-runtime-d4-cp3-budget-controller');
+  const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
+  const started = performance.now();
+  const resumeFile = process.env.CP3_BUDGET_RESUME_CHECKPOINT;
+  const resume = resumeFile ? JSON.parse(await fs.readFile(resumeFile, 'utf8')) : null;
+  const root = resume ? path.resolve(resume.root) : await fs.mkdtemp(path.join(os.tmpdir(), 'd4-cp3-budget-'));
+  assert.equal(path.dirname(root).toLowerCase(), path.resolve(os.tmpdir()).toLowerCase());
+  assert.ok(path.basename(root).startsWith('d4-cp3-budget-'), 'resume targets only this member temporary directories');
+  const directory = path.join(root, 'runtime');
+  await fs.mkdir(evidenceBase, {recursive: true});
+  const evidence = resume ? path.resolve(resume.evidence) : await fs.mkdtemp(path.join(evidenceBase, 'run-'));
+  assert.equal(path.dirname(evidence), evidenceBase, 'resume evidence stays in this member artifact scope');
+  const writeJson = (name, value) => fs.writeFile(path.join(evidence, name), JSON.stringify(value, null, 2));
+  const dtos = Array.from({length: 128}, (_, index) => ({version: 3,
+    commandId: `cp3-budget-${String(index + 1).padStart(3, '0')}`,
+    expectedRevision: index === 0 ? 0 : index + 11,
+    type: index === 0 ? 'PlayerTravel' : 'PlayerGiftFood',
+    payload: index === 0 ? {destination: 'forest'} : {recipientId: 'actor-2'}}));
+  await writeJson('canonical-dtos.json', dtos);
+  let server;
+  let complete = false;
+  const instances = [];
+  const lifecycle = [];
+  const receipts = [];
+  const formalNames = async () => (await fs.readdir(directory))
+    .filter((name) => /^service-commit-r(0|[1-9][0-9]*)\.json$/.test(name))
+    .sort((a, b) => Number(a.match(/r(\d+)/)[1]) - Number(b.match(/r(\d+)/)[1]));
+  const storedBytes = async () => new Map(await Promise.all((await formalNames())
+    .map(async (name) => [name, await fs.readFile(path.join(directory, name))])));
+  const hashes = (files) => Array.from(files, ([name, bytes]) => ({name, bytes: bytes.length, sha256: sha256(bytes)}));
+  const expectedNames = (count) => ['service-commit-r0.json', ...Array.from({length: count}, (_, i) =>
+    `service-commit-r${i + 12}.json`)];
+  const portClosed = (url) => new Promise((resolve, reject) => {
+    const socket = createConnection({host: '127.0.0.1', port: Number(new URL(url).port)});
+    socket.once('connect', () => { socket.destroy(); reject(new Error(`Test port still open: ${url}`)); });
+    socket.once('error', (error) => { socket.destroy(); error.code === 'ECONNREFUSED' ? resolve(true) : reject(error); });
+  });
+  const closeCurrent = async () => {
+    if (!server) return;
+    const current = server;
+    server = null;
+    await current.close();
+    await assert.rejects(fs.stat(path.join(directory, '.runtime-owner.lock')), (error) => error.code === 'ENOENT');
+    assert.equal(await portClosed(current.url), true);
+    lifecycle.push({status: 'stopped', pid: process.pid, url: current.url, lockGone: true, portClosed: true,
+      elapsedMs: Math.round(performance.now() - started)});
+    await writeJson('lifecycle.json', lifecycle);
+  };
+  t.after(async () => {
+    await closeCurrent();
+    if (complete) {
+      assert.equal(path.dirname(root).toLowerCase(), path.resolve(os.tmpdir()).toLowerCase());
+      assert.ok(path.basename(root).startsWith('d4-cp3-budget-'));
+      await fs.rm(root, {recursive: true, force: true});
+      await assert.rejects(fs.stat(root), (error) => error.code === 'ENOENT');
+    }
+    await writeJson('cleanup.json', {pid: process.pid, instances, root, complete,
+      preservedForResume: !complete, removed: complete, elapsedMs: Math.round(performance.now() - started)});
+  });
+  const open = async (fresh = false) => {
+    server = await startRuntimeServer({directory, ...(fresh ? {profile: 'scene-survival-village', seed: 42} : {}),
+      port: 0, writable: true, inspectMind: true});
+    assert.notEqual(Number(new URL(server.url).port), 18324);
+    instances.push(server.url);
+    lifecycle.push({status: 'ready', pid: process.pid, url: server.url, directory,
+      elapsedMs: Math.round(performance.now() - started)});
+    await writeJson('lifecycle.json', lifecycle);
+  };
+  const readFive = async () => {
+    const routes = ['snapshot', 'player', 'minds', 'encounter', 'scene'];
+    return Object.fromEntries(await Promise.all(routes.map(async (route) => {
+      const response = await fetch(`${server.url}/api/runtime/${route}`);
+      assert.equal(response.status, 200, route);
+      return [route, await response.json()];
+    })));
+  };
+  const send = async (dto, label) => {
+    const body = JSON.stringify(dto);
+    const response = await fetch(`${server.url}/api/runtime/commands`, {method: 'POST',
+      headers: {'content-type': 'application/json'}, body});
+    const raw = await response.text();
+    await writeJson(`http-${label}.json`, {dto, requestBody: body, status: response.status,
+      responseBody: raw, pid: process.pid, url: server.url, elapsedMs: Math.round(performance.now() - started)});
+    return {status: response.status, value: JSON.parse(raw)};
+  };
+  const checkpoint = async (count, phase) => {
+    const files = await storedBytes();
+    assert.deepEqual(Array.from(files.keys()), expectedNames(count));
+    const value = {phase, accepted: count, remaining: 128 - count, root, directory, evidence,
+      pid: process.pid, url: server.url, elapsedMs: Math.round(performance.now() - started),
+      commandIds: dtos.slice(0, count).map((dto) => dto.commandId), fileHashes: hashes(files)};
+    await writeJson(`checkpoint-${String(count).padStart(3, '0')}.json`, value);
+    await writeJson('checkpoint.json', value);
+    console.log(`CP3-BUDGET ${phase}: ${count}/128 accepted, remaining=${128 - count}, elapsed=${value.elapsedMs}ms, checkpoint=${path.join(evidence, 'checkpoint.json')}`);
+  };
+  await open(!resume);
+  let accepted = 0;
+  if (resume) {
+    const names = await formalNames();
+    accepted = names.length - 1;
+    assert.ok(accepted >= 0 && accepted <= 128);
+    assert.deepEqual(names, expectedNames(accepted));
+    const saved = JSON.parse(await fs.readFile(path.join(directory, names.at(-1)), 'utf8'));
+    assert.equal(saved.serviceFormatVersion, 9);
+    assert.deepEqual(saved.commands.map((entry) => entry.dto), dtos.slice(0, accepted));
+    receipts.push(...saved.commands.map((entry) => entry.receipt));
+    await checkpoint(accepted, 'resumed-real-files');
+  } else {
+    assert.deepEqual(await formalNames(), ['service-commit-r0.json']);
+    const initial = JSON.parse(await fs.readFile(path.join(directory, 'service-commit-r0.json'), 'utf8'));
+    assert.equal(initial.serviceFormatVersion, 9);
+    assert.equal(initial.commands.length, 0);
+    assert.equal(initial.bundle.snapshot.tick, 0);
+    assert.equal(initial.bundle.snapshot.revision, 0);
+    await fs.copyFile(path.join(directory, 'service-commit-r0.json'), path.join(evidence, 'initial-r0.json'));
+    await checkpoint(0, 'initialized-r0');
+  }
+  for (let index = accepted; index < 128; index++) {
+    const response = await send(dtos[index], String(index + 1).padStart(3, '0'));
+    assert.equal(response.status, 200, `accepted input ${index + 1}`);
+    const receipt = response.value;
+    assert.equal(receipt.status, 'committed');
+    assert.equal(receipt.commandId, dtos[index].commandId);
+    assert.equal(receipt.fromRevision, dtos[index].expectedRevision);
+    assert.equal(receipt.toRevision, index + 12);
+    assert.equal(receipt.fromTick, index === 0 ? 0 : 12);
+    assert.equal(receipt.tick, 12);
+    assert.equal(receipt.durationTicks, index === 0 ? 12 : 0);
+    assert.equal(receipt.outcome, index === 0 ? 'succeeded' : 'rejected');
+    if (index > 0) assert.deepEqual(receipt.result, {donorId: 'actor-4', recipientId: 'actor-2',
+      product: 'food', quantity: 1, sourceEventSeq: null, reasonCode: 'NOT_COLOCATED'});
+    receipts.push(receipt);
+    const saved = JSON.parse(await fs.readFile(path.join(directory, `service-commit-r${index + 12}.json`), 'utf8'));
+    assert.equal(saved.serviceFormatVersion, 9);
+    assert.equal(saved.commands.length, index + 1);
+    assert.deepEqual(saved.commands.at(-1), {dto: dtos[index], receipt});
+    assert.deepEqual(saved.bundle.snapshot.world.encounterModel.inputHistory.at(-1), {dto: dtos[index], receipt});
+    assert.equal(saved.bundle.snapshot.revision, index + 12);
+    assert.equal(saved.bundle.snapshot.tick, 12);
+    if ((index + 1) % 16 === 0) await checkpoint(index + 1, 'accepted-commands');
+  }
+  const finalFile = path.join(directory, 'service-commit-r139.json');
+  const finalRaw = await fs.readFile(finalFile);
+  const final = JSON.parse(finalRaw);
+  const world = final.bundle.snapshot.world;
+  const journal = dtos.map((dto, i) => ({dto, receipt: receipts[i]}));
+  assert.equal(receipts.length, 128);
+  assert.deepEqual(final.commands, journal);
+  assert.deepEqual(world.encounterModel.inputHistory, journal);
+  assert.equal(final.bundle.snapshot.revision, 139);
+  assert.equal(final.bundle.snapshot.tick, 12);
+  assert.equal(final.bundle.snapshot.instantCommits, 127);
+  assert.equal(world.playerModel.inventory.food, 20);
+  assert.equal(world.playerModel.ledger.foodGiven, 0);
+  assert.equal(world.societyModel.agents.find((actor) => actor.state.actorId === 'actor-2').state.inventory.food, 0);
+  assert.equal(world.societyModel.agents.reduce((sum, actor) => sum + actor.trade.foodReceived, 0), 0);
+  assert.equal(final.bundle.eventLog.filter((event) => event.type === 'FoodGiftCommitted').length, 0);
+  const resolved = final.bundle.eventLog.filter((event) => event.type === 'EncounterCommandResolved');
+  assert.equal(resolved.length, 128);
+  assert.deepEqual(resolved.map((event) => event.payload), journal);
+  for (const actor of world.memoryModel.observer.actors) {
+    assert.ok(actor.memories.length <= 32);
+    assert.equal(actor.memories.filter((memory) => memory.observable?.type === 'food-gift').length, 0);
+    for (const memory of actor.memories) {
+      const fact = final.bundle.eventLog.find((event) => event.eventSeq === memory.sourceEventSeq);
+      assert.ok(fact, 'every retained memory refers to a real persisted fact');
+      assert.equal(memory.occurrenceTick, fact.tick);
+    }
+  }
+  await fs.writeFile(path.join(evidence, 'final-r139.json'), finalRaw);
+  await writeJson('receipts.json', receipts);
+  await writeJson('journal.json', journal);
+  const before = await readFive();
+  for (const value of Object.values(before)) { assert.equal(value.revision, 139); assert.equal(value.tick, 12); }
+  assert.equal(before.scene.location, 'forest');
+  assert.deepEqual(before.scene.actors, []);
+  const diskBefore = await storedBytes();
+  assert.equal(diskBefore.size, 129, 'actual formal r0 plus128 accepted commits; lock and temporary files excluded');
+  assert.deepEqual(Array.from(diskBefore.keys()), expectedNames(128));
+  await writeJson('five-before.json', before);
+  await writeJson('disk-before.json', hashes(diskBefore));
+  const unchanged = async (label) => {
+    const after = await readFive();
+    assert.deepEqual(after, before, `${label}: all five real HTTP projections unchanged`);
+    const files = await storedBytes();
+    assert.deepEqual(Array.from(files.keys()), Array.from(diskBefore.keys()));
+    for (const [name, bytes] of diskBefore) assert.deepEqual(files.get(name), bytes, `${label}: ${name} byte-identical`);
+    await writeJson(`disk-${label}.json`, hashes(files));
+  };
+  const overflow = await send({...dtos[1], commandId: 'cp3-budget-129', expectedRevision: 139}, 'overflow');
+  assert.equal(overflow.status, 413);
+  assert.equal(overflow.value.error.code, 'LIMIT_EXCEEDED');
+  await unchanged('after-overflow');
+  const earliest = await send(dtos[0], 'earliest-original-dto');
+  assert.equal(earliest.status, 200);
+  assert.deepEqual(earliest.value, receipts[0], 'original expectedRevision0 is replayed before stale or full budget');
+  await unchanged('after-earliest-replay');
+  const conflict = await send({...dtos[0], expectedRevision: 139}, 'same-id-different-dto');
+  assert.equal(conflict.status, 409);
+  assert.equal(conflict.value.error.code, 'COMMAND_ID_CONFLICT');
+  await unchanged('after-conflict');
+  const stale = await send({...dtos[1], commandId: 'cp3-budget-new-stale', expectedRevision: 138}, 'new-id-stale');
+  assert.equal(stale.status, 409);
+  assert.equal(stale.value.error.code, 'REVISION_CONFLICT');
+  assert.equal(stale.value.currentRevision, 139);
+  await unchanged('after-stale');
+  await closeCurrent();
+  await open();
+  await unchanged('after-graceful-reopen');
+  const replayReopened = await send(dtos[0], 'earliest-after-reopen');
+  assert.equal(replayReopened.status, 200);
+  assert.deepEqual(replayReopened.value, receipts[0]);
+  await unchanged('after-reopen-replay');
+  await writeJson('result.json', {status: 'PASS', accepted: 128, formalFiles: 129, journal: 128,
+    revision: 139, tick: 12, actualGiftFacts: 0, originalDtoReplay: true, overflowStatus: 413,
+    conflictStatus: 409, staleStatus: 409, elapsedMs: Math.round(performance.now() - started)});
+  complete = true;
+});
