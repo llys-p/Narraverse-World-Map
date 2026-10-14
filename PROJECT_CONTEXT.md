@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-14 09:41（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-14 14:40（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -35,7 +35,7 @@
 - 流程优化已分给独立Codex对话 `01a133e5-db80-7e81-af05-941188b1598e`（DSH｜流程优化与中断恢复）；任务书/修复/实验全部在 `E:\codex\2026-10-13\dsh-workflow-optimization`，本项目仅只读参考，禁止改活动STATE/源码/合同/看板或续派业务。当前对话继续业务派工验收；两路不得共用包工头写入会话。
 - D4 体验目标：给同村猎人一份私粮→立即记得本人收粮→日结实际吃粮→去森林完成遭遇→返回/刷新/关闭重开仍是同一人。局部知识展示同地点公开人物，不泄漏他人私账，不加信任或模型。合同版本、文件范围与手算见任务书，D 整体仍待体验收口。
 - DSH 流程优化已落地：原包工头会话 `session-2564efe0-949b-48ed-90a5-f7f7feb9cbce` 使用Global DeepSeek Flash完成复盘与两名顺序工人接续演练；Codex独立核对并修正停止证明/证据归属。运行册 `D:\Narraverse-World-Map\docs\operations\DSH-TEAM-RUNBOOK.md`，持久检查点 `.dsh-team/STATE.json`；原生任务task-24/25为历史演练完成；当前业务状态以CP2c复核及A/B验收记录为准。
-- 流程默认短工单/并发1、额度与502分流、最多一次重试及一个获准免费备选探测、工人和包工头各自落盘检查点；同文件换写者须可引用停止证据。当前仅验证顺序读取接续，实际子代理路由/额度未知、自动额度切换及进程强杀接管未验证。CP2c门已限定PASS；CP3进行中：唯一FULL首轮真实完成赠粮及日结144，但森林旅行计算耗时触发测试守卫，正式响应/最终r157未采集，该门不计通过；服务退出与资源清理已确认。已保存真实day144正式文件，严格续接成员仅准备、尚未运行；129文件预算成员仍在顺序执行，最新状态须从其checkpoint/HTTP原始响应核实。详见[D4A CP3进度](docs/runtime/D4A-CP3-REVIEW-20261014.md)。完整A及B仍未验收；完整遭遇返程、graceful reopen与真实format-9 129文件压力均待验。历史流程优化轮没有改运行时源码或启停用户实例。
+- 流程默认短工单/并发1、额度与502分流、最多一次重试及一个获准免费备选探测、工人和包工头各自落盘检查点；同文件换写者须可引用停止证据。当前仅验证顺序读取接续，实际子代理路由/额度未知、自动额度切换及进程强杀接管未验证。CP2c门已限定PASS；CP3按用户要求暂停：129个真实format-9服务文件预算门限定PASS（128 journal、final revision 139/tick 12），但FULL续接仍未运行，森林Begin/attack/Return链及正式tick180证据缺失。FULL首轮1项失败保留，只有赠粮与日结144局部通过；因此CP3、D4A与母合同未PASS，B仍未完成。详见[D4A CP3进度](docs/runtime/D4A-CP3-REVIEW-20261014.md)；后续需明确续作后再继续。历史流程优化轮没有改运行时源码或启停用户实例.
 - 更早的R3、DSH停工与接管过程、旧候选拒收和上下文恢复等活动流水压缩为历史；本地证据相对路径：`artifacts/world-runtime-d35-hour-review-20261012/repair-workers-latest.json`、`artifacts/world-runtime-d35-r3-review-20261012/`。历史状态不代表当前验收结论。
 
 ## 证据入口
