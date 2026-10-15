@@ -62,7 +62,17 @@ export function cloneData(value, ancestors = new Set(), depth = 0) {
     result = value.map((entry) => cloneData(entry, ancestors, depth + 1));
   } else {
     record(value); result = {};
-    for (const key of Object.keys(value).sort()) put(result, key, cloneData(value[key], ancestors, depth + 1));
+    for (const key of Object.keys(value).sort()) {
+      const entry = cloneData(value[key], ancestors, depth + 1);
+      // The result record is a plain `{}`, so its prototype chain is rooted at Object.prototype.
+      // A plain assignment is only unsafe when `key` is an own property of Object.prototype:
+      // there it would hit the inherited `__proto__` accessor, or throw on a non-writable
+      // inherited data property, instead of creating the own data property the contract
+      // requires. For every other key, assignment creates an own enumerable/writable/
+      // configurable data property identical to put(), so it is used to avoid defineProperty.
+      if (Object.hasOwn(Object.prototype, key)) put(result, key, entry);
+      else result[key] = entry;
+    }
   }
   ancestors.delete(value);
   return result;
