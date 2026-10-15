@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-15 13:27（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-15 16:24（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -22,7 +22,7 @@
 
 ## 集成基准与实际位置
 
-- 最新独立任务候选：`D:\Narraverse-World-Map-d4-canonical` / `codex/world-runtime-d4-canonical`，最终 `2936233426e990857f3c88a39ad58623832419fd` 已推送读回、干净（原交付d8cfafe7，中控只补测试/说明，生产字节不变）；D4P3编码优化及后续候选上的D4P2测量事项限定PASS，未main/deploy/启动日常入口，不能称日常性能或D整体通过。原A/B功能存档及标签保留为各自基准。
+- 最新限定PASS任务候选：`D:\Narraverse-World-Map-d4-data-fast` / `codex/world-runtime-d4-data-fast`，交付 `b7e5a9e7c131ee79acd017276ff62910a549d5ad` 已推送读回、干净；唯一生产data-contract吸收DeepSeek安全复制并新增单次有界键名转义复用，完整实档链一致。上一轮 `D:\Narraverse-World-Map-d4-canonical` / `codex/world-runtime-d4-canonical` 的已验2936233426e990857f3c88a39ad58623832419fd保持不动、作为可回退基准；旧A/B/模型实验与标签均保留。未main/deploy/启动日常入口，不能称日常性能或D整体通过。
 - GitHub 分支 `codex/world-runtime-d4-cp1a-review` 已读回A候选 `254c27d143f735dfff2051f561dee129012b5a99`；B分支 `codex/world-runtime-d4-acceptance` 已读回 `f0fa73dd2b41db6fb5aa1c11a221a3fa142ae30a`。存档标签 [checkpoint/d4-functional-20261014](https://github.com/llys-p/Narraverse-World-Map/tree/checkpoint/d4-functional-20261014) 指向B提交，包含A源码祖先；控制文档另在 `codex/world-runtime-control`。均未合入main或部署，ignored原始证据仍保留本地。执行树origin仍指本机clone，本次推送使用精确GitHub URL。
 
 - 控制文档树：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`；
@@ -32,7 +32,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- **D4P5已开工（Codex自行优化）**：用户授权吸收模型方案并继续优化；独立树 `D:\Narraverse-World-Map-d4-data-fast` / `codex/world-runtime-d4-data-fast` 接DeepSeek10a2180。只改data-contract，采纳安全复制并试单次规范编码的有界键名转义复用；成功校验展开短对照无稳定收益已弃。核心等价13/13通过（189.7215ms），下一步持久篡改与唯一受监督r170→返村→重开链；任务见 `tasks/D4P5-DATA-CONTRACT-FAST-PATH-TASK.md`。原已验2936233/各实验/旧实例保持，尚未宣称新候选验收。
+- **D4P5限定PASS并收口**：[复核](docs/runtime/D4P5-REVIEW-20261015.md)，任务b7e5a9e已推送且干净、实测生产d8d1dc6字节未变；等价13/13+真实持久篡改1/1。唯一无Profiler受监督完整r170链：开档47901.369/返村49255.913/关闭1.221/重开62098.170ms，总159545.607ms exit0；19内部核验、r182原始字节/回执/重开五投影一致，原8档/7副本未变/无锁/测量子进程。相对历史2936233总计低18.79%，非成对稳定性能证明；首开未胜过历史DeepSeek47.38秒，新增键名复用只获编码短对照中位11.57%收益支持。校验展开无稳定增益已弃，仍几十秒等待；未合main/部署/启停旧实例，D/日常性能仍未验。D4P5看板已先待验收再逐字段读回Done/已验收，D仍In Progress/进行中；原始Git/板证据在 `artifacts/d4p5-20261015/`。
 
 - **D4P4-R2方案沟通/短试跑已复核**，见[原报告R2](docs/runtime/D4P4-DSH-FREE-MODEL-COMPARISON-20261015.md)：Hy3复用（d838c41）、用户手动恢复后的Hy4 fromEntries（8bc88df）、Step5返修复用（c5692b7）三个实验已保存推送；Hy4原Relay hard_credit失败保留，手动runId/路由unknown。DeepSeek本轮未重新调用，只复用第一轮实际候选，额度故障后只探测了一个获准备选Step。中控四真实函数各10/10直接语义检查，统一合成100轮：原始455.7/DeepSeek166.9/Hy3170.6/Step182.5/Hy4227.1ms，仍首选DeepSeek，不外推真实档或p95。Hy4示意patch早return会漏清理，不可照搬；原型与真实DeepSeek均通过反例。只新增实验文件，四树生产/原测试/旧派工hash不变；无新慢档/main/deploy/服务启停。原始终态/保护/独立对照在 `artifacts/d4p4-dsh-20261015/r2/`；看板D4P4已先待验收再读回Done/已验收（方案试跑比较完成，非生产采纳或D整体验收）；报告/独立脚本与JSON提交8504155已推送读回。
 
