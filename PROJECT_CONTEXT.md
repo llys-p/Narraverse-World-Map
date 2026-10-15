@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-15 16:24（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-15 21:51（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,6 +31,9 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **D4E1固定本地入口已交付（CLI/HTTP限定PASS）**：[任务](tasks/D4E1-FIXED-EXPERIENCE-ENTRY-TASK.md)/[复核](docs/runtime/D4E1-REVIEW-20261015.md)，新树 `D:\Narraverse-World-Map-d4-experience` / `codex/world-runtime-d4-experience` @5acf6472已推送读回且干净；业务接b7e5a9e不变，仅Start-D4.cmd/说明/README。固定18325，首次新隔离scene世界，数据本树artifacts/d4-daily/world；不导入原世界、不启停旧18324。初版重开带初始化参数被保护拒绝，修正后临时端口/目录CLI/HTTP启动/quit/重开签名与r0字节一致、锁/子进程释放；非Windows双击/浏览器/日常性能验收。默认用户世界未创建、无常驻服务。看板D4E1已先待验收再读回Done/已验收（启动包限定范围），D仍In Progress/进行中。
+- **剩余性能已交GitHub开放问题**：[Issue #3](https://github.com/llys-p/Narraverse-World-Map/issues/3)，已创建并读回、加入Project #2/Todo。给仓库AI固定b7e5a9e与代码/原始已推送证据链接，写明私有原档未上传及不可削弱的校验/重演边界；没有自动指派AI，优化保持开放。
 
 - **D4P5限定PASS并收口**：[复核](docs/runtime/D4P5-REVIEW-20261015.md)，任务b7e5a9e已推送且干净、实测生产d8d1dc6字节未变；等价13/13+真实持久篡改1/1。唯一无Profiler受监督完整r170链：开档47901.369/返村49255.913/关闭1.221/重开62098.170ms，总159545.607ms exit0；19内部核验、r182原始字节/回执/重开五投影一致，原8档/7副本未变/无锁/测量子进程。相对历史2936233总计低18.79%，非成对稳定性能证明；首开未胜过历史DeepSeek47.38秒，新增键名复用只获编码短对照中位11.57%收益支持。校验展开无稳定增益已弃，仍几十秒等待；未合main/部署/启停旧实例，D/日常性能仍未验。D4P5看板已先待验收再逐字段读回Done/已验收，D仍In Progress/进行中；原始Git/板证据在 `artifacts/d4p5-20261015/`。
 
