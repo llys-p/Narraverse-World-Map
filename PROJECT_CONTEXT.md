@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-15 10:08（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-15 10:10（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -66,7 +66,7 @@
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)，
   owner `llys-p`，project #2；状态变化需读回并链接证据。
   正式平台 Project #1 独立维护。
-- D4P2任务卡 `PVTI_lAHOEF9IDs4BmADfzhA2qB8`：本轮收到交付，先登记待验收再裁定需修正；R1沿用该卡、待开工，不新建重复业务卡。D整体仍进行中；远端同步读回证据待本轮收口登记。原发布提交 `01dbb9e3f45fd52471720ba58ea627d5d24748c9` 及 `artifacts/d4-long-history-publication-20261015/verification.json` 为发布当时历史。
+- D4P2任务卡 `PVTI_lAHOEF9IDs4BmADfzhA2qB8`：已先登记待验收，再逐字/按字段ID读回 In Progress / 需修正；R1沿用该卡、待开工，不新建重复业务卡。D仍 In Progress / 进行中，D4A/B仍Done；复核/R1发布 `c02e76ffd7764b198f9a545c84445469c8cdf3ad` 已推送，证据 `artifacts/d4p2-review-20261015/board-verification.json`，本轮无业务重跑。原发布 `01dbb9e` 及对应发布索引为当时历史。
 - 本轮合同 rev3 勘误 `c83492dfb56b98bfdd1976196929c2d97f1f35db` 已推送并读回；D4 原预规划 `cb0067a` 保留为历史；历史发布时A/B任务待派。
   D卡正文保留D3-5限定PASS并登记D4发布；D阶段仍进行中。A候选提交 `254c27d` 已就绪，B独立验收H1–H7功能合同限定PASS；D4功能范围已限定PASS，不等于性能通过或D阶段整体收口。原D4状态卡与证据保留，项目简介未改。
   本轮性能事项D卡已同步并逐字/按字段ID读回，仍In Progress/进行中；证据 `artifacts/world-runtime-d4-performance-review-20261014/board-verification.json`。D4A/B冻结功能PASS与存档tag不变；本次性能只限审计复用slice。此前D4B、CP2b/CP2c与合同发布证据目录保留，均只代表当时范围。
