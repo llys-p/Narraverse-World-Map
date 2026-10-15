@@ -1,0 +1,342 @@
+{
+  "at": "2026-10-15T08:19:39.136Z",
+  "sourceCommit": "d8d1dc6b6d554ad6dc51f00ea7374ecf07e2bb30",
+  "dataContractSHA256": "9ab3bc12265351a822beb652e50f3e62620b36a6f265790bd966b822ed9a0c28",
+  "verdict": "LIMITED_PASS",
+  "testEvidence": {
+    "equivalence": "13/13, 189.7215ms",
+    "tamper": "1/1, 703.4485ms"
+  },
+  "business": {
+    "verdict": "COMPLETED_CONSISTENT",
+    "checkCount": 19,
+    "start": {
+      "revision": 170,
+      "tick": 168,
+      "commands": 6
+    },
+    "end": {
+      "revision": 182,
+      "tick": 180,
+      "commands": 7
+    },
+    "receipt": {
+      "apiVersion": 1,
+      "commandId": "0d851472-c18d-4060-95a2-476d903130a7",
+      "durationTicks": 12,
+      "fromRevision": 170,
+      "fromTick": 168,
+      "outcome": "succeeded",
+      "receiptVersion": 3,
+      "result": {
+        "actorId": "actor-4",
+        "after": {
+          "communalGold": 1000,
+          "fatigue": 200,
+          "inventory": {
+            "food": 18,
+            "herbs": 0
+          },
+          "location": "village",
+          "publicStock": {
+            "food": 464,
+            "herbs": 20
+          },
+          "wallet": 0
+        },
+        "amount": 0,
+        "before": {
+          "communalGold": 1000,
+          "fatigue": 100,
+          "inventory": {
+            "food": 18,
+            "herbs": 0
+          },
+          "location": "forest",
+          "publicStock": {
+            "food": 464,
+            "herbs": 20
+          },
+          "wallet": 0
+        },
+        "endTick": 180,
+        "product": null,
+        "quantity": 0,
+        "startTick": 168,
+        "type": "PlayerTravel",
+        "unitPrice": 0
+      },
+      "status": "committed",
+      "tick": 180,
+      "toRevision": 182,
+      "type": "PlayerTravel"
+    },
+    "produced": {
+      "file": "service-commit-r182.json",
+      "bytes": 136020,
+      "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "canonicalSha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "referenceBytes": 136020,
+      "referenceSha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "referenceCanonicalSha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "canonicalEqual": true,
+      "byteIdenticalToReference": true
+    },
+    "reopen": {
+      "beforeSignature": "2dd3b73b24fb95c1dcf815a63ae075f4f0f0131711f8e921a0d98f63c2bea48f",
+      "afterSignature": "2dd3b73b24fb95c1dcf815a63ae075f4f0f0131711f8e921a0d98f63c2bea48f",
+      "equal": true,
+      "producedUnchanged": true
+    }
+  },
+  "parent": {
+    "at": "2026-10-15T08:19:39.136Z",
+    "runId": "run-20261015-p5",
+    "contract": "d4-data-contract-fast-path-v1",
+    "verdict": "COMPLETED_CONSISTENT",
+    "reviewCause": "NONE",
+    "command": "node scripts/measure-d4-long-history.mjs run --run-id run-20261015-p5",
+    "childPid": 48640,
+    "childExit": {
+      "code": 0,
+      "signal": null
+    },
+    "exitUnconfirmed": false,
+    "totalMs": 159545.607,
+    "observed": {
+      "stages": [
+        {
+          "stage": "first-open",
+          "budgetMs": 120000,
+          "beginAtMs": 238.607,
+          "endAtMs": 48152.225,
+          "ms": 47901.369,
+          "status": "completed"
+        },
+        {
+          "stage": "submit-travel",
+          "budgetMs": 120000,
+          "beginAtMs": 48152.247,
+          "endAtMs": 97373.284,
+          "ms": 49255.913,
+          "status": "completed"
+        },
+        {
+          "stage": "close",
+          "budgetMs": null,
+          "beginAtMs": 97435.847,
+          "endAtMs": 97435.884,
+          "ms": 1.221,
+          "status": "completed"
+        },
+        {
+          "stage": "reopen",
+          "budgetMs": 120000,
+          "beginAtMs": 97435.887,
+          "endAtMs": 159540.8,
+          "ms": 62098.17,
+          "status": "completed"
+        }
+      ],
+      "lastEventAt": 159540.851
+    },
+    "limits": {
+      "stageMs": 120000,
+      "totalMs": 420000,
+      "exitConfirmMs": 5000
+    },
+    "killed": null,
+    "lockPresentAtEnd": false,
+    "childResultPresent": true,
+    "machine": {
+      "platform": "win32",
+      "arch": "x64",
+      "node": "v24.14.0",
+      "cpu": "13th Gen Intel(R) Core(TM) i5-13500HX",
+      "logicalCpus": 20,
+      "memoryGB": 15.726432800292969,
+      "hostname": "HQnoe"
+    }
+  },
+  "protection": {
+    "at": "2026-10-15T08:19:52.564Z",
+    "runId": "run-20261015-p5",
+    "verdict": "PROTECTION_OK",
+    "mode": "full",
+    "originalArchiveUnchanged": true,
+    "runtimeCopiesUnchanged": true,
+    "lockPresent": false,
+    "produced": {
+      "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "bytes": 136020
+    },
+    "expectedProduced": true,
+    "runtimeFilesCount": 8,
+    "expectedFileCount": 8,
+    "runtimeFiles": [
+      "service-commit-r0.json",
+      "service-commit-r1.json",
+      "service-commit-r145.json",
+      "service-commit-r157.json",
+      "service-commit-r158.json",
+      "service-commit-r164.json",
+      "service-commit-r170.json",
+      "service-commit-r182.json"
+    ],
+    "runDirFiles": [
+      "child-events.ndjson",
+      "child-result.json",
+      "child-stdio.log",
+      "manifest.json",
+      "parent-result.json",
+      "runtime-data"
+    ],
+    "archive": [
+      {
+        "file": "service-commit-r0.json",
+        "bytes": 82290,
+        "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "expectedSha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r1.json",
+        "bytes": 85039,
+        "sha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+        "expectedSha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r145.json",
+        "bytes": 117495,
+        "sha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+        "expectedSha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r157.json",
+        "bytes": 122259,
+        "sha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+        "expectedSha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r158.json",
+        "bytes": 125381,
+        "sha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+        "expectedSha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r164.json",
+        "bytes": 128313,
+        "sha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+        "expectedSha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r170.json",
+        "bytes": 131239,
+        "sha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+        "expectedSha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r182.json",
+        "bytes": 136020,
+        "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+        "expectedSha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+        "match": true,
+        "error": null
+      }
+    ],
+    "copiesStatus": [
+      {
+        "file": "service-commit-r0.json",
+        "present": true,
+        "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "expectedSha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "match": true
+      },
+      {
+        "file": "service-commit-r1.json",
+        "present": true,
+        "sha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+        "expectedSha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+        "match": true
+      },
+      {
+        "file": "service-commit-r145.json",
+        "present": true,
+        "sha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+        "expectedSha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+        "match": true
+      },
+      {
+        "file": "service-commit-r157.json",
+        "present": true,
+        "sha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+        "expectedSha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+        "match": true
+      },
+      {
+        "file": "service-commit-r158.json",
+        "present": true,
+        "sha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+        "expectedSha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+        "match": true
+      },
+      {
+        "file": "service-commit-r164.json",
+        "present": true,
+        "sha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+        "expectedSha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+        "match": true
+      },
+      {
+        "file": "service-commit-r170.json",
+        "present": true,
+        "sha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+        "expectedSha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+        "match": true
+      }
+    ]
+  },
+  "historicalComparison": {
+    "first-open": {
+      "historicalMs": 61851.345,
+      "candidateMs": 47901.369,
+      "reductionPct": 22.55403823473847
+    },
+    "submit-travel": {
+      "historicalMs": 63404.284,
+      "candidateMs": 49255.913,
+      "reductionPct": 22.314534771814476
+    },
+    "reopen": {
+      "historicalMs": 70974.714,
+      "candidateMs": 62098.17,
+      "reductionPct": 12.506628769226191
+    },
+    "total": {
+      "historicalMs": 196451.86,
+      "candidateMs": 159545.607,
+      "reductionPct": 18.786410574071432
+    }
+  },
+  "proofFiles": {
+    "artifacts\\d4p5-20261015\\equivalence.tap": "cfcb4c1baad1bbdeb09873d62893762dad4a9b7ac6e4cb8d81a7fafe3fb7e73d",
+    "artifacts\\d4p5-20261015\\tamper.tap": "16ba3cfdec7fc6e86dc3bb5d3158f9abc53e581b3560bbb3c1f8e4ce7efefa45",
+    "artifacts\\d4p5-20261015\\micro-real-result.json": "7564c4d26e2b29f8e7c5f18158c4b32d75a3cebf440a17321fb92f7877896def",
+    "artifacts\\d4-long-history-20261015\\run-20261015-p5\\child-result.json": "9c3d6218bfe2cf8aec7fe46d8908478a1cbcb06f15adc97c433732fbc0072806",
+    "artifacts\\d4-long-history-20261015\\run-20261015-p5\\parent-result.json": "b01852cd0705747ac2b714e5c70a0826a84668f5400448a3a326c4f643270852",
+    "artifacts\\d4-long-history-20261015\\run-20261015-p5\\protection.json": "9802af5a438b7777db7b393ca399ac2c3d0329637bc270db5a12b03a0dc9ee3d"
+  }
+}

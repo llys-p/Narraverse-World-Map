@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-15T08:16:30.690Z",
+  "kind": "r170 parse then clone/encode only; NOT runtime open",
+  "sha": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+  "results": [
+    {
+      "repeat": 0,
+      "name": "accepted293",
+      "rounds": 250,
+      "cloneDataMs": 473.23949999999996,
+      "canonicalJsonMs": 391.67189999999994
+    },
+    {
+      "repeat": 0,
+      "name": "deepseek10a",
+      "rounds": 250,
+      "cloneDataMs": 235.29910000000007,
+      "canonicalJsonMs": 379.827
+    },
+    {
+      "repeat": 0,
+      "name": "candidate",
+      "rounds": 250,
+      "cloneDataMs": 231.81659999999988,
+      "canonicalJsonMs": 347.9941000000001
+    },
+    {
+      "repeat": 1,
+      "name": "deepseek10a",
+      "rounds": 250,
+      "cloneDataMs": 267.56899999999996,
+      "canonicalJsonMs": 393.53830000000016
+    },
+    {
+      "repeat": 1,
+      "name": "candidate",
+      "rounds": 250,
+      "cloneDataMs": 223.60490000000027,
+      "canonicalJsonMs": 370.97400000000016
+    },
+    {
+      "repeat": 1,
+      "name": "accepted293",
+      "rounds": 250,
+      "cloneDataMs": 438.59400000000005,
+      "canonicalJsonMs": 370.40290000000005
+    },
+    {
+      "repeat": 2,
+      "name": "candidate",
+      "rounds": 250,
+      "cloneDataMs": 230.9338000000007,
+      "canonicalJsonMs": 343.3680999999997
+    },
+    {
+      "repeat": 2,
+      "name": "accepted293",
+      "rounds": 250,
+      "cloneDataMs": 441.91010000000006,
+      "canonicalJsonMs": 364.6051000000007
+    },
+    {
+      "repeat": 2,
+      "name": "deepseek10a",
+      "rounds": 250,
+      "cloneDataMs": 229.19580000000042,
+      "canonicalJsonMs": 399.5564999999997
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "kind": "discarded local guard-inline attempt; results transcribed from original tool output",
+  "results": [
+    {
+      "repeat": 0,
+      "name": "accepted293",
+      "cloneDataMs": 472.4103,
+      "canonicalJsonMs": 372.1763
+    },
+    {
+      "repeat": 0,
+      "name": "deepseek10a",
+      "cloneDataMs": 220.354,
+      "canonicalJsonMs": 363.0042
+    },
+    {
+      "repeat": 0,
+      "name": "candidate",
+      "cloneDataMs": 218.1241,
+      "canonicalJsonMs": 353.1946
+    },
+    {
+      "repeat": 1,
+      "name": "deepseek10a",
+      "cloneDataMs": 218.4776,
+      "canonicalJsonMs": 393.9258
+    },
+    {
+      "repeat": 1,
+      "name": "candidate",
+      "cloneDataMs": 264.9782,
+      "canonicalJsonMs": 400.5228
+    },
+    {
+      "repeat": 1,
+      "name": "accepted293",
+      "cloneDataMs": 468.9897,
+      "canonicalJsonMs": 375.0543
+    },
+    {
+      "repeat": 2,
+      "name": "candidate",
+      "cloneDataMs": 236.7399,
+      "canonicalJsonMs": 362.7313
+    },
+    {
+      "repeat": 2,
+      "name": "accepted293",
+      "cloneDataMs": 443.791,
+      "canonicalJsonMs": 380.4747
+    },
+    {
+      "repeat": 2,
+      "name": "deepseek10a",
+      "cloneDataMs": 236.6308,
+      "canonicalJsonMs": 393.9358
+    }
+  ],
+  "rounds": 250,
+  "verdict": "DISCARDED_NO_CLEAR_GAIN"
+}

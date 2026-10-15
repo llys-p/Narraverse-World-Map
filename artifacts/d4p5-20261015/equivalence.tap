@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: D4P3 Step 1: verify independent baseline oracle source fingerprint
+ok 1 - D4P3 Step 1: verify independent baseline oracle source fingerprint
+  ---
+  duration_ms: 5.0969
+  type: 'test'
+  ...
+# Subtest: D4P3 Step 1: synthetic valid cases produce byte-for-byte identical canonicalJson
+ok 2 - D4P3 Step 1: synthetic valid cases produce byte-for-byte identical canonicalJson
+  ---
+  duration_ms: 4.2187
+  type: 'test'
+  ...
+# Subtest: D4P3 Step 1: invalid cases throw identical error code, message and never invoke getters
+ok 3 - D4P3 Step 1: invalid cases throw identical error code, message and never invoke getters
+  ---
+  duration_ms: 1.6041
+  type: 'test'
+  ...
+# Subtest: D4P3 Step 2: real 8 post-war archive saves produce identical canonicalJson signatures
+ok 4 - D4P3 Step 2: real 8 post-war archive saves produce identical canonicalJson signatures
+  ---
+  duration_ms: 87.1721
+  type: 'test'
+  ...
+# Subtest: D4P3 Step 2: payloadBudget boundary check with new canonicalJson
+ok 5 - D4P3 Step 2: payloadBudget boundary check with new canonicalJson
+  ---
+  duration_ms: 2.2239
+  type: 'test'
+  ...
+# Subtest: D4P5 key reuse preserves escaped/integer keys past cache capacity and length bound
+ok 6 - D4P5 key reuse preserves escaped/integer keys past cache capacity and length bound
+  ---
+  duration_ms: 6.3664
+  type: 'test'
+  ...
+# Subtest: D4P5 cached key spellings never reuse values or skip late getter/cycle validation
+ok 7 - D4P5 cached key spellings never reuse values or skip late getter/cycle validation
+  ---
+  duration_ms: 1.0606
+  type: 'test'
+  ...
+# Subtest: D4P4 Step 1: baseline oracle fingerprint matches the frozen baseline SHA
+ok 8 - D4P4 Step 1: baseline oracle fingerprint matches the frozen baseline SHA
+  ---
+  duration_ms: 5.531
+  type: 'test'
+  ...
+# Subtest: D4P4 Step 1: cloneData produces descriptor-identical clones for all valid cases
+ok 9 - D4P4 Step 1: cloneData produces descriptor-identical clones for all valid cases
+  ---
+  duration_ms: 4.5125
+  type: 'test'
+  ...
+# Subtest: D4P4 Step 1: cloneData preserves prototype-pollution safety under hostile Object.prototype
+ok 10 - D4P4 Step 1: cloneData preserves prototype-pollution safety under hostile Object.prototype
+  ---
+  duration_ms: 1.242
+  type: 'test'
+  ...
+# Subtest: D4P4 Step 1: cloneData throws identical error code and message on invalid cases
+ok 11 - D4P4 Step 1: cloneData throws identical error code and message on invalid cases
+  ---
+  duration_ms: 1.3633
+  type: 'test'
+  ...
+# Subtest: D4P4 Step 1: real archive saves clone to identical fingerprints
+ok 12 - D4P4 Step 1: real archive saves clone to identical fingerprints
+  ---
+  duration_ms: 33.8705
+  type: 'test'
+  ...
+# Subtest: D4P4 Step 1: put() stays exported and defineProperty-based (command-engine dynamic keys)
+ok 13 - D4P4 Step 1: put() stays exported and defineProperty-based (command-engine dynamic keys)
+  ---
+  duration_ms: 0.4414
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 189.7215

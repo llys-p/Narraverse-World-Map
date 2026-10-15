@@ -1,0 +1,8 @@
+{
+  "productionFiles": [
+    "runtime/core/data-contract.mjs"
+  ],
+  "sourceHead": "d8d1dc6b6d554ad6dc51f00ea7374ecf07e2bb30",
+  "dataContractSHA256": "9ab3bc12265351a822beb652e50f3e62620b36a6f265790bd966b822ed9a0c28",
+  "measurementScriptMatchesAccepted": true
+}
