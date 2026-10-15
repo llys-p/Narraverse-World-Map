@@ -1,0 +1,41 @@
+TIMING rounds=12 oracleDefineProperty=42.804ms candidate=20.608ms traversalSanity=40.762ms ratio=2.077x
+TAP version 13
+# Subtest: R1 counter-example: inherited setter on Object.prototype is not invoked and value parity holds
+ok 1 - R1 counter-example: inherited setter on Object.prototype is not invoked and value parity holds
+  ---
+  duration_ms: 1.4702
+  type: 'test'
+  ...
+# Subtest: read-only inherited member only: candidate matches oracle (R1 rejection \#2)
+ok 2 - read-only inherited member only: candidate matches oracle (R1 rejection \#2)
+  ---
+  duration_ms: 0.3473
+  type: 'test'
+  ...
+# Subtest: descriptor/prototype/key-order parity and getter-free on synthetic legal samples
+ok 3 - descriptor/prototype/key-order parity and getter-free on synthetic legal samples
+  ---
+  duration_ms: 0.9294
+  type: 'test'
+  ...
+# Subtest: rejection parity: identical code+message, getters never invoked
+ok 4 - rejection parity: identical code+message, getters never invoked
+  ---
+  duration_ms: 1.5377
+  type: 'test'
+  ...
+# Subtest: copy-loop micro timing: oracle defineProperty loop vs candidate (same traversal)
+ok 5 - copy-loop micro timing: oracle defineProperty loop vs candidate (same traversal)
+  ---
+  duration_ms: 105.2279
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 126.6619
