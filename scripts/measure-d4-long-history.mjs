@@ -36,6 +36,15 @@ const DEFAULT_RUN_ID = 'run-20261015-01';
 // Contracts
 const CONTRACT_D4P2 = 'd4-long-history-performance-v1';
 const CONTRACT_R1 = 'd4-long-history-open-profile-r1';
+const CONTRACT_D4P3 = 'd4-canonical-encoding-performance-v1';
+
+function resolveContract(args, isProfile) {
+  if (args.contract) return args.contract;
+  if (isProfile) return CONTRACT_R1;
+  const runId = args['run-id'] || '';
+  if (runId.includes('p3') || runId.includes('canonical')) return CONTRACT_D4P3;
+  return CONTRACT_D4P2;
+}
 
 // Frozen SHA256 of the eight original archive files (task book section 2).
 const ORIGINAL_SHA = {
@@ -122,7 +131,7 @@ function machineInfo() {
 async function cmdPrepare(args) {
   const runId = args['run-id'] || DEFAULT_RUN_ID;
   const isProfile = !!args.profile || (args['run-id'] && args['run-id'].includes('r1')) || args.contract === CONTRACT_R1;
-  const contract = isProfile ? CONTRACT_R1 : CONTRACT_D4P2;
+  const contract = resolveContract(args, isProfile);
   const totalLimitMs = isProfile ? R1_TOTAL_LIMIT_MS : D4P2_TOTAL_LIMIT_MS;
   const runDir = runDirOf(runId), runtimeData = runtimeDataOf(runId);
 
@@ -266,7 +275,7 @@ async function cmdWatchdogProbe() {
 async function cmdChild(args) {
   const runId = args['run-id'] || DEFAULT_RUN_ID;
   const isProfile = !!args.profile || (args['run-id'] && args['run-id'].includes('r1'));
-  const contract = isProfile ? CONTRACT_R1 : CONTRACT_D4P2;
+  const contract = resolveContract(args, isProfile);
   const stageLimitMs = STAGE_LIMIT_MS;
   const runDir = runDirOf(runId), runtimeData = runtimeDataOf(runId);
   const eventsPath = path.join(runDir, 'child-events.ndjson');
@@ -498,7 +507,7 @@ async function cmdChild(args) {
 async function cmdRun(args) {
   const runId = args['run-id'] || DEFAULT_RUN_ID;
   const isProfile = !!args.profile || (args['run-id'] && args['run-id'].includes('r1'));
-  const contract = isProfile ? CONTRACT_R1 : CONTRACT_D4P2;
+  const contract = resolveContract(args, isProfile);
   const stageLimitMs = STAGE_LIMIT_MS;
   const totalLimitMs = isProfile ? R1_TOTAL_LIMIT_MS : D4P2_TOTAL_LIMIT_MS;
   const exitConfirmMs = EXIT_CONFIRM_MS;
@@ -517,6 +526,7 @@ async function cmdRun(args) {
   const scriptPath = fileURLToPath(import.meta.url);
   const childArgs = [scriptPath, 'child', '--run-id', runId];
   if (isProfile) childArgs.push('--profile');
+  if (args.contract) childArgs.push('--contract', args.contract);
 
   const child = spawn(process.execPath, childArgs, {
     cwd: SOURCE, stdio: ['ignore', stdioFd, stdioFd], windowsHide: true

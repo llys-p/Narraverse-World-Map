@@ -67,14 +67,47 @@ export function cloneData(value, ancestors = new Set(), depth = 0) {
   ancestors.delete(value);
   return result;
 }
+function encodeCanonical(value, ancestors = new Set(), depth = 0) {
+  requireCondition(depth <= 64, 'Data nesting budget exceeded', 'LIMIT_EXCEEDED');
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);
+  if (typeof value === 'number') {
+    requireCondition(Number.isFinite(value), 'Non-finite number');
+    return value === 0 ? '0' : JSON.stringify(value);
+  }
+  requireCondition(typeof value === 'object', 'Non-JSON data');
+  requireCondition(!ancestors.has(value), 'Cyclic data');
+  ancestors.add(value);
+  try {
+    if (Array.isArray(value)) {
+      denseArray(value, MAX_EVENTS);
+      const len = value.length;
+      if (len === 0) return '[]';
+      let out = '[';
+      for (let i = 0; i < len; i++) {
+        if (i > 0) out += ',';
+        out += encodeCanonical(value[i], ancestors, depth + 1);
+      }
+      return out + ']';
+    }
+    record(value);
+    const sortedKeys = Object.keys(value).sort();
+    const len = sortedKeys.length;
+    if (len === 0) return '{}';
+    let out = '{';
+    for (let i = 0; i < len; i++) {
+      if (i > 0) out += ',';
+      const key = sortedKeys[i];
+      out += JSON.stringify(key) + ':' + encodeCanonical(value[key], ancestors, depth + 1);
+    }
+    return out + '}';
+  } finally {
+    ancestors.delete(value);
+  }
+}
+
 // Encode keys directly: building an object first would reorder integer-looking keys.
 export function canonicalJson(value) {
-  const encode = (data) => {
-    if (data === null || typeof data !== 'object') return JSON.stringify(data);
-    if (Array.isArray(data)) return '[' + data.map(encode).join(',') + ']';
-    return '{' + Object.keys(data).sort().map((key) => JSON.stringify(key) + ':' + encode(data[key])).join(',') + '}';
-  };
-  return encode(cloneData(value));
+  return encodeCanonical(value);
 }
 export function payloadBudget(value) {
   requireCondition(new TextEncoder().encode(canonicalJson(value)).length <= MAX_PAYLOAD_BYTES, 'Payload budget exceeded', 'LIMIT_EXCEEDED');
