@@ -77,7 +77,7 @@ export function cloneData(value, ancestors = new Set(), depth = 0) {
   ancestors.delete(value);
   return result;
 }
-function encodeCanonical(value, ancestors = new Set(), depth = 0) {
+function encodeCanonical(value, ancestors = new Set(), depth = 0, encodedKeys = new Map()) {
   requireCondition(depth <= 64, 'Data nesting budget exceeded', 'LIMIT_EXCEEDED');
   if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);
   if (typeof value === 'number') {
@@ -95,7 +95,7 @@ function encodeCanonical(value, ancestors = new Set(), depth = 0) {
       let out = '[';
       for (let i = 0; i < len; i++) {
         if (i > 0) out += ',';
-        out += encodeCanonical(value[i], ancestors, depth + 1);
+        out += encodeCanonical(value[i], ancestors, depth + 1, encodedKeys);
       }
       return out + ']';
     }
@@ -107,7 +107,13 @@ function encodeCanonical(value, ancestors = new Set(), depth = 0) {
     for (let i = 0; i < len; i++) {
       if (i > 0) out += ',';
       const key = sortedKeys[i];
-      out += JSON.stringify(key) + ':' + encodeCanonical(value[key], ancestors, depth + 1);
+      let encodedKey = encodedKeys.get(key);
+      if (encodedKey === undefined) {
+        encodedKey = JSON.stringify(key);
+        // Only immutable key spellings are reused, within this one fully validated encoding.
+        if (key.length <= 128 && encodedKeys.size < 256) encodedKeys.set(key, encodedKey);
+      }
+      out += encodedKey + ':' + encodeCanonical(value[key], ancestors, depth + 1, encodedKeys);
     }
     return out + '}';
   } finally {
