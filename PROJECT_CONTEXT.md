@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-15 11:06（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-15 11:57（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -32,6 +32,7 @@
 
 ## 活动工作、阻塞与下一步
 
+- 用户授权DSH目录免费模型独立试优化，已发布[D4P4统一任务](tasks/D4P4-DSH-FREE-MODEL-OPTIMIZATION-TASK.md)：基准2936233，4独立树在 `D:\Narraverse-World-Map\free-perf-trials\{deepseek,hy4,hy3,step5}`，分别对应workbuddy-global的deepseek-v4.1-flash/hy4-preview-f/hy3/step-5-preview（目录x0.00，实际额度/费用不可观测，无付费回退）。各模型最多一个data-contract候选，顺序写入/串行测量，不改业务审计/规则。DeepSeek读取probe已成功，原生run `d814490c-73c9-467f-88d5-f5c83350b6e1`已开工；其他待派。原已验版本2936233保持，试验不等于采纳。
 - D4P2首轮脚本失败与R1诊断历史保留：原生产611b3aff首次无Profiler95147.747ms；R1交付1c2713a4，带Profiler111303.165ms、起点170/168/6commands、无返村/重开。诊断限定PASS及统计勘误见[R1复核](docs/runtime/D4P2-R1-REVIEW-20261015.md)，不把它改写为原完整链全绿。后续D4P3已在新候选补齐测量事项。
 - **D4P3与D4P2测量事项已限定PASS收口**，见[中控复核](docs/runtime/D4P3-REVIEW-20261015.md)。唯一无Profiler完整链：开档61851.345ms→返村63404.284ms→关闭1.381ms→重开70974.714ms，总196451.860ms/exit0；完整r182原始字节及回执与参考一致，五投影跨重开一致、原8档/7副本未变/锁释放。中控补真65536/65537 UTF-8边界及自有constructor键，最终等价5/5、持久篡改1/1通过，仅测试/说明改动，未重跑业务。相对历史开档约35%只是单样本差值；仍有分钟级等待，日常性能未验，D整体仍进行中。本轮停止，不自动派发下一阶段或部署。
 - D3-5A 生产候选在 `2ecfc0c` 主体上已有真实服务、CLI、持久化预算及浏览器消费者证据：服务6/6、旧parser窄回归3/3；CLI窄测4/4、旧clock-smoke 1/1、有界reader 1/1；Edge组合1/1（92.5秒）；新profile metadata负例1/1。format8 128输入/129正式service文件边界1/1（269秒）；旧profile 128文件上限1/1（127条真实命令，887.98秒）。这些是既有定向回执，不代表新候选整体验收。
