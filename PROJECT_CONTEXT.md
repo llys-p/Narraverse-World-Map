@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-15 12:49（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-15 12:52（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -70,7 +70,7 @@
   owner `llys-p`，project #2；状态变化需读回并链接证据。
   正式平台 Project #1 独立维护。
 - D4P2卡 `PVTI_lAHOEF9IDs4BmADfzhA2qB8` 与D4P3卡 `PVTI_lAHOEF9IDs4BmADfzhA3b1M` 已先登记待验收，再逐字/按字段ID读回 Done / 已验收（测量/编码优化限定PASS）；D仍 In Progress / 进行中，D4A/B仍Done。收口报告提交 `75fb5d34febdf733d2e714fcda7cf4f4caebd46e` 已推送；独立原始索引/看板读回证据在 `artifacts/d4p3-review-20261015/`。本轮无业务重跑，最终源码2936233已推送读回且干净。
-- D4P4卡 `PVTI_lAHOEF9IDs4BmADfzhA4L_c` 已发布开工并登记待验收；候选比较报告已就绪，远端最终收口读回待登记。原始路由/模型输出、manifest、测试/反例与一次开档证据在 `artifacts/d4p4-dsh-20261015/` 和各候选本地artifacts；所有已派原生run均已终态。
+- D4P4卡 `PVTI_lAHOEF9IDs4BmADfzhA4L_c` 已先待验收再读回 Done / 已验收（候选比较范围完成，不代表四模型代码均通过），D仍 In Progress / 进行中、D4P2/P3仍Done；报告提交 `4d348e2b504ba02b0451c5f86b0f999f3a9c86e8` 已推送。原始模型输出/manifest/候选索引/一次开档及看板读回在 `artifacts/d4p4-dsh-20261015/`，各树另保留测试/反例和Hy3手动恢复回执；所有已派原生run终态，无旧实例启停。
 - 本轮合同 rev3 勘误 `c83492dfb56b98bfdd1976196929c2d97f1f35db` 已推送并读回；D4 原预规划 `cb0067a` 保留为历史；历史发布时A/B任务待派。
   D卡正文保留D3-5限定PASS并登记D4发布；D阶段仍进行中。A候选提交 `254c27d` 已就绪，B独立验收H1–H7功能合同限定PASS；D4功能范围已限定PASS，不等于性能通过或D阶段整体收口。原D4状态卡与证据保留，项目简介未改。
   此前不可变审计复用slice的D卡已同步并逐字/按字段ID读回，仍In Progress/进行中；证据 `artifacts/world-runtime-d4-performance-review-20261014/board-verification.json`。D4A/B冻结功能PASS与存档tag不变；该历史轮次性能只限审计复用slice。此前D4B、CP2b/CP2c与合同发布证据目录保留，均只代表当时范围。
