@@ -62,7 +62,17 @@ export function cloneData(value, ancestors = new Set(), depth = 0) {
     result = value.map((entry) => cloneData(entry, ancestors, depth + 1));
   } else {
     record(value); result = {};
-    for (const key of Object.keys(value).sort()) put(result, key, cloneData(value[key], ancestors, depth + 1));
+    const keys = Object.keys(value).sort();
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const entry = cloneData(value[key], ancestors, depth + 1);
+      // record() above proves prototype === Object.prototype/null and that every own key is an
+      // enumerable data property, so a plain store creates the same own enumerable/writable/
+      // configurable property put() would define. Only '__proto__' would resolve to the
+      // Object.prototype accessor instead of an own data property, so it keeps put().
+      if (key === '__proto__') put(result, key, entry);
+      else result[key] = entry;
+    }
   }
   ancestors.delete(value);
   return result;
