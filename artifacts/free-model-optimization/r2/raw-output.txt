@@ -1,0 +1,34 @@
+=== Part 1: R1 rejection counterexamples (Object.prototype polluted at runtime) ===
+V0-baseline(defineProperty)
+  setter: calls=0 own=true value="x" threw=null
+  readonly: own=true value="x" threw=null
+V1-r1-literal-proto(REJECTED)
+  setter: calls=1 own=false value=undefined threw=null
+  readonly: own=null value=null threw=TypeError: Cannot assign to read only property 'locked' of object '#<Object>'
+V2-deepseek-style(ownkey-guard)
+  setter: calls=1 own=false value=undefined threw=null
+  readonly: own=null value=null threw=TypeError: Cannot assign to read only property 'locked' of object '#<Object>'
+V3-r2-object-fromEntries
+  setter: calls=0 own=true value="x" threw=null
+  readonly: own=true value="x" threw=null
+
+=== Part 2: semantics vs V0-baseline (canonicalJson / prototype / descriptors) ===
+V0-baseline(defineProperty) -> MATCH (all 9 cases)
+V1-r1-literal-proto(REJECTED) -> MATCH (all 9 cases)
+V2-deepseek-style(ownkey-guard) -> MATCH (all 9 cases)
+V3-r2-object-fromEntries -> MATCH (all 9 cases)
+
+=== Part 3: invalid-input parity vs V0-baseline ===
+V0-baseline(defineProperty) -> PARITY (all 14)
+V1-r1-literal-proto(REJECTED) -> PARITY (all 14)
+V2-deepseek-style(ownkey-guard) -> PARITY (all 14)
+V3-r2-object-fromEntries -> PARITY (all 14)
+getter invocations across variants: 0 (baseline must be 0; each variant counted)
+
+=== Part 4: clone-only micro timing, 30 records x 12 keys x 3 levels, 200 iterations ===
+V0-baseline(defineProperty) -> 200 iters total=891.24ms avg=4.4562ms
+V1-r1-literal-proto(REJECTED) -> 200 iters total=363.07ms avg=1.8154ms
+V2-deepseek-style(ownkey-guard) -> 200 iters total=407.43ms avg=2.0372ms
+V3-r2-object-fromEntries -> 200 iters total=494.01ms avg=2.4701ms
+
+NOTE: Part 4 is a synthetic clone-only micro measurement under this sandbox; it is NOT a product performance result. Real measurement belongs to Codex (r170 first-open under the parent contract).
