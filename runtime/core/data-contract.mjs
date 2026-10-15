@@ -62,7 +62,13 @@ export function cloneData(value, ancestors = new Set(), depth = 0) {
     result = value.map((entry) => cloneData(entry, ancestors, depth + 1));
   } else {
     record(value); result = {};
-    for (const key of Object.keys(value).sort()) put(result, key, cloneData(value[key], ancestors, depth + 1));
+    // Plain assignment on a fresh `{}` yields the same {writable,enumerable,configurable} data
+    // descriptor as put(), and is materially cheaper. `__proto__` is the only accessor inherited
+    // from Object.prototype, so it must still go through defineProperty to stay an own data key.
+    for (const key of Object.keys(value).sort()) {
+      const entry = cloneData(value[key], ancestors, depth + 1);
+      if (key === '__proto__') put(result, key, entry); else result[key] = entry;
+    }
   }
   ancestors.delete(value);
   return result;
