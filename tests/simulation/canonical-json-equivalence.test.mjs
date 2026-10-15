@@ -59,7 +59,7 @@ test('D4P3 Step 1: synthetic valid cases produce byte-for-byte identical canonic
 
   const ownProtoObj = {};
   Object.defineProperty(ownProtoObj, '__proto__', { value: 'custom-proto-value', enumerable: true, writable: true, configurable: true });
-  ownProtoObj.constructorKey = 'constructor-val';
+  ownProtoObj.constructor = 'constructor-val';
 
   const validCases = [
     // Primitives
@@ -214,15 +214,22 @@ test('D4P3 Step 2: real 8 post-war archive saves produce identical canonicalJson
 });
 
 test('D4P3 Step 2: payloadBudget boundary check with new canonicalJson', async () => {
-  const { payloadBudget, MAX_PAYLOAD_BYTES } = await import(pathToFileURL(path.join(LOCAL_SOURCE, 'runtime/core/data-contract.mjs')).href);
+  const { payloadBudget, canonicalJson, MAX_PAYLOAD_BYTES } = await import(pathToFileURL(path.join(LOCAL_SOURCE, 'runtime/core/data-contract.mjs')).href);
+  const baseline = await import(pathToFileURL(path.join(BASELINE_SOURCE, 'runtime/core/data-contract.mjs')).href);
 
   // Payload within budget: passes cleanly
   const validPayload = { text: 'small payload', numbers: [1, 2, 3] };
   assert.doesNotThrow(() => payloadBudget(validPayload));
 
-  // Boundary payload: oversized payload > 65536 bytes
-  const largePayload = { largeText: 'x'.repeat(MAX_PAYLOAD_BYTES + 100) };
-  assert.throws(() => payloadBudget(largePayload), (err) => {
-    return err.code === 'LIMIT_EXCEEDED' && err.message === 'Payload budget exceeded';
-  });
+  // Include a multibyte character: the limit is UTF-8 bytes, not string length.
+  const overhead = Buffer.byteLength(canonicalJson({ text: '粮' }), 'utf8');
+  const exact = { text: '粮' + 'x'.repeat(MAX_PAYLOAD_BYTES - overhead) };
+  const over = { text: exact.text + 'x' };
+  assert.equal(Buffer.byteLength(canonicalJson(exact), 'utf8'), MAX_PAYLOAD_BYTES);
+  assert.equal(Buffer.byteLength(canonicalJson(over), 'utf8'), MAX_PAYLOAD_BYTES + 1);
+  for (const contract of [baseline, { payloadBudget }]) {
+    assert.doesNotThrow(() => contract.payloadBudget(exact));
+    assert.throws(() => contract.payloadBudget(over), (err) =>
+      err.code === 'LIMIT_EXCEEDED' && err.message === 'Payload budget exceeded');
+  }
 });
