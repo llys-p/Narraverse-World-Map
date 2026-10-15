@@ -32,6 +32,8 @@
 
 ## 活动工作、阻塞与下一步
 
+- **D4P5已开工（Codex自行优化）**：用户授权吸收模型方案并继续优化；独立树 `D:\Narraverse-World-Map-d4-data-fast` / `codex/world-runtime-d4-data-fast` 接DeepSeek10a2180。只改data-contract，采纳安全复制并试单次规范编码的有界键名转义复用；成功校验展开短对照无稳定收益已弃。核心等价13/13通过（189.7215ms），下一步持久篡改与唯一受监督r170→返村→重开链；任务见 `tasks/D4P5-DATA-CONTRACT-FAST-PATH-TASK.md`。原已验2936233/各实验/旧实例保持，尚未宣称新候选验收。
+
 - **D4P4-R2方案沟通/短试跑已复核**，见[原报告R2](docs/runtime/D4P4-DSH-FREE-MODEL-COMPARISON-20261015.md)：Hy3复用（d838c41）、用户手动恢复后的Hy4 fromEntries（8bc88df）、Step5返修复用（c5692b7）三个实验已保存推送；Hy4原Relay hard_credit失败保留，手动runId/路由unknown。DeepSeek本轮未重新调用，只复用第一轮实际候选，额度故障后只探测了一个获准备选Step。中控四真实函数各10/10直接语义检查，统一合成100轮：原始455.7/DeepSeek166.9/Hy3170.6/Step182.5/Hy4227.1ms，仍首选DeepSeek，不外推真实档或p95。Hy4示意patch早return会漏清理，不可照搬；原型与真实DeepSeek均通过反例。只新增实验文件，四树生产/原测试/旧派工hash不变；无新慢档/main/deploy/服务启停。原始终态/保护/独立对照在 `artifacts/d4p4-dsh-20261015/r2/`；看板D4P4已先待验收再读回Done/已验收（方案试跑比较完成，非生产采纳或D整体验收）；报告/独立脚本与JSON提交8504155已推送读回。
 
 - **D4P4四个DSH目录x0.00模型比较完成**，见[报告](docs/runtime/D4P4-DSH-FREE-MODEL-COMPARISON-20261015.md)。统一基准2936233，独立树在 `D:\Narraverse-World-Map\free-perf-trials\{deepseek,hy4,hy3,step5}`。DeepSeek候选10a2180：中控11/11语义+1/1持久篡改通过，唯一r170打开47377.2192ms、投影签名/原档保护一致，较历史61.85秒单样本低约23.4%；仅推荐候选，未采纳到2936233。Hy4 f8128f0/Step5 7226859因继承setter/只读属性语义反例拒收、未测慢存档；Hy3原429失败，用户手动恢复后NO_CHANGE/零diff（EPERM交回），两轮分记。三个有改动实验分支已保存推送；实际费用/共享额度池未知，无付费回退。原已验版本/标签保持，D整体仍进行中；本轮到比较收口停止。
