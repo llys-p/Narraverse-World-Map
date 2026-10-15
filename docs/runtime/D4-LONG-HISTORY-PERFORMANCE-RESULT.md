@@ -1,3 +1,133 @@
+# D4P2-R1｜测量器修正与首次打开 CPU 采样结果回执
+
+- 合同：`d4-long-history-open-profile-r1`（属于 D4P2 需修正后的限定接续）
+- 结果分类：**`COMPLETED_CONSISTENT`**（本次采样与诊断测量成功走完，结果一致；开启 Profiler 的诊断样本，**不代表日常性能合格，返村与重开整链仍未运行**）
+- 错误归因：`NONE`（测量器已修正，无异常抛出）
+- 执行分支：`codex/world-runtime-d4-long-history`
+- 基准提交：`5b1c0964da33660fa65c0a9b6f678add8656da1b`（生产基准仍为 `611b3aff1e98150af069478a50e09923f4d5f633`，未修改任何生产代码）
+- 执行树：`D:\Narraverse-World-Map-d4-long-history`
+- 唯一业务运行：`run-20261015-r1`，命令 `node scripts/measure-d4-long-history.mjs run --run-id run-20261015-r1 --profile`
+- Node / 机器：`v24.14.0`；`win32/x64`，`13th Gen Intel(R) Core(TM) i5-13500HX`，`logicalCpus 20`，`memoryGB 15.726432800292969`，hostname `HQnoe`
+- 原始证据目录（ignored）：`artifacts/d4-long-history-20261015/run-20261015-r1/`（`manifest.json`、`child-events.ndjson`、`child-result.json`、`parent-result.json`、`protection.json`、`first-open.cpuprofile`、`profile-analysis.json`、`runtime-data/`）
+- 探针证据：`artifacts/d4-long-history-20261015/watchdog-probe.json`
+
+---
+
+## R1-1. 测量器（Harness）修正与短探针核验
+
+按照中控首轮复核（`D4P2-REVIEW-20261015.md`）要求，完成三项缺陷修正：
+1. **起点 commands 来源**：不再从公开 snapshot 读取私有 commands，改从副本 `service-commit-r170.json` 真实读取并核验 SHA256，核对 `commands.length === 6`、`revision: 170`、`tick: 168`，再与真实 owner 公开投影的 revision/tick 进行交叉比对。
+2. **Watchdog 退出确认时限**：父进程采用非阻塞监控循环，在检测到超时发出 `SIGKILL` 终止信号的同时，立即启动最多 5 秒的 `Promise.race` 退出确认。禁止先无界等待 `await finished`。若确认超时报告 `exitUnconfirmed: true`，停止调度，不强删锁。
+3. **保护检查与未产生产物解耦**：在 `cmdVerify` 中将“原文件不变”、“7个副本不变”、“锁释放”与“业务产物生成”独立报告。对于 R1 采样模式（不提交返村），预期产物即为 7 副本且无 r182，核验判定为 `PROTECTION_OK`，不再误报为保护失败。
+4. **短 watchdog 探针验证**：在业务运行前执行 `watchdog-probe`（不导入 runtime、不读写存档），设定 200ms 总预算与 400ms 退出确认，成功在 205.459ms 检测超时、发送 SIGKILL 并在 8.2ms 内完成有界退出确认，总耗时 213.694ms，`bounded: true`。
+
+---
+
+## R1-2. 业务阶段耗时与状态核对
+
+| 阶段 | 状态 | 耗时 | 预算 | 说明 |
+| --- | --- | --- | --- | --- |
+| `profiler-setup` | 已完成 | 92.997 ms | — | 独立记录，不计入打开时间 |
+| `first-open`（开启 Profiler 诊断样本） | **已完成** | **111303.165 ms** | 120000 ms | 真实打开 r170 完整存档，走完冷校验、重演与初始化 |
+| `profiler-stop` | 已完成 | 476.171 ms | — | 停止采样并落盘 `first-open.cpuprofile` |
+| `graceful-close` | 已完成 | 2.885 ms | — | 正常关闭，锁已释放 |
+| `submit-travel` | **未运行** | — | — | R1 合同明确禁止提交 |
+| `reopen` | **未运行** | — | — | R1 合同明确禁止重开 |
+
+- **父进程观测总耗时**：`totalMs = 112169.290 ms`（子进程总预算 180000 ms 内，未超时，watchdog `killed = null`，退出码 `code: 0`）。
+- **五公开读取耗时**（打开后测得）：`getSnapshot 0.086ms`、`getPlayer 0.063ms`、`getMindInspector 0.309ms`、`getEncounter 0.056ms`、`getScene 0.021ms`（合计 0.535ms，均为亚毫秒级）。
+- **起点状态与五投影签名**：
+  - `startState`：`revision 170`、`tick 168`、`commands 6`（全部通过断言）
+  - 五投影 `canonicalJson` 签名：`046e7b2ef5da06bf3bf3d54096535601a84d7074e0754233c98d4f4031ec5f07`
+- **采样样本说明**：本次 111.3 秒为开启 Node CPU Profiler 的诊断样本，采样存在 CPU 开销（首轮未采样打开为 95.1 秒），不能替代首轮数据或据此计算优化收益。
+
+---
+
+## R1-3. CPU Profile 原始采样与热点调用栈分析
+
+- **采样概况**：
+  - 采样文件：`first-open.cpuprofile`（81935 个调用节点，68143 个时间采样）
+  - 采样起止时间戳：`startTime 93162158626` 至 `endTime 93273543057` 微秒
+  - 采样有效统计时长（$\sum \Delta t$）：**111384.244 ms**（与第一阶段耗时 111303.165ms 高度吻合）
+
+### 1. 最高 Self 耗时（函数自身 CPU 占用，排除子调用）
+
+| 排名 | 函数名与源码位置 | Self 耗时 (ms) | 占采样总时间比例 |
+| --- | --- | --- | --- |
+| 1 | `put` (`runtime/core/data-contract.mjs:45`) | **31260.753** | **28.07%** |
+| 2 | `cloneData` (`runtime/core/data-contract.mjs:49`) | **17490.573** | **15.70%** |
+| 3 | `requireCondition` (`runtime/core/data-contract.mjs:10`) | **17423.986** | **15.64%** |
+| 4 | `encode` (`runtime/core/data-contract.mjs:72`) | **14518.917** | **13.04%** |
+| 5 | `(anonymous)` (`runtime/core/data-contract.mjs:75`) | **8738.621** | **7.85%** |
+| 6 | `record` (`runtime/core/data-contract.mjs:13`) | **5053.642** | **4.54%** |
+| 7 | `visit` (`runtime/core/experience-state.mjs:30`) | **4750.735** | **4.27%** |
+| 8 | `(garbage collector)` (native) | **1558.498** | **1.40%** |
+| 9 | `denseArray` (`runtime/core/data-contract.mjs:36`) | **1527.222** | **1.37%** |
+| 10 | `own` (`runtime/core/data-contract.mjs:5`) | **1420.910** | **1.28%** |
+
+> **关键发现**：仅 `runtime/core/data-contract.mjs` 中的底层数据合同操作（`put`、`cloneData`、`requireCondition`、`encode`、`record` 等）就占用了 **97433.9 ms** 的 Self CPU 时间，占整个首次打开总耗时的 **87.47%**！
+
+### 2. 关键业务子系统 Inclusive 耗时（调用栈累积时间）
+
+| 业务环节 / 子系统 | Inclusive 耗时 (ms) | 占采样总时间比例 | 分析与归因 |
+| --- | --- | --- | --- |
+| `performTick` (`command-engine.mjs:44`) | 108312.248 | 97.24% | tick 循环推进驱动所有子系统 |
+| `validateBundle` (`world-state.mjs:98`) | 96477.681 | 86.62% | 完整 bundle 结构与历史权威校验 |
+| `validateEventLog` (`event-log.mjs:65`) | 95782.306 | 85.99% | 事件日志校验调用历史回放 |
+| `hooksValidateHistory` (`encounter-runtime.mjs:1263`) | 95548.224 | 85.78% | **核心瓶颈**：从 tick 0 到 168 的逐 tick 完整事件回放与事实对比 |
+| `loadServiceCommit` (`service-commit.mjs:90`) | 93799.994 | 84.21% | 存档提交加载与冷审计 |
+| `transitionAuditedServiceCommand` (`service-commit.mjs:29`) | 78853.891 | 70.79% | 6 条历史 service commands 逐条重演 |
+| `canonicalJson` (`data-contract.mjs:71`) | 46609.272 | 41.85% | 在 `validateHistory` 对比事实及 `payloadBudget` 中反复调用 |
+| `projections` (五投影函数) | 47.709 | 0.04% | 极快，上一轮不可变审计复用在此已完全消除冗余开销 |
+| `deepStrictEqual` (深比较) | 3.288 | 0.003% | 几乎无开销 |
+| `(garbage collector)` (GC 开销) | 1558.498 | 1.40% | GC 开销很低，非主要瓶颈 |
+| `(program / idle)` (闲置) | 47.014 | 0.04% | 无 I/O 等待，属于纯 CPU 密集计算 |
+
+### 3. 调用栈热点根因定位
+
+1. **热点主要路径**：
+   `loadServiceCommit` → `validateServiceCommit` → `createAuditedBundle` → `validateBundle` → `validateEventLog` → `validateHistory` (`hooksValidateHistory`)。
+2. **为何耗时达 95 秒以上**：
+   在 `hooksValidateHistory` 中，为保证零作弊，引擎从 tick 0 起重新执行 `performTick` 推进 168 个 ticks，并在每个 tick 的每条事实断言中执行 `canonicalJson(replay.eventLog[seq]) === canonicalJson(events[seq])`。
+3. **`data-contract.mjs` 为何占用 87% CPU**：
+   - `canonicalJson(value)` 的实现为 `return encode(cloneData(value))`；
+   - 每次调用 `canonicalJson` 时，不仅做 JSON 编码，而且先调用 `cloneData` 做了一次完整的对象深拷贝；
+   - `cloneData` 在遍历对象属性时，对每个属性都调用了 `put(result, key, entry)`，而 `put` 使用了 V8 中开销极其高昂的 `Object.defineProperty(value, key, { value, enumerable: true, writable: true, configurable: true })`（单这一项就消耗了 **31.26 秒** 的纯 CPU 时间！）；
+   - 在整个 168-tick 重演与数千次事实验证过程中，`Object.defineProperty` 与 `cloneData` 被触发了数百万次。
+
+---
+
+## R1-4. 唯一最小优化候选建议（供中控评审，不实施）
+
+基于实测的 68143 个 CPU 采样证据，提出**至多一项**最小优化候选：
+
+* **优化项**：**消除 `canonicalJson` 中不必要的 `cloneData` 全量对象深拷贝，并优化 `put` 属性赋值开销**。
+* **证据支撑**：
+  * `put`（31.26s，28.07%）与 `cloneData`（17.49s，15.70%）合计直接消耗了 **48.75 秒**（占总耗时 43.77%）的 Self 时间。
+  * `canonicalJson` 内部的 `encode` 函数本身已经递归按键排序（`Object.keys(data).sort()`）遍历并做字符串拼接，在 `encode` 之前调用 `cloneData(value)` 属于完全重复的多余内存分配与 `Object.defineProperty` 遍历。
+* **边界与合同保全**：
+  * **权威一致性**：`canonicalJson` 的输出字符串规范（键按字母排序、紧凑格式）完全保持不变，对外部不可变 bundle、journal、签名以及事实等值比较 100% 保持完全相同的字节输出。
+  * **外部审计与重演**：不跳过任何外部 `validateBundle` 或 `hooksValidateHistory` 168-tick 的逐条回执重演与全量业务规则检查。
+  * **磁盘发布与隔离**：不改写任何存档格式、模式、文件发布流程或 profile 边界，旧 profile 与非 scene 规则完全隔离。
+
+---
+
+## R1-5. 保护状态与未运行项
+
+- **原文件保护**：原始参考存档 8 个文件全部逐字节未变（SHA256 全部匹配）。
+- **运行目录保护**：`run-20261015-r1` 仅包含 7 个合法副本文件，逐字节等于原始存档；未生成 `service-commit-r182.json`（符合诊断采样未提交返村的预期）。
+- **进程与锁状态**：子进程已以 `code 0` 正常退出，运行目录内无残留 `.runtime-owner.lock`，无残留进程。
+- **未运行项**：
+  * 未执行 `submit-travel`（返村命令提交）
+  * 未执行 `reopen`（关闭重开对比）
+  * 未执行新 r182 完整结果比较
+  * 未执行任何日常体验服务或浏览器端流程
+- **结论**：本 R1 工单仅达成“测量器缺陷修正”与“首次打开 CPU 采样定位”，**D4P2 原返村/重开整链仍未完成，D 阶段整体仍进行中**。
+
+---
+
+# --- 历史首轮记录（2026-10-15 首轮交付，保留备查） ---
+
 # D4P2｜长历史存档性能定向验证 结果回执
 
 - 合同：`d4-long-history-performance-v1`
