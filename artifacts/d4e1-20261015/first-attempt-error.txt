@@ -1,0 +1,7 @@
+Source: Codex tool output from the initial narrow CLI check, before fixing the launcher.
+CLI exited before ready: ERROR INVALID_INPUT: Cannot reset existing runtime profile
+
+Cause: the first launcher and test passed initialization profile/seed on reopen.
+Correction: initialize only when the world directory does not exist; otherwise omit initialization flags.
+The failed attempt's initial test world was preserved at artifacts/d4e1-20261015/cli-test-world/.
+The successful later attempt used a new timestamped test directory. No original world was reset.
