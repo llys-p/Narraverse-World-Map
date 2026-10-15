@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-15T05:24:27.876Z",
+  "kind": "scoped prototype parity and single synthetic micro timing",
+  "results": [
+    {
+      "label": "deepseek-existing",
+      "checks": 10,
+      "pass": true
+    },
+    {
+      "label": "hy3-reuse",
+      "checks": 10,
+      "pass": true
+    },
+    {
+      "label": "hy4-fromEntries",
+      "checks": 10,
+      "pass": true
+    },
+    {
+      "label": "step5-descriptor-guard",
+      "checks": 10,
+      "pass": true
+    }
+  ],
+  "timings": [
+    {
+      "label": "oracle",
+      "rounds": 100,
+      "totalMs": 455.7364
+    },
+    {
+      "label": "deepseek-existing",
+      "rounds": 100,
+      "totalMs": 166.90110000000004
+    },
+    {
+      "label": "hy3-reuse",
+      "rounds": 100,
+      "totalMs": 170.64199999999994
+    },
+    {
+      "label": "hy4-fromEntries",
+      "rounds": 100,
+      "totalMs": 227.0866000000001
+    },
+    {
+      "label": "step5-descriptor-guard",
+      "rounds": 100,
+      "totalMs": 182.47890000000007
+    }
+  ],
+  "notMeasured": [
+    "real-save-open",
+    "travel",
+    "reopen",
+    "peak-memory",
+    "p95"
+  ]
+}

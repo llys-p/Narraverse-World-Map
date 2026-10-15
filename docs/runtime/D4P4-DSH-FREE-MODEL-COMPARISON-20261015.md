@@ -54,3 +54,46 @@ DSH多路都遇node --test的spawn EPERM。Hy4按约定交回；DeepSeek使用�
 本轮为候选比较完成，D4P4可收口；仅推荐DeepSeek候选继续候选验证。未将其替换2936233或合main，未部署/启动18324和其他旧实例/接模型/迁移真实档，也没有扩大到全量、截图或H7/128命令重跑。若采纳DeepSeek，还需该候选直接影响的最少持久提交/正常重开完整结果核验；此前D4P3全链证据不能冒充新候选全链新跑。
 
 控制树原始证据索引在 `artifacts/d4p4-dsh-20261015/`：各路manifest/probe/dispatch/终态，`candidate-index.json`，`open-deepseek/result.json`及原始测量driver/输出。模型自身的试验/回执/中控测试与反例保留在各候选 `artifacts/free-model-optimization/`；原始私有档和凭据不上传。
+
+## R2：继续沟通、原型与短试跑（2026-10-15 13:27 Asia/Shanghai）
+
+用户要求继续沟通并试跑方案后，新增三个模型的实验原型；**本节不是四模型都重新调用一次，也没有生产优化落地**。原候选/生产/原测试/两份未跟踪派工文件的字节均未变，新增文件只在各树 `artifacts/free-model-optimization/r2/`。DeepSeek保留第一轮实际候选，没有伪造它的第二轮回复。
+
+### 真实交互与阻塞
+
+| 模型 | 本次交付与调用证据 | 保存提交 |
+| --- | --- | --- |
+| Hy3 | 原会话接续 `c9b050dc-57f2-46a3-8095-58d20a329ac4` / succeeded。产出原型、短脚本和proposal，明确复用DeepSeek机制；自报最终18项通过。 | `d838c414bb6755b007c3e73bd604d9fcddff53eb` |
+| Hy4 | 接续 `7260b9d4-c18d-4758-ad49-8594a6c1681a` / failed，原文含hard_credit/14018/Credits exhausted。用户随后明确手动恢复，产出Object.fromEntries方案、短试验与原始输出；新手动runId/实际路由unknown，不把旧failed改成succeeded。原生会话注册表最后running=false，文件已落盘。 | `8bc88df17429e0798d63df3561aa34a115cb09ac` |
+| Step-5 | 额度故障后唯一备选probe `edf9eecf-6fc4-445d-9d17-d2b11198c718` / succeeded，真实回复READY但余额unknown；原会话接续 `17236a76-f591-4bd2-84e8-b3e4bdf624b5` / succeeded。返修原继承属性缺陷，自报5/5，明确同机制复用。 | `c5692b7d1b60c6f43ceda41baa46daf5c71fe0c3` |
+| DeepSeek | 保留第一轮 `10a2180` 的方案和实档证据；明确额度故障后按有界探测约定不再遍历同池。本轮只把真实已有函数纳入中控同样本短对照，没有新DSH调用。 | 原 `10a2180441fcc9509a6ddd561ac97679f279aa9f` |
+
+请求路由仍为已授权workbuddy-global目录x0.00模型；Hy3/Hy4请求high，Step probe/接续low；手动恢复实际路由unknown。未主动付费回退/购买/账号操作。Hy3耗时13分15秒、Step接续8分01秒，均超过5分钟目标；有界短shell验证不等于模型回合硬截止。此前steer一次未观测到持久消息、后续更具体反馈已durable，不能把首次催促当已生效。
+
+### 中控独立结果：同一进程的短对照
+
+冻结旧oracle SHA为 `c6f3bb2cfb813ed15aa6e2f522c10e2566b74a8f94ef38e9342ba52a4e60244f`；它的cloneData规则与2936233相同，但**不等于2936233整个模块的字节SHA**。中控直接导入该oracle、真实DeepSeek候选和三个R2原型，未使用模型自己重写的oracle或缓存键集合冒充真实候选。
+
+命令：`node artifacts/d4p4-dsh-20261015/r2/verify-prototypes.mjs`。结果exit0，每个候选**10/10**直接检查通过：六组合法值/副本/递归原型与描述符、继承setter=0、继承只读属性、自有属性保持、getter=0与循环拒绝码/信息相同。四组是40次断言组，不是全量回归或生产整体验收。没有为未改的生产模块重跑旧套件。
+
+随后同一合成三层记录样本，各100次、顺序、各两次预热，唯一微测量：
+
+| 实际函数 | 总耗时（ms） | 本轮定位 |
+| --- | ---: | --- |
+| oracle原始逐键defineProperty | 455.7364 | 参照 |
+| DeepSeek第一轮动态Object.hasOwn守卫 | **166.9011** | 本短样本最快 |
+| Hy3复用版 | 170.6420 | 同机制复现，不是新增优化 |
+| Step-5描述符守卫版 | 182.4789 | 修好继承属性反例，仍属同机制 |
+| Hy4 Object.fromEntries | 227.0866 | 不同机制，较原始快，但本样本慢于DeepSeek |
+
+原始结果及脚本保存在 `artifacts/d4p4-dsh-20261015/r2/controller-prototype-verification.json` 和 `verify-prototypes.mjs`。这些只是一次clone-only微测量；不能外推真实开档、返村/重开、峰值内存、p95，更不能把各模型不同样本的毫秒直接横比。本轮未跑新的慢存档、服务、Profiler、视觉或全量。
+
+### 采信与修正
+
+- **保留DeepSeek作为首选候选**。Hy3/Step的复现增加了直接机制证据，但没有提供优于现有实现的新方向；不把重复方案拼成更大改动。
+- **保留Hy4为备用方案**：Object.fromEntries使用定义属性语义，可避免继承setter/只读冲突，但增加entries数组和二元组分配。本短样本没有胜过DeepSeek，不为它另跑慢存档。
+- Hy4的V2曾缓存模块加载时的Object.prototype键集合，这与真实DeepSeek动态Object.hasOwn不同；其后自己补了动态守卫探针，中控也直接验证真实候选通过，故不采信“DeepSeek有同样缺陷”的推断。其原回执与raw-output的部分毫秒/成员计数也不完全一致，采用上表中控原始JSON。
+- Hy4 proposal里的生产示意diff有提前return，会绕过原cloneData末尾ancestors清理；**不可照搬该diff**。其实际原型通过shared清理后返回，故本次原型通过不等于示意patch可直接落地。若以后实施须保留清理与共享引用规则。
+- Step试验早期有未绑定函数/ESM require及自写oracle问题，中控按路径反馈后已修正为直接导入原oracle；未执行其原硬编码的范围外存档读取。Hy3只读属性初版用例不准确，已按反馈修正。失败/过程证据与最终结论分开，不用自报次数代替中控核验。
+
+三个R2实验提交均已精确推送并读回；未把生产候选替换到2936233、未合main或部署。原已验2936233保持。继续采纳DeepSeek仍需另行完成该候选最少直接持久提交/重开核验；本轮只完成方案沟通与短试跑比较。所有已派Relay run终态，手动Hy4会话已空闲。R2本地manifest/调用终态/手动记录/保护hash与Git读回见 `artifacts/d4p4-dsh-20261015/r2/`。
