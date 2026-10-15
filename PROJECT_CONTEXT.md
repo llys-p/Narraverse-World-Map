@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-15 09:04（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-15 10:08（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,7 +31,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- 当前待开工：已发布 [D4P2 长历史存档性能定向验证](tasks/D4-LONG-HISTORY-PERFORMANCE-TASK.md)，冻结生产 `611b3aff1e98150af069478a50e09923f4d5f633`；计划独立树 `D:\Narraverse-World-Map-d4-long-history` / `codex/world-runtime-d4-long-history`（尚未创建）。只复制原 CP3 r170 存档，测打开→一次真实返村→正常关闭重开，完整结果对照已保存 r182；单重步骤120秒、子进程总420秒硬上限。任务已发布不等于开工/性能通过；本轮仅发布文档，未运行测量。按结果再派具体性能修复或固定日常体验入口，D整体仍进行中。
+- D4P2首轮 **需修正**：树 `D:\Narraverse-World-Map-d4-long-history` / `codex/world-runtime-d4-long-history`，交付 `5b1c0964da33660fa65c0a9b6f678add8656da1b` 已远端读回、干净，恰新增script+回执，生产仍 `611b3aff1e98150af069478a50e09923f4d5f633`。唯一原始运行首次打开95147.747ms有效，随后脚本误读公开snapshot.commands中止；返村/重开/完整终态比对未跑，不是产品不一致证明。原8档/7副本及源码未变，进程退出/锁释放。见[复核](docs/runtime/D4P2-REVIEW-20261015.md)；[R1测量器修正及一次打开CPU采样](tasks/D4P2-R1-HARNESS-OPEN-PROFILE-TASK.md)已发布待开工，开档120秒/子进程180秒，不提交不重开不改生产；先定位热点再冻优化任务，D整体仍进行中。
 - D3-5A 生产候选在 `2ecfc0c` 主体上已有真实服务、CLI、持久化预算及浏览器消费者证据：服务6/6、旧parser窄回归3/3；CLI窄测4/4、旧clock-smoke 1/1、有界reader 1/1；Edge组合1/1（92.5秒）；新profile metadata负例1/1。format8 128输入/129正式service文件边界1/1（269秒）；旧profile 128文件上限1/1（127条真实命令，887.98秒）。这些是既有定向回执，不代表新候选整体验收。
 - B1 15项、B2 7项（2+3+2）、B3 6项共28个独立成员已分批通过、无skip；并非一次28/28。B2新增 owner durable-failure 与G7共11种checkpoint变体均通过。原失败记录与定向补验保留，见[D3-5B复核](docs/runtime/D3-5B-REVIEW-20261013.md)。A唯一源码行为修复为 `d22c730` 的 owner queue 幂等优先级及回归；B测试候选提交 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb` 仅改B2测试。相关D3提交现随D4任务分支远端可达；未合入main、未部署；D3整体未验收。
 - D4 合同 `d4-scene-continuity-v1` 已冻结，基准 `f7699fb43c02204a7dedf7fe6dc6706214d72fdb`；任务书见[A](tasks/D4A-SCENE-GIFT-MEMORY-TASK.md)与[B](tasks/D4B-SCENE-CONTINUITY-ACCEPTANCE-TASK.md)。CP1a、CP1b历史候选修正与限定PASS记录保留；A最终候选CP1/CP2/CP3内部门完成。B独立验收裁定H1–H7功能合同限定PASS，复核见[D4B复核](docs/runtime/D4B-REVIEW-20261014.md)；D4功能合同与本次性能slice均限定PASS，D阶段整体仍进行中，正式平台未接入。
@@ -66,7 +66,7 @@
 - 专用看板：[World Map 项目进度](https://github.com/users/llys-p/projects/2)，
   owner `llys-p`，project #2；状态变化需读回并链接证据。
   正式平台 Project #1 独立维护。
-- D4P2 发布提交 `01dbb9e3f45fd52471720ba58ea627d5d24748c9` 已推送；任务卡 `PVTI_lAHOEF9IDs4BmADfzhA2qB8` 已逐字/按字段ID读回为 Todo / 待开始，D卡仍 In Progress / 进行中，D4A/B仍 Done / 已验收。发布证据 `artifacts/d4-long-history-publication-20261015/verification.json`；本轮只核对文档、链接及8份原存档指纹，未开测量/体验服务。
+- D4P2任务卡 `PVTI_lAHOEF9IDs4BmADfzhA2qB8`：本轮收到交付，先登记待验收再裁定需修正；R1沿用该卡、待开工，不新建重复业务卡。D整体仍进行中；远端同步读回证据待本轮收口登记。原发布提交 `01dbb9e3f45fd52471720ba58ea627d5d24748c9` 及 `artifacts/d4-long-history-publication-20261015/verification.json` 为发布当时历史。
 - 本轮合同 rev3 勘误 `c83492dfb56b98bfdd1976196929c2d97f1f35db` 已推送并读回；D4 原预规划 `cb0067a` 保留为历史；历史发布时A/B任务待派。
   D卡正文保留D3-5限定PASS并登记D4发布；D阶段仍进行中。A候选提交 `254c27d` 已就绪，B独立验收H1–H7功能合同限定PASS；D4功能范围已限定PASS，不等于性能通过或D阶段整体收口。原D4状态卡与证据保留，项目简介未改。
   本轮性能事项D卡已同步并逐字/按字段ID读回，仍In Progress/进行中；证据 `artifacts/world-runtime-d4-performance-review-20261014/board-verification.json`。D4A/B冻结功能PASS与存档tag不变；本次性能只限审计复用slice。此前D4B、CP2b/CP2c与合同发布证据目录保留，均只代表当时范围。
