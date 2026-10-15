@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-15 11:57（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-15 12:49（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -32,7 +32,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- 用户授权DSH目录免费模型独立试优化，已发布[D4P4统一任务](tasks/D4P4-DSH-FREE-MODEL-OPTIMIZATION-TASK.md)：基准2936233，4独立树在 `D:\Narraverse-World-Map\free-perf-trials\{deepseek,hy4,hy3,step5}`，分别对应workbuddy-global的deepseek-v4.1-flash/hy4-preview-f/hy3/step-5-preview（目录x0.00，实际额度/费用不可观测，无付费回退）。各模型最多一个data-contract候选，顺序写入/串行测量，不改业务审计/规则。DeepSeek读取probe已成功，原生run `d814490c-73c9-467f-88d5-f5c83350b6e1`已开工；其他待派。原已验版本2936233保持，试验不等于采纳。
+- **D4P4四个DSH目录x0.00模型比较完成**，见[报告](docs/runtime/D4P4-DSH-FREE-MODEL-COMPARISON-20261015.md)。统一基准2936233，独立树在 `D:\Narraverse-World-Map\free-perf-trials\{deepseek,hy4,hy3,step5}`。DeepSeek候选10a2180：中控11/11语义+1/1持久篡改通过，唯一r170打开47377.2192ms、投影签名/原档保护一致，较历史61.85秒单样本低约23.4%；仅推荐候选，未采纳到2936233。Hy4 f8128f0/Step5 7226859因继承setter/只读属性语义反例拒收、未测慢存档；Hy3原429失败，用户手动恢复后NO_CHANGE/零diff（EPERM交回），两轮分记。三个有改动实验分支已保存推送；实际费用/共享额度池未知，无付费回退。原已验版本/标签保持，D整体仍进行中；本轮到比较收口停止。
 - D4P2首轮脚本失败与R1诊断历史保留：原生产611b3aff首次无Profiler95147.747ms；R1交付1c2713a4，带Profiler111303.165ms、起点170/168/6commands、无返村/重开。诊断限定PASS及统计勘误见[R1复核](docs/runtime/D4P2-R1-REVIEW-20261015.md)，不把它改写为原完整链全绿。后续D4P3已在新候选补齐测量事项。
 - **D4P3与D4P2测量事项已限定PASS收口**，见[中控复核](docs/runtime/D4P3-REVIEW-20261015.md)。唯一无Profiler完整链：开档61851.345ms→返村63404.284ms→关闭1.381ms→重开70974.714ms，总196451.860ms/exit0；完整r182原始字节及回执与参考一致，五投影跨重开一致、原8档/7副本未变/锁释放。中控补真65536/65537 UTF-8边界及自有constructor键，最终等价5/5、持久篡改1/1通过，仅测试/说明改动，未重跑业务。相对历史开档约35%只是单样本差值；仍有分钟级等待，日常性能未验，D整体仍进行中。本轮停止，不自动派发下一阶段或部署。
 - D3-5A 生产候选在 `2ecfc0c` 主体上已有真实服务、CLI、持久化预算及浏览器消费者证据：服务6/6、旧parser窄回归3/3；CLI窄测4/4、旧clock-smoke 1/1、有界reader 1/1；Edge组合1/1（92.5秒）；新profile metadata负例1/1。format8 128输入/129正式service文件边界1/1（269秒）；旧profile 128文件上限1/1（127条真实命令，887.98秒）。这些是既有定向回执，不代表新候选整体验收。
@@ -70,6 +70,7 @@
   owner `llys-p`，project #2；状态变化需读回并链接证据。
   正式平台 Project #1 独立维护。
 - D4P2卡 `PVTI_lAHOEF9IDs4BmADfzhA2qB8` 与D4P3卡 `PVTI_lAHOEF9IDs4BmADfzhA3b1M` 已先登记待验收，再逐字/按字段ID读回 Done / 已验收（测量/编码优化限定PASS）；D仍 In Progress / 进行中，D4A/B仍Done。收口报告提交 `75fb5d34febdf733d2e714fcda7cf4f4caebd46e` 已推送；独立原始索引/看板读回证据在 `artifacts/d4p3-review-20261015/`。本轮无业务重跑，最终源码2936233已推送读回且干净。
+- D4P4卡 `PVTI_lAHOEF9IDs4BmADfzhA4L_c` 已发布开工并登记待验收；候选比较报告已就绪，远端最终收口读回待登记。原始路由/模型输出、manifest、测试/反例与一次开档证据在 `artifacts/d4p4-dsh-20261015/` 和各候选本地artifacts；所有已派原生run均已终态。
 - 本轮合同 rev3 勘误 `c83492dfb56b98bfdd1976196929c2d97f1f35db` 已推送并读回；D4 原预规划 `cb0067a` 保留为历史；历史发布时A/B任务待派。
   D卡正文保留D3-5限定PASS并登记D4发布；D阶段仍进行中。A候选提交 `254c27d` 已就绪，B独立验收H1–H7功能合同限定PASS；D4功能范围已限定PASS，不等于性能通过或D阶段整体收口。原D4状态卡与证据保留，项目简介未改。
   此前不可变审计复用slice的D卡已同步并逐字/按字段ID读回，仍In Progress/进行中；证据 `artifacts/world-runtime-d4-performance-review-20261014/board-verification.json`。D4A/B冻结功能PASS与存档tag不变；该历史轮次性能只限审计复用slice。此前D4B、CP2b/CP2c与合同发布证据目录保留，均只代表当时范围。
