@@ -23,4 +23,4 @@ jobs:
       - name: Focused scene service smoke
         run: node --test --test-name-pattern='CP2a-S1 ' tests/simulation/scene-gift-service.test.mjs
       - name: Synthetic bounded attribution
-        run: node scripts/measure-issue3-fixture.mjs
+        run: node scripts/measure-issue3-fixture.mjs --profile
