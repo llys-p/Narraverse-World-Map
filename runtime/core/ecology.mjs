@@ -1,5 +1,5 @@
-import { cloneData, fields, integer, denseArray, canonicalJson, requireCondition } from './data-contract.mjs';
-import { createResourceWorld, validateResourceWorld, defaultResourceConfig, settleResourceDay, validateResourcePayload, MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
+import { cloneData, fields, integer, denseArray, canonicalJson, validateJsonData, requireCondition } from './data-contract.mjs';
+import { createResourceWorld, validateResourceConfiguration, validateResourceWorld, defaultResourceConfig, settleResourceDay, validateResourcePayload, MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
 import { createRng } from './rng.mjs';
 
 export const ECOLOGY_RULES = 'b-ecology-v1';
@@ -33,7 +33,7 @@ export function defaultEcologyConfig() {
     foodPerDeer: 20, foodReserveDays: 5, farmLossPerHungryWolf: 4, injuryBasePermille: 100, injuryPressurePermille: 400 };
 }
 
-function validateConfig(config) {
+function validateConfig(config, buildWorld = true) {
   fields(config, ['version','resources',...PARAMETERS]);
   requireCondition(['ecology-config-v1','ecology-config-v2'].includes(config.version), 'Unknown ecology configuration', 'UNSUPPORTED_VERSION');
   for (const key of PARAMETERS) {
@@ -42,7 +42,7 @@ function validateConfig(config) {
     if (key.includes('Permille')) requireCondition(config[key] <= 1000, 'Invalid ecological rate');
   }
   requireCondition(config.injuryBasePermille + config.injuryPressurePermille <= 1000, 'Injury probability exceeds one');
-  const resources = createResourceWorld(config.resources), village=config.resources.settlement;
+  const resources = buildWorld ? createResourceWorld(config.resources) : validateResourceConfiguration(config.resources), village=config.resources.settlement;
   requireCondition(village.humanCount<=MAX_POPULATION && config.resources.populations.deer<=config.deerCapacity &&
     config.resources.populations.wolves<=MAX_POPULATION, 'Population/capacity budget exceeded');
   requireCondition(config.resources.resources.herbs.consumption.numerator===1 &&
@@ -60,11 +60,16 @@ export function createEcologyWorld(config = defaultEcologyConfig()) {
     ...(isV2(copy)?{reservedWolves:0}:{}) } };
 }
 
+export function validateEcologyConfiguration(config = defaultEcologyConfig()) {
+  validateConfig(config, false);
+  validateJsonData(cloneData(config));
+}
+
 export function validateEcologyWorld(world, currencySpent = 0) {
   fields(world,['resources','resourceModel','ecologyModel']); validateResourceWorld(resourcePart(world), currencySpent);
   const m=world.ecologyModel,v2=isV2(m.config);
   fields(m,['config','configFingerprint','day','populations','injuredCount','remainders','ledger',...(v2?['reservedWolves']:[])]);
-  validateConfig(m.config);requireCondition(m.configFingerprint===canonicalJson(m.config) &&
+  validateConfig(m.config,false);requireCondition(m.configFingerprint===canonicalJson(m.config) &&
     canonicalJson(m.config.resources)===canonicalJson(world.resourceModel.config),'Ecology/resource configuration mismatch');
   integer(m.day);requireCondition(m.day===world.resourceModel.day && m.day<=MAX_RESOURCE_DAYS,'Ecology day mismatch');
   integer(m.injuredCount);requireCondition(m.injuredCount<=m.config.resources.settlement.humanCount,'Invalid injury count');

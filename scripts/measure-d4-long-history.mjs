@@ -25,7 +25,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { performance } from 'node:perf_hooks';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const SOURCE = path.resolve(SCRIPT_DIR, '..');
+// Acceptance-only override: run this identical harness against either frozen source tree.
+const SOURCE = path.resolve(process.env.D4_ACCEPTANCE_SOURCE || path.resolve(SCRIPT_DIR, '..'));
 
 // Read-only reference archive (outside this execution tree). Never copied into the run directory.
 const REFERENCE_RUNTIME_DATA = process.env.D4P2_REFERENCE_RUNTIME_DATA ||
@@ -285,12 +286,14 @@ async function cmdChild(args) {
   const timings = [], checks = [];
   const stage = (name, budgetMs, fn) => async () => {
     emit({ event: 'stage-begin', stage: name, budgetMs });
-    const t = performance.now();
+    const t = performance.now(), cpuStart = process.cpuUsage();
     try {
       const value = await fn();
       const elapsed = performance.now() - t;
-      emit({ event: 'stage-end', stage: name, ms: ms(elapsed) });
-      timings.push({ stage: name, ms: ms(elapsed), status: 'completed' });
+      const cpu = process.cpuUsage(cpuStart), cpuMs = ms((cpu.user + cpu.system) / 1000);
+      const cpuUserMs = ms(cpu.user / 1000), cpuSystemMs = ms(cpu.system / 1000);
+      emit({ event: 'stage-end', stage: name, ms: ms(elapsed), cpuMs, cpuUserMs, cpuSystemMs });
+      timings.push({ stage: name, ms: ms(elapsed), cpuMs, cpuUserMs, cpuSystemMs, status: 'completed' });
       return value;
     } catch (error) {
       const elapsed = performance.now() - t;
@@ -316,6 +319,7 @@ async function cmdChild(args) {
     encounter: timeRead('getEncounter', () => owner.getEncounter()),
     scene: timeRead('getScene', () => owner.getScene())
   });
+  const viewSignatures = views => Object.fromEntries(Object.entries(views).map(([key, value]) => [key, sha256(canonicalJson(value))]));
 
   const lockPath = path.join(runtimeData, LOCK_NAME);
   const result = {
@@ -392,6 +396,8 @@ async function cmdChild(args) {
     check('start tick', result.startState.tick === EXPECTED_START.tick, result.startState);
     check('start commands', result.startState.commands === EXPECTED_START.commands, result.startState);
     result.startSignature = sha256(canonicalJson(start));
+    result.startProjectionSignatures = viewSignatures(start);
+    check('start five views match frozen r170 signature', result.startSignature === '046e7b2ef5da06bf3bf3d54096535601a84d7074e0754233c98d4f4031ec5f07', result.startSignature);
 
     // If R1 profiling mode: STOP here, normal close, lock release, verify, exit
     if (isProfile) {
@@ -437,6 +443,12 @@ async function cmdChild(args) {
       produced: result.produced.canonicalSha256, reference: result.produced.referenceCanonicalSha256
     });
     const producedState = JSON.parse(producedBuf.toString('utf8'));
+    const referenceState = JSON.parse(referenceBuf.toString('utf8'));
+    check('r182 raw bytes equal reference', result.produced.byteIdenticalToReference, result.produced.sha256);
+    result.receiptSignature = sha256(canonicalJson(receipt));
+    result.referenceReceiptSignature = sha256(canonicalJson(referenceState.commands.at(-1).receipt));
+    check('returned receipt equals original r182 journal receipt', result.receiptSignature === result.referenceReceiptSignature, result.receiptSignature);
+    check('frozen DTO equals original r182 last command', canonicalJson(TRAVEL_DTO) === canonicalJson(referenceState.commands.at(-1).dto), null);
     result.endState = {
       revision: producedState.bundle.snapshot.revision, tick: producedState.bundle.snapshot.tick,
       commands: producedState.commands.length
@@ -449,7 +461,9 @@ async function cmdChild(args) {
     check('seven originals unchanged after submit', originalsAfterSubmit.every(o => o.sha256 === ORIGINAL_SHA[o.file]), originalsAfterSubmit);
 
     // Step 4a: capture projections, normal close, lock release.
-    const before = await stage('close', null, async () => { const v = timedViews(); await owner.close(); return v; })();
+    const before = timedViews();
+    result.endProjectionSignatures = viewSignatures(before);
+    await stage('close', stageLimitMs, () => owner.close())();
     result.closeState = { lockReleased: !fsSync.existsSync(lockPath) };
     check('lock released after close', result.closeState.lockReleased, result.closeState);
     const beforeSignature = sha256(canonicalJson(before));
@@ -457,11 +471,13 @@ async function cmdChild(args) {
     // Step 4b: reopen the same directory with the same source and time it.
     owner = await stage('reopen', stageLimitMs, () => createRuntimeOwner({ directory: runtimeData, writable: true }))();
     const after = timedViews();
+    result.reopenedProjectionSignatures = viewSignatures(after);
     result.reopenComparison = {
       beforeSignature, afterSignature: sha256(canonicalJson(after)), equal: beforeSignature === sha256(canonicalJson(after)),
       producedUnchanged: sha256(await fs.readFile(producedPath)) === result.produced.sha256
     };
     check('five projections equal across reopen', result.reopenComparison.equal, result.reopenComparison);
+    check('end five views match frozen r182 signature', beforeSignature === '2dd3b73b24fb95c1dcf815a63ae075f4f0f0131711f8e921a0d98f63c2bea48f', beforeSignature);
     check('r182 bytes unchanged across reopen', result.reopenComparison.producedUnchanged, result.reopenComparison);
 
     await owner.close();

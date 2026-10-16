@@ -1,5 +1,5 @@
 import { cloneData,fields,integer,denseArray,canonicalJson,requireCondition,identifier,record } from './data-contract.mjs';
-import { createMarketWorld,validateMarketWorld,settleMarketDay,applyMarketCommand,marketCommandFact,marketCauses,validateMarketPayload,calibratedMarketConfig } from './market.mjs';
+import { createMarketWorld,validateMarketConfiguration,validateMarketWorld,settleMarketDay,applyMarketCommand,marketCommandFact,marketCauses,validateMarketPayload,calibratedMarketConfig } from './market.mjs';
 import { createRng } from './rng.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
 
@@ -20,13 +20,13 @@ export function defaultActorConfig(market=calibratedMarketConfig()) {
   ]};
 }
 
-function validateConfig(config){
+function validateConfig(config,buildWorld=true){
   fields(config,['version','market','initialActors']);requireCondition(['actor-config-v1','actor-config-v2','actor-config-v3','actor-config-v4'].includes(config.version),'Unknown Actor configuration','UNSUPPORTED_VERSION');
   denseArray(config.initialActors,MAX_PERSISTENT_ACTORS);
   for(const actor of config.initialActors){fields(actor,INITIAL_FIELDS);identifier(actor.name);
     requireCondition(['chief','hunter','merchant',...(config.version!=='actor-config-v1'?['player']:[])].includes(actor.occupation),'Unknown Actor occupation');
     for(const key of ['health','hunger','fatigue'])value1000(actor[key]);}
-  const world=createMarketWorld(config.market),settlement=config.market.ecology.resources.settlement;
+  const world=buildWorld?createMarketWorld(config.market):validateMarketConfiguration(config.market),settlement=config.market.ecology.resources.settlement;
   requireCondition(config.initialActors.length<=settlement.humanCount && settlement.injuredCount<=settlement.humanCount-config.initialActors.length,
     'Named population overlaps aggregate injury shares');
   const food=config.market.ecology.resources.resources.food.consumption;
@@ -56,7 +56,7 @@ export function validateActorWorld(world,privateFoodConsumed=0){
   const m=world.actorModel;fields(m,['config','configFingerprint','day','actors','ledger']);
   // actor-config-v4 lets the player body die on the tick a real action completes, not only on a day boundary.
   const v4=m.config.version==='actor-config-v4';
-  denseArray(m.actors,MAX_PERSISTENT_ACTORS);validateConfig(m.config);validateMarketWorld(marketPart(world));
+  denseArray(m.actors,MAX_PERSISTENT_ACTORS);validateConfig(m.config,false);validateMarketWorld(marketPart(world));
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.market)===canonicalJson(world.marketModel.config),'Actor/market configuration mismatch');
   integer(m.day);requireCondition(m.day===world.marketModel.day && m.day<=MAX_RESOURCE_DAYS,'Actor day mismatch');
   requireCondition(m.actors.length===m.config.initialActors.length,'Actor registry count mismatch');

@@ -1,5 +1,5 @@
-import { cloneData, fields, integer, denseArray, canonicalJson, requireCondition } from './data-contract.mjs';
-import { createEcologyWorld, defaultEcologyConfig, validateEcologyWorld, settleEcologyDay, removePopulation, validateEcologyPayload } from './ecology.mjs';
+import { cloneData, fields, integer, denseArray, canonicalJson, validateJsonData, requireCondition } from './data-contract.mjs';
+import { createEcologyWorld, validateEcologyConfiguration, defaultEcologyConfig, validateEcologyWorld, settleEcologyDay, removePopulation, validateEcologyPayload } from './ecology.mjs';
 import { createRng } from './rng.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
 
@@ -23,12 +23,12 @@ function validateProduct(product) {
   requireCondition(product.minPrice<=product.basePrice && product.basePrice<=product.maxPrice, 'Invalid price bounds');
 }
 const MARKET_VERSIONS = ['market-config-v1', 'market-config-v2'];
-function validateConfig(config) {
+function validateConfig(config, buildWorld = true) {
   fields(config, CONFIG_FIELDS); requireCondition(MARKET_VERSIONS.includes(config.version), 'Unknown market configuration', 'UNSUPPORTED_VERSION');
   fields(config.products, IDS); for(const id of IDS) validateProduct(config.products[id]);
   bounded(config.transportCapacity); bounded(config.delayDays,1,30);
   for(const key of ['routeRiskPermille','riskPremiumPermille','scarcityGainPermille']) bounded(config[key],0,1000);
-  return createEcologyWorld(config.ecology);
+  return buildWorld ? createEcologyWorld(config.ecology) : validateEcologyConfiguration(config.ecology);
 }
 
 export function defaultMarketConfig() {
@@ -57,6 +57,11 @@ export function createMarketWorld(config=defaultMarketConfig()) {
     inTransit:[],nextShipmentId:1,ordered:units(),arrived:units(),paid:0}};
 }
 
+export function validateMarketConfiguration(config = defaultMarketConfig()) {
+  validateConfig(config, false);
+  validateJsonData(cloneData(config));
+}
+
 export function quotePrice(stock,previous,product,config) {
   integer(stock); validateProduct(product); bounded(previous,product.minPrice,product.maxPrice);
   fields(config,CONFIG_FIELDS);
@@ -82,7 +87,7 @@ export function validateMarketWorld(world) {
   fields(world,['resources','resourceModel','ecologyModel','marketModel']);
   const m=world.marketModel;
   fields(m,['config','configFingerprint','day','routeOpen','prices','inTransit','nextShipmentId','ordered','arrived','paid']);
-  denseArray(m.inTransit,MAX_TRANSIT_ORDERS); integer(m.paid); validateEcologyWorld(ecologyPart(world),m.paid); validateConfig(m.config);
+  denseArray(m.inTransit,MAX_TRANSIT_ORDERS); integer(m.paid); validateEcologyWorld(ecologyPart(world),m.paid); validateConfig(m.config,false);
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.ecology)===canonicalJson(world.ecologyModel.config), 'Market/ecology configuration mismatch');
   integer(m.day); requireCondition(m.day===world.ecologyModel.day && m.day<=MAX_RESOURCE_DAYS,'Market day mismatch');
   requireCondition(typeof m.routeOpen==='boolean','Invalid trade route state'); integer(m.nextShipmentId,1);

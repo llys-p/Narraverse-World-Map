@@ -1,4 +1,4 @@
-import { cloneData, fields, integer, denseArray, canonicalJson, requireCondition } from './data-contract.mjs';
+import { cloneData, fields, integer, denseArray, canonicalJson, validateJsonData, requireCondition } from './data-contract.mjs';
 
 export const RESOURCE_RULES = 'b-resources-v1';
 export const MAX_RESOURCE_DAYS = 10000; // Protection budget, not a performance promise.
@@ -62,6 +62,12 @@ export function createResourceWorld(config = defaultResourceConfig()) {
   return { resources: Object.fromEntries(IDS.map(id => [id, copy.resources[id].initial])),
     resourceModel: { config: copy, configFingerprint: canonicalJson(copy), day: 0,
       remainders: { food: carry(), herbs: carry() }, ledger: Object.fromEntries(IDS.map(id => [id, totals()])) } };
+}
+
+// Configuration-only consumer: retain constructor validation without constructing a world.
+export function validateResourceConfiguration(config = defaultResourceConfig()) {
+  validateConfig(config);
+  validateJsonData(cloneData(config));
 }
 
 export function validateResourceWorld(world, currencySpent = 0) {

@@ -125,6 +125,30 @@ function encodeCanonical(value, ancestors = new Set(), depth = 0, encodedKeys = 
 export function canonicalJson(value) {
   return encodeCanonical(value);
 }
+// Same ordered JSON-data checks as canonicalJson, for callers that discard its spelling.
+// No trust/certificate/cache: every node and descriptor is checked on every call.
+export function validateJsonData(value) {
+  const ancestors = new Set();
+  const visit = (entry, depth) => {
+    requireCondition(depth <= 64, 'Data nesting budget exceeded', 'LIMIT_EXCEEDED');
+    if (entry === null || typeof entry === 'string' || typeof entry === 'boolean') return;
+    if (typeof entry === 'number') { requireCondition(Number.isFinite(entry), 'Non-finite number'); return; }
+    requireCondition(typeof entry === 'object', 'Non-JSON data');
+    requireCondition(!ancestors.has(entry), 'Cyclic data');
+    ancestors.add(entry);
+    try {
+      if (Array.isArray(entry)) {
+        denseArray(entry, MAX_EVENTS);
+        const length = entry.length;
+        for (let i = 0; i < length; i++) visit(entry[i], depth + 1);
+      } else {
+        record(entry);
+        for (const key of Object.keys(entry).sort()) visit(entry[key], depth + 1);
+      }
+    } finally { ancestors.delete(entry); }
+  };
+  visit(value, 0);
+}
 export function payloadBudget(value) {
   requireCondition(new TextEncoder().encode(canonicalJson(value)).length <= MAX_PAYLOAD_BYTES, 'Payload budget exceeded', 'LIMIT_EXCEEDED');
 }
