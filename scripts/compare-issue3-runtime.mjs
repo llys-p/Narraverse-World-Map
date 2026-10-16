@@ -8,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync,execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 
-const baseline='b7e5a9e7c131ee79acd017276ff62910a549d5ad';
+const baseline='87d95751fa55f3a082f1545d6b03b20cca25d3bd';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const source=path.resolve(here,'..');
 const temp=await fs.mkdtemp(path.join(os.tmpdir(),'narraverse-issue3-ab-'));
