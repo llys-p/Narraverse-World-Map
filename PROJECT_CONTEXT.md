@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 16:12（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 16:57（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,6 +31,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **D4E4真实世界活动日志合同已发布，待实现接单**：[冻结合同](https://github.com/llys-p/Narraverse-World-Map/blob/2562f40e1420c98939b18279369c7cd3e95e495f/tasks/D4E4-WORLD-ACTIVITY-LOG-TASK.md)。总负责人转达用户授权推进至交付和定向验收；独立树`D:\Narraverse-World-Map-world-activity` / `codex/world-runtime-world-activity`，合同2562f40已推送精确读回，基准0f4bba2（生产b7）。本轮显式开发者全知观察、默认关闭、白名单事实/真实结果、最近256事件/64条/64KiB、人物/地点筛选，不混入玩家/角色可知投影或原始私账。原18325 PID2592用户实例保持，新候选仅18327新隔离世界；无活动性能工人，不重复Issue3测量。性价比high工人先完成只读来源核查，现已下发实现范围，接单后再标开工；中控独占合同/指导/状态/看板/最终复核。后续地图贯通、重要人物可追踪行为只在指导书留指引，本轮不实施；禁止全量/无关/视觉/H7/长链/main/deploy/迁移/外部付费调用，DSH仍由其它对话负责。
 
 - **当前优先：先跑通现有玩法，暂缓继续优化；D4E3功能体验候选已交付**：[复核](https://github.com/llys-p/Narraverse-World-Map/blob/0f4bba27f68a5841ca672288a76512e11ea729b1/docs/runtime/D4E3-PLAYABLE-REVIEW-20261016.md)。用户2026-10-16明确选择现有玩法可直接体验的完整闭环，性能Issue3独立保留，不阻塞本候选。新树`D:\Narraverse-World-Map-d4-playable` / `codex/world-runtime-d4-playable` @0f4bba2；90份生产同b7，不带入PR6/7或配置性能实验。真实浏览器按钮完成赠粮→森林→遭遇/两攻击胜利→地图真实返村→刷新→quit/重开，6命令成功；rev38/tick36、健康920、私粮19及猎人记忆保持，四项投影与7档重开前后字节一致。日结/长历史/拒绝与回滚同源证据复用，无H7/全量/视觉重跑。实际Start-D4.cmd的新建/正常退出/恢复、固定18325新世界页面核验通过；用户世界`artifacts/d4-daily/world`仅r0、tick0/私粮20，未做玩家动作，与18326战斗测试档分开。本轮进程均退出、无锁/常驻服务；原8档及既有脏文件保持，无模型/DSH/main/deploy/迁移。双击上述树Start-D4.cmd等待ready后体验，正常quit关闭；下一步收集实际玩法卡点。
 
