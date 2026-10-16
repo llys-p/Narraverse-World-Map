@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 15:26（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 16:12（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,6 +31,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **当前优先：先跑通现有玩法，暂缓继续优化；D4E3功能体验候选已交付**：[复核](https://github.com/llys-p/Narraverse-World-Map/blob/0f4bba27f68a5841ca672288a76512e11ea729b1/docs/runtime/D4E3-PLAYABLE-REVIEW-20261016.md)。用户2026-10-16明确选择现有玩法可直接体验的完整闭环，性能Issue3独立保留，不阻塞本候选。新树`D:\Narraverse-World-Map-d4-playable` / `codex/world-runtime-d4-playable` @0f4bba2；90份生产同b7，不带入PR6/7或配置性能实验。真实浏览器按钮完成赠粮→森林→遭遇/两攻击胜利→地图真实返村→刷新→quit/重开，6命令成功；rev38/tick36、健康920、私粮19及猎人记忆保持，四项投影与7档重开前后字节一致。日结/长历史/拒绝与回滚同源证据复用，无H7/全量/视觉重跑。实际Start-D4.cmd的新建/正常退出/恢复、固定18325新世界页面核验通过；用户世界`artifacts/d4-daily/world`仅r0、tick0/私粮20，未做玩家动作，与18326战斗测试档分开。本轮进程均退出、无锁/常驻服务；原8档及既有脏文件保持，无模型/DSH/main/deploy/迁移。双击上述树Start-D4.cmd等待ready后体验，正常quit关闭；下一步收集实际玩法卡点。
 
 - **Issue #3配置校验优化试验已交付，整体性能未准入**：[固定报告](https://github.com/llys-p/Narraverse-World-Map/blob/4ceaab29009687ebad2e13095e7980ea09b92ef4/docs/runtime/ISSUE3-CONFIG-CHECKS-RESULT-20261016.md)。独立树`D:\Narraverse-World-Map-issue3-config-checks` / `codex/issue-3-config-checks`，源码c94a228、报告4ceaab2已推送；下层M1试验fbaf514 / `codex/issue-3-history-cost`另存远端，未采纳。原b7一次真实CPU采样定位配置校验反复构造初始世界，8个core保留完整配置检查及实际指纹/审计/重演/持久规则，只省无消费者的分配/字符串。定向14/14、持久篡改/失败回滚2/2；ABBA每版2次、每轮24/24。重开中位67.592→55.654秒（17.66%，CPU16.93%），两组各少15.872/8.005秒；首开中位52.866→56.299秒、反向组慢11.629秒，返村中位仅少3.303秒按用户要求不算收益、不追查。功能限定PASS但未替换b7基准，PR6/7原结论保持。原8档/副本/生产/既有脏文件保持、38记录PID退出、无锁、原监听身份不变；55份散列/计时文件加索引推送，私档/完整投影未上传。任务报告交付收口，Issue3/D仍开放进行中；无main/deploy/模型/服务启停或DSH协调。
 
