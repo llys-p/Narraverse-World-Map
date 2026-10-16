@@ -1,0 +1,10 @@
+{
+  "verdict": "HARNESS_EXIT_STATUS_MISMATCH",
+  "expectedExit": 1,
+  "actualExit": 0,
+  "guardMessagePresent": true,
+  "serverStarted": false,
+  "cause": "Direct cmd /c batch invocation did not propagate nested exit /b status; explicit call returns 1.",
+  "correction": "Use cmd /d /c call Start-D4.cmd in the redirected CLI harness.",
+  "productionGuardChangedAfterFailure": false
+}

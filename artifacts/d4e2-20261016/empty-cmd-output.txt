@@ -1,0 +1,10 @@
+D4 local experience candidate - isolated world
+Map:     http://127.0.0.1:18325/runtime-map.html
+Village: http://127.0.0.1:18325/runtime-village.html
+Wait for status ready before opening the page.
+Type quit and press Enter to save and stop normally. Wait for status stopped.
+Existing services and saved worlds are not stopped or imported.
+
+No completed service commit found in the existing world directory.
+Initialization may have been interrupted. Keep the directory for diagnosis.
+�밴���������. . . 

@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-16T02:27:17.144Z",
+  "verdict": "ENTRY_BOUNDARY_PASS",
+  "old": {
+    "pid": 15740,
+    "exit": {
+      "code": 0,
+      "signal": null
+    },
+    "sceneStatus": 404,
+    "sceneAvailable": false,
+    "wrongDefaultWorldReproduced": true
+  },
+  "cases": [
+    {
+      "label": "empty",
+      "exit": 1,
+      "unchanged": true,
+      "noServerInvoked": true
+    },
+    {
+      "label": "partial",
+      "exit": 1,
+      "unchanged": true,
+      "noServerInvoked": true
+    }
+  ],
+  "missingGit": {
+    "exit": 1,
+    "explicitFailure": true
+  },
+  "defaultUserWorldCreated": false,
+  "old18324Untouched": true,
+  "browserVerified": false,
+  "fullStoryRerun": false
+}

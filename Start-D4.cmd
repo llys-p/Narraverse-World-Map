@@ -15,6 +15,12 @@ echo Type quit and press Enter to save and stop normally. Wait for status stoppe
 echo Existing services and saved worlds are not stopped or imported.
 echo.
 if exist "%~dp0artifacts\d4-daily\world\" (
+  if not exist "%~dp0artifacts\d4-daily\world\service-commit-r*.json" (
+    echo No completed service commit found in the existing world directory.
+    echo Initialization may have been interrupted. Keep the directory for diagnosis.
+    pause
+    exit /b 1
+  )
   node runtime-server.mjs --data-dir "%~dp0artifacts\d4-daily\world" --port 18325 --writable true --inspect-mind false
 ) else (
   node runtime-server.mjs --data-dir "%~dp0artifacts\d4-daily\world" --port 18325 --profile scene-survival-village --seed 42 --writable true --inspect-mind false

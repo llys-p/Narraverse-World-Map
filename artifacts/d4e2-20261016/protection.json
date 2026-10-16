@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-16 Asia/Shanghai",
+  "runtimeGitDiffEmpty": true,
+  "baselineSourceSha256": "9ab3bc12265351a822beb652e50f3e62620b36a6f265790bd966b822ed9a0c28",
+  "workingSourceSha256": "7b7e99715bbfe1e8a56af27ba51b1121141bf4feb280fa59f23c28a0af5ff328",
+  "normalizedEqual": true,
+  "defaultWorldExists": false,
+  "noPrivateSaveReadOrWritten": true,
+  "noMainMergeOrDeployment": true
+}
