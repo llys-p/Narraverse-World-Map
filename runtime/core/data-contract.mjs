@@ -38,7 +38,7 @@ export function denseArray(value, limit = MAX_COLLECTION) {
   requireCondition(value.length <= limit, 'Array budget exceeded', 'LIMIT_EXCEEDED');
   requireCondition(Reflect.ownKeys(value).length === value.length + 1, 'Sparse array or extra array properties');
   for (let i = 0; i < value.length; i++) {
-    const descriptor = Object.getOwnPropertyDescriptor(value, String(i));
+    const descriptor = Object.getOwnPropertyDescriptor(value, i);
     requireCondition(descriptor && descriptor.enumerable && own(descriptor, 'value'), 'Sparse array or accessor element');
   }
 }
