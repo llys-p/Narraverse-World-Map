@@ -14,7 +14,7 @@ const LIMIT_MS = 120000;
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const script = fileURLToPath(import.meta.url);
 
-async function runChild(directory) {
+async function runChild(directory, sampleCpu = false) {
   const {createRuntimeOwner} = await import('../runtime/service/runtime-owner.mjs');
   const {validateServiceCommit,loadServiceCommit} = await import('../runtime/service/service-commit.mjs');
   const {parseStrictJson} = await import('../runtime/service/strict-json.mjs');
@@ -28,6 +28,39 @@ async function runChild(directory) {
     stages.push({name,wallMs:+(performance.now()-wall).toFixed(3),
       cpuMs:+((cpu.user+cpu.system)/1000).toFixed(3)});
     return result;
+  }
+
+  // Diagnostic-only CPU sampling. Local to this bounded synthetic child; never changes
+  // the production validation or exposes any trusted/audit-bypass options.
+  const profiles = {};
+  async function profileOrTime(name, fn) {
+    if (!sampleCpu) return time(name, fn);
+    const {Session} = await import('node:inspector/promises');
+    const session = new Session();
+    session.connect();
+    try {
+      await session.post('Profiler.enable');
+      await session.post('Profiler.start');
+      const output = await time(name, fn);
+      const {profile} = await session.post('Profiler.stop');
+      const nodes = new Map(profile.nodes.map(node => [node.id, node.callFrame]));
+      const totals = new Map();
+      for (let i = 0; i < (profile.samples?.length || 0); i++) {
+        const frame = nodes.get(profile.samples[i]);
+        if (!frame) continue;
+        const url = frame.url || '(native)';
+        const nameAt = frame.functionName || '(anonymous)';
+        const key = [url, frame.lineNumber + 1, nameAt].join('|');
+        totals.set(key, (totals.get(key) || 0) + (profile.timeDeltas?.[i] || 0) / 1000);
+      }
+      const topSelf = [...totals].sort((a, b) => b[1] - a[1]).slice(0, 15)
+        .map(([site, selfMs]) => ({site, selfMs: +selfMs.toFixed(2)}));
+      profiles[name] = {samples: profile.samples?.length || 0, topSelf};
+      return output;
+    } finally {
+      try { await session.post('Profiler.disable'); } catch {}
+      session.disconnect();
+    }
   }
   let owner=null;
   try {
@@ -51,10 +84,10 @@ async function runChild(directory) {
     const bytes=await readStateFile(file),beforeFile=hash(bytes);
     const parsed=await time('strict-parse',()=>parseStrictJson(bytes,MAX_STATE_FILE_BYTES));
     assert.equal(parsed.commands.length,3);
-    await time('validate-service-commit',()=>validateServiceCommit(parsed));
+    await profileOrTime('validate-service-commit',()=>validateServiceCommit(parsed));
     await time('clone-envelope',()=>cloneData(parsed));
     await time('load-service-commit',()=>loadServiceCommit(file));
-    owner=await time('reopen',()=>createRuntimeOwner({directory,writable:true}));
+    owner=await profileOrTime('reopen',()=>createRuntimeOwner({directory,writable:true}));
     assert.equal(owner.getSnapshot().revision,revision);
     const afterViews=hash(canonicalJson(projections(owner)));
     assert.equal(afterViews,beforeViews,'five projections must survive restart');
@@ -66,16 +99,16 @@ async function runChild(directory) {
     console.log(JSON.stringify({verdict:'SYNTHETIC_CONSISTENT',node:process.version,
       provenance:'generated seed42 scene fixture, not r170 private history',
       commands:3,revision,saveBytes:bytes.length,saveSha256:beforeFile,
-      fiveProjectionSha256:afterViews,stages}));
+      fiveProjectionSha256:afterViews,stages,...(sampleCpu ? {profiles} : {})}));
   } finally {
     if(owner)await owner.close();
   }
 }
 
-async function runParent(){
+async function runParent(sampleCpu = false){
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'narraverse-issue3-fixture-'));
   try {
-    const child=spawn(process.execPath,[script,'--child',path.join(root,'world')],
+    const child=spawn(process.execPath,[script,'--child',path.join(root,'world'),...(sampleCpu ? ['--profile'] : [])],
       {stdio:['ignore','pipe','pipe']});
     let stdout='',stderr='',timeout=false,overflow=false;
     child.stdout.setEncoding('utf8');child.stderr.setEncoding('utf8');
@@ -109,8 +142,8 @@ async function runParent(){
   }
 }
 try{
-  if(process.argv[2]==='--child')await runChild(process.argv[3]);
-  else if(process.argv.length===2)await runParent();
+  if(process.argv[2]==='--child')await runChild(process.argv[3],process.argv[4]==='--profile');
+  else if(process.argv.length===2 || (process.argv.length===3 && process.argv[2]==='--profile'))await runParent(process.argv[2]==='--profile');
   else throw new Error('Usage: node scripts/measure-issue3-fixture.mjs');
 }catch(error){
   console.error(error.stack||String(error));
