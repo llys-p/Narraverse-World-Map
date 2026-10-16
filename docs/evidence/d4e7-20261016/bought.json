@@ -1,0 +1,125 @@
+{
+  "simulationId": "scene-survival-village",
+  "revision": 2,
+  "tick": 2,
+  "hashes": {
+    "snapshot": "d80627ca56201fb5a6bb6dff59d9c3d8fcc29a472473837148e1e21aecf35d03",
+    "player": "2a1d17f2d8e11174ee9373f781faa3821c304dd41fe950731f6875b8b487dd42",
+    "scene": "05e1c56ed64ae42de3863e1830fec345ac13cfe97707bee747534b7e5f9ffb2e",
+    "encounter": "ad0a765578fd8941a2331d1961913c6e45f062e8a3636ab172767bd3a52deb56",
+    "activity": "12c9499acdcecda310e135ee9d8394c5829be13ea1cacbc624326a62f24fb38e"
+  },
+  "files": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r1.json": "9b6a2a801e4878687eba1517d0570390c8a26869758ed3f2d2db37b9afe9d245",
+    "service-commit-r2.json": "d9c92ea84d0d05dd8376526b09f20c0452a58b592cbf6a04d83d4f331d3c076f"
+  },
+  "player": {
+    "wallet": 0,
+    "inventory": {
+      "food": 18,
+      "herbs": 0
+    },
+    "ledger": {
+      "earned": 20,
+      "foodBought": 2,
+      "foodGiven": 0,
+      "foodSold": 4,
+      "foodUsed": 0,
+      "herbsBought": 0,
+      "herbsSold": 0,
+      "herbsUsed": 0,
+      "spent": 20
+    }
+  },
+  "commands": [
+    {
+      "type": "PlayerSell",
+      "quantity": 4,
+      "fromRevision": 0,
+      "toRevision": 1,
+      "fromTick": 0,
+      "tick": 1,
+      "durationTicks": 1,
+      "outcome": "succeeded",
+      "amount": 20,
+      "unitPrice": 5
+    },
+    {
+      "type": "PlayerBuy",
+      "quantity": 2,
+      "fromRevision": 1,
+      "toRevision": 2,
+      "fromTick": 1,
+      "tick": 2,
+      "durationTicks": 1,
+      "outcome": "succeeded",
+      "amount": 20,
+      "unitPrice": 10
+    }
+  ],
+  "playerDaily": [],
+  "actorStates": [
+    {
+      "actorId": "actor-1",
+      "alive": true,
+      "location": "village",
+      "name": "村长",
+      "occupation": "chief"
+    },
+    {
+      "actorId": "actor-2",
+      "alive": true,
+      "location": "village",
+      "name": "猎人",
+      "occupation": "hunter"
+    },
+    {
+      "actorId": "actor-3",
+      "alive": true,
+      "location": "village",
+      "name": "商人",
+      "occupation": "merchant"
+    },
+    {
+      "actorId": "actor-4",
+      "alive": true,
+      "location": "village",
+      "name": "玩家",
+      "occupation": "player"
+    }
+  ],
+  "activities": [
+    {
+      "activityId": "event-3-item-0",
+      "actorIds": [
+        "actor-4"
+      ],
+      "kind": "player-action",
+      "status": "succeeded",
+      "tick": 1,
+      "location": null,
+      "summary": "玩家卖出口粮4份，已完成"
+    },
+    {
+      "activityId": "event-5-item-0",
+      "actorIds": [
+        "actor-4"
+      ],
+      "kind": "player-action",
+      "status": "succeeded",
+      "tick": 2,
+      "location": null,
+      "summary": "玩家买入口粮2份，已完成"
+    }
+  ],
+  "tradeAssertions": {
+    "quantity": 2,
+    "unitPrice": 10,
+    "amount": 20,
+    "playerWalletDelta": -20,
+    "privateFoodDelta": 2,
+    "publicFoodDelta": -2,
+    "communalGoldDelta": 20
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBO4Rs",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "待验收",
+              "optionId": "18ec6731",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZHDI",
+        "body": "D4E7：既有买粮到日结真实页面链，交付待复核\n\n合同及开工前资金前提勘误v1.1：https://github.com/llys-p/Narraverse-World-Map/blob/2cdf3c6fedfce2473df7458bce5bfa32f7046b3c/tasks/D4E7-LIVELIHOOD-LOOP-TASK.md\n\n基准1cde888，新树D:/Narraverse-World-Map-livelihood-loop / codex/world-runtime-livelihood-loop。18333唯一新隔离scene seed42已启动；真实初始读数钱包0/私粮20，直接购买缺资金。业务前勘误为卖4粮取得20金币→买2粮→推进一天→核对日结实际消费→刷新与正常重开，复用同一r0（零命令），不改初始资产。优先只读验收现有实现，未新增NPC行为/位置规则。合同/勘误已推送读回，已实际开工，未验收。\n\n本机链已完成待证据复核：三成功命令、一次日结，私粮20→16→18→17，金币0→20→0→0；rev/tick146。刷新与正常重开，五读取/四档字节一致；玩家成功3/日结1，猎人真实未行动/消费0。两自有CLI exit0，600秒总限/120秒阶段限均未触发；保护终检原8档/93产品源/5旧文件/18325与18327进程及9/3档不变。仅补操作说明，未改产品代码。\n\n原八份档、18325 PID2592/18327 PID4432及其已有9/3份档、控制五旧文件、93份产品文件均在保护快照。只做直接必要功能检查，不跑全量/视觉/旧长链，不上传私档/完整投影/回执。D仍进行中，Issue3暂停，无main/deploy/迁移/DSH/外部模型。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

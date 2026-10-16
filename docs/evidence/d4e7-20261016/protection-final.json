@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-16T19:25:07.944368+08:00",
+  "originalEightUnchanged": true,
+  "originalHashes": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r1.json": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+    "service-commit-r145.json": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+    "service-commit-r157.json": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+    "service-commit-r158.json": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+    "service-commit-r164.json": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+    "service-commit-r170.json": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+    "service-commit-r182.json": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c"
+  },
+  "productSourceFilesUnchanged": 93,
+  "protectedUntrackedUnchanged": 5,
+  "userServices": [
+    {
+      "port": 18325,
+      "pid": 2592,
+      "processAndSourceUnchanged": true,
+      "existingFilesUnchanged": 9
+    },
+    {
+      "port": 18327,
+      "pid": 4432,
+      "processAndSourceUnchanged": true,
+      "existingFilesUnchanged": 3
+    }
+  ],
+  "ownProcesses": {
+    "first": {
+      "pid": 1780,
+      "code": 0,
+      "signal": null,
+      "timedOut": false,
+      "wallMs": 201119,
+      "phases": [
+        {
+          "phase": "startup",
+          "at": "2026-10-16T11:20:01.720Z"
+        },
+        {
+          "phase": "done",
+          "at": "2026-10-16T11:20:02.008Z"
+        },
+        {
+          "phase": "sell",
+          "at": "2026-10-16T11:21:39.067Z"
+        },
+        {
+          "phase": "buy",
+          "at": "2026-10-16T11:21:59.857Z"
+        },
+        {
+          "phase": "done",
+          "at": "2026-10-16T11:22:09.317Z"
+        },
+        {
+          "phase": "advance",
+          "at": "2026-10-16T11:22:21.653Z"
+        },
+        {
+          "phase": "done",
+          "at": "2026-10-16T11:23:03.538Z"
+        },
+        {
+          "phase": "done",
+          "at": "2026-10-16T11:23:22.773Z"
+        }
+      ]
+    },
+    "reopen": {
+      "pid": 11372,
+      "code": 0,
+      "signal": null,
+      "timedOut": false,
+      "wallMs": 88833,
+      "phases": [
+        {
+          "phase": "startup",
+          "at": "2026-10-16T11:23:36.939Z"
+        },
+        {
+          "phase": "done",
+          "at": "2026-10-16T11:24:04.085Z"
+        },
+        {
+          "phase": "done",
+          "at": "2026-10-16T11:25:05.712Z"
+        }
+      ]
+    }
+  },
+  "ownMatchingNodeCount": 0,
+  "ownLockAbsent": true,
+  "ownTemporaryFilesAbsent": true,
+  "defaultDailyWorldCreated": false,
+  "fiveViewsAndFilesIdenticalAfterRefreshAndReopen": true,
+  "ownServiceFiles": 4,
+  "businessCommandCount": 3,
+  "dailyCount": 1
+}

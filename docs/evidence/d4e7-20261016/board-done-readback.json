@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBO4Rs",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "Done",
+              "optionId": "98236657",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "已验收",
+              "optionId": "4dfee22c",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZHDI",
+        "body": "D4E7：既有买粮到日结真实页面链，中控限定PASS\n\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/1c809efeec9cbd1d224835da368b6b2eb2876686/docs/runtime/D4E7-LIVELIHOOD-REVIEW-20261016.md\n合同及业务前v1.1勘误：https://github.com/llys-p/Narraverse-World-Map/blob/2cdf3c6fedfce2473df7458bce5bfa32f7046b3c/tasks/D4E7-LIVELIHOOD-LOOP-TASK.md\n\n独立树D:/Narraverse-World-Map-livelihood-loop / codex/world-runtime-livelihood-loop接1cde888，产品仍c7c2132。实际初始私粮20/钱包0，业务前按公开报价更正为页面卖4粮取得20金币→买2粮→推进1天；未改初始资产/源码，不存在先失败再覆盖。唯一新世界scene seed42、18333，三成功命令、一次tick144日结，期末rev/tick146，私粮17、金币0，ledger卖4/买2/吃1/收20/付20。\n\n正式service DTO/回执、公私粮与公共金币对等变化、同版玩家读数和三NPC真实日结逐项核对；玩家卡成功3/日结1，猎人NoAction/取食0/饥饿200→300如实显示。刷新和正常重开，五HTTP响应/四份正式档SHA及页面人物卡/四条记录一致，控制台error为空。两自有CLI正常exit0，无超时、测试锁或残留Node；原8私档、93产品文件、控制5旧文件与用户18325 PID2592/18327 PID4432及已有9/3档保持。默认日常目录未创建。已补入口操作说明，原日志/散列与保护证据归档。\n\n仅此功能链限定Done/已验收；D整体仍In Progress/进行中。0新增suite运行，未把复用旧输入/篡改/回滚证据计成新测；未测零余额直接购粮动态拒绝、NPC新行为/移动、死亡、长期平衡或日常性能。Issue3开放且暂停，无main/deploy/迁移/DSH/模型/全量/视觉/旧长链。本片收口停止。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
