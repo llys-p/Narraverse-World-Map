@@ -1,0 +1,2 @@
+{"status":"ready","url":"http://127.0.0.1:18333","writes":true}
+{"status":"stopped"}

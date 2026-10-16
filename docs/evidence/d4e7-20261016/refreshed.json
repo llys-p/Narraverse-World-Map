@@ -1,0 +1,333 @@
+{
+  "simulationId": "scene-survival-village",
+  "revision": 146,
+  "tick": 146,
+  "hashes": {
+    "snapshot": "9457f29dc7af147c7ed5978bf77b2d099ed80947a09d234107b8cb445960a242",
+    "player": "8aa567fa9c16dcd2490a05228b85479f16e768789aa3a6f1f91817f2cb5c4b99",
+    "scene": "02cf28994a133efd37d2556497e3c090fe994be992f769e692ceaeb6f61231c8",
+    "encounter": "1a2e7daee669ce1775e5ad734d458781fb5452dbd832f5038e375d8a5613afaf",
+    "activity": "fc5f34d265d7960cee1157bc441d84399e0fbc7b0d47ce94e5cc2d810730b765"
+  },
+  "files": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r1.json": "9b6a2a801e4878687eba1517d0570390c8a26869758ed3f2d2db37b9afe9d245",
+    "service-commit-r2.json": "d9c92ea84d0d05dd8376526b09f20c0452a58b592cbf6a04d83d4f331d3c076f",
+    "service-commit-r146.json": "f56d5ae2339030217b35eb74986e704282ebb8d44ebcc01853fea05e7206d3ec"
+  },
+  "player": {
+    "wallet": 0,
+    "inventory": {
+      "food": 17,
+      "herbs": 0
+    },
+    "ledger": {
+      "earned": 20,
+      "foodBought": 2,
+      "foodGiven": 0,
+      "foodSold": 4,
+      "foodUsed": 1,
+      "herbsBought": 0,
+      "herbsSold": 0,
+      "herbsUsed": 0,
+      "spent": 20
+    }
+  },
+  "commands": [
+    {
+      "type": "PlayerSell",
+      "quantity": 4,
+      "fromRevision": 0,
+      "toRevision": 1,
+      "fromTick": 0,
+      "tick": 1,
+      "durationTicks": 1,
+      "outcome": "succeeded",
+      "amount": 20,
+      "unitPrice": 5
+    },
+    {
+      "type": "PlayerBuy",
+      "quantity": 2,
+      "fromRevision": 1,
+      "toRevision": 2,
+      "fromTick": 1,
+      "tick": 2,
+      "durationTicks": 1,
+      "outcome": "succeeded",
+      "amount": 20,
+      "unitPrice": 10
+    },
+    {
+      "type": "AdvanceTime",
+      "quantity": null,
+      "fromRevision": 2,
+      "toRevision": 146,
+      "fromTick": 2,
+      "tick": 146,
+      "durationTicks": 144,
+      "outcome": "succeeded",
+      "amount": null,
+      "unitPrice": null
+    }
+  ],
+  "playerDaily": [
+    {
+      "tick": 144,
+      "day": 1,
+      "food": 1
+    }
+  ],
+  "actorStates": [
+    {
+      "actorId": "actor-1",
+      "alive": true,
+      "location": "village",
+      "name": "村长",
+      "occupation": "chief"
+    },
+    {
+      "actorId": "actor-2",
+      "alive": true,
+      "location": "village",
+      "name": "猎人",
+      "occupation": "hunter"
+    },
+    {
+      "actorId": "actor-3",
+      "alive": true,
+      "location": "village",
+      "name": "商人",
+      "occupation": "merchant"
+    },
+    {
+      "actorId": "actor-4",
+      "alive": true,
+      "location": "village",
+      "name": "玩家",
+      "occupation": "player"
+    }
+  ],
+  "activities": [
+    {
+      "activityId": "event-3-item-0",
+      "actorIds": [
+        "actor-4"
+      ],
+      "kind": "player-action",
+      "status": "succeeded",
+      "tick": 1,
+      "location": null,
+      "summary": "玩家卖出口粮4份，已完成"
+    },
+    {
+      "activityId": "event-5-item-0",
+      "actorIds": [
+        "actor-4"
+      ],
+      "kind": "player-action",
+      "status": "succeeded",
+      "tick": 2,
+      "location": null,
+      "summary": "玩家买入口粮2份，已完成"
+    },
+    {
+      "activityId": "event-11-item-0",
+      "actorIds": [
+        "actor-1"
+      ],
+      "kind": "npc-action",
+      "status": "succeeded",
+      "tick": 144,
+      "location": null,
+      "summary": "村长完成休息"
+    },
+    {
+      "activityId": "event-12-item-0",
+      "actorIds": [
+        "actor-2"
+      ],
+      "kind": "npc-action",
+      "status": "no-action",
+      "tick": 144,
+      "location": null,
+      "summary": "猎人未行动"
+    },
+    {
+      "activityId": "event-13-item-0",
+      "actorIds": [
+        "actor-3"
+      ],
+      "kind": "npc-action",
+      "status": "no-action",
+      "tick": 144,
+      "location": null,
+      "summary": "商人未行动"
+    },
+    {
+      "activityId": "event-14-item-0",
+      "actorIds": [
+        "actor-1"
+      ],
+      "kind": "daily-person",
+      "status": "settled",
+      "tick": 144,
+      "location": "village",
+      "summary": "村长日结区间：消耗口粮1份、药材0份；休息减疲劳0；健康1000→1000，饥饿0→0，疲劳0→0；日结收尾地点村庄"
+    },
+    {
+      "activityId": "event-14-item-1",
+      "actorIds": [
+        "actor-2"
+      ],
+      "kind": "daily-person",
+      "status": "settled",
+      "tick": 144,
+      "location": "village",
+      "summary": "猎人日结区间：消耗口粮0份、药材0份；休息减疲劳0；健康1000→1000，饥饿200→300，疲劳0→0；日结收尾地点村庄"
+    },
+    {
+      "activityId": "event-14-item-2",
+      "actorIds": [
+        "actor-3"
+      ],
+      "kind": "daily-person",
+      "status": "settled",
+      "tick": 144,
+      "location": "village",
+      "summary": "商人日结区间：消耗口粮1份、药材0份；休息减疲劳0；健康1000→1000，饥饿0→0，疲劳0→0；日结收尾地点村庄"
+    },
+    {
+      "activityId": "event-14-item-3",
+      "actorIds": [],
+      "kind": "daily-population",
+      "status": "settled",
+      "tick": 144,
+      "location": null,
+      "summary": "鹿群群体统计：120→121可用群体（出生2，被捕食1）"
+    },
+    {
+      "activityId": "event-14-item-4",
+      "actorIds": [],
+      "kind": "daily-population",
+      "status": "settled",
+      "tick": 144,
+      "location": null,
+      "summary": "狼群群体统计：总数14→14（可用14→14，保留0→0）"
+    },
+    {
+      "activityId": "event-15-item-0",
+      "actorIds": [
+        "actor-4"
+      ],
+      "kind": "daily-person",
+      "status": "settled",
+      "tick": 144,
+      "location": null,
+      "summary": "玩家日结：消耗1份本人口粮"
+    },
+    {
+      "activityId": "event-19-item-0",
+      "actorIds": [
+        "actor-4"
+      ],
+      "kind": "player-action",
+      "status": "succeeded",
+      "tick": 146,
+      "location": null,
+      "summary": "玩家推进时间：tick 2→146（144刻）"
+    }
+  ],
+  "npcDaily": [
+    {
+      "actorId": "actor-1",
+      "food": 1,
+      "herbs": 0,
+      "restReduction": 0,
+      "opening": {
+        "alive": true,
+        "fatigue": 0,
+        "health": 1000,
+        "hunger": 0
+      },
+      "closing": {
+        "actorId": "actor-1",
+        "alive": true,
+        "deathTick": null,
+        "fatigue": 0,
+        "health": 1000,
+        "hunger": 0,
+        "lastNeedsTick": 144,
+        "location": "village",
+        "name": "村长",
+        "needs": {
+          "food": 0,
+          "healing": 0,
+          "rest": 0
+        },
+        "occupation": "chief",
+        "simulationLevel": "L1"
+      }
+    },
+    {
+      "actorId": "actor-2",
+      "food": 0,
+      "herbs": 0,
+      "restReduction": 0,
+      "opening": {
+        "alive": true,
+        "fatigue": 0,
+        "health": 1000,
+        "hunger": 200
+      },
+      "closing": {
+        "actorId": "actor-2",
+        "alive": true,
+        "deathTick": null,
+        "fatigue": 0,
+        "health": 1000,
+        "hunger": 300,
+        "lastNeedsTick": 144,
+        "location": "village",
+        "name": "猎人",
+        "needs": {
+          "food": 300,
+          "healing": 0,
+          "rest": 0
+        },
+        "occupation": "hunter",
+        "simulationLevel": "L1"
+      }
+    },
+    {
+      "actorId": "actor-3",
+      "food": 1,
+      "herbs": 0,
+      "restReduction": 0,
+      "opening": {
+        "alive": true,
+        "fatigue": 0,
+        "health": 1000,
+        "hunger": 0
+      },
+      "closing": {
+        "actorId": "actor-3",
+        "alive": true,
+        "deathTick": null,
+        "fatigue": 0,
+        "health": 1000,
+        "hunger": 0,
+        "lastNeedsTick": 144,
+        "location": "village",
+        "name": "商人",
+        "needs": {
+          "food": 0,
+          "healing": 0,
+          "rest": 0
+        },
+        "occupation": "merchant",
+        "simulationLevel": "L1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "realBusinessRuns": 1,
+  "successfulCommands": 3,
+  "dayAdvances": 1,
+  "settlementCount": 1,
+  "newSuiteRuns": 0,
+  "sellAndBuyPrivatePublicFoodAndCashOpposite": true,
+  "playerLedgerReconciled": true,
+  "noDuplicateDailyConsumption": true,
+  "pageMatchesPlayerReadings": true,
+  "npcDailyMatchesActualRows": true,
+  "refreshAndReopenFiveViewsAndFilesEqual": true,
+  "productFilesUnchanged": 93,
+  "originalEightUnchanged": true,
+  "consoleErrors": 0,
+  "newProductCodeChanges": 0,
+  "scope": "D4E7 v1 plus pre-business v1.1 correction; limited functional acceptance, not performance or long term balance"
+}

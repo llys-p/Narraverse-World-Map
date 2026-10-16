@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBO4Rs",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "Todo",
+              "optionId": "f75ad846",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "待开始",
+              "optionId": "b307ec50",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZHDI",
+        "body": "D4E7：既有买粮到日结真实页面链，已发布\n\n合同：https://github.com/llys-p/Narraverse-World-Map/blob/6ba9a637672181f5d555c5248a43685b211e4d04/tasks/D4E7-LIVELIHOOD-LOOP-TASK.md\n\n基准1cde888，新树D:/Narraverse-World-Map-livelihood-loop / codex/world-runtime-livelihood-loop。18333唯一新隔离scene seed42；真实页面买2粮→推进一天→核对日结实际消费→刷新与正常重开。优先只读验收现有实现，源码不变不造修改；没有新增NPC行为/位置规则。合同已推送读回，尚未开始业务。\n\n原八份档、18325 PID2592/18327 PID4432及其已有9/3份档、控制五旧文件、93份产品文件均在保护快照。只做直接必要功能检查，不跑全量/视觉/旧长链，不上传私档/完整投影/回执。D仍进行中，Issue3暂停，无main/deploy/迁移/DSH/外部模型。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

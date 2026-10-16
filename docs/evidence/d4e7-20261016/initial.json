@@ -1,0 +1,66 @@
+{
+  "simulationId": "scene-survival-village",
+  "revision": 0,
+  "tick": 0,
+  "hashes": {
+    "snapshot": "fe911d6e6907b632ed1eaad34476076c5d64a25f8360ffbe9eb806b13a6035ac",
+    "player": "a90c445ae36d87e8935244390c811d7dc7f0079bad194b2165ca9d43aefe73cf",
+    "scene": "41eaab83d138372a3421eeb0ccb6887b1b1c0a2000feec5fe9f263ab98ea3b73",
+    "encounter": "19a364d0fe3e3447d1097b710fa82cb66a344dd8c4f50f5ce765086628d54584",
+    "activity": "2136d4fbcef817284b2979f4e3a513948a6465f781e1bb93ed03d43439a824fa"
+  },
+  "files": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b"
+  },
+  "player": {
+    "wallet": 0,
+    "inventory": {
+      "food": 20,
+      "herbs": 0
+    },
+    "ledger": {
+      "earned": 0,
+      "foodBought": 0,
+      "foodGiven": 0,
+      "foodSold": 0,
+      "foodUsed": 0,
+      "herbsBought": 0,
+      "herbsSold": 0,
+      "herbsUsed": 0,
+      "spent": 0
+    }
+  },
+  "commands": [],
+  "playerDaily": [],
+  "actorStates": [
+    {
+      "actorId": "actor-1",
+      "alive": true,
+      "location": "village",
+      "name": "村长",
+      "occupation": "chief"
+    },
+    {
+      "actorId": "actor-2",
+      "alive": true,
+      "location": "village",
+      "name": "猎人",
+      "occupation": "hunter"
+    },
+    {
+      "actorId": "actor-3",
+      "alive": true,
+      "location": "village",
+      "name": "商人",
+      "occupation": "merchant"
+    },
+    {
+      "actorId": "actor-4",
+      "alive": true,
+      "location": "village",
+      "name": "玩家",
+      "occupation": "player"
+    }
+  ],
+  "activities": []
+}
