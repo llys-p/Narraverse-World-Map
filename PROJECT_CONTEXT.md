@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 19:28（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 19:40（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,6 +31,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **D4E8交易前余额/库存/数量提示已发布**：[合同](tasks/D4E8-TRADE-FEEDBACK-TASK.md)，新树`D:/Narraverse-World-Map-trade-feedback` / `codex/world-runtime-trade-feedback`接06e9222。只改地图两前端文件，依同版本人资产和报价提示/禁用明显无法执行交易，保留现有全局禁用与服务端裁决；root18334单一样本卖4/买2和恢复，不重复日结。原8档、18325/18327与5旧文件保护；候选未验收，Issue3暂停，无main/deploy/DSH/迁移/新生计规则。
 
 - **D4E7既有交易到日结体验链限定PASS**：[复核](docs/runtime/D4E7-LIVELIHOOD-REVIEW-20261016.md)，合同2cdf3c6含业务前v1.1资金前提勘误；树`D:/Narraverse-World-Map-livelihood-loop` / `codex/world-runtime-livelihood-loop`接1cde888，93份产品源仍同D4E6 c7c2132。初始钱包0/私粮20，真实页面卖4粮→买2粮→唯一Advance144，三成功命令/一次日结，rev/tick146、私粮17、金币0；钱粮对等、ledger与真实日结逐项核对。刷新/正常重开五读取/四档字节与玩家卡四条记录一致；0新增suite运行，不重复旧证据。两CLI exit0、无超时/测试锁/残留，原8档/93产品/5旧文件及18325 PID2592、18327 PID4432的进程与9/3既有档保持，默认日常目录未创建。仅补入口说明，报告/脱敏证据推送，看板先待验收再Done/已验收读回；D仍进行中，Issue3暂停，无main/deploy/迁移/DSH/模型。本片收口停止；未实现NPC新行为/移动或长期生存。
 
