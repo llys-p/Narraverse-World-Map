@@ -7,6 +7,8 @@
 
 - **当前 D4 固定本地体验候选：双击 `Start-D4.cmd`**，地图地址 `http://127.0.0.1:18325/runtime-map.html`。使用新的独立世界与存档目录，原18324保持；[启动、关闭、重开说明](docs/runtime/D4-EXPERIENCE-ENTRY.md)。长历史性能仍待优化，见[Issue #3](https://github.com/llys-p/Narraverse-World-Map/issues/3)。
 
+- 仓库 AI 可直接运行 `node scripts/measure-data-contract-synthetic.mjs`，见[可移植短性能探针](docs/runtime/DATA-CONTRACT-PORTABLE-PROBE.md)。使用合成数据，无需本机私有存档；不代表真实长历史开档性能。
+
 - GitHub：`llys-p/Narraverse-World-Map`。
 - 本机开发目录：`D:\Narraverse-World-Map`；原 Narraverse artifacts 目录未移动、未删除。
 - Node.js 20+，服务仅用内置模块；不需要先安装 npm 依赖。

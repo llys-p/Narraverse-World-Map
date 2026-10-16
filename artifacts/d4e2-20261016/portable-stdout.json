@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-16T02:21:45.810Z",
+  "node": "v24.14.0",
+  "platform": "win32",
+  "sampleKind": "SYNTHETIC_ONLY_NOT_REAL_R170",
+  "sampleBytes": 20847,
+  "sampleSha256": "e9fec5545d63dea96c309798f0a00ce0564a44e6f3faa558acbbaf09f7e5bdea",
+  "checks": {
+    "cloneValuesEqual": true,
+    "canonicalBytesEqual": true,
+    "getterCalls": 0,
+    "rejectionParity": true
+  },
+  "references": [
+    {
+      "label": "accepted293",
+      "commit": "2936233426e990857f3c88a39ad58623832419fd",
+      "sha256": "5adf9160d6d8d6e2c086f136fe909149378c846a026159db0305540b59514f2b"
+    },
+    {
+      "label": "deepseek10a",
+      "commit": "10a2180441fcc9509a6ddd561ac97679f279aa9f",
+      "sha256": "f0d1566891ec86b36fd916efcb175f56b686a0970080285892eb8c09b9e5281a"
+    },
+    {
+      "label": "candidate",
+      "commit": null,
+      "sha256": "7b7e99715bbfe1e8a56af27ba51b1121141bf4feb280fa59f23c28a0af5ff328"
+    }
+  ],
+  "results": [
+    {
+      "repeat": 0,
+      "label": "accepted293",
+      "iterations": 100,
+      "cloneDataMs": 75.1187,
+      "canonicalJsonMs": 62.651700000000005
+    },
+    {
+      "repeat": 0,
+      "label": "deepseek10a",
+      "iterations": 100,
+      "cloneDataMs": 41.17239999999998,
+      "canonicalJsonMs": 56.70979999999997
+    },
+    {
+      "repeat": 0,
+      "label": "candidate",
+      "iterations": 100,
+      "cloneDataMs": 41.0376,
+      "canonicalJsonMs": 50.560299999999984
+    },
+    {
+      "repeat": 1,
+      "label": "deepseek10a",
+      "iterations": 100,
+      "cloneDataMs": 37.88140000000004,
+      "canonicalJsonMs": 53.184999999999945
+    },
+    {
+      "repeat": 1,
+      "label": "candidate",
+      "iterations": 100,
+      "cloneDataMs": 38.93859999999995,
+      "canonicalJsonMs": 45.46079999999995
+    },
+    {
+      "repeat": 1,
+      "label": "accepted293",
+      "iterations": 100,
+      "cloneDataMs": 61.10069999999996,
+      "canonicalJsonMs": 52.995700000000056
+    },
+    {
+      "repeat": 2,
+      "label": "candidate",
+      "iterations": 100,
+      "cloneDataMs": 37.015100000000075,
+      "canonicalJsonMs": 45.434799999999996
+    },
+    {
+      "repeat": 2,
+      "label": "accepted293",
+      "iterations": 100,
+      "cloneDataMs": 60.75830000000008,
+      "canonicalJsonMs": 54.16230000000007
+    },
+    {
+      "repeat": 2,
+      "label": "deepseek10a",
+      "iterations": 100,
+      "cloneDataMs": 36.526700000000005,
+      "canonicalJsonMs": 50.06689999999992
+    }
+  ],
+  "notMeasured": [
+    "runtime-open",
+    "travel",
+    "reopen",
+    "p95",
+    "peak-memory"
+  ]
+}

@@ -1,0 +1,4 @@
+This fixed probe takes no arguments
+
+3 !== 2
+
