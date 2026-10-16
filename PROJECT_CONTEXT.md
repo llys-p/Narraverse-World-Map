@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 18:30（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 19:18（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,6 +31,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **D4E7买粮到日结体验链已发布**：[合同](tasks/D4E7-LIVELIHOOD-LOOP-TASK.md)，新树`D:/Narraverse-World-Map-livelihood-loop` / `codex/world-runtime-livelihood-loop`接1cde888；18333单一新隔离默认scene seed42，页面买2粮→推进1天→日结消费→刷新/正常重开。优先核验既有实现，源码不变不造修改；原八档、用户18325/18327与5旧文件保护。合同发布不等于开工/验收；Issue3继续暂停，D仍进行中，不扩NPC新规则、不合main/deploy/迁移/DSH。
 
 - **D4E6重要人物真实行为追踪限定PASS**：[复核](docs/runtime/D4E6-IMPORTANT-PERSON-REVIEW-20261016.md)，合同22c3dd3；树`D:/Narraverse-World-Map-person-tracking` / `codex/world-runtime-person-tracking`，实现c7c213239911976ce45c6403c67f750e091e19b8（接D4E5 6ed7263）。人物卡分当前状态与近期全部事实，日结沿用同一真实行的消费/休息/状态变化/收尾地点，不推断未知地点、不改NPC固定村庄规则。唯一新测试2/2、35.187秒/120秒硬限、一次Advance144；玩家死亡分支测试后去重仅静态审查，未测工作/买卖/死亡或正数减疲劳。中控18332同样本真实浏览器换人/地点独立筛选/刷新/正常重开通过，五读取与两档字节一致；猎人未行动、取食0、饥饿200→300如实呈现。原8档、其他77runtime、控制5旧文件与用户18325 PID2592/18327 PID4432及既有9/3档保护；两自有服务exit0、无测试锁/残留，18331默认目录未创建。实现/报告/脱敏证据推送，Projects先待验收再Done/已验收读回，D仍进行中。Issue3暂停，无main/deploy/迁移/DSH/外部模型，本片结束停止；新行为/移动另定范围。
 
