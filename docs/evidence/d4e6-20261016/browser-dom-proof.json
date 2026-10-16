@@ -1,0 +1,21 @@
+{
+  "method": "Real Codex in-app browser semantic controls and DOM; observed transcript summarized by controller; no screenshots or visual checks",
+  "url": "http://127.0.0.1:18332/runtime-map.html",
+  "sourceCommit": "c7c213239911976ce45c6403c67f750e091e19b8",
+  "revision": 144,
+  "tick": 144,
+  "all": {"cardHidden": true, "promptVisible": true, "entryCount": 10},
+  "countsOrder": ["succeeded", "rejected", "no-action", "settled", "waiting-resolved"],
+  "actorCounts": {"actor-1": [1,0,0,1,0], "actor-2": [0,0,1,1,0], "actor-3": [0,0,1,1,0], "actor-4": [1,0,0,1,0]},
+  "hunter": {"currentLocation": "village", "alive": true, "ids": ["event-8-item-0","event-10-item-1"], "foodConsumed": 0, "hunger": [200,300], "dailyClosingLocation": "village"},
+  "hunterForest": {"ids": [], "emptyMessageVisible": true, "samePersonCard": true},
+  "hunterUnknown": {"ids": ["event-8-item-0"], "samePersonCard": true},
+  "fourActorSwitchesCorrect": true,
+  "allAgainCardHiddenAndPromptVisible": true,
+  "refreshSameHunterCardAndRows": true,
+  "reopenStartsWithAllSelection": true,
+  "reopenedHunterSameCardAndRows": true,
+  "consoleErrors": [],
+  "reopenConsoleErrors": [],
+  "limits": ["No screenshots/visual QA", "No selection persistence claim", "No injected disconnection", "No second day advance", "No work/buy/sell/death sample"]
+}

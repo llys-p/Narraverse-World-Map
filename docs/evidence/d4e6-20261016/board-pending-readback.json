@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBOHvU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "待验收",
+              "optionId": "18ec6731",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZEqo",
+        "body": "D4E6重要人物真实行为追踪：交付待独立验收\n\n冻结合同：https://github.com/llys-p/Narraverse-World-Map/blob/22c3dd370722f84fb67ce085adae021a3be35a05/tasks/D4E6-IMPORTANT-PERSON-TRACKING-TASK.md\n\n基准D4E5 6ed7263，树D:/Narraverse-World-Map-person-tracking / codex/world-runtime-person-tracking，新候选18331，独立浏览器18332复用唯一新样本。仅对已有真实行动/日结/收尾位置提供追踪卡与摘要，当前状态与历史分开；NPC现行固定村庄，不加移动/新规则/API/存档字段。原18325/18327及可能18329保护。性能Issue3暂停；禁止全量/视觉/长链/main/deploy/迁移/DSH/外部模型。当前合同已发布，未验收。\n\n执行者c7c213239911976ce45c6403c67f750e091e19b8已推送读回并停写。唯一定向文件2/2（35.187秒/120秒外层硬限，未超时），真实默认scene seed42一次Advance144已生成；0取食、无工作/买粮和减疲劳0均如实记录。中控18332将恢复同一样本，只读核对换人、地点筛选独立、刷新和正常重开；玩家死亡分支本轮无动态样本，只做语法/diff及独立审查，未冒称新测。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

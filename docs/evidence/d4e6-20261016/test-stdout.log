@@ -1,0 +1,11 @@
+✔ 人物卡按当前同版筛选全部近期事实，地点、换人、零值与无记录互不串读 (2.3571ms)
+✔ 唯一真实owner样本：seed42创建、一次AdvanceTime到144并逐项核对活动API (34363.9208ms)
+ℹ isolated-world=D:\Narraverse-World-Map-person-tracking\artifacts\d4e6-person-tracking-tests\run-f36e66cf-0fe4-4664-975c-9af1e7e3baeb\world;tick=144;npc-daily-rows=3;
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34608.9043

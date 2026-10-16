@@ -1,0 +1,119 @@
+{
+  "simulationId": "scene-survival-village",
+  "revision": 144,
+  "tick": 144,
+  "actors": [
+    {
+      "actorId": "actor-1",
+      "alive": true,
+      "location": "village",
+      "name": "村长",
+      "occupation": "chief"
+    },
+    {
+      "actorId": "actor-2",
+      "alive": true,
+      "location": "village",
+      "name": "猎人",
+      "occupation": "hunter"
+    },
+    {
+      "actorId": "actor-3",
+      "alive": true,
+      "location": "village",
+      "name": "商人",
+      "occupation": "merchant"
+    },
+    {
+      "actorId": "actor-4",
+      "alive": true,
+      "location": "village",
+      "name": "玩家",
+      "occupation": "player"
+    }
+  ],
+  "activityCount": 10,
+  "personCounts": {
+    "actor-1": {
+      "succeeded": 1,
+      "rejected": 0,
+      "no-action": 0,
+      "settled": 1,
+      "waiting-resolved": 0
+    },
+    "actor-2": {
+      "succeeded": 0,
+      "rejected": 0,
+      "no-action": 1,
+      "settled": 1,
+      "waiting-resolved": 0
+    },
+    "actor-3": {
+      "succeeded": 0,
+      "rejected": 0,
+      "no-action": 1,
+      "settled": 1,
+      "waiting-resolved": 0
+    },
+    "actor-4": {
+      "succeeded": 1,
+      "rejected": 0,
+      "no-action": 0,
+      "settled": 1,
+      "waiting-resolved": 0
+    }
+  },
+  "dailySummaries": [
+    {
+      "activityId": "event-10-item-0",
+      "actorIds": [
+        "actor-1"
+      ],
+      "tick": 144,
+      "location": "village",
+      "locationEvidence": "event-location",
+      "summary": "村长日结区间：消耗口粮1份、药材0份；休息减疲劳0；健康1000→1000，饥饿0→0，疲劳0→0；日结收尾地点村庄"
+    },
+    {
+      "activityId": "event-10-item-1",
+      "actorIds": [
+        "actor-2"
+      ],
+      "tick": 144,
+      "location": "village",
+      "locationEvidence": "event-location",
+      "summary": "猎人日结区间：消耗口粮0份、药材0份；休息减疲劳0；健康1000→1000，饥饿200→300，疲劳0→0；日结收尾地点村庄"
+    },
+    {
+      "activityId": "event-10-item-2",
+      "actorIds": [
+        "actor-3"
+      ],
+      "tick": 144,
+      "location": "village",
+      "locationEvidence": "event-location",
+      "summary": "商人日结区间：消耗口粮1份、药材0份；休息减疲劳0；健康1000→1000，饥饿0→0，疲劳0→0；日结收尾地点村庄"
+    },
+    {
+      "activityId": "event-11-item-0",
+      "actorIds": [
+        "actor-4"
+      ],
+      "tick": 144,
+      "location": null,
+      "locationEvidence": "unknown",
+      "summary": "玩家日结：消耗1份本人口粮"
+    }
+  ],
+  "hashes": {
+    "snapshot": "87012c5ce0bb0f9ac988e89f67b654fe26b4936a17eca1da914ea1a6776ffca9",
+    "player": "c4007efa3b4cda9adcaa961089432ea20d9d4c799aafdd3413611e18332edc58",
+    "scene": "9327b4fa282af1cbdc087edafffb3ed506479eaceef0c7c9c985c45d4ddf01ef",
+    "encounter": "151685207749dcedd0041b1ef15d4878f119c15e0cc309dc472a93c086ba06ba",
+    "activity": "0593aaa95f627c8af1e7f97c3d67b353c7d253a3f8eb1003f608275b3d8b1711"
+  },
+  "files": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r144.json": "58d1eb49f9366f0819826d8b92fbd14d18878d25fe0f24a4ad3d5ddf6c6dcd5d"
+  }
+}
