@@ -111,9 +111,10 @@ function renderLog(encounter) {
   nodes['scene-log'].replaceChildren(...items);
 }
 async function refresh() {
+  readingsFresh = false;
+  for (const id of ['encounter-begin','encounter-attack','encounter-flee','encounter-cancel']) nodes[id].disabled = true;
   nodes['scene-status'].textContent = '正在读取同一修订的玩家与遭遇状态…';
   try {
-    readingsFresh = false;
     const [cap, player, encounter] = await Promise.all([
       fetchJson('/api/runtime/capabilities'), fetchJson('/api/runtime/player'), fetchJson('/api/runtime/encounter')
     ]);
@@ -137,7 +138,7 @@ async function refresh() {
     if (pending) nodes['scene-command-status'].textContent = '请求结果尚未确认；重试会使用同一完整请求。';
   }
 }function makeCommand(action) {
-  if (!current || pending || submitting || !capabilities) return null;
+  if (!readingsFresh || !current || pending || submitting || !capabilities) return null;
   const type = ACTION_TYPES[action];
   if (!type) return null;
   const payload = action === 'begin' ? {} : action === 'cancel' ? {encounterId:current.view.encounter?.encounterId} :
