@@ -1,0 +1,336 @@
+{
+  "label": "B1",
+  "sourceCommit": "fbaf5147c6aea516007c61f60498493cf3c5af29",
+  "pid": 47624,
+  "timings": [
+    {
+      "stage": "first-open",
+      "ms": 42712.854,
+      "cpuMs": 42391,
+      "cpuUserMs": 40844,
+      "cpuSystemMs": 1547,
+      "status": "completed"
+    },
+    {
+      "stage": "submit-travel",
+      "ms": 42227.668,
+      "cpuMs": 41171,
+      "cpuUserMs": 40296,
+      "cpuSystemMs": 875,
+      "status": "completed"
+    },
+    {
+      "stage": "close",
+      "ms": 5.389,
+      "cpuMs": 0,
+      "cpuUserMs": 0,
+      "cpuSystemMs": 0,
+      "status": "completed"
+    },
+    {
+      "stage": "reopen",
+      "ms": 48065.817,
+      "cpuMs": 47078,
+      "cpuUserMs": 46078,
+      "cpuSystemMs": 1000,
+      "status": "completed"
+    }
+  ],
+  "parentTotalMs": 133144.079,
+  "checks": [
+    {
+      "name": "r170 copy sha matches original",
+      "ok": true
+    },
+    {
+      "name": "r170 commit revision",
+      "ok": true
+    },
+    {
+      "name": "r170 commit tick",
+      "ok": true
+    },
+    {
+      "name": "r170 commit commands count",
+      "ok": true
+    },
+    {
+      "name": "no r182 before submit",
+      "ok": true
+    },
+    {
+      "name": "start revision",
+      "ok": true
+    },
+    {
+      "name": "start tick",
+      "ok": true
+    },
+    {
+      "name": "start commands",
+      "ok": true
+    },
+    {
+      "name": "start five views match frozen r170 signature",
+      "ok": true
+    },
+    {
+      "name": "receipt committed",
+      "ok": true
+    },
+    {
+      "name": "receipt toRevision",
+      "ok": true
+    },
+    {
+      "name": "produced r182 canonical equals reference r182",
+      "ok": true
+    },
+    {
+      "name": "r182 raw bytes equal reference",
+      "ok": true
+    },
+    {
+      "name": "returned receipt equals original r182 journal receipt",
+      "ok": true
+    },
+    {
+      "name": "frozen DTO equals original r182 last command",
+      "ok": true
+    },
+    {
+      "name": "end revision",
+      "ok": true
+    },
+    {
+      "name": "end tick",
+      "ok": true
+    },
+    {
+      "name": "end commands",
+      "ok": true
+    },
+    {
+      "name": "seven originals unchanged after submit",
+      "ok": true
+    },
+    {
+      "name": "lock released after close",
+      "ok": true
+    },
+    {
+      "name": "five projections equal across reopen",
+      "ok": true
+    },
+    {
+      "name": "end five views match frozen r182 signature",
+      "ok": true
+    },
+    {
+      "name": "r182 bytes unchanged across reopen",
+      "ok": true
+    },
+    {
+      "name": "lock released after final close",
+      "ok": true
+    }
+  ],
+  "startSignature": "046e7b2ef5da06bf3bf3d54096535601a84d7074e0754233c98d4f4031ec5f07",
+  "startProjectionSignatures": {
+    "snapshot": "76bad82268cc9c5a5595050168c2f21692dd9b192278f299b360393992afd012",
+    "player": "4ae04ddc432f43d46e7759d722191bae8ee28b9b8a39668e76b797f4a614eca1",
+    "mind": "8ccd19e4fee567f09bf0da0836cbafd8f65cd30f8e693010cc7810edba4a3368",
+    "encounter": "14f1b6defc654bddca48acf1c9645cc5f1499342160b2aa3171adf75b4c247f1",
+    "scene": "c50e97b68ffa64bcda98ca1601acf7ad0be5a6475c0c02d7d5682b12c442dcb2"
+  },
+  "endProjectionSignatures": {
+    "snapshot": "7f7af29e2047f3c3e407d1defda9b697d674281a1611e0179f0fea54f83cb421",
+    "player": "08be1b893183136f47db8ec4d26db820b534cbe2ba2e45edeee9b847ba990963",
+    "mind": "edfe06727850e9e89524b2f5e017da8d28b95fdae079e97293183903f32a6fa7",
+    "encounter": "7c05562659feb2d8c5dfba7ca498db834b71f8cb35487da3fbc0ede7cdb8b00e",
+    "scene": "84addc04363874e9208012ef1cb3710ab63c0a1f09a39b193111d704b3008a14"
+  },
+  "reopenedProjectionSignatures": {
+    "snapshot": "7f7af29e2047f3c3e407d1defda9b697d674281a1611e0179f0fea54f83cb421",
+    "player": "08be1b893183136f47db8ec4d26db820b534cbe2ba2e45edeee9b847ba990963",
+    "mind": "edfe06727850e9e89524b2f5e017da8d28b95fdae079e97293183903f32a6fa7",
+    "encounter": "7c05562659feb2d8c5dfba7ca498db834b71f8cb35487da3fbc0ede7cdb8b00e",
+    "scene": "84addc04363874e9208012ef1cb3710ab63c0a1f09a39b193111d704b3008a14"
+  },
+  "receiptSignature": "9b67b487d1737b7462404291bd1e2dd84c420b0d8547e77de817d4783d06497c",
+  "referenceReceiptSignature": "9b67b487d1737b7462404291bd1e2dd84c420b0d8547e77de817d4783d06497c",
+  "produced": {
+    "file": "service-commit-r182.json",
+    "bytes": 136020,
+    "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+    "canonicalSha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+    "referenceBytes": 136020,
+    "referenceSha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+    "referenceCanonicalSha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+    "canonicalEqual": true,
+    "byteIdenticalToReference": true
+  },
+  "reopenComparison": {
+    "beforeSignature": "2dd3b73b24fb95c1dcf815a63ae075f4f0f0131711f8e921a0d98f63c2bea48f",
+    "afterSignature": "2dd3b73b24fb95c1dcf815a63ae075f4f0f0131711f8e921a0d98f63c2bea48f",
+    "equal": true,
+    "producedUnchanged": true
+  },
+  "childExit": {
+    "code": 0,
+    "signal": null
+  },
+  "killed": null,
+  "exitUnconfirmed": false,
+  "protection": {
+    "at": "2026-10-16T06:59:45.320Z",
+    "runId": "issue3-cost-B1",
+    "verdict": "PROTECTION_OK",
+    "mode": "full",
+    "originalArchiveUnchanged": true,
+    "runtimeCopiesUnchanged": true,
+    "lockPresent": false,
+    "produced": {
+      "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "bytes": 136020
+    },
+    "expectedProduced": true,
+    "runtimeFilesCount": 8,
+    "expectedFileCount": 8,
+    "runtimeFiles": [
+      "service-commit-r0.json",
+      "service-commit-r1.json",
+      "service-commit-r145.json",
+      "service-commit-r157.json",
+      "service-commit-r158.json",
+      "service-commit-r164.json",
+      "service-commit-r170.json",
+      "service-commit-r182.json"
+    ],
+    "runDirFiles": [
+      "child-events.ndjson",
+      "child-result.json",
+      "child-stdio.log",
+      "manifest.json",
+      "parent-result.json",
+      "runtime-data"
+    ],
+    "archive": [
+      {
+        "file": "service-commit-r0.json",
+        "bytes": 82290,
+        "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "expectedSha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r1.json",
+        "bytes": 85039,
+        "sha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+        "expectedSha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r145.json",
+        "bytes": 117495,
+        "sha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+        "expectedSha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r157.json",
+        "bytes": 122259,
+        "sha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+        "expectedSha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r158.json",
+        "bytes": 125381,
+        "sha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+        "expectedSha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r164.json",
+        "bytes": 128313,
+        "sha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+        "expectedSha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r170.json",
+        "bytes": 131239,
+        "sha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+        "expectedSha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+        "match": true,
+        "error": null
+      },
+      {
+        "file": "service-commit-r182.json",
+        "bytes": 136020,
+        "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+        "expectedSha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+        "match": true,
+        "error": null
+      }
+    ],
+    "copiesStatus": [
+      {
+        "file": "service-commit-r0.json",
+        "present": true,
+        "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "expectedSha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "match": true
+      },
+      {
+        "file": "service-commit-r1.json",
+        "present": true,
+        "sha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+        "expectedSha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+        "match": true
+      },
+      {
+        "file": "service-commit-r145.json",
+        "present": true,
+        "sha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+        "expectedSha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+        "match": true
+      },
+      {
+        "file": "service-commit-r157.json",
+        "present": true,
+        "sha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+        "expectedSha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+        "match": true
+      },
+      {
+        "file": "service-commit-r158.json",
+        "present": true,
+        "sha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+        "expectedSha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+        "match": true
+      },
+      {
+        "file": "service-commit-r164.json",
+        "present": true,
+        "sha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+        "expectedSha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+        "match": true
+      },
+      {
+        "file": "service-commit-r170.json",
+        "present": true,
+        "sha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+        "expectedSha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+        "match": true
+      }
+    ]
+  }
+}

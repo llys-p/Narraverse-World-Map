@@ -1,0 +1,81 @@
+{
+  "kind": "private encoder parameter initialization experiment, not r170 service latency",
+  "node": "v24.14.0",
+  "iterations": 200,
+  "originalEightCanonicalEqual": true,
+  "sourceSha256": "7b7e99715bbfe1e8a56af27ba51b1121141bf4feb280fa59f23c28a0af5ff328",
+  "rows": [
+    {
+      "repeat": 0,
+      "label": "baseline",
+      "wallMs": 436.3578,
+      "cpuMs": 375
+    },
+    {
+      "repeat": 0,
+      "label": "candidate",
+      "wallMs": 436.0720000000001,
+      "cpuMs": 391
+    },
+    {
+      "repeat": 1,
+      "label": "candidate",
+      "wallMs": 470.28949999999986,
+      "cpuMs": 437
+    },
+    {
+      "repeat": 1,
+      "label": "baseline",
+      "wallMs": 413.4647,
+      "cpuMs": 375
+    },
+    {
+      "repeat": 2,
+      "label": "baseline",
+      "wallMs": 399.16859999999997,
+      "cpuMs": 360
+    },
+    {
+      "repeat": 2,
+      "label": "candidate",
+      "wallMs": 437.18830000000025,
+      "cpuMs": 391
+    },
+    {
+      "repeat": 3,
+      "label": "candidate",
+      "wallMs": 447.1885000000002,
+      "cpuMs": 422
+    },
+    {
+      "repeat": 3,
+      "label": "baseline",
+      "wallMs": 514.3494000000001,
+      "cpuMs": 453
+    },
+    {
+      "repeat": 4,
+      "label": "baseline",
+      "wallMs": 455.03669999999966,
+      "cpuMs": 454
+    },
+    {
+      "repeat": 4,
+      "label": "candidate",
+      "wallMs": 454.7323000000006,
+      "cpuMs": 436
+    },
+    {
+      "repeat": 5,
+      "label": "candidate",
+      "wallMs": 437.10410000000047,
+      "cpuMs": 422
+    },
+    {
+      "repeat": 5,
+      "label": "baseline",
+      "wallMs": 576.4538999999995,
+      "cpuMs": 500
+    }
+  ]
+}

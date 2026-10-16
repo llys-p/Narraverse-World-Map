@@ -1,0 +1,21 @@
+{
+  "label": "unit-B",
+  "args": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "--test",
+    "--test-isolation=none",
+    "--test-reporter=tap",
+    "--test-timeout=90000",
+    "tests/simulation/canonical-json-equivalence.test.mjs",
+    "tests/simulation/canonical-key-reuse.test.mjs",
+    "tests/simulation/config-validation-construction.test.mjs",
+    "tests/simulation/upper-config-validation.test.mjs"
+  ],
+  "cwd": "D:\\Narraverse-World-Map-issue3-config-checks",
+  "sourceOverride": null,
+  "pid": 3036,
+  "exit": 0,
+  "hardLimitSeconds": 100,
+  "timedOut": false,
+  "wallMs": 1185.7906999975967
+}

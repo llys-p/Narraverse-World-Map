@@ -1,0 +1,20 @@
+{
+  "runId": "issue3-profile-20261016",
+  "contract": "d4-long-history-open-profile-r1",
+  "verdict": "COMPLETED_CONSISTENT",
+  "reviewCause": "NONE",
+  "childPid": 35736,
+  "childExit": {
+    "code": 0,
+    "signal": null
+  },
+  "exitUnconfirmed": false,
+  "totalMs": 79563.334,
+  "limits": {
+    "stageMs": 120000,
+    "totalMs": 180000,
+    "exitConfirmMs": 5000
+  },
+  "killed": null,
+  "lockPresentAtEnd": false
+}

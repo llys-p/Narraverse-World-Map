@@ -1,0 +1,310 @@
+{
+  "baseline": "b7e5a9e7c131ee79acd017276ff62910a549d5ad",
+  "candidate": "fbaf5147c6aea516007c61f60498493cf3c5af29",
+  "order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2"
+  ],
+  "measurementsPerVersion": 2,
+  "statistics": [
+    {
+      "stage": "first-open",
+      "metric": "ms",
+      "baseline": {
+        "n": 2,
+        "valuesMs": [
+          41918.096,
+          74347.342
+        ],
+        "medianMs": 58132.719,
+        "meanMs": 58132.719,
+        "minMs": 41918.096,
+        "maxMs": 74347.342,
+        "sampleSdMs": 22930.939755366726,
+        "cvPct": 39.44584074136757
+      },
+      "candidate": {
+        "n": 2,
+        "valuesMs": [
+          42712.854,
+          40877.006
+        ],
+        "medianMs": 41794.93,
+        "meanMs": 41794.93,
+        "minMs": 40877.006,
+        "maxMs": 42712.854,
+        "sampleSdMs": 1298.1405700277596,
+        "cvPct": 3.105976179473825
+      },
+      "improvementPct": 28.104291836065677,
+      "pairedImprovementPct": [
+        -1.8959782906170286,
+        45.01887370768413
+      ]
+    },
+    {
+      "stage": "first-open",
+      "metric": "cpuMs",
+      "baseline": {
+        "n": 2,
+        "valuesMs": [
+          41562,
+          68921
+        ],
+        "medianMs": 55241.5,
+        "meanMs": 55241.5,
+        "minMs": 41562,
+        "maxMs": 68921,
+        "sampleSdMs": 19345.734426482755,
+        "cvPct": 35.02029167651631
+      },
+      "candidate": {
+        "n": 2,
+        "valuesMs": [
+          42391,
+          40704
+        ],
+        "medianMs": 41547.5,
+        "meanMs": 41547.5,
+        "minMs": 40704,
+        "maxMs": 42391,
+        "sampleSdMs": 1192.8891398617056,
+        "cvPct": 2.8711454115451125
+      },
+      "improvementPct": 24.789334105699524,
+      "pairedImprovementPct": [
+        -1.9946104614792404,
+        40.94107746550398
+      ]
+    },
+    {
+      "stage": "submit-travel",
+      "metric": "ms",
+      "baseline": {
+        "n": 2,
+        "valuesMs": [
+          43527.877,
+          67850.571
+        ],
+        "medianMs": 55689.224,
+        "meanMs": 55689.224,
+        "minMs": 43527.877,
+        "maxMs": 67850.571,
+        "sampleSdMs": 17198.74186412535,
+        "cvPct": 30.883428837373184
+      },
+      "candidate": {
+        "n": 2,
+        "valuesMs": [
+          42227.668,
+          51375.184
+        ],
+        "medianMs": 46801.426,
+        "meanMs": 46801.426,
+        "minMs": 42227.668,
+        "maxMs": 51375.184,
+        "sampleSdMs": 6468.270594612445,
+        "cvPct": 13.820669897136137
+      },
+      "improvementPct": 15.959637002663207,
+      "pairedImprovementPct": [
+        2.9870719401270174,
+        24.281869344916785
+      ]
+    },
+    {
+      "stage": "submit-travel",
+      "metric": "cpuMs",
+      "baseline": {
+        "n": 2,
+        "valuesMs": [
+          42906,
+          63328
+        ],
+        "medianMs": 53117.0,
+        "meanMs": 53117,
+        "minMs": 42906,
+        "maxMs": 63328,
+        "sampleSdMs": 14440.534685391674,
+        "cvPct": 27.186276870666028
+      },
+      "candidate": {
+        "n": 2,
+        "valuesMs": [
+          41171,
+          49733
+        ],
+        "medianMs": 45452.0,
+        "meanMs": 45452,
+        "minMs": 41171,
+        "maxMs": 49733,
+        "sampleSdMs": 6054.24826051922,
+        "cvPct": 13.32009209829979
+      },
+      "improvementPct": 14.430408343844725,
+      "pairedImprovementPct": [
+        4.043723488556383,
+        21.46759727134917
+      ]
+    },
+    {
+      "stage": "close",
+      "metric": "ms",
+      "baseline": {
+        "n": 2,
+        "valuesMs": [
+          1.176,
+          1.101
+        ],
+        "medianMs": 1.1385,
+        "meanMs": 1.1385,
+        "minMs": 1.101,
+        "maxMs": 1.176,
+        "sampleSdMs": 0.053033008588991036,
+        "cvPct": 4.658147438646556
+      },
+      "candidate": {
+        "n": 2,
+        "valuesMs": [
+          5.389,
+          1.978
+        ],
+        "medianMs": 3.6835,
+        "meanMs": 3.6835,
+        "minMs": 1.978,
+        "maxMs": 5.389,
+        "sampleSdMs": 2.411941230627314,
+        "cvPct": 65.47960446931761
+      },
+      "improvementPct": -223.5397452788757,
+      "pairedImprovementPct": [
+        -358.24829931972795,
+        -79.65485921889193
+      ]
+    },
+    {
+      "stage": "close",
+      "metric": "cpuMs",
+      "baseline": {
+        "n": 2,
+        "valuesMs": [
+          0,
+          0
+        ],
+        "medianMs": 0.0,
+        "meanMs": 0,
+        "minMs": 0,
+        "maxMs": 0,
+        "sampleSdMs": 0.0,
+        "cvPct": null
+      },
+      "candidate": {
+        "n": 2,
+        "valuesMs": [
+          0,
+          0
+        ],
+        "medianMs": 0.0,
+        "meanMs": 0,
+        "minMs": 0,
+        "maxMs": 0,
+        "sampleSdMs": 0.0,
+        "cvPct": null
+      },
+      "improvementPct": null,
+      "pairedImprovementPct": [
+        null,
+        null
+      ]
+    },
+    {
+      "stage": "reopen",
+      "metric": "ms",
+      "baseline": {
+        "n": 2,
+        "valuesMs": [
+          48841.287,
+          68282.307
+        ],
+        "medianMs": 58561.797,
+        "meanMs": 58561.797,
+        "minMs": 48841.287,
+        "maxMs": 68282.307,
+        "sampleSdMs": 13746.877075183296,
+        "cvPct": 23.474138054853913
+      },
+      "candidate": {
+        "n": 2,
+        "valuesMs": [
+          48065.817,
+          82618.477
+        ],
+        "medianMs": 65342.147,
+        "meanMs": 65342.147,
+        "minMs": 48065.817,
+        "maxMs": 82618.477,
+        "sampleSdMs": 24432.42019403317,
+        "cvPct": 37.39151729133292
+      },
+      "improvementPct": -11.578111238628818,
+      "pairedImprovementPct": [
+        1.587734573824795,
+        -20.995438833078683
+      ]
+    },
+    {
+      "stage": "reopen",
+      "metric": "cpuMs",
+      "baseline": {
+        "n": 2,
+        "valuesMs": [
+          47953,
+          64548
+        ],
+        "medianMs": 56250.5,
+        "meanMs": 56250.5,
+        "minMs": 47953,
+        "maxMs": 64548,
+        "sampleSdMs": 11734.437033790757,
+        "cvPct": 20.861035961975016
+      },
+      "candidate": {
+        "n": 2,
+        "valuesMs": [
+          47078,
+          75844
+        ],
+        "medianMs": 61461.0,
+        "meanMs": 61461,
+        "minMs": 47078,
+        "maxMs": 75844,
+        "sampleSdMs": 20340.633667612226,
+        "cvPct": 33.09518827811495
+      },
+      "improvementPct": -9.263028773077565,
+      "pairedImprovementPct": [
+        1.8247033553687952,
+        -17.500154923467814
+      ]
+    }
+  ],
+  "parentTotalsMs": {
+    "A": [
+      134424.499,
+      210683.303
+    ],
+    "B": [
+      133144.079,
+      175031.355
+    ]
+  },
+  "functionalVerdict": "PASS",
+  "performanceVerdict": "SEE_REPORT_NOT_DAILY_ACCEPTANCE",
+  "allEightOriginalsUnchanged": true,
+  "servicesAfter": [],
+  "protectedUntrackedUnchanged": true,
+  "productionUnchanged": true,
+  "privateSavesExported": false
+}

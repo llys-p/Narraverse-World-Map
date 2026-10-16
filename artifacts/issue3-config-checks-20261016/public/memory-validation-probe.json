@@ -1,0 +1,78 @@
+{
+  "kind": "complete memory configuration validation using original r170 configuration, fresh world; not real history chain",
+  "iterations": 50,
+  "rows": [
+    {
+      "repeat": 0,
+      "label": "baseline",
+      "wallMs": 485.10579999999993,
+      "cpuMs": 469
+    },
+    {
+      "repeat": 0,
+      "label": "candidate",
+      "wallMs": 401.1058999999999,
+      "cpuMs": 391
+    },
+    {
+      "repeat": 1,
+      "label": "candidate",
+      "wallMs": 382.19349999999986,
+      "cpuMs": 344
+    },
+    {
+      "repeat": 1,
+      "label": "baseline",
+      "wallMs": 467.5435,
+      "cpuMs": 485
+    },
+    {
+      "repeat": 2,
+      "label": "baseline",
+      "wallMs": 459.27379999999994,
+      "cpuMs": 406
+    },
+    {
+      "repeat": 2,
+      "label": "candidate",
+      "wallMs": 384.37310000000025,
+      "cpuMs": 376
+    },
+    {
+      "repeat": 3,
+      "label": "candidate",
+      "wallMs": 408.78840000000037,
+      "cpuMs": 437
+    },
+    {
+      "repeat": 3,
+      "label": "baseline",
+      "wallMs": 560.7683999999999,
+      "cpuMs": 484
+    },
+    {
+      "repeat": 4,
+      "label": "baseline",
+      "wallMs": 492.4956000000002,
+      "cpuMs": 438
+    },
+    {
+      "repeat": 4,
+      "label": "candidate",
+      "wallMs": 408.77099999999973,
+      "cpuMs": 391
+    },
+    {
+      "repeat": 5,
+      "label": "candidate",
+      "wallMs": 381.9996000000001,
+      "cpuMs": 390
+    },
+    {
+      "repeat": 5,
+      "label": "baseline",
+      "wallMs": 480.4840000000004,
+      "cpuMs": 453
+    }
+  ]
+}

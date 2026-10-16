@@ -1,0 +1,17 @@
+{
+  "label": "verify-A1",
+  "args": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "D:\\Narraverse-World-Map-issue3-history-cost\\scripts\\measure-d4-long-history.mjs",
+    "verify",
+    "--run-id",
+    "issue3-cost-A1"
+  ],
+  "cwd": "D:\\Narraverse-World-Map-issue3-history-cost",
+  "sourceOverride": "D:\\Narraverse-World-Map-issue3-baseline",
+  "pid": 7112,
+  "exit": 0,
+  "hardLimitSeconds": 30,
+  "timedOut": false,
+  "wallMs": 73.13920000160579
+}

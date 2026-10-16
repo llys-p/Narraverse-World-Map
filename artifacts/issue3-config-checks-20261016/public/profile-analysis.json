@@ -1,0 +1,354 @@
+{
+  "startTime": 19607916044,
+  "endTime": 19686846928,
+  "totalMicroseconds": 78930614,
+  "totalMs": 78930.614,
+  "samplesCount": 48545,
+  "nodesCount": 50276,
+  "subsystemSummary": {
+    "coldAuditedBundle": {
+      "ms": 68438.135,
+      "percent": 86.707
+    },
+    "validateBundle": {
+      "ms": 68411.551,
+      "percent": 86.673
+    },
+    "journalReplay": {
+      "ms": 66197.903,
+      "percent": 83.868
+    },
+    "advanceTimeTicks144": {
+      "ms": 0,
+      "percent": 0
+    },
+    "projections": {
+      "ms": 50.242,
+      "percent": 0.064
+    },
+    "deepStrictEqual": {
+      "ms": 3.217,
+      "percent": 0.004
+    },
+    "cloneBundleOrFreeze": {
+      "ms": 72.096,
+      "percent": 0.091
+    },
+    "jsonParseOrStringify": {
+      "ms": 26429.605,
+      "percent": 33.485
+    },
+    "garbageCollector": {
+      "ms": 1287.042,
+      "percent": 1.631
+    },
+    "programIdle": {
+      "ms": 46.452,
+      "percent": 0.059
+    }
+  },
+  "topSelf": [
+    {
+      "key": "encodeCanonical [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:80]",
+      "ms": 25704.369,
+      "percent": 32.566
+    },
+    {
+      "key": "requireCondition [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:10]",
+      "ms": 19210.61,
+      "percent": 24.339
+    },
+    {
+      "key": "cloneData [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:49]",
+      "ms": 9945.995,
+      "percent": 12.601
+    },
+    {
+      "key": "record [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:13]",
+      "ms": 5469.027,
+      "percent": 6.929
+    },
+    {
+      "key": "visit [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/experience-state.mjs:30]",
+      "ms": 5259.899,
+      "percent": 6.664
+    },
+    {
+      "key": "denseArray [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:36]",
+      "ms": 1774.684,
+      "percent": 2.248
+    },
+    {
+      "key": "own [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:5]",
+      "ms": 1550.76,
+      "percent": 1.965
+    },
+    {
+      "key": "(garbage collector) [(native)]",
+      "ms": 1287.042,
+      "percent": 1.631
+    },
+    {
+      "key": "validateSocietyWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/society.mjs:63]",
+      "ms": 609.916,
+      "percent": 0.773
+    },
+    {
+      "key": "fields [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:25]",
+      "ms": 599.633,
+      "percent": 0.76
+    },
+    {
+      "key": "performTick [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/command-engine.mjs:44]",
+      "ms": 592.098,
+      "percent": 0.75
+    },
+    {
+      "key": "validateActorWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/actors.mjs:53]",
+      "ms": 456.941,
+      "percent": 0.579
+    },
+    {
+      "key": "validateHunterWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/hunter.mjs:41]",
+      "ms": 447.879,
+      "percent": 0.567
+    },
+    {
+      "key": "validateConfig [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/ecology.mjs:36]",
+      "ms": 357.868,
+      "percent": 0.453
+    },
+    {
+      "key": "totals [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/resource-ledger.mjs:10]",
+      "ms": 344.208,
+      "percent": 0.436
+    },
+    {
+      "key": "canonicalJson [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:125]",
+      "ms": 338.489,
+      "percent": 0.429
+    },
+    {
+      "key": "createEcologyWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/ecology.mjs:53]",
+      "ms": 294.617,
+      "percent": 0.373
+    },
+    {
+      "key": "validateMemoryWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/memory-runtime.mjs:43]",
+      "ms": 268.088,
+      "percent": 0.34
+    },
+    {
+      "key": "validateMarketWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/market.mjs:81]",
+      "ms": 260.323,
+      "percent": 0.33
+    },
+    {
+      "key": "createResourceWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/resource-ledger.mjs:59]",
+      "ms": 235.943,
+      "percent": 0.299
+    },
+    {
+      "key": "validateEcologyWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/ecology.mjs:63]",
+      "ms": 219.425,
+      "percent": 0.278
+    },
+    {
+      "key": "createHunterWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/hunter.mjs:31]",
+      "ms": 210.48,
+      "percent": 0.267
+    },
+    {
+      "key": "validateConfig [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/resource-ledger.mjs:33]",
+      "ms": 206.238,
+      "percent": 0.261
+    },
+    {
+      "key": "validateResourceWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/resource-ledger.mjs:67]",
+      "ms": 186.812,
+      "percent": 0.237
+    },
+    {
+      "key": "(anonymous) [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/ecology.mjs:58]",
+      "ms": 183.849,
+      "percent": 0.233
+    },
+    {
+      "key": "(anonymous) [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:28]",
+      "ms": 149.321,
+      "percent": 0.189
+    },
+    {
+      "key": "validateConfig [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/actors.mjs:23]",
+      "ms": 143.535,
+      "percent": 0.182
+    },
+    {
+      "key": "validateConfig [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/society.mjs:29]",
+      "ms": 139.728,
+      "percent": 0.177
+    },
+    {
+      "key": "validateConfig [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/hunter.mjs:21]",
+      "ms": 122.207,
+      "percent": 0.155
+    },
+    {
+      "key": "validateConfig [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/market.mjs:26]",
+      "ms": 122.199,
+      "percent": 0.155
+    }
+  ],
+  "topInclusive": [
+    {
+      "key": "(root) [(native)]",
+      "ms": 78930.614,
+      "percent": 100
+    },
+    {
+      "key": "executeIntent [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/encounter-runtime.mjs:1462]",
+      "ms": 76688.441,
+      "percent": 97.159
+    },
+    {
+      "key": "executeIntentFor [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/encounter-runtime.mjs:694]",
+      "ms": 76682.318,
+      "percent": 97.152
+    },
+    {
+      "key": "performTick [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/command-engine.mjs:44]",
+      "ms": 76541.955,
+      "percent": 96.974
+    },
+    {
+      "key": "createAuditedBundle [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/world-state.mjs:43]",
+      "ms": 68438.135,
+      "percent": 86.707
+    },
+    {
+      "key": "validateBundle [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/world-state.mjs:98]",
+      "ms": 68411.551,
+      "percent": 86.673
+    },
+    {
+      "key": "validateEventLog [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/event-log.mjs:65]",
+      "ms": 67910.771,
+      "percent": 86.039
+    },
+    {
+      "key": "hooksValidateHistory [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/encounter-runtime.mjs:1263]",
+      "ms": 67730.04,
+      "percent": 85.81
+    },
+    {
+      "key": "validateHistory [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/encounter-runtime.mjs:1469]",
+      "ms": 67730.04,
+      "percent": 85.81
+    },
+    {
+      "key": "validateHistory [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/scene-runtime.mjs:20]",
+      "ms": 67730.04,
+      "percent": 85.81
+    },
+    {
+      "key": "loadServiceCommit [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/service/service-commit.mjs:90]",
+      "ms": 66197.903,
+      "percent": 83.868
+    },
+    {
+      "key": "validateServiceCommit [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/service/service-commit.mjs:62]",
+      "ms": 66190.084,
+      "percent": 83.859
+    },
+    {
+      "key": "transitionSceneCommand [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/service/service-commit.mjs:23]",
+      "ms": 58072.748,
+      "percent": 73.574
+    },
+    {
+      "key": "transitionAuditedServiceCommand [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/service/service-commit.mjs:29]",
+      "ms": 58072.748,
+      "percent": 73.574
+    },
+    {
+      "key": "executeAuditedSceneIntent [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/scene-runtime.mjs:91]",
+      "ms": 58071.292,
+      "percent": 73.573
+    },
+    {
+      "key": "validateMemoryWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/memory-runtime.mjs:43]",
+      "ms": 54724.21,
+      "percent": 69.332
+    },
+    {
+      "key": "validateMindWorldFor [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/mind-runtime.mjs:54]",
+      "ms": 54260.357,
+      "percent": 68.744
+    },
+    {
+      "key": "validateSocietyWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/society.mjs:63]",
+      "ms": 37316.274,
+      "percent": 47.277
+    },
+    {
+      "key": "encodeCanonical [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:80]",
+      "ms": 36046.535,
+      "percent": 45.669
+    },
+    {
+      "key": "validateSnapshotStructure [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/world-state.mjs:113]",
+      "ms": 34946.094,
+      "percent": 44.274
+    },
+    {
+      "key": "validateSceneWorldState [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/scene-runtime.mjs:22]",
+      "ms": 33468.578,
+      "percent": 42.403
+    },
+    {
+      "key": "validateWorldFor [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/motivation-runtime.mjs:133]",
+      "ms": 29819.138,
+      "percent": 37.779
+    },
+    {
+      "key": "beforeSystemsFor [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/motivation-runtime.mjs:422]",
+      "ms": 27890.146,
+      "percent": 35.335
+    },
+    {
+      "key": "beforeSystems [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/motivation-runtime.mjs:903]",
+      "ms": 26571.36,
+      "percent": 33.664
+    },
+    {
+      "key": "applyMindStimuliTick [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/mind-runtime.mjs:35]",
+      "ms": 26542.524,
+      "percent": 33.628
+    },
+    {
+      "key": "applyMindStimuliTickFor [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/mind-runtime.mjs:104]",
+      "ms": 26540.875,
+      "percent": 33.626
+    },
+    {
+      "key": "canonicalJson [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:125]",
+      "ms": 26429.605,
+      "percent": 33.485
+    },
+    {
+      "key": "hooksBeforeSystems [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/encounter-runtime.mjs:1144]",
+      "ms": 25665.002,
+      "percent": 32.516
+    },
+    {
+      "key": "validateHunterWorld [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/hunter.mjs:41]",
+      "ms": 19853.228,
+      "percent": 25.153
+    },
+    {
+      "key": "requireCondition [file:/D:/Narraverse-World-Map-issue3-history-cost/runtime/core/data-contract.mjs:10]",
+      "ms": 19210.61,
+      "percent": 24.339
+    }
+  ]
+}

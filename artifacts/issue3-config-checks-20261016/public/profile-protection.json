@@ -1,0 +1,149 @@
+{
+  "at": "2026-10-16T06:39:59.048Z",
+  "runId": "issue3-profile-20261016",
+  "verdict": "PROTECTION_OK",
+  "mode": "profile",
+  "originalArchiveUnchanged": true,
+  "runtimeCopiesUnchanged": true,
+  "lockPresent": false,
+  "produced": null,
+  "expectedProduced": false,
+  "runtimeFilesCount": 7,
+  "expectedFileCount": 7,
+  "runtimeFiles": [
+    "service-commit-r0.json",
+    "service-commit-r1.json",
+    "service-commit-r145.json",
+    "service-commit-r157.json",
+    "service-commit-r158.json",
+    "service-commit-r164.json",
+    "service-commit-r170.json"
+  ],
+  "runDirFiles": [
+    "child-events.ndjson",
+    "child-result.json",
+    "child-stdio.log",
+    "first-open.cpuprofile",
+    "manifest.json",
+    "parent-result.json",
+    "profile-analysis.json",
+    "runtime-data"
+  ],
+  "archive": [
+    {
+      "file": "service-commit-r0.json",
+      "bytes": 82290,
+      "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+      "expectedSha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+      "match": true,
+      "error": null
+    },
+    {
+      "file": "service-commit-r1.json",
+      "bytes": 85039,
+      "sha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+      "expectedSha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+      "match": true,
+      "error": null
+    },
+    {
+      "file": "service-commit-r145.json",
+      "bytes": 117495,
+      "sha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+      "expectedSha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+      "match": true,
+      "error": null
+    },
+    {
+      "file": "service-commit-r157.json",
+      "bytes": 122259,
+      "sha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+      "expectedSha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+      "match": true,
+      "error": null
+    },
+    {
+      "file": "service-commit-r158.json",
+      "bytes": 125381,
+      "sha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+      "expectedSha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+      "match": true,
+      "error": null
+    },
+    {
+      "file": "service-commit-r164.json",
+      "bytes": 128313,
+      "sha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+      "expectedSha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+      "match": true,
+      "error": null
+    },
+    {
+      "file": "service-commit-r170.json",
+      "bytes": 131239,
+      "sha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+      "expectedSha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+      "match": true,
+      "error": null
+    },
+    {
+      "file": "service-commit-r182.json",
+      "bytes": 136020,
+      "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "expectedSha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "match": true,
+      "error": null
+    }
+  ],
+  "copiesStatus": [
+    {
+      "file": "service-commit-r0.json",
+      "present": true,
+      "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+      "expectedSha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+      "match": true
+    },
+    {
+      "file": "service-commit-r1.json",
+      "present": true,
+      "sha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+      "expectedSha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+      "match": true
+    },
+    {
+      "file": "service-commit-r145.json",
+      "present": true,
+      "sha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+      "expectedSha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+      "match": true
+    },
+    {
+      "file": "service-commit-r157.json",
+      "present": true,
+      "sha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+      "expectedSha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+      "match": true
+    },
+    {
+      "file": "service-commit-r158.json",
+      "present": true,
+      "sha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+      "expectedSha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+      "match": true
+    },
+    {
+      "file": "service-commit-r164.json",
+      "present": true,
+      "sha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+      "expectedSha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+      "match": true
+    },
+    {
+      "file": "service-commit-r170.json",
+      "present": true,
+      "sha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+      "expectedSha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+      "match": true
+    }
+  ]
+}

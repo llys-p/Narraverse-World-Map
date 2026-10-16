@@ -1,0 +1,21 @@
+{
+  "label": "prepare-B2",
+  "args": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "D:\\Narraverse-World-Map-issue3-config-checks\\scripts\\measure-d4-long-history.mjs",
+    "prepare",
+    "--run-id",
+    "issue3-complete-B2",
+    "--contract",
+    "issue3-complete-config-validation-v1",
+    "--git-head",
+    "c94a228e3c671ea6142ba90eb9ab690a930e0e72"
+  ],
+  "cwd": "D:\\Narraverse-World-Map-issue3-config-checks",
+  "sourceOverride": "D:\\Narraverse-World-Map-issue3-config-checks",
+  "pid": 46616,
+  "exit": 0,
+  "hardLimitSeconds": 30,
+  "timedOut": false,
+  "wallMs": 110.1715000004333
+}

@@ -1,0 +1,79 @@
+{
+  "kind": "bounded per-call immutable string spelling reuse; no object or audit cache; not service latency",
+  "iterations": 200,
+  "originalEightCanonicalEqual": true,
+  "rows": [
+    {
+      "repeat": 0,
+      "label": "baseline",
+      "wallMs": 422.9418,
+      "cpuMs": 407
+    },
+    {
+      "repeat": 0,
+      "label": "candidate",
+      "wallMs": 425.2496000000001,
+      "cpuMs": 376
+    },
+    {
+      "repeat": 1,
+      "label": "candidate",
+      "wallMs": 443.4691,
+      "cpuMs": 406
+    },
+    {
+      "repeat": 1,
+      "label": "baseline",
+      "wallMs": 462.31860000000006,
+      "cpuMs": 406
+    },
+    {
+      "repeat": 2,
+      "label": "baseline",
+      "wallMs": 413.7896999999998,
+      "cpuMs": 422
+    },
+    {
+      "repeat": 2,
+      "label": "candidate",
+      "wallMs": 447.7494999999999,
+      "cpuMs": 422
+    },
+    {
+      "repeat": 3,
+      "label": "candidate",
+      "wallMs": 425.0799000000002,
+      "cpuMs": 406
+    },
+    {
+      "repeat": 3,
+      "label": "baseline",
+      "wallMs": 463.13949999999977,
+      "cpuMs": 329
+    },
+    {
+      "repeat": 4,
+      "label": "baseline",
+      "wallMs": 433.53679999999986,
+      "cpuMs": 390
+    },
+    {
+      "repeat": 4,
+      "label": "candidate",
+      "wallMs": 451.15309999999954,
+      "cpuMs": 437
+    },
+    {
+      "repeat": 5,
+      "label": "candidate",
+      "wallMs": 425.08560000000034,
+      "cpuMs": 391
+    },
+    {
+      "repeat": 5,
+      "label": "baseline",
+      "wallMs": 427.6765999999998,
+      "cpuMs": 406
+    }
+  ]
+}

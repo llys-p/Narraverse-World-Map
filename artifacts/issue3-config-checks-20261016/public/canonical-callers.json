@@ -1,0 +1,170 @@
+{
+  "method": "CPU Profiler timeDeltas, nearest parent above canonicalJson; sampled elapsed weights, not exact process CPU",
+  "rows": [
+    {
+      "caller": "createMarketWorld [market.mjs]",
+      "ms": 3624.197,
+      "percent": 4.591608273385105
+    },
+    {
+      "caller": "createEcologyWorld [ecology.mjs]",
+      "ms": 3159.452,
+      "percent": 4.002808330386873
+    },
+    {
+      "caller": "createActorWorld [actors.mjs]",
+      "ms": 3106.745,
+      "percent": 3.936032187350138
+    },
+    {
+      "caller": "createResourceWorld [resource-ledger.mjs]",
+      "ms": 2963.845,
+      "percent": 3.7549877181155096
+    },
+    {
+      "caller": "validateHunterWorld [hunter.mjs]",
+      "ms": 2517.279,
+      "percent": 3.1892193174980785
+    },
+    {
+      "caller": "validateActorWorld [actors.mjs]",
+      "ms": 2445.697,
+      "percent": 3.098529847961667
+    },
+    {
+      "caller": "createHunterWorld [hunter.mjs]",
+      "ms": 2038.785,
+      "percent": 2.5830003373584414
+    },
+    {
+      "caller": "performTick [command-engine.mjs]",
+      "ms": 1990.472,
+      "percent": 2.5217910900377096
+    },
+    {
+      "caller": "validateMarketWorld [market.mjs]",
+      "ms": 1146.352,
+      "percent": 1.45234912103607
+    },
+    {
+      "caller": "validateEcologyWorld [ecology.mjs]",
+      "ms": 1049.904,
+      "percent": 1.3301561401491462
+    },
+    {
+      "caller": "envelope [command-engine.mjs]",
+      "ms": 944.071,
+      "percent": 1.196073009900662
+    },
+    {
+      "caller": "validateMemoryWorld [memory-runtime.mjs]",
+      "ms": 523.706,
+      "percent": 0.6634994737927932
+    },
+    {
+      "caller": "validateResourceWorld [resource-ledger.mjs]",
+      "ms": 321.076,
+      "percent": 0.40678120366674214
+    },
+    {
+      "caller": "validateWorldFor [motivation-runtime.mjs]",
+      "ms": 244.127,
+      "percent": 0.30929211435158893
+    },
+    {
+      "caller": "validateSocietyWorld [society.mjs]",
+      "ms": 154.891,
+      "percent": 0.19623624131715034
+    },
+    {
+      "caller": "payloadBudget [data-contract.mjs]",
+      "ms": 64.043,
+      "percent": 0.08113807517979908
+    },
+    {
+      "caller": "hooksValidateHistory [encounter-runtime.mjs]",
+      "ms": 49.774,
+      "percent": 0.06306023381164716
+    },
+    {
+      "caller": "createSocietyWorld [society.mjs]",
+      "ms": 16.86,
+      "percent": 0.0213604601210345
+    },
+    {
+      "caller": "byteLength [experience-state.mjs]",
+      "ms": 16.85,
+      "percent": 0.021347790808981693
+    },
+    {
+      "caller": "canonicalBytes [cognitive-review.mjs]",
+      "ms": 8.186,
+      "percent": 0.010371098846428731
+    },
+    {
+      "caller": "byteLength [work-experience.mjs]",
+      "ms": 7.983,
+      "percent": 0.010113911811756726
+    },
+    {
+      "caller": "validateMemoryState [memory-observer.mjs]",
+      "ms": 7.962,
+      "percent": 0.010087306256445829
+    },
+    {
+      "caller": "validateCognitionModelFor [cognition-state.mjs]",
+      "ms": 6.271,
+      "percent": 0.007944925588315976
+    },
+    {
+      "caller": "validateCognitionSignalBaseline [cognition-state.mjs]",
+      "ms": 4.814,
+      "percent": 0.006099006822221831
+    },
+    {
+      "caller": "validateExperienceModel [experience-state.mjs]",
+      "ms": 3.24,
+      "percent": 0.004104857105109832
+    },
+    {
+      "caller": "projectSceneKnowledge [scene-knowledge.mjs]",
+      "ms": 1.752,
+      "percent": 0.0022196634716519837
+    },
+    {
+      "caller": "validateKnowledgeVariant [motivation-planner.mjs]",
+      "ms": 1.703,
+      "percent": 0.0021575838425932237
+    },
+    {
+      "caller": "validateEncounterCommandDto [http-contract.mjs]",
+      "ms": 1.667,
+      "percent": 0.0021119743192031144
+    },
+    {
+      "caller": "deriveActorSurvivalSignals [survival-signals.mjs]",
+      "ms": 1.647,
+      "percent": 0.002086635695097498
+    },
+    {
+      "caller": "validateSurvivalKnowledge [survival-state.mjs]",
+      "ms": 1.647,
+      "percent": 0.002086635695097498
+    },
+    {
+      "caller": "createMemoryWorld [memory-runtime.mjs]",
+      "ms": 1.63,
+      "percent": 0.0020650978646077245
+    },
+    {
+      "caller": "createWorldFor [motivation-runtime.mjs]",
+      "ms": 1.491,
+      "percent": 0.0018889944270736915
+    },
+    {
+      "caller": "byteLength [cognition-state.mjs]",
+      "ms": 1.486,
+      "percent": 0.0018826597710472875
+    }
+  ]
+}

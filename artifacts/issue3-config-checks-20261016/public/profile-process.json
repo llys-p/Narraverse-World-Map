@@ -1,0 +1,17 @@
+{
+  "args": [
+    "node",
+    "scripts/measure-d4-long-history.mjs",
+    "run",
+    "--run-id",
+    "issue3-profile-20261016",
+    "--profile",
+    "--contract",
+    "d4-long-history-open-profile-r1"
+  ],
+  "pid": 32256,
+  "exit": 0,
+  "outerHardLimitSeconds": 200,
+  "timedOut": false,
+  "wallMs": 85681.67750000066
+}

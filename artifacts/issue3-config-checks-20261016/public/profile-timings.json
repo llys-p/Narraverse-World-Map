@@ -1,0 +1,57 @@
+{
+  "timings": [
+    {
+      "stage": "first-open",
+      "ms": 78908.629,
+      "status": "completed"
+    },
+    {
+      "stage": "graceful-close",
+      "ms": 2.824,
+      "status": "completed"
+    }
+  ],
+  "startSignature": "046e7b2ef5da06bf3bf3d54096535601a84d7074e0754233c98d4f4031ec5f07",
+  "checks": [
+    {
+      "name": "r170 copy sha matches original",
+      "ok": true
+    },
+    {
+      "name": "r170 commit revision",
+      "ok": true
+    },
+    {
+      "name": "r170 commit tick",
+      "ok": true
+    },
+    {
+      "name": "r170 commit commands count",
+      "ok": true
+    },
+    {
+      "name": "no r182 before submit",
+      "ok": true
+    },
+    {
+      "name": "start revision",
+      "ok": true
+    },
+    {
+      "name": "start tick",
+      "ok": true
+    },
+    {
+      "name": "start commands",
+      "ok": true
+    },
+    {
+      "name": "lock released after close",
+      "ok": true
+    },
+    {
+      "name": "seven originals unchanged after open",
+      "ok": true
+    }
+  ]
+}
