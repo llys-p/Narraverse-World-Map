@@ -48,6 +48,8 @@ C:/Python311/python.exe scripts/accept-issue3-local.py run
 C:/Python311/python.exe scripts/accept-issue3-local.py summarize
 ```
 
+以上为本次原样执行记录。驱动是固定目录/起始HEAD的一次性验收工具，拒绝覆盖既有preflight、日志或样本；在已完成的验收树直接再次prepare会按设计停止。重新测量需另定隔离树、运行标识及对应冻结源码，保留本次证据，不能将这些命令当成可覆盖旧样本的通用基准入口。
+
 每个真实样本的实际Node命令同为下式，源码通过`D4_ACCEPTANCE_SOURCE`分别指向A/B；驱动清除继承的NODE_OPTIONS与旧测量路径覆盖，再固定原档来源。四次相同脚本SHA：`122977b207c5aed4f9902402c428759ad09ecbc0f55b3295f1b5702dfe1e9f2a`，driver SHA：`aee1f61212a4d0078eb0232bc7af6976593a9bc03ff62e600937dd9ee649264b`。
 
 ```powershell
