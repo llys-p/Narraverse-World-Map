@@ -1,5 +1,7 @@
 # 当前状态与接手方向
 
+> 本树为 Issue #3 独立验收分支，见[本机验收报告](docs/runtime/ISSUE3-LOCAL-ACCEPTANCE-20261016.md)。唯一项目当前状态在[控制分支 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-control/PROJECT_CONTEXT.md)。下文为基准携带的历史快照，不作为本树的当前进度。
+
 更新时间：2026-10-11 21:15（Asia/Shanghai）。
 
 ## 当前D3施工树

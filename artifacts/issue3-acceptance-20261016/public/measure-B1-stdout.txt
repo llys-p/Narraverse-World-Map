@@ -1,0 +1,103 @@
+{
+  "verdict": "COMPLETED_CONSISTENT",
+  "reviewCause": "NONE",
+  "runId": "issue3-abba-B1",
+  "totalMs": 153574.553,
+  "childExit": {
+    "code": 0,
+    "signal": null
+  },
+  "exitUnconfirmed": false,
+  "killed": null,
+  "stages": [
+    {
+      "stage": "first-open",
+      "status": "completed",
+      "ms": 47107.572,
+      "observedMs": null
+    },
+    {
+      "stage": "submit-travel",
+      "status": "completed",
+      "ms": 49385.486,
+      "observedMs": null
+    },
+    {
+      "stage": "close",
+      "status": "completed",
+      "ms": 1.03,
+      "observedMs": null
+    },
+    {
+      "stage": "reopen",
+      "status": "completed",
+      "ms": 56926.049,
+      "observedMs": null
+    }
+  ],
+  "readTimings": [
+    {
+      "name": "getSnapshot",
+      "ms": 0.044
+    },
+    {
+      "name": "getPlayer",
+      "ms": 0.029
+    },
+    {
+      "name": "getMindInspector",
+      "ms": 0.119
+    },
+    {
+      "name": "getEncounter",
+      "ms": 0.027
+    },
+    {
+      "name": "getScene",
+      "ms": 0.015
+    },
+    {
+      "name": "getSnapshot",
+      "ms": 0.095
+    },
+    {
+      "name": "getPlayer",
+      "ms": 0.029
+    },
+    {
+      "name": "getMindInspector",
+      "ms": 0.184
+    },
+    {
+      "name": "getEncounter",
+      "ms": 0.052
+    },
+    {
+      "name": "getScene",
+      "ms": 0.022
+    },
+    {
+      "name": "getSnapshot",
+      "ms": 0.02
+    },
+    {
+      "name": "getPlayer",
+      "ms": 0.011
+    },
+    {
+      "name": "getMindInspector",
+      "ms": 0.184
+    },
+    {
+      "name": "getEncounter",
+      "ms": 0.013
+    },
+    {
+      "name": "getScene",
+      "ms": 0.015
+    }
+  ],
+  "lockPresentAtEnd": false,
+  "profileWritten": null,
+  "profileAnalysisSummary": null
+}

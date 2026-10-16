@@ -1,0 +1,15 @@
+{
+  "label": "watchdog",
+  "args": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "D:\\Narraverse-World-Map-issue3-acceptance\\scripts\\measure-d4-long-history.mjs",
+    "watchdog-probe"
+  ],
+  "cwd": "D:\\Narraverse-World-Map-issue3-acceptance",
+  "sourceOverride": "D:\\Narraverse-World-Map-issue3-acceptance",
+  "pid": 25916,
+  "exit": 0,
+  "hardLimitSeconds": 10,
+  "timedOut": false,
+  "wallMs": 668.7487999997757
+}

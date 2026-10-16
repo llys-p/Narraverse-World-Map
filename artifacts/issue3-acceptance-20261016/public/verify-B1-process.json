@@ -1,0 +1,17 @@
+{
+  "label": "verify-B1",
+  "args": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "D:\\Narraverse-World-Map-issue3-acceptance\\scripts\\measure-d4-long-history.mjs",
+    "verify",
+    "--run-id",
+    "issue3-abba-B1"
+  ],
+  "cwd": "D:\\Narraverse-World-Map-issue3-acceptance",
+  "sourceOverride": "D:\\Narraverse-World-Map-issue3-acceptance",
+  "pid": 38652,
+  "exit": 0,
+  "hardLimitSeconds": 30,
+  "timedOut": false,
+  "wallMs": 70.29700000020966
+}

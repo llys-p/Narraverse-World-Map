@@ -1,0 +1,12 @@
+{
+  "verdict": "PROTECTION_OK",
+  "mode": "full",
+  "originalArchiveUnchanged": true,
+  "runtimeCopiesUnchanged": true,
+  "lockPresent": false,
+  "produced": {
+    "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+    "bytes": 136020
+  },
+  "runtimeFilesCount": 8
+}

@@ -1,0 +1,19 @@
+{
+  "label": "measure-B2",
+  "args": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "D:\\Narraverse-World-Map-issue3-acceptance\\scripts\\measure-d4-long-history.mjs",
+    "run",
+    "--run-id",
+    "issue3-abba-B2",
+    "--contract",
+    "issue3-local-abba-r170-v1"
+  ],
+  "cwd": "D:\\Narraverse-World-Map-issue3-acceptance",
+  "sourceOverride": "D:\\Narraverse-World-Map-issue3-acceptance",
+  "pid": 36596,
+  "exit": 0,
+  "hardLimitSeconds": 460,
+  "timedOut": false,
+  "wallMs": 131362.15820000053
+}

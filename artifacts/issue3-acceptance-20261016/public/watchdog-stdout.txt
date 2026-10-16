@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-16T02:53:12.778Z",
+  "probe": "watchdog-timeout-confirmation",
+  "pid": 27180,
+  "killed": {
+    "reason": "TOTAL_LIMIT",
+    "limitMs": 200,
+    "observedMs": 204.992
+  },
+  "exit": {
+    "code": null,
+    "signal": "SIGKILL"
+  },
+  "exitUnconfirmed": false,
+  "totalMs": 209.667,
+  "bounded": true
+}

@@ -1,0 +1,20 @@
+{
+  "label": "persistence-B",
+  "args": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "--test",
+    "--test-isolation=none",
+    "--test-reporter=tap",
+    "--test-timeout=90000",
+    "--test-name-pattern",
+    "^CP2a-S(?:5|7) ",
+    "tests/simulation/scene-gift-service.test.mjs"
+  ],
+  "cwd": "D:\\Narraverse-World-Map-issue3-acceptance",
+  "sourceOverride": null,
+  "pid": 9564,
+  "exit": 0,
+  "hardLimitSeconds": 100,
+  "timedOut": false,
+  "wallMs": 1215.9732000000076
+}

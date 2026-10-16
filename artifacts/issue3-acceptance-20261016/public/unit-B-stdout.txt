@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: D4P3 Step 1: verify independent baseline oracle source fingerprint
+ok 1 - D4P3 Step 1: verify independent baseline oracle source fingerprint
+  ---
+  duration_ms: 4.8411
+  type: 'test'
+  ...
+# Subtest: D4P3 Step 1: synthetic valid cases produce byte-for-byte identical canonicalJson
+ok 2 - D4P3 Step 1: synthetic valid cases produce byte-for-byte identical canonicalJson
+  ---
+  duration_ms: 1.8031
+  type: 'test'
+  ...
+# Subtest: D4P3 Step 1: invalid cases throw identical error code, message and never invoke getters
+ok 3 - D4P3 Step 1: invalid cases throw identical error code, message and never invoke getters
+  ---
+  duration_ms: 1.3375
+  type: 'test'
+  ...
+# Subtest: D4P3 Step 2: real 8 post-war archive saves produce identical canonicalJson signatures
+ok 4 - D4P3 Step 2: real 8 post-war archive saves produce identical canonicalJson signatures
+  ---
+  duration_ms: 77.793
+  type: 'test'
+  ...
+# Subtest: D4P3 Step 2: payloadBudget boundary check with new canonicalJson
+ok 5 - D4P3 Step 2: payloadBudget boundary check with new canonicalJson
+  ---
+  duration_ms: 2.3389
+  type: 'test'
+  ...
+# Subtest: D4P5 key reuse preserves escaped/integer keys past cache capacity and length bound
+ok 6 - D4P5 key reuse preserves escaped/integer keys past cache capacity and length bound
+  ---
+  duration_ms: 2.201
+  type: 'test'
+  ...
+# Subtest: D4P5 cached key spellings never reuse values or skip late getter/cycle validation
+ok 7 - D4P5 cached key spellings never reuse values or skip late getter/cycle validation
+  ---
+  duration_ms: 0.8447
+  type: 'test'
+  ...
+# Subtest: Issue \#3 native number conversion matches JSON finite-number spelling
+ok 8 - Issue \#3 native number conversion matches JSON finite-number spelling
+  ---
+  duration_ms: 0.8019
+  type: 'test'
+  ...
+# Subtest: Issue \#3 numeric fast path still rejects nonfinite values without changing rejection
+ok 9 - Issue \#3 numeric fast path still rejects nonfinite values without changing rejection
+  ---
+  duration_ms: 0.2347
+  type: 'test'
+  ...
+# Subtest: Issue \#3 numeric spelling does not depend on mutable global String
+ok 10 - Issue \#3 numeric spelling does not depend on mutable global String
+  ---
+  duration_ms: 0.2101
+  type: 'test'
+  ...
+# Subtest: Issue \#3 fixed primitive encodings remain byte-exact inside nested data
+ok 11 - Issue \#3 fixed primitive encodings remain byte-exact inside nested data
+  ---
+  duration_ms: 0.1917
+  type: 'test'
+  ...
+# Subtest: Issue \#3 primitive fast path never bypasses depth, getters or non-finite rejection
+ok 12 - Issue \#3 primitive fast path never bypasses depth, getters or non-finite rejection
+  ---
+  duration_ms: 0.5569
+  type: 'test'
+  ...
+# Subtest: Issue \#3 canonical boolean/null performance change preserves UTF8 payload budget
+ok 13 - Issue \#3 canonical boolean/null performance change preserves UTF8 payload budget
+  ---
+  duration_ms: 0.3699
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 122.1162

@@ -1,0 +1,19 @@
+{
+  "label": "unit-A",
+  "args": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "--test",
+    "--test-isolation=none",
+    "--test-reporter=tap",
+    "--test-timeout=90000",
+    "tests/simulation/canonical-json-equivalence.test.mjs",
+    "tests/simulation/canonical-key-reuse.test.mjs"
+  ],
+  "cwd": "D:\\Narraverse-World-Map-issue3-baseline",
+  "sourceOverride": null,
+  "pid": 16192,
+  "exit": 0,
+  "hardLimitSeconds": 100,
+  "timedOut": false,
+  "wallMs": 187.39589999950113
+}
