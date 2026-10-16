@@ -3,10 +3,32 @@ const byId=id=>document.getElementById(id),status=byId('connection'),button=byId
 const occupations={chief:'村长',hunter:'猎人',merchant:'商人',player:'玩家'};
 const advance=byId('advance'),ticks=byId('advance-ticks'),commandStatus=byId('command-status');let writable=false,pending=null,submitting=false,lastPlayer=null,actionsAvailable=false;
 const actionControls=['travel-destination','travel-submit','rest-submit','trade-product','trade-quantity','buy-submit','sell-submit'];
+function tradeBaseDisabled(){return !writable || !actionsAvailable || !lastPlayer?.self.identity.alive || submitting || pending!==null || lastEncounter?.encounter?.status==='active' || !readingsFresh || lastPlayer?.actions?.canTrade!==true;}
+function updateTradeFeedback(){const note=byId('trade-estimate'),product=byId('trade-product').value,quantity=byId('trade-quantity').valueAsNumber,actions=lastPlayer?.actions,self=lastPlayer?.self;
+  const tradeInputs=['trade-product','trade-quantity','buy-submit','sell-submit'],baseDisabled=tradeBaseDisabled();
+  if(!readingsFresh){note.textContent=status.dataset.state==='loading'?'正在读取同版世界读数，暂不提供交易估算。':'读数已过期或不可用，请刷新后再查看交易估算。';
+    for(const id of tradeInputs)byId(id).disabled=true;return;}
+  if(!actions || !self){note.textContent='当前没有可用的玩家交易读数。';for(const id of tradeInputs)byId(id).disabled=true;return;}
+  const validQuantity=Number.isSafeInteger(quantity) && quantity>=1 && Number.isSafeInteger(actions.maxQuantity) && quantity<=actions.maxQuantity;
+  const quote=actions.prices?.[product],wallet=self.wallet,inventory=self.inventory?.[product];
+  byId('trade-product').disabled=baseDisabled;byId('trade-quantity').disabled=baseDisabled;
+  if(!validQuantity){note.textContent=`数量必须是 1 至 ${Number.isSafeInteger(actions.maxQuantity)?actions.maxQuantity:'有效上限'} 的安全整数；买入和卖出已禁用。`;
+    byId('buy-submit').disabled=true;byId('sell-submit').disabled=true;return;}
+  if(!quote || !Number.isSafeInteger(quote.buy) || quote.buy<0 || !Number.isSafeInteger(quote.sell) || quote.sell<0 || !Number.isSafeInteger(wallet) || wallet<0 || !Number.isSafeInteger(inventory) || inventory<0){
+    note.textContent='当前交易报价或本人资产读数无效，买入和卖出已禁用。';byId('buy-submit').disabled=true;byId('sell-submit').disabled=true;return;}
+  const total=quote.buy*quantity;
+  if(!Number.isSafeInteger(total)){note.textContent='预计买入总价超出安全整数范围，买入和卖出已禁用。';byId('buy-submit').disabled=true;byId('sell-submit').disabled=true;return;}
+  const insufficientMoney=wallet<total,insufficientInventory=inventory<quantity;
+  const moneyMessage=insufficientMoney?`金币不足 ${total-wallet}（本人余额 ${wallet}）。`:'';
+  const inventoryMessage=insufficientInventory?`可卖库存不足 ${quantity-inventory}（本人库存 ${inventory}）。`:'';
+  note.textContent=`预计买入 ${total} 金币 · 本人余额 ${wallet} · 可卖库存 ${inventory}。${moneyMessage}${inventoryMessage}${!actions.canTrade?'当前地点或生命状态不能交易。':''}当前报价仅供预计；按完成时价格及服务端规则结算。`;
+  byId('buy-submit').disabled=baseDisabled || insufficientMoney;byId('sell-submit').disabled=baseDisabled || insufficientInventory;
+}
 function controls(){const encounterActive=lastEncounter?.encounter?.status==='active';advance.disabled=!writable || !last || submitting || encounterActive || !readingsFresh;ticks.disabled=submitting || pending!==null || encounterActive || !readingsFresh;advance.textContent=pending?'重试同一请求':'推进世界时间';
   byId('encounter-block-note').hidden=!encounterActive;if(encounterActive)byId('encounter-block-note').textContent='遭遇进行中，旅行、休整、交易和世界时间操作已暂停。';
   for(const id of actionControls)byId(id).disabled=!writable || !actionsAvailable || !lastPlayer?.self.identity.alive || submitting || pending!==null || encounterActive || !readingsFresh;
   if(lastPlayer?.actions && !lastPlayer.actions.canTrade)for(const id of ['trade-product','trade-quantity','buy-submit','sell-submit'])byId(id).disabled=true;
+  updateTradeFeedback();
 }
 function render(dto,sceneAvailable,actualLocation){
   byId('world-time').textContent=`第 ${dto.clock.day+1} 天 · ${String(dto.clock.hour).padStart(2,'0')}:${String(dto.clock.minute).padStart(2,'0')}`;
@@ -60,7 +82,7 @@ function renderActions(player){
   byId('travel-destination').replaceChildren(...options);byId('travel-submit').textContent=`旅行 · ${actions.travelTicks*10} 分钟`;
   byId('rest-submit').textContent=`休整 · ${actions.restTicks*10} 分钟`;byId('trade-quantity').max=String(actions.maxQuantity);
   byId('trade-prices').textContent=`粮食 买 ${actions.prices.food.buy} / 卖 ${actions.prices.food.sell} 金币 · 药材 买 ${actions.prices.herbs.buy} / 卖 ${actions.prices.herbs.sell} 金币`;
-  byId('trade-note').textContent=`整笔买卖耗时 ${actions.tradeTicks*10} 分钟，按完成时价格结算，期间可能变化。${actions.canTrade?'':'当前地点或生命状态不能交易。'}`;
+  byId('trade-note').textContent=`整笔买卖耗时 ${actions.tradeTicks*10} 分钟。当前报价为预计；按完成时价格及服务端规则结算。${actions.canTrade?'':'当前地点或生命状态不能交易。'}`;
 }
 async function readPair(playerAvailable,encounterAvailable){
   const read=async route=>{const response=await fetch(route,{cache:'no-store',signal:AbortSignal.timeout(6000)});
@@ -189,4 +211,5 @@ byId('travel-form').addEventListener('submit',event=>{event.preventDefault();sub
 byId('rest-submit').addEventListener('click',()=>submitAction('PlayerRest',{}));
 byId('trade-form').addEventListener('submit',event=>{event.preventDefault();submitAction(event.submitter?.id==='sell-submit'?'PlayerSell':'PlayerBuy',
   {product:byId('trade-product').value,quantity:Number(byId('trade-quantity').value)});});
+byId('trade-product').addEventListener('change',updateTradeFeedback);byId('trade-quantity').addEventListener('input',updateTradeFeedback);
 button.addEventListener('click',refresh);advance.addEventListener('click',submitTime);refresh();
