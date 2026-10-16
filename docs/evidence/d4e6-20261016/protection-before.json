@@ -1,0 +1,51 @@
+{
+  "protectedUntracked": {
+    "ADVISORY-TO-CONTROLLER-2026-10-09-ROUND2.md": "fb1b6f7047675661d95c1e1b03bc2259569a6501efda986964b0bcad88178ef6",
+    "HANDOFF-TO-CONTROLLER-M3-4B-2026-10-09.md": "23c97a166195d26205b3f598d71b92827399aa582b62f3cf8eb8c4ee80f82bb5",
+    "asset-studio.html": "298d9a01de094654b11eefe0b3663308a010e964f9bf778935ee565d38e0d011",
+    "docs/character-mind/REFERENCE-BASED-REPLAN-20261008.md": "02f5327460c28549473369887929683944c7faf886d55080245f9f268b8a85b5",
+    "dual-presentation-demo.html": "21c859aa5bbe6db6078498db37978141fc3a0abd8409a1dd1bb7382c6f30598f"
+  },
+  "services": [
+    {
+      "tree": "D:\\Narraverse-World-Map-d4-playable",
+      "port": 18325,
+      "pid": 2592,
+      "process": {
+        "startUtc": "2026-10-16T08:14:24.5112030Z",
+        "pid": 2592,
+        "commandLine": "node  runtime-server.mjs --data-dir \"D:\\Narraverse-World-Map-d4-playable\\artifacts\\d4-daily\\world\" --port 18325 --writable true --inspect-mind false"
+      },
+      "sourceCommit": "0f4bba27f68a5841ca672288a76512e11ea729b1",
+      "sourceStatus": "",
+      "existingFiles": {
+        "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "service-commit-r12.json": "5cab39dde0ffc1628bf20bc2bed1d4693a972f6b6d6b0fe6a5f360fb18669d4d",
+        "service-commit-r18.json": "3438f9834e13401f5ec9c3d4132d171c5adcf00fb388bbd9ae2c8494861719f3",
+        "service-commit-r24.json": "a6c845ccaa1ab7dcc35b4d90085082664023f23ee5ed05ee89c5ae9cdf7bc12a",
+        "service-commit-r25.json": "65ff632ca1c8f0bfe1987c25a8c431afd5dd4f36a3983be426146f46a73b248e",
+        "service-commit-r31.json": "39a5b68986d44c42fb1bb63ee77a1a9f7a6d32fdd5d5601ecc5bbe22bcd29232",
+        "service-commit-r37.json": "e9ed76ffc43f438e858d711ab3b2bf754f16d2ae7ca89de5363ee4e0afb5007d",
+        "service-commit-r38.json": "bae66ede0ab8896b0a8553826ef7b5692c1fa311bd4d2db743b863265aef1e25",
+        "service-commit-r44.json": "c091e55aedefb4abbcb700a22f122cbc8e12166bec43026c9c89409e0598c4d5"
+      }
+    },
+    {
+      "tree": "D:\\Narraverse-World-Map-world-activity",
+      "port": 18327,
+      "pid": 4432,
+      "process": {
+        "startUtc": "2026-10-16T09:30:17.3891040Z",
+        "pid": 4432,
+        "commandLine": "node  runtime-server.mjs --data-dir \"D:\\Narraverse-World-Map-world-activity\\artifacts\\d4-daily\\world\" --port 18327 --profile scene-survival-village --seed 42 --writable true --inspect-mind false --inspect-activity true"
+      },
+      "sourceCommit": "b594b454238623a451f3e26ebc47986c75d6f04c",
+      "sourceStatus": "",
+      "existingFiles": {
+        "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+        "service-commit-r12.json": "40f50d6c73af5c9374f37347faf1408984ebe72d90e1d5b1fa2c6bcfbc1f8f68",
+        "service-commit-r156.json": "4955ee40d4eba2b2b0fe4bd144df00e706eb00dc1dcdc617d2e686fcb1f20ad6"
+      }
+    }
+  ]
+}

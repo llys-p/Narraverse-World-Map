@@ -1,0 +1,139 @@
+{
+  "at": "2026-10-16T18:27:58.151757+08:00",
+  "sourceCommit": "c7c213239911976ce45c6403c67f750e091e19b8",
+  "originalEight": [
+    {
+      "file": "service-commit-r0.json",
+      "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r1.json",
+      "sha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r145.json",
+      "sha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r157.json",
+      "sha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r158.json",
+      "sha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r164.json",
+      "sha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r170.json",
+      "sha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r182.json",
+      "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "unchanged": true
+    }
+  ],
+  "userServices": [
+    {
+      "port": 18325,
+      "pid": 2592,
+      "sameProcessIdentity": true,
+      "sourceCommit": "0f4bba27f68a5841ca672288a76512e11ea729b1",
+      "sourceUnchanged": true,
+      "existingFiles": {
+        "service-commit-r0.json": {
+          "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+          "unchanged": true
+        },
+        "service-commit-r12.json": {
+          "sha256": "5cab39dde0ffc1628bf20bc2bed1d4693a972f6b6d6b0fe6a5f360fb18669d4d",
+          "unchanged": true
+        },
+        "service-commit-r18.json": {
+          "sha256": "3438f9834e13401f5ec9c3d4132d171c5adcf00fb388bbd9ae2c8494861719f3",
+          "unchanged": true
+        },
+        "service-commit-r24.json": {
+          "sha256": "a6c845ccaa1ab7dcc35b4d90085082664023f23ee5ed05ee89c5ae9cdf7bc12a",
+          "unchanged": true
+        },
+        "service-commit-r25.json": {
+          "sha256": "65ff632ca1c8f0bfe1987c25a8c431afd5dd4f36a3983be426146f46a73b248e",
+          "unchanged": true
+        },
+        "service-commit-r31.json": {
+          "sha256": "39a5b68986d44c42fb1bb63ee77a1a9f7a6d32fdd5d5601ecc5bbe22bcd29232",
+          "unchanged": true
+        },
+        "service-commit-r37.json": {
+          "sha256": "e9ed76ffc43f438e858d711ab3b2bf754f16d2ae7ca89de5363ee4e0afb5007d",
+          "unchanged": true
+        },
+        "service-commit-r38.json": {
+          "sha256": "bae66ede0ab8896b0a8553826ef7b5692c1fa311bd4d2db743b863265aef1e25",
+          "unchanged": true
+        },
+        "service-commit-r44.json": {
+          "sha256": "c091e55aedefb4abbcb700a22f122cbc8e12166bec43026c9c89409e0598c4d5",
+          "unchanged": true
+        }
+      }
+    },
+    {
+      "port": 18327,
+      "pid": 4432,
+      "sameProcessIdentity": true,
+      "sourceCommit": "b594b454238623a451f3e26ebc47986c75d6f04c",
+      "sourceUnchanged": true,
+      "existingFiles": {
+        "service-commit-r0.json": {
+          "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+          "unchanged": true
+        },
+        "service-commit-r12.json": {
+          "sha256": "40f50d6c73af5c9374f37347faf1408984ebe72d90e1d5b1fa2c6bcfbc1f8f68",
+          "unchanged": true
+        },
+        "service-commit-r156.json": {
+          "sha256": "4955ee40d4eba2b2b0fe4bd144df00e706eb00dc1dcdc617d2e686fcb1f20ad6",
+          "unchanged": true
+        }
+      }
+    }
+  ],
+  "otherRuntimeFilesUnchanged": 77,
+  "otherRuntimeAllUnchanged": true,
+  "protectedUntrackedCount": 5,
+  "protectedUntrackedAllUnchanged": true,
+  "ownProcesses": {
+    "first": {
+      "pid": 46484,
+      "code": 0,
+      "signal": null,
+      "timedOut": false,
+      "wallMs": 75899
+    },
+    "reopen": {
+      "pid": 49436,
+      "code": 0,
+      "signal": null,
+      "timedOut": false,
+      "wallMs": 180015
+    }
+  },
+  "ownMatchingNodeCount": 0,
+  "ownLockAbsent": true,
+  "candidate18331DefaultWorldCreated": false,
+  "fiveViewsAndServiceFilesSameThroughBrowserAndReopen": true,
+  "serviceFileCount": 2
+}

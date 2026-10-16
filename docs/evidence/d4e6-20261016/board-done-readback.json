@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBOHvU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "Done",
+              "optionId": "98236657",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "已验收",
+              "optionId": "4dfee22c",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZEqo",
+        "body": "D4E6重要人物真实行为追踪：中控限定PASS，当前任务收口\n\n冻结合同：https://github.com/llys-p/Narraverse-World-Map/blob/22c3dd370722f84fb67ce085adae021a3be35a05/tasks/D4E6-IMPORTANT-PERSON-TRACKING-TASK.md\n\n独立报告：https://github.com/llys-p/Narraverse-World-Map/blob/5fabb6a11b1e07c04400aa648be6e2f467264fd8/docs/runtime/D4E6-IMPORTANT-PERSON-REVIEW-20261016.md\n\n执行树D:/Narraverse-World-Map-person-tracking / codex/world-runtime-person-tracking；基准D4E5 6ed7263，实现c7c213239911976ce45c6403c67f750e091e19b8已推送精确读回并停写。人物当前状态与近期事实统计分开，沿用实际行动及同一日结行的取食/药材/休息/状态变化/收尾位置；NPC固定村庄规则未变，未新增移动/日程/API/schema。未知历史位置仍未知。\n\n唯一新增定向2/2，父进程35.187秒/120秒硬限未超时；一次默认scene seed42 Advance144。中控18332恢复同一样本，真实浏览器换四人、地点筛选独立、全部提示、刷新与正常关闭重开通过；五读取与两份档签名一致。猎人未行动1/日结1、取食0、饥饿200→300如实显示。玩家死亡分支在测试后去重，仅静态核对；本轮无工作/购买/卖药/死亡或正数减疲劳动态样本，不称长期生存通过。\n\n保护终检原8私档、其他77runtime、控制5旧文件保持；用户18325 PID2592/18327 PID4432及既有9/3档保持，自己的两CLI进程正常exit0，无测试锁/残留。新候选18331默认世界未创建/未启动。原字节日志、签名与保护元数据随后随报告分支归档，私档/完整投影不上传。\n\nDone/已验收仅指本合同范围；D整体仍In Progress/进行中。性能Issue3保持开放并暂停。无main/deploy/迁移/DSH/外部模型/全量/视觉/旧长链重跑。当前任务停止；新NPC行为/移动或扩地图另定最小范围。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "runId": "ec0f9f80-60c4-4a9d-aec2-285044237cda",
+  "processId": 48244,
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "argv": [
+    "--test",
+    "tests/simulation/important-person-tracking.test.mjs"
+  ],
+  "workingDirectory": "D:\\Narraverse-World-Map-person-tracking",
+  "startedUtc": "2026-10-16T10:21:34.3328361Z",
+  "endedUtc": "2026-10-16T10:22:09.5450111Z",
+  "elapsedSeconds": 35.187,
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "D:\\Narraverse-World-Map-person-tracking\\artifacts\\d4e6-person-tracking-tests\\execution-ec0f9f80-60c4-4a9d-aec2-285044237cda\\stdout.log",
+  "stderr": "D:\\Narraverse-World-Map-person-tracking\\artifacts\\d4e6-person-tracking-tests\\execution-ec0f9f80-60c4-4a9d-aec2-285044237cda\\stderr.log",
+  "outerHardLimitMs": 120000,
+  "watchdogDeadlineMs": 114000
+}
