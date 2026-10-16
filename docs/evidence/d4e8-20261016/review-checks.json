@@ -1,0 +1,28 @@
+{
+  "newSuiteRuns": 0,
+  "realBusinessRuns": 1,
+  "successfulCommands": 2,
+  "dayAdvances": 0,
+  "pureInputSameFiveViewsAndR0": true,
+  "zeroBalanceBuyDisabled": true,
+  "invalidQuantityCases": [
+    "0",
+    "11",
+    "1.5"
+  ],
+  "zeroHerbsSellDisabled": true,
+  "affordableBuyEnabled": true,
+  "afterBuyZeroBalanceDisabled": true,
+  "submissionGlobalDisableObserved": true,
+  "invalidTradeDoesNotDisableTimeTravelRest": true,
+  "refreshAndReopenStateSame": true,
+  "fiveViewsAndThreeFilesSame": true,
+  "core78FilesUnchanged": true,
+  "other91ProductFilesUnchanged": true,
+  "consoleErrors": 0,
+  "limitations": [
+    "readonly/stale/dead/foreign-location/encounter guards static only",
+    "overflow guard static only",
+    "no new income or long-term survival/performance claim"
+  ]
+}

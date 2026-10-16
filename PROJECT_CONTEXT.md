@@ -1,17 +1,16 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 19:28（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
+更新时间：2026-10-16 19:49（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
 
-## 当前 D4E7 交付树
+## 当前 D4E8 交付树
 
-- 本树 `D:/Narraverse-World-Map-livelihood-loop` / `codex/world-runtime-livelihood-loop`，接D4E6 `1cde8888f1af2a0930929c94ff5fbbded991a1c2`。产品实现仍c7c2132，93份产品文件不变。
-- **既有交易到日结页面链限定PASS**：[复核](docs/runtime/D4E7-LIVELIHOOD-REVIEW-20261016.md)，[合同v1及业务前v1.1勘误](tasks/D4E7-LIVELIHOOD-LOOP-TASK.md)。钱包初始0，先卖4粮取得20金币→买2粮→推进一天；真实三命令/一次日结，rev/tick146、私粮17、金币0。仅补[入口说明](docs/runtime/D4-EXPERIENCE-ENTRY.md)，未改规则或初始资产。
-- 单一新隔离scene seed42/18333真实浏览器完成交易、人物筛选、刷新、正常quit/重开；五读取与四份档字节一致，玩家卡成功3/日结1。猎人NoAction/消费0/饥饿200→300如实显示，未验证或新增NPC工作/买粮/移动和长期平衡。0新增suite运行，旧不变源码的边界/篡改/回滚证据明确复用。
-- 原八档、93产品源、控制5旧文件与18325 PID2592/18327 PID4432及其既有9/3档保持。两自有CLI exit0、无超时/锁/测试进程，临时页已关；默认Start-D4入口18331和日常世界未启动/创建。
-- 报告、说明与脱敏原字节证据推送，控制状态/Projects先待验收再Done/已验收读回；D仍进行中，Issue3开放且暂停。本片结束停止，无main/deploy/迁移/DSH/模型调用。
+- 本树 `D:/Narraverse-World-Map-trade-feedback` / `codex/world-runtime-trade-feedback`，基准D4E7 `06e922217904d17cca81ae30bb07a273ed9a3693`，冻结合同2fbb074，实现 `99659a2e215dedacb396e927ba9137fc72c1704a`仅改地图html/mjs。
+- **交易前提示限定PASS**：[复核](docs/runtime/D4E8-TRADE-FEEDBACK-REVIEW-20261016.md)。显示当前预计金额/本人余额/可卖库存；无效数量、余额/库存不足对应禁用，现有全局禁止条件和服务端裁决保持。
+- root18334唯一新隔离scene seed42真实页面验证输入0/11/1.5、0余额/药材库存、输入不写档、筹资后的买入恢复和提交中全局禁用。仅卖4/买2两成功命令，rev/tick2、私粮18/金币0；刷新和正常重开预算、五读取与三档字节一致，控制台无error。0新增suite/0日结；旧日结、篡改/回滚等不变职责按原有效证据复用，不计新测。
+- 原八档、其余91产品文件（含全部78runtime）、控制5旧文件与用户18325 PID2592/18327 PID4432及既有9/3档保持。两自有CLI exit0、无超时/锁/测试进程；临时页已关，默认Start-D4的18331日常世界未创建/启动。
+- 源码/说明/报告/脱敏原字节证据推送，控制状态和Projects先待验收再限定Done/已验收读回；D仍进行中、Issue3开放且暂停。本片完成停止，未合main/部署/迁移/DSH/第三方模型调用。
 
-## 历史与后续
+## 边界与历史
 
-- D4E3赠粮/旅行/战斗、D4E5地图地点闭环、D4E6人物追踪按各自报告限定验收；未把历史数量算成本轮测试。
-- [D4E6固定状态](https://github.com/llys-p/Narraverse-World-Map/blob/1cde8888f1af2a0930929c94ff5fbbded991a1c2/PROJECT_CONTEXT.md)保留历史；当前方向见[控制指导书](https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-control/PROJECT_GUIDE.md)。
-- 下一任务按实际体验卡点另定最小范围。NPC新行为/位置规则、更多地图与长期经济、生存、性能均未因本轮通过而自动开工。独立原型未接正式平台。
+- [D4E7交易日结](docs/runtime/D4E7-LIVELIHOOD-REVIEW-20261016.md)与D4E6人物追踪等保持各自限定证据。只读/过期/死亡/异地/遭遇与溢出门本片静态复核，未分别动态注入。没有新增收入、NPC行为、地图或长期生存/性能承诺。
+- [D4E7固定状态](https://github.com/llys-p/Narraverse-World-Map/blob/06e922217904d17cca81ae30bb07a273ed9a3693/PROJECT_CONTEXT.md)保留历史；外部探索待用户转交的登记和长期方向统一见控制树，不自动接入demo或新模型任务。

@@ -1,0 +1,97 @@
+{
+  "simulationId": "scene-survival-village",
+  "revision": 2,
+  "tick": 2,
+  "hashes": {
+    "snapshot": "d80627ca56201fb5a6bb6dff59d9c3d8fcc29a472473837148e1e21aecf35d03",
+    "player": "2a1d17f2d8e11174ee9373f781faa3821c304dd41fe950731f6875b8b487dd42",
+    "scene": "05e1c56ed64ae42de3863e1830fec345ac13cfe97707bee747534b7e5f9ffb2e",
+    "encounter": "ad0a765578fd8941a2331d1961913c6e45f062e8a3636ab172767bd3a52deb56",
+    "activity": "12c9499acdcecda310e135ee9d8394c5829be13ea1cacbc624326a62f24fb38e"
+  },
+  "files": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r1.json": "1651f67a656c00b23783a54e65f02341712bee317373b3f83f27dd4a1b620518",
+    "service-commit-r2.json": "7a0b30baf40933c57a2e5a82de3178e51a09e6ef34569060ec86f488853e9ace"
+  },
+  "player": {
+    "wallet": 0,
+    "inventory": {
+      "food": 18,
+      "herbs": 0
+    },
+    "ledger": {
+      "earned": 20,
+      "foodBought": 2,
+      "foodGiven": 0,
+      "foodSold": 4,
+      "foodUsed": 0,
+      "herbsBought": 0,
+      "herbsSold": 0,
+      "herbsUsed": 0,
+      "spent": 20
+    }
+  },
+  "commands": [
+    {
+      "type": "PlayerSell",
+      "quantity": 4,
+      "fromRevision": 0,
+      "toRevision": 1,
+      "tick": 1,
+      "outcome": "succeeded",
+      "amount": 20,
+      "unitPrice": 5
+    },
+    {
+      "type": "PlayerBuy",
+      "quantity": 2,
+      "fromRevision": 1,
+      "toRevision": 2,
+      "tick": 2,
+      "outcome": "succeeded",
+      "amount": 20,
+      "unitPrice": 10
+    }
+  ],
+  "trades": [
+    {
+      "type": "PlayerSell",
+      "quantity": 4,
+      "unitPrice": 5,
+      "amount": 20,
+      "playerWalletDelta": 20,
+      "privateFoodDelta": -4,
+      "publicFoodDelta": 4,
+      "communalGoldDelta": -20
+    },
+    {
+      "type": "PlayerBuy",
+      "quantity": 2,
+      "unitPrice": 10,
+      "amount": 20,
+      "playerWalletDelta": -20,
+      "privateFoodDelta": 2,
+      "publicFoodDelta": -2,
+      "communalGoldDelta": 20
+    }
+  ],
+  "activities": [
+    {
+      "activityId": "event-3-item-0",
+      "actorIds": [
+        "actor-4"
+      ],
+      "status": "succeeded",
+      "summary": "玩家卖出口粮4份，已完成"
+    },
+    {
+      "activityId": "event-5-item-0",
+      "actorIds": [
+        "actor-4"
+      ],
+      "status": "succeeded",
+      "summary": "玩家买入口粮2份，已完成"
+    }
+  ]
+}
