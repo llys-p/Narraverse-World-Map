@@ -15,7 +15,8 @@ const originalSource=execFileSync('git',['show',SHA+':runtime/core/data-contract
 const original=await import('data:text/javascript;base64,'+
   Buffer.from(originalSource,'utf8').toString('base64'));
 const sha=value=>createHash('sha256').update(value).digest('hex');
-const median=values=>[...values].sort((a,b)=>a-b)[Math.floor(values.length/2)];
+const median=values=>{const ordered=[...values].sort((a,b)=>a-b),mid=Math.floor(ordered.length/2);
+  return ordered.length%2?ordered[mid]:(ordered[mid-1]+ordered[mid])/2;};
 const event=n=>({
   eventSeq:n+1,tick:n%25,sourceSystem:'society',type:'SocietyDaySettled',
   flag:n%2===0,succeeded:n%3===0,active:false,requested:null,
