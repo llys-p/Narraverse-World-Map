@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 3,
+  "sourceTransferPolicy": "path-reference-only",
+  "workspaceRoot": "D:\\Narraverse-World-Map",
+  "permissionMode": "read-only",
+  "scope": "Read-only fixed launcher review, max3 actionable issues; preserve all files",
+  "reviewTargets": [
+    "parallel-trials/d4-entry-review/Start-D4.cmd",
+    "parallel-trials/d4-entry-review/docs/runtime/D4-EXPERIENCE-ENTRY.md"
+  ],
+  "contextReadScope": [
+    "parallel-trials/d4-entry-review/Start-D4.cmd",
+    "parallel-trials/d4-entry-review/docs/runtime/D4-EXPERIENCE-ENTRY.md",
+    "parallel-trials/d4-entry-review/runtime-server.mjs",
+    "parallel-trials/d4-entry-review/runtime/service",
+    "parallel-trials/d4-entry-review/artifacts/d4e1-20261015",
+    "parallel-trials/d4-entry-review/artifacts/controller-context",
+    "parallel-trials/d4-entry-review/AGENTS.md"
+  ],
+  "excludedPaths": [
+    ".env",
+    ".git"
+  ],
+  "writeScope": [],
+  "scopeEnforcement": "instruction-only"
+}

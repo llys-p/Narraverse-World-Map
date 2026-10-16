@@ -1,0 +1,10 @@
+{
+  "runId": "822aed16-0a81-42dd-aec2-3d79dd3d1b41",
+  "sessionId": "session-31ce9a4f-dc0a-4f73-8716-632fec908147",
+  "status": "failed",
+  "assistantText": "",
+  "error": "INVALID_REQUEST: 400: {\"message\":\"workbuddy upstream client (http 400): {\\\"code\\\":11128,\\\"msg\\\":\\\"conversation id missing\\\",\\\"requestId\\\":\\\"b55eecda-4816-456d-a01f-f0e75fdf0ce9\\\",\\\"displayMsg\\\":{\\\"en\\\":\\\"Request blocked. Please send it again\\\",\\\"zh\\\":\\\"请求被拦截，请重新发送\\\",\\\"zh-hant\\\":\\\"請求已被攔截，請重新傳送\\\"},\\\"displayTips\\\":{\\\"en\\\":\\\"This call failed channel verification, possibly because it was not sent from an official client. Please resend from the official client.\\\",\\\"zh\\\":\\\"这次调用没通过渠道校验，可能不是官方客户端发出的。请用官方版本重新发\",\"type\":\"client\",\"code\":\"client\"}",
+  "startedAt": "2026-10-16T02:20:38.383Z",
+  "finishedAt": "2026-10-16T02:21:44.151Z",
+  "subsequentDecision": "User moved DSH coordination to another conversation; no further DSH calls or dispatches."
+}

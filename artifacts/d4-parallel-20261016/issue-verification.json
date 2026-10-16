@@ -1,0 +1,10 @@
+{
+  "issue": "https://github.com/llys-p/Narraverse-World-Map/issues/3",
+  "state": "open",
+  "bodyReadbackMatches": true,
+  "bodySha256": "25519d68237a0331f63f41a9ab314eb96098d80a3026f33d158b25c74b83fb90",
+  "sourceCommit": "67bf6056d0072af1ec59124d79feab5fa4acd340",
+  "branch": "codex/world-runtime-d4-cloud-probe",
+  "githubAiAssignedOrTriggered": false,
+  "sourceTreeClean": true
+}

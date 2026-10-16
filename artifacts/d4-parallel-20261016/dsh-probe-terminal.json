@@ -1,0 +1,10 @@
+{
+  "runId": "5df9a67a-e44d-4e1a-a874-79656289662f",
+  "status": "succeeded",
+  "assistantText": "READY",
+  "modelSelection": {
+    "provider": "workbuddy-global",
+    "model": "deepseek-v4.1-flash",
+    "reasoningEffort": "low"
+  }
+}
