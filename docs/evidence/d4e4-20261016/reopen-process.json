@@ -1,0 +1,1 @@
+{"pid":5752,"args":["runtime-server.mjs","--data-dir","D:\\Narraverse-World-Map-world-activity\\artifacts\\d4e4-controller-20261016\\world","--port","18328","--writable","true","--inspect-mind","false","--inspect-activity","true"],"hardLimitMs":600000}

@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBNJG4",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "待验收",
+              "optionId": "18ec6731",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZB4I",
+        "body": "D4E4真实世界活动日志：实现已交付，待中控验收\n\nhttps://github.com/llys-p/Narraverse-World-Map/blob/2562f40e1420c98939b18279369c7cd3e95e495f/tasks/D4E4-WORLD-ACTIVITY-LOG-TASK.md\n\n源码28d3f793a18f223e7df8d2378b1e81eba2d8e1e5已推送读回；执行者已停写。独立树D:/Narraverse-World-Map-world-activity，新候选18327，不动活跃18325。唯一新增定向门2/2，90秒看门狗未触发，48.104秒；历史失败/超时保留说明。中控正核对18328隔离浏览器的筛选、刷新和重开；尚未作最终验收裁定。性能Issue3仍开放，后续地图/人物两步未开工。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
