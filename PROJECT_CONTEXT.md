@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 18:10（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 18:18（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,6 +31,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **D4E6重要人物真实行为追踪已发布并开工**：[合同](https://github.com/llys-p/Narraverse-World-Map/blob/22c3dd370722f84fb67ce085adae021a3be35a05/tasks/D4E6-IMPORTANT-PERSON-TRACKING-TASK.md)。用户明确继续第三步，接D4E5 6ed7263；新树`D:/Narraverse-World-Map-person-tracking` / `codex/world-runtime-person-tracking`，候选18331，浏览器18332复用单一新日结样本。沿用真实既有行动/日结收尾位置，人物追踪卡分当前状态与最近事实统计，NPC固定村庄的现有规则不变；不新增行为/移动/API/存档字段。性价比high工人接单独占允许实现/唯一新测试，中控独占合同/报告/状态/看板/保护/浏览器。原18325 PID2592/18327 PID4432及八档保护；待交付/独立验收。性能Issue3暂停，无main/deploy/迁移/DSH/外部模型，不跑全量/视觉/旧长链。
 
 - **D4E5地图到地点现有玩法闭环限定PASS**：[复核](docs/runtime/D4E5-PLACE-EXPERIENCE-REVIEW-20261016.md)，合同c36704e，树`D:/Narraverse-World-Map-place-loop` / `codex/world-runtime-place-loop`，候选17074c4ef6f9cb372b4cbdf4d8925e231a541283（接D4E4 b594b45/生产b7）。helper最终2/2、141ms/60秒硬限，独立18330真实浏览器地图查看/人物锚点→赠粮→旅行→开始/取消遭遇→查看村庄不旅行→明确返村→地图→刷新/正常重开；rev27/tick24、私粮19、猎人记忆1，五读取投影/六档跨重开字节同一。地点仅真实2村庄/3森林记录，不补造未知位置或人物知识。原八档、78runtime源码、控制5旧文件、用户18325 PID2592和18327 PID4432及既有9/3份档保护；测试三服务正常exit0、无锁/残留，新18329日常目录未创建。源码/报告/脱敏证据已推送，看板先待验收再Done/已验收读回，D仍进行中。性能Issue3暂停、第三步重要人物新行为未开工；无main/deploy/迁移/DSH/外部模型，本片结束停止。
 
