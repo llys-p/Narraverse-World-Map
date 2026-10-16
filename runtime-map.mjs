@@ -1,4 +1,5 @@
-const byId=id=>document.getElementById(id),status=byId('connection'),button=byId('refresh');let last=null,lastCapabilities=null,lastEncounter=null;
+import { renderActivityRows } from './runtime-activity.mjs';
+const byId=id=>document.getElementById(id),status=byId('connection'),button=byId('refresh');let last=null,lastCapabilities=null,lastEncounter=null,lastActivity=null;
 const occupations={chief:'村长',hunter:'猎人',merchant:'商人',player:'玩家'};
 const advance=byId('advance'),ticks=byId('advance-ticks'),commandStatus=byId('command-status');let writable=false,pending=null,submitting=false,lastPlayer=null,actionsAvailable=false;
 const actionControls=['travel-destination','travel-submit','rest-submit','trade-product','trade-quantity','buy-submit','sell-submit'];
@@ -50,6 +51,46 @@ async function readPair(playerAvailable,encounterAvailable){
   }
   throw Object.assign(new Error('世界投影不一致'),{code:'READING_CONFLICT'});
 }let refreshing=false,readingsFresh=false;
+function renderActivity(view){
+  const panel=byId('activity-panel'),actorFilter=byId('activity-actor'),locationFilter=byId('activity-location');
+  panel.hidden=view===null;if(!view)return;
+  const prior=actorFilter.value,all=document.createElement('option');all.value='all';all.textContent='全部人物';
+  actorFilter.replaceChildren(all,...view.actors.map(actor=>{const option=document.createElement('option');option.value=actor.actorId;option.textContent=actor.name;return option;}));
+  actorFilter.value=view.actors.some(actor=>actor.actorId===prior)?prior:'all';
+  const count=renderActivityRows(byId('activity-list'),view.entries,actorFilter.value,locationFilter.value);
+  byId('activity-count').textContent=`${count} 条 · ${view.window.truncated?'最近窗口，历史已截断':'当前来源窗口'}`;
+}
+function rerenderActivity(){if(lastActivity)renderActivity(lastActivity);}
+byId('activity-actor').addEventListener('change',rerenderActivity);
+byId('activity-location').addEventListener('change',rerenderActivity);
+function validActivityView(view,world){
+  const exact=(value,keys)=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).length===keys.length&&keys.every(key=>Object.hasOwn(value,key));
+  const integer=value=>Number.isSafeInteger(value)&&value>=0;
+  if(!exact(view,['apiVersion','activityViewVersion','perspective','simulationId','revision','tick','actors','window','entries'])||
+    view.apiVersion!==1||view.activityViewVersion!==1||view.perspective!=='developer-world'||view.simulationId!==world.simulationId||
+    view.revision!==world.revision||view.tick!==world.tick||!Array.isArray(view.actors)||!Array.isArray(view.entries)||
+    !exact(view.window,['maxSourceEvents','maxEntries','sourceEventsConsidered','truncated'])||view.window.maxSourceEvents!==256||
+    view.window.maxEntries!==64||!integer(view.window.sourceEventsConsidered)||view.window.sourceEventsConsidered>256||
+    typeof view.window.truncated!=='boolean'||view.entries.length>64||view.actors.length>16)return false;
+  const actorIds=new Set();
+  if(!view.actors.every(actor=>exact(actor,['actorId','name'])&&typeof actor.actorId==='string'&&actor.actorId.length>0&&
+    typeof actor.name==='string'&&!actorIds.has(actor.actorId)&&actorIds.add(actor.actorId)))return false;
+  const statuses=new Set(['succeeded','rejected','no-action','settled','waiting-resolved']);
+  const kinds=new Set(['npc-action','player-action','gift','daily-person','daily-population','waiting-result','encounter-end']);
+  const evidence=new Set(['event-location','travel-receipt','successful-forest-encounter-rule','unknown','encounter-fact']);
+  let previous=null;
+  for(const entry of view.entries){
+    if(!exact(entry,['activityId','sourceEventSeq','sourceItemIndex','tick','actorIds','location','locationEvidence','kind','status','summary'])||
+      typeof entry.activityId!=='string'||!Number.isSafeInteger(entry.sourceEventSeq)||entry.sourceEventSeq<1||!integer(entry.sourceItemIndex)||
+      !integer(entry.tick)||entry.tick>view.tick||!Array.isArray(entry.actorIds)||!entry.actorIds.every(id=>actorIds.has(id))||
+      ![null,'village','forest'].includes(entry.location)||!evidence.has(entry.locationEvidence)||!kinds.has(entry.kind)||!statuses.has(entry.status)||
+      typeof entry.summary!=='string'||entry.summary.length>300||entry.activityId!==`event-${entry.sourceEventSeq}-item-${entry.sourceItemIndex}`)return false;
+    if(previous&&(entry.sourceEventSeq<previous.sourceEventSeq||
+      (entry.sourceEventSeq===previous.sourceEventSeq&&entry.sourceItemIndex<=previous.sourceItemIndex)))return false;
+    previous=entry;
+  }
+  return new TextEncoder().encode(JSON.stringify(view)).length<=65536;
+}
 async function refresh(){
   if(refreshing)return;refreshing=true;readingsFresh=false;
   button.disabled=true;status.dataset.state='loading';status.textContent='正在读取世界…';
@@ -58,12 +99,17 @@ async function refresh(){
     if(!capResponse.ok)throw new Error('世界能力读取失败');const capabilities=await capResponse.json();
     if(capabilities.apiVersion!==1 || typeof capabilities.playerAvailable!=='boolean')throw new Error('未知世界能力');
     const encounterAvailable=capabilities.encounterAvailable===true;
+    if(capabilities.activityAvailable!==undefined && capabilities.activityAvailable!==true)throw new Error('未知世界活动能力');
     if(encounterAvailable && (capabilities.commandDtoVersion!==3 || capabilities.playerAvailable!==true))throw new Error('未知遭遇能力');
     const {dto,player,encounter}=await readPair(capabilities.playerAvailable,encounterAvailable);
+    const activity=capabilities.activityAvailable===true?await (async()=>{const response=await fetch('/api/runtime/activities',{cache:'no-store',signal:AbortSignal.timeout(6000)});
+      if(!response.ok)throw new Error('世界活动读取失败');const view=await response.json();
+      if(!validActivityView(view,dto))throw new Error('世界活动投影不一致');
+      return view;})():null;
     if(capabilities.playerActionsAvailable===true && !player?.actions)throw new Error('动作读数缺失');
     if(encounterAvailable && (!encounter || encounter.encounterViewVersion!==1))throw new Error('遭遇读数缺失');
     if(last && dto.revision<last.revision)throw Object.assign(new Error('忽略迟到读数'),{code:'READING_CONFLICT'});
-    render(dto);renderPlayer(player);renderActions(player);last=dto;lastPlayer=player;lastEncounter=encounter;lastCapabilities=capabilities;
+    render(dto);renderPlayer(player);renderActions(player);renderActivity(activity);last=dto;lastPlayer=player;lastEncounter=encounter;lastCapabilities=capabilities;lastActivity=activity;
     actionsAvailable=capabilities.playerActionsAvailable===true;writable=capabilities.writes===true;readingsFresh=true;
     byId('time-controls').hidden=!writable;byId('mind-link').hidden=capabilities.mindAvailable!==true;
     if(capabilities.sceneAvailable===true){const villageLink=byId('village-scene-link');if(villageLink)villageLink.hidden=false;}

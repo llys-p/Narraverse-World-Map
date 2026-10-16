@@ -15,6 +15,7 @@ import { validateBundle,createAuditedBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { fields,record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
 import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,projectEncounterSnapshot,projectSceneSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend,loadCognitionBackend,requireCognitionBackend,loadSurvivalBackend,requireSurvivalBackend } from './http-contract.mjs';
+import { projectWorldActivity } from './world-activity.mjs';
 import { saveServiceCommit,loadServiceCommit,transitionAuditedServiceCommand,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 const MAX_ENCOUNTER_SERVICE_FILES=MAX_SERVICE_FILES+1;
@@ -69,7 +70,7 @@ async function inspectDirectory(directory,io){
 }
 // IO injection is a library test boundary; HTTP/CLI cannot supply handlers or bypass validation.
 export async function createRuntimeOwner(options,io=fs){
-  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','writable'].includes(k)),'Unknown owner option');
+  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','writable','inspectActivity'].includes(k)),'Unknown owner option');
   // Keep unrelated legacy profiles available. A failed M2/M3 import is retained by the loader
   // and rethrown when a motivation/cognition profile or checkpoint actually requires it.
   try{await loadMotivationBackend();}catch(error){if(options.profile==='motivation-village')throw error;}
@@ -77,6 +78,7 @@ export async function createRuntimeOwner(options,io=fs){
   try{await loadSurvivalBackend();}catch(error){if(options.profile==='survival-village')throw error;}
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
+  const inspectActivity=options.inspectActivity??false;requireCondition(typeof inspectActivity==='boolean','Invalid activity inspector mode');
   if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village','encounter-survival-village','scene-survival-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
   requireCondition(options.profile===undefined || options.checkpoint===undefined,'Profile and checkpoint are mutually exclusive');
   if(options.seed!==undefined){integer(options.seed);requireCondition(options.seed<=0xffffffff,'Invalid runtime seed');}
@@ -126,7 +128,8 @@ export async function createRuntimeOwner(options,io=fs){
     }
     let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(bundle),playerProjection=playerAvailable?projectPlayerSnapshot(bundle):null,
       mindProjection=mindAvailable?projectMindInspector(bundle):null,encounterProjection=encounterAvailable?projectEncounterSnapshot(bundle):null,
-      sceneProjection=sceneAvailable?projectSceneSnapshot(bundle):null;
+      sceneProjection=sceneAvailable?projectSceneSnapshot(bundle):null,
+      activityProjection=inspectActivity&&sceneAvailable?projectWorldActivity(bundle):null;
     if(!states.length){
       if(state)await saveServiceCommit(state,directory,io);
       else await saveCheckpoint(bundle,{directory,rulesVersion:PERSONALITY_RULES,systems},io);
@@ -174,12 +177,13 @@ export async function createRuntimeOwner(options,io=fs){
             nextProjection=projectPublicSnapshot(nextBundle),nextPlayerProjection=playerAvailable?projectPlayerSnapshot(nextBundle):null,
             nextMindProjection=mindAvailable?projectMindInspector(nextBundle):null,
             nextEncounterProjection=encounterAvailable?projectEncounterSnapshot(nextBundle):null,
-            nextSceneProjection=sceneAvailable?projectSceneSnapshot(nextBundle):null;
+            nextSceneProjection=sceneAvailable?projectSceneSnapshot(nextBundle):null,
+            nextActivityProjection=inspectActivity&&sceneAvailable?projectWorldActivity(nextBundle):null;
           const next={serviceFormatVersion,anchor:state.anchor,commands:[...state.commands,{dto,receipt}],bundle:nextBundle};
           await saveServiceCommit(next,directory,io);
           // The complete service file is the commit point. No fallible work precedes publication of the audited DTO.
           state=next;session=candidate;projection=nextProjection;playerProjection=nextPlayerProjection;mindProjection=nextMindProjection;
-          encounterProjection=nextEncounterProjection;sceneProjection=nextSceneProjection;return cloneData(receipt);
+          encounterProjection=nextEncounterProjection;sceneProjection=nextSceneProjection;activityProjection=nextActivityProjection;return cloneData(receipt);
         }).finally(()=>{pending--;});
         tail=operation.catch(()=>{});return operation;
       }catch(error){return Promise.reject(error);}
@@ -189,6 +193,8 @@ export async function createRuntimeOwner(options,io=fs){
       getPlayer(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(playerAvailable,'Current world has no player','PLAYER_UNAVAILABLE');return cloneData(playerProjection);},
       getMindInspector(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(mindAvailable,'Current world has no mind inspector','MIND_UNAVAILABLE');return cloneData(mindProjection);},
       getEncounter(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(encounterAvailable,'Current world has no encounter projection','ENCOUNTER_UNAVAILABLE');return cloneData(encounterProjection);},
+      ...(activityProjection!==null?{activityAvailable:true,
+        getActivity(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(activityProjection);}}:{}),
       ...(sceneAvailable?{sceneAvailable:true,
         getScene(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(sceneProjection);}}:{}),
       submit,

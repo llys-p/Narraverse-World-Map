@@ -47,6 +47,16 @@
     <article><h2>聚落居民</h2><p><strong id="human-count">—</strong> <span>人</span></p><small id="named-count">正在读取身份…</small></article>
     <article><h2>山林种群</h2><p><strong id="deer-count">—</strong> <span>鹿</span><strong id="wolf-count">—</strong> <span>狼</span></p><small>当前种群合计</small></article>
   </section>
+  <section id="activity-panel" class="activity-panel" hidden aria-labelledby="activity-title">
+    <div class="section-title"><h2 id="activity-title">世界活动</h2><span id="activity-count">—</span></div>
+    <p class="activity-notice">开发者观察，非玩家/角色可知信息。这里只呈现已记录事实；人物计划和未确认请求不算执行结果。</p>
+    <div class="activity-filters">
+      <label for="activity-actor">人物</label><select id="activity-actor"><option value="all">全部人物</option></select>
+      <label for="activity-location">地点</label><select id="activity-location"><option value="all">全部地点</option><option value="village">村庄</option><option value="forest">森林</option><option value="unknown">地点未知</option></select>
+    </div>
+    <p class="activity-window">最近最多 256 条来源事实、64 条活动；截断后仍可用人物与地点筛选。</p>
+    <ol id="activity-list" aria-label="世界活动列表"><li>正在读取世界活动…</li></ol>
+  </section>
   <section class="people"><div class="section-title"><h2>村中人物</h2><span id="route-state">正在读取贸易路线…</span></div><ul id="actor-list" aria-label="已登记人物"><li>正在读取居民…</li></ul></section>
 </main>
 </body></html>

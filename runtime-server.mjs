@@ -8,7 +8,8 @@ import { MAX_PENDING_REQUESTS } from './runtime/service/service-commit.mjs';
 import { record,integer,requireCondition,fault } from './runtime/core/data-contract.mjs';
 const root=fileURLToPath(new URL('./',import.meta.url));
 const staticFiles=new Map([['/',['runtime-map.html','text/html; charset=utf-8']],['/runtime-map.html',['runtime-map.html','text/html; charset=utf-8']],
-  ['/runtime-map.mjs',['runtime-map.mjs','text/javascript; charset=utf-8']],['/runtime-map.css',['runtime-map.css','text/css; charset=utf-8']]]);
+  ['/runtime-map.mjs',['runtime-map.mjs','text/javascript; charset=utf-8']],['/runtime-activity.mjs',['runtime-activity.mjs','text/javascript; charset=utf-8']],
+  ['/runtime-map.css',['runtime-map.css','text/css; charset=utf-8']]]);
 const mindStaticFiles=new Map([['/runtime-mind.html',['runtime-mind.html','text/html; charset=utf-8']],
   ['/runtime-mind.mjs',['runtime-mind.mjs','text/javascript; charset=utf-8']],['/runtime-mind.css',['runtime-mind.css','text/css; charset=utf-8']]]);
 const encounterStaticFiles=new Map([['/runtime-encounter.html',['runtime-encounter.html','text/html; charset=utf-8']],
@@ -30,12 +31,14 @@ function readCommandBody(req){
   });
 }
 export async function startRuntimeServer(options){
-  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','port','writable','inspectMind'].includes(k)),'Unknown service option');
+  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','port','writable','inspectMind','inspectActivity'].includes(k)),'Unknown service option');
   const port=options.port??18314;integer(port);requireCondition(port<=65535,'Invalid runtime port');
   const inspectMind=options.inspectMind??false;requireCondition(typeof inspectMind==='boolean','Invalid mind inspector mode');
+  const inspectActivity=options.inspectActivity??false;requireCondition(typeof inspectActivity==='boolean','Invalid activity inspector mode');
   const assets=new Map();for(const [url,[file,type]] of staticFiles)assets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
   const mindAssets=new Map();for(const [url,[file,type]] of mindStaticFiles)mindAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
-  const {port:ignored,inspectMind:ignoredInspector,...ownerOptions}=options,owner=await createRuntimeOwner(ownerOptions);let actualPort=port,closed=false,pendingRequests=0,sceneBodyReads=0;
+  const {port:ignored,inspectMind:ignoredInspector,inspectActivity:ignoredActivity,...ownerOptions}=options,
+    owner=await createRuntimeOwner({...ownerOptions,inspectActivity});let actualPort=port,closed=false,pendingRequests=0,sceneBodyReads=0;
   const encounterAssets=new Map();if(owner.encounterAvailable)for(const [url,[file,type]] of encounterStaticFiles){
     try{encounterAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});}
     catch(error){await owner.close();throw error;}
@@ -48,7 +51,8 @@ export async function startRuntimeServer(options){
     playerActionsAvailable:owner.playerActionsAvailable,mindAvailable:inspectMind && owner.mindAvailable,
     commandDtoVersion:owner.commandDtoVersion,maxCommandBytes:MAX_COMMAND_BYTES,
     maxAdvanceTicks:owner.commandDtoVersion===3?144000:MAX_SERVICE_ADVANCE_TICKS,
-    ...(owner.encounterAvailable?{encounterAvailable:true}:{}),...(owner.sceneAvailable?{sceneAvailable:true}:{})});
+    ...(owner.encounterAvailable?{encounterAvailable:true}:{}),...(owner.sceneAvailable?{sceneAvailable:true}:{}),
+    ...(owner.activityAvailable?{activityAvailable:true}:{})});
   const server=http.createServer({maxHeaderSize:8192,requestTimeout:5000,headersTimeout:5000},async(req,res)=>{
     const send=(status,data,type='application/json; charset=utf-8',extra={})=>{
       const bytes=Buffer.isBuffer(data)?data:Buffer.from(JSON.stringify(data));
@@ -86,6 +90,12 @@ export async function startRuntimeServer(options){
         if(!['GET','HEAD'].includes(req.method)){send(405,envelope('WRITE_DISABLED','当前接口只支持读取。'),undefined,{Allow:'GET, HEAD',Connection:'close'});return;}
         if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
         send(200,owner.getEncounter());return;
+      }
+      if(route==='/api/runtime/activities'){
+        if(!owner.activityAvailable){send(404,envelope('ACTIVITY_UNAVAILABLE','当前世界活动观察未启用。'));return;}
+        if(!['GET','HEAD'].includes(req.method)){send(405,envelope('WRITE_DISABLED','当前接口只支持读取。'),undefined,{Allow:'GET, HEAD',Connection:'close'});return;}
+        if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
+        send(200,owner.getActivity());return;
       }
       if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
       if(route==='/api/runtime/commands'){
@@ -135,14 +145,15 @@ export async function startRuntimeServer(options){
 }
 if(process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   try{
-    const flags=new Map();for(let i=2;i<process.argv.length;i+=2){const flag=process.argv[i],value=process.argv[i+1];requireCondition(['--data-dir','--port','--seed','--checkpoint','--profile','--writable','--inspect-mind'].includes(flag) && !flags.has(flag) && value && !value.startsWith('--'),'Invalid service argument');flags.set(flag,value);}
+    const flags=new Map();for(let i=2;i<process.argv.length;i+=2){const flag=process.argv[i],value=process.argv[i+1];requireCondition(['--data-dir','--port','--seed','--checkpoint','--profile','--writable','--inspect-mind','--inspect-activity'].includes(flag) && !flags.has(flag) && value && !value.startsWith('--'),'Invalid service argument');flags.set(flag,value);}
     if(flags.has('--writable'))requireCondition(['true','false'].includes(flags.get('--writable')),'Invalid write mode');
     if(flags.has('--inspect-mind'))requireCondition(['true','false'].includes(flags.get('--inspect-mind')),'Invalid mind inspector mode');
+    if(flags.has('--inspect-activity'))requireCondition(['true','false'].includes(flags.get('--inspect-activity')),'Invalid activity inspector mode');
     const decimal=value=>{requireCondition(/^(0|[1-9][0-9]*)$/.test(value),'Invalid decimal option');return Number(value);};
     const options={directory:flags.get('--data-dir')??path.join(root,'artifacts','world-runtime-d1','dev-world'),
       ...(flags.has('--port')?{port:decimal(flags.get('--port'))}:{}),...(flags.has('--seed')?{seed:decimal(flags.get('--seed'))}:{}),
       ...(flags.has('--checkpoint')?{checkpoint:flags.get('--checkpoint')}:{}),...(flags.has('--profile')?{profile:flags.get('--profile')}:{}),writable:flags.get('--writable')==='true',
-      inspectMind:flags.get('--inspect-mind')==='true'};
+      inspectMind:flags.get('--inspect-mind')==='true',inspectActivity:flags.get('--inspect-activity')==='true'};
     const service=await startRuntimeServer(options);console.log(JSON.stringify({status:'ready',url:service.url,writes:options.writable}));
     let stopping=false;const stop=async()=>{if(stopping)return;stopping=true;await service.close();process.stdin.pause();console.log(JSON.stringify({status:'stopped'}));};
     process.once('SIGINT',()=>{stop().catch(()=>{process.exitCode=1;});});process.once('SIGTERM',()=>{stop().catch(()=>{process.exitCode=1;});});
