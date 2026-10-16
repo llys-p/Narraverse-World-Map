@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBPKSo",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZHpY",
+        "body": "D4E8：交易前余额、库存、数量提示，进行中\n\n合同：https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-trade-feedback/tasks/D4E8-TRADE-FEEDBACK-TASK.md\n\n新树D:/Narraverse-World-Map-trade-feedback / codex/world-runtime-trade-feedback接06e9222。仅runtime-map.mjs/html，使用同版本人资产与报价显示预计金额、持有金币/库存、数量上限，禁用当前余额/库存不足或无效数量的交易；服务端仍最终裁决，旧pending/过期/异地/死亡/只读等禁用门优先。不加玩家工作/奖励或NPC行为，不改底座/接口/规则。\n\n性价比high执行者已实际接单，核对HEAD与干净工作区后只改允许两文件；root负责独立审查和18334唯一新样本，纯输入不写档，再卖4/买2、刷新和正常重开；不重复日结。原8档、18325 PID2592/18327 PID4432及既有9/3档、控制5旧文件保护。只做必要定向功能验证，不跑全量/视觉/旧长链/性能；D仍进行中，Issue3暂停，无main/deploy/迁移/DSH/外部模型。尚未验收。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

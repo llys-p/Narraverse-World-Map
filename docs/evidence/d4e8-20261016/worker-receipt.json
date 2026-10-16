@@ -1,0 +1,15 @@
+{
+  "agent":"/root/trade_feedback",
+  "requestedModel":"gpt-6-luna",
+  "requestedReasoningEffort":"high",
+  "actualModelIdentity":"not independently observable",
+  "base":"2fbb074b56b38123ceb604e7095be7dd409d11d0",
+  "commit":"99659a2e215dedacb396e927ba9137fc72c1704a",
+  "allowedFiles":["runtime-map.mjs","runtime-map.html"],
+  "workerReportedChecks":{"node --check runtime-map.mjs":"exit 0","git diff --check":"exit 0"},
+  "evidenceKind":"worker final receipt; file scope independently checked by controller using git show/diff; browser acceptance separately recorded",
+  "workerNewSuiteRuns":0,
+  "workerBusinessRuns":0,
+  "workerStopped":true,
+  "controllerReview":{"blockingFindings":0,"sourceScopeMatches":true,"submissionAndReceiptValidationUnchanged":true,"coreAndPersistenceUnchanged":true,"textContentAndLocalInputsOnly":true}
+}

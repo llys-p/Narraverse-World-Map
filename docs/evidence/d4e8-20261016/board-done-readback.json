@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBPKSo",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "Done",
+              "optionId": "98236657",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "已验收",
+              "optionId": "4dfee22c",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZHpY",
+        "body": "D4E8：交易前余额、库存与数量提示，中控限定PASS\n\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/3cd65fc9f9f7e8343c03c90c37d1c8de161e5736/docs/runtime/D4E8-TRADE-FEEDBACK-REVIEW-20261016.md\n合同：https://github.com/llys-p/Narraverse-World-Map/blob/2fbb074b56b38123ceb604e7095be7dd409d11d0/tasks/D4E8-TRADE-FEEDBACK-TASK.md\n\n树D:/Narraverse-World-Map-trade-feedback / codex/world-runtime-trade-feedback接06e9222。执行者99659a2e215dedacb396e927ba9137fc72c1704a只改runtime-map.html/mjs，已推送精确读回停写。提示复用同版本人资产/报价、数量1至maxQuantity整数与安全金额；余额不足禁买、库存不足禁卖，原全局禁止门优先，服务端最终裁决。没有新接口/核心/收入/配置/存档变更。\n\nroot18334唯一新scene seed42真实页面已核：0余额买禁、有粮卖可用；数量0/11/1.5买卖禁且可修正，切药材0库存卖禁，输入前后五读取/r0/零命令一致。卖4粮余额20/私粮16，数量2买可用；明确买后余额0/私粮18，买再次禁用；提交期间全部相关操作禁用。两正式成功回执与公私钱粮对等、刷新/正常重开预算/五读取/三档字节一致。两CLI exit0未超时、无测试锁/进程，原8私档/其余91产品（含全部78runtime）/控制5旧文件、用户18325 PID2592和18327 PID4432及既有9/3档保持。默认日常世界未创建。\n\n0新增suite运行、2成功交易、0日结；只读/过期/死亡/异地/遭遇/溢出守卫静态复核，未冒称分别动态通过；不重复D4E7日结或长历史。报告/说明/脱敏原字节证据归档。仅本片Done/已验收，D整体仍进行中；Issue3开放且暂停，无main/deploy/迁移/DSH/第三方模型调用。本片停止，后续新生计规则另定范围。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 19:40（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 19:49（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -32,7 +32,9 @@
 
 ## 活动工作、阻塞与下一步
 
-- **D4E8交易前余额/库存/数量提示已发布**：[合同](tasks/D4E8-TRADE-FEEDBACK-TASK.md)，新树`D:/Narraverse-World-Map-trade-feedback` / `codex/world-runtime-trade-feedback`接06e9222。只改地图两前端文件，依同版本人资产和报价提示/禁用明显无法执行交易，保留现有全局禁用与服务端裁决；root18334单一样本卖4/买2和恢复，不重复日结。原8档、18325/18327与5旧文件保护；候选未验收，Issue3暂停，无main/deploy/DSH/迁移/新生计规则。
+- **D4E8交易前余额/库存/数量提示限定PASS**：[复核](docs/runtime/D4E8-TRADE-FEEDBACK-REVIEW-20261016.md)，合同2fbb074；树`D:/Narraverse-World-Map-trade-feedback` / `codex/world-runtime-trade-feedback`接06e9222，实现99659a2仅地图html/mjs，服务与78runtime不变。性价比high工人静态检查后停写，root18334单一新世界真实验证0余额/0库存/0、11、小数数量禁用、本地输入不写档、卖4后买2可用、提交中全局禁用、完成余额0后重新禁买；两成功回执对等钱粮、刷新/正常重开五读取/三档与预算一致。0新增suite/0日结，不复跑旧链；原8档/其余91产品/5旧文件和18325 PID2592/18327 PID4432及既有9/3档保持，两自有CLI exit0无锁/残留，默认日常世界未创建。报告/说明/脱敏证据推送，板先待验收再Done/已验收读回；D仍进行中，Issue3暂停，无main/deploy/迁移/DSH/第三方模型。本片完成停止，新收入/NPC规则未实现。
+
+- **外部探索登记（总负责人转告，待用户转交）**：豆包静态地图/地点原型`D:/Narraverse-World-Map-exploration/EXT-A-map-place`；千问3.8 Flash字段绑定矩阵`EXT-B-view-bindings`；免费DeepSeek模拟战斗播放`EXT-C-battle-playback`（后两者同一exploration根目录）。仅收到规划，开工/目录/产物均未核实；本对话未派发、轮询、启模型或建任务板。用户转交后先按源SHA与静态/模拟边界只读复核，再决定复用，不能直接合并或当业务验收；不改变当前D4E8范围。
 
 - **D4E7既有交易到日结体验链限定PASS**：[复核](docs/runtime/D4E7-LIVELIHOOD-REVIEW-20261016.md)，合同2cdf3c6含业务前v1.1资金前提勘误；树`D:/Narraverse-World-Map-livelihood-loop` / `codex/world-runtime-livelihood-loop`接1cde888，93份产品源仍同D4E6 c7c2132。初始钱包0/私粮20，真实页面卖4粮→买2粮→唯一Advance144，三成功命令/一次日结，rev/tick146、私粮17、金币0；钱粮对等、ledger与真实日结逐项核对。刷新/正常重开五读取/四档字节与玩家卡四条记录一致；0新增suite运行，不重复旧证据。两CLI exit0、无超时/测试锁/残留，原8档/93产品/5旧文件及18325 PID2592、18327 PID4432的进程与9/3既有档保持，默认日常目录未创建。仅补入口说明，报告/脱敏证据推送，看板先待验收再Done/已验收读回；D仍进行中，Issue3暂停，无main/deploy/迁移/DSH/模型。本片收口停止；未实现NPC新行为/移动或长期生存。
 
