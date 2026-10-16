@@ -13,7 +13,8 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const source=path.resolve(here,'..');
 const temp=await fs.mkdtemp(path.join(os.tmpdir(),'narraverse-issue3-ab-'));
 const cloneDir=path.join(temp,'baseline-checkout');
-const median=v=>[...v].sort((a,b)=>a-b)[Math.floor(v.length/2)];
+const median=values=>{const ordered=[...values].sort((a,b)=>a-b),mid=Math.floor(ordered.length/2);
+  return ordered.length%2?ordered[mid]:(ordered[mid-1]+ordered[mid])/2;};
 const steps=['fresh-scene-open','travel-forest','travel-village','gift-village',
   'strict-parse','validate-service-commit','clone-envelope','load-service-commit','reopen'];
 const run=(name,cwd)=>{
