@@ -9,7 +9,7 @@ import {performance} from 'node:perf_hooks';
 import * as optimized from '../runtime/core/data-contract.mjs';
 import {createSceneVillage} from '../runtime/fixtures/scene-survival-village.mjs';
 
-const SHA='b7e5a9e7c131ee79acd017276ff62910a549d5ad';
+const SHA='87d95751fa55f3a082f1545d6b03b20cca25d3bd';
 const originalSource=execFileSync('git',['show',SHA+':runtime/core/data-contract.mjs'],{
   encoding:'utf8',maxBuffer:1024*1024});
 const original=await import('data:text/javascript;base64,'+
