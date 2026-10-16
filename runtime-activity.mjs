@@ -3,6 +3,81 @@ const statusLabels = Object.freeze({
 });
 const locationLabels = Object.freeze({village:'村庄',forest:'森林'});
 
+const exact = (value, keys) => value !== null && typeof value === 'object' && !Array.isArray(value) &&
+  Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key));
+const integer = value => Number.isSafeInteger(value) && value >= 0;
+
+// Keep the complete D4E4 response contract here so every consumer accepts the
+// same identity, version, bounds, ordering, and byte-size guarantees.
+export function validActivityView(view, world) {
+  if (!exact(view,['apiVersion','activityViewVersion','perspective','simulationId','revision','tick','actors','window','entries']) ||
+    view.apiVersion !== 1 || view.activityViewVersion !== 1 || view.perspective !== 'developer-world' ||
+    view.simulationId !== world?.simulationId || view.revision !== world?.revision || view.tick !== world?.tick ||
+    !Array.isArray(view.actors) || !Array.isArray(view.entries) ||
+    !exact(view.window,['maxSourceEvents','maxEntries','sourceEventsConsidered','truncated']) ||
+    view.window.maxSourceEvents !== 256 || view.window.maxEntries !== 64 || !integer(view.window.sourceEventsConsidered) ||
+    view.window.sourceEventsConsidered > 256 || typeof view.window.truncated !== 'boolean' ||
+    view.entries.length > 64 || view.actors.length > 16) return false;
+  const actorIds = new Set();
+  if (!view.actors.every(actor => exact(actor,['actorId','name']) && typeof actor.actorId === 'string' && actor.actorId.length > 0 &&
+    typeof actor.name === 'string' && !actorIds.has(actor.actorId) && actorIds.add(actor.actorId))) return false;
+  const statuses = new Set(['succeeded','rejected','no-action','settled','waiting-resolved']);
+  const kinds = new Set(['npc-action','player-action','gift','daily-person','daily-population','waiting-result','encounter-end']);
+  const evidence = new Set(['event-location','travel-receipt','successful-forest-encounter-rule','unknown','encounter-fact']);
+  let previous = null;
+  for (const entry of view.entries) {
+    if (!exact(entry,['activityId','sourceEventSeq','sourceItemIndex','tick','actorIds','location','locationEvidence','kind','status','summary']) ||
+      typeof entry.activityId !== 'string' || !Number.isSafeInteger(entry.sourceEventSeq) || entry.sourceEventSeq < 1 ||
+      !integer(entry.sourceItemIndex) || !integer(entry.tick) || entry.tick > view.tick || !Array.isArray(entry.actorIds) ||
+      !entry.actorIds.every(id => actorIds.has(id)) || ![null,'village','forest'].includes(entry.location) ||
+      !evidence.has(entry.locationEvidence) || !kinds.has(entry.kind) || !statuses.has(entry.status) ||
+      typeof entry.summary !== 'string' || entry.summary.length > 300 ||
+      entry.activityId !== `event-${entry.sourceEventSeq}-item-${entry.sourceItemIndex}`) return false;
+    if (previous && (entry.sourceEventSeq < previous.sourceEventSeq ||
+      (entry.sourceEventSeq === previous.sourceEventSeq && entry.sourceItemIndex <= previous.sourceItemIndex))) return false;
+    previous = entry;
+  }
+  return new TextEncoder().encode(JSON.stringify(view)).length <= 65536;
+}
+
+export function filterActivityEntries(entries, location) {
+  if (location === null) return entries.slice();
+  if (!['village','forest'].includes(location)) return [];
+  return entries.filter(entry => entry.location === location);
+}
+
+export async function readActivity(capabilities, world) {
+  if (capabilities?.activityAvailable !== true) return null;
+  const response = await fetch('/api/runtime/activities',{cache:'no-store',signal:AbortSignal.timeout(6000)});
+  if (!response.ok) throw new Error('世界活动读取失败');
+  const view = await response.json();
+  if (!validActivityView(view,world)) throw new Error('世界活动投影不一致');
+  return view;
+}
+
+export function mountActivityPanel(panel, location) {
+  const list = panel.querySelector('[data-activity-list]');
+  const count = panel.querySelector('[data-activity-count]');
+  const actorFilter = panel.querySelector('[data-activity-actor]');
+  let current = null;
+  const render = () => {
+    panel.hidden = current === null;
+    if (!current) return;
+    const entries = filterActivityEntries(current.entries,location);
+    const prior = actorFilter.value;
+    const all = document.createElement('option'); all.value = 'all'; all.textContent = '全部人物';
+    actorFilter.replaceChildren(all,...current.actors.map(actor => {
+      const option = document.createElement('option'); option.value = actor.actorId; option.textContent = actor.name; return option;
+    }));
+    actorFilter.value = current.actors.some(actor => actor.actorId === prior) ? prior : 'all';
+    count.textContent = `${entries.filter(entry => actorFilter.value === 'all' || entry.actorIds.includes(actorFilter.value)).length} 条 · ` +
+      `${current.window.truncated ? '最近窗口，历史已截断' : '当前来源窗口'} · 地点未知的旧记录请回地图查看`;
+    renderActivityRows(list,entries,actorFilter.value,'all');
+  };
+  actorFilter.addEventListener('change',render);
+  return {update(view) { current = view; render(); }};
+}
+
 export function renderActivityRows(list, entries, actorId, location) {
   const filtered = entries.filter(entry => (actorId === 'all' || entry.actorIds.includes(actorId)) &&
     (location === 'all' || (location === 'unknown' ? entry.location === null : entry.location === location)));

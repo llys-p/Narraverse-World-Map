@@ -1,7 +1,9 @@
+import { mountActivityPanel, readActivity } from './runtime-activity.mjs';
 const byId = id => document.getElementById(id);
 const nodes = Object.fromEntries(['village-status','village-revision','village-tick','village-food','village-location','village-life',
-  'village-people','village-refresh','village-retry','village-travel','village-forest-link','village-command-status','village-receipt','village-receipt-details']
+  'village-player-location','village-people','village-refresh','village-retry','village-travel','village-forest-link','village-command-status','village-receipt','village-receipt-details']
   .map(id => [id, byId(id)]));
+const activityPanel = mountActivityPanel(byId('village-activity'),'village');
 const PENDING_PREFIX = 'narraverse.village.pending.v1:';
 const RECEIPT_FIELDS = ['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result'];
 const GIFT_REASONS = ['PLAYER_DEAD','ENCOUNTER_BUSY','RECIPIENT_DEAD','NOT_COLOCATED','NO_FOOD','RECIPIENT_FULL'];
@@ -110,11 +112,11 @@ function render() {
   nodes['village-tick'].textContent = String(scene.tick);
   nodes['village-food'].textContent = String(scene.self.food);
   nodes['village-location'].textContent = locationText(scene.location);
+  nodes['village-player-location'].textContent = locationText(playerLocation(current.player));
   nodes['village-life'].textContent = scene.self.alive ? '存活' : '已逝 · 身份与记忆保留';
   nodes['village-travel'].textContent = scene.location === 'village' ? '前往森林 · 12 tick' : '返回村庄 · 12 tick';
-  nodes['village-forest-link'].hidden = scene.location !== 'forest';
   const items = scene.actors.map(actor => {
-    const item = document.createElement('li'); item.dataset.actorId = actor.actorId;
+    const item = document.createElement('li'); item.dataset.actorId = actor.actorId; item.id = actor.actorId;
     const heading = document.createElement('div'); heading.className = 'person-heading';
     const name = document.createElement('h3'); name.textContent = actor.name; heading.append(name);
     if (actor.actorId === 'actor-2') {
@@ -144,6 +146,7 @@ function render() {
   });
   if (!items.length) { const empty = document.createElement('li'); empty.textContent = '玩家当前在森林，村庄人物不在同地点；返回村庄后可查看。'; items.push(empty); }
   nodes['village-people'].replaceChildren(...items);
+  activityPanel.update(current.activity);
   document.documentElement.dataset.revision = String(scene.revision);
   if (fresh) {
     nodes['village-status'].dataset.state = 'ready';
@@ -152,6 +155,7 @@ function render() {
   }
   controls();
 }
+function playerLocation(player) { return player?.self?.identity?.location ?? '未知'; }
 async function refresh() {
   fresh = false; controls();
   nodes['village-status'].textContent = '正在读取村庄读数…';
@@ -159,7 +163,9 @@ async function refresh() {
     const [cap,scene,player,encounter] = await Promise.all(['/api/runtime/capabilities','/api/runtime/scene','/api/runtime/player','/api/runtime/encounter'].map(fetchJson));
     if (!coherent(cap,scene,player,encounter) || (current && scene.simulationId !== current.scene.simulationId) || scene.revision < highestRevision)
       throw new Error('Incoherent or late world projection');
-    highestRevision = scene.revision; current = {cap,scene,player,encounter};
+    if (cap.activityAvailable !== undefined && typeof cap.activityAvailable !== 'boolean') throw new Error('Unknown activity capability');
+    const activity = await readActivity(cap,scene);
+    highestRevision = scene.revision; current = {cap,scene,player,encounter,activity};
     if (!pending && !storageBlocked) pending = restorePending(scene.simulationId);
     fresh = true; render();
     if (pending) setCommandStatus('发现结果未确认的请求；只有点击重试才会发送同一完整请求。');

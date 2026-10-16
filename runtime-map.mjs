@@ -1,4 +1,4 @@
-import { renderActivityRows } from './runtime-activity.mjs';
+import { renderActivityRows, readActivity } from './runtime-activity.mjs';
 const byId=id=>document.getElementById(id),status=byId('connection'),button=byId('refresh');let last=null,lastCapabilities=null,lastEncounter=null,lastActivity=null;
 const occupations={chief:'村长',hunter:'猎人',merchant:'商人',player:'玩家'};
 const advance=byId('advance'),ticks=byId('advance-ticks'),commandStatus=byId('command-status');let writable=false,pending=null,submitting=false,lastPlayer=null,actionsAvailable=false;
@@ -8,7 +8,7 @@ function controls(){const encounterActive=lastEncounter?.encounter?.status==='ac
   for(const id of actionControls)byId(id).disabled=!writable || !actionsAvailable || !lastPlayer?.self.identity.alive || submitting || pending!==null || encounterActive || !readingsFresh;
   if(lastPlayer?.actions && !lastPlayer.actions.canTrade)for(const id of ['trade-product','trade-quantity','buy-submit','sell-submit'])byId(id).disabled=true;
 }
-function render(dto){
+function render(dto,sceneAvailable,actualLocation){
   byId('world-time').textContent=`第 ${dto.clock.day+1} 天 · ${String(dto.clock.hour).padStart(2,'0')}:${String(dto.clock.minute).padStart(2,'0')}`;
   byId('stock-food').textContent=dto.market.food;byId('stock-herbs').textContent=dto.market.herbs;
   byId('price-food').textContent=`公布粮价 ${dto.market.prices.food} 金币 / 份`;byId('price-herbs').textContent=`公布药价 ${dto.market.prices.herbs} 金币 / 份`;
@@ -18,16 +18,37 @@ function render(dto){
   const rows=dto.actors.map(a=>{const li=document.createElement('li'),seal=document.createElement('span'),body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');
     seal.className='seal';seal.textContent=occupations[a.occupation]?.slice(0,1)??'人';name.textContent=a.name;
     detail.textContent=`${occupations[a.occupation]??a.occupation} · ${a.location==='village'?'村庄':a.location} · ${a.alive?'存活':'已逝'}`;
-    body.append(name,detail);li.append(seal,body);return li;});
+    const place=sceneAvailable && ['village','forest'].includes(a.location)?a.location:null;
+    if(place){const link=document.createElement('a');link.href=`${place==='village'?'/runtime-village.html':'/runtime-encounter.html'}${place==='village'&&actualLocation==='village'?'#'+encodeURIComponent(a.actorId):''}`;
+      link.textContent=place==='village'&&actualLocation==='village'?`定位${a.name}`:`查看${place==='village'?'村庄':'森林'}（${a.name}仅在同地点时可见）`;
+      link.className='person-place-link';body.append(name,detail,link);}
+    else body.append(name,detail);
+    li.dataset.actorId=a.actorId;body.dataset.actorId=a.actorId;li.append(seal,body);return li;});
   byId('actor-list').replaceChildren(...rows);document.documentElement.dataset.revision=String(dto.revision);
 }
-function renderPlayer(player){
+function renderActivity(view){
+  const panel=byId('activity-panel'),actorFilter=byId('activity-actor'),locationFilter=byId('activity-location');
+  panel.hidden=view===null;if(!view)return;
+  const prior=actorFilter.value,all=document.createElement('option');all.value='all';all.textContent='全部人物';
+  actorFilter.replaceChildren(all,...view.actors.map(actor=>{const option=document.createElement('option');option.value=actor.actorId;option.textContent=actor.name;return option;}));
+  actorFilter.value=view.actors.some(actor=>actor.actorId===prior)?prior:'all';
+  const count=renderActivityRows(byId('activity-list'),view.entries,actorFilter.value,locationFilter.value);
+  byId('activity-count').textContent=`${count} 条 · ${view.window.truncated?'最近窗口，历史已截断':'当前来源窗口'}`;
+}
+function rerenderActivity(){if(lastActivity)renderActivity(lastActivity);}
+byId('activity-actor').addEventListener('change',rerenderActivity);
+byId('activity-location').addEventListener('change',rerenderActivity);
+function renderPlayer(player,sceneAvailable){
   byId('player-panel').hidden=player===null;if(!player)return;const s=player.self,a=s.identity;
   byId('player-identity').textContent=`${a.name} · ${a.location==='village'?'村庄':a.location==='forest'?'森林':a.location} · ${a.alive?'存活':`已逝 · 第 ${Math.floor(a.deathTick/144)+1} 天`}`;
   for(const key of ['health','hunger','fatigue','wallet'])byId('player-'+key).textContent=s[key];
   byId('player-food').textContent=s.inventory.food;byId('player-herbs').textContent=s.inventory.herbs;
   byId('player-needs').textContent=`当前需求：食物 ${s.needs.food} · 治疗 ${s.needs.healing} · 休息 ${s.needs.rest}`;
   byId('player-panel').dataset.revision=String(player.revision);
+  const sceneLink=byId('player-scene-link'),place=a.location;
+  sceneLink.hidden=sceneAvailable!==true || !['village','forest'].includes(place);
+  if(!sceneLink.hidden){sceneLink.href=`${place==='village'?'/runtime-village.html':'/runtime-encounter.html'}#actor-4`;
+    sceneLink.textContent=`定位我在${place==='village'?'村庄':'森林'}的状态`;}
 }
 function renderActions(player){
   byId('action-panel').hidden=!player?.actions;if(!player?.actions)return;const actions=player.actions;
@@ -51,46 +72,6 @@ async function readPair(playerAvailable,encounterAvailable){
   }
   throw Object.assign(new Error('世界投影不一致'),{code:'READING_CONFLICT'});
 }let refreshing=false,readingsFresh=false;
-function renderActivity(view){
-  const panel=byId('activity-panel'),actorFilter=byId('activity-actor'),locationFilter=byId('activity-location');
-  panel.hidden=view===null;if(!view)return;
-  const prior=actorFilter.value,all=document.createElement('option');all.value='all';all.textContent='全部人物';
-  actorFilter.replaceChildren(all,...view.actors.map(actor=>{const option=document.createElement('option');option.value=actor.actorId;option.textContent=actor.name;return option;}));
-  actorFilter.value=view.actors.some(actor=>actor.actorId===prior)?prior:'all';
-  const count=renderActivityRows(byId('activity-list'),view.entries,actorFilter.value,locationFilter.value);
-  byId('activity-count').textContent=`${count} 条 · ${view.window.truncated?'最近窗口，历史已截断':'当前来源窗口'}`;
-}
-function rerenderActivity(){if(lastActivity)renderActivity(lastActivity);}
-byId('activity-actor').addEventListener('change',rerenderActivity);
-byId('activity-location').addEventListener('change',rerenderActivity);
-function validActivityView(view,world){
-  const exact=(value,keys)=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).length===keys.length&&keys.every(key=>Object.hasOwn(value,key));
-  const integer=value=>Number.isSafeInteger(value)&&value>=0;
-  if(!exact(view,['apiVersion','activityViewVersion','perspective','simulationId','revision','tick','actors','window','entries'])||
-    view.apiVersion!==1||view.activityViewVersion!==1||view.perspective!=='developer-world'||view.simulationId!==world.simulationId||
-    view.revision!==world.revision||view.tick!==world.tick||!Array.isArray(view.actors)||!Array.isArray(view.entries)||
-    !exact(view.window,['maxSourceEvents','maxEntries','sourceEventsConsidered','truncated'])||view.window.maxSourceEvents!==256||
-    view.window.maxEntries!==64||!integer(view.window.sourceEventsConsidered)||view.window.sourceEventsConsidered>256||
-    typeof view.window.truncated!=='boolean'||view.entries.length>64||view.actors.length>16)return false;
-  const actorIds=new Set();
-  if(!view.actors.every(actor=>exact(actor,['actorId','name'])&&typeof actor.actorId==='string'&&actor.actorId.length>0&&
-    typeof actor.name==='string'&&!actorIds.has(actor.actorId)&&actorIds.add(actor.actorId)))return false;
-  const statuses=new Set(['succeeded','rejected','no-action','settled','waiting-resolved']);
-  const kinds=new Set(['npc-action','player-action','gift','daily-person','daily-population','waiting-result','encounter-end']);
-  const evidence=new Set(['event-location','travel-receipt','successful-forest-encounter-rule','unknown','encounter-fact']);
-  let previous=null;
-  for(const entry of view.entries){
-    if(!exact(entry,['activityId','sourceEventSeq','sourceItemIndex','tick','actorIds','location','locationEvidence','kind','status','summary'])||
-      typeof entry.activityId!=='string'||!Number.isSafeInteger(entry.sourceEventSeq)||entry.sourceEventSeq<1||!integer(entry.sourceItemIndex)||
-      !integer(entry.tick)||entry.tick>view.tick||!Array.isArray(entry.actorIds)||!entry.actorIds.every(id=>actorIds.has(id))||
-      ![null,'village','forest'].includes(entry.location)||!evidence.has(entry.locationEvidence)||!kinds.has(entry.kind)||!statuses.has(entry.status)||
-      typeof entry.summary!=='string'||entry.summary.length>300||entry.activityId!==`event-${entry.sourceEventSeq}-item-${entry.sourceItemIndex}`)return false;
-    if(previous&&(entry.sourceEventSeq<previous.sourceEventSeq||
-      (entry.sourceEventSeq===previous.sourceEventSeq&&entry.sourceItemIndex<=previous.sourceItemIndex)))return false;
-    previous=entry;
-  }
-  return new TextEncoder().encode(JSON.stringify(view)).length<=65536;
-}
 async function refresh(){
   if(refreshing)return;refreshing=true;readingsFresh=false;
   button.disabled=true;status.dataset.state='loading';status.textContent='正在读取世界…';
@@ -99,22 +80,20 @@ async function refresh(){
     if(!capResponse.ok)throw new Error('世界能力读取失败');const capabilities=await capResponse.json();
     if(capabilities.apiVersion!==1 || typeof capabilities.playerAvailable!=='boolean')throw new Error('未知世界能力');
     const encounterAvailable=capabilities.encounterAvailable===true;
-    if(capabilities.activityAvailable!==undefined && capabilities.activityAvailable!==true)throw new Error('未知世界活动能力');
+    if(capabilities.activityAvailable!==undefined && typeof capabilities.activityAvailable!=='boolean')throw new Error('未知世界活动能力');
     if(encounterAvailable && (capabilities.commandDtoVersion!==3 || capabilities.playerAvailable!==true))throw new Error('未知遭遇能力');
     const {dto,player,encounter}=await readPair(capabilities.playerAvailable,encounterAvailable);
-    const activity=capabilities.activityAvailable===true?await (async()=>{const response=await fetch('/api/runtime/activities',{cache:'no-store',signal:AbortSignal.timeout(6000)});
-      if(!response.ok)throw new Error('世界活动读取失败');const view=await response.json();
-      if(!validActivityView(view,dto))throw new Error('世界活动投影不一致');
-      return view;})():null;
+    const activity=await readActivity(capabilities,dto);
     if(capabilities.playerActionsAvailable===true && !player?.actions)throw new Error('动作读数缺失');
     if(encounterAvailable && (!encounter || encounter.encounterViewVersion!==1))throw new Error('遭遇读数缺失');
     if(last && dto.revision<last.revision)throw Object.assign(new Error('忽略迟到读数'),{code:'READING_CONFLICT'});
-    render(dto);renderPlayer(player);renderActions(player);renderActivity(activity);last=dto;lastPlayer=player;lastEncounter=encounter;lastCapabilities=capabilities;lastActivity=activity;
+    render(dto,capabilities.sceneAvailable===true,player?.self?.identity?.location);renderPlayer(player,capabilities.sceneAvailable===true);renderActions(player);renderActivity(activity);last=dto;lastPlayer=player;lastEncounter=encounter;lastCapabilities=capabilities;lastActivity=activity;
     actionsAvailable=capabilities.playerActionsAvailable===true;writable=capabilities.writes===true;readingsFresh=true;
     byId('time-controls').hidden=!writable;byId('mind-link').hidden=capabilities.mindAvailable!==true;
     if(capabilities.sceneAvailable===true){const villageLink=byId('village-scene-link');if(villageLink)villageLink.hidden=false;}
-    const sceneLink=byId('forest-scene-link'),inForest=player?.self?.identity?.location==='forest' && encounterAvailable;
-    sceneLink.hidden=!inForest;if(inForest)sceneLink.textContent=player.self.identity.alive?'进入森林场景':'查看森林场景（玩家已逝）';
+    const sceneLink=byId('forest-scene-link'),canViewForest=capabilities.sceneAvailable===true ||
+      (player?.self?.identity?.location==='forest' && encounterAvailable);
+    sceneLink.hidden=!canViewForest;if(canViewForest)sceneLink.textContent=capabilities.sceneAvailable===true?'查看森林场景':'进入森林场景';
     byId('map-note').textContent=writable?'世界时间仅在明确提交后推进':'只读观察 · 世界时间不会自动流逝';
     status.dataset.state='ready';status.textContent='已读取服务保存的世界 · 刷新不会推进时间';
   }catch(error){status.dataset.state='error';status.textContent=error.code==='READING_CONFLICT'?

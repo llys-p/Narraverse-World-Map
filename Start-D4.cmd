@@ -8,8 +8,8 @@ if errorlevel 1 (
   exit /b 1
 )
 echo D4 local experience candidate - isolated world
-echo Map:     http://127.0.0.1:18327/runtime-map.html
-echo Village: http://127.0.0.1:18327/runtime-village.html
+echo Map:     http://127.0.0.1:18329/runtime-map.html
+echo Village: http://127.0.0.1:18329/runtime-village.html
 echo Activity list: explicit developer world observation (not player/character knowledge)
 echo Wait for status ready before opening the page.
 echo Type quit and press Enter to save and stop normally. Wait for status stopped.
@@ -22,9 +22,9 @@ if exist "%~dp0artifacts\d4-daily\world\" (
     pause
     exit /b 1
   )
-  node runtime-server.mjs --data-dir "%~dp0artifacts\d4-daily\world" --port 18327 --writable true --inspect-mind false --inspect-activity true
+  node runtime-server.mjs --data-dir "%~dp0artifacts\d4-daily\world" --port 18329 --writable true --inspect-mind false --inspect-activity true
 ) else (
-  node runtime-server.mjs --data-dir "%~dp0artifacts\d4-daily\world" --port 18327 --profile scene-survival-village --seed 42 --writable true --inspect-mind false --inspect-activity true
+  node runtime-server.mjs --data-dir "%~dp0artifacts\d4-daily\world" --port 18329 --profile scene-survival-village --seed 42 --writable true --inspect-mind false --inspect-activity true
 )
 if errorlevel 1 (
   echo.

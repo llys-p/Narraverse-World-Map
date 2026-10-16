@@ -11,13 +11,14 @@
 <main>
   <header>
     <div><p class="eyebrow">NARRAVERSE · 地点场景</p><h1>村庄日常</h1><p class="intro">同地点的人物，以及他们亲历的收粮记忆。</p></div>
-    <nav aria-label="场景导航"><a href="/runtime-map.html">返回世界地图</a><a id="village-forest-link" href="/runtime-encounter.html" hidden>查看森林场景</a></nav>
+    <nav aria-label="场景导航"><a href="/runtime-map.html">返回世界地图</a><a id="village-forest-link" href="/runtime-encounter.html">查看森林场景</a></nav>
   </header>
+  <p class="viewing-location">正在查看：村庄 · 玩家实际位置：<strong id="village-player-location">读取中…</strong></p>
   <p id="village-status" role="status" aria-live="polite">正在读取村庄读数…</p>
   <section class="readings" aria-label="我的世界读数">
     <article><h2>世界修订</h2><p><strong id="village-revision">—</strong></p><small>时刻 <span id="village-tick">—</span> tick</small></article>
     <article><h2>我的口粮</h2><p><strong id="village-food">—</strong> <span>份</span></p><small>赠粮使用本人的私有口粮</small></article>
-    <article><h2>我的位置</h2><p id="village-location">—</p><small id="village-life">正在读取…</small></article>
+    <article id="actor-4"><h2>我的位置</h2><p id="village-location">—</p><small id="village-life">正在读取…</small></article>
   </section>
   <section class="world-actions" aria-label="读取与旅行">
     <button id="village-refresh" type="button">刷新场景读数</button>
@@ -27,6 +28,13 @@
   <section aria-labelledby="village-people-title">
     <div class="section-title"><h2 id="village-people-title">同地点人物</h2><span>公开身份与可观察状态</span></div>
     <ul id="village-people" aria-label="同地点人物与本人收粮记忆"><li>尚未取得一致读数。</li></ul>
+  </section>
+  <section id="village-activity" class="activity-panel" hidden aria-labelledby="village-activity-title">
+    <div class="section-title"><h2 id="village-activity-title">村庄活动</h2><span data-activity-count>—</span></div>
+    <p class="activity-notice">开发者观察，非玩家/角色可知信息。这里只呈现地点明确为村庄的真实记录。</p>
+    <label>人物 <select data-activity-actor><option value="all">全部人物</option></select></label>
+    <p class="activity-window">地点未知的历史活动不归入村庄，请回地图查看。</p>
+    <ol data-activity-list aria-label="村庄世界活动"><li>活动观察未启用。</li></ol>
   </section>
   <section class="command-panel" aria-labelledby="village-command-title">
     <h2 id="village-command-title">操作回执</h2>

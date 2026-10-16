@@ -11,7 +11,7 @@
 <main>
   <header>
     <div><p class="eyebrow">NARRAVERSE · 地点场景</p><h1>森林边缘</h1><p class="intro">查看狼群与当前遭遇。所有状态以同一世界回执为准。</p></div>
-    <div class="toolbar"><p>森林 · 实时世界</p><a id="scene-exit" href="/runtime-map.html">返回世界地图</a></div>
+    <nav class="toolbar" aria-label="地点导航"><p>正在查看：森林</p><p id="actor-4">玩家实际位置：<strong id="scene-player-location">读取中…</strong></p><a id="scene-village-link" href="/runtime-village.html" hidden>查看村庄场景</a><br><a id="scene-exit" href="/runtime-map.html">返回世界地图</a></nav>
   </header>
   <p id="scene-status" role="status" aria-live="polite">正在读取森林与玩家状态…</p>
   <section class="readings" aria-label="当前世界状态">
@@ -39,6 +39,13 @@
   <section class="log-section" aria-labelledby="log-title">
     <div class="section-title"><h2 id="log-title">遭遇记录</h2><span>真实回执与持久场景状态</span></div>
     <ol id="scene-log" aria-label="遭遇日志"><li>正在读取遭遇记录…</li></ol>
+  </section>
+  <section id="forest-activity" class="activity-panel" hidden aria-labelledby="forest-activity-title">
+    <div class="section-title"><h2 id="forest-activity-title">森林活动</h2><span data-activity-count>—</span></div>
+    <p class="activity-notice">开发者观察，非玩家/角色可知信息。这里只呈现地点明确为森林的真实记录。</p>
+    <label>人物 <select data-activity-actor><option value="all">全部人物</option></select></label>
+    <p class="activity-window">森林没有已确认的其他人物位置；地点未知的历史活动不归入森林，请回地图查看。</p>
+    <ol data-activity-list aria-label="森林世界活动"><li>活动观察未启用。</li></ol>
   </section>
 </main>
 </body>

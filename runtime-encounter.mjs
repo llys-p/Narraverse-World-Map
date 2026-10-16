@@ -1,8 +1,10 @@
+import { mountActivityPanel, readActivity } from './runtime-activity.mjs';
 const byId = id => document.getElementById(id);
 const nodes = Object.fromEntries(['scene-status','scene-revision','scene-tick','scene-player-health','scene-player-state',
   'scene-wolf-health','scene-wolf-count','encounter-state','encounter-begin','encounter-attack','encounter-flee',
-  'encounter-cancel','encounter-refresh','encounter-retry','scene-command-status','scene-log','world-action-block']
+  'encounter-cancel','encounter-refresh','encounter-retry','scene-command-status','scene-log','world-action-block','scene-player-location','scene-village-link']
   .map(id => [id, byId(id)]));
+const activityPanel = mountActivityPanel(byId('forest-activity'),'forest');
 const PENDING_KEY = 'narraverse.encounter.pending.v1';
 const RECEIPTS_KEY = 'narraverse.encounter.receipts.v1';
 const RECEIPT_FIELDS = ['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick',
@@ -61,6 +63,8 @@ function displayWorld(player, view) {
   nodes['scene-revision'].textContent = String(view.revision);
   nodes['scene-tick'].textContent = String(view.tick);
   nodes['scene-player-health'].textContent = String(view.self.health);
+  nodes['scene-player-location'].textContent = player.self.identity.location === 'village' ? '村庄' : '森林';
+  nodes['scene-village-link'].hidden = capabilities?.sceneAvailable !== true;
   nodes['scene-player-state'].textContent = view.self.alive ? '存活' : `已逝 · ${view.self.deathTick ?? '死亡时刻未知'}`;
   nodes['scene-wolf-count'].textContent = String(view.population.availableWolves);
   nodes['scene-wolf-health'].textContent = encounter ? String(encounter.wolfHealth) : '—';
@@ -80,6 +84,7 @@ function displayWorld(player, view) {
     view.self.location !== 'forest' ? '玩家当前不在森林；可以查看世界状态。' : active ? '遭遇正在持续，刷新后会读取同一场遭遇。' :
     '森林状态来自同一修订的玩家与遭遇投影。';
   renderLog(encounter);
+  activityPanel.update(current.activity);
 }
 function resolutionText(value) {
   return ({win:'胜利',lose:'失败',flee:'逃跑',cancel:'取消', 'player-died':'玩家死亡'})[value] ?? '无结果';
@@ -114,19 +119,21 @@ async function refresh() {
     ]);
     if (![cap,player,encounter].every(item => item.response.ok) || !coherent(cap.json, player.json, encounter.json))
       throw new Error('世界投影版本或修订不一致');
+    if (cap.json.activityAvailable !== undefined && typeof cap.json.activityAvailable !== 'boolean') throw new Error('未知世界活动能力');
+    const activity = await readActivity(cap.json,player.json);
     if (current && encounter.json.revision < current.view.revision) {
       nodes['scene-status'].textContent = '忽略了迟到的旧读数；保留最后一组一致世界状态。';
       displayWorld(current.player, current.view);
       return;
     }
     capabilities = cap.json;
-    current = {player:player.json, view:encounter.json};
+    current = {player:player.json, view:encounter.json, activity};
     readingsFresh = true;
     displayWorld(current.player, current.view);
     if (!pending && !submitting) nodes['scene-command-status'].textContent = '只读读取不会推进世界时间。';
   } catch {
-    nodes['scene-status'].textContent = current ? '读取暂时失败，保留最后一组一致世界读数；操作已暂停。' : '连接失败，尚未取得一致的世界读数。';
     if (current) displayWorld(current.player, current.view);
+    nodes['scene-status'].textContent = current ? '读取暂时失败，保留最后一组一致世界读数；操作已暂停。' : '连接失败，尚未取得一致的世界读数。';
     if (pending) nodes['scene-command-status'].textContent = '请求结果尚未确认；重试会使用同一完整请求。';
   }
 }function makeCommand(action) {
