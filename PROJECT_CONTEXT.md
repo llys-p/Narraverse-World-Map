@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 11:12（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 15:26（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,6 +31,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **Issue #3配置校验优化试验已交付，整体性能未准入**：[固定报告](https://github.com/llys-p/Narraverse-World-Map/blob/4ceaab29009687ebad2e13095e7980ea09b92ef4/docs/runtime/ISSUE3-CONFIG-CHECKS-RESULT-20261016.md)。独立树`D:\Narraverse-World-Map-issue3-config-checks` / `codex/issue-3-config-checks`，源码c94a228、报告4ceaab2已推送；下层M1试验fbaf514 / `codex/issue-3-history-cost`另存远端，未采纳。原b7一次真实CPU采样定位配置校验反复构造初始世界，8个core保留完整配置检查及实际指纹/审计/重演/持久规则，只省无消费者的分配/字符串。定向14/14、持久篡改/失败回滚2/2；ABBA每版2次、每轮24/24。重开中位67.592→55.654秒（17.66%，CPU16.93%），两组各少15.872/8.005秒；首开中位52.866→56.299秒、反向组慢11.629秒，返村中位仅少3.303秒按用户要求不算收益、不追查。功能限定PASS但未替换b7基准，PR6/7原结论保持。原8档/副本/生产/既有脏文件保持、38记录PID退出、无锁、原监听身份不变；55份散列/计时文件加索引推送，私档/完整投影未上传。任务报告交付收口，Issue3/D仍开放进行中；无main/deploy/模型/服务启停或DSH协调。
 
 - **Issue #3 本机独立ABBA验收完成，性能仍未验收**：[固定报告](https://github.com/llys-p/Narraverse-World-Map/blob/220f62adc26da6938d730fa5a67b647d3b4afc97/docs/runtime/ISSUE3-LOCAL-ACCEPTANCE-20261016.md)。A=b7e5a9e7，B=aa21ba32（PR6+7），独立worktree `D:\Narraverse-World-Map-issue3-{baseline,acceptance}`；验收分支 `codex/issue-3-local-acceptance-20261016` / 220f62a已推送精确读回且干净。Node24.14/Windows，A1 B1 B2 A2各2次真实r170→返村→关闭→重开，每次24/24断言、r182字节/回执/逐项五投影/重演/重开一致；编码A7/B13、持久篡改与失败回滚各版2/2通过。墙钟中位开档46.762→44.658s（+4.50%）、返村48.379→45.828s（+5.27%）、重开65.073→51.787s（+20.42%）；首组全退化、次组全改善，A重开54.313–75.833s波动大，n=2不能证明可重复收益，当前建议暂缓以性能为据合并PR6/7，不采纳成新生产基准。原8档/各7副本/生产与既有脏文件保持，22个本任务Node PID全退出、无锁/临时文件；39份计时/散列证据随分支推送，私档/完整投影未上传。PR5仅诊断、PR4未纳入，无Profiler/视觉/全量/H7/128链/服务启停/main/deploy/模型调用。验收报告任务收口，Issue3开放、D仍进行中。
 
