@@ -1,0 +1,10 @@
+✔ D4E4 projection is a deterministic, bounded, redacted timeline from committed scene facts (45301.0126ms)
+✔ D4E4 owner and HTTP activity projection are opt-in, revision-coherent, detached, read-only, and durable (2670.7968ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 48104.4388

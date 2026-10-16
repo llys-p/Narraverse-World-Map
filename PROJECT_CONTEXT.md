@@ -1,16 +1,15 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-11 21:15（Asia/Shanghai）。
+更新时间：2026-10-16 17:23（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
 
-## 当前D3施工树
+## 当前D4E4交付树
 
-- D3-4源码cb03e1afd3900b6748d729aaa345bfed590f90e9已中控限定PASS：新战斗测试18/18、0 fail/skip/todo，语法/diff与前后哈希通过；旧直接回归复用不重跑。固定攻击/逃跑/取消只输出候选生命/结果/局部耗时，未写回世界、会话或页面。源码未push/main/部署，本片结束；见tasks/D3-4-ENCOUNTER-COMBAT-TASK.md收口。
+- 本树 `D:/Narraverse-World-Map-world-activity` / `codex/world-runtime-world-activity`；被验源码/测试 `28d3f793a18f223e7df8d2378b1e81eba2d8e1e5`，冻结合同2562f40，基准D4E3 0f4bba2（生产b7）。
+- 活动日志功能合同限定PASS：唯一新增定向2/2（48.104秒/90秒硬限），独立18328真实浏览器筛选、刷新只读和正常重开一致；完整结果、历史失败/超时及证据边界见[本轮复核](docs/runtime/D4E4-WORLD-ACTIVITY-REVIEW-20261016.md)。
+- 默认关闭活动观察；本树Start-D4显式开发者全知模式，固定18327新隔离世界。18327未启动/日常目录未创建；原18325用户实例、原八档及既有改动保持。源码/脱敏证据推送任务分支，不合main、部署或迁移。
+- 性能Issue3仍开放，本轮未新测或优化；不称几十秒等待为流畅。下一步现有村庄/森林消费链贯通，再少数重要人物行为追踪，仅作指引，本轮未开工。当前范围完成停止。
 
-- 实际目录D:/Narraverse-World-Map/hds-reservation，分支codex/world-runtime-d3-reservation；D3-3源码4947adddddbca8f7a0478b845c8c960af2e4cda3，基准6790b4d。仅新增encounter-session模块与独立测试。
-- 中控限定PASS：标准三文件69/69（19新+36世界适配+14预留），0 fail/skip/todo、10.1秒；语法/diff通过、测试前后哈希一致。证据control artifacts/world-runtime-d3-session-20261011/controller-validation.json与controller-final.tap。
-- 内存会话开始/取消、回执、幂等、版本冲突、100项预算和原子发布已验。后置故障未注入；旧SimulationSession/EventLog/存档/服务/UI/战斗未接，完整D3未验收。
-- 唯一DSH包工头使用国内DeepSeek V4 Pro high，执行优先免费Global DeepSeek V4.1 Flash high；原生工人已结束，Codex完成最终验收。源码未push/main/部署，本片结束停止；下一片另定合同。
-- 下方继承历史仅作背景，主线唯一状态以D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md为准。
+下方是继承的历史背景，不作为当前源码、进程、推送或阶段状态。
 
 ## 项目定位
 

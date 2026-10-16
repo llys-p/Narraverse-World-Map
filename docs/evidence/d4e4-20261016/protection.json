@@ -1,0 +1,128 @@
+{
+  "sourceCommit": "28d3f793a18f223e7df8d2378b1e81eba2d8e1e5",
+  "originalEight": [
+    {
+      "file": "service-commit-r0.json",
+      "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r1.json",
+      "sha256": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r145.json",
+      "sha256": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r157.json",
+      "sha256": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r158.json",
+      "sha256": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r164.json",
+      "sha256": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r170.json",
+      "sha256": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+      "unchanged": true
+    },
+    {
+      "file": "service-commit-r182.json",
+      "sha256": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c",
+      "unchanged": true
+    }
+  ],
+  "protectedUntracked": {
+    "ADVISORY-TO-CONTROLLER-2026-10-09-ROUND2.md": {
+      "sha256": "fb1b6f7047675661d95c1e1b03bc2259569a6501efda986964b0bcad88178ef6",
+      "unchanged": true
+    },
+    "HANDOFF-TO-CONTROLLER-M3-4B-2026-10-09.md": {
+      "sha256": "23c97a166195d26205b3f598d71b92827399aa582b62f3cf8eb8c4ee80f82bb5",
+      "unchanged": true
+    },
+    "asset-studio.html": {
+      "sha256": "298d9a01de094654b11eefe0b3663308a010e964f9bf778935ee565d38e0d011",
+      "unchanged": true
+    },
+    "docs/character-mind/REFERENCE-BASED-REPLAN-20261008.md": {
+      "sha256": "02f5327460c28549473369887929683944c7faf886d55080245f9f268b8a85b5",
+      "unchanged": true
+    },
+    "dual-presentation-demo.html": {
+      "sha256": "21c859aa5bbe6db6078498db37978141fc3a0abd8409a1dd1bb7382c6f30598f",
+      "unchanged": true
+    }
+  },
+  "activeWorldPreviousFiles": {
+    "service-commit-r0.json": {
+      "sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+      "unchanged": true
+    },
+    "service-commit-r12.json": {
+      "sha256": "5cab39dde0ffc1628bf20bc2bed1d4693a972f6b6d6b0fe6a5f360fb18669d4d",
+      "unchanged": true
+    },
+    "service-commit-r18.json": {
+      "sha256": "3438f9834e13401f5ec9c3d4132d171c5adcf00fb388bbd9ae2c8494861719f3",
+      "unchanged": true
+    },
+    "service-commit-r24.json": {
+      "sha256": "a6c845ccaa1ab7dcc35b4d90085082664023f23ee5ed05ee89c5ae9cdf7bc12a",
+      "unchanged": true
+    },
+    "service-commit-r25.json": {
+      "sha256": "65ff632ca1c8f0bfe1987c25a8c431afd5dd4f36a3983be426146f46a73b248e",
+      "unchanged": true
+    },
+    "service-commit-r31.json": {
+      "sha256": "39a5b68986d44c42fb1bb63ee77a1a9f7a6d32fdd5d5601ecc5bbe22bcd29232",
+      "unchanged": true
+    },
+    "service-commit-r37.json": {
+      "sha256": "e9ed76ffc43f438e858d711ab3b2bf754f16d2ae7ca89de5363ee4e0afb5007d",
+      "unchanged": true
+    },
+    "service-commit-r38.json": {
+      "sha256": "bae66ede0ab8896b0a8553826ef7b5692c1fa311bd4d2db743b863265aef1e25",
+      "unchanged": true
+    },
+    "service-commit-r44.json": {
+      "sha256": "c091e55aedefb4abbcb700a22f122cbc8e12166bec43026c9c89409e0598c4d5",
+      "unchanged": true
+    }
+  },
+  "activeSourceCommit": "0f4bba27f68a5841ca672288a76512e11ea729b1",
+  "activeSourceClean": true,
+  "activeServiceSamePidCommandAndStart": true,
+  "ownExit": {
+    "first": {
+      "pid": 44812,
+      "code": 0,
+      "signal": null,
+      "timedOut": false,
+      "wallMs": 60581
+    },
+    "reopen": {
+      "pid": 5752,
+      "code": 0,
+      "signal": null,
+      "timedOut": false,
+      "wallMs": 51474
+    }
+  },
+  "ownLockAbsent": true,
+  "candidate18327DefaultWorldCreated": false,
+  "browserFilesUnchangedThroughRefreshAndReopen": true,
+  "browserFileCount": 3
+}

@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBNJG4",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "Done",
+              "optionId": "98236657",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "已验收",
+              "optionId": "4dfee22c",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZB4I",
+        "body": "D4E4真实世界活动日志：功能合同限定PASS\n\nhttps://github.com/llys-p/Narraverse-World-Map/blob/2562f40e1420c98939b18279369c7cd3e95e495f/tasks/D4E4-WORLD-ACTIVITY-LOG-TASK.md\n\n被验源码28d3f793a18f223e7df8d2378b1e81eba2d8e1e5已推送读回，执行者停写。独立树D:/Narraverse-World-Map-world-activity。新增定向门2/2（48.104秒/90秒硬限），中控独立18328真实浏览器人物/地点筛选、空结果、刷新只读、正常关闭重开一致；两服务exit0、无锁/测试进程。原八档、18325用户服务/9既有文件、5未跟踪文件均保护。旧失败/超时原日志被覆盖，重建记录与最终完整日志分别保留。\n\n复核与脱敏证据：https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-world-activity/docs/runtime/D4E4-WORLD-ACTIVITY-REVIEW-20261016.md\n\n新18327入口为开发者全知观察，默认服务关闭活动API；18327日常目录尚未创建，18325未更新或迁移。只读来源最近256事件/64条/64KiB，不泄漏原始私账/计划/回执，不改变角色知识或审计重演。性能Issue3仍开放且暂停，本轮无新性能结论；D整体仍进行中。后续地图/人物两步未开工；未main/deploy/迁移/DSH，本轮停止。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

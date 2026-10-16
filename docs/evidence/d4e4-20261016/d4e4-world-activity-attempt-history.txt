@@ -1,0 +1,12 @@
+D4E4 targeted test attempt history (console result transcript reconstructed after common stdout path was reused)
+
+Attempt 1 — test file tests/simulation/world-activity.test.mjs; outer watchdog 90000 ms.
+Observed Node test output: tests 2, pass 0, fail 2, duration 47026.877 ms. First failure: player trade assertion expected summary containing 买入口粮1份; actual projection did not satisfy the expected success text. Second failure: the original temp-root prefix guard assertion failed before entering cleanup. Later fix: trade assertion now accepts only a truthful successful product/quantity or an explicit rejection; cleanup guard now validates parent directory and task prefix from inside try/finally. Original same-name stdout/stderr files were overwritten by later runs.
+
+Attempt 2 — test file tests/simulation/world-activity.test.mjs; outer watchdog 90000 ms.
+Observed shell result: Targeted test exceeded 90 second watchdog. The experiment placed 96 ticks before several independently audited scene commands and then exceeded the one-day bound. Abandoned; trajectory was changed to commands at tick 0 followed by remaining ticks through tick 144. The same-name stdout/stderr files were overwritten by later runs.
+
+Attempt 3 — test file tests/simulation/world-activity.test.mjs; outer watchdog 90000 ms.
+Observed Node test output: tests 2, pass 1, fail 1, duration 33260.717 ms. Projection/owner behavior assertions passed. Remaining failure was a false-positive redaction assertion matching the evidence label travel-receipt, not a receipt DTO field. Fixed the redaction test to check private field names; the public DTO shape is separately exact-key checked. Original same-name stdout/stderr files were overwritten by the final run.
+
+Final run — PID 20352; argv: "C:\Program Files\nodejs\node.exe" --test tests/simulation/world-activity.test.mjs; watchdog 90000 ms; timed out false; exit code 0; duration 48104.438 ms; tests 2, pass 2, fail 0. Full process stdout: d4e4-world-activity-verified.stdout. Full process stderr: d4e4-world-activity-verified.stderr (empty).

@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "28d3f793a18f223e7df8d2378b1e81eba2d8e1e5",
+  "argv": [
+    "C:/Program Files/nodejs/node.exe",
+    "--test",
+    "tests/simulation/world-activity.test.mjs"
+  ],
+  "pid": 20352,
+  "hardLimitMs": 90000,
+  "timedOut": false,
+  "exitCode": 0,
+  "durationMs": 48104.4388,
+  "tests": 2,
+  "pass": 2,
+  "fail": 0,
+  "metadataSource": "executor process receipt; complete final stdout retained; prior overwritten attempts reconstructed separately"
+}

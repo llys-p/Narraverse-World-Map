@@ -1,0 +1,12 @@
+{
+  "sourceCommit": "28d3f793a18f223e7df8d2378b1e81eba2d8e1e5",
+  "method": "Codex in-app browser, real DOM and semantic select/click operations; transcription of returned observations; no screenshots or visual review",
+  "url": "http://127.0.0.1:18328/runtime-map.html",
+  "initial": {"count": 2, "activityIds": ["event-1-item-0", "event-2-item-0"], "developerPerspectiveNoticePresent": true, "rejectedEncounterLocationUnknown": true, "giftActor2Village": true},
+  "filters": {"actor2GiftOnly": true, "actor3EmptyMessage": true, "unknownLocationRejectedOnly": true, "villageGiftOnly": true},
+  "afterRefresh": {"sameIdsContentAndCount": true, "saveFileHashesUnchanged": true},
+  "afterNormalCloseAndReopen": {"sameIdsContentAndCount": true, "sameActivityApiSha256": "8082bec932e6aa3f122c4b388b8386829b22efeef39e4a5b65a237dd0d4bc427", "revision": 2, "tick": 0},
+  "consoleErrors": [],
+  "temporaryTabClosed": true,
+  "browserServicesNormallyStopped": true
+}
