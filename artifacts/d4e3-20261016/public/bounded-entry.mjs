@@ -1,0 +1,11 @@
+import {spawn} from 'node:child_process';
+import {writeFileSync,appendFileSync,existsSync} from 'node:fs';
+const label=process.argv.includes('--reopen')?'entry-reopen':'entry-first',base='artifacts/d4e3-20261016/';
+if(existsSync(base+label+'-process.json'))throw Error('Refusing to overwrite entry proof');
+const args=['/d','/c','call','Start-D4.cmd'];
+const child=spawn('cmd.exe',args,{stdio:['pipe','pipe','pipe'],windowsHide:true});const started=Date.now();
+writeFileSync(base+label+'-process.json',JSON.stringify({pid:child.pid,args,hardLimitMs:120000,exitConfirmMs:5000}));
+for(const [stream,name] of [[child.stdout,'stdout'],[child.stderr,'stderr']])stream.on('data',x=>{process[name].write(x);appendFileSync(base+label+'-'+name+'.txt',x);});
+process.stdin.pipe(child.stdin);child.stdin.on('error',()=>{});let forced;
+const timer=setTimeout(()=>{child.stdin.write('quit\n');forced=setTimeout(()=>spawn('taskkill',['/PID',String(child.pid),'/T','/F'],{windowsHide:true,stdio:'ignore'}),5000);},120000);
+child.on('exit',(code,signal)=>{clearTimeout(timer);clearTimeout(forced);writeFileSync(base+label+'-exit.json',JSON.stringify({pid:child.pid,code,signal,wallMs:Date.now()-started}));process.exit(code??1);});

@@ -1,0 +1,103 @@
+{
+  "source": "67bf6056d0072af1ec59124d79feab5fa4acd340",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "after-reads.json",
+      "bytes": 1933,
+      "sha256": "a4d7c2b1028c63e27cbdfcf6e5f856e75b31d1ec0885296a94223c53aa83cac5"
+    },
+    {
+      "path": "before-reads.json",
+      "bytes": 1933,
+      "sha256": "a4d7c2b1028c63e27cbdfcf6e5f856e75b31d1ec0885296a94223c53aa83cac5"
+    },
+    {
+      "path": "bounded-entry.mjs",
+      "bytes": 1227,
+      "sha256": "e4a2dd2f734849604e81f0fbdd0999a4c9f4896c46b80a3878f6da4f85ee47aa"
+    },
+    {
+      "path": "bounded-server.mjs",
+      "bytes": 1416,
+      "sha256": "53e55235f44928e1196029acbd9970b79392b7e671ab15d2a6554eb20cce695f"
+    },
+    {
+      "path": "browser-functional.json",
+      "bytes": 1608,
+      "sha256": "b0a5e2c3d269e0d143f3c0ee722adbcde6eb4fcb434308f800c8d68c35ce7236"
+    },
+    {
+      "path": "capture.py",
+      "bytes": 1286,
+      "sha256": "4a14977fb7de093bc9f040bd8b4e8ff06c32a84b3ea1896a8ebc495bf8ef6f4e"
+    },
+    {
+      "path": "entry-after.json",
+      "bytes": 178,
+      "sha256": "8946241eb72cff404d6fd4a8444a1f2d981ebb5bb2b41bffbeba1c900497cb5c"
+    },
+    {
+      "path": "entry-before.json",
+      "bytes": 173,
+      "sha256": "e5fd02cf41ecb1a40e5d7962cf079493d5e00c16253a6e6a075e3af2f5a9557b"
+    },
+    {
+      "path": "entry-first-exit.json",
+      "bytes": 51,
+      "sha256": "6fcec0178cbfaa89c18d3c409f766a537aeb2b705c1d9a956164c1490708954b"
+    },
+    {
+      "path": "entry-first-process.json",
+      "bytes": 96,
+      "sha256": "53cf4acaf54da04bf3baf5c10dfe5455434bd5893e7e5e22d335c6bb0a003015"
+    },
+    {
+      "path": "entry-reopen-exit.json",
+      "bytes": 51,
+      "sha256": "ee9252719f6e051112aeed754bc0382f946774b8c781f948a05b2143947c8443"
+    },
+    {
+      "path": "entry-reopen-process.json",
+      "bytes": 96,
+      "sha256": "82b81628ec1d891e06e240328d25c2ed07ce655b802331cb325e7d591a558583"
+    },
+    {
+      "path": "first-exit.json",
+      "bytes": 52,
+      "sha256": "a1a7feef2806a8ce7b3fb966bc10b766a6082658e3a97db5004060ce301b8a63"
+    },
+    {
+      "path": "first-process.json",
+      "bytes": 268,
+      "sha256": "e11316356829c591c740171d1097d043aaaefdc791471968a3532deda7d05d39"
+    },
+    {
+      "path": "preflight.json",
+      "bytes": 11669,
+      "sha256": "e36f99d5ecc674ecd0304426f5cc8f001dad96a64714a01e5b258db4d13c9139"
+    },
+    {
+      "path": "protection.json",
+      "bytes": 805,
+      "sha256": "f3aa422467f7b0c99a15f8e80f35fbf801ee3f75b7c5277a71c8a27be65326f0"
+    },
+    {
+      "path": "reopen-exit.json",
+      "bytes": 52,
+      "sha256": "7a79a17981d041ca4452c8bee124d921e63a16cd01fd90ce3bc20739ae14aa6f"
+    },
+    {
+      "path": "reopen-process.json",
+      "bytes": 217,
+      "sha256": "aa8a9e006f6a9e1bdb389eb9bf34b9d48f6260429e8a7c0658ffd26fa5be0ff3"
+    }
+  ],
+  "saveContentsExported": false,
+  "fullProjectionsExported": false,
+  "lockNonceExported": false
+}

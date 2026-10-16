@@ -1,0 +1,29 @@
+{
+  "originalEightUnchanged": true,
+  "production90WorkingHashesUnchanged": true,
+  "sameGitProductionAsB7": true,
+  "rawLineEndingsExplained": [
+    "runtime/core/data-contract.mjs"
+  ],
+  "fourProjectionsAndAllSevenCommitFilesIdenticalAcrossReopen": true,
+  "childPids": [
+    44612,
+    47748
+  ],
+  "childPidsAlive": false,
+  "testLockRemaining": false,
+  "defaultUserWorldCreated": true,
+  "privateArchiveCopied": false,
+  "screenshotsTaken": false,
+  "modelsCalled": false,
+  "performanceRuns": false,
+  "defaultUserWorldPristine": {
+    "revision": 0,
+    "tick": 0,
+    "food": 20,
+    "simulationId": "scene-survival-village",
+    "r0Sha256": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b"
+  },
+  "defaultUserWorldLockRemaining": false,
+  "entryCmdNormalExitBothRuns": true
+}

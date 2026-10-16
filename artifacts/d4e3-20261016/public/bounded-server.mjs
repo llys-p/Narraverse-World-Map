@@ -1,0 +1,15 @@
+import {spawn} from 'node:child_process';
+import {writeFileSync,appendFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+const directory=resolve('artifacts/d4e3-20261016/test-world');
+const restore=process.argv.includes('--restore');
+const args=['runtime-server.mjs','--data-dir',directory,'--port','18326','--writable','true','--inspect-mind','false',...(restore?[]:['--profile','scene-survival-village','--seed','42'])];
+const child=spawn(process.execPath,args,{stdio:['pipe','pipe','pipe'],windowsHide:true});
+const started=Date.now(),label=restore?'reopen':'first';
+writeFileSync(`artifacts/d4e3-20261016/${label}-process.json`,JSON.stringify({pid:child.pid,args,hardLimitMs:1200000}));
+child.stdout.on('data',x=>{process.stdout.write(x);appendFileSync(`artifacts/d4e3-20261016/${label}-stdout.txt`,x);});
+child.stderr.on('data',x=>{process.stderr.write(x);appendFileSync(`artifacts/d4e3-20261016/${label}-stderr.txt`,x);});
+process.stdin.pipe(child.stdin);child.stdin.on('error',()=>{});
+let forced;
+const deadline=setTimeout(()=>{console.error('TEST_HARD_LIMIT');child.stdin.write('quit\n');forced=setTimeout(()=>child.kill('SIGKILL'),5000);},1200000);
+child.on('exit',(code,signal)=>{clearTimeout(deadline);clearTimeout(forced);writeFileSync(`artifacts/d4e3-20261016/${label}-exit.json`,JSON.stringify({pid:child.pid,code,signal,wallMs:Date.now()-started}));process.exit(code??1);});

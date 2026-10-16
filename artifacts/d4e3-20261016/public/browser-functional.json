@@ -1,0 +1,69 @@
+{
+  "method": "Real Codex in-app browser CUA semantic clicks and DOM/AX reads; no screenshot",
+  "testPort": 18326,
+  "steps": [
+    {
+      "step": "gift",
+      "revision": 1,
+      "tick": 0,
+      "food": 19,
+      "receivedGiftMemoryVisible": true
+    },
+    {
+      "step": "travel-forest",
+      "revision": 13,
+      "tick": 12,
+      "food": 19
+    },
+    {
+      "step": "encounter-begin",
+      "revision": 14,
+      "tick": 12,
+      "health": 1000,
+      "wolfHealth": 300
+    },
+    {
+      "step": "attack-1",
+      "revision": 20,
+      "tick": 18,
+      "health": 920,
+      "wolfHealth": 150
+    },
+    {
+      "step": "battle-win",
+      "revision": 26,
+      "tick": 24,
+      "health": 920,
+      "wolfHealth": 0
+    },
+    {
+      "step": "return-village",
+      "revision": 38,
+      "tick": 36,
+      "food": 19,
+      "health": 920,
+      "receivedGiftMemoryVisible": true
+    },
+    {
+      "step": "refresh",
+      "revision": 38,
+      "tick": 36,
+      "readOnly": true
+    },
+    {
+      "step": "reopen-village-and-map",
+      "revision": 38,
+      "tick": 36,
+      "food": 19,
+      "health": 920,
+      "receivedGiftMemoryVisible": true
+    }
+  ],
+  "consoleErrors": [],
+  "testObserverCorrections": [
+    "First attack wait mistakenly expected wolf health 220; actual receipt gave 150. Corrected observer; product unchanged.",
+    "A short locator wait ended while return command was pending; waited for actual completion; did not resubmit."
+  ],
+  "newFullDayRun": false,
+  "settlementEvidence": "Reused unchanged production D4P5/CP3 evidence; no full history/H7 rerun"
+}

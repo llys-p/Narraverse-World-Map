@@ -1,0 +1,41 @@
+{
+  "views": {
+    "snapshot": {
+      "sha256": "928585d928efd8e17463975eefa1b9f65064378b16f223b77d02887eee5994c4",
+      "canonicalSha256": "928585d928efd8e17463975eefa1b9f65064378b16f223b77d02887eee5994c4",
+      "revision": 38,
+      "tick": 36,
+      "simulationId": "scene-survival-village"
+    },
+    "player": {
+      "sha256": "a24b1c8edc6bf9990700e43fadfb04fc38176b1233ba4f7d29e6af8c39c0ace5",
+      "canonicalSha256": "a24b1c8edc6bf9990700e43fadfb04fc38176b1233ba4f7d29e6af8c39c0ace5",
+      "revision": 38,
+      "tick": 36,
+      "simulationId": "scene-survival-village"
+    },
+    "encounter": {
+      "sha256": "d594f25f5e5df1472c5cb2c1a160022c060c8839b2bfda085b55538d82e55a2b",
+      "canonicalSha256": "d594f25f5e5df1472c5cb2c1a160022c060c8839b2bfda085b55538d82e55a2b",
+      "revision": 38,
+      "tick": 36,
+      "simulationId": "scene-survival-village"
+    },
+    "scene": {
+      "sha256": "983d4cd7b2bf6c4c9df7e4284ffa7a66d3de6f216a5af5c4ad8ad67ffadedfb6",
+      "canonicalSha256": "983d4cd7b2bf6c4c9df7e4284ffa7a66d3de6f216a5af5c4ad8ad67ffadedfb6",
+      "revision": 38,
+      "tick": 36,
+      "simulationId": "scene-survival-village"
+    }
+  },
+  "serviceCommitHashes": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r1.json": "c9dcb011848a937392a59a1d0b3bd655f476e06fe77a7f76f05cd2f02522e2ab",
+    "service-commit-r13.json": "5934903293f6bbb93968a561ac1fa17417c4bc301ac53f4d7162ad57fd79d7db",
+    "service-commit-r14.json": "05d39f222bd79397a77a124bda1c03721f19a263f796d5cd4fb9943863efde2e",
+    "service-commit-r20.json": "ea6d35d608ed8f5642364883dbe13847847209016c2b601c32add1ff6a250533",
+    "service-commit-r26.json": "ad2831aab984c666d9687c819c512ee634efda6ddec92ebb10397fbae11de634",
+    "service-commit-r38.json": "7e0fcf25fedaa9943a1dea8c9bdc94b410ec9a49aabf5b5cf2f8d50b04b25566"
+  }
+}
