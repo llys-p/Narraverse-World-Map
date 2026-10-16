@@ -84,7 +84,7 @@ function encodeCanonical(value, ancestors = new Set(), depth = 0, encodedKeys = 
   if (typeof value === 'string') return JSON.stringify(value);
   if (typeof value === 'number') {
     requireCondition(Number.isFinite(value), 'Non-finite number');
-    return value === 0 ? '0' : JSON.stringify(value);
+    return value === 0 ? '0' : '' + value;
   }
   requireCondition(typeof value === 'object', 'Non-JSON data');
   requireCondition(!ancestors.has(value), 'Cyclic data');
