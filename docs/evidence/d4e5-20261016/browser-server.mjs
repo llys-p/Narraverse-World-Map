@@ -1,0 +1,15 @@
+import {spawn} from 'node:child_process';
+import {writeFileSync,appendFileSync,existsSync} from 'node:fs';
+import {resolve} from 'node:path';
+import assert from 'node:assert/strict';
+const root='artifacts/d4e5-controller-20261016',restore=process.argv.includes('--restore'),label=process.argv.includes('--navigation')?'navigation':restore?'reopen':'first';
+const args=['runtime-server.mjs','--data-dir',resolve(root,'world'),'--port','18330','--writable','true','--inspect-mind','false','--inspect-activity','true',...(restore?[]:['--profile','scene-survival-village','--seed','42'])];
+assert(!existsSync(`${root}/${label}-process.json`));
+const child=spawn(process.execPath,args,{stdio:['pipe','pipe','pipe'],windowsHide:true}),started=Date.now();
+writeFileSync(`${root}/${label}-process.json`,JSON.stringify({pid:child.pid,args,hardLimitMs:600000}));
+let forced,timedOut=false;
+const timer=setTimeout(()=>{timedOut=true;console.error('TEST_HARD_LIMIT');child.stdin.write('quit\n');forced=setTimeout(()=>child.kill('SIGKILL'),5000);},600000);
+process.stdin.pipe(child.stdin);child.stdin.on('error',()=>{});
+child.stdout.on('data',x=>{process.stdout.write(x);appendFileSync(`${root}/${label}-stdout.txt`,x);});
+child.stderr.on('data',x=>{process.stderr.write(x);appendFileSync(`${root}/${label}-stderr.txt`,x);});
+child.on('exit',(code,signal)=>{clearTimeout(timer);clearTimeout(forced);writeFileSync(`${root}/${label}-exit.json`,JSON.stringify({pid:child.pid,code,signal,timedOut,wallMs:Date.now()-started}));process.exit(code===0&&signal===null&&!timedOut?0:1);});

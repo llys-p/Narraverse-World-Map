@@ -1,0 +1,10 @@
+✔ shared activity validator accepts the same-version complete DTO and rejects version or identity mismatch (0.7822ms)
+✔ place filtering uses strict location equality and does not mutate the source DTO (0.5749ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 70.5154

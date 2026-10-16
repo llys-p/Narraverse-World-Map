@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 18:02（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 18:10（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -32,7 +32,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- **D4E5地图到地点现有玩法闭环已发布并开工**：[合同](https://github.com/llys-p/Narraverse-World-Map/blob/c36704e6081c0597f579465b66d7a6d5ea3c8d32/tasks/D4E5-PLACE-EXPERIENCE-LOOP-TASK.md)。用户明确继续既定第二步，接续D4E4 b594b45；新树`D:/Narraverse-World-Map-place-loop` / `codex/world-runtime-place-loop`，候选18329、独立浏览器18330。原18325 PID2592和用户已启动的18327 PID4432均保护，原树/世界不改。性价比high工人接单并独占允许前端/直接测试，root独占合同/报告/状态/看板/保护/浏览器。仅页面导航、已有地点人物/活动及原交互链，查看不旅行/不写档，不改runtime/审计/知识/存档；尚未交付验收。性能Issue3继续暂停，第三步人物新行为未开工；无main/deploy/迁移/DSH/外部付费调用。
+- **D4E5地图到地点现有玩法闭环限定PASS**：[复核](docs/runtime/D4E5-PLACE-EXPERIENCE-REVIEW-20261016.md)，合同c36704e，树`D:/Narraverse-World-Map-place-loop` / `codex/world-runtime-place-loop`，候选17074c4ef6f9cb372b4cbdf4d8925e231a541283（接D4E4 b594b45/生产b7）。helper最终2/2、141ms/60秒硬限，独立18330真实浏览器地图查看/人物锚点→赠粮→旅行→开始/取消遭遇→查看村庄不旅行→明确返村→地图→刷新/正常重开；rev27/tick24、私粮19、猎人记忆1，五读取投影/六档跨重开字节同一。地点仅真实2村庄/3森林记录，不补造未知位置或人物知识。原八档、78runtime源码、控制5旧文件、用户18325 PID2592和18327 PID4432及既有9/3份档保护；测试三服务正常exit0、无锁/残留，新18329日常目录未创建。源码/报告/脱敏证据已推送，看板先待验收再Done/已验收读回，D仍进行中。性能Issue3暂停、第三步重要人物新行为未开工；无main/deploy/迁移/DSH/外部模型，本片结束停止。
 
 - **D4E4真实世界活动日志限定PASS**：[复核](docs/runtime/D4E4-WORLD-ACTIVITY-REVIEW-20261016.md)，合同2562f40；独立树`D:/Narraverse-World-Map-world-activity` / `codex/world-runtime-world-activity`，被验源码28d3f793a18f223e7df8d2378b1e81eba2d8e1e5（接D4E3 0f4bba2/生产b7），执行者已停写。新增定向2/2、48.104秒/90秒硬限，独立18328浏览器人物/地点筛选、刷新不写档和正常重开一致；原失败/超时及旧原始日志覆盖事实详见报告。显式开发者全知观察默认关闭，最近256来源/64条/64KiB，不混入角色知识；原18325 PID2592/9既有档与原八档均保护，新18327日常目录尚未创建。源码/脱敏证据已推送，Projects先待验收再已验收并读回；D整体仍进行中。性能Issue3开放且暂停，无新测量/main/deploy/迁移/DSH；后两步仅指导，本轮完成停止。
 

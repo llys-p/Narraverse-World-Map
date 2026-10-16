@@ -1,0 +1,16 @@
+{
+  "pid": 40820,
+  "executable": "node",
+  "argv": [
+    "--test",
+    "tests/simulation/place-navigation.test.mjs"
+  ],
+  "startedAt": "2026-10-16T18:01:06.8669751+08:00",
+  "endedAt": "2026-10-16T18:01:07.0183490+08:00",
+  "elapsedMs": 148,
+  "timeoutSeconds": 60,
+  "timedOut": false,
+  "exitCode": 0,
+  "stdout": "stdout.log",
+  "stderr": "stderr.log"
+}
