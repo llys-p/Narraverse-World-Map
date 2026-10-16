@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - codex/issue-3-phase-attribution
+      - codex/issue-3-primitive-encoding
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,6 +16,8 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -22,5 +25,9 @@ jobs:
         run: node --check scripts/measure-issue3-fixture.mjs
       - name: Focused scene service smoke
         run: node --test --test-name-pattern='CP2a-S1 ' tests/simulation/scene-gift-service.test.mjs
+      - name: Primitive encoder direct regression tests
+        run: node --test tests/simulation/canonical-primitive-fast.test.mjs
+      - name: Same-process canonical encoder A/B
+        run: node scripts/bench-issue3-primitive.mjs
       - name: Synthetic bounded attribution
         run: node scripts/measure-issue3-fixture.mjs --profile
