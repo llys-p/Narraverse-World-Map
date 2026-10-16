@@ -1,0 +1,8 @@
+{
+  "id": "PVTI_lAHOEF9IDs4BmADfzhBJLDQ",
+  "content": {
+    "id": "DI_lAHOEF9IDs4BmADfzgLY4dU",
+    "title": "Issue #3｜Windows r170 独立A/B验收",
+    "body": "用户2026-10-16授权本机独立验收。冻结A=b7e5a9e7，B=aa21ba32（PR6+7）；PR5仅诊断，PR4不纳入。独立worktree/隔离7档副本，Node24，A1 B1 B2 A2，每阶段120s/子进程420s，墙钟与process CPU分开。原8档SHA核对、编码A7/B13及持久化各2项通过；当前完整实档链测量中，不是已验收。不合main/部署/上传私档/启停旧实例/模型调用。"
+  }
+}

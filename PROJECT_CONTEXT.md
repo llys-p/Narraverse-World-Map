@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 10:32（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 11:12（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,6 +31,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **Issue #3 本机独立ABBA验收完成，性能仍未验收**：[固定报告](https://github.com/llys-p/Narraverse-World-Map/blob/220f62adc26da6938d730fa5a67b647d3b4afc97/docs/runtime/ISSUE3-LOCAL-ACCEPTANCE-20261016.md)。A=b7e5a9e7，B=aa21ba32（PR6+7），独立worktree `D:\Narraverse-World-Map-issue3-{baseline,acceptance}`；验收分支 `codex/issue-3-local-acceptance-20261016` / 220f62a已推送精确读回且干净。Node24.14/Windows，A1 B1 B2 A2各2次真实r170→返村→关闭→重开，每次24/24断言、r182字节/回执/逐项五投影/重演/重开一致；编码A7/B13、持久篡改与失败回滚各版2/2通过。墙钟中位开档46.762→44.658s（+4.50%）、返村48.379→45.828s（+5.27%）、重开65.073→51.787s（+20.42%）；首组全退化、次组全改善，A重开54.313–75.833s波动大，n=2不能证明可重复收益，当前建议暂缓以性能为据合并PR6/7，不采纳成新生产基准。原8档/各7副本/生产与既有脏文件保持，22个本任务Node PID全退出、无锁/临时文件；39份计时/散列证据随分支推送，私档/完整投影未上传。PR5仅诊断、PR4未纳入，无Profiler/视觉/全量/H7/128链/服务启停/main/deploy/模型调用。验收报告任务收口，Issue3开放、D仍进行中。
 
 - **D4E2入口保护与可移植探针限定PASS**：[任务](tasks/D4E2-PARALLEL-ENTRY-CLOUD-TASK.md)/[复核](docs/runtime/D4E2-REVIEW-20261016.md)。新树 `D:\Narraverse-World-Map-d4-cloud-probe` / `codex/world-runtime-d4-cloud-probe`，67bf605已推送精确读回、干净；runtime/页面不变。仓库AI可跑固定合成短探针，复制/编码/拒绝/getter=0及缺Git/未知参数检查通过，不代表真实r170或日常性能。旧空目录误建默认世界已复现；CMD新增缺正式档停止保护，空/仅临时档目录核验通过且文件不变，保留首轮CMD返回码捕获失败。Issue #3正文已补固定链接/命令并读回OPEN；默认用户世界未创建，旧18324/正式平台未触动，无浏览器/故事/慢档重跑。DSH实际审查被渠道校验拒绝、无意见；用户已交其它对话负责，本对话停止DSH协调。D4E2看板按限定范围收口，D仍进行中，剩余性能继续Issue #3。
 

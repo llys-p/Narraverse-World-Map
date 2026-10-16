@@ -1,0 +1,25 @@
+{
+  "branch": "codex/issue-3-local-acceptance-20261016",
+  "head": "220f62adc26da6938d730fa5a67b647d3b4afc97",
+  "remoteHeadMatches": true,
+  "productionCandidate": "aa21ba32b6fcc92e04d0e3152060028be89dc63b",
+  "report": "https://github.com/llys-p/Narraverse-World-Map/blob/220f62adc26da6938d730fa5a67b647d3b4afc97/docs/runtime/ISSUE3-LOCAL-ACCEPTANCE-20261016.md",
+  "GitHubStates": {
+    "issues/3": {
+      "state": "open",
+      "head": null,
+      "draft": null
+    },
+    "pulls/6": {
+      "state": "open",
+      "head": "87d95751fa55f3a082f1545d6b03b20cca25d3bd",
+      "draft": true
+    },
+    "pulls/7": {
+      "state": "open",
+      "head": "aa21ba32b6fcc92e04d0e3152060028be89dc63b",
+      "draft": true
+    }
+  },
+  "privateSavesUploaded": false
+}
