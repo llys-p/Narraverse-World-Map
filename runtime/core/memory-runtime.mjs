@@ -1,5 +1,5 @@
 import { fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,inputFingerprint } from './data-contract.mjs';
-import { defaultSocietyConfig,createSocietyWorld,validateSocietyWorld,planSocietyDay,applySocietyAction,applySocietyCommand,settleSocietyDay,societyActionFact,societyCauses } from './society.mjs';
+import { defaultSocietyConfig,createSocietyWorld,inspectSocietyConfiguration,validateSocietyWorld,planSocietyDay,applySocietyAction,applySocietyCommand,settleSocietyDay,societyActionFact,societyCauses } from './society.mjs';
 import { createMemoryState,validateMemoryState,reduceMemoryFacts } from './memory-observer.mjs';
 import { createMedicineAnnouncements,validateMedicineAnnouncement,selectPublicMedicineBuyer } from './public-medicine.mjs';
 import { createRng } from './rng.mjs';
@@ -28,13 +28,13 @@ const isLocatedConfig=version=>isPlayConfig(version) || isGiftConfig(version);
 const isPlayerConfig=version=>version==='memory-config-v3' || isLocatedConfig(version);
 const societyVersionOf=version=>isGiftConfig(version)?'society-config-v5':version==='memory-config-v5'?'society-config-v4':version==='memory-config-v4'?'society-config-v3':version==='memory-config-v3'?'society-config-v2':'society-config-v1';
 const observerVersionOf=version=>isGiftConfig(version)?'memory-observer-v3':isPlayConfig(version)?'memory-observer-v2':'memory-observer-v1';
-function validateConfig(config){
+function validateConfig(config,buildWorld=true){
   record(config);requireCondition(MEMORY_VERSIONS.includes(config.version),'Unknown memory configuration','UNSUPPORTED_VERSION');
   fields(config,['version','society','discountEnabled',...(config.version!=='memory-config-v1'?['personalities']:[])]);
   record(config.society);
   requireCondition(config.society.version===societyVersionOf(config.version),'Memory/Society version mismatch','UNSUPPORTED_VERSION');
   if(config.version!=='memory-config-v1')validatePersonalities(config.personalities);
-  requireCondition(typeof config.discountEnabled==='boolean','Invalid memory discount policy');return createSocietyWorld(config.society);}
+  requireCondition(typeof config.discountEnabled==='boolean','Invalid memory discount policy');return buildWorld?createSocietyWorld(config.society):inspectSocietyConfiguration(config.society);}
 export function createMemoryWorld(config=defaultMemoryConfig()){
   const world=validateConfig(config),copy=cloneData(config);
   return {...world,memoryModel:{config:copy,configFingerprint:canonicalJson(copy),day:0,
@@ -43,11 +43,11 @@ export function createMemoryWorld(config=defaultMemoryConfig()){
 export function validateMemoryWorld(world){
   record(world);record(world.memoryModel);record(world.memoryModel.config);
   fields(world,[...SOCIETY_FIELDS,'memoryModel',...(isPlayerConfig(world.memoryModel.config.version)?['playerModel']:[])]);validateSocietyWorld(society(world));const m=world.memoryModel;
-  fields(m,['config','configFingerprint','day','observer','announcements','waitingActorId','waitingOutcome']);const initial=validateConfig(m.config);
+  fields(m,['config','configFingerprint','day','observer','announcements','waitingActorId','waitingOutcome']);const initial=validateConfig(m.config,false);
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.society)===canonicalJson(world.societyModel.config),'Memory/Society configuration mismatch');
   integer(m.day);requireCondition(m.day===world.societyModel.day,'Memory day mismatch');validateMemoryState(m.observer);
   const play=isLocatedConfig(m.config.version),version=observerVersionOf(m.config.version);
-  requireCondition(m.observer.version===version && canonicalJson(m.observer.initialActors)===canonicalJson(createMemoryState(initial.actorModel.actors.map(a=>({actorId:a.actorId,alive:a.alive,...(play?{location:a.location}:{})})),version).initialActors),'Memory initial identity/version mismatch');
+  requireCondition(m.observer.version===version && canonicalJson(m.observer.initialActors)===canonicalJson(createMemoryState(initial.actors.map(a=>({actorId:a.actorId,alive:a.alive,...(play?{location:a.location}:{})})),version).initialActors),'Memory initial identity/version mismatch');
   denseArray(m.announcements,6);const seen=new Set();
   for(const f of m.announcements){validateMedicineAnnouncement(f);const key=f.type+'-'+f.payload.actorId;
     requireCondition(!seen.has(key) && world.actorModel.actors.some(a=>a.actorId===f.payload.actorId) &&

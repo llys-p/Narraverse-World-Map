@@ -1,6 +1,6 @@
-import { fields,integer,denseArray,cloneData,canonicalJson,requireCondition,identifier,inputFingerprint,MAX_COLLECTION,record } from './data-contract.mjs';
-import { createActorWorld,validateActorWorld,settleActorDay,applyActorCommand,validateActorPayload } from './actors.mjs';
-import { defaultHunterConfig,createHunterWorld,validateHunterWorld,planHunterDay,applyHunterAction,canPersonalAction,HUNTER_ACTIONS,validateHunterActionResult } from './hunter.mjs';
+import { fields,integer,denseArray,cloneData,canonicalJson,validateJsonData,requireCondition,identifier,inputFingerprint,MAX_COLLECTION,record } from './data-contract.mjs';
+import { createActorWorld,inspectActorConfiguration,validateActorWorld,settleActorDay,applyActorCommand,validateActorPayload } from './actors.mjs';
+import { defaultHunterConfig,createHunterWorld,validateHunterConfiguration,validateHunterWorld,planHunterDay,applyHunterAction,canPersonalAction,HUNTER_ACTIONS,validateHunterActionResult } from './hunter.mjs';
 import { createRng } from './rng.mjs';
 import { marketCommandFact } from './market.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
@@ -26,19 +26,20 @@ export function defaultSocietyConfig(){
 }
 function unitConfig(config,index){return {...defaultHunterConfig(),actors:cloneData(config.actors),...config.economics,
   initialFood:config.estates[index].initialFood,initialHerbs:config.estates[index].initialHerbs,initialWallet:config.estates[index].initialWallet};}
-function validateConfig(c){
+function validateConfig(c,buildWorld=true){
   record(c);
   const player=['society-config-v2','society-config-v3','society-config-v4','society-config-v5'].includes(c.version),play=['society-config-v3','society-config-v4','society-config-v5'].includes(c.version),gift=c.version==='society-config-v5';
   fields(c,['version','actors','estates','economics','saleMarkup','reserveFoodDays',...(player?['player']:[])]);requireCondition(['society-config-v1','society-config-v2','society-config-v3','society-config-v4','society-config-v5'].includes(c.version),'Unknown Society configuration','UNSUPPORTED_VERSION');
   denseArray(c.estates,3);requireCondition(c.estates.length===3,'Society needs exactly three estates');
   fields(c.economics,ECONOMICS);integer(c.saleMarkup);requireCondition(c.saleMarkup<=1000,'Sale markup budget exceeded','LIMIT_EXCEEDED');
   integer(c.reserveFoodDays,1);requireCondition(c.reserveFoodDays<=10,'Public reserve goal budget exceeded');
-  const world=createActorWorld(c.actors);
-  requireCondition(c.actors.version===((c.version==='society-config-v4'||gift)?'actor-config-v4':play?'actor-config-v3':player?'actor-config-v2':'actor-config-v1') && world.actorModel.actors.length===(player?4:3) && world.actorModel.actors.every((a,i)=>a.occupation===[...ROLES,...(player?['player']:[])][i]) &&
+  const world=buildWorld?createActorWorld(c.actors):inspectActorConfiguration(c.actors),actors=buildWorld?world.actorModel.actors:world.actors;
+  requireCondition(c.actors.version===((c.version==='society-config-v4'||gift)?'actor-config-v4':play?'actor-config-v3':player?'actor-config-v2':'actor-config-v1') && actors.length===(player?4:3) && actors.every((a,i)=>a.occupation===[...ROLES,...(player?['player']:[])][i]) &&
     c.actors.market.ecology.resources.settlement.humanCount===80,'Society roster/population differs from fixed contract');
   for(const [i,e] of c.estates.entries()){
     fields(e,['actorId','initialFood','initialHerbs','initialWallet']);requireCondition(e.actorId==='actor-'+(i+1),'Estate identity/order mismatch');
-    for(const key of ['initialFood','initialHerbs','initialWallet'])integer(e[key]);createHunterWorld(unitConfig(c,i));
+    for(const key of ['initialFood','initialHerbs','initialWallet'])integer(e[key]);
+    if(buildWorld)createHunterWorld(unitConfig(c,i));else validateHunterConfiguration(unitConfig(c,i));
   }
   if(player)validatePlayerAllocation(c.player);
   requireCondition(sum(c.estates,e=>e.initialFood)+(player?c.player.initialFood:0)<=world.resources.food && sum(c.estates,e=>e.initialHerbs)+(player?c.player.initialHerbs:0)<=world.resources.herbs &&
@@ -54,6 +55,19 @@ export function createSocietyWorld(config=defaultSocietyConfig()){
   return {...world,societyModel:{config:copy,configFingerprint:canonicalJson(copy),day:0,agents},...(copy.player?{playerModel:(copy.version==='society-config-v5'?createPlayerV3State:['society-config-v3','society-config-v4'].includes(copy.version)?createPlayerPlayState:createPlayerState)(copy.player)}:{})};
 }
 
+export function inspectSocietyConfiguration(config=defaultSocietyConfig()){
+  const initial=validateConfig(config,false),copy=cloneData(config);
+  for(let i=0;i<copy.estates.length;i++)validateHunterConfiguration(unitConfig(copy,i));
+  const resources={...initial.resources};
+  for(const id of ['food','herbs']){
+    const key=id==='food'?'initialFood':'initialHerbs';
+    resources[id]-=sum(copy.estates,e=>e[key])+(copy.player?copy.player[key]:0);
+  }
+  validateJsonData(copy);
+  if(copy.player)(copy.version==='society-config-v5'?createPlayerV3State:['society-config-v3','society-config-v4'].includes(copy.version)?createPlayerPlayState:createPlayerState)(copy.player);
+  return {config:copy,actors:initial.actors,resources};
+}
+
 function ownership(w,id){const a=agent(w,id),others=w.societyModel.agents.filter(a=>a.state.actorId!==id);
   const base={actorId:id,foreignWallets:add(sum(others,a=>a.state.wallet),w.playerModel?.wallet??0),foreignFoodUsed:add(sum(others,a=>a.state.ledger.foodUsed),w.playerModel?.ledger.foodUsed??0),
     saleRevenue:a.trade.revenue,herbsSold:a.trade.herbsSold,herbsReceived:a.trade.herbsReceived};
@@ -64,7 +78,7 @@ export function validateSocietyWorld(w){
   record(w);record(w.societyModel);record(w.societyModel.config);
   fields(w,['resources','resourceModel','ecologyModel','marketModel','actorModel','societyModel',...(w.societyModel.config.version!=='society-config-v1'?['playerModel']:[])]);const m=w.societyModel;
   fields(m,['config','configFingerprint','day','agents']);denseArray(m.agents,3);requireCondition(m.agents.length===3,'Invalid Society estate count');
-  validateConfig(m.config);requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.actors)===canonicalJson(w.actorModel.config),'Society/Actor configuration mismatch');
+  validateConfig(m.config,false);requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.actors)===canonicalJson(w.actorModel.config),'Society/Actor configuration mismatch');
   integer(m.day);requireCondition(m.day===w.actorModel.day,'Society day mismatch');
   for(const [i,a] of m.agents.entries()){
     fields(a,['state','trade']);fields(a.trade,m.config.version==='society-config-v5'?[...TRADE_FIELDS,'foodReceived']:TRADE_FIELDS);for(const n of Object.values(a.trade))integer(n);

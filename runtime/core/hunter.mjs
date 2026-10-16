@@ -1,5 +1,5 @@
-import { fields,integer,cloneData,canonicalJson,requireCondition,identifier,denseArray,inputFingerprint,MAX_COLLECTION,record } from './data-contract.mjs';
-import { defaultActorConfig,createActorWorld,validateActorWorld,settleActorDay,populationShares,applyActorCommand,validateActorPayload } from './actors.mjs';
+import { fields,integer,cloneData,canonicalJson,validateJsonData,requireCondition,identifier,denseArray,inputFingerprint,MAX_COLLECTION,record } from './data-contract.mjs';
+import { defaultActorConfig,createActorWorld,inspectActorConfiguration,validateActorWorld,settleActorDay,populationShares,applyActorCommand,validateActorPayload } from './actors.mjs';
 import { createRng } from './rng.mjs';
 import { marketCommandFact } from './market.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
@@ -18,11 +18,12 @@ export function defaultHunterConfig(){
   return {version:'hunter-config-v1',actors:defaultActorConfig(),initialFood:3,initialHerbs:0,initialWallet:0,wage:20,workFood:8,huntFood:20,
     huntRiskPermille:200,huntDamage:100,workFatigue:150,huntFatigue:200,deadlineDays:20,maxFailures:3,cooldownDays:2};
 }
-function validateConfig(config){
+function validateConfig(config,buildWorld=true){
   fields(config,CONFIG_FIELDS);requireCondition(config.version==='hunter-config-v1','Unknown Hunter configuration','UNSUPPORTED_VERSION');
   for(const key of CONFIG_FIELDS.filter(k=>!['version','actors'].includes(k))){integer(config[key]);requireCondition(config[key]<=1000,'Hunter parameter budget exceeded','LIMIT_EXCEEDED');}
   requireCondition(config.wage>0 && config.deadlineDays>0 && config.maxFailures>0 && config.cooldownDays>0,'Invalid Hunter goal/payment parameters');
-  const world=createActorWorld(config.actors),hunter=world.actorModel.actors.find(a=>a.occupation==='hunter');
+  const world=buildWorld?createActorWorld(config.actors):inspectActorConfiguration(config.actors);
+  const hunter=(buildWorld?world.actorModel.actors:world.actors).find(a=>a.occupation==='hunter');
   requireCondition(hunter,'Hunter occupation not registered');
   requireCondition(config.initialFood<=world.resources.food && config.initialHerbs<=world.resources.herbs && config.initialWallet<=world.resources.gold,'Initial private assets exceed world assets');
   return {world,hunter};
@@ -37,6 +38,11 @@ export function createHunterWorld(config=defaultHunterConfig()){
     currentGoal:null,nextGoalId:1,cooldownUntilDay:0,lastActionDay:0,lastAction:'None',lastDecision:null}};
 }
 
+export function validateHunterConfiguration(config=defaultHunterConfig()){
+  validateConfig(config,false);
+  validateJsonData(cloneData(config));
+}
+
 export function communalGold(world){validateHunterWorld(world);return world.resources.gold-world.hunterModel.wallet;}
 export function validateHunterWorld(world,ownership){
   if(ownership!==undefined){
@@ -48,7 +54,7 @@ export function validateHunterWorld(world,ownership){
     for(const key of (v2?['foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived','foodReceived']:['foreignWallets','foreignFoodUsed','saleRevenue','herbsSold','herbsReceived']))integer(ownership[key]);}
   fields(world,['resources','resourceModel','ecologyModel','marketModel','actorModel','hunterModel']);
   const m=world.hunterModel;fields(m,['config','configFingerprint','actorId','day','wallet','inventory','ledger','currentGoal','nextGoalId','cooldownUntilDay','lastActionDay','lastAction','lastDecision']);
-  validateConfig(m.config);fields(m.ledger,LEDGER_FIELDS);for(const n of Object.values(m.ledger))integer(n);
+  validateConfig(m.config,false);fields(m.ledger,LEDGER_FIELDS);for(const n of Object.values(m.ledger))integer(n);
   validateActorWorld(actorPart(world),add(m.ledger.foodUsed,ownership?.foreignFoodUsed??0));
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.actors)===canonicalJson(world.actorModel.config),'Hunter/Actor config mismatch');
   integer(m.day);requireCondition(m.day===world.actorModel.day,'Hunter day mismatch');identifier(m.actorId);

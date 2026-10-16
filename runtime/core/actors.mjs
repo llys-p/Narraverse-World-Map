@@ -1,4 +1,4 @@
-import { cloneData,fields,integer,denseArray,canonicalJson,requireCondition,identifier,record } from './data-contract.mjs';
+import { cloneData,fields,integer,denseArray,canonicalJson,validateJsonData,requireCondition,identifier,record } from './data-contract.mjs';
 import { createMarketWorld,validateMarketConfiguration,validateMarketWorld,settleMarketDay,applyMarketCommand,marketCommandFact,marketCauses,validateMarketPayload,calibratedMarketConfig } from './market.mjs';
 import { createRng } from './rng.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
@@ -34,14 +34,26 @@ function validateConfig(config,buildWorld=true){
   return world;
 }
 
-export function createActorWorld(config){
-  const world=validateConfig(config),copy=cloneData(config);
-  const actors=copy.initialActors.map((initial,index)=>{
+function initialActors(copy){
+  return copy.initialActors.map((initial,index)=>{
     const actor={actorId:'actor-'+(index+1),...initial,location:'village',simulationLevel:'L1',alive:initial.health>0,
       needs:{},lastNeedsTick:0,deathTick:initial.health===0?0:null};actor.needs=needsOf(actor);return actor;
   });
+}
+export function createActorWorld(config){
+  const world=validateConfig(config),copy=cloneData(config);
+  const actors=initialActors(copy);
   return {...world,actorModel:{config:copy,configFingerprint:canonicalJson(copy),day:0,actors,
     ledger:{foodConsumed:0,herbsConsumed:0,deaths:0}}};
+}
+
+// Detached initial roster/balances for configuration checks; not an audited world.
+export function inspectActorConfiguration(config){
+  validateConfig(config,false);
+  const copy=cloneData(config),actors=initialActors(copy);
+  validateJsonData(copy);
+  const stock=copy.market.ecology.resources.resources;
+  return {config:copy,actors,resources:{food:stock.food.initial,herbs:stock.herbs.initial,gold:stock.gold.initial}};
 }
 
 function sharesOf(world){
