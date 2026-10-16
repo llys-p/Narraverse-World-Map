@@ -1,13 +1,13 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 17:23（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
+更新时间：2026-10-16 18:10（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
 
-## 当前D4E4交付树
+## 当前D4E5交付树
 
-- 本树 `D:/Narraverse-World-Map-world-activity` / `codex/world-runtime-world-activity`；被验源码/测试 `28d3f793a18f223e7df8d2378b1e81eba2d8e1e5`，冻结合同2562f40，基准D4E3 0f4bba2（生产b7）。
-- 活动日志功能合同限定PASS：唯一新增定向2/2（48.104秒/90秒硬限），独立18328真实浏览器筛选、刷新只读和正常重开一致；完整结果、历史失败/超时及证据边界见[本轮复核](docs/runtime/D4E4-WORLD-ACTIVITY-REVIEW-20261016.md)。
-- 默认关闭活动观察；本树Start-D4显式开发者全知模式，固定18327新隔离世界。18327未启动/日常目录未创建；原18325用户实例、原八档及既有改动保持。源码/脱敏证据推送任务分支，不合main、部署或迁移。
-- 性能Issue3仍开放，本轮未新测或优化；不称几十秒等待为流畅。下一步现有村庄/森林消费链贯通，再少数重要人物行为追踪，仅作指引，本轮未开工。当前范围完成停止。
+- 本树 `D:/Narraverse-World-Map-place-loop` / `codex/world-runtime-place-loop`；被验候选 `17074c4ef6f9cb372b4cbdf4d8925e231a541283`，冻结合同c36704e，基准D4E4 b594b45（生产b7）。
+- 地图→现有地点人物/开发者活动→既有交互→同世界返回功能合同限定PASS：[复核](docs/runtime/D4E5-PLACE-EXPERIENCE-REVIEW-20261016.md)。唯一helper门2/2；独立18330真实浏览器赠粮、旅行、开始/取消遭遇、返村、刷新和正常重开通过，rev27/tick24、私粮19、猎人记忆1条，五项读取投影/六档字节保持。
+- 地点查看不旅行；活动严格按已知地点，不造未知历史或角色知识。runtime/服务源码不变，原八档、18325/18327用户服务与旧文件保护。本树Start-D4固定18329新隔离世界，日常目录未创建；没有迁移用户数据。
+- 源码/报告/脱敏证据已推送任务分支，控制看板先待验收再限定已验收；D整体仍进行中。性能Issue3开放且暂停，未合main或部署，无DSH/外部模型。第三步重要人物行为仅后续方向，本轮完成停止。
 
 下方是继承的历史背景，不作为当前源码、进程、推送或阶段状态。
 

@@ -1,0 +1,18 @@
+{
+  "pid": 21184,
+  "executablePath": "C:\\Program Files\\nodejs\\node.exe",
+  "argv": [
+    "--test",
+    "tests/simulation/place-navigation.test.mjs"
+  ],
+  "workingDirectory": "D:\\Narraverse-World-Map-place-loop",
+  "nodeVersion": "v24.14.0",
+  "startedAt": "2026-10-16T18:01:55.1591191+08:00",
+  "endedAt": "2026-10-16T18:01:55.3013841+08:00",
+  "elapsedMs": 141,
+  "timeoutSeconds": 60,
+  "timedOut": false,
+  "exitCode": 0,
+  "stdout": "stdout.log",
+  "stderr": "stderr.log"
+}

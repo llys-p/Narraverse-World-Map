@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBN3O4",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "Todo",
+              "optionId": "f75ad846",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "待开始",
+              "optionId": "b307ec50",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZD_M",
+        "body": "D4E5地图到地点现有玩法闭环：合同已发布\n\n冻结合同：https://github.com/llys-p/Narraverse-World-Map/blob/c36704e6081c0597f579465b66d7a6d5ea3c8d32/tasks/D4E5-PLACE-EXPERIENCE-LOOP-TASK.md\n\n接续D4E4 b594b45，独立树D:/Narraverse-World-Map-place-loop / codex/world-runtime-place-loop。只复用已有地图、地点人物、开发者活动窗口、赠粮、旅行与遭遇，把查看和实际旅行区分；不新增规则/API/人物行为。两个活动用户实例18325/18327保护，新候选18329，独立浏览器18330。本片不优化性能、不做全量/视觉/旧长链、不调用DSH/模型/main/deploy/迁移。当前仅合同发布，执行接单后另记进行中。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBN3O4",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "待验收",
+              "optionId": "18ec6731",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZD_M",
+        "body": "D4E5地图到地点现有玩法闭环：实现已交付，待独立验收\n\n冻结合同：https://github.com/llys-p/Narraverse-World-Map/blob/c36704e6081c0597f579465b66d7a6d5ea3c8d32/tasks/D4E5-PLACE-EXPERIENCE-LOOP-TASK.md\n\n交付源码17074c4ef6f9cb372b4cbdf4d8925e231a541283已推送读回（工人07b3d8e/42fea29已停写，中控仅补森林空状态说明）。前端helper定向最终2/2，60秒硬限未触发，141ms；两次不同源码有效门的独立日志均保留。独立18330真实浏览器验收进行中，地图先查看森林仍在村庄/不能开始遭遇，导航前后五投影/档案字节不变。待完成真实赠粮、旅行、遭遇与同世界返回重开后裁定。原18325/18327均保护，性能优化暂停；无全量/视觉/长链/main/deploy/迁移/DSH。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

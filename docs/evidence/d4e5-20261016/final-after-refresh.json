@@ -1,0 +1,43 @@
+{
+  "simulationId": "scene-survival-village",
+  "revision": 27,
+  "tick": 24,
+  "location": "village",
+  "food": 19,
+  "hunterGiftMemories": 1,
+  "visibleOthers": [
+    "actor-1",
+    "actor-2",
+    "actor-3"
+  ],
+  "encounterStatus": "closed",
+  "encounterResolution": "cancel",
+  "activityCount": 5,
+  "activityIds": [
+    "event-1-item-0",
+    "event-5-item-0",
+    "event-6-item-0",
+    "event-7-item-0",
+    "event-9-item-0"
+  ],
+  "placeActivityCounts": {
+    "village": 2,
+    "forest": 3,
+    "unknown": 0
+  },
+  "hashes": {
+    "snapshot": "c1c43f9266d976558e8da5000b07f4c7ad3d44b98d4cd55917d66cb92ac600b1",
+    "player": "0f6778539ce3167124b43fe02c23f394fa71ee4092aa630a1c18abb4e21ffd5a",
+    "scene": "06ede9b86f12851f2c9be0ff545e8a65cc5f68c7347986dd3ab98f67bc2d3423",
+    "encounter": "17b518821c6eb8c8656d06431cfe16108eb86b1b7e28afc9cb04b63e84b470a1",
+    "activity": "263d644b248ff4f6c7585e578e63a4ea7d2d3d288c8c032ffc3639246ea449ef"
+  },
+  "files": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r1.json": "d36fbd1a6dc86a7f0bda5f4876a8f2edbcc91dfb799e3eeb966cd8da90c3d477",
+    "service-commit-r13.json": "731b0beb3c25e5a9f223dea3406f6cc52c752eeca97ce69d1bff4179a9d572c5",
+    "service-commit-r14.json": "2948ffc751d0411d7221400fb9b4cfbedfc3ee05d99ace9c6e5294b8fd9520a7",
+    "service-commit-r15.json": "84fd38bfa2eea04c43c0bfe2ab51bd4b00c4892dad7574636ccba2bb1fa2293a",
+    "service-commit-r27.json": "04c466d9c9fb1da506c892248f9994ee311abe3cc22506d31807d4e882deaeed"
+  }
+}

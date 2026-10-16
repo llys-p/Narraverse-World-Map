@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "17074c4ef6f9cb372b4cbdf4d8925e231a541283",
+  "method": "Real Codex in-app browser DOM, link/button clicks and select; transcription of returned observations; no screenshots or visual review",
+  "origin": "http://127.0.0.1:18330",
+  "inspectForestFromVillage": {"revision":0,"tick":0,"actualLocation":"village","beginDisabled":true,"worldAndFileHashesUnchanged":true},
+  "hunterLink": {"fragment":"actor-2","targetExists":true},
+  "gift": {"outcome":"succeeded","revision":1,"tick":0,"food":19,"hunterRemembers":true,"villageActivityIds":["event-1-item-0"]},
+  "travelForest": {"outcome":"succeeded","revision":13,"tick":12,"actualLocation":"forest","villagePeopleHidden":true},
+  "begin": {"outcome":"succeeded","revision":14,"tick":12,"state":"active","forestActivityCount":2},
+  "cancel": {"outcome":"succeeded","revision":15,"tick":12,"resolution":"cancel","forestActivityCount":3},
+  "viewVillageWhileInForest": {"actualLocation":"forest","giftButtons":0,"villageActivityIds":["event-1-item-0"],"worldAndFileHashesUnchanged":true},
+  "returnVillage": {"outcome":"succeeded","revision":27,"tick":24,"food":19,"hunterRemembers":true,"villageActivityIds":["event-1-item-0","event-9-item-0"]},
+  "finalMapAndRefreshedAndReopened": {"revision":27,"tick":24,"identity":"player in village alive","activityIds":["event-1-item-0","event-5-item-0","event-6-item-0","event-7-item-0","event-9-item-0"],"same":true},
+  "reopenedVillageActor2Filter": {"hunterRemembers":true,"activityIds":["event-1-item-0"]},
+  "consoleErrors": [],
+  "automationAttemptNote": "One exact getByLabel selector did not match the wrapping label; inspected actual DOM and selected the grounded data-activity-actor control. No business action was resubmitted and no production change was needed.",
+  "temporaryTabClosed": true
+}

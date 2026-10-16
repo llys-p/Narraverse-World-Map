@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBN3O4",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "Done",
+              "optionId": "98236657",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "已验收",
+              "optionId": "4dfee22c",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZD_M",
+        "body": "D4E5地图到地点现有玩法闭环：功能合同限定PASS\n\n冻结合同：https://github.com/llys-p/Narraverse-World-Map/blob/c36704e6081c0597f579465b66d7a6d5ea3c8d32/tasks/D4E5-PLACE-EXPERIENCE-LOOP-TASK.md\n\n被验源码17074c4ef6f9cb372b4cbdf4d8925e231a541283已推送读回。前端helper最终2/2、141ms/60秒硬限（前一版本有效运行独立保留）；中控独立18330真实浏览器完成地图查看森林/人物锚点→赠粮→真实旅行→开始/取消遭遇→查看村庄不旅行→明确返村→同世界地图→刷新/quit重开。最终rev27/tick24、私粮19、猎人记忆1条；五读取投影和六测试档跨刷新重开字节一致。地点活动严格2村庄/3森林，不编造未知地点/人物知识。\n\n复核/脱敏证据：https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-place-loop/docs/runtime/D4E5-PLACE-EXPERIENCE-REVIEW-20261016.md\n\n原八档、78runtime源码、控制5既有文件和用户18325 PID2592/18327 PID4432及此前9/3份service档均保护；测试三服务正常exit0、锁释放、无残留。候选18329日常目录未创建。性能Issue3仍开放/暂停，D整体仍进行中；第三步重要人物新行为未开工。本轮停止；无全量/视觉/H7/长链/main/deploy/迁移/DSH/外部模型。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
