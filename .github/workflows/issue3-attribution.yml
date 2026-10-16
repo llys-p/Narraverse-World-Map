@@ -4,6 +4,7 @@ on:
     branches:
       - codex/issue-3-phase-attribution
       - codex/issue-3-primitive-encoding
+      - codex/issue-3-number-encoding
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,6 +28,12 @@ jobs:
         run: node --test --test-name-pattern='CP2a-S1 ' tests/simulation/scene-gift-service.test.mjs
       - name: Primitive encoder direct regression tests
         run: node --test tests/simulation/canonical-primitive-fast.test.mjs
+      - name: Numeric finite conversion regression
+        run: node --test tests/simulation/canonical-number-fast.test.mjs
+      - name: Journal tamper rejection smoke
+        run: node --test --test-name-pattern='CP2a-S7 ' tests/simulation/scene-gift-service.test.mjs
+      - name: Portable 150-actor comparison with accepted293 and DeepSeek10a
+        run: node scripts/measure-data-contract-synthetic.mjs
       - name: Same-process canonical encoder A/B
         run: node scripts/bench-issue3-primitive.mjs
       - name: Same-runner service audit and reopen A B B A
