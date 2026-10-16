@@ -52,6 +52,24 @@ function deltaSummary(delta) {
   });
 }
 
+function societyActionSummary(result, actorName, action) {
+  const labels = {food:'口粮',herbs:'药材',wallet:'金币'};
+  const before = result?.before, after = result?.after;
+  const deltas = Object.entries(labels).flatMap(([key,label]) => {
+    const oldValue = key === 'food' || key === 'herbs' ? before?.inventory?.[key] : before?.[key];
+    const newValue = key === 'food' || key === 'herbs' ? after?.inventory?.[key] : after?.[key];
+    return Number.isSafeInteger(oldValue) && Number.isSafeInteger(newValue) && oldValue !== newValue ?
+      [`${label}${newValue - oldValue > 0 ? '+' : ''}${newValue - oldValue}`] : [];
+  });
+  // SellMedicine records the real peer transfer using role-specific keys.
+  if (Number.isSafeInteger(before?.sellerHerbs) && Number.isSafeInteger(after?.sellerHerbs) && before.sellerHerbs !== after.sellerHerbs)
+    deltas.push(`药材${after.sellerHerbs - before.sellerHerbs > 0 ? '+' : ''}${after.sellerHerbs - before.sellerHerbs}`);
+  if (Number.isSafeInteger(before?.sellerWallet) && Number.isSafeInteger(after?.sellerWallet) && before.sellerWallet !== after.sellerWallet)
+    deltas.push(`金币${after.sellerWallet - before.sellerWallet > 0 ? '+' : ''}${after.sellerWallet - before.sellerWallet}`);
+  if (Number.isSafeInteger(result?.foodProduced) && result.foodProduced > 0) deltas.push(`公仓产出${result.foodProduced}份口粮`);
+  return `${actorName}完成${action}${deltas.length ? `（${deltas.join('，')}）` : ''}`;
+}
+
 function commandSummary(dto, receipt, actorName) {
   const result = receipt?.result;
   if (receipt?.outcome === 'rejected') {
@@ -113,7 +131,7 @@ export function projectWorldActivity(bundle) {
       const action = actionLabel(p.action) ?? '居民行动';
       addEntry(rows,event,{sourceItemIndex:0,actorIds:[p.actorId,...(p.buyerId ? [p.buyerId] : [])],
         location:null,locationEvidence:'unknown',kind:'npc-action',status:'succeeded',
-        summary:`${actorLabel(actors,p.actorId)}完成${action}`});
+        summary:societyActionSummary(p,actorLabel(actors,p.actorId),action)});
     } else if (event.type === 'FoodGiftCommitted') {
       addEntry(rows,event,{sourceItemIndex:0,actorIds:[p.donorId,p.recipientId],location:p.location,
         locationEvidence:'event-location',kind:'gift',status:'succeeded',
@@ -143,12 +161,18 @@ export function projectWorldActivity(bundle) {
       for (const row of dailyRows) {
         if (row.actorId === 'actor-4' && row.died !== true) continue; // Consumption comes from the player's explicit daily fact below.
         if (row.actorId === 'actor-4') {
-          addEntry(rows,event,{sourceItemIndex:itemIndex++,actorIds:[row.actorId],location:null,locationEvidence:'unknown',
-            kind:'daily-person',status:'settled',summary:`${actorLabel(actors,row.actorId)}日结：本日死亡`});
+          const location = ['village','forest'].includes(row.closing?.location) ? row.closing.location : null;
+          const changes = ['health','hunger','fatigue'].flatMap(key => Number.isSafeInteger(row.opening?.[key]) && Number.isSafeInteger(row.closing?.[key]) ?
+            [`${({health:'健康',hunger:'饥饿',fatigue:'疲劳'})[key]}${row.opening[key]}→${row.closing[key]}`] : []);
+          addEntry(rows,event,{sourceItemIndex:itemIndex++,actorIds:[row.actorId],location,locationEvidence:location ? 'event-location' : 'unknown',
+            kind:'daily-person',status:'settled',summary:`${actorLabel(actors,row.actorId)}日结区间：本日死亡；${changes.join('，')}${location ? `；日结收尾地点${location === 'village' ? '村庄' : '森林'}` : ''}`});
           continue;
         }
-        const summary = `${actorLabel(actors,row.actorId)}日结：口粮${integer(row.food)?row.food:0}份、药材${integer(row.herbs)?row.herbs:0}份${row.died === true ? '，本日死亡' : ''}`;
-        addEntry(rows,event,{sourceItemIndex:itemIndex++,actorIds:[row.actorId],location:null,locationEvidence:'unknown',
+        const location = ['village','forest'].includes(row.closing?.location) ? row.closing.location : null;
+        const changes = ['health','hunger','fatigue'].flatMap(key => Number.isSafeInteger(row.opening?.[key]) && Number.isSafeInteger(row.closing?.[key]) ?
+          [`${({health:'健康',hunger:'饥饿',fatigue:'疲劳'})[key]}${row.opening[key]}→${row.closing[key]}`] : []);
+        const summary = `${actorLabel(actors,row.actorId)}日结区间：消耗口粮${integer(row.food)?row.food:0}份、药材${integer(row.herbs)?row.herbs:0}份；休息减疲劳${integer(row.restReduction)?row.restReduction:0}；${changes.join('，')}${location ? `；日结收尾地点${location === 'village' ? '村庄' : '森林'}` : ''}${row.died === true ? '；本日死亡' : ''}`;
+        addEntry(rows,event,{sourceItemIndex:itemIndex++,actorIds:[row.actorId],location,locationEvidence:location ? 'event-location' : 'unknown',
           kind:'daily-person',status:'settled',summary});
       }
       const ecology = p.actors?.market?.ecology;

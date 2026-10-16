@@ -46,6 +46,37 @@ export function filterActivityEntries(entries, location) {
   return entries.filter(entry => entry.location === location);
 }
 
+export function buildPersonTrackingModel(snapshot, activity, actorId) {
+  if (!snapshot || !activity || snapshot.simulationId !== activity.simulationId ||
+    snapshot.revision !== activity.revision || snapshot.tick !== activity.tick) return null;
+  if (actorId === 'all') return { selected:false, actor:null, entries:[], counts:{succeeded:0,rejected:0,'no-action':0,settled:0,'waiting-resolved':0}, latestFactTick:null,
+    revision:snapshot.revision,tick:snapshot.tick };
+  const actor = snapshot.actors.find(item => item.actorId === actorId);
+  if (!actor) return null;
+  const entries = activity.entries.filter(entry => entry.actorIds.includes(actorId));
+  const counts = {succeeded:0,rejected:0,'no-action':0,settled:0,'waiting-resolved':0};
+  for (const entry of entries) counts[entry.status]++;
+  return { selected:true, actor:{actorId:actor.actorId,name:actor.name,occupation:actor.occupation,location:actor.location,alive:actor.alive},
+    entries,counts,latestFactTick:entries.length ? Math.max(...entries.map(entry => entry.tick)) : null,
+    revision:snapshot.revision,tick:snapshot.tick };
+}
+
+export function renderPersonTracking(panel, snapshot, activity, actorId) {
+  const model = buildPersonTrackingModel(snapshot,activity,actorId);
+  panel.replaceChildren();
+  if (!model || !model.selected) { panel.hidden=true; return model; }
+  panel.hidden=false;
+  const title=document.createElement('h3'); title.textContent=`${model.actor.name} · 当前状态`;
+  const state=document.createElement('p');
+  const places={village:'村庄',forest:'森林'};
+  const occupations={chief:'村长',hunter:'猎人',merchant:'商人',player:'玩家'};
+  state.textContent=`${occupations[model.actor.occupation]??model.actor.occupation} · ${places[model.actor.location]??model.actor.location} · ${model.actor.alive?'存活':'已逝'} · revision ${model.revision} · tick ${model.tick}`;
+  const facts=document.createElement('p'); facts.textContent=`最近窗口（人物全部活动，不受地点筛选）：成功 ${model.counts.succeeded} · 拒绝 ${model.counts.rejected} · 未行动 ${model.counts['no-action']} · 日结 ${model.counts.settled} · 等待结果 ${model.counts['waiting-resolved']}`;
+  const latest=document.createElement('p'); latest.textContent=model.latestFactTick===null?'最近事实：无活动记录':'最近事实：tick '+model.latestFactTick;
+  panel.append(title,state,facts,latest);
+  return model;
+}
+
 export async function readActivity(capabilities, world) {
   if (capabilities?.activityAvailable !== true) return null;
   const response = await fetch('/api/runtime/activities',{cache:'no-store',signal:AbortSignal.timeout(6000)});

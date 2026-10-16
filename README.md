@@ -5,7 +5,7 @@
 
 ## 独立项目入口
 
-- **D4 本地体验候选：双击 `Start-D4.cmd`**，地图地址 `http://127.0.0.1:18329/runtime-map.html`。使用本树独立世界与存档目录；世界活动是显式开发者全知观察，不属于玩家或人物可知信息；心智检查器仍关闭。本候选不触碰18325/18327用户实例；[启动、关闭、重开说明](docs/runtime/D4-EXPERIENCE-ENTRY.md)。
+- **D4 本地体验候选：双击 `Start-D4.cmd`**，地图地址 `http://127.0.0.1:18331/runtime-map.html`。使用本树独立世界与存档目录；世界活动是显式开发者全知观察，不属于玩家或人物可知信息；心智检查器仍关闭。本候选不触碰18325/18327用户实例；[启动、关闭、重开说明](docs/runtime/D4-EXPERIENCE-ENTRY.md)。
 
 - 仓库 AI 可直接运行 `node scripts/measure-data-contract-synthetic.mjs`，见[可移植短性能探针](docs/runtime/DATA-CONTRACT-PORTABLE-PROBE.md)。使用合成数据，无需本机私有存档；不代表真实长历史开档性能。
 

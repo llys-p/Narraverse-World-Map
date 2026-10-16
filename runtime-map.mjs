@@ -1,5 +1,5 @@
-import { renderActivityRows, readActivity } from './runtime-activity.mjs';
-const byId=id=>document.getElementById(id),status=byId('connection'),button=byId('refresh');let last=null,lastCapabilities=null,lastEncounter=null,lastActivity=null;
+import { renderActivityRows, readActivity, renderPersonTracking } from './runtime-activity.mjs';
+const byId=id=>document.getElementById(id),status=byId('connection'),button=byId('refresh');let last=null,lastCapabilities=null,lastEncounter=null,lastActivity=null,lastActivityGroup=null;
 const occupations={chief:'村长',hunter:'猎人',merchant:'商人',player:'玩家'};
 const advance=byId('advance'),ticks=byId('advance-ticks'),commandStatus=byId('command-status');let writable=false,pending=null,submitting=false,lastPlayer=null,actionsAvailable=false;
 const actionControls=['travel-destination','travel-submit','rest-submit','trade-product','trade-quantity','buy-submit','sell-submit'];
@@ -26,16 +26,19 @@ function render(dto,sceneAvailable,actualLocation){
     li.dataset.actorId=a.actorId;body.dataset.actorId=a.actorId;li.append(seal,body);return li;});
   byId('actor-list').replaceChildren(...rows);document.documentElement.dataset.revision=String(dto.revision);
 }
-function renderActivity(view){
+function renderActivity(view,snapshot){
   const panel=byId('activity-panel'),actorFilter=byId('activity-actor'),locationFilter=byId('activity-location');
-  panel.hidden=view===null;if(!view)return;
+  panel.hidden=view===null;if(!view){lastActivityGroup=null;return;}
+  lastActivityGroup={snapshot,activity:view};
   const prior=actorFilter.value,all=document.createElement('option');all.value='all';all.textContent='全部人物';
   actorFilter.replaceChildren(all,...view.actors.map(actor=>{const option=document.createElement('option');option.value=actor.actorId;option.textContent=actor.name;return option;}));
   actorFilter.value=view.actors.some(actor=>actor.actorId===prior)?prior:'all';
   const count=renderActivityRows(byId('activity-list'),view.entries,actorFilter.value,locationFilter.value);
   byId('activity-count').textContent=`${count} 条 · ${view.window.truncated?'最近窗口，历史已截断':'当前来源窗口'}`;
+  const tracking=renderPersonTracking(byId('person-tracking'),snapshot,view,actorFilter.value);
+  byId('person-tracking-prompt').hidden=tracking?.selected===true;
 }
-function rerenderActivity(){if(lastActivity)renderActivity(lastActivity);}
+function rerenderActivity(){if(lastActivityGroup)renderActivity(lastActivityGroup.activity,lastActivityGroup.snapshot);}
 byId('activity-actor').addEventListener('change',rerenderActivity);
 byId('activity-location').addEventListener('change',rerenderActivity);
 function renderPlayer(player,sceneAvailable){
@@ -87,7 +90,7 @@ async function refresh(){
     if(capabilities.playerActionsAvailable===true && !player?.actions)throw new Error('动作读数缺失');
     if(encounterAvailable && (!encounter || encounter.encounterViewVersion!==1))throw new Error('遭遇读数缺失');
     if(last && dto.revision<last.revision)throw Object.assign(new Error('忽略迟到读数'),{code:'READING_CONFLICT'});
-    render(dto,capabilities.sceneAvailable===true,player?.self?.identity?.location);renderPlayer(player,capabilities.sceneAvailable===true);renderActions(player);renderActivity(activity);last=dto;lastPlayer=player;lastEncounter=encounter;lastCapabilities=capabilities;lastActivity=activity;
+    render(dto,capabilities.sceneAvailable===true,player?.self?.identity?.location);renderPlayer(player,capabilities.sceneAvailable===true);renderActions(player);renderActivity(activity,dto);byId('activity-stale').hidden=true;byId('activity-panel').dataset.stale='false';last=dto;lastPlayer=player;lastEncounter=encounter;lastCapabilities=capabilities;lastActivity=activity;
     actionsAvailable=capabilities.playerActionsAvailable===true;writable=capabilities.writes===true;readingsFresh=true;
     byId('time-controls').hidden=!writable;byId('mind-link').hidden=capabilities.mindAvailable!==true;
     if(capabilities.sceneAvailable===true){const villageLink=byId('village-scene-link');if(villageLink)villageLink.hidden=false;}
@@ -96,7 +99,7 @@ async function refresh(){
     sceneLink.hidden=!canViewForest;if(canViewForest)sceneLink.textContent=capabilities.sceneAvailable===true?'查看森林场景':'进入森林场景';
     byId('map-note').textContent=writable?'世界时间仅在明确提交后推进':'只读观察 · 世界时间不会自动流逝';
     status.dataset.state='ready';status.textContent='已读取服务保存的世界 · 刷新不会推进时间';
-  }catch(error){status.dataset.state='error';status.textContent=error.code==='READING_CONFLICT'?
+  }catch(error){if(lastActivityGroup){byId('activity-stale').hidden=false;byId('activity-panel').dataset.stale='true';}status.dataset.state='error';status.textContent=error.code==='READING_CONFLICT'?
     (last?'世界投影暂不一致，保留上次一致读数。请刷新重试。':'世界投影暂不一致，暂未显示。请刷新重试。'):
     (last?'连接中断，显示上次读数。请重试。':'暂时无法连接世界。请重试。');}
   finally{refreshing=false;button.disabled=false;controls();}

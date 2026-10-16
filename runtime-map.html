@@ -50,11 +50,15 @@
   <section id="activity-panel" class="activity-panel" hidden aria-labelledby="activity-title">
     <div class="section-title"><h2 id="activity-title">世界活动</h2><span id="activity-count">—</span></div>
     <p class="activity-notice">开发者观察，非玩家/角色可知信息。这里只呈现已记录事实；人物计划和未确认请求不算执行结果。</p>
+    <p class="person-tracking-boundary">现行规则：村长、猎人、商人固定在村庄；玩家可按真实旅行记录移动。活动统计与地点筛选分开。</p>
     <div class="activity-filters">
       <label for="activity-actor">人物</label><select id="activity-actor"><option value="all">全部人物</option></select>
       <label for="activity-location">地点</label><select id="activity-location"><option value="all">全部地点</option><option value="village">村庄</option><option value="forest">森林</option><option value="unknown">地点未知</option></select>
     </div>
     <p class="activity-window">最近最多 256 条来源事实、64 条活动；截断后仍可用人物与地点筛选。</p>
+    <p id="activity-stale" class="activity-stale" hidden>当前读数过期，保留上次同版地图与活动；刷新成功后更新。</p>
+    <p id="person-tracking-prompt" class="person-tracking-prompt">选择人物查看当前状态与最近事实统计。</p>
+    <article id="person-tracking" class="person-tracking" hidden aria-live="polite"></article>
     <ol id="activity-list" aria-label="世界活动列表"><li>正在读取世界活动…</li></ol>
   </section>
   <section class="people"><div class="section-title"><h2>村中人物</h2><span id="route-state">正在读取贸易路线…</span></div><ul id="actor-list" aria-label="已登记人物"><li>正在读取居民…</li></ul></section>
