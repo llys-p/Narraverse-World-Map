@@ -79,7 +79,9 @@ export function cloneData(value, ancestors = new Set(), depth = 0) {
 }
 function encodeCanonical(value, ancestors = new Set(), depth = 0, encodedKeys = new Map()) {
   requireCondition(depth <= 64, 'Data nesting budget exceeded', 'LIMIT_EXCEEDED');
-  if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);
+  if (value === null) return 'null';
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  if (typeof value === 'string') return JSON.stringify(value);
   if (typeof value === 'number') {
     requireCondition(Number.isFinite(value), 'Non-finite number');
     return value === 0 ? '0' : JSON.stringify(value);
