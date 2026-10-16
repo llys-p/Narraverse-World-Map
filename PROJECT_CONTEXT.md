@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 17:23（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-16 18:02（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -31,6 +31,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **D4E5地图到地点现有玩法闭环已发布并开工**：[合同](https://github.com/llys-p/Narraverse-World-Map/blob/c36704e6081c0597f579465b66d7a6d5ea3c8d32/tasks/D4E5-PLACE-EXPERIENCE-LOOP-TASK.md)。用户明确继续既定第二步，接续D4E4 b594b45；新树`D:/Narraverse-World-Map-place-loop` / `codex/world-runtime-place-loop`，候选18329、独立浏览器18330。原18325 PID2592和用户已启动的18327 PID4432均保护，原树/世界不改。性价比high工人接单并独占允许前端/直接测试，root独占合同/报告/状态/看板/保护/浏览器。仅页面导航、已有地点人物/活动及原交互链，查看不旅行/不写档，不改runtime/审计/知识/存档；尚未交付验收。性能Issue3继续暂停，第三步人物新行为未开工；无main/deploy/迁移/DSH/外部付费调用。
 
 - **D4E4真实世界活动日志限定PASS**：[复核](docs/runtime/D4E4-WORLD-ACTIVITY-REVIEW-20261016.md)，合同2562f40；独立树`D:/Narraverse-World-Map-world-activity` / `codex/world-runtime-world-activity`，被验源码28d3f793a18f223e7df8d2378b1e81eba2d8e1e5（接D4E3 0f4bba2/生产b7），执行者已停写。新增定向2/2、48.104秒/90秒硬限，独立18328浏览器人物/地点筛选、刷新不写档和正常重开一致；原失败/超时及旧原始日志覆盖事实详见报告。显式开发者全知观察默认关闭，最近256来源/64条/64KiB，不混入角色知识；原18325 PID2592/9既有档与原八档均保护，新18327日常目录尚未创建。源码/脱敏证据已推送，Projects先待验收再已验收并读回；D整体仍进行中。性能Issue3开放且暂停，无新测量/main/deploy/迁移/DSH；后两步仅指导，本轮完成停止。
 
