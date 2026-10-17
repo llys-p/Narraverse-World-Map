@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-isolation=none",
+    "tests/simulation/demo-pending-status.test.mjs"
+  ],
+  "pid": 66520,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 1523.318,
+  "cpuMs": 1718.75,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

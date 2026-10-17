@@ -1,0 +1,294 @@
+{
+  "verdict": "MEASURED",
+  "environment": {
+    "node": "v24.14.0",
+    "platform": "win32"
+  },
+  "instrumented": [
+    {
+      "file": "/D:/Narraverse-World-Map-demo-integration/runtime-server.mjs",
+      "originalSha256": "dfc7d910408c3464f035cc761739ccb89ca40835433ce10a303f18f77127258b"
+    },
+    {
+      "file": "/D:/Narraverse-World-Map-demo-integration/runtime/service/runtime-owner.mjs",
+      "originalSha256": "175de716971abec39ff3a47191816e8ffa2bf29a961fd942367102b7e99a4c59"
+    },
+    {
+      "file": "/D:/Narraverse-World-Map-demo-integration/runtime/service/march-runner.mjs",
+      "originalSha256": "e71e3609d97eae2e7e42a5ff1047a47fcaee43459bbb1d4f74f78fd39587a19a"
+    }
+  ],
+  "commits": [
+    {
+      "commandId": "97291c63-1f3e-491f-96ff-a615ea135310",
+      "type": "MarchSet",
+      "totalMs": 151.56229999999982,
+      "parts": [
+        {
+          "name": "owner-queue",
+          "wallMs": 0.5554999999999382,
+          "cpuMs": 0
+        },
+        {
+          "name": "preflight-and-lock",
+          "wallMs": 2.3514999999999873,
+          "cpuMs": 16
+        },
+        {
+          "name": "inspect-directory",
+          "wallMs": 0.633600000000115,
+          "cpuMs": 0
+        },
+        {
+          "name": "audited-transition",
+          "wallMs": 120.60280000000012,
+          "cpuMs": 141
+        },
+        {
+          "name": "session-copy",
+          "wallMs": 2.095799999999599,
+          "cpuMs": 0
+        },
+        {
+          "name": "projections",
+          "wallMs": 4.278200000000197,
+          "cpuMs": 16
+        },
+        {
+          "name": "durable-save",
+          "wallMs": 20.881400000000212,
+          "cpuMs": 31
+        },
+        {
+          "name": "publish",
+          "wallMs": 0.04589999999961947,
+          "cpuMs": 0
+        }
+      ]
+    },
+    {
+      "commandId": "march-auto-af478f56-0417-4962-95c0-f87cf057d2e5",
+      "type": "MarchStep",
+      "totalMs": 408.3702000000003,
+      "parts": [
+        {
+          "name": "owner-queue",
+          "wallMs": 0.04350000000022192,
+          "cpuMs": 0
+        },
+        {
+          "name": "preflight-and-lock",
+          "wallMs": 1.8578999999999724,
+          "cpuMs": 0
+        },
+        {
+          "name": "inspect-directory",
+          "wallMs": 0.903400000000147,
+          "cpuMs": 0
+        },
+        {
+          "name": "audited-transition",
+          "wallMs": 383.4404999999997,
+          "cpuMs": 436
+        },
+        {
+          "name": "session-copy",
+          "wallMs": 2.2449000000001433,
+          "cpuMs": 0
+        },
+        {
+          "name": "projections",
+          "wallMs": 5.26929999999993,
+          "cpuMs": 0
+        },
+        {
+          "name": "durable-save",
+          "wallMs": 14.569400000000314,
+          "cpuMs": 16
+        },
+        {
+          "name": "publish",
+          "wallMs": 0.022599999999783904,
+          "cpuMs": 0
+        }
+      ]
+    },
+    {
+      "commandId": "march-auto-7b2aa79e-ba2a-49a6-8a5a-84affe278e7c",
+      "type": "MarchStep",
+      "totalMs": 773.5438999999997,
+      "parts": [
+        {
+          "name": "owner-queue",
+          "wallMs": 0.0443000000000211,
+          "cpuMs": 0
+        },
+        {
+          "name": "preflight-and-lock",
+          "wallMs": 1.834899999999834,
+          "cpuMs": 0
+        },
+        {
+          "name": "inspect-directory",
+          "wallMs": 1.0214000000000851,
+          "cpuMs": 16
+        },
+        {
+          "name": "audited-transition",
+          "wallMs": 743.4984999999997,
+          "cpuMs": 719
+        },
+        {
+          "name": "session-copy",
+          "wallMs": 2.7533000000003085,
+          "cpuMs": 0
+        },
+        {
+          "name": "projections",
+          "wallMs": 5.589399999999841,
+          "cpuMs": 15
+        },
+        {
+          "name": "durable-save",
+          "wallMs": 18.76170000000002,
+          "cpuMs": 32
+        },
+        {
+          "name": "publish",
+          "wallMs": 0.024099999999634747,
+          "cpuMs": 0
+        }
+      ]
+    },
+    {
+      "commandId": "3b858878-8b1b-4345-95af-6ea3700e2cf6",
+      "type": "MarchPause",
+      "totalMs": 367.5101000000004,
+      "parts": [
+        {
+          "name": "owner-queue",
+          "wallMs": 0.04849999999987631,
+          "cpuMs": 0
+        },
+        {
+          "name": "preflight-and-lock",
+          "wallMs": 1.615500000000793,
+          "cpuMs": 0
+        },
+        {
+          "name": "inspect-directory",
+          "wallMs": 0.7885999999998603,
+          "cpuMs": 0
+        },
+        {
+          "name": "audited-transition",
+          "wallMs": 343.0790999999999,
+          "cpuMs": 359
+        },
+        {
+          "name": "session-copy",
+          "wallMs": 2.238299999999981,
+          "cpuMs": 0
+        },
+        {
+          "name": "projections",
+          "wallMs": 3.702299999999923,
+          "cpuMs": 0
+        },
+        {
+          "name": "durable-save",
+          "wallMs": 15.993499999999585,
+          "cpuMs": 15
+        },
+        {
+          "name": "publish",
+          "wallMs": 0.02580000000034488,
+          "cpuMs": 0
+        }
+      ]
+    }
+  ],
+  "intents": [
+    {
+      "requestId": "97291c63-1f3e-491f-96ff-a615ea135310",
+      "runnerQueueMs": 0.634900000000016
+    },
+    {
+      "requestId": "3b858878-8b1b-4345-95af-6ea3700e2cf6",
+      "runnerQueueMs": 0.4801000000006752
+    }
+  ],
+  "network": [
+    {
+      "path": "/api/runtime/demo-state",
+      "method": "GET",
+      "type": null,
+      "status": 200,
+      "wallMs": 2.05199999618344,
+      "headersMs": 12.053999991621822
+    },
+    {
+      "path": "/api/runtime/demo-order",
+      "method": "POST",
+      "type": "MarchSet",
+      "status": 200,
+      "wallMs": 158.03999999479856,
+      "headersMs": 172.34499999904074
+    },
+    {
+      "path": "/api/runtime/demo-state",
+      "method": "GET",
+      "type": null,
+      "status": 200,
+      "wallMs": 3.316000002087094,
+      "headersMs": 3.727999996044673
+    },
+    {
+      "path": "/api/runtime/demo-stop",
+      "method": "POST",
+      "type": "stop",
+      "status": 200,
+      "wallMs": 3.6050000053364784,
+      "headersMs": 8.72900000831578
+    },
+    {
+      "path": "/api/runtime/demo-state",
+      "method": "GET",
+      "type": null,
+      "status": 200,
+      "wallMs": 2.374000003328547,
+      "headersMs": 3.072999999858439
+    },
+    {
+      "path": "/api/runtime/demo-order",
+      "method": "POST",
+      "type": "MarchPause",
+      "status": 200,
+      "wallMs": 370.5409999965923,
+      "headersMs": 371.3909999933094
+    },
+    {
+      "path": "/api/runtime/demo-state",
+      "method": "GET",
+      "type": null,
+      "status": 200,
+      "wallMs": 1.7729999963194132,
+      "headersMs": 2.206999997724779
+    }
+  ],
+  "statusText": "已保存 · MarchPause",
+  "final": {
+    "revision": 6,
+    "tick": 4,
+    "position": {
+      "actorId": "actor-4",
+      "alive": true,
+      "location": "road",
+      "x": 8,
+      "y": 7
+    },
+    "orderStatus": "paused"
+  },
+  "errors": [],
+  "remainingLocks": []
+}

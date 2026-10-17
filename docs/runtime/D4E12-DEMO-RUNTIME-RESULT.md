@@ -6,9 +6,46 @@
 
 采用原demo的地图、场景、火柴人、兽类绘制和合成音效，接入现有村庄/森林与三NPC。赠粮记忆、工作收入、买卖、休整、途中暂停/改道、路遇、两回合单狼胜利和返村都已消费真实世界结果。地图页面只下达订单，由服务端生成并保存MarchStep；钱包、位置、生命与战果只有一个权威来源。
 
-新入口为 `Start-Demo.cmd` → `http://127.0.0.1:18342/demo-runtime.html`，新档仅 `artifacts/d4e12-daily/world`。本轮未创建日常档、未启动18342。旧18338与18340服务保留；固定CMD仅静态核对，实测使用等价CLI/API及随机端口。
+新入口为 `Start-Demo.cmd` → `http://127.0.0.1:18342/demo-runtime.html`，新档仅 `artifacts/d4e12-daily/world`。首次交付时未创建日常档、未启动18342；16:26回访已观察到既有18342/PID14520及匹配的日常档锁（进程16:04启动），由本轮继续保留，不启停或操作。旧18338与18340服务保留；固定CMD仅静态核对，实测使用等价CLI/API及随机端口。
 
 **流畅度不能判合格。** 较短样本两次攻击从点击到确认及表现结束约2.29/2.48秒；较长样本曾达5.13/8.52秒；最终30命令/81tick样本冷开仍74.35秒。连续订单消除了浏览器逐步驱动，完整世界历史审计仍造成多秒确认和冷启动等待。
+
+## 16:26补充：确认提示修复与一次短行军归因
+
+修复源码 `f4b93894dbaf82ff0fe30f3620c2c4077ecd8732`，接原交付 `2191da54e89c938f99d1042ac26ca3860a547480`。生产修改仅两份前端文件：SSE在POST进行中保持“正在确认”，此时不展示重试；响应中断且可恢复时才展示重试。原requestId、原请求字节、sessionStorage保全和严格POST回执校验不变。较新的SSE投影不能确认该POST成功，也不清除pending。
+
+定向检查先以原实现复现冲突RED，再以修复实现通过1/1（墙钟1514.913ms、Node CPU1765.625ms，180秒硬限、退出0）；覆盖恢复pending→POST未回→较新SSE到达→连接失败→原字节/ID重试→有效POST回执才清除pending。最初两次测试构造错误保留在本机，不计为产品缺陷或通过次数。证据：[RED](../evidence/d4e12-demo-runtime-20261017/pending-status-red.tap)、[GREEN](../evidence/d4e12-demo-runtime-20261017/pending-status-green.tap)、[进程计时](../evidence/d4e12-demo-runtime-20261017/pending-status-green.json)。
+
+**只运行一次短业务采样**：新隔离世界、seed42、随机端口和独立Edge配置，正常点击森林→两次内部MarchStep落盘→点击暂停。最终r6/tick4/road(8,7)，订单paused、runner停止；无浏览器MarchStep请求、JS异常0、正常关闭、隔离锁0。整进程墙钟4873.836ms、Node CPU2718.750ms、180秒硬限、退出0。没有复跑长链、历史档或视觉检查。
+
+| owner分段（ms墙钟） | MarchSet | 首次MarchStep | 第二次MarchStep | MarchPause |
+| --- | ---: | ---: | ---: | ---: |
+| owner排队 | 0.555 | 0.044 | 0.044 | 0.048 |
+| 预检与锁 | 2.351 | 1.858 | 1.835 | 1.616 |
+| 存档目录核对 | 0.634 | 0.903 | 1.021 | 0.789 |
+| 审计后的状态推进 | 120.603 | 383.440 | 743.498 | 343.079 |
+| session复制 | 2.096 | 2.245 | 2.753 | 2.238 |
+| 投影 | 4.278 | 5.269 | 5.589 | 3.702 |
+| 持久发布 | 20.881 | 14.569 | 18.762 | 15.993 |
+| 发布内存状态 | 0.046 | 0.023 | 0.024 | 0.026 |
+| owner被测总段 | 151.562 | 408.370 | 773.544 | 367.510 |
+
+订单进入runner的排队为0.635/0.480ms；浏览器MarchSet/MarchPause请求完成约158.040/370.541ms。POST后的额外状态GET为3.316/1.773ms，暂停排空后的GET为2.374ms。两次步进的状态推进约占owner总段94%/96%；该段进程CPU分别436/719ms，持久发布CPU为16/32ms。完整分段CPU、源码指纹和网络数据见[采样原始结果](../evidence/d4e12-demo-runtime-20261017/march-attribution.json)、[父进程计时](../evidence/d4e12-demo-runtime-20261017/march-attribution-process.json)。CPU包含进程内其他线程，受计时粒度影响，可大于墙钟；不是函数Self采样。
+
+诊断只通过Node加载钩子在内存插入时钟，逐一断言替换锚点；不改生产文件或判断/发布顺序。被测owner段从入队至内存发布，尚未计返回回执副本/HTTP发送；网络wallMs另取CDP requestWillBeSent→loadingFinished。原始headersMs有少数大于wallMs，属于此采集口径下时间戳不自洽，保留原值但不用于头部/网络耗时结论。
+
+**本次结论**：排队、复制、额外GET和写盘在该短样本中都不是主要等待；本轮不据此改动它们。`advanceAuditedServiceCommit`已复用私有认证的服务前缀，并非每步重新冷开/重演整份service journal；新候选仍走`executeAuditedCampaignIntent`与完整world/history审计。当前分段尚不能区分该段内部的实际推进、descriptor遍历、复制/编码、历史核对各占多少。下一最小性能工作是细分这一个热段，再决定优化；不能把两次耗时差异当成历史增长的受控证明。
+
+时间规则保持原合同：**每格1 tick，每次MarchStep至多2 ticks**，不是每条MarchStep固定1 tick；每次提交后仍等500ms再调度，未改成墙钟实时推进。本轮86份backend文件零改动，format11/DTO5、逐步保存、外部审计/重演、失败回滚和断连语义均不变。已有未变源码的核心证据复用，不重跑。
+
+原8档/16依赖/原型/旧88源码/控制树其他文件与先前已存在的日常文件散列仍一致，[保护核对](../evidence/d4e12-demo-runtime-20261017/followup-protection.json)。新发现18342日常档没有本轮开工前快照，故只确认锁PID与服务相符，不声称为其做了前后字节验收。旧18338/PID61236、18340/PID63160及既有18342/PID14520保留；无本轮测试进程或隔离锁残留。本轮已改源码不等于用户已打开的页面完成更新，当前浏览器缓存版本未核实。性能仍未达标，不以新建短存档或提示修复代替长档性能验收。
+
+实际执行命令（label不可复用）：
+
+```powershell
+python scripts/run-d4e12-check.py pending-green-01 180 node --test --test-isolation=none tests/simulation/demo-pending-status.test.mjs
+python scripts/run-d4e12-check.py march-attribution-01 180 --phase-file artifacts/d4e12/march-attribution-01/phase.json node scripts/measure-d4e12-march.mjs artifacts/d4e12/march-attribution-01
+```
 
 ## 源码与环境
 

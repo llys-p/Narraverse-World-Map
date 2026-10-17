@@ -1,0 +1,9 @@
+✔ SSE keeps an in-flight recovered request pending and retry confirms only on its POST receipt (1324.6721ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1424.7951

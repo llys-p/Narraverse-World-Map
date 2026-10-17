@@ -1,0 +1,255 @@
+{
+  "originalEight": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r1.json": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+    "service-commit-r145.json": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+    "service-commit-r157.json": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+    "service-commit-r158.json": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+    "service-commit-r164.json": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+    "service-commit-r170.json": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+    "service-commit-r182.json": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c"
+  },
+  "demoOriginal": "dcf65a984698dba5f2ff65c41d8efab683f970fc0b8007b7154894735a023c8e",
+  "assets": {
+    "stickman-engine.js": {
+      "control": "c59e5290c6b40cf7ccd57e94cde1a161cba27a5e4d13db6c38d1883a3fff1dd8",
+      "candidate": "c59e5290c6b40cf7ccd57e94cde1a161cba27a5e4d13db6c38d1883a3fff1dd8"
+    },
+    "world-combat-fx.js": {
+      "control": "0a2fef080e7daa24f26479c988f18af7e80fc2cbc869d51b7850e24a42a6d5c2",
+      "candidate": "0a2fef080e7daa24f26479c988f18af7e80fc2cbc869d51b7850e24a42a6d5c2"
+    },
+    "kit/core.js": {
+      "control": "18ee0cbdc85c21eb12c9f96c9741902c27d5fa89441c2cddfe72253d0366ee3c",
+      "candidate": "18ee0cbdc85c21eb12c9f96c9741902c27d5fa89441c2cddfe72253d0366ee3c"
+    },
+    "kit/effects.js": {
+      "control": "367f170274601480aecdd0f806d56df2e5a2fbd1073852a870560a39a70c4ccb",
+      "candidate": "367f170274601480aecdd0f806d56df2e5a2fbd1073852a870560a39a70c4ccb"
+    },
+    "kit/humanoid.js": {
+      "control": "8556bf5487153523171282e19a8392273d555a772419ffb7b8da4d577fa9f1c4",
+      "candidate": "8556bf5487153523171282e19a8392273d555a772419ffb7b8da4d577fa9f1c4"
+    },
+    "kit/appearance-modern.js": {
+      "control": "ac8e13c1a2c2e1d7ea195ec047fb3733cd0bd71142300e11b28675f347721d17",
+      "candidate": "ac8e13c1a2c2e1d7ea195ec047fb3733cd0bd71142300e11b28675f347721d17"
+    },
+    "kit/accessories.js": {
+      "control": "8cdd5ec11853523a0f48c9acb06e59f5940e367f1c4d9a59d66000fcb71fb25b",
+      "candidate": "8cdd5ec11853523a0f48c9acb06e59f5940e367f1c4d9a59d66000fcb71fb25b"
+    },
+    "kit/structures-lib.js": {
+      "control": "293b3e8f327fba726e23e53e9727f4bf68ee4a359c9f7f2ae88e0cb4bb455f83",
+      "candidate": "293b3e8f327fba726e23e53e9727f4bf68ee4a359c9f7f2ae88e0cb4bb455f83"
+    },
+    "kit/furniture-lib.js": {
+      "control": "17c637bd8377fb9fd8ca047109d685c02a5c62a79b8d8f0e2123e2da300445b0",
+      "candidate": "17c637bd8377fb9fd8ca047109d685c02a5c62a79b8d8f0e2123e2da300445b0"
+    },
+    "kit/fixtures.js": {
+      "control": "64d21465e7ce3f9002d1e36bd029f422bd8c97a65212e2f100cdfb3f6d0c33f8",
+      "candidate": "64d21465e7ce3f9002d1e36bd029f422bd8c97a65212e2f100cdfb3f6d0c33f8"
+    },
+    "stickart/stickart-core.js": {
+      "control": "4d9da570d65cc27f768c0199bca41aae8c66367721b9071c3b6735056a892450",
+      "candidate": "4d9da570d65cc27f768c0199bca41aae8c66367721b9071c3b6735056a892450"
+    },
+    "stickart/beasts/quad.js": {
+      "control": "fb36f1b148055fd819efb51a522e0e266845920158c729897104db81a9736822",
+      "candidate": "fb36f1b148055fd819efb51a522e0e266845920158c729897104db81a9736822"
+    },
+    "stickart/beasts/deep.js": {
+      "control": "09757eed4473a9c941982254210465451ce883c876d7df53b927d60dd791fae3",
+      "candidate": "09757eed4473a9c941982254210465451ce883c876d7df53b927d60dd791fae3"
+    },
+    "stickart/beasts/serpent.js": {
+      "control": "0b715adf62959270334779f9ee46cb8b85c1bbc349e60fe59cfb8e22401180d0",
+      "candidate": "0b715adf62959270334779f9ee46cb8b85c1bbc349e60fe59cfb8e22401180d0"
+    },
+    "stickart/beasts/mountain.js": {
+      "control": "b7e58f42d21a2e7cb3ca41112a38d5c2418f7b9b198ed020ddf3653ee0f0ebf7",
+      "candidate": "b7e58f42d21a2e7cb3ca41112a38d5c2418f7b9b198ed020ddf3653ee0f0ebf7"
+    },
+    "stickart/beasts/village.js": {
+      "control": "01798db8b53ef3fefd0687e430c06f21dec8b1727823456ed2bcaae555f4e995",
+      "candidate": "01798db8b53ef3fefd0687e430c06f21dec8b1727823456ed2bcaae555f4e995"
+    }
+  },
+  "oldSource": {
+    "runtime-campaign.css": "c1261d72210b71608c1584b661d195cbefcbe46c288d3c6da21c675a36b614d3",
+    "runtime-campaign.html": "dae079a6522bffa06a653469ae878a493a19bce87062b4858ab5f71e53b237f6",
+    "runtime-campaign.mjs": "dfe892a9ad6ee535d3d8976521fd74a4e268b633def2a17272415dc100b1c991",
+    "runtime-server.mjs": "0a6014f278e8014f49b41111844e1725625903327fea1231da797ac34260c1f9",
+    "runtime/core/actors.mjs": "c82ec10bce34b4817c1e1eaa71a6656fd9c9142f06cdcfed6ad53ee500107316",
+    "runtime/core/campaign-map.mjs": "e16f8aab26a8fdc52fbb72f2e3da683cf8cb875e5ca6eb9bd26d86244b875738",
+    "runtime/core/cognition-signals.mjs": "5daa28f44f64004b4f83ed86dacbf1379d5b20ed43dab7c0ae5ca124ade2b51d",
+    "runtime/core/cognition-state.mjs": "b5372c8150d3055180777c6a34ad0a6cfd7dc0a671bada1288ef24aa8f9768f5",
+    "runtime/core/cognitive-review.mjs": "4aa1f416755e6463fb672308023f3f3f2a8550eaaee505f72374fd8d8581d8d4",
+    "runtime/core/command-engine.mjs": "ffb66b1e6492a4f820da4726832c8feea7271d3053f06a2c7c763c61ecb1bff9",
+    "runtime/core/data-contract.mjs": "2bdfbc901077d318d6eec4ca8c51bf6c2c51bf4c943f22473c028f616602a0c7",
+    "runtime/core/ecology.mjs": "22cb158550f1b1b2aa37d290dd5d3066b798fd29c7f18cba0a68e3be7c18733a",
+    "runtime/core/encounter-combat.mjs": "7f4c5673582fa799307fdadc94c1ee6a118e8739c5fee3e8f2e974ad2e105d64",
+    "runtime/core/encounter-reservation.mjs": "aba86baa76af065d3ecd44ba6f5d8a4124562acead018391ddb15b9c8d258a87",
+    "runtime/core/encounter-runtime.mjs": "467cef2c211508bb5a066c61b93d81112ceed7ffe563818321c2af53a405ad38",
+    "runtime/core/encounter-session.mjs": "40523243281b92eca346fdb9b40a790c029f63b9e0573b2ff8a40a383e5763f3",
+    "runtime/core/encounter-world.mjs": "9bc1880d94ae53e6a16e59fed74905c5e45527713d891b69061601996ec46940",
+    "runtime/core/event-log.mjs": "14663705098d977dec64bfb4020b07aeafcd8890871ddac914023db4abbc41eb",
+    "runtime/core/experience-state.mjs": "d15a3121d19f2e4490580b8776f35c28f6d10f587d42486e673d26818c0e1eb7",
+    "runtime/core/hunter.mjs": "a37aed05c2877b21c7774c1c2fd11dcab73069a95ad7a8751ca36ef710002ece",
+    "runtime/core/market.mjs": "4a0925ee195671dfd05c252160afd15e0e00fc22429b6d68a997ecd2cf0b3f78",
+    "runtime/core/memory-observer.mjs": "90d1d4a69ff5edfab5e0ffb114a261450f739b5912c8bd016a6c9d0e42ddae4e",
+    "runtime/core/memory-runtime.mjs": "9b277bd4ae259aa0b1f76472be69f3ca70b1deb17a263506eaf2036ee6136190",
+    "runtime/core/mind-planner.mjs": "6d83b11a04ac7d765066a740a39152e44585d80ead000bc56ca0a5d0217858fc",
+    "runtime/core/mind-runtime.mjs": "d55f7d2ecaf9c173c9689cc42950c9a3cb8624ff3b63c0b8e1b10b80a41aae9d",
+    "runtime/core/mind-state.mjs": "ccd54c483bd5eea954c59d5a68036a99da4f0ffbc1c92c7787f55b6f8dc1b04b",
+    "runtime/core/motivation-planner.mjs": "f83804b2c29eb840be0655bf472d4d5d2d0e108d3fa44c18deb01c9c303feac6",
+    "runtime/core/motivation-runtime.mjs": "3df6df53ed9051459c9595d6d01ba77dc3e6cdf69cf073124ace16409935a7b1",
+    "runtime/core/motivation-state.mjs": "89589d7868cc7b759c08c9775b671769344391f319799312fcf081213a3dc04c",
+    "runtime/core/personality.mjs": "f01490bd0827f5dd45986a8d63825473fc3654126d5a535cdeca5e76a5d00961",
+    "runtime/core/player-intents.mjs": "fd4deaa6734bc47dc3021dce5f8ba14be248be5b28d2bc7308b2bbbfcbe2d2d9",
+    "runtime/core/player-runtime.mjs": "934c2e8553b2643522bdd45ef2213a6b1d701ffde93c69016539e40b2873515b",
+    "runtime/core/player-state.mjs": "a5601262a5209e0a3c38399eb3ce441372732ffa8ac3efc93ac4d9f319f3d68d",
+    "runtime/core/player-work.mjs": "26cb237b71749b1be8497b096acefef491294b5732e156059610a48bf5c2b8f1",
+    "runtime/core/public-medicine.mjs": "47aa563763d9a320f2fe996bd778bec650d34f4072b8e3bc98dc510973c21125",
+    "runtime/core/resource-ledger.mjs": "419f723f1b1389efc21f5a87a8baf40a75ad887b184f669d27974f65e84469b7",
+    "runtime/core/rng.mjs": "849c8adc224174532dbd92b941f5757c29b0fc1b2006bdcb1bcee403b7660400",
+    "runtime/core/scene-campaign-runtime.mjs": "9112a491d8ae1178c4d4eae50aaa69924bb91fd234d0699dce3dd8f3ab16d59a",
+    "runtime/core/scene-livelihood-runtime.mjs": "57b63d978a198acb6c2c8a85e5a82d6b2cc5122f46819f9fd6b71804ab6690ba",
+    "runtime/core/scene-runtime.mjs": "6ba9f5d49e224944d84975377e392efdd952ac8ecfe7d7a6b23f90e975baa6b2",
+    "runtime/core/scheduler.mjs": "6c8c3e71aeff17b71ba9436228898c2872f66b8fb6cfaf1cf718fa1f881745af",
+    "runtime/core/simulation-clock.mjs": "c2d0beee55212512c4b4e64cf88f13a962fc4727459d33cee96636a7ef2c1a46",
+    "runtime/core/society.mjs": "740d452b19c8821103c661afe594710af9314965c035adde40d42da54c269f17",
+    "runtime/core/survival-planner.mjs": "1aed6418701ae76f9b8da32492e7cb95b0fc2be22fb49efba185f5145efaae57",
+    "runtime/core/survival-signals.mjs": "ec0e3e7eadbd8f9ecd2c805152c0ae7964edc6fcc39f6b39ac179077c85a729e",
+    "runtime/core/survival-state.mjs": "017ad1c72ea35c49877736d41d4335b56e4b281adb96057496f008796cfca586",
+    "runtime/core/work-experience-adapter.mjs": "72ae1976c319c1ba2dd1c27c534f20ef5da6dccba689f8d2413c8f6ab8c88818",
+    "runtime/core/work-experience.mjs": "2e685219c47fe6b81b278688b1310fffeb54c03ba6d71296da46367250d02b42",
+    "runtime/core/world-state.mjs": "60ec634fcbf4151dca80026aa3a126eb8609263cb98f1dcbe479332b540bf9fe",
+    "runtime/experiments/b4-experiments.mjs": "2e5c2cbcb115b60fd93ce3f84453b56280aeafe751db993b68a54478454bfec2",
+    "runtime/experiments/b4-report.mjs": "e27006d3c8e781bbb9f8eb13f09df20c582241a5fc52d6d5b0cd0139609f178c",
+    "runtime/experiments/m3-closeout-scenario.mjs": "7528a6d71cabd32181d19e902de7b4bb0036639643e699705d237c29ebc39331",
+    "runtime/fixtures/actor-village.mjs": "a33d7a310fd2ad92ceee4eb31475495159fbab36c5e6589a1742fad585db22f6",
+    "runtime/fixtures/b4-calibrated.mjs": "48767dd7d99e03680bfe56bb631384488e64625368b29a46bc4fc302c7da87c3",
+    "runtime/fixtures/campaign-village.mjs": "e978748c57acdc904077b9b36bb0aabda84d5c9b48cf6f1576e71bcd9785f269",
+    "runtime/fixtures/clock-smoke.mjs": "c0cfa1410e828dd3862126bc6b761039722586fb8ce0b879cf257388a5d74e39",
+    "runtime/fixtures/cognition-village.mjs": "dc55bc8658b6e9602d0e3390df4de6785fa3b4e85f7bd96f3bf04a949cd854b3",
+    "runtime/fixtures/ecology-village.mjs": "8b64fdad70e87f48f98fddace110c86595669a5920a7718a581a3db3bee749cc",
+    "runtime/fixtures/encounter-survival-village.mjs": "6444e320dbb7de983858e7bb64fdf4817f429dec517639b962a7fe254263ebdb",
+    "runtime/fixtures/experience-village.mjs": "4738264e10e790d164441a5d00310e8db31e8165fb7753eb430adbf02dc7daf2",
+    "runtime/fixtures/hunter-village.mjs": "aedfe2a3f9fc2a4b29f9789d8acad9c6d50057eb99dd63b67b31b28a13da1cfd",
+    "runtime/fixtures/market-village.mjs": "8d0fa93775894303753a052bd3cfbd51e528e41217f7c4bba93d1f53cdccee34",
+    "runtime/fixtures/memory-village.mjs": "2f8c8c049ee002beb88c053e68f6601eeb6dde7de0ae5daa1d998955f103bf46",
+    "runtime/fixtures/mind-village.mjs": "5fe45d3b8446f2770e5ff5d0b2cf97a843bbcc50ea84f015d753cdefb962334c",
+    "runtime/fixtures/motivation-village.mjs": "2e3a370270036768d4b456443aa6fbb41af3c0cc2d314cac0fb13f577cab9a90",
+    "runtime/fixtures/personality-village.mjs": "92409841ebd982e22505d175707d7f49f2c12427ee30a9a289746cf6ff9b4781",
+    "runtime/fixtures/player-play-village.mjs": "900598f0a3d633e993285177d1f16bcf46b56cd30c7023a68e6bb86eabaea899",
+    "runtime/fixtures/player-village.mjs": "3b5d0315629f6ceee7ceddf3a3866d12976b46a0e73a244c7bf8694a35c6021e",
+    "runtime/fixtures/resource-village.mjs": "f34b0a108d684b8894dbe56dfe9335737a701b6f54da660a8105813eb0af5318",
+    "runtime/fixtures/scene-livelihood-village.mjs": "38efb6d0f3fa53877c71b8ec6be44e9cc376b8f3cc83fb357356ac1b1d63de25",
+    "runtime/fixtures/scene-survival-village.mjs": "b330ccf20b61bba7a551d1b31f0a1d666e2f16afe0af55d1b2ba1243cfb820b2",
+    "runtime/fixtures/society-village.mjs": "db4ca208f340dc92668c649a81e694c5382882c3178c98e00ee0d9025ecd927f",
+    "runtime/fixtures/survival-village.mjs": "e13e250e04fd4a0047bacf31bffe513da64e048cb0b9295d848f8c7be8e30db1",
+    "runtime/knowledge/actor-knowledge.mjs": "71913e6eb872a7bdedf67d001134715def6330598e2b91159efcc33cd84c6acf",
+    "runtime/knowledge/cognition-knowledge.mjs": "1b582e4c36733cbb7fb334f832ff45eb89c9a3ed36623fd2fd99b931bb4cf429",
+    "runtime/knowledge/encounter-knowledge.mjs": "acb60709ad450be35418dcf4985a074415c2566ba8e0bcd9e6820d3b1818c58a",
+    "runtime/knowledge/mind-knowledge.mjs": "b78101ac1eba939159bc165e7b9e2ccb5c4f386883a7e50dd7d111d2f7440468",
+    "runtime/knowledge/motivation-knowledge.mjs": "e0e633c8114f1de2e4a704781fd2125367c9442c3a4304b13a197806df8e8365",
+    "runtime/knowledge/player-knowledge.mjs": "d63807f09eeade8aad7d93b6fd110fbc2809489b3d45af78ca63610399e4e607",
+    "runtime/knowledge/scene-knowledge.mjs": "a52be37966eac18a8d4a8ef1ea4a1b7606e47702a6b352a50624adab6408c63a",
+    "runtime/knowledge/survival-knowledge.mjs": "b0194fe2cfbfe757ebb4a518c8ebbc1d4a5711c84dbf795f677770c760c56b41",
+    "runtime/persistence/bounded-json-file.mjs": "34b375fb71a814e59370b3f3b016364748b97e4063d36db82c4775478b73bb94",
+    "runtime/persistence/checkpoint-store.mjs": "e98f958c5c47d6cf6cd6e0b204294062b2f14ce548ec52aeb4f038fc5019bf4e",
+    "runtime/service/http-contract.mjs": "1a347714f634159f8f78eabd240f58b7b5e3c9548c0493ad74f75edd847cf833",
+    "runtime/service/runtime-owner.mjs": "30e5afb0b10aa805dde0b66282ff6ddba8e54b2668dbe4efe47d2204a846678e",
+    "runtime/service/service-commit.mjs": "c70624524fa6ce392bc602d7b905eb27f3a204feab376bfce038496f430363ed",
+    "runtime/service/strict-json.mjs": "f49540f4a8254b1e898f2d16cbd2fe51f48ecd0268d0d4f2b40faed328a5b6a4",
+    "runtime/service/world-activity.mjs": "5d2e571192c8123c33dabaaef505dad842d321cb799bc5f98a5f454aa2a97856"
+  },
+  "controlForeign": {
+    "ADVISORY-TO-CONTROLLER-2026-10-09-ROUND2.md": "fb1b6f7047675661d95c1e1b03bc2259569a6501efda986964b0bcad88178ef6",
+    "HANDOFF-TO-CONTROLLER-M3-4B-2026-10-09.md": "23c97a166195d26205b3f598d71b92827399aa582b62f3cf8eb8c4ee80f82bb5",
+    "asset-studio.html": "298d9a01de094654b11eefe0b3663308a010e964f9bf778935ee565d38e0d011",
+    "docs/character-mind/REFERENCE-BASED-REPLAN-20261008.md": "02f5327460c28549473369887929683944c7faf886d55080245f9f268b8a85b5"
+  },
+  "dailyExisting": {
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\.runtime-owner.lock": "02f6781678f363fc3137db902c1bc9e5535e9033aa435deaa09398ac51a0e5f3",
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\service-commit-r0.json": "b9c7576b3bb2813da480bfc34de20d286b52c0afb1516c1a8989a74fcfc9bafd",
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\service-commit-r1.json": "55d54333d75babf8376bcd0a455ae1c3031be09dcc9680cd5d34ef5684404dc3",
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\service-commit-r13.json": "7e72ba2426614faf8f87fbe9fe265a22656eb13d3e7f833055fc65242da32227",
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\service-commit-r14.json": "a90e2115bbd0f3f0e369b1f6cca73f728b5d6d466247437f9a68ff1e59b64e57",
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\service-commit-r20.json": "db1e7473e8a320cf0449a1fcba4179b551baf583c5635379376b861a2a9f839b",
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\service-commit-r26.json": "64ddfa5c0bc851b671d1e389344cfd6b5a3e8eb5c6db2d29502b370dd3acd805",
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\service-commit-r38.json": "45ebdde9689a7fa2c5139bc768d9ad54cd886a70590450477e41f445efcc9485",
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\service-commit-r50.json": "dd18e1f7782f29f8c4bd914a619dcbcc49c7c82969b4962ad4ccc86313b6db49",
+    "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-daily\\world\\service-commit-r62.json": "114732742b780f0d6a59018b277b8228936332ad329aa183ee90fdfc9e99bc52",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\.runtime-owner.lock": "ed1cd5170046959fe164b24f3fe3eb5a559c938c2daba090ff317ce81fa61f1d",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r1.json": "ac4d68d100a5ecc85cde0fd4f1e2b6594cfd4a93cd587229dd0c6f16d99223bf",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r10.json": "f2771a7d078ecea4fdb13ed2437ffe692d89368534e8c3e260f340cf71ee8739",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r11.json": "b5787e07b0943d1a95d51299ead2a78e73b6318ff832458501da48bfdc950d99",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r12.json": "8394623c77680171932240653a11b3e08a3d41f938e274af4a4405a29d04910b",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r13.json": "ba8b0bbc52e73690aaac9ee8652dda8f708d6f304eed1ba5566d104321eb91c4",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r14.json": "4abac3a368dd7b8bc9b22515df3fbad2471472c4a69f11b59c23778e1e818244",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r16.json": "13a3715027b0c0b641c818d0f812bd26628f8e1fc02c1a00b2e827ca508f1f3f",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r18.json": "5feaf38261cbf2687b58c120272222f5e45661d74ed49fc435c9f1f09a0832da",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r19.json": "3501ae22b8ee3f416b5c0da4b9ec97ec7b4efc46a6d4ee0ececd88c17bd71559",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r21.json": "1a0aa1133369a54a20a439c5bd64b485da2bfdce8b6c1e04a87c855880eb6b57",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r23.json": "e286a5f7577e962c6b32fe3dda8850a11c7f623993faa75ad0c86a86f9b61496",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r24.json": "c8b28dc6348d07222daf1d9d6e194fe71f0059c2a1a914fbbd574f74b9abb421",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r26.json": "b769b86805e75194b9747b80f1e3cc350768b185113044add367de0b060c5651",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r27.json": "2b38d8b8f5fc68b1b4b4831033efead9f281bc9a04d35004289db4fb9ac0051d",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r28.json": "b6723cd360e6f58f2563f87fd7852549ea6f3e269ab373af26ee22f723a55578",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r3.json": "1df654d5b79a6b80c5153888a3b65dce26ada77e2d717c3ce56c1fef91e816dd",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r30.json": "f3cfa45f2c906c330563291bb35bfeaad16a336896ed063944fe4168957787bd",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r31.json": "37edc6b0b8044bde11e4b62e2cb83af0206d34aeb0ebb5a0fcac6fc2dd0ee672",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r32.json": "5d50b798978565aee4c81874541fbd84000e8c7f8774a3b07d6cf72c679a14eb",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r33.json": "ef3d0a7d16cb24cca64c907dd2bb5e36bbd68221d6ecd62290f44c43a5e3e0ab",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r34.json": "dca2014c8ab2ff20ab96bd66b2f6b6ac682bb7eba289b97c8372b4140aecdfdf",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r36.json": "a5485488123af7ed8009e905dff2764e073704b9bb298921f3443e0f2ed3ceea",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r37.json": "dc388bd148816fc66f773a883879621235f8827fccb4383c8155348ba3a06387",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r38.json": "0f4cd6be898378889e2246af988af7e921f713f1a21ee1466d67e02a5126892e",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r39.json": "5278586e8cae515d3bbc1a3d073c8fa67377c6c5a608ff4fb6eaf449df3a1bcf",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r40.json": "31099da3f40912b905e866d3aa98c39fac3c2d617311dee6251535787b1d50fe",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r42.json": "464ec313ba74a52e1838ee9bf6ca8a21c2f101418719148f40888402ac1a721e",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r43.json": "6ea2558c74f852a1105fdd61098202ed349301ed7dbcd4ddfa6c6afb35fe8de4",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r44.json": "e8ff8ed51e53c0f8ef842752ca207aaeb9bb6a5f62264100223d7afd5bdedca9",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r45.json": "695f13f11a19d8c0a3a53a54d9e6349c86d1461e43dc886495b02c22eb8fd3b9",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r46.json": "56c524eccc52cb8c6241bdaa5376e838ee389abf2c6ce1a6c8aba49a2ac89a25",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r47.json": "220e776a7da8629cea8458ff6abb176dd83a81289010a7d852ed5e471e9e5b57",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r49.json": "b17bc7a1e097ca446800fea4b2bf6001e300919daf69ae889e423836f4ee6084",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r5.json": "71205bbb33faf8d4002b1c16c6e25fbab56484e92f2741e6a1d6bde7c1b3edeb",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r50.json": "e8d5eda51b29501935274911b812d725b7809f4ce368b970612a87bbc3b568a5",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r7.json": "28f78b46b77afb7c72a5396173fafa51f51597897b21dd1abeb247e853dadaa4",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r8.json": "f4155bba7eded1eed5ea354ff1763f31b5efa1101dd74db1ab005178d8620a03",
+    "D:\\Narraverse-World-Map-campaign-jrpg\\artifacts\\d4e11-daily\\world\\service-commit-r9.json": "000749d4c56d2e3c75b07adafbe0eec3081bed0dab048e8557a2819288c6b637"
+  },
+  "verdict": "PROTECTION_OK",
+  "backendFilesUnchanged": 86,
+  "live": {
+    "ownedProcesses": [],
+    "listeners": [
+      {
+        "LocalPort": 18342,
+        "OwningProcess": 14520
+      },
+      {
+        "LocalPort": 18340,
+        "OwningProcess": 63160
+      },
+      {
+        "LocalPort": 18338,
+        "OwningProcess": 61236
+      }
+    ]
+  },
+  "isolatedLocks": [],
+  "newlyObserved18342": {
+    "pid": 14520,
+    "ownerLockPidMatches": true,
+    "startedByThisFollowup": false,
+    "formalFilesObserved": 59,
+    "beforeAfterComparisonAvailable": false
+  },
+  "checkedAt": "2026-10-17T16:25:42.537259+08:00"
+}
