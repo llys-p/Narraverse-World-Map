@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12 Demo村庄/森林真实接入。现有两地/三NPC和日式回合制范围不变。\n\n功能限定通过，性能未达标，仍需修正。原核心4/4、短链26命令返村、较长档30命令r92/tick81重演及五投影/31正式档SHA恢复证据复用，未重跑长链或改写原失败。\n\n补修f4b93894dbaf82ff0fe30f3620c2c4077ecd8732：SSE不再把进行中POST误报重试；原ID/字节、pending保全及严格POST回执不变。定向1/1 PASS。唯一隔离短行军样本两步408/774ms，状态推进383/743ms，写盘15/19ms、owner排队<1ms、额外GET约2–3ms；n=1，无A/B或长史性能结论。86 backend文件未改，下一步细分状态推进热段；每格1 tick/每批至多2 ticks、500ms间隔不变。\n\n原8档、原型、16依赖、旧88源码和原日常文件保护；新采样无进程/锁残留。已发现既有18342/PID14520及匹配日常档锁，连同18338/PID61236、18340/PID63160保留未启停；用户已打开页面缓存版本未核实。无外观/听感核验，无main/部署/存档迁移上传。\n\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/eaddf683659465194b784b631be6e78b94f11a0e/docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md\n合同：https://github.com/llys-p/Narraverse-World-Map/blob/eaddf683659465194b784b631be6e78b94f11a0e/tasks/D4E12-DEMO-RUNTIME-TASK.md\n交付：eaddf683659465194b784b631be6e78b94f11a0e，远端SHA和报告API字节已一致读回。D4E11历史未验收不改，D阶段仍进行中。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
