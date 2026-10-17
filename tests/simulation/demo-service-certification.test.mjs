@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {createCampaignVillage} from '../../runtime/fixtures/campaign-village.mjs';
-import {createAuditedServiceCommit,advanceAuditedServiceCommit,validateServiceCommit,saveServiceCommit,loadServiceCommit} from '../../runtime/service/service-commit.mjs';
+import {createAuditedServiceCommit,advanceAuditedServiceCommit,validateServiceCommit,saveServiceCommit,loadServiceCommit,loadRuntimeServiceCommit} from '../../runtime/service/service-commit.mjs';
 
 test('live immutable service prefix equals independent full replay and rejects external forgeries',async()=>{
  const directory=await fs.mkdtemp(path.resolve('artifacts/d4e12/cert-'));
@@ -18,9 +18,15 @@ test('live immutable service prefix equals independent full replay and rejects e
  await saveServiceCommit(state,directory);
  const loaded=await loadServiceCommit(path.join(directory,`service-commit-r${state.bundle.snapshot.revision}.json`));
  assert.deepEqual(loaded,state);
+ assert.equal(Object.isFrozen(loaded),false);
+ const immutableLoaded=await loadRuntimeServiceCommit(path.join(directory,`service-commit-r${state.bundle.snapshot.revision}.json`));
+ assert.deepEqual(immutableLoaded,state);assert(Object.isFrozen(immutableLoaded.bundle.snapshot.world));
+ assert.equal(createAuditedServiceCommit(immutableLoaded),immutableLoaded);
  const forged=structuredClone(state);forged.commands.at(-1).receipt.outcome='rejected';
  assert.throws(()=>createAuditedServiceCommit(forged));
  await assert.rejects(saveServiceCommit(forged,directory));
+ const forgedFile=path.join(directory,'forged.json');await fs.writeFile(forgedFile,JSON.stringify(forged));
+ await assert.rejects(loadRuntimeServiceCommit(forgedFile),{code:'INVALID_SERVICE_COMMIT'});
  assert.throws(()=>advanceAuditedServiceCommit(forged,{version:5,commandId:'forged',expectedRevision:forged.bundle.snapshot.revision,type:'MarchResume',payload:{}}));
  assert.throws(()=>advanceAuditedServiceCommit(state,{...state.commands[0].dto,expectedRevision:state.bundle.snapshot.revision}));
  const before=await fs.readdir(directory);

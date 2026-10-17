@@ -68,6 +68,9 @@ export function transitionServiceCommand(bundle,dto){
     {bundle:cloneData(result.bundle),receipt:cloneData(result.receipt)}:result;
 }
 export function validateServiceCommit(envelope){
+  auditServiceCommit(envelope);
+}
+function auditServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
   requireCondition([1,2,3,4,5,6,7,8,9,10,11].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
   const profile=runtimeProfile(envelope.anchor),finalProfile=runtimeProfile(envelope.bundle);
@@ -90,6 +93,7 @@ export function validateServiceCommit(envelope){
     requireCondition(isDeepStrictEqual(entry.receipt,next.receipt),'Service receipt does not match replay');
   }
   requireCondition(isDeepStrictEqual(replay,envelope.bundle),'Service world does not match command replay');
+  return {anchor,final};
 }
 export async function saveServiceCommit(envelope,directory,io=defaultIo){
   if(!auditedServiceCommits.has(envelope))validateServiceCommit(envelope);
@@ -97,11 +101,10 @@ export async function saveServiceCommit(envelope,directory,io=defaultIo){
 }
 export function createAuditedServiceCommit(envelope){
   if(auditedServiceCommits.has(envelope))return envelope;
-  validateServiceCommit(envelope);
+  const {anchor,final}=auditServiceCommit(envelope);
   requireCondition(envelope.serviceFormatVersion===11,'Live service certification requires campaign format','UNSUPPORTED_VERSION');
-  const profile=runtimeProfile(envelope.bundle),options={rulesVersion:profile.rulesVersion,systems:profile.systems};
-  const immutable=Object.freeze({serviceFormatVersion:11,anchor:createAuditedBundle(envelope.anchor,options),
-    commands:freezeData(cloneData(envelope.commands)),bundle:createAuditedBundle(envelope.bundle,options)});
+  const immutable=Object.freeze({serviceFormatVersion:11,anchor,
+    commands:freezeData(cloneData(envelope.commands)),bundle:final});
   auditedServiceCommits.add(immutable);return immutable;
 }
 export function advanceAuditedServiceCommit(previous,raw){
@@ -119,8 +122,18 @@ export function advanceAuditedServiceCommit(previous,raw){
   auditedServiceCommits.add(next);return next;
 }
 export async function loadServiceCommit(file,io=defaultIo){
+  return readServiceCommit(file,io,false);
+}
+// Owner-only loading path returns the immutable result of the SAME full audit.
+// Public loadServiceCommit keeps returning detached mutable data.
+export async function loadRuntimeServiceCommit(file,io=defaultIo){
+  return readServiceCommit(file,io,true);
+}
+async function readServiceCommit(file,io,certify){
   requireCondition(!/\.tmp$/i.test(file),'Temporary file is not a service commit','INVALID_SERVICE_COMMIT');
-  try{const envelope=parseStrictJson(await readStateFile(file,io),MAX_STATE_FILE_BYTES);validateServiceCommit(envelope);return cloneData(envelope);}
+  try{const envelope=parseStrictJson(await readStateFile(file,io),MAX_STATE_FILE_BYTES);
+    if(certify&&envelope.serviceFormatVersion===11)return createAuditedServiceCommit(envelope);
+    validateServiceCommit(envelope);return cloneData(envelope);}
   catch(cause){if(['LIMIT_EXCEEDED','UNSUPPORTED_VERSION'].includes(cause.code))throw cause;
     throw Object.assign(fault('INVALID_SERVICE_COMMIT','Service commit could not be audited'),{cause});}
 }

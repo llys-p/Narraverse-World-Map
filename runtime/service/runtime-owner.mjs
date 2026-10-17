@@ -19,7 +19,7 @@ import { parseStrictJson } from './strict-json.mjs';
 import { fields,record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
 import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,projectEncounterSnapshot,projectSceneSnapshot,projectMapSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend,loadCognitionBackend,requireCognitionBackend,loadSurvivalBackend,requireSurvivalBackend } from './http-contract.mjs';
 import { projectWorldActivity } from './world-activity.mjs';
-import { saveServiceCommit,loadServiceCommit,transitionAuditedServiceCommand,createAuditedServiceCommit,advanceAuditedServiceCommit,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
+import { saveServiceCommit,loadRuntimeServiceCommit,transitionAuditedServiceCommand,createAuditedServiceCommit,advanceAuditedServiceCommit,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 const MAX_ENCOUNTER_SERVICE_FILES=MAX_SERVICE_FILES+1;
 const serviceFileLimit=format=>[8,9,10,11].includes(format)?MAX_ENCOUNTER_SERVICE_FILES:MAX_SERVICE_FILES;
@@ -99,7 +99,7 @@ export async function createRuntimeOwner(options,io=fs){
     if(states.length){
       requireCondition(options.checkpoint===undefined,'Cannot replace existing runtime checkpoint');
       requireCondition(options.profile===undefined,'Cannot reset existing runtime profile');
-      if(states[0].kind==='service-commit'){state=await loadServiceCommit(states[0].file,io);bundle=state.bundle;}
+      if(states[0].kind==='service-commit'){state=await loadRuntimeServiceCommit(states[0].file,io);bundle=state.bundle;}
       else{
         requireCondition(!writable,'Use an explicit checkpoint to initialize a new writable directory','UNSUPPORTED_VERSION');
         bundle=await loadCheckpoint(states[0].file,{rulesVersion:PERSONALITY_RULES,systems:memorySystems()},io);
@@ -127,10 +127,9 @@ export async function createRuntimeOwner(options,io=fs){
       playerActionsAvailable=[3,4,5,6,7,8,9,10,11].includes(serviceFormatVersion),
       mindAvailable=[4,5,6,7,8,9,10].includes(serviceFormatVersion),encounterAvailable=[8,9,10,11].includes(serviceFormatVersion),mapAvailable=serviceFormatVersion===11,sceneAvailable=[9,10,11].includes(serviceFormatVersion);
     if(sceneAvailable){
-      const auditOptions={rulesVersion:bundle.snapshot.rulesVersion,systems};
-      bundle=createAuditedBundle(bundle,auditOptions);
-      state={...state,anchor:createAuditedBundle(state.anchor,auditOptions),bundle};
       if(serviceFormatVersion===11){state=createAuditedServiceCommit(state);bundle=state.bundle;}
+      else{const auditOptions={rulesVersion:bundle.snapshot.rulesVersion,systems};
+        bundle=createAuditedBundle(bundle,auditOptions);state={...state,anchor:createAuditedBundle(state.anchor,auditOptions),bundle};}
     }
     let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(bundle),playerProjection=playerAvailable?projectPlayerSnapshot(bundle):null,
       mindProjection=mindAvailable?projectMindInspector(bundle):null,encounterProjection=encounterAvailable?projectEncounterSnapshot(bundle):null,
