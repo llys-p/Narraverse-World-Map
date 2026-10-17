@@ -99,7 +99,7 @@ export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
  function connect(){
   if(document.hidden||source)return;
   source=new EventSource('/api/runtime/demo-events');
-  source.onmessage=event=>{try{apply(JSON.parse(event.data));connected=true;status(pending?'有待确认请求，请重试原请求。':'世界已连接 · 行军由运行时执行');onBusy(busy);}catch(error){disconnect();blocked=true;status(error.message,true);onBusy(false);}};
+  source.onmessage=event=>{try{apply(JSON.parse(event.data));connected=true;status(busy?'指令已发送，正在确认…':pending?'请求中断：结果待确认，可重试原请求。':'世界已连接 · 行军由运行时执行');onBusy(busy);}catch(error){disconnect();blocked=true;status(error.message,true);onBusy(false);}};
   source.onerror=()=>{connected=false;status('世界连接中断，连续行军将停止；重连后请明确继续。',true);onBusy(busy);};
  }
  async function stop(){
@@ -127,5 +127,5 @@ export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
   connect();document.addEventListener('visibilitychange',hidden);window.addEventListener('pagehide',()=>{disconnect();navigator.sendBeacon('/api/runtime/demo-stop',new Blob(['{"apiVersion":1}'],{type:'application/json'}));});
  }
  return Object.freeze({start,submit,pause,stop,refresh,retry(){if(!pending||busy||blocked||!connected)throw Error('没有可重试的请求');return perform(pending);},
-  state:()=>({connected,blocked,busy,pending:pending!==null}),getGroup:()=>group});
+  state:()=>({connected,blocked,busy,pending:pending!==null,canRetry:pending!==null&&!busy&&!blocked&&connected}),getGroup:()=>group});
 }

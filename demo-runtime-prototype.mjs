@@ -1521,7 +1521,7 @@ function paintReadings(){
  const gift=group.scene.actors.find(a=>a.actorId==='actor-2')?.gift;$('giftFood').disabled=!write||!gift?.available;
  $('beginEncounter').disabled=!write||!group.encounter.actions.canBegin;$('attack').disabled=!write||!group.encounter.actions.canAct;$('flee').disabled=$('attack').disabled;
  $('cancelEncounter').disabled=!write||!group.encounter.actions.canCancel;
- $('retryPending').hidden=!s.pending;$('retryPending').disabled=s.busy||!s.connected||s.blocked;
+ $('retryPending').hidden=!s.canRetry;$('retryPending').disabled=!s.canRetry;
  $('priceText').textContent='粮食 买/卖 '+group.player.actions.prices.food.buy+'/'+group.player.actions.prices.food.sell+'；药草 '+group.player.actions.prices.herbs.buy+'/'+group.player.actions.prices.herbs.sell;
  $('battleState').textContent=playbackBusy?'正在表现已确认回合':e?.status==='active'?'第 '+(e.attackCount+1)+' 回合 · 请选择指令':e?'战斗结束 · '+({win:'胜利',lose:'败北',flee:'逃离',cancel:'取消'}[e.resolution]??e.resolution):'尚无遭遇';
  if(!playbackBusy)setHealth(p.health,e?.wolfHealth);if(selectedActorId)showPerson(selectedActorId);
