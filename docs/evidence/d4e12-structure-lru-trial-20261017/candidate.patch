@@ -1,0 +1,37 @@
+diff --git a/runtime/core/scene-campaign-runtime.mjs b/runtime/core/scene-campaign-runtime.mjs
+index 4be388d..8697aa4 100644
+--- a/runtime/core/scene-campaign-runtime.mjs
++++ b/runtime/core/scene-campaign-runtime.mjs
+@@ -40,18 +40,28 @@ export const campaignRuntimeHooks=Object.freeze({
+  createWorld:(...a)=>hooks().createWorld(...a),beforeSystems:(...a)=>hooks().beforeSystems(...a),afterSystems:(...a)=>hooks().afterSystems(...a),
+  applyAction:(...a)=>hooks().applyAction(...a),settleDay:(...a)=>hooks().settleDay(...a),validateHistory:(...a)=>hooks().validateHistory(...a)
+ });
+-// A single bounded proof of this pure structural predicate, keyed by exact JSON
++// Bounded proofs of this pure structural predicate, keyed by exact JSON
+ // bytes and tick, never by mutable identity or a caller-provided trust flag.
+ // Input descriptors are always inspected and detached before comparing bytes.
+ // Event/history/receipt replay is outside this predicate and never cached here.
+-let lastWorldStructure = null;
++const worldStructures = new Map();
++let worldStructureUnits = 0;
++const MAX_STRUCTURE_PROOFS = 8, MAX_STRUCTURE_UNITS = 262144;
+ export function validateCampaignWorldState(world,options={}){
+  inspectDescriptorTree({world,options});record(world);fields(options,['tick']);integer(options.tick);
+  const detached=cloneData({world,options}),key=canonicalJson(detached);
+- if(lastWorldStructure?.key===key)return cloneData(lastWorldStructure.result);
++ if(worldStructures.has(key)){
++  const result=worldStructures.get(key);worldStructures.delete(key);worldStructures.set(key,result);
++  return cloneData(result);
++ }
+  const {mapModel,encounterModel,...part}=detached.world;validateCampaignBaseWorld(part);validateCampaignMap(detached.world,detached.options.tick);
+  const result=validateSceneEncounterWorldState({...part,encounterModel},detached.options);
+- if(key.length<=262144)lastWorldStructure={key,result:cloneData(result)};
++ if(key.length<=MAX_STRUCTURE_UNITS){
++  worldStructures.set(key,cloneData(result));worldStructureUnits+=key.length;
++  while(worldStructures.size>MAX_STRUCTURE_PROOFS||worldStructureUnits>MAX_STRUCTURE_UNITS){
++   const oldest=worldStructures.keys().next().value;worldStructures.delete(oldest);worldStructureUnits-=oldest.length;
++  }
++ }
+  return result;
+ }
+ export function describeCampaignEncounterActions(bundle){validateBundle(bundle,{rulesVersion:CAMPAIGN_RULES,systems:canonicalSystems(CAMPAIGN_RULES)});

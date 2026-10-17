@@ -1,0 +1,168 @@
+{
+  "baseline": "8fbfc7ef621bb0f4c8d73830ce7ba73e8f330c3e",
+  "decision": "DISCARDED_NO_CONFIRMED_COLD_OPEN_BENEFIT",
+  "order": [
+    "a1",
+    "b1",
+    "b2",
+    "a2"
+  ],
+  "repetitionsPerVariant": 2,
+  "commands": 8,
+  "ticks": 16,
+  "filesReceiptsProjectionsEqual": true,
+  "coreTestsRun": false,
+  "pageChainRun": false,
+  "data": {
+    "a1": {
+      "actions": {
+        "wallMs": 2081.6054999999997,
+        "cpuMs": 2344
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2168.6454,
+        "cpuMs": 2109
+      },
+      "structureCounts": {
+        "misses": 211
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-structure-lru.mjs",
+          "baseline",
+          "artifacts/d4e12/structure-lru-a1"
+        ],
+        "pid": 70752,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4701.791,
+        "cpuMs": 4859.375,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b1": {
+      "actions": {
+        "wallMs": 1973.391,
+        "cpuMs": 2078
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2147.9246,
+        "cpuMs": 2251
+      },
+      "structureCounts": {
+        "misses": 199
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-structure-lru.mjs",
+          "candidate",
+          "artifacts/d4e12/structure-lru-b1"
+        ],
+        "pid": 71492,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4443.291,
+        "cpuMs": 4671.875,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b2": {
+      "actions": {
+        "wallMs": 2006.0620999999999,
+        "cpuMs": 2031
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2199.7387000000003,
+        "cpuMs": 2125
+      },
+      "structureCounts": {
+        "misses": 199
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-structure-lru.mjs",
+          "candidate",
+          "artifacts/d4e12/structure-lru-b2"
+        ],
+        "pid": 53724,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4521.981,
+        "cpuMs": 4531.25,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "a2": {
+      "actions": {
+        "wallMs": 2178.2329,
+        "cpuMs": 2359
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2208.7877000000003,
+        "cpuMs": 2234
+      },
+      "structureCounts": {
+        "misses": 211
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-structure-lru.mjs",
+          "baseline",
+          "artifacts/d4e12/structure-lru-a2"
+        ],
+        "pid": 54940,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4748.77,
+        "cpuMs": 4859.375,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    }
+  },
+  "medians": {
+    "actions": {
+      "wallMs": {
+        "baseline": 2129.9192,
+        "candidate": 1989.7265499999999,
+        "improvementPercent": 6.582064239807783
+      },
+      "cpuMs": {
+        "baseline": 2351.5,
+        "candidate": 2054.5,
+        "improvementPercent": 12.63023601956198
+      }
+    },
+    "reopen": {
+      "wallMs": {
+        "baseline": 2188.71655,
+        "candidate": 2173.83165,
+        "improvementPercent": 0.6800743568188383
+      },
+      "cpuMs": {
+        "baseline": 2171.5,
+        "candidate": 2188.0,
+        "improvementPercent": -0.7598434262030773
+      }
+    }
+  }
+}
