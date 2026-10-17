@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-17 16:29（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-17 16:52（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -33,7 +33,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- **D4E12 Demo村庄/森林接入：功能限定通过，性能未达标，仍需修正**：[合同](tasks/D4E12-DEMO-RUNTIME-TASK.md) / [报告](https://github.com/llys-p/Narraverse-World-Map/blob/eaddf683659465194b784b631be6e78b94f11a0e/docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md)。树D:/Narraverse-World-Map-demo-integration / codex/world-runtime-demo-integration，原产品9899d9e；补修f4b93894dbaf82ff0fe30f3620c2c4077ecd8732修复SSE将进行中POST误报重试，保留原ID/字节、pending及严格回执，定向1/1。唯一隔离短行军两步408/774ms，其中状态推进383/743ms、写盘15/19ms，owner排队<1ms、额外GET约2–3ms；n=1、无后端改动，下一步细分状态推进热段。原核心4/4、UI短链26命令胜利返村、较长档30命令r92/tick81完整重演/五投影/31正式档SHA恢复证据复用，原失败保留；冷开74.351秒仍未达标、无外观听感验收。交付eaddf683659465194b784b631be6e78b94f11a0e已推送并读回SHA/报告API字节一致，执行树干净。Projects卡PVTI_lAHOEF9IDs4BmADfzhBbReM维持In Progress/需修正并读回，D仍进行中。18342/PID14520及匹配日常档锁已只读发现（16:04启动），连同旧18338/PID61236、18340/PID63160保留未启停；用户页面当前版本未核实。原8档、原型、16依赖、旧88源码和原日常文件保护，无本轮测试进程/隔离锁残留，无main/部署/迁移/存档上传；D4E11历史未验收不改。
+- **D4E12 Demo村庄/森林接入：功能限定通过，性能未达标，仍需修正**：[原总报告](https://github.com/llys-p/Narraverse-World-Map/blob/24ee9f909d4532742ea3a4da695420869ce53fb6/docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md) / [本轮线程隔离与Reference Review](https://github.com/llys-p/Narraverse-World-Map/blob/24ee9f909d4532742ea3a4da695420869ce53fb6/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md)。执行树D:/Narraverse-World-Map-demo-integration，源码216cd12、交付24ee9f909d4532742ea3a4da695420869ce53fb6已推送读回。按用户自主修复授权阅读OpenTTD/Mindustry及RimWorld非官方反编译参考（非开源、未复制），将原owner完整计算/审计/保存放进worker；ABBA真实Advance12各版2次，最长读取阻塞804–868→4.5–7.4ms、四轮r12SHA一致，确认约0.85–0.96秒未证明加速。最终worker1/1，实际页面26命令r48/tick37胜利返村/正常关闭，短档完整重演恢复/篡改拒绝通过。长档冷开与确认成本尚未解决，旧失败证据保留，无外观验收。原8档/16依赖/旧88源码/107份既有日常文件保护，18338/PID61236、18340/PID63160、18342/PID14520未启停切换，无测试进程/隔离锁；中控并行原型摘要保留。线程故障中断恢复未测，不改D4E11历史状态，无main/部署/迁移/存档上传。Projects仍In Progress/需修正，D仍进行中；本对话自动跟进world-map已建立，继续有界处理确认等待，非整体验收收口。
 
 - **D4E11候选已推送，未验收**：[合同](tasks/D4E11-CAMPAIGN-JRPG-TASK.md)，[结果报告与失败记录](https://github.com/llys-p/Narraverse-World-Map/blob/80d6206ab2382f8bc96a20ef3e650fbcda1b9e97/docs/runtime/D4E11-CAMPAIGN-JRPG-RESULT.md)。树D:/Narraverse-World-Map-campaign-jrpg / codex/world-runtime-campaign-jrpg，远端80d6206ab2382f8bc96a20ef3e650fbcda1b9e97已推送精确读回，报告API可读；核心27ddaba、页面e7f6223、原证据1bf24ff。持续行军/暂停改道/NPC路遇/回合制已接，8个不同定向成员分次通过，非一次8/8。页面赠粮/猎人记忆路遇/两击胜利已完成，最终r50/tick40/road(9,7)/商人暂停，返村及最终正常关闭重开未完成。原600秒、首授权300秒、后续继续独立300秒失败/超时保留，最新PHASE_LIMIT120秒；下一业务运行需新的有界授权，不重置旧预算/重打战斗。原8档、旧98产品、5素材、13外部、17日常文件不变；18338/PID61236保持，验收自有锁/进程已清；用户随后明确要求展示，已启动本树独立日常18340/PID63160，artifacts/d4e11-daily/world新世界，实读页面世界已连接。体验服务保留供用户操作（exec会话30372，可输入quit正常关闭）；不是重启旧补验，r50验收档保持。用户已明确授权本次候选源码和脱敏证据推送当前公开仓库，不上传存档/新增素材、不推定许可；控制并行dual原型及摘要保留，不纳入本任务提交。Projects先待验收再In Progress/需修正逐字段读回，D仍进行中；证据docs/evidence/d4e11-campaign-jrpg-control-20261017/。D4E10仍上一已验树，Issue3暂停。
 

@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12仍功能限定通过、性能未达标，In Progress/需修正。\n\n用户授权自主参考开源游戏解决行动等待。参考OpenTTD/Mindustry，学习性阅读RimWorld反编译代码（非开源、未复制）；源码216cd124cb992bc593007ebdec2c154ad046daaa将原owner完整审计/保存放进工作线程。ABBA实际Advance12各版2次：最长读取阻塞804–868ms到4.5–7.4ms，四轮r12 SHA相同；确认总耗时约0.85–0.96s，未证明加速。定向worker最终1/1；真实页面26命令r48/tick37两回合胜利返村/正常关闭通过，短档完整恢复和篡改拒绝通过。长档冷开/确认计算仍待处理，不冒称全部解决。原8档、旧88源码、16素材、107份既有日常文件保护，18338/18340/18342原PID保留，无隔离锁/测试进程残留。未合main/部署/切换服务。\n\n已设置本对话后续自动跟进world-map；只继续有界修复，不削弱审计或运行旧长档，实质变化才通知。\n\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/24ee9f909d4532742ea3a4da695420869ce53fb6/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md\n交付：24ee9f909d4532742ea3a4da695420869ce53fb6，远端SHA及报告API字节一致读回。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

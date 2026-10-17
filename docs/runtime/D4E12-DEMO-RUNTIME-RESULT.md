@@ -1,7 +1,5 @@
 # D4E12结果入口
 
-完整实现、失败记录与脱敏证据位于独立执行分支；控制树仅保存入口。
+[完整接入报告](https://github.com/llys-p/Narraverse-World-Map/blob/24ee9f909d4532742ea3a4da695420869ce53fb6/docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md) · [本轮线程隔离与游戏源码参考](https://github.com/llys-p/Narraverse-World-Map/blob/24ee9f909d4532742ea3a4da695420869ce53fb6/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md)。
 
-[固定提交eaddf683的完整报告](https://github.com/llys-p/Narraverse-World-Map/blob/eaddf683659465194b784b631be6e78b94f11a0e/docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md)。
-
-本机：[执行树报告](D:/Narraverse-World-Map-demo-integration/docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md)。确认提示补修及一次短行军归因已交付；功能限定通过，性能未达标，D4E12仍需修正。
+读取阻塞改善，行动确认及长档冷开仍未解决；功能限定通过，性能未达标，继续修正。现有体验实例未切换。
