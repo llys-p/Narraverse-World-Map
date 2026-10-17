@@ -1,0 +1,9 @@
+{
+  "branch": "codex/world-runtime-demo-integration",
+  "head": "a42957b28bb7482fa8da5f2184abd22a428d4793",
+  "productionSourceUnchanged": "1e5e16cfab302b56da89e93383b6eefdb13f3213",
+  "remoteMatches": true,
+  "reportApiMatchesGitBlob": true,
+  "reportSha256": "abb5d1fa1df55341116c7ee9b75c86d5bce566a3f252dac0fb148305e0875820",
+  "reportUrl": "https://github.com/llys-p/Narraverse-World-Map/blob/a42957b28bb7482fa8da5f2184abd22a428d4793/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md"
+}
