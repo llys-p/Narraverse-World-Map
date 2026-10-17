@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12｜Demo村庄/森林真实接入：功能限定通过，性能仍需修正。\n最新生产1e5e16cfab302b56da89e93383b6eefdb13f3213；证据交付8fbfc7ef621bb0f4c8d73830ce7ba73e8f330c3e已推送精确读回，报告API字节一致：https://github.com/llys-p/Narraverse-World-Map/blob/8fbfc7ef621bb0f4c8d73830ce7ba73e8f330c3e/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md\n\n按完整数据内容和tick复用单条结构证明：每次仍inspectDescriptorTree+cloneData+完整canonical key比较，不信任可变identity/哈希/公开bypass参数。最多262144 UTF-16单元的一条key，成功后才保留独立结果、返回clone。不同内容/tick重新完整结构校验。公开完整审计和从零历史重演仍执行；不缓存历史/事实/回执/磁盘结论；耐久发布/回滚/幂等/时间规则保持。\n同一seed42短世界、真实HTTP 8×AdvanceTime(2)、ABBA各版2次：行动墙钟中位2639.689→2046.121ms（22.49%），CPU2788.5→2001ms（28.24%）；完整重开2935.778→2174.051ms（25.95%），CPU2922.5→2218ms（24.11%）。9档SHA/8回执/五投影/重开/原ID重试完全一致，全部退出0。只对本次短样本成立，不叠加前轮百分比或外推长档。\n核心9/9、后增反例2/2分次PASS，非一次11/11；包含内容/tick篡改重验、结果投毒、零getter、伪trusted、Proxy实际值、命中结构证明后历史报价10→11仍被完整审计拒绝；完整服务重演/恢复/发布失败回滚/幂等通过。独立静态复核未见新增漏洞（不承诺拒绝所有Proxy，trap仍可能执行）。实际Edge隔离26命令，赠粮/暂停改道/NPC路遇/两回合胜利/返村/正常关闭，r48/tick37/HP920/私粮19/钱包0/村庄(4,7)，errors0；未含工作交易休息/独立重演/重开，后两项由核心及ABBA分次覆盖；无视觉检查。\n本轮空循环envelope及数值String候选收益不足，已全撤回；未运行补充测试，不计通过。此前相等/副本/断言试验亦撤回。\n长档74.351秒旧样本本次未复跑，历史增长下完整重演/嵌套遍历仍为剩余成本，持续流畅体验未完成。原8档/16依赖/旧88源码/107日常文件/中控并行原型与摘要保护，18338/PID61236、18340/PID63160、18342/PID14520保持未更新，无测试进程/隔离锁。无main/部署/迁移/存档上传/DSH外部模型。\nD4E12 In Progress/需修正、D阶段进行中，D4E11历史不改；继续有界推进。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
