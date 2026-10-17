@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>森林 · 遭遇记录</title>
   <link rel="stylesheet" href="/runtime-encounter.css">
+  <link rel="stylesheet" href="/runtime-presentation.css">
+  <script defer src="/runtime-art/stickman-engine.js"></script>
+  <script defer src="/runtime-art/stickart-core.js"></script>
+  <script defer src="/runtime-art/quad.js"></script>
+  <script defer src="/runtime-art/deep.js"></script>
+  <script defer src="/runtime-art/world-combat-fx.js"></script>
   <script type="module" src="/runtime-encounter.mjs"></script>
 </head>
 <body>
@@ -15,6 +21,17 @@
   </header>
   <p id="scene-status" role="status" aria-live="polite">正在读取森林与玩家状态…</p>
   <p class="note">暂无已确认的其他人物；这里只显示本人状态与真实遭遇。</p>
+  <section class="battle-graphic" aria-label="已确认遭遇的图形表现">
+    <div class="graphic-stage" id="battle-stage">
+      <canvas id="battle-player" aria-hidden="true"></canvas>
+      <canvas id="battle-wolf" class="graphic-overlay" aria-hidden="true"></canvas>
+      <canvas id="battle-effects" class="graphic-overlay" aria-hidden="true"></canvas>
+    </div>
+    <div class="graphic-meters"><label>玩家健康过渡 <meter id="battle-player-meter" min="0" max="1000" value="0"></meter></label>
+      <label>遭遇狼健康过渡 <meter id="battle-wolf-meter" min="0" max="300" value="0"></meter></label></div>
+    <p class="graphic-note" id="battle-playback-status" role="status" aria-live="polite">等待已确认读数；查看森林不会旅行。</p>
+    <div class="graphic-controls"><button id="battle-skip" type="button" disabled>跳过表现</button><button id="battle-reset" type="button" disabled>停止并显示确认末态</button></div>
+  </section>
   <section class="readings" aria-label="当前世界状态">
     <article><h2>世界版本</h2><p>修订 <strong id="scene-revision">—</strong></p><small>世界时刻 <span id="scene-tick">—</span> tick</small></article>
     <article><h2>我的健康</h2><p><strong id="scene-player-health">—</strong> <span>/ 1000</span></p><small id="scene-player-state">正在读取人物…</small></article>

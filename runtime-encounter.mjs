@@ -1,4 +1,5 @@
 import { mountActivityPanel, readActivity } from './runtime-activity.mjs';
+import {createBattlePlayback} from './runtime-presentation.mjs';
 const byId = id => document.getElementById(id);
 const nodes = Object.fromEntries(['scene-status','scene-revision','scene-tick','scene-player-health','scene-player-state',
   'scene-wolf-health','scene-wolf-count','encounter-state','encounter-begin','encounter-attack','encounter-flee',
@@ -11,6 +12,9 @@ const RECEIPT_FIELDS = ['apiVersion','receiptVersion','commandId','status','from
   'durationTicks','type','outcome','result'];
 const ACTION_TYPES = {begin:'EncounterBegin',attack:'EncounterAction',flee:'EncounterAction',cancel:'EncounterCancel'};
 let current = null, capabilities = null, pending = restorePending(), submitting = false, readingsFresh = false, receipts = restoreReceipts();
+const playback=createBattlePlayback({canvas:byId('battle-player'),wolfCanvas:byId('battle-wolf'),effects:byId('battle-effects'),
+  status:byId('battle-playback-status'),playerBar:byId('battle-player-meter'),wolfBar:byId('battle-wolf-meter'),
+  skip:byId('battle-skip'),reset:byId('battle-reset'),onStateChange(){if(current)displayWorld(current.player,current.view);}});
 
 function safeInteger(value) { return Number.isSafeInteger(value) && value >= 0; }
 function readJsonResponse(response, text) {
@@ -62,6 +66,7 @@ function coherent(cap, player, encounter) {
     (encounter.encounter === null || typeof encounter.encounter === 'object');
 }
 function displayWorld(player, view) {
+  playback.sync(player,view);
   const encounter = view.encounter;
   nodes['scene-revision'].textContent = String(view.revision);
   nodes['scene-tick'].textContent = String(view.tick);
@@ -75,7 +80,7 @@ function displayWorld(player, view) {
   nodes['encounter-state'].textContent = !view.self.alive ? '玩家已逝' : active ? `遭遇进行中 · ${encounter.encounterId}` :
     encounter?.status === 'closed' ? `遭遇结束 · ${resolutionText(encounter.resolution)}` : '尚无遭遇';
   nodes['world-action-block'].hidden = !active;
-  const canWrite = readingsFresh && capabilities?.writes === true;
+  const canWrite = readingsFresh && capabilities?.writes === true && !playback.busy;
   nodes['encounter-begin'].disabled = submitting || pending !== null || !canWrite || !view.self.alive || view.self.location !== 'forest' || active ||
     !view.actions?.canBegin || view.population.availableWolves < 1;
   for (const id of ['encounter-attack','encounter-flee','encounter-cancel'])
@@ -114,6 +119,7 @@ function renderLog(encounter) {
   nodes['scene-log'].replaceChildren(...items);
 }
 async function refresh() {
+  playback.invalidate();
   readingsFresh = false;
   for (const id of ['encounter-begin','encounter-attack','encounter-flee','encounter-cancel']) nodes[id].disabled = true;
   nodes['scene-status'].textContent = '正在读取同一修订的玩家与遭遇状态…';
@@ -127,7 +133,7 @@ async function refresh() {
     const activity = await readActivity(cap.json,player.json);
     if (current && encounter.json.revision < current.view.revision) {
       nodes['scene-status'].textContent = '忽略了迟到的旧读数；保留最后一组一致世界状态。';
-      displayWorld(current.player, current.view);
+      displayWorld(current.player, current.view);playback.invalidate();
       return;
     }
     capabilities = cap.json;
@@ -136,7 +142,7 @@ async function refresh() {
     displayWorld(current.player, current.view);
     if (!pending && !submitting) nodes['scene-command-status'].textContent = '只读读取不会推进世界时间。';
   } catch {
-    if (current) displayWorld(current.player, current.view);
+    if (current) displayWorld(current.player, current.view);playback.invalidate();
     nodes['scene-status'].textContent = current ? '读取暂时失败，保留最后一组一致世界读数；操作已暂停。' : '连接失败，尚未取得一致的世界读数。';
     if (pending) nodes['scene-command-status'].textContent = '请求结果尚未确认；重试会使用同一完整请求。';
   }
@@ -211,6 +217,7 @@ async function sendPending() {
     receipts = [...receipts, {receipt:body, receiptKeys:Object.keys(body)}].slice(-24); saveReceipts(); clearPending();
     nodes['scene-command-status'].textContent = describeReceipt(body);
     await refresh();
+    if(readingsFresh)playback.play(body,command);
   } catch {
     nodes['scene-command-status'].textContent = '连接中断，结果尚未确认；重试会再次发送同一请求。';
   } finally {
@@ -221,6 +228,7 @@ async function sendPending() {
   }
 }
 function start(action) {
+  if(playback.busy)return;
   const command = makeCommand(action);
   if (!command) return;
   if (!savePending(command)) { nodes['scene-command-status'].textContent = '浏览器无法保存待确认请求，操作未发送。'; return; }

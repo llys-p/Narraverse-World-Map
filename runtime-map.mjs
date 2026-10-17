@@ -52,6 +52,12 @@ function render(dto,sceneAvailable,actualLocation){
   byId('human-count').textContent=dto.population.totalAlive;byId('named-count').textContent=`${dto.population.namedAlive} 位实名居民 · ${dto.population.unnamedAlive} 位普通居民`;
   byId('deer-count').textContent=dto.population.deer;byId('wolf-count').textContent=dto.population.wolves;
   byId('route-state').textContent=dto.market.routeOpen?'贸易路线开放':'贸易路线暂停';
+  const marker=byId('player-map-marker');
+  const markerVisible=sceneAvailable===true && ['village','forest'].includes(actualLocation);
+  marker.toggleAttribute('hidden',!markerVisible);
+  marker.dataset.location=markerVisible?actualLocation:'unknown';marker.dataset.revision=String(dto.revision);
+  if(markerVisible){marker.setAttribute('transform',actualLocation==='village'?'translate(330 228)':'translate(790 218)');
+    marker.setAttribute('aria-label',`玩家 actor-4 当前位置：${actualLocation==='village'?'村庄':'森林'}`);}
   const rows=dto.actors.map(a=>{const li=document.createElement('li'),seal=document.createElement('span'),body=document.createElement('div'),name=document.createElement('strong'),detail=document.createElement('small');
     seal.className='seal';seal.textContent=occupations[a.occupation]?.slice(0,1)??'人';name.textContent=a.name;
     detail.textContent=`${occupations[a.occupation]??a.occupation} · ${a.location==='village'?'村庄':a.location} · ${a.alive?'存活':'已逝'}`;
@@ -138,10 +144,12 @@ async function refresh(){
     render(dto,capabilities.sceneAvailable===true,player?.self?.identity?.location);renderPlayer(player,capabilities.sceneAvailable===true);renderActions(player);renderActivity(activity,dto);byId('activity-stale').hidden=true;byId('activity-panel').dataset.stale='false';last=dto;lastPlayer=player;lastEncounter=encounter;lastCapabilities=capabilities;lastActivity=activity;
     actionsAvailable=capabilities.playerActionsAvailable===true;writable=capabilities.writes===true;readingsFresh=true;
     byId('time-controls').hidden=!writable;byId('mind-link').hidden=capabilities.mindAvailable!==true;
-    if(capabilities.sceneAvailable===true){const villageLink=byId('village-scene-link');if(villageLink)villageLink.hidden=false;}
+    if(capabilities.sceneAvailable===true){const villageLink=byId('village-scene-link');if(villageLink)villageLink.hidden=false;
+      byId('village-map-anchor').removeAttribute('hidden');}
     const sceneLink=byId('forest-scene-link'),canViewForest=capabilities.sceneAvailable===true ||
       (player?.self?.identity?.location==='forest' && encounterAvailable);
     sceneLink.hidden=!canViewForest;if(canViewForest)sceneLink.textContent=capabilities.sceneAvailable===true?'查看森林场景':'进入森林场景';
+    byId('forest-map-anchor').toggleAttribute('hidden',!canViewForest);
     byId('map-note').textContent=writable?'世界时间仅在明确提交后推进':'只读观察 · 世界时间不会自动流逝';
     status.dataset.state='ready';status.textContent='已读取服务保存的世界 · 刷新不会推进时间';
   }catch(error){if(lastActivityGroup){byId('activity-stale').hidden=false;byId('activity-panel').dataset.stale='true';}status.dataset.state='error';status.textContent=error.code==='READING_CONFLICT'?

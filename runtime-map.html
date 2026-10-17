@@ -39,7 +39,12 @@
       <path class="river" d="M20 294Q240 260 420 282T970 235"/>
       <g class="trees"><path d="m655 230 17-58 17 58zm80-18 15-48 15 48zm111 11 18-66 18 66zm73-29 13-44 13 44z"/></g>
       <g class="village"><path d="m235 240 23-30 23 30v29h-46zm57 7 20-24 20 24v22h-40zm-95 7 16-20 16 20v15h-32z"/></g>
-      <text x="245" y="195" class="map-label">村庄</text><text x="755" y="150" class="map-label">山林</text>
+      <a id="village-map-anchor" class="map-place-anchor" href="/runtime-village.html" aria-label="查看村庄场景" hidden><text x="245" y="195" class="map-label">村庄 · 查看</text></a>
+      <a id="forest-map-anchor" class="map-place-anchor" href="/runtime-encounter.html" aria-label="查看森林场景" hidden><text x="755" y="150" class="map-label">山林 · 查看</text></a>
+      <g id="player-map-marker" class="player-map-marker" data-actor-id="actor-4" hidden aria-label="玩家位置">
+        <circle cx="0" cy="0" r="10" class="player-map-marker__head"/><path d="M0 10V29M0 16L-11 24M0 16L11 24M0 29L-9 42M0 29L9 42" class="player-map-marker__body"/>
+        <text id="player-map-marker-label" x="0" y="58" class="player-map-marker__label">玩家 · actor-4</text>
+      </g>
     </svg><nav class="place-links" aria-label="查看地点"><a id="village-scene-link" class="forest-scene-link" href="/runtime-village.html" hidden>查看村庄</a><a id="forest-scene-link" class="forest-scene-link" href="/runtime-encounter.html" hidden>查看森林</a></nav><p class="map-note" id="map-note">查看地点不会旅行；玩家实际位置见上方人物状态。</p>
   </section>
   <section class="readings" aria-label="世界公开读数">

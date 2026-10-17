@@ -4,6 +4,8 @@ const nodes = Object.fromEntries(['village-status','village-revision','village-t
   'village-player-location','village-people','village-refresh','village-retry','village-travel','village-forest-link','village-command-status','village-receipt','village-receipt-details']
   .map(id => [id, byId(id)]));
 const activityPanel = mountActivityPanel(byId('village-activity'),'village');
+const placeViewReady = import('./runtime-presentation.mjs').then(({createPlaceView}) =>
+  createPlaceView(byId('village-canvas'),byId('village-cast'))).catch(() => null);
 const PENDING_PREFIX = 'narraverse.village.pending.v1:';
 const RECEIPT_FIELDS = ['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result'];
 const GIFT_REASONS = ['PLAYER_DEAD','ENCOUNTER_BUSY','RECIPIENT_DEAD','NOT_COLOCATED','NO_FOOD','RECIPIENT_FULL'];
@@ -110,6 +112,12 @@ function controls() {
 function render() {
   if (!current) { controls(); return; }
   const {scene,encounter} = current;
+  void placeViewReady.then(placeView => {
+    if (!placeView || !fresh || current?.scene !== scene) return;
+    try { placeView.show({simulationId:scene.simulationId,revision:scene.revision,tick:scene.tick,viewPlace:'village',
+      player:{actorId:'actor-4',name:current.player.self.identity.name,location:scene.location,alive:scene.self.alive},actors:scene.actors}); }
+    catch { /* A presentation failure must not interrupt text controls or commands. */ }
+  });
   nodes['village-revision'].textContent = String(scene.revision);
   nodes['village-tick'].textContent = String(scene.tick);
   nodes['village-food'].textContent = String(scene.self.food);

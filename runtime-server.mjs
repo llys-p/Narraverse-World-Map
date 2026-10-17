@@ -7,11 +7,17 @@ import { MAX_COMMAND_BYTES,MAX_SERVICE_ADVANCE_TICKS,parseCommandBytes,parseScen
 import { MAX_PENDING_REQUESTS } from './runtime/service/service-commit.mjs';
 import { record,integer,requireCondition,fault } from './runtime/core/data-contract.mjs';
 const root=fileURLToPath(new URL('./',import.meta.url));
+// Fixed public drawing assets already tracked in this checkout. Never read another worktree.
+const presentationFiles=[['/runtime-presentation.mjs','runtime-presentation.mjs'],['/runtime-playback-state.mjs','runtime-playback-state.mjs'],
+  ['/runtime-presentation.css','runtime-presentation.css'],['/runtime-art/stickman-engine.js','stickman-engine.js'],
+  ['/runtime-art/stickart-core.js','stickart/stickart-core.js'],['/runtime-art/quad.js','stickart/beasts/quad.js'],
+  ['/runtime-art/deep.js','stickart/beasts/deep.js'],['/runtime-art/world-combat-fx.js','world-combat-fx.js']];
 const staticFiles=new Map([['/',['runtime-map.html','text/html; charset=utf-8']],['/runtime-map.html',['runtime-map.html','text/html; charset=utf-8']],
   ['/runtime-map.mjs',['runtime-map.mjs','text/javascript; charset=utf-8']],['/runtime-activity.mjs',['runtime-activity.mjs','text/javascript; charset=utf-8']],
   ['/runtime-map.css',['runtime-map.css','text/css; charset=utf-8']]]);
 const mindStaticFiles=new Map([['/runtime-mind.html',['runtime-mind.html','text/html; charset=utf-8']],
   ['/runtime-mind.mjs',['runtime-mind.mjs','text/javascript; charset=utf-8']],['/runtime-mind.css',['runtime-mind.css','text/css; charset=utf-8']]]);
+for(const [url,file] of presentationFiles)staticFiles.set(url,[file,file.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8']);
 const encounterStaticFiles=new Map([['/runtime-encounter.html',['runtime-encounter.html','text/html; charset=utf-8']],
   ['/runtime-encounter.mjs',['runtime-encounter.mjs','text/javascript; charset=utf-8']],['/runtime-encounter.css',['runtime-encounter.css','text/css; charset=utf-8']]]);
 const villageStaticFiles=new Map([['/runtime-village.html',['runtime-village.html','text/html; charset=utf-8']],
