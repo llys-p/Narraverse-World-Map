@@ -32,6 +32,8 @@
 
 ## 活动工作、阻塞与下一步
 
+- D4E10图形体验接入已获用户批准并开工：[冻结任务书](tasks/D4E10-GRAPHICAL-LOOP-TASK.md)。执行树D:/Narraverse-World-Map-graphical-loop，分支codex/world-runtime-graphical-loop，基准fe66af9。采用A布局/B修正绑定/C真实回执表现，不改Runtime规则/存档，当前施工未验收。三路已齐：A5、B3、C5文件；此前静态评审缺件状态为历史。旧18336日常服务现PID48192在监听，加入保护；18325/18327保持。
+
 - **D4E9玩家工作收入闭环限定PASS**：用户确认6小时/工资20/疲劳+150/成功start间隔24小时；[冻结合同](tasks/D4E9-PLAYER-WORK-TASK.md)，[完整结果与脱敏证据](https://github.com/llys-p/Narraverse-World-Map/blob/fe66af943069bb62324a82aa1cd43d0b1bfb8212/docs/runtime/D4E9-PLAYER-WORK-RESULT.md)。执行树 `D:/Narraverse-World-Map-player-work` / `codex/world-runtime-player-work`，接f7bc328，实现a375acc、交付fe66af9已推送并读回SHA完全一致/树干净；新format10/DTO4隔离档。核心8/8、根旧DTO3两成员2/2；同一fresh世界真实页面work/buy2→HTTP Advance107→tick144→close/reopen，工资20/支出20/钱包0/私粮21、工作/日结各1、五投影/活动/原回执/4档SHA一致。原8档/旧93产品/控制5旧文件不变，97候选运行源验收前后匹配；无自有锁/进程，18325 PID2592/18327 PID4432保持。Start-D4E9.cmd新18336日常世界未创建/启动；实际短史重开23.6秒，不宣称性能合格；首败保留，无全量/视觉/长史/迁移/main/deploy/DSH。看板先待验收再Done/已验收逐字段读回；D整体仍进行中，Issue3暂停。
 
 - **D4E8交易前余额/库存/数量提示限定PASS**：[复核](docs/runtime/D4E8-TRADE-FEEDBACK-REVIEW-20261016.md)，合同2fbb074；树`D:/Narraverse-World-Map-trade-feedback` / `codex/world-runtime-trade-feedback`接06e9222，实现99659a2仅地图html/mjs，服务与78runtime不变。性价比high工人静态检查后停写，root18334单一新世界真实验证0余额/0库存/0、11、小数数量禁用、本地输入不写档、卖4后买2可用、提交中全局禁用、完成余额0后重新禁买；两成功回执对等钱粮、刷新/正常重开五读取/三档与预算一致。0新增suite/0日结，不复跑旧链；原8档/其余91产品/5旧文件和18325 PID2592/18327 PID4432及既有9/3档保持，两自有CLI exit0无锁/残留，默认日常世界未创建。报告/说明/脱敏证据推送，板先待验收再Done/已验收读回；D仍进行中，Issue3暂停，无main/deploy/迁移/DSH/第三方模型。本片完成停止，新收入/NPC规则未实现。
