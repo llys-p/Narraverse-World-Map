@@ -1,0 +1,591 @@
+{
+  "verdict": "INCOMPLETE_NOT_ACCEPTED",
+  "sourceBase": "6c60fe2d5b6276660936e1ab55a43385a79737ba",
+  "coreCommit": "27ddaba51e080ef9db38361eaafe1c09c9863b57",
+  "uiCommit": "e7f622350be5912082239ddaab5d20f406b50b03",
+  "branch": "codex/world-runtime-campaign-jrpg",
+  "environment": {
+    "checkedAt": "2026-10-17T14:46:02.5161794+08:00",
+    "remainingTestLocks": [],
+    "remainingProcesses": [],
+    "dailyEntryExists": false,
+    "node": "v24.14.0",
+    "platform": "Microsoft Windows NT 10.0.26200.0",
+    "listeners": [
+      {
+        "LocalPort": 18338,
+        "OwningProcess": 61236
+      }
+    ]
+  },
+  "functionalChecks": {
+    "uniqueDirectedMembersPassed": 8,
+    "oneCombinedRun": false,
+    "pureMap": 3,
+    "input": 1,
+    "crossDayCombat": 1,
+    "deathBeforeCompletion": 1,
+    "ownerRollbackReopenTamper": 1,
+    "httpLegacyGate": 1
+  },
+  "browser": {
+    "initialRun": "2026-10-17T03-44-36-116Z",
+    "mainRun": "2026-10-17T03-45-59-812Z",
+    "knownFailedPreparationRun": "2026-10-17T03-53-44-958Z",
+    "originalLimitMs": 600000,
+    "supplementLimitMs": 300000,
+    "supplementStartedAt": "2026-10-17T04:05:35.118Z",
+    "supplementEndedBy": "First supplement: checker fetch failure, then same-budget continuation ended by road/village assertion. Later user-continue grant: PHASE_LIMIT at return-confirmed-r50.",
+    "finalReturnGatePassed": false,
+    "finalReopenGateRun": false,
+    "completed": [
+      "gift memory",
+      "march",
+      "pause",
+      "replan",
+      "hunter contact",
+      "forest arrival",
+      "two-turn win",
+      "saved march explicitly resumed after reload",
+      "merchant contact on return"
+    ],
+    "visualAcceptance": false,
+    "performanceAcceptance": false,
+    "latestContinuation": {
+      "verdict": "INCOMPLETE_NOT_ACCEPTED",
+      "grant": "20261017-user-continue",
+      "authorization": {
+        "authorized": true,
+        "totalLimitMs": 300000,
+        "phaseLimitMs": 120000,
+        "startedAt": "2026-10-17T06:39:15.95Z"
+      },
+      "supervisor": {
+        "pid": 58772,
+        "code": null,
+        "signal": "SIGKILL",
+        "killed": {
+          "reason": "PHASE_LIMIT",
+          "phase": "return-confirmed-r50"
+        }
+      },
+      "uiObservedBeforeResume": {
+        "revision": 50,
+        "tick": 40,
+        "location": "road",
+        "x": 9,
+        "y": 7,
+        "order": "paused",
+        "destination": {
+          "x": 4,
+          "y": 7
+        },
+        "contact": "actor-3"
+      },
+      "uiAction": "Clicked the visible Continue march button; UI entered pending confirmation.",
+      "uiError": {
+        "timestamp": "2026-10-17T06:41:46.048Z",
+        "message": "Campaign confirmation failed TypeError: Failed to fetch",
+        "source": "runtime-campaign.mjs:181:26"
+      },
+      "notes": [
+        "The 120-second phase includes browser interaction and supervision wait; it is not a measured individual request latency.",
+        "No newer published revision or final return marker was found. Reopen was not run.",
+        "SIGKILL left only the test owner lock. PID absence and exact path/owner were checked; the lock metadata was copied before removing this specific orphan.",
+        "No repeat attack and no new world were executed in this grant."
+      ]
+    }
+  },
+  "finalObservedMetadata": {
+    "file": "service-commit-r50.json",
+    "sha256": "674d590c8de5ca5b4e414bc28df9b9e39b2244bde54e7c559de9a82d98f96aaa",
+    "tick": 40,
+    "revision": 50,
+    "commandCount": 26,
+    "position": {
+      "x": 9,
+      "y": 7
+    },
+    "orderStatus": "paused",
+    "target": {
+      "x": 4,
+      "y": 7
+    },
+    "contact": {
+      "actorId": "actor-3",
+      "tick": 39
+    },
+    "health": 920,
+    "food": 19,
+    "battleResolution": "win",
+    "note": "Read from the existing fully published synthetic commit for the report; no new post-budget full-load audit was run."
+  },
+  "trace": [
+    {
+      "type": "PlayerGiftFood",
+      "commandId": "b4393ae2-157d-4ad1-976d-908cc2ca7485",
+      "payload": {
+        "recipientId": "actor-2"
+      },
+      "fromRevision": 0,
+      "toRevision": 1,
+      "fromTick": 0,
+      "tick": 0,
+      "outcome": "succeeded",
+      "stepsMoved": null,
+      "orderStatus": null,
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchSet",
+      "commandId": "e82a54d3-92e4-43b3-8ad6-979284adb404",
+      "payload": {
+        "x": 16,
+        "y": 7
+      },
+      "fromRevision": 1,
+      "toRevision": 2,
+      "fromTick": 0,
+      "tick": 0,
+      "outcome": "succeeded",
+      "stepsMoved": 0,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "5f1eb484-fce0-4cf3-bb64-caad96ee5994",
+      "payload": {},
+      "fromRevision": 2,
+      "toRevision": 4,
+      "fromTick": 0,
+      "tick": 2,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "c455bbed-04e3-4e17-b02b-c4ec9c21c72f",
+      "payload": {},
+      "fromRevision": 4,
+      "toRevision": 6,
+      "fromTick": 2,
+      "tick": 4,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "03ab84f3-d141-4cce-a7a2-4101805223f8",
+      "payload": {},
+      "fromRevision": 6,
+      "toRevision": 8,
+      "fromTick": 4,
+      "tick": 6,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "f733af21-dc5f-4f7f-988e-a95c1796b7a8",
+      "payload": {},
+      "fromRevision": 8,
+      "toRevision": 10,
+      "fromTick": 6,
+      "tick": 8,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchPause",
+      "commandId": "0dca0326-3a60-4e53-81b3-669bdd3310b1",
+      "payload": {},
+      "fromRevision": 10,
+      "toRevision": 11,
+      "fromTick": 8,
+      "tick": 8,
+      "outcome": "succeeded",
+      "stepsMoved": 0,
+      "orderStatus": "paused",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchSet",
+      "commandId": "07a503f2-279c-4b66-8007-6cab61b3a719",
+      "payload": {
+        "x": 8,
+        "y": 8
+      },
+      "fromRevision": 11,
+      "toRevision": 12,
+      "fromTick": 8,
+      "tick": 8,
+      "outcome": "succeeded",
+      "stepsMoved": 0,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "b8fe5d18-6e65-43e0-b370-1183cf4bbca7",
+      "payload": {},
+      "fromRevision": 12,
+      "toRevision": 14,
+      "fromTick": 8,
+      "tick": 10,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "4cda61e9-1856-48cb-9848-bd47d36e3d41",
+      "payload": {},
+      "fromRevision": 14,
+      "toRevision": 16,
+      "fromTick": 10,
+      "tick": 12,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "paused",
+      "contact": {
+        "actorId": "actor-2",
+        "tick": 12
+      },
+      "turnEvents": null
+    },
+    {
+      "type": "MarchSet",
+      "commandId": "32530205-5fa5-4513-bd42-24658442c67a",
+      "payload": {
+        "x": 16,
+        "y": 7
+      },
+      "fromRevision": 16,
+      "toRevision": 17,
+      "fromTick": 12,
+      "tick": 12,
+      "outcome": "succeeded",
+      "stepsMoved": 0,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "573e93ae-c46d-4067-92f0-a3d0d01701ef",
+      "payload": {},
+      "fromRevision": 17,
+      "toRevision": 19,
+      "fromTick": 12,
+      "tick": 14,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "892ee836-47b9-405d-a703-3c2e7caf739d",
+      "payload": {},
+      "fromRevision": 19,
+      "toRevision": 21,
+      "fromTick": 14,
+      "tick": 16,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "1e9c8d87-d1da-4449-bfb2-595df6bbee39",
+      "payload": {},
+      "fromRevision": 21,
+      "toRevision": 23,
+      "fromTick": 16,
+      "tick": 18,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "08d46d81-68c9-4b97-8196-cf561132448c",
+      "payload": {},
+      "fromRevision": 23,
+      "toRevision": 25,
+      "fromTick": 18,
+      "tick": 20,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "arrived",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "EncounterBegin",
+      "commandId": "190f3b65-f6d5-4ff8-84fd-1a2a0cb65742",
+      "payload": {},
+      "fromRevision": 25,
+      "toRevision": 26,
+      "fromTick": 20,
+      "tick": 20,
+      "outcome": "succeeded",
+      "stepsMoved": null,
+      "orderStatus": null,
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "EncounterAction",
+      "commandId": "da6ef0a5-d784-4e89-a295-5aedb0e82dc7",
+      "payload": {
+        "action": "attack",
+        "encounterId": "encounter-1"
+      },
+      "fromRevision": 26,
+      "toRevision": 32,
+      "fromTick": 20,
+      "tick": 26,
+      "outcome": "succeeded",
+      "stepsMoved": null,
+      "orderStatus": null,
+      "contact": null,
+      "turnEvents": [
+        {
+          "actorId": "actor-4",
+          "afterHealth": 150,
+          "beforeHealth": 300,
+          "kind": "player-strike",
+          "targetId": "encounter-1"
+        },
+        {
+          "actorId": "encounter-1",
+          "afterHealth": 920,
+          "beforeHealth": 1000,
+          "kind": "wolf-counter",
+          "targetId": "actor-4"
+        }
+      ]
+    },
+    {
+      "type": "EncounterAction",
+      "commandId": "eea2e36b-4c59-4c98-9efe-97677df4c0ca",
+      "payload": {
+        "action": "attack",
+        "encounterId": "encounter-1"
+      },
+      "fromRevision": 32,
+      "toRevision": 38,
+      "fromTick": 26,
+      "tick": 32,
+      "outcome": "succeeded",
+      "stepsMoved": null,
+      "orderStatus": null,
+      "contact": null,
+      "turnEvents": [
+        {
+          "actorId": "actor-4",
+          "afterHealth": 0,
+          "beforeHealth": 150,
+          "kind": "player-strike",
+          "targetId": "encounter-1"
+        },
+        {
+          "actorId": "encounter-1",
+          "afterHealth": 0,
+          "beforeHealth": 150,
+          "kind": "defeat",
+          "targetId": null
+        }
+      ]
+    },
+    {
+      "type": "MarchSet",
+      "commandId": "dd891664-886e-48e9-a4b9-5e01a271e443",
+      "payload": {
+        "x": 4,
+        "y": 7
+      },
+      "fromRevision": 38,
+      "toRevision": 39,
+      "fromTick": 32,
+      "tick": 32,
+      "outcome": "succeeded",
+      "stepsMoved": 0,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchResume",
+      "commandId": "ce639424-9edd-42b6-90e4-841dee935025",
+      "payload": {},
+      "fromRevision": 39,
+      "toRevision": 40,
+      "fromTick": 32,
+      "tick": 32,
+      "outcome": "succeeded",
+      "stepsMoved": 0,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchResume",
+      "commandId": "da63ff79-acb6-4228-ac17-7e8678c1b2f8",
+      "payload": {},
+      "fromRevision": 40,
+      "toRevision": 41,
+      "fromTick": 32,
+      "tick": 32,
+      "outcome": "succeeded",
+      "stepsMoved": 0,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "cbec8476-b188-4814-bf38-be6cad611a49",
+      "payload": {},
+      "fromRevision": 41,
+      "toRevision": 43,
+      "fromTick": 32,
+      "tick": 34,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "paused",
+      "contact": {
+        "actorId": "actor-2",
+        "tick": 34
+      },
+      "turnEvents": null
+    },
+    {
+      "type": "MarchResume",
+      "commandId": "e0868634-9d92-4897-bca9-b606daa36225",
+      "payload": {},
+      "fromRevision": 43,
+      "toRevision": 44,
+      "fromTick": 34,
+      "tick": 34,
+      "outcome": "succeeded",
+      "stepsMoved": 0,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "ee5a319d-1495-407e-b77c-d480bc43a6f9",
+      "payload": {},
+      "fromRevision": 44,
+      "toRevision": 46,
+      "fromTick": 34,
+      "tick": 36,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "30147fdc-2d75-4537-bee6-14602c298823",
+      "payload": {},
+      "fromRevision": 46,
+      "toRevision": 48,
+      "fromTick": 36,
+      "tick": 38,
+      "outcome": "succeeded",
+      "stepsMoved": 2,
+      "orderStatus": "marching",
+      "contact": null,
+      "turnEvents": null
+    },
+    {
+      "type": "MarchStep",
+      "commandId": "d7444b9f-5107-4a68-8cf1-b9ccc992f476",
+      "payload": {},
+      "fromRevision": 48,
+      "toRevision": 50,
+      "fromTick": 38,
+      "tick": 40,
+      "outcome": "succeeded",
+      "stepsMoved": 1,
+      "orderStatus": "paused",
+      "contact": {
+        "actorId": "actor-3",
+        "tick": 39
+      },
+      "turnEvents": null
+    }
+  ],
+  "saveHashes": {
+    "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+    "service-commit-r1.json": "c445fd51e832143207a6ce2b09705e687537e347cf1bc2f8bfb50863cc98ab8f",
+    "service-commit-r10.json": "3fb4debf71b58b6f6178f2bbbc17b92e5e35ac0c5cacbf72efc8dbf12eb7e3c7",
+    "service-commit-r11.json": "1f1eb0bb0833bfc26e603ab6a6b6fc82847f9c19c3cd7475b42caa27638f79bc",
+    "service-commit-r12.json": "ee7a8051bc575d7cfed1fc474e63d910dfa8d1584d3ea4f54f221732021b705b",
+    "service-commit-r14.json": "20c5a80bb05b4f7ef083b34b3e69d0e70bbd1829042d39aa4ee2ec4b15743442",
+    "service-commit-r16.json": "c220acd57b58da8f4802d529604680cd7a3e6b1d99eb8633a619b619eb806566",
+    "service-commit-r17.json": "16c5658950239fd3a3a357a4698250f33f4d0260de5fd0b83a79f96af1156daa",
+    "service-commit-r19.json": "e1b7c2e36cb671f2510bb9e313c73ad25105519f2b85a51f253124b79f283c34",
+    "service-commit-r2.json": "40a4023bd05c7f64b76fd4043973ca7e80b4343d740f75330a91a67cf0fc3c44",
+    "service-commit-r21.json": "72e918fdbb13b8a371c39abb94d37719d9c00f3eaf2c2c7da2bb6141ee1f0d36",
+    "service-commit-r23.json": "8f0f0f02eaad4b6528b81f88753e3fd37e2fa2ec2bff7d6ba439fb43093c8990",
+    "service-commit-r25.json": "d703df5454ed5980cd56902e9a3c5bca70fb55fdc1e77d49848668aae1e8bca9",
+    "service-commit-r26.json": "8aa435184bfc9620bf996e29ae99f3f4e7b2159cc9cf8fc3f059acad7406de5e",
+    "service-commit-r32.json": "9050ee63b1c035e0713545156207bad224a6a40b06e40e8d401e9f1e8ce84437",
+    "service-commit-r38.json": "516bc5f39e87fdcc464fee955cda3eeb11608a0dd120220a5f0244b404e3e381",
+    "service-commit-r39.json": "79cac24c2b0be187a6cba92096ee9515c845fb4050e2a0c5044fc89565e789b7",
+    "service-commit-r4.json": "c71e9ab1dbee3f7941510350ab00504b0e50cab50ce30686c929b75c70a6126e",
+    "service-commit-r40.json": "28eaa11bca0579a5b1978b1a87561f0bbb4f35d2640a0ebe69a7828baade5a37",
+    "service-commit-r41.json": "c3ac50d9a6fd46203aeca1f793ea43e08f7be9046b05e232c7e4dd3dc63e2f6f",
+    "service-commit-r43.json": "c5ff13ba3a90faf8620402e654e597e062b33645745142a0ec26d6990436f9af",
+    "service-commit-r44.json": "05df30a60633a6d36b927319a565589f4127749bda5b3326014f892470db0c35",
+    "service-commit-r46.json": "649f66af0f5e6ad221d5caab9341d274e5f9fdf41932d84ae6a98076ac619414",
+    "service-commit-r48.json": "46d7bc8d0f64fd124711b1ee7f35ede3bda8324ca9851180eadb16c6c6419eb1",
+    "service-commit-r50.json": "674d590c8de5ca5b4e414bc28df9b9e39b2244bde54e7c559de9a82d98f96aaa",
+    "service-commit-r6.json": "b203e8efb26cdf9db2e1b518d6323617762d0bd835d64adadf09bf4f11abd180",
+    "service-commit-r8.json": "8ae3b0e4f7b24801621d8f06e3ec00d2ea46064375714afa73a387178a208a0a"
+  },
+  "remaining": [
+    "Return from saved merchant contact to village through real UI",
+    "Normal close and final reopen five-projection/activity/original-receipt/file-hash equality",
+    "Fresh bounded authorization before another business acceptance run; preserve all failed attempts"
+  ],
+  "protectionNote": "98 source products, five drawing assets, 13 external deliverables, eight original saves and 17 preexisting world files unchanged. Four of five control untracked files unchanged; dual-presentation-demo.html changed externally during concurrent work and was neither edited nor restored by this task.",
+  "productManifestCount": 108,
+  "remoteDelivery": {
+    "repository": "llys-p/Narraverse-World-Map",
+    "observedIsPrivate": false,
+    "pushed": false,
+    "boardUpdated": false,
+    "reason": "AGENTS.md requires private repository; awaiting explicit publication or private visibility decision"
+  }
+}

@@ -1,0 +1,170 @@
+[
+  {
+    "file": "runtime-server.mjs",
+    "exitCode": 0,
+    "wallMs": 47.00000000593718,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/actors.mjs",
+    "exitCode": 0,
+    "wallMs": 62.999999994644895,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/command-engine.mjs",
+    "exitCode": 0,
+    "wallMs": 62.000000005355105,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/encounter-runtime.mjs",
+    "exitCode": 0,
+    "wallMs": 47.00000000593718,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/event-log.mjs",
+    "exitCode": 0,
+    "wallMs": 62.999999994644895,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/experience-state.mjs",
+    "exitCode": 0,
+    "wallMs": 46.000000002095476,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/memory-observer.mjs",
+    "exitCode": 0,
+    "wallMs": 46.999999991385266,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/memory-runtime.mjs",
+    "exitCode": 0,
+    "wallMs": 63.00000000919681,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/mind-runtime.mjs",
+    "exitCode": 0,
+    "wallMs": 61.99999999080319,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/motivation-runtime.mjs",
+    "exitCode": 0,
+    "wallMs": 63.00000000919681,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/player-state.mjs",
+    "exitCode": 0,
+    "wallMs": 61.99999999080319,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/scene-runtime.mjs",
+    "exitCode": 0,
+    "wallMs": 47.00000000593718,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/society.mjs",
+    "exitCode": 0,
+    "wallMs": 62.999999994644895,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/world-state.mjs",
+    "exitCode": 0,
+    "wallMs": 47.00000000593718,
+    "output": ""
+  },
+  {
+    "file": "runtime/service/http-contract.mjs",
+    "exitCode": 0,
+    "wallMs": 62.000000005355105,
+    "output": ""
+  },
+  {
+    "file": "runtime/service/runtime-owner.mjs",
+    "exitCode": 0,
+    "wallMs": 46.999999991385266,
+    "output": ""
+  },
+  {
+    "file": "runtime/service/service-commit.mjs",
+    "exitCode": 0,
+    "wallMs": 62.000000005355105,
+    "output": ""
+  },
+  {
+    "file": "runtime/service/world-activity.mjs",
+    "exitCode": 0,
+    "wallMs": 46.999999991385266,
+    "output": ""
+  },
+  {
+    "file": "runtime-campaign-battle.mjs",
+    "exitCode": 0,
+    "wallMs": 78.00000000861473,
+    "output": ""
+  },
+  {
+    "file": "runtime-campaign-contract.mjs",
+    "exitCode": 0,
+    "wallMs": 46.999999991385266,
+    "output": ""
+  },
+  {
+    "file": "runtime-campaign.mjs",
+    "exitCode": 0,
+    "wallMs": 63.00000000919681,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/campaign-map.mjs",
+    "exitCode": 0,
+    "wallMs": 46.999999991385266,
+    "output": ""
+  },
+  {
+    "file": "runtime/core/scene-campaign-runtime.mjs",
+    "exitCode": 0,
+    "wallMs": 62.000000005355105,
+    "output": ""
+  },
+  {
+    "file": "runtime/fixtures/campaign-village.mjs",
+    "exitCode": 0,
+    "wallMs": 62.999999994644895,
+    "output": ""
+  },
+  {
+    "file": "scripts/verify-d4e11-campaign-jrpg.mjs",
+    "exitCode": 0,
+    "wallMs": 62.000000005355105,
+    "output": ""
+  },
+  {
+    "file": "tests/simulation/campaign-map.test.mjs",
+    "exitCode": 0,
+    "wallMs": 62.999999994644895,
+    "output": ""
+  },
+  {
+    "file": "tests/simulation/campaign-runtime.test.mjs",
+    "exitCode": 0,
+    "wallMs": 47.00000000593718,
+    "output": ""
+  },
+  {
+    "file": "tests/simulation/campaign-service.test.mjs",
+    "exitCode": 0,
+    "wallMs": 46.000000002095476,
+    "output": ""
+  }
+]

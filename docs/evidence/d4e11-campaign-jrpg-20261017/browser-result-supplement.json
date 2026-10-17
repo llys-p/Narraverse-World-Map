@@ -1,0 +1,21 @@
+{
+  "verdict": "FAIL",
+  "steps": [
+    {
+      "name": "initialize",
+      "ms": 12762.924299999999
+    },
+    {
+      "name": "browser-win",
+      "ms": 0.14650000000074215
+    },
+    {
+      "name": "browser-return",
+      "ms": 17939.809699999998
+    }
+  ],
+  "error": {
+    "message": "fetch failed",
+    "stack": "TypeError: fetch failed"
+  }
+}

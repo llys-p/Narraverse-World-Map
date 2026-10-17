@@ -5,6 +5,10 @@
 
 ## 独立项目入口
 
+- **D4E11 行军与日式回合制候选：`Start-D4E11.cmd`**，拟用 `http://127.0.0.1:18340/runtime-campaign.html`。地图真实行军支持途中暂停/改道、附近NPC路遇和森林回合指令；独立campaign-village/DTO5/format11，不读取旧入口存档。
+  - **尚未验收**：页面已覆盖行军/改道/路遇/两回合胜利，返村及最终正常重开缺项。未启动日常入口、未创建 `artifacts/d4e11-daily/world`。见[合同](tasks/D4E11-CAMPAIGN-JRPG-TASK.md)、[结果与失败记录](docs/runtime/D4E11-CAMPAIGN-JRPG-RESULT.md)。
+  - 每笔至多2刻，确认后续发；后台、刷新或离页停止续发，需点击继续。每世界128命令并保留暂停位，满额显式停止；不承诺无限游玩或流畅性能。关闭时输入 `quit` 等待 `stopped`，勿删除存档或其他实例锁。
+
 - **D4E10 图形体验入口：双击 `Start-D4E10.cmd`**，等待 ready 后打开 `http://127.0.0.1:18338/runtime-map.html`。地图标记跟随真实玩家位置；点击村庄/森林仅查看地点，旅行仍需明确提交。村庄显示同修订的在场人物；森林在攻击/逃跑回执确认后播放状态过渡，跳过或停止不改变世界结果。
   - 独占本树 `artifacts/d4e10-daily/world`，沿用 D4E9 的工作、买粮、赠粮与保存规则；本入口创建新世界，不读取旧入口存档。关闭时输入 `quit` 并等待 `stopped`，再双击可恢复。
   - 本轮已用隔离世界实际页面完成赠粮→旅行→两次攻击胜利→返村，再核对关闭重开；日常目录尚未创建，18338尚未启动。功能范围通过，动画外观/音效和长历史性能未验收。见[任务合同](tasks/D4E10-GRAPHICAL-LOOP-TASK.md)与[结果报告](docs/runtime/D4E10-GRAPHICAL-LOOP-RESULT.md)。

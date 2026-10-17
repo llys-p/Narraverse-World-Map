@@ -1,0 +1,44 @@
+{
+  "verdict": "INCOMPLETE_NOT_ACCEPTED",
+  "grant": "20261017-user-continue",
+  "authorization": {
+    "authorized": true,
+    "totalLimitMs": 300000,
+    "phaseLimitMs": 120000,
+    "startedAt": "2026-10-17T06:39:15.950Z"
+  },
+  "supervisor": {
+    "pid": 58772,
+    "code": null,
+    "signal": "SIGKILL",
+    "killed": {
+      "reason": "PHASE_LIMIT",
+      "phase": "return-confirmed-r50"
+    }
+  },
+  "uiObservedBeforeResume": {
+    "revision": 50,
+    "tick": 40,
+    "location": "road",
+    "x": 9,
+    "y": 7,
+    "order": "paused",
+    "destination": {
+      "x": 4,
+      "y": 7
+    },
+    "contact": "actor-3"
+  },
+  "uiAction": "Clicked the visible Continue march button; UI entered pending confirmation.",
+  "uiError": {
+    "timestamp": "2026-10-17T06:41:46.048Z",
+    "message": "Campaign confirmation failed TypeError: Failed to fetch",
+    "source": "runtime-campaign.mjs:181:26"
+  },
+  "notes": [
+    "The 120-second phase includes browser interaction and supervision wait; it is not a measured individual request latency.",
+    "No newer published revision or final return marker was found. Reopen was not run.",
+    "SIGKILL left only the test owner lock. PID absence and exact path/owner were checked; the lock metadata was copied before removing this specific orphan.",
+    "No repeat attack and no new world were executed in this grant."
+  ]
+}

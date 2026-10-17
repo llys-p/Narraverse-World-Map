@@ -1,0 +1,9 @@
+{
+  "pid": 56936,
+  "code": null,
+  "signal": "SIGKILL",
+  "killed": {
+    "reason": "TOTAL_LIMIT",
+    "phase": "browser-return"
+  }
+}

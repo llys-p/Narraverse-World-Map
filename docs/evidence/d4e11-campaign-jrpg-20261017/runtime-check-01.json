@@ -1,0 +1,1 @@
+{"exitCode":null,"timedOut":true,"hardLimitMs":60000,"command":"node --test tests/simulation/campaign-map.test.mjs tests/simulation/campaign-runtime.test.mjs","note":"Initial parent captured stdout in RAM; TimeoutExpired prevented raw TAP from being persisted. Tool timeout exception is preserved in conversation. Follow-up scoped process inventory found no matching Node process."}

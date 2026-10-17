@@ -1,0 +1,18 @@
+{
+  "verdict": "FAIL",
+  "steps": [
+    {
+      "name": "initialize",
+      "ms": 617.4954
+    },
+    {
+      "name": "browser-gift",
+      "ms": 27180.733600000003
+    }
+  ],
+  "error": {
+    "message": "Expected values to be strictly equal:\n\n20 !== 19\n",
+    "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n20 !== 19\n\n    at file:///D:/Narraverse-World-Map-campaign-jrpg/scripts/verify-d4e11-campaign-jrpg.mjs:49:39\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+    "code": "ERR_ASSERTION"
+  }
+}

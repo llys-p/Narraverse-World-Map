@@ -1,0 +1,6 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+'road' !== 'village'
+
+    at file:///D:/Narraverse-World-Map-campaign-jrpg/scripts/verify-d4e11-campaign-jrpg.mjs:64:47
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)

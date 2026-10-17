@@ -1,0 +1,9 @@
+{
+  "pid": 37804,
+  "code": null,
+  "signal": "SIGKILL",
+  "killed": {
+    "reason": "PHASE_LIMIT",
+    "phase": "browser-win"
+  }
+}

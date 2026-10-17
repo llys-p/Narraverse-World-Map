@@ -1,0 +1,13 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-name-pattern=cross-day attack",
+    "tests/simulation/campaign-runtime.test.mjs"
+  ],
+  "pid": 38284,
+  "exitCode": 1,
+  "timedOut": false,
+  "wallMs": 24264.999999999418,
+  "hardLimitMs": 60000.0
+}

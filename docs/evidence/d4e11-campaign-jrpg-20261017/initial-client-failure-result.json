@@ -1,0 +1,22 @@
+{
+  "verdict": "FAIL",
+  "steps": [
+    {
+      "name": "initialize",
+      "ms": 745.7586
+    },
+    {
+      "name": "browser-gift",
+      "ms": 69895.5041
+    },
+    {
+      "name": "browser-set",
+      "ms": 0.2736999999906402
+    }
+  ],
+  "error": {
+    "message": "The expression evaluated to a falsy value:\n\n  assert.ok(v[1].order)\n",
+    "stack": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(v[1].order)\n\n    at file:///D:/Narraverse-World-Map-campaign-jrpg/scripts/verify-d4e11-campaign-jrpg.mjs:50:34\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+    "code": "ERR_ASSERTION"
+  }
+}

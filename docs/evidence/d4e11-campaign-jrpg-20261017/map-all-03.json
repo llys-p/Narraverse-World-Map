@@ -1,0 +1,12 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/simulation/campaign-map.test.mjs"
+  ],
+  "pid": 36340,
+  "exitCode": 0,
+  "timedOut": false,
+  "wallMs": 186.9999999908032,
+  "hardLimitMs": 60000.0
+}

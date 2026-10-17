@@ -1,0 +1,9 @@
+{
+  "pid": 58772,
+  "code": null,
+  "signal": "SIGKILL",
+  "killed": {
+    "reason": "PHASE_LIMIT",
+    "phase": "return-confirmed-r50"
+  }
+}

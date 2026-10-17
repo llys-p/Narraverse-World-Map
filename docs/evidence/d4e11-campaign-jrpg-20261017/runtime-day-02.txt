@@ -1,0 +1,41 @@
+✖ campaign cross-day attack separates real settlement from strike/counter and keeps local knowledge (23988.3753ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 24192.1818
+
+✖ failing tests:
+
+test at tests\simulation\campaign-runtime.test.mjs:29:1
+✖ campaign cross-day attack separates real settlement from strike/counter and keeps local knowledge (23988.3753ms)
+  Error: Tick 144 was not committed
+      at performTick (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/command-engine.mjs:269:19)
+      at executeIntentFor (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/encounter-runtime.mjs:790:17)
+      at Object.executeIntent (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/encounter-runtime.mjs:1487:31)
+      at executeAuditedCampaignIntent (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/scene-campaign-runtime.mjs:52:84)
+      at Object.send (file:///D:/Narraverse-World-Map-campaign-jrpg/tests/simulation/campaign-runtime.test.mjs:13:16)
+      at TestContext.<anonymous> (file:///D:/Narraverse-World-Map-campaign-jrpg/tests/simulation/campaign-runtime.test.mjs:34:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    code: 'INVALID_INPUT',
+    failedTick: 144,
+    [cause]: Error: Non-JSON data
+        at fault (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/data-contract.mjs:8:24)
+        at requireCondition (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/data-contract.mjs:11:25)
+        at cloneData (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/data-contract.mjs:56:3)
+        at Object.applyAction (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/scene-campaign-runtime.mjs:28:150)
+        at hooksApplyAction (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/encounter-runtime.mjs:1250:29)
+        at Object.applyAction (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/encounter-runtime.mjs:1492:44)
+        at Object.applyAction (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/scene-campaign-runtime.mjs:41:30)
+        at commitInput (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/command-engine.mjs:97:29)
+        at file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/command-engine.mjs:149:7
+        at beforeSystemsFor (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/motivation-runtime.mjs:495:80) {
+      code: 'INVALID_INPUT'
+    }
+  }

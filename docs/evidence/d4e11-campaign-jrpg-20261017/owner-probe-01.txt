@@ -1,0 +1,23 @@
+{"dto":5,"map":{"actors":[{"actorId":"actor-1","alive":true,"canInteract":true,"condition":"healthy","location":"village","name":"村长","occupation":"chief","receivedGifts":[],"x":4,"y":6},{"actorId":"actor-2","alive":true,"canInteract":true,"condition":"healthy","location":"village","name":"猎人","occupation":"hunter","receivedGifts":[],"x":5,"y":7},{"actorId":"actor-3","alive":true,"canInteract":true,"condition":"healthy","location":"village","name":"商人","occupation":"merchant","receivedGifts":[],"x":3,"y":7}],"apiVersion":1,"blocked":[{"x":10,"y":0},{"x":10,"y":1},{"x":10,"y":2},{"x":10,"y":3},{"x":10,"y":4},{"x":10,"y":5},{"x":10,"y":6},{"x":10,"y":8},{"x":10,"y":9},{"x":10,"y":10},{"x":10,"y":11}],"budget":{"remainingCommands":128},"contact":null,"height":12,"landmarks":[{"id":"village","name":"村庄","x":4,"y":7},{"id":"forest","name":"森林","x":16,"y":7}],"mapId":"village-forest-v1","mapViewVersion":1,"movement":{"batchTicks":2,"maxSteps":48,"ticksPerStep":1},"order":null,"revision":0,"self":{"actorId":"actor-4","alive":true,"location":"village","x":4,"y":7},"simulationId":"campaign-village","tick":0,"width":20}}
+{"apiVersion":1,"commandId":"owner-1","durationTicks":0,"fromRevision":0,"fromTick":0,"outcome":"succeeded","receiptVersion":5,"result":{"action":"MarchSet","after":{"x":4,"y":7},"before":{"x":4,"y":7},"contact":null,"status":"marching","stepsMoved":0},"status":"committed","tick":0,"toRevision":1,"type":"MarchSet"}
+{"apiVersion":1,"commandId":"owner-2","durationTicks":2,"fromRevision":1,"fromTick":0,"outcome":"succeeded","receiptVersion":5,"result":{"action":"MarchStep","after":{"x":6,"y":7},"before":{"x":4,"y":7},"contact":null,"status":"marching","stepsMoved":2},"status":"committed","tick":2,"toRevision":3,"type":"MarchStep"}
+{"apiVersion":1,"commandId":"owner-3","durationTicks":0,"fromRevision":3,"fromTick":2,"outcome":"succeeded","receiptVersion":5,"result":{"action":"MarchPause","after":{"x":6,"y":7},"before":{"x":6,"y":7},"contact":null,"status":"paused","stepsMoved":0},"status":"committed","tick":2,"toRevision":4,"type":"MarchPause"}
+file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/data-contract.mjs:8
+  return Object.assign(new Error(message), { code });
+                       ^
+
+Error: Unknown action location
+    at fault (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/data-contract.mjs:8:24)
+    at requireCondition (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/data-contract.mjs:11:25)
+    at validateActionResult (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/player-state.mjs:53:120)
+    at validatePlayerActionResult (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/player-state.mjs:45:54)
+    at checkEvent (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/memory-observer.mjs:43:5)
+    at sourceLog (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/memory-observer.mjs:152:5)
+    at reduceMemoryFacts (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/memory-observer.mjs:226:3)
+    at Object.observeSceneCommand [as observe] (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/memory-runtime.mjs:109:13)
+    at executeIntentFor (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/encounter-runtime.mjs:893:22)
+    at Object.executeIntent (file:///D:/Narraverse-World-Map-campaign-jrpg/runtime/core/encounter-runtime.mjs:1485:31) {
+  code: 'INVALID_INPUT'
+}
+
+Node.js v24.14.0

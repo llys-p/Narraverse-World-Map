@@ -1,0 +1,29 @@
+✖ campaign owner rollback, pause/replan/NPC gift, restart equality, tamper rejection and no lock residue (14943.8603ms)
+✔ campaign HTTP DTO/profile/route authority remains isolated from old profile (9902.6162ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25115.6046
+
+✖ failing tests:
+
+test at tests\simulation\campaign-service.test.mjs:12:1
+✖ campaign owner rollback, pause/replan/NPC gift, restart equality, tamper rejection and no lock residue (14943.8603ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///D:/Narraverse-World-Map-campaign-jrpg/tests/simulation/campaign-service.test.mjs:34:63)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

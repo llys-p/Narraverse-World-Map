@@ -1,0 +1,13 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-name-pattern=campaign owner rollback",
+    "tests/simulation/campaign-service.test.mjs"
+  ],
+  "pid": 55588,
+  "exitCode": 0,
+  "timedOut": false,
+  "wallMs": 14219.000000011874,
+  "hardLimitMs": 180000.0
+}

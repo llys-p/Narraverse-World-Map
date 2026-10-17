@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-17T14:46:02.5161794+08:00",
+  "remainingTestLocks": [],
+  "remainingProcesses": [],
+  "dailyEntryExists": false,
+  "node": "v24.14.0",
+  "platform": "Microsoft Windows NT 10.0.26200.0",
+  "listeners": [
+    {
+      "LocalPort": 18338,
+      "OwningProcess": 61236
+    }
+  ]
+}

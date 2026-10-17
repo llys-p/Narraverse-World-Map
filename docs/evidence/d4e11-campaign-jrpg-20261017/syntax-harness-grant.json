@@ -1,0 +1,11 @@
+{
+  "command": [
+    "node",
+    "--check",
+    "scripts/verify-d4e11-campaign-jrpg.mjs"
+  ],
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": "",
+  "hardLimitMs": 15000
+}

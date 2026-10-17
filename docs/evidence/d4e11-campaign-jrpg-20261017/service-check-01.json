@@ -1,0 +1,5 @@
+{
+  "exitCode": 1,
+  "wallMs": 25187.999999994645,
+  "command": "node --test tests/simulation/campaign-service.test.mjs"
+}

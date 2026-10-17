@@ -13,13 +13,15 @@ if(process.argv[2]!=='--child'){
   const out=resuming?path.resolve(process.argv[resumeIndex+1]):path.join(root,'artifacts','d4e11-acceptance',new Date().toISOString().replace(/[:.]/g,'-'));
   assert(out.startsWith(path.join(root,'artifacts','d4e11-acceptance')+path.sep));
   if(!resuming){await fs.mkdir(path.dirname(out),{recursive:true});await fs.mkdir(out);}
+  const grantIndex=process.argv.indexOf('--grant-id'),grant=grantIndex<0?'':process.argv[grantIndex+1];assert(!grant||/^[a-z0-9-]{1,64}$/.test(grant),'Invalid grant id');
+  const authorizationFile=path.join(out,grant?`supplement-${grant}-authorized.json`:'supplement-authorized.json');
   const continuation=process.argv.includes('--continue-supplement');const supplement=process.argv.includes('--supplement')||continuation;assert(!supplement||resuming,'Supplement requires the existing run');
-  if(supplement&&!continuation)await fs.writeFile(path.join(out,'supplement-authorized.json'),JSON.stringify({authorized:true,totalLimitMs:300000,phaseLimitMs:120000,startedAt:new Date().toISOString()}),{flag:'wx'});
-  const suffix=continuation?'-supplement-continued':supplement?'-supplement':resuming?'-tail':'';
+  if(supplement&&!continuation)await fs.writeFile(authorizationFile,JSON.stringify({authorized:true,totalLimitMs:300000,phaseLimitMs:120000,startedAt:new Date().toISOString()}),{flag:'wx'});
+  const suffix=grant?`-supplement-${grant}`:continuation?'-supplement-continued':supplement?'-supplement':resuming?'-tail':'';
   const born=Date.parse(path.basename(out).replace(/T(\d{2})-(\d{2})-(\d{2})-(\d{3})Z$/,'T$1:$2:$3.$4Z'));
   if(continuation){const prior=JSON.parse(await fs.readFile(path.join(out,'result-supplement.json'),'utf8'));assert(prior.verdict==='FAIL'&&prior.error?.message==='fetch failed','Only the recorded checker failure may continue');}
-  const remaining=supplement?300000-(Date.now()-Date.parse(JSON.parse(await fs.readFile(path.join(out,'supplement-authorized.json'),'utf8')).startedAt)):600000-(Date.now()-born);assert(remaining>0,'Original browser budget is exhausted');
-  const child=fork(script,['--child',out,...(resuming?['--resume-tail']:[]),...(supplement?['--supplement']:[]),...(continuation?['--continue-supplement']:[])],{cwd:root,stdio:['ignore','pipe','pipe','ipc']});
+  const remaining=supplement?300000-(Date.now()-Date.parse(JSON.parse(await fs.readFile(authorizationFile,'utf8')).startedAt)):600000-(Date.now()-born);assert(remaining>0,'Original browser budget is exhausted');
+  const child=fork(script,['--child',out,...(resuming?['--resume-tail']:[]),...(supplement?['--supplement']:[]),...(continuation?['--continue-supplement']:[]),...(grant?['--grant-id',grant]:[])],{cwd:root,stdio:['ignore','pipe','pipe','ipc']});
   console.log(JSON.stringify({out,pid:child.pid,browser:process.argv.includes('--browser')}));
   const stdout=[],stderr=[];let phase='startup',killed=null,phaseTimer,exitTimer;
   const kill=reason=>{if(killed)return;killed={reason,phase};child.kill('SIGKILL');exitTimer=setTimeout(async()=>{
@@ -40,6 +42,7 @@ if(process.argv[2]!=='--child'){
   if(result.code!==0||result.killed){process.stderr.write(Buffer.concat(stderr));process.exitCode=1;}
 }else{
  const out=process.argv[3],directory=path.join(out,'world'),tail=process.argv.includes('--resume-tail'),supplement=process.argv.includes('--supplement');
+ const grantIndex=process.argv.indexOf('--grant-id'),grant=grantIndex<0?'':process.argv[grantIndex+1];
  const {startRuntimeServer}=await import('../runtime-server.mjs');
  const {loadServiceCommit}=await import('../runtime/service/service-commit.mjs');
  const {canonicalJson}=await import('../runtime/core/data-contract.mjs');
@@ -48,7 +51,7 @@ if(process.argv[2]!=='--child'){
  const read=async route=>{const r=await fetch(server.url+'/api/runtime/'+route,{signal:AbortSignal.timeout(15000)});assert.equal(r.status,200);return r.json();};
  const five=()=>Promise.all(routes.map(read));
  const hashes=async()=>Object.fromEntries(await Promise.all((await fs.readdir(directory)).filter(f=>f.endsWith('.json')).sort().map(async f=>[f,sha(await fs.readFile(path.join(directory,f)))])));
- async function boundary(name){let revision=-1;await phase('browser-'+name,async()=>{for(;;){if(supplement&&name==='return'){const next=Math.max(...(await fs.readdir(directory)).map(f=>/^service-commit-r(\d+)\.json$/.exec(f)).filter(Boolean).map(m=>Number(m[1])));if(next!==revision){revision=next;process.send?.({phase:'return-confirmed-r'+revision});}}try{await fs.access(path.join(out,name+'.json'));break;}catch(e){if(e.code!=='ENOENT')throw e;}await new Promise(r=>setTimeout(r,100));}});return five();}
+ async function boundary(name){let revision=-1;await phase('browser-'+name,async()=>{for(;;){if(supplement&&name==='return'){const next=Math.max(...(await fs.readdir(directory)).map(f=>/^service-commit-r(\d+)\.json$/.exec(f)).filter(Boolean).map(m=>Number(m[1])));if(next!==revision){revision=next;process.send?.({phase:'return-confirmed-r'+revision});}}try{await fs.access(path.join(out,name+(grant&&['return','restored'].includes(name)?'-'+grant:'')+'.json'));break;}catch(e){if(e.code!=='ENOENT')throw e;}await new Promise(r=>setTimeout(r,100));}});return five();}
  try{
   await fs.mkdir(out,{recursive:true});
   await phase('initialize',async()=>{server=await startRuntimeServer(tail?{directory,port:Number(new URL(JSON.parse(await fs.readFile(path.join(out,'endpoint.json'),'utf8')).url).port),writable:true,inspectMind:false,inspectActivity:true}:{directory,profile:'campaign-village',seed:42,port:0,writable:true,inspectMind:false,inspectActivity:true});});
@@ -73,10 +76,10 @@ if(process.argv[2]!=='--child'){
   assert.deepEqual(await five(),final);assert.deepEqual(await read('activities'),activity);assert.deepEqual(await hashes(),before);
   const last=envelope.commands.at(-1);const retry=await fetch(server.url+'/api/runtime/commands',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(last.dto),signal:AbortSignal.timeout(15000)});assert.equal(retry.status,200);assert.deepEqual(await retry.json(),last.receipt);
   assert.deepEqual(await hashes(),before);
-  await fs.writeFile(path.join(out,'reopen-endpoint.json'),JSON.stringify({url:server.url}));await boundary('restored');assert.deepEqual(await hashes(),before);
+  await fs.writeFile(path.join(out,grant?'reopen-endpoint-'+grant+'.json':'reopen-endpoint.json'),JSON.stringify({url:server.url}));await boundary('restored');assert.deepEqual(await hashes(),before);
   await phase('reclose',async()=>{await server.close();server=null;});
   report={verdict:'PASS',environment:{node:process.version,platform:process.platform},steps,projectionSignature:sha(canonicalJson(final)),hashes:before,receipts,
     final:{tick:final[0].tick,revision:final[0].revision,position:final[1].self,order:final[1].order,health:final[2].self.health,food:final[2].self.inventory.food,resolution:final[3].encounter.resolution},commandCount:envelope.commands.length,remainingLocks:[]};
  }catch(error){report={verdict:'FAIL',steps,error:{message:error.message,stack:error.stack,code:error.code}};process.exitCode=1;console.error(error.stack);}
- finally{if(server)await server.close();await fs.writeFile(path.join(out,process.argv.includes('--continue-supplement')?'result-supplement-continued.json':supplement?'result-supplement.json':tail?'result-tail.json':'result.json'),JSON.stringify(report,null,2));}
+ finally{if(server)await server.close();await fs.writeFile(path.join(out,grant?`result-supplement-${grant}.json`:process.argv.includes('--continue-supplement')?'result-supplement-continued.json':supplement?'result-supplement.json':tail?'result-tail.json':'result.json'),JSON.stringify(report,null,2));}
 }

@@ -1,0 +1,22 @@
+{
+  "verdict": "FAIL",
+  "steps": [
+    {
+      "name": "initialize",
+      "ms": 14697.587500000001
+    },
+    {
+      "name": "browser-win",
+      "ms": 0.140400000000227
+    },
+    {
+      "name": "browser-return",
+      "ms": 193364.68
+    }
+  ],
+  "error": {
+    "message": "Expected values to be strictly equal:\n\n'road' !== 'village'\n",
+    "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'road' !== 'village'\n\n    at file:///D:/Narraverse-World-Map-campaign-jrpg/scripts/verify-d4e11-campaign-jrpg.mjs:64:47\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+    "code": "ERR_ASSERTION"
+  }
+}
