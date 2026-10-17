@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-17 10:56（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-17 11:09（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -32,6 +32,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **D4E11目标已明确，具体设计待审阅**：用户要自行在世界地图移动，并明确战斗先做日式RPG回合制。[设计草案v0.1](tasks/D4E11-CAMPAIGN-JRPG-DESIGN.md)基于6c60fe2，建议真实坐标/按距离耗时/按段点选旅行，配JRPG指令与真实回合表现事件；新增opt-in格式11/DTO5，不改旧档。本轮只完成源码定位与设计，未发布冻结执行任务、未派工/实现/跑测/启服务/更改看板；待用户审阅按段旅行范围后冻结。控制旧未跟踪dual-presentation-demo.html已与D4E10保护快照散列不同，本轮未编辑/覆盖，保留当前字节。D4E10仍为最新已验业务树，Issue3暂停。
 
 - **D4E10图形体验接入限定PASS**：[合同](tasks/D4E10-GRAPHICAL-LOOP-TASK.md)，[结果与27份脱敏证据](https://github.com/llys-p/Narraverse-World-Map/blob/6c60fe2d5b6276660936e1ab55a43385a79737ba/docs/runtime/D4E10-GRAPHICAL-LOOP-RESULT.md)。树D:/Narraverse-World-Map-graphical-loop / codex/world-runtime-graphical-loop，接fe66af9，实现157c5dd、交付6c60fe2d5b6276660936e1ab55a43385a79737ba已推送精确读回/树干净。地图真实位置/地点入口、同版村庄人物、确认回执战斗表现；runtime/**与素材零改。纯3/3、语法7文件、根一次实际页面赠粮1→旅行→遭遇→攻击2胜利→返村，tick36/rev38/HP920/私粮19；全档审计、五投影/活动/六原回执/七档SHA跨重开一致。原八档/原97产品/原日常7文件/外部13/控制5文件与18325 PID2592、18327 PID4432、18336 PID48192保持；子62856正常exit0/无超时/无测试锁或进程。新Start-D4E10.cmd/18338日常目录未创建启动。外观/音效/性能未验，第二次播放中停止未捕获不冒称通过；RED/包装器GBK/选择器问题保留，无重发攻击。无main/deploy/迁移/DSH；本合同完成停止。Projects卡PVTI_lAHOEF9IDs4BmADfzhBZbUE先待验收再Done/已验收读回，最终只读查询首超时45秒、仅重试读取成功；D仍进行中，Issue3暂停。看板证据docs/evidence/d4e10-graphical-loop-control-20261017/。
 
