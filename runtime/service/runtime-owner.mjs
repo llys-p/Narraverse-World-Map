@@ -203,6 +203,7 @@ export async function createRuntimeOwner(options,io=fs){
     return Object.freeze({playerAvailable,playerActionsAvailable,mindAvailable,encounterAvailable,commandDtoVersion:serviceFormatVersion===11?5:serviceFormatVersion===10?4:encounterAvailable?3:1,
       ...([10,11].includes(serviceFormatVersion)?{playerWorkAvailable:true}:{}),
       ...(mapAvailable?{mapAvailable:true,getMap(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(mapProjection);},
+        getCommittedCommands(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData([...new Map([...state.bundle.snapshot.world.encounterModel.inputHistory,...state.commands].map(entry=>[entry.dto.commandId,entry])).values()]);},
         getCommittedCommand(commandId){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');const entry=state.commands.find(c=>c.dto.commandId===commandId)??state.bundle.snapshot.world.encounterModel.inputHistory.find(c=>c.dto.commandId===commandId);return entry?cloneData(entry):null;}}:{}),
       getSnapshot(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(projection);},
       getPlayer(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(playerAvailable,'Current world has no player','PLAYER_UNAVAILABLE');return cloneData(playerProjection);},

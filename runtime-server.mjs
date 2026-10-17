@@ -43,15 +43,17 @@ function readCommandBody(req){
   });
 }
 export async function startRuntimeServer(options){
-  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','port','writable','inspectMind','inspectActivity','continuousMarch'].includes(k)),'Unknown service option');
+  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','port','writable','inspectMind','inspectActivity','continuousMarch','runtimeWorker'].includes(k)),'Unknown service option');
   const port=options.port??18314;integer(port);requireCondition(port<=65535,'Invalid runtime port');
   const inspectMind=options.inspectMind??false;requireCondition(typeof inspectMind==='boolean','Invalid mind inspector mode');
   const inspectActivity=options.inspectActivity??false;requireCondition(typeof inspectActivity==='boolean','Invalid activity inspector mode');
   const assets=new Map();for(const [url,[file,type]] of staticFiles)assets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
   const mindAssets=new Map();for(const [url,[file,type]] of mindStaticFiles)mindAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
   const continuousMarch=options.continuousMarch??false;requireCondition(typeof continuousMarch==='boolean','Invalid march runner mode');
-  const {port:ignored,inspectMind:ignoredInspector,inspectActivity:ignoredActivity,continuousMarch:ignoredMarch,...ownerOptions}=options,
-    owner=await createRuntimeOwner({...ownerOptions,inspectActivity});let actualPort=port,closed=false,pendingRequests=0,sceneBodyReads=0;
+  const runtimeWorker=options.runtimeWorker??continuousMarch;requireCondition(typeof runtimeWorker==='boolean'&&(!runtimeWorker||continuousMarch),'Worker mode requires continuous demo');
+  const {port:ignored,inspectMind:ignoredInspector,inspectActivity:ignoredActivity,continuousMarch:ignoredMarch,runtimeWorker:ignoredWorker,...ownerOptions}=options,
+    createOwner=runtimeWorker?(await import('./runtime/service/runtime-owner-thread.mjs')).createThreadedRuntimeOwner:createRuntimeOwner,
+    owner=await createOwner({...ownerOptions,inspectActivity});let actualPort=port,closed=false,pendingRequests=0,sceneBodyReads=0;
   const encounterAssets=new Map();if(owner.encounterAvailable)for(const [url,[file,type]] of encounterStaticFiles){
     try{encounterAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});}
     catch(error){await owner.close();throw error;}
