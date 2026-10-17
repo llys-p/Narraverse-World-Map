@@ -19,7 +19,7 @@ import { parseStrictJson } from './strict-json.mjs';
 import { fields,record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
 import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,projectEncounterSnapshot,projectSceneSnapshot,projectMapSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend,loadCognitionBackend,requireCognitionBackend,loadSurvivalBackend,requireSurvivalBackend } from './http-contract.mjs';
 import { projectWorldActivity } from './world-activity.mjs';
-import { saveServiceCommit,loadServiceCommit,transitionAuditedServiceCommand,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
+import { saveServiceCommit,loadServiceCommit,transitionAuditedServiceCommand,createAuditedServiceCommit,advanceAuditedServiceCommit,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 const MAX_ENCOUNTER_SERVICE_FILES=MAX_SERVICE_FILES+1;
 const serviceFileLimit=format=>[8,9,10,11].includes(format)?MAX_ENCOUNTER_SERVICE_FILES:MAX_SERVICE_FILES;
@@ -130,6 +130,7 @@ export async function createRuntimeOwner(options,io=fs){
       const auditOptions={rulesVersion:bundle.snapshot.rulesVersion,systems};
       bundle=createAuditedBundle(bundle,auditOptions);
       state={...state,anchor:createAuditedBundle(state.anchor,auditOptions),bundle};
+      if(serviceFormatVersion===11){state=createAuditedServiceCommit(state);bundle=state.bundle;}
     }
     let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(bundle),playerProjection=playerAvailable?projectPlayerSnapshot(bundle):null,
       mindProjection=mindAvailable?projectMindInspector(bundle):null,encounterProjection=encounterAvailable?projectEncounterSnapshot(bundle):null,
@@ -183,14 +184,15 @@ export async function createRuntimeOwner(options,io=fs){
           const inventory=await inspectDirectory(directory,io);
           requireCondition(inventory.length<serviceFileLimit(serviceFormatVersion),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
           requireCondition(inventory.length>0 && inventory[0].kind==='service-commit' && inventory[0].revision===projection.revision,'Runtime state files changed','INVALID_SERVICE_COMMIT');
-          const {bundle:nextBundle,receipt}=transitionAuditedServiceCommand(state.bundle,dto),candidate=createSimulationSession(nextBundle,systems),
+          const certifiedNext=serviceFormatVersion===11?advanceAuditedServiceCommit(state,dto):null;
+          const {bundle:nextBundle,receipt}=certifiedNext?{bundle:certifiedNext.bundle,receipt:certifiedNext.commands.at(-1).receipt}:transitionAuditedServiceCommand(state.bundle,dto),candidate=createSimulationSession(nextBundle,systems),
             nextProjection=projectPublicSnapshot(nextBundle),nextPlayerProjection=playerAvailable?projectPlayerSnapshot(nextBundle):null,
             nextMindProjection=mindAvailable?projectMindInspector(nextBundle):null,
             nextEncounterProjection=encounterAvailable?projectEncounterSnapshot(nextBundle):null,
             nextSceneProjection=sceneAvailable?projectSceneSnapshot(nextBundle):null,
             nextMapProjection=mapAvailable?projectMapSnapshot(nextBundle,MAX_SERVICE_COMMANDS-nextBundle.snapshot.world.encounterModel.inputHistory.length):null,
             nextActivityProjection=inspectActivity&&sceneAvailable?projectWorldActivity(nextBundle):null;
-          const next={serviceFormatVersion,anchor:state.anchor,commands:[...state.commands,{dto,receipt}],bundle:nextBundle};
+          const next=certifiedNext??{serviceFormatVersion,anchor:state.anchor,commands:[...state.commands,{dto,receipt}],bundle:nextBundle};
           await saveServiceCommit(next,directory,io);
           // The complete service file is the commit point. No fallible work precedes publication of the audited DTO.
           state=next;session=candidate;projection=nextProjection;playerProjection=nextPlayerProjection;mindProjection=nextMindProjection;
@@ -201,7 +203,8 @@ export async function createRuntimeOwner(options,io=fs){
     };
     return Object.freeze({playerAvailable,playerActionsAvailable,mindAvailable,encounterAvailable,commandDtoVersion:serviceFormatVersion===11?5:serviceFormatVersion===10?4:encounterAvailable?3:1,
       ...([10,11].includes(serviceFormatVersion)?{playerWorkAvailable:true}:{}),
-      ...(mapAvailable?{mapAvailable:true,getMap(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(mapProjection);}}:{}),
+      ...(mapAvailable?{mapAvailable:true,getMap(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(mapProjection);},
+        getCommittedCommand(commandId){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');const entry=state.commands.find(c=>c.dto.commandId===commandId)??state.bundle.snapshot.world.encounterModel.inputHistory.find(c=>c.dto.commandId===commandId);return entry?cloneData(entry):null;}}:{}),
       getSnapshot(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(projection);},
       getPlayer(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(playerAvailable,'Current world has no player','PLAYER_UNAVAILABLE');return cloneData(playerProjection);},
       getMindInspector(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');requireCondition(mindAvailable,'Current world has no mind inspector','MIND_UNAVAILABLE');return cloneData(mindProjection);},
