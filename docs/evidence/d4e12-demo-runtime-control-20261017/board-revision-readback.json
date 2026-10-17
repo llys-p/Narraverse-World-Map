@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12 Demo村庄/森林真实接入。用户已明确选择现有两地/三NPC和日式回合制。\n\n代码与脱敏证据已交付，功能限定通过、性能未达标，不能标为整体验收。核心最终4/4；真实页面短链26命令，r48/tick37胜利返村正常关闭；较长档30命令r92/tick81完整重演与五投影/31正式文件SHA恢复分次通过。原失败和旧重开超限保留。\n\n较长样本冷开74.351秒，短样本攻击2.29/2.48秒；同步历史审计仍待处理。无外观/听感验收。原8档、原型、16依赖、旧88源码与18338/18340保护，无测试残留。新18342未启动；未合main/部署/迁移/上传存档。D4E11历史未完成验收不改，D阶段仍进行中。\n\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/2191da54e89c938f99d1042ac26ca3860a547480/docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md\n合同：https://github.com/llys-p/Narraverse-World-Map/blob/2191da54e89c938f99d1042ac26ca3860a547480/tasks/D4E12-DEMO-RUNTIME-TASK.md\n源码产品：9899d9ee88fc97a21b6ae06a574af69832818c7d；交付2191da54e89c938f99d1042ac26ca3860a547480。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

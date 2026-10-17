@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-17 15:00（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-17 16:02（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -32,6 +32,8 @@
 - 新遭遇规则使用隔离的 profile/schema，旧 profile 与存档行为保持；M4 正式实现和生产边界不变。M4 独立体验对话 `01a12aff-2703-71c2-ab00-cc7ae733ca2a` 使用 `http://127.0.0.1:18324/`；控制文档工作不得启停该实例。
 
 ## 活动工作、阻塞与下一步
+
+- **D4E12 Demo村庄/森林接入：功能限定通过，性能未达标，仍需修正**：[合同](tasks/D4E12-DEMO-RUNTIME-TASK.md) / [报告](https://github.com/llys-p/Narraverse-World-Map/blob/2191da54e89c938f99d1042ac26ca3860a547480/docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md)。树 D:/Narraverse-World-Map-demo-integration / codex/world-runtime-demo-integration，接80d6206，产品9899d9ee88fc97a21b6ae06a574af69832818c7d；认证456e35b/4d39b39/3c1cfbf。最终核心4/4，UI短链26命令r48/tick37胜利返村；较长档30命令r92/tick81的完整重演、五投影/正式档SHA与浏览器恢复分次通过，原失败/超限保留。冷开74.351秒、短样本攻击2.29/2.48秒，非流畅验收；无外观/听感核验。源码/脱敏证据已推送2191da54e89c938f99d1042ac26ca3860a547480并读回SHA/报告API字节一致；执行树干净。Projects卡PVTI_lAHOEF9IDs4BmADfzhBbReM先待验收再In Progress/需修正读回，D仍进行中。Start-Demo.cmd拟18342，日常目录未创建/固定服务未启动；原8档、原型dcf65a98、16依赖、旧88源码与18338/18340保护，无测试进程/锁残留。D4E11历史未验收不改，D仍进行中。
 
 - **D4E11候选已推送，未验收**：[合同](tasks/D4E11-CAMPAIGN-JRPG-TASK.md)，[结果报告与失败记录](https://github.com/llys-p/Narraverse-World-Map/blob/80d6206ab2382f8bc96a20ef3e650fbcda1b9e97/docs/runtime/D4E11-CAMPAIGN-JRPG-RESULT.md)。树D:/Narraverse-World-Map-campaign-jrpg / codex/world-runtime-campaign-jrpg，远端80d6206ab2382f8bc96a20ef3e650fbcda1b9e97已推送精确读回，报告API可读；核心27ddaba、页面e7f6223、原证据1bf24ff。持续行军/暂停改道/NPC路遇/回合制已接，8个不同定向成员分次通过，非一次8/8。页面赠粮/猎人记忆路遇/两击胜利已完成，最终r50/tick40/road(9,7)/商人暂停，返村及最终正常关闭重开未完成。原600秒、首授权300秒、后续继续独立300秒失败/超时保留，最新PHASE_LIMIT120秒；下一业务运行需新的有界授权，不重置旧预算/重打战斗。原8档、旧98产品、5素材、13外部、17日常文件不变；18338/PID61236保持，验收自有锁/进程已清；用户随后明确要求展示，已启动本树独立日常18340/PID63160，artifacts/d4e11-daily/world新世界，实读页面世界已连接。体验服务保留供用户操作（exec会话30372，可输入quit正常关闭）；不是重启旧补验，r50验收档保持。用户已明确授权本次候选源码和脱敏证据推送当前公开仓库，不上传存档/新增素材、不推定许可；控制并行dual原型及摘要保留，不纳入本任务提交。Projects先待验收再In Progress/需修正逐字段读回，D仍进行中；证据docs/evidence/d4e11-campaign-jrpg-control-20261017/。D4E10仍上一已验树，Issue3暂停。
 
