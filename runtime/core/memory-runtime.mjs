@@ -28,13 +28,28 @@ const isLocatedConfig=version=>isPlayConfig(version) || isGiftConfig(version);
 const isPlayerConfig=version=>version==='memory-config-v3' || isLocatedConfig(version);
 const societyVersionOf=version=>version==='memory-config-v8'?'society-config-v7':version==='memory-config-v7'?'society-config-v6':isGiftConfig(version)?'society-config-v5':version==='memory-config-v5'?'society-config-v4':version==='memory-config-v4'?'society-config-v3':version==='memory-config-v3'?'society-config-v2':'society-config-v1';
 const observerVersionOf=version=>version==='memory-config-v8'?'memory-observer-v4':isGiftConfig(version)?'memory-observer-v3':isPlayConfig(version)?'memory-observer-v2':'memory-observer-v1';
+// Only the campaign's pure initial template is reused, by full configuration
+// content. Live worlds and history proofs are never stored here; each caller
+// receives an independent copy. Old configuration versions keep their path.
+let campaignInitialTemplate = null;
 function validateConfig(config){
   record(config);requireCondition(MEMORY_VERSIONS.includes(config.version),'Unknown memory configuration','UNSUPPORTED_VERSION');
+  let key;
+  if(config.version==='memory-config-v8'){
+    config=cloneData(config);
+    requireCondition(config.version==='memory-config-v8','Detached campaign configuration version changed','UNSUPPORTED_VERSION');
+    key=canonicalJson(config);
+    if(campaignInitialTemplate?.key===key)return cloneData(campaignInitialTemplate.world);
+  }
   fields(config,['version','society','discountEnabled',...(config.version!=='memory-config-v1'?['personalities']:[])]);
   record(config.society);
   requireCondition(config.society.version===societyVersionOf(config.version),'Memory/Society version mismatch','UNSUPPORTED_VERSION');
   if(config.version!=='memory-config-v1')validatePersonalities(config.personalities);
-  requireCondition(typeof config.discountEnabled==='boolean','Invalid memory discount policy');return createSocietyWorld(config.society);}
+  requireCondition(typeof config.discountEnabled==='boolean','Invalid memory discount policy');
+  const world=createSocietyWorld(config.society);
+  if(key!==undefined&&key.length<=65536&&canonicalJson(world).length<=262144)
+    campaignInitialTemplate={key,world:cloneData(world)};
+  return world;}
 export function createMemoryWorld(config=defaultMemoryConfig()){
   const world=validateConfig(config),copy=cloneData(config);
   return {...world,memoryModel:{config:copy,configFingerprint:canonicalJson(copy),day:0,
