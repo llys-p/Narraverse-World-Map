@@ -5,6 +5,11 @@
 
 ## 独立项目入口
 
+- **D4E12 Demo真实接入候选：`Start-Demo.cmd`**，启动后打开 `http://127.0.0.1:18342/demo-runtime.html`。采用原型三层画面与绘制资源，接真实村庄/森林、现有三NPC、工作/交易/赠粮及日式回合战斗。地图下达一次目的地后由运行时执行步进，支持暂停、改道与路遇。
+  - 新档仅在本树 `artifacts/d4e12-daily/world`；不导入旧档，不启停18338/18340。离页或断连停止续跑，恢复后明确点击继续；输入 `quit` 等待 `stopped` 正常关闭。
+  - **性能尚未达标**：较长历史仍有多秒确认，固定样本冷启动74.35秒。功能、保护与实际验证范围见[D4E12报告](docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md)。日常目录尚未创建，固定18342尚未启动；无外观/听感验收。
+  - 需要Windows与Node24（本机验证24.14.0）。旧入口条目保留其交付时说明，当前主线状态以控制树PROJECT_CONTEXT为准。
+
 - **D4E11 行军与日式回合制候选：`Start-D4E11.cmd`**，拟用 `http://127.0.0.1:18340/runtime-campaign.html`。地图真实行军支持途中暂停/改道、附近NPC路遇和森林回合指令；独立campaign-village/DTO5/format11，不读取旧入口存档。
   - **尚未验收**：页面已覆盖行军/改道/路遇/两回合胜利，返村及最终正常重开缺项。未启动日常入口、未创建 `artifacts/d4e11-daily/world`。见[合同](tasks/D4E11-CAMPAIGN-JRPG-TASK.md)、[结果与失败记录](docs/runtime/D4E11-CAMPAIGN-JRPG-RESULT.md)。
   - 每笔至多2刻，确认后续发；后台、刷新或离页停止续发，需点击继续。每世界128命令并保留暂停位，满额显式停止；不承诺无限游玩或流畅性能。关闭时输入 `quit` 等待 `stopped`，勿删除存档或其他实例锁。
