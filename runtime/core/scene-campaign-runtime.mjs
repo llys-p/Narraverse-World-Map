@@ -1,4 +1,4 @@
-import {fields,record,integer,cloneData,requireCondition} from './data-contract.mjs';
+import {fields,record,integer,cloneData,canonicalJson,requireCondition} from './data-contract.mjs';
 import {inspectDescriptorTree} from './experience-state.mjs';
 import {campaignBaseRuntimeHooks,validateCampaignBaseWorld} from './motivation-runtime.mjs';
 import {createSceneEncounterRuntimeHooks,validateSceneEncounterWorldState} from './encounter-runtime.mjs';
@@ -40,10 +40,19 @@ export const campaignRuntimeHooks=Object.freeze({
  createWorld:(...a)=>hooks().createWorld(...a),beforeSystems:(...a)=>hooks().beforeSystems(...a),afterSystems:(...a)=>hooks().afterSystems(...a),
  applyAction:(...a)=>hooks().applyAction(...a),settleDay:(...a)=>hooks().settleDay(...a),validateHistory:(...a)=>hooks().validateHistory(...a)
 });
+// A single bounded proof of this pure structural predicate, keyed by exact JSON
+// bytes and tick, never by mutable identity or a caller-provided trust flag.
+// Input descriptors are always inspected and detached before comparing bytes.
+// Event/history/receipt replay is outside this predicate and never cached here.
+let lastWorldStructure = null;
 export function validateCampaignWorldState(world,options={}){
  inspectDescriptorTree({world,options});record(world);fields(options,['tick']);integer(options.tick);
- const {mapModel,encounterModel,...part}=world;validateCampaignBaseWorld(part);validateCampaignMap(world,options.tick);
- return validateSceneEncounterWorldState({...part,encounterModel},options);
+ const detached=cloneData({world,options}),key=canonicalJson(detached);
+ if(lastWorldStructure?.key===key)return cloneData(lastWorldStructure.result);
+ const {mapModel,encounterModel,...part}=detached.world;validateCampaignBaseWorld(part);validateCampaignMap(detached.world,detached.options.tick);
+ const result=validateSceneEncounterWorldState({...part,encounterModel},detached.options);
+ if(key.length<=262144)lastWorldStructure={key,result:cloneData(result)};
+ return result;
 }
 export function describeCampaignEncounterActions(bundle){validateBundle(bundle,{rulesVersion:CAMPAIGN_RULES,systems:canonicalSystems(CAMPAIGN_RULES)});
  const result=hooks().describeActions(bundle);if(bundle.snapshot.world.mapModel.order?.status==='marching')result.canBegin=false;return cloneData(result);}
