@@ -4,6 +4,27 @@
 
 **已隔离HTTP事件循环阻塞；最新短世界行动确认与完整重开审计分别改善20.65%/21.47%，长档冷开与持续流畅体验尚未解决，性能整体仍不判合格。** 没有把仍在等待的行动提前标成成功。现有18338/18340/18342实例未启停，新代码没有切换进这些进程。
 
+## 18:23 自动跟进：内部副本复用试验未采纳
+
+基准 `386602e7ccba295247e5e13f39e0499bf1e3372c`。先在同一合成短世界采样，编码/断言仍是主要Self热点；`cloneData`约694ms、描述符递归检查约428ms（诊断采样总时长约6.1秒，含Profiler/计数插桩，不能当无采样耗时）。试验只在上一轮私有campaign入口中复用刚由 `cloneBundle` 完整检查并深拷贝的内部副本，省去紧随其后的重复preflight和snapshot拷贝；外部数据检查、结构验证、通用自定义系统比较与完整历史重演均未改变。
+
+按相同seed42/8条HTTP `AdvanceTime(2)`/r16、独立新目录及进程、相同主线程放置，执行ABBA各版2次；每进程180秒/阶段120秒硬限，四轮退出0，无watchdog介入。
+
+| 轮次 | 行动墙钟/CPU ms | 完整重开墙钟/CPU ms |
+| --- | ---: | ---: |
+| A1原版 | 2617.665 / 2734 | 2925.812 / 2970 |
+| B1候选 | 2590.523 / 2750 | 2776.743 / 2828 |
+| B2候选 | 2582.574 / 2782 | 2912.543 / 2906 |
+| A2原版 | 2622.581 / 2656 | 2867.401 / 2891 |
+
+行动墙钟中位2620.123→2586.549ms（1.28%），CPU2695→2766ms（反增2.63%）；重开2896.607→2844.643ms（1.79%），CPU2930.5→2867ms（2.17%）。**收益不足以保留候选，不追查这些小幅差异。候选生产改动、补充测试及活动测量脚本已全部撤回；生产保持7e6806a，不宣称新修复。**
+
+四轮9文件SHA、8回执和五投影完全一致，全部session计数192、无proof；关闭后完整审计重开一致、原ID重试无新增档，隔离锁为0。新增返回值别名测试仅撰写并归档，**未执行，不计PASS**；既然候选被弃用，没有复跑核心测试或页面链。上一轮6/6及实际页面证据只适用于保持不变的生产源码，不混称本次复验。
+
+[原始数据/中位统计](../evidence/d4e12-tick-copy-trial-20261017/summary.json)、[采样Self摘要](../evidence/d4e12-tick-copy-trial-20261017/profile-summary.json)、[弃用补丁](../evidence/d4e12-tick-copy-trial-20261017/candidate.patch)、[保护核验](../evidence/d4e12-tick-copy-trial-20261017/protection.json)。测量器与未运行测试保留为`.txt`审阅副本；仅在独立树应用补丁并恢复原路径时才用于复现，均非当前活动代码。四轮原始进程回执同目录保留，无存档上传。实际命令模式：`python scripts/run-d4e12-check.py tick-copy-k 180 --phase-file artifacts/d4e12/tick-copy-k/phase.json node scripts/measure-d4e12-tick-copy.mjs variant artifacts/d4e12/tick-copy-k`，k/variant依次a1/baseline、b1/candidate、b2/candidate、a2/baseline，完整展开命令见各process.json。
+
+原八档/16依赖/旧88源码/107份既有日常文件、中控并行原型及脏摘要均保护；18338/PID61236、18340/PID63160、18342/PID14520保持，没有本轮测试进程或隔离锁。无main/部署/迁移/DSH外部模型；性能整体仍未达标，Projects保持需修正。后续按编码与规则校验的实际调用热点定位，不继续此副本复用微优化，不重跑私有长档。
+
 ## 18:02 自动跟进：固定规则 tick 去除重复计算，保留完整重演
 
 **本片功能限定PASS，短世界性能改善成立；D4E12仍需修正。** 执行树 `D:/Narraverse-World-Map-demo-integration`，分支 `codex/world-runtime-demo-integration`。生产变更只有 `runtime/core/command-engine.mjs`、`runtime/core/encounter-runtime.mjs`；新增一个定向测试和可复现A/B测量脚本。

@@ -1,0 +1,54 @@
+diff --git a/runtime/core/command-engine.mjs b/runtime/core/command-engine.mjs
+index 28b24a6..1f4c4ea 100644
+--- a/runtime/core/command-engine.mjs
++++ b/runtime/core/command-engine.mjs
+@@ -64,10 +64,12 @@ function runTick(bundle, systems, mode, execution = undefined) {
+   let failedTick;
+   let active = true;
+   try {
+-    preflightExperienceData(bundle, true);
++    // The private campaign path already inspected and detached this exact JSON
++    // tree in cloneBundle. No callback or caller can mutate it before use.
++    if (execution !== campaignExecution) preflightExperienceData(bundle, true);
+     fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
+     if (mode === 'full') validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems });
+-    const candidate = mode === 'full' ? cloneBundle(bundle) :
++    const candidate = execution === campaignExecution ? bundle : mode === 'full' ? cloneBundle(bundle) :
+       { snapshot: cloneData(bundle.snapshot), eventLog: bundle.eventLog.slice() };
+     const s = candidate.snapshot;
+     const rulesVersion = s.rulesVersion;
+diff --git a/tests/simulation/campaign-canonical-tick.test.mjs b/tests/simulation/campaign-canonical-tick.test.mjs
+index 2ff161c..f4f2e16 100644
+--- a/tests/simulation/campaign-canonical-tick.test.mjs
++++ b/tests/simulation/campaign-canonical-tick.test.mjs
+@@ -26,6 +26,30 @@ test('campaign canonical ticks match the legacy registered-system oracle for six
+   assert.deepEqual(initial, untouched, 'both tick paths leave the caller input unchanged');
+ });
+ 
++test('campaign tick detaches its returned snapshot, world, and existing event objects', () => {
++  const { bundle, systems } = createCampaignVillage(42);
++  const input = performCampaignTick(bundle);
++  assert.ok(input.eventLog.length > 0, 'tick 1 provides an existing event to check');
++  const untouched = structuredClone(input);
++
++  const returned = performCampaignTick(input);
++  assert.notStrictEqual(returned.snapshot, input.snapshot);
++  assert.notStrictEqual(returned.snapshot.world, input.snapshot.world);
++  assert.equal(returned.eventLog.length, input.eventLog.length);
++  for (let index = 0; index < input.eventLog.length; index++) {
++    assert.notStrictEqual(returned.eventLog[index], input.eventLog[index], `event ${index} is detached`);
++  }
++  const expected = structuredClone(returned);
++
++  returned.snapshot.world.mapModel.position.x = 5;
++  returned.eventLog[0].type = 'tampered';
++  assert.deepEqual(input, untouched, 'mutating returned nested state leaves the caller input unchanged');
++
++  const legacy = performTick(input, systems, 'session');
++  assert.deepEqual(legacy, expected, 'the unchanged input remains usable by the legacy oracle');
++  assert.deepEqual(input, untouched, 'the legacy oracle also leaves the caller input unchanged');
++});
++
+ test('one synthetic day-boundary primitive preserves settlement facts and RNG', () => {
+   // This is a primitive input, not a fabricated saved history or a restore test.
+   const { bundle, systems } = createCampaignVillage(42);

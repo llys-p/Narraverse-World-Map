@@ -1,0 +1,128 @@
+{
+  "baseline": "386602e7ccba295247e5e13f39e0499bf1e3372c",
+  "samples": 3635,
+  "durationMs": 6132.762,
+  "note": "Diagnostic sample with profiler and counter instrumentation; excluded from ABBA timings. Recursive stacks aggregated only by self time.",
+  "topSelf": [
+    {
+      "function": "encodeCanonical",
+      "file": "data-contract.mjs",
+      "line": 80,
+      "sampledMs": 1795.624
+    },
+    {
+      "function": "requireCondition",
+      "file": "data-contract.mjs",
+      "line": 10,
+      "sampledMs": 1392.55
+    },
+    {
+      "function": "cloneData",
+      "file": "data-contract.mjs",
+      "line": 49,
+      "sampledMs": 694.123
+    },
+    {
+      "function": "visit",
+      "file": "experience-state.mjs",
+      "line": 30,
+      "sampledMs": 427.611
+    },
+    {
+      "function": "record",
+      "file": "data-contract.mjs",
+      "line": 13,
+      "sampledMs": 389.001
+    },
+    {
+      "function": "(garbage collector)",
+      "file": "",
+      "line": 0,
+      "sampledMs": 190.6
+    },
+    {
+      "function": "denseArray",
+      "file": "data-contract.mjs",
+      "line": 36,
+      "sampledMs": 127.612
+    },
+    {
+      "function": "own",
+      "file": "data-contract.mjs",
+      "line": 5,
+      "sampledMs": 101.402
+    },
+    {
+      "function": "(idle)",
+      "file": "",
+      "line": 0,
+      "sampledMs": 75.998
+    },
+    {
+      "function": "parts",
+      "file": "bounded-json-file.mjs",
+      "line": 7,
+      "sampledMs": 52.451
+    },
+    {
+      "function": "validateSocietyWorld",
+      "file": "society.mjs",
+      "line": 63,
+      "sampledMs": 37.855
+    },
+    {
+      "function": "validateActorWorld",
+      "file": "actors.mjs",
+      "line": 53,
+      "sampledMs": 35.814
+    },
+    {
+      "function": "fields",
+      "file": "data-contract.mjs",
+      "line": 25,
+      "sampledMs": 34.852
+    },
+    {
+      "function": "",
+      "file": "actors.mjs",
+      "line": 39,
+      "sampledMs": 33.974
+    },
+    {
+      "function": "validateHunterWorld",
+      "file": "hunter.mjs",
+      "line": 41,
+      "sampledMs": 31.587
+    },
+    {
+      "function": "totals",
+      "file": "resource-ledger.mjs",
+      "line": 10,
+      "sampledMs": 27.635
+    },
+    {
+      "function": "createEcologyWorld",
+      "file": "ecology.mjs",
+      "line": 53,
+      "sampledMs": 27.535
+    },
+    {
+      "function": "(program)",
+      "file": "",
+      "line": 0,
+      "sampledMs": 26.142
+    },
+    {
+      "function": "validateConfig",
+      "file": "resource-ledger.mjs",
+      "line": 33,
+      "sampledMs": 24.017
+    },
+    {
+      "function": "validateMarketWorld",
+      "file": "market.mjs",
+      "line": 81,
+      "sampledMs": 22.43
+    }
+  ]
+}
