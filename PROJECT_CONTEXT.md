@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-17 11:24（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-17 14:48（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -33,7 +33,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- **D4E11已按用户选择B开工**：[冻结合同](tasks/D4E11-CAMPAIGN-JRPG-TASK.md)。地图持续行军/途中暂停与改道、真实NPC路遇，战斗日式RPG回合制；v0.1按段方案A未采用。执行树D:/Narraverse-World-Map-campaign-jrpg / codex/world-runtime-campaign-jrpg接6c60fe2，当前仅建立隔离树/冻结合同，生产实现与验收尚未完成。128命令预算保留暂停位、至多2tick一笔确认，不放宽审计；新opt-in格式11/DTO5。18338 PID61236已在运行，连同18325/18327/18336保护；控制旧dual-presentation-demo.html按当前字节保留。D4E10仍最新已验业务树，D整体进行中，Issue3暂停。
+- **D4E11候选已本地交付，未验收**：[合同](tasks/D4E11-CAMPAIGN-JRPG-TASK.md)。树D:/Narraverse-World-Map-campaign-jrpg / codex/world-runtime-campaign-jrpg，交付1bf24ff2d4c2039b223c8411f8785817a953cc11（核心27ddaba、页面e7f6223）；本地报告docs/runtime/D4E11-CAMPAIGN-JRPG-RESULT.md。真实持续行军/暂停改道/NPC路遇/回合制已接；分次8个不同定向成员通过，非一次8/8。页面已赠粮/猎人记忆路遇/两击胜利；最终r50/tick40/road(9,7)/商人暂停，返村(4,7)及最终正常重开未完成。原600秒、授权300秒及用户继续独立300秒接续失败/超时全部保留，最新PHASE_LIMIT120秒；不得重置预算/重打战斗，下一业务运行需新的有界授权。原8档、旧98产品、5素材、13外部、17日常文件不变；18338/PID61236保持，测试锁/进程为空，18340日常目录未创建。GitHub实际isPrivate:false，与AGENTS保持私有要求冲突，候选未推送/Projects未更新，待用户决定发布范围。控制并行dual原型与摘要保留、不纳入本任务提交。D4E10仍上一已验树；D整体进行中，Issue3暂停。
 
 - **D4E10图形体验接入限定PASS**：[合同](tasks/D4E10-GRAPHICAL-LOOP-TASK.md)，[结果与27份脱敏证据](https://github.com/llys-p/Narraverse-World-Map/blob/6c60fe2d5b6276660936e1ab55a43385a79737ba/docs/runtime/D4E10-GRAPHICAL-LOOP-RESULT.md)。树D:/Narraverse-World-Map-graphical-loop / codex/world-runtime-graphical-loop，接fe66af9，实现157c5dd、交付6c60fe2d5b6276660936e1ab55a43385a79737ba已推送精确读回/树干净。地图真实位置/地点入口、同版村庄人物、确认回执战斗表现；runtime/**与素材零改。纯3/3、语法7文件、根一次实际页面赠粮1→旅行→遭遇→攻击2胜利→返村，tick36/rev38/HP920/私粮19；全档审计、五投影/活动/六原回执/七档SHA跨重开一致。原八档/原97产品/原日常7文件/外部13/控制5文件与18325 PID2592、18327 PID4432、18336 PID48192保持；子62856正常exit0/无超时/无测试锁或进程。新Start-D4E10.cmd/18338日常目录未创建启动。外观/音效/性能未验，第二次播放中停止未捕获不冒称通过；RED/包装器GBK/选择器问题保留，无重发攻击。无main/deploy/迁移/DSH；本合同完成停止。Projects卡PVTI_lAHOEF9IDs4BmADfzhBZbUE先待验收再Done/已验收读回，最终只读查询首超时45秒、仅重试读取成功；D仍进行中，Issue3暂停。看板证据docs/evidence/d4e10-graphical-loop-control-20261017/。
 

@@ -11,7 +11,7 @@
 ## 1. 行军语义与预算
 
 - 沿v0.1的20×12地图、村庄中心(4,7)、森林入口(16,7)、村庄区x3..5/y6..8、森林区x14..19/y2..11、河列x10仅桥y7通行；其余为road。四邻接最短路，固定北/东/南/西，最多240搜索节点/48步。地图坐标是真实世界状态，画布像素仅表现。
-- 新profile campaign-village / d-campaign-v1 / serviceFormat11 / DTO5/receipt5 / actor-config-v5、society-config-v7、memory-config-v8；工资账沿player-state-v4。旧profile与DTO、原始存档规则/字节不变，不迁移。
+- 新profile campaign-village / d-campaign-v1 / serviceFormat11 / DTO5/receipt5 / actor-config-v5、society-config-v7、memory-config-v8 / memory-observer-v4；工资账沿player-state-v4。旧profile与DTO、原始存档规则/字节不变，不迁移。
 - 新命令 MarchSet{x,y}（开始/改道）、MarchPause{}、MarchResume{} 均0 tick/revision+1；MarchStep{}每次推进min(剩余步数,2)真实tick，其余字段由服务计算。前端一次只提交一笔，确认后再续发，决不按每个动画帧写档。
 - 每tick先按路线走一格、更新真实区域，再执行该tick原规则/日结。只存活者可移动；日结死亡后暂停，后续格不再走。一次已接收的至多2tick仍完成，可能因相遇/死亡出现一tick原地等待；仅真正走格增加步数/疲劳。
 - mapModel精确 `{version:'campaign-map-v1',mapId:'village-forest-v1',position:{x,y},travelledSteps,npcs:[{actorId,x,y,routeIndex}],order:null|{target:{x,y},path:[{x,y}],index,status},contact:null|{actorId,tick}}`。order状态marching/paused/arrived，position等于path[index]；到末端必arrived。累计路程折算疲劳：每格取ceil(新总步数×100/12)−ceil(旧总步数×100/12)，上限1000，暂停/改道不额外收费。
@@ -22,7 +22,7 @@
 
 ## 2. NPC真实位置与相遇
 
-- NPC地图位置纳入mapModel与完整重演，actor.location必须与各自坐标派生区域一致；只有新actor-config-v5允许三NPC实际离村。旧NPC固定村庄规则不改。
+- NPC地图位置纳入mapModel与完整重演，跨区域变化写入CampaignRegionsChanged事实供新observer-v4逐条重演；旧observer-v1/v2/v3不放宽。actor.location必须与各自坐标派生区域一致；只有新actor-config-v5允许三NPC实际离村。旧NPC固定村庄规则不改。
 - 初态：村长(4,6)固定，猎人(5,7)沿水平路到(16,7)折返（每4tick一格），商人(3,7)经(3,8)沿南路到(9,8)折返（每6tick一格）。确定性、无随机抽样，不加通用日程AI。
 - 地图展示Chebyshev距离≤4的存活/遗留在场人物，≤1可查看身份、可观察身体状态及该NPC本人收到玩家粮食的既有记忆；不泄漏钱包/目标/计划/他人记忆。
 - 当一次tick后新进入≤1范围且上tick不在范围，记录最低actorId的contact并暂停行军；已在附近的人不反复触发。contact对象NPC暂留待交互，其他NPC照规则走；MarchPause清contact并保持暂停，MarchResume或MarchSet清contact后继续。到终点时contact可存在但order仍arrived。
@@ -43,7 +43,7 @@
 
 沿v0.1参考裁定：旧index.html只借点击/跟随/地图表现；不接其前端WorldState/随机怪/本地时间存档。Bannerlord仅为既有资料库的设计线索，不声称复刻其内部实现。复用原encounter完整审计/日结与真实战斗规则，不复制整套Runtime、不放宽校验。
 
-- 根：campaign-map.mjs、scene-campaign-runtime.mjs、campaign-village fixture；encounter-runtime/world-state/command-engine/event-log/experience-state；http-contract/service-commit/runtime-owner/world-activity/runtime-server；runtime-campaign-contract.mjs、Start-D4E11.cmd；任务/状态/README/结果与脱敏证据、直接必要核验脚本。
+- 根：campaign-map.mjs、scene-campaign-runtime.mjs、campaign-village fixture；encounter-runtime/world-state/command-engine/event-log/experience-state/memory-observer；http-contract/service-commit/runtime-owner/world-activity/runtime-server；runtime-campaign-contract.mjs、Start-D4E11.cmd；任务/状态/README/结果与脱敏证据、直接必要核验脚本。
 - 版本接线工人：actors.mjs、society.mjs、player-state.mjs、memory-runtime.mjs、mind-runtime.mjs、motivation-runtime.mjs。只新增campaign新版本配对与base hooks，旧默认门不变，不改算法/审计。
 - 地图页面工人：runtime-campaign.html/mjs/css，仅新界面、真实API接线/行军续发、暂停改道与NPC卡、已有工作/交易/赠粮入口；不写核心/服务/战斗模块/共用验证器。
 - 战斗工人：runtime-campaign-battle.mjs/css，按上方API实现JRPG场景与捕获token播放；不写其他页面/服务/核心/共用验证器。
@@ -60,3 +60,9 @@
 现有18325/18327/18336及新发现18338 PID61236均保护，不启停；验收新目录随机端口，日常入口拟18340，先查占用且不自动启动。原八档、D4E9/D4E10产品/用户数据、控制5旧文件保留；dual-presentation-demo.html以当前字节为准，不回写旧散列版本。
 
 交付代码/报告/脱敏摘要到独立分支，控制状态≤150行和Projects逐字段读回；功能、外观、性能、D整体分别判断。无main合并、部署、迁移或上传私档/完整bundle。有限128命令预算与2tick确认粒度明示，不承诺无限长期游玩或实时战斗。本合同范围完成后停止。
+
+## 已授权补验（2026-10-17 Asia/Shanghai）
+
+原页面600秒预算已耗尽，保留PHASE_LIMIT/TOTAL_LIMIT及已胜利存档，不把超时记作通过。用户明确授权仅一次300秒补验、单阶段120秒、退出确认5秒，接续同一隔离r39返村订单，仅完成返村与正常关闭/重开比对，不重复攻击/新建世界或重跑整链。脚本以wx标记限制一次补验；返回途中每个实际revision确认作为下一有界阶段，补验总限不重置。
+
+2026-10-17后续用户明确“继续”，安排一次新的有界接续 `20261017-user-continue`：仍300秒总限/120秒阶段限/5秒退出确认，从同一r50商人相遇继续返村及正常重开，不重复战斗。与原600秒、首个补验分别计时/留证，不能覆盖旧失败或把接续说成单次全绿。
