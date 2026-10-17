@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-name-pattern",
+    "detached campaign configuration",
+    "tests/simulation/campaign-initial-template.test.mjs"
+  ],
+  "pid": 33968,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 364.055,
+  "cpuMs": 78.125,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

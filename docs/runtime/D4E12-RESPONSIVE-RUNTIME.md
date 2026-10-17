@@ -1,8 +1,57 @@
 # D4E12：模拟执行与入口响应分离
 
-2026-10-17（Asia/Shanghai）。用户要求自主阅读开源游戏并解决行动等待。线程隔离源码 `216cd124cb992bc593007ebdec2c154ad046daaa`；固定规则tick优化 `7e6806a4ac0c802fa9322cdc58c95b37d9010e79`；最新结构证明复用源码 `1e5e16cfab302b56da89e93383b6eefdb13f3213`，本片比较基准 `7d746467b0104f9b8988045871f7cfe682729ab1`。
+2026-10-17（Asia/Shanghai）。用户要求自主阅读开源游戏并解决行动等待。线程隔离 `216cd124cb992bc593007ebdec2c154ad046daaa`、固定tick优化 `7e6806a4ac0c802fa9322cdc58c95b37d9010e79`、单条结构证明 `1e5e16cfab302b56da89e93383b6eefdb13f3213` 均保留。最新初始模板优化源码 `d22bc5d2462d4f5ccdfbad237534c3b9f3ae698d`，本片比较基准 `a42957b28bb7482fa8da5f2184abd22a428d4793`。
 
-**已隔离HTTP事件循环阻塞；最新短世界行动确认与完整重开审计相对上一已采纳版再改善22.49%/25.95%，长档冷开与持续流畅体验尚未解决，性能整体仍不判合格。** 不把不同轮次的百分比相加，不把仍在等待的行动提前标成成功。现有18338/18340/18342实例未启停，新代码没有切换进这些进程。
+**已隔离HTTP事件循环阻塞；最新短世界行动确认与完整重开审计相对上一已采纳版再改善9.20%/18.81%，长档冷开与持续流畅体验尚未解决，性能整体仍不判合格。** 不把不同轮次的百分比相加，不提前确认行动。23:35本轮开工只读核验发现18338/18340/18342已无监听，原PID61236/63160/14520已退出；不是本轮启停，未重启或操作日常存档，新代码未投入日常入口。
+
+## 23:41 继续推进：复用 campaign v8 纯配置初始模板
+
+**本片功能限定PASS，最终短世界行动/重开样本改善成立；整体性能仍需修正。** 唯一生产修改为 `runtime/core/memory-runtime.mjs` 私有 `validateConfig`，另新增定向测试与HTTP测量工具。
+
+### 范围和校验边界
+
+不断变化的world无法频繁命中整份结构证明，但其 `memory-config-v8` 长期不变。原路径在每次模型结构校验时，都会经 `createSocietyWorld` 及其下层重新构造同一份初始世界。新实现只对v8先复制配置、再次核验复制后的版本，然后按**完整规范配置字符串**匹配一条私有初始模板；配置不同则执行全部原配置规则和构造器。每次存取均复制，调用方修改返回的资源、角色或配置不会污染模板。
+
+只复用纯配置→初始模板的确定性结果；不保存运行中world、RNG、tick、事件或命令回执结论，不缓存历史重演。实时 `validateMemoryWorld`、完整配置指纹/账本/身份检查、公开完整审计、从零历史重演及事实/receipt对比仍执行。耐久发布、失败回滚、幂等、世界时间与存档版本不变；v6/v7及其他旧配置保留原路径。成功后才保存，key上限65536、模板规范表示上限262144个UTF-16代码单元；这限制的是规范表示长度，不是精确JS堆字节。超过长度仍执行校验/构造，但不保留该模板。
+
+独立只读复核认为普通JSON的纯构造、完整内容键和引用隔离没有发现新增问题，并指出复制后版本需再核验。新增Proxy版本漂移反例先RED（原候选没有抛异常），随即补上 `config.version==='memory-config-v8'` 检查；最终16项定向通过。旧路径本来也存在Proxy多次读取漂移，不能据此宣称曾有完整公开审计绕过；也不承诺拒绝所有Proxy或不执行trap。直接构造器收到多个同时非法字段时，v8提前复制可能改变首个报错的优先级，非法数据仍拒绝；服务完整JSON预检保持。该边界如实记录，不称所有直接构造器错误顺序完全相同。
+
+### 最终源码同机ABBA（独立于加固前样本）
+
+Windows / Node v24.14.0；seed42、相同commandId、真实HTTP 8×`AdvanceTime(2)`、终点r16/tick16。每轮新进程/目录/随机端口，两侧同为 `runtimeWorker:false`；A只通过加载钩子读取固定基准的memory模块，B读取最终候选，记录原模块SHA。每进程180秒/阶段120秒硬限，四轮退出0，无watchdog介入。机器负载未固定，因此只比较本轮交替对照，不与此前报告的绝对秒数跨轮比较。
+
+| 最终轮次 | 新世界打开墙钟/CPU ms | 8条行动墙钟/CPU ms | 关闭墙钟/CPU ms | 完整重开墙钟/CPU ms |
+| --- | ---: | ---: | ---: | ---: |
+| A1 | 234.318 / 328 | 3525.185 / 3656 | 2.145 / 0 | 3809.604 / 3937 |
+| B1 | 242.883 / 344 | 3314.928 / 3422 | 2.158 / 0 | 3087.520 / 3140 |
+| B2 | 208.436 / 312 | 2954.257 / 3203 | 1.979 / 0 | 3119.355 / 3266 |
+| A2 | 225.943 / 313 | 3379.440 / 3765 | 2.345 / 0 | 3835.153 / 3860 |
+
+各版2次。行动墙钟中位3452.313→3134.592ms（**9.20%**），CPU3710.5→3312.5ms（**10.73%**）；完整重开3822.379→3103.438ms（**18.81%**），CPU3898.5→3203ms（**17.84%**）。行动范围A3379–3525/B2954–3315ms；重开A3810–3835/B3088–3119ms。新世界打开与关闭没有确认收益；两次样本不作置信区间，更不能代表私有长档或持续游玩性能。
+
+四轮9份正式文件SHA、8回执和五投影完全一致，完整重开逐项一致，原ID重试回原回执且不新增档，前后9文件SHA保持。终点r16 SHA `4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a`，回执`aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2`，五投影`9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4`。
+
+加固前也完成一次ABBA，各版2次，数据完整保留且**不混入最终统计**：行动中位3810→3143ms；基准重开样本3748/6418ms出现明显波动，未据此确认冷开收益，也未追查这类普通波动。之所以重新测最终ABBA，是Proxy边界修复改变了生产源码，而不是为了刷出更好成绩。
+
+### 功能证据与分次覆盖
+
+- `initial-template-core-01`：加固前15/15 PASS，墙钟7809.028ms/CPU8468.75ms。
+- `initial-template-proxy-red-01`：新增版本漂移反例1/1 FAIL、退出1（预期的RED），保留原始错误，不计PASS。
+- `initial-template-core-02`：**最终源码16/16 PASS**，墙钟7045.135ms/CPU7828.125ms。含v6/v7及合法变化v8与冻结基准oracle对照、返回引用隔离、配置变更重验、getter0、复制后版本漂移拒绝；同时覆盖固定tick/日结RNG、结构证明防投毒、暖证明下历史事实伪造拒绝、全服务重演、持久发布失败回滚、worker恢复与幂等。
+- `initial-template-ui-01`：在最终Proxy边界加固**之前**完成实际Edge新隔离世界26命令，赠粮→行军暂停改道→NPC路遇→两回合胜利→返村→正常关闭PASS；墙钟42696.028ms/Node CPU30671.875ms（不含浏览器CPU），终态r48/tick37、HP920/私粮19/钱包0、村庄(4,7)，errors0。最终版本检查没有改变普通v8 JSON行为，但**没有重跑最终源码页面链，不把此前页面运行冒称最终源码复验**；最终16项及完整HTTP ABBA是本轮最终源码的运行证据。页面 `--ui-only` 本来也不含工作交易休息/独立全档审计/重开；后两项由核心和ABBA分次覆盖，无视觉检查。
+
+命令（加固前prefix为 `initial-template`，最终为 `initial-template-final`；k/variant依次a1/baseline、b1/candidate、b2/candidate、a2/baseline，完整展开命令见原始JSON）：
+
+```powershell
+python scripts/run-d4e12-check.py prefix-k 180 --phase-file artifacts/d4e12/prefix-k/phase.json node scripts/measure-d4e12-initial-template.mjs variant artifacts/d4e12/prefix-k
+python scripts/run-d4e12-check.py initial-template-proxy-red-01 180 node --test --test-name-pattern "detached campaign configuration" tests/simulation/campaign-initial-template.test.mjs
+python scripts/run-d4e12-check.py initial-template-core-02 180 node --test --test-isolation=none tests/simulation/campaign-initial-template.test.mjs tests/simulation/campaign-canonical-tick.test.mjs tests/simulation/campaign-structure-proof.test.mjs tests/simulation/demo-service-certification.test.mjs tests/simulation/demo-worker.test.mjs
+python scripts/run-d4e12-check.py initial-template-ui-01 600 --phase-file artifacts/d4e12/initial-template-ui-01/phase.json node scripts/verify-d4e12-demo.mjs artifacts/d4e12/initial-template-ui-01 --ui-only
+```
+
+[最终原始四轮](../evidence/d4e12-initial-template-20261017/final-runs.json)、[统计](../evidence/d4e12-initial-template-20261017/summary.json)、[最终16项TAP](../evidence/d4e12-initial-template-20261017/initial-template-core-02.txt)、[RED反例](../evidence/d4e12-initial-template-20261017/initial-template-proxy-red-01.txt)、[加固前页面](../evidence/d4e12-initial-template-20261017/initial-template-ui-01-result.json)、[保护](../evidence/d4e12-initial-template-20261017/protection.json)。同目录保留加固前ABBA和15项结果；没有存档上传。
+
+开工前和结束时三个旧端口均无监听，旧PID已退出，启停动作0；不将23:35外部现场变化写成由本轮代码导致，也不猜退出原因。原8档、16依赖、旧88源码、107份既有日常文件、中控并行原型和脏摘要均字节保持，测试进程/隔离锁无残留；未main/部署/迁移/DSH外部模型。较长档74.351秒旧样本未复跑，历史增长成本仍在，性能整体未达标。Projects仍In Progress/需修正，继续有界推进。
 
 ## 20:23 自动跟进：多条结构证明未改善冷开，已撤回
 

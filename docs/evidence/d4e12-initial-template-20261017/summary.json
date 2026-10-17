@@ -1,0 +1,88 @@
+{
+  "baseline": "a42957b28bb7482fa8da5f2184abd22a428d4793",
+  "candidate": "d22bc5d2462d4f5ccdfbad237534c3b9f3ae698d",
+  "order": [
+    "a1",
+    "b1",
+    "b2",
+    "a2"
+  ],
+  "repetitionsPerVariant": 2,
+  "commands": 8,
+  "ticks": 16,
+  "filesReceiptsProjectionsEqual": true,
+  "finalCoreTests": 16,
+  "uiBeforeFinalProxyHardening": true,
+  "medians": {
+    "actions": {
+      "wallMs": {
+        "baseline": 3452.3125999999993,
+        "candidate": 3134.5921500000004,
+        "improvementPercent": 9.20311938148356
+      },
+      "cpuMs": {
+        "baseline": 3710.5,
+        "candidate": 3312.5,
+        "improvementPercent": 10.726317207923463
+      }
+    },
+    "reopen": {
+      "wallMs": {
+        "baseline": 3822.3785,
+        "candidate": 3103.43775,
+        "improvementPercent": 18.80872734084288
+      },
+      "cpuMs": {
+        "baseline": 3898.5,
+        "candidate": 3203.0,
+        "improvementPercent": 17.840194946774403
+      }
+    }
+  },
+  "data": {
+    "a1": {
+      "actions": {
+        "wallMs": 3525.1854,
+        "cpuMs": 3656
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 3809.6036,
+        "cpuMs": 3937
+      }
+    },
+    "b1": {
+      "actions": {
+        "wallMs": 3314.9278000000004,
+        "cpuMs": 3422
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 3087.5204,
+        "cpuMs": 3140
+      }
+    },
+    "b2": {
+      "actions": {
+        "wallMs": 2954.2565,
+        "cpuMs": 3203
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 3119.3550999999998,
+        "cpuMs": 3266
+      }
+    },
+    "a2": {
+      "actions": {
+        "wallMs": 3379.439799999999,
+        "cpuMs": 3765
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 3835.1534,
+        "cpuMs": 3860
+      }
+    }
+  }
+}

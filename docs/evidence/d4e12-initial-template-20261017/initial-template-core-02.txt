@@ -1,0 +1,24 @@
+✔ campaign canonical ticks match the legacy registered-system oracle for six ticks (459.9139ms)
+✔ one synthetic day-boundary primitive preserves settlement facts and RNG (584.4656ms)
+✔ session mode rejects a structurally valid but non-canonical custom transition (100.6483ms)
+✔ campaign tick rejects accessor, wrong-profile, and invalid-data inputs (58.5733ms)
+✔ reused campaign templates produce equivalent worlds with fully independent mutable data (24.0605ms)
+✔ warm cache never accepts changed invalid configuration and restored content remains valid (40.4119ms)
+✔ configuration accessors are rejected without execution before and after warming the cache (3.68ms)
+✔ v6, v7, and a valid v8 variation match the frozen memory-runtime oracle (79.1048ms)
+✔ detached campaign configuration must still carry the selected v8 version (5.6236ms)
+✔ identical campaign structures return detached validation results and cannot poison the cache (38.4297ms)
+✔ mutated actor, numeric config, map, tick, and forged trust data are revalidated (97.6827ms)
+✔ descriptor inspection rejects accessors before and after a successful cached proof (28.485ms)
+✔ proof keys use detached data even when a Proxy supplies different property values (36.1021ms)
+✔ a warmed structural proof cannot certify a forged historical fact (139.3485ms)
+✔ live immutable service prefix equals independent full replay and rejects external forgeries (3587.31ms)
+✔ worker preserves committed views, exact retries, full restore and tamper refusal (1483.7871ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6935.4824

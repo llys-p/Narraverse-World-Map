@@ -1,0 +1,21 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-isolation=none",
+    "tests/simulation/campaign-initial-template.test.mjs",
+    "tests/simulation/campaign-canonical-tick.test.mjs",
+    "tests/simulation/campaign-structure-proof.test.mjs",
+    "tests/simulation/demo-service-certification.test.mjs",
+    "tests/simulation/demo-worker.test.mjs"
+  ],
+  "pid": 70076,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 7809.028,
+  "cpuMs": 8468.75,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

@@ -1,0 +1,27 @@
+✖ detached campaign configuration must still carry the selected v8 version (15.6551ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 267.0936
+
+✖ failing tests:
+
+test at tests\simulation\campaign-initial-template.test.mjs:81:1
+✖ detached campaign configuration must still carry the selected v8 version (15.6551ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///D:/Narraverse-World-Map-demo-integration/tests/simulation/campaign-initial-template.test.mjs:92:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { code: 'UNSUPPORTED_VERSION' },
+    operator: 'throws',
+    diff: 'simple'
+  }
