@@ -1,0 +1,14 @@
+✔ campaign canonical ticks match the legacy registered-system oracle for six ticks (432.8176ms)
+✔ one synthetic day-boundary primitive preserves settlement facts and RNG (441.6678ms)
+✔ session mode rejects a structurally valid but non-canonical custom transition (105.3701ms)
+✔ campaign tick rejects accessor, wrong-profile, and invalid-data inputs (68.5392ms)
+✔ live immutable service prefix equals independent full replay and rejects external forgeries (3824.1489ms)
+✔ worker preserves committed views, exact retries, full restore and tamper refusal (1260.371ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6199.763

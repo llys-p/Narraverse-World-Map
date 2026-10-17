@@ -1,0 +1,171 @@
+{
+  "baseline": "e26f386490ac54f7d6474556a4e7008c782df40c",
+  "candidate": "7e6806a4ac0c802fa9322cdc58c95b37d9010e79",
+  "order": [
+    "a1",
+    "b1",
+    "b2",
+    "a2"
+  ],
+  "repetitionsPerVariant": 2,
+  "seed": 42,
+  "commands": 8,
+  "ticks": 16,
+  "filesEqual": true,
+  "receiptsEqual": true,
+  "fiveProjectionsEqual": true,
+  "data": {
+    "a1": {
+      "actions": {
+        "wallMs": 3341.4533,
+        "cpuMs": 3391
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 3657.675,
+        "cpuMs": 3593
+      },
+      "tickCounts": {
+        "session": 192,
+        "proof": 192
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-canonical-tick.mjs",
+          "baseline",
+          "artifacts/d4e12/canonical-tick-a1"
+        ],
+        "pid": 40476,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 7468.871,
+        "cpuMs": 7453.125,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b1": {
+      "actions": {
+        "wallMs": 2629.3150999999993,
+        "cpuMs": 2625
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2910.8149,
+        "cpuMs": 2953
+      },
+      "tickCounts": {
+        "session": 192
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-canonical-tick.mjs",
+          "candidate",
+          "artifacts/d4e12/canonical-tick-b1"
+        ],
+        "pid": 63452,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 5938.415,
+        "cpuMs": 5984.375,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b2": {
+      "actions": {
+        "wallMs": 2660.9902,
+        "cpuMs": 2828
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2899.6898,
+        "cpuMs": 2969
+      },
+      "tickCounts": {
+        "session": 192
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-canonical-tick.mjs",
+          "candidate",
+          "artifacts/d4e12/canonical-tick-b2"
+        ],
+        "pid": 27160,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 5979.787,
+        "cpuMs": 6390.625,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "a2": {
+      "actions": {
+        "wallMs": 3325.4509999999996,
+        "cpuMs": 3344
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 3740.9938999999995,
+        "cpuMs": 3673
+      },
+      "tickCounts": {
+        "session": 192,
+        "proof": 192
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-canonical-tick.mjs",
+          "baseline",
+          "artifacts/d4e12/canonical-tick-a2"
+        ],
+        "pid": 67128,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 7539.625,
+        "cpuMs": 7531.25,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    }
+  },
+  "medians": {
+    "actions": {
+      "wallMs": {
+        "baseline": 3333.45215,
+        "candidate": 2645.15265,
+        "improvementPercent": 20.648248993164643
+      },
+      "cpuMs": {
+        "baseline": 3367.5,
+        "candidate": 2726.5,
+        "improvementPercent": 19.034892353377874
+      }
+    },
+    "reopen": {
+      "wallMs": {
+        "baseline": 3699.33445,
+        "candidate": 2905.2523499999998,
+        "improvementPercent": 21.46553956482632
+      },
+      "cpuMs": {
+        "baseline": 3633.0,
+        "candidate": 2961.0,
+        "improvementPercent": 18.497109826589597
+      }
+    }
+  }
+}

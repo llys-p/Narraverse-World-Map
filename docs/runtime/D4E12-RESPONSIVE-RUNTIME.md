@@ -1,8 +1,53 @@
 # D4E12：模拟执行与入口响应分离
 
-2026-10-17（Asia/Shanghai）。用户要求自主阅读开源游戏并解决行动等待。本轮源码 `216cd124cb992bc593007ebdec2c154ad046daaa`，基准 `eaddf683659465194b784b631be6e78b94f11a0e`。
+2026-10-17（Asia/Shanghai）。用户要求自主阅读开源游戏并解决行动等待。线程隔离源码 `216cd124cb992bc593007ebdec2c154ad046daaa`；最新固定规则 tick 优化源码 `7e6806a4ac0c802fa9322cdc58c95b37d9010e79`，比较基准 `e26f386490ac54f7d6474556a4e7008c782df40c`。
 
-**已消除新入口中同步审计堵住HTTP事件循环的问题；行动确认与长档冷开成本尚未解决，性能整体仍不判合格。** 没有把仍在等待的行动提前标成成功。现有18338/18340/18342实例未启停，新代码没有切换进这些进程。
+**已隔离HTTP事件循环阻塞；最新短世界行动确认与完整重开审计分别改善20.65%/21.47%，长档冷开与持续流畅体验尚未解决，性能整体仍不判合格。** 没有把仍在等待的行动提前标成成功。现有18338/18340/18342实例未启停，新代码没有切换进这些进程。
+
+## 18:02 自动跟进：固定规则 tick 去除重复计算，保留完整重演
+
+**本片功能限定PASS，短世界性能改善成立；D4E12仍需修正。** 执行树 `D:/Narraverse-World-Map-demo-integration`，分支 `codex/world-runtime-demo-integration`。生产变更只有 `runtime/core/command-engine.mjs`、`runtime/core/encounter-runtime.mjs`；新增一个定向测试和可复现A/B测量脚本。
+
+原 `performTick(...,'session')` 会先运行调用方系统，再运行固定系统一次来比较结果。campaign命令执行及历史重演本来就传入固定系统，因此这条链上的每个tick重复计算。新增 `performCampaignTick(bundle)`：先通过原数据合同深拷贝/拒绝访问器，只能选择代码内部固定campaign系统，仍检查结构、调度、计数器、预算、受保护字段和事实；对这条专用路径省去第二次相同计算。通用 `performTick` 仍保留自定义系统的固定规则比较，调用方不能通过第四参数或自造Symbol启用专用路径。
+
+正确性依据：输入已脱离调用方可变数据，专用入口不接受回调或跳过校验参数，时间与随机数全部来自同一输入快照，因此同一固定规则的第二次运行不是独立审计。**公开 `validateBundle` / `validateServiceCommit`、从零完整历史重演、逐事实/回执/终态比较全部保留**；没有缓存重演结果、裁剪历史、削减规则、改变世界时间或异步提前确认。七处campaign推进/重演tick调用改接专用入口；其他profile保持旧路径。磁盘发布、失败回滚、幂等、HTTP及worker实现没有修改。
+
+### 同机ABBA真实HTTP对照
+
+Windows / Node.js v24.14.0。每轮独立进程、随机端口、新隔离目录；seed42、相同commandId，8次真实HTTP `AdvanceTime(2)`，终点r16/tick16。A读取上述固定基准的两个生产模块，B读取候选；Node加载钩子只添加执行次数计数，记录插桩前模块SHA。两侧都使用 `runtimeWorker:false` 比较相同主线程放置的计算成本，不能用此表推断worker读取延迟。每进程180秒外部硬限、阶段120秒；四轮全部退出0、无watchdog介入。
+
+| 顺序 | 新世界打开墙钟/CPU ms | 8条行动墙钟/CPU ms | 关闭墙钟/CPU ms | 完整重开墙钟/CPU ms |
+| --- | ---: | ---: | ---: | ---: |
+| A1原版 | 219.342 / 250 | 3341.453 / 3391 | 1.339 / 0 | 3657.675 / 3593 |
+| B1候选 | 223.974 / 250 | 2629.315 / 2625 | 1.338 / 16 | 2910.815 / 2953 |
+| B2候选 | 237.720 / 359 | 2660.990 / 2828 | 1.243 / 0 | 2899.690 / 2969 |
+| A2原版 | 220.237 / 297 | 3325.451 / 3344 | 1.501 / 0 | 3740.994 / 3673 |
+
+各版2次；行动墙钟中位3333.452→2645.153ms（**20.65%**），CPU3367.5→2726.5ms（19.03%）；重开墙钟3699.334→2905.252ms（**21.47%**），CPU3633→2961ms（18.50%）。行动墙钟范围A3325–3341/B2629–2661ms，重开A3658–3741/B2900–2911ms；仅两次样本，不作置信区间或长档外推，不追查普通小幅波动。新世界打开及关闭没有确认的性能收益。
+
+四轮均计到192次session推进；A另有192次proof重算，B为0。**实际session次数没有减少**，完整审计仍执行所有历史ticks。四轮9份正式输出逐文件SHA、8份回执、五投影完全相同，关闭后完整重开逐项一致；重试原ID返回原回执、没有新增存档，原9文件SHA不变。
+
+- r16文件SHA256：`4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a`
+- 回执规范签名：`aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2`
+- 五投影规范签名：`9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4`
+
+### 最少定向门与实际页面
+
+`canonical-tick-core-01`：6/6 PASS，墙钟6268.867ms/CPU6578.125ms，包括连续6tick与旧路径等价/输入不变、单个合成日结边界tick143→144的事实及RNG等价、自定义系统伪造与第四参数绕过拒绝、非法数据/错误profile/零getter执行、完整服务重演与篡改拒绝、耐久发布失败回滚、worker恢复/精确幂等。日结用例是原语输入，不冒称合法长历史恢复。
+
+`canonical-tick-ui-01`：同一次隔离新世界实际Edge页面26命令，赠粮→行军暂停改道→NPC路遇→JRPG两回合胜利→返村→正常关闭PASS；墙钟25388.722ms/Node CPU16328.125ms（不含浏览器CPU）。终态r48/tick37、HP920/私粮19/钱包0、村庄(4,7)，页面errors为0。该链使用 `--ui-only`，**没有在本页面链测试工作交易休息、独立全档审计或重开**；完整短史审计/重开由上面的A/B与核心门单独覆盖，不能说一次全链全绿。未截图、录屏或视觉巡检；不以两次不同时间页面时长作性能对照。
+
+实际命令（`k`按a1、b1、b2、a2，`variant`依次baseline、candidate、candidate、baseline；每条只运行一次）：
+
+```powershell
+python scripts/run-d4e12-check.py canonical-tick-k 180 --phase-file artifacts/d4e12/canonical-tick-k/phase.json node scripts/measure-d4e12-canonical-tick.mjs variant artifacts/d4e12/canonical-tick-k
+python scripts/run-d4e12-check.py canonical-tick-core-01 180 node --test --test-isolation=none tests/simulation/campaign-canonical-tick.test.mjs tests/simulation/demo-service-certification.test.mjs tests/simulation/demo-worker.test.mjs
+python scripts/run-d4e12-check.py canonical-tick-ui-01 600 --phase-file artifacts/d4e12/canonical-tick-ui-01/phase.json node scripts/verify-d4e12-demo.mjs artifacts/d4e12/canonical-tick-ui-01 --ui-only
+```
+
+[原始数据与统计](../evidence/d4e12-canonical-tick-20261017/summary.json)、[定向检查TAP](../evidence/d4e12-canonical-tick-20261017/canonical-tick-core-01.txt)、[页面结果](../evidence/d4e12-canonical-tick-20261017/canonical-tick-ui-01-result.json)、[保护核验](../evidence/d4e12-canonical-tick-20261017/protection.json)。同目录保留四轮原始JSON和各父进程硬限回执；只上传合成指标、回执及SHA，不上传任何存档。
+
+原8份存档、16依赖、旧88源码、107份既有日常文件字节未变；中控并行原型与未提交摘要保留。18338/PID61236、18340/PID63160、18342/PID14520保持；本轮测试进程及隔离锁均无残留。未合main/部署/迁移，未调用DSH或外部模型。下一片继续定位历史增长下的重复遍历/审计成本；不复跑私有长档，不宣称日常入口已应用候选。Projects保持In Progress/需修正，自动跟进继续。
 
 ## 17:27 自动跟进：流式相等比较试验已弃用
 

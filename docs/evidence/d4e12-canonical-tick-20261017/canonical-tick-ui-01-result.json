@@ -1,0 +1,223 @@
+{
+  "verdict": "PASS",
+  "coverage": {
+    "workTradeRest": false,
+    "fullIndependentReplay": false,
+    "reopen": false
+  },
+  "environment": {
+    "node": "v24.14.0",
+    "platform": "win32"
+  },
+  "steps": [
+    {
+      "name": "start",
+      "wallMs": 1232.0586,
+      "cpuMs": 500
+    },
+    {
+      "name": "village-person-and-gift",
+      "wallMs": 315.0054,
+      "cpuMs": 171
+    },
+    {
+      "name": "march-pause-replan-forest",
+      "wallMs": 5815.7138,
+      "cpuMs": 2782
+    },
+    {
+      "name": "jrpg-two-turns",
+      "wallMs": 3659.1621999999998,
+      "cpuMs": 1953
+    },
+    {
+      "name": "return-village",
+      "wallMs": 14163.829899999999,
+      "cpuMs": 10765
+    },
+    {
+      "name": "close",
+      "wallMs": 7.036000000000058,
+      "cpuMs": 16
+    }
+  ],
+  "timings": [
+    {
+      "type": "PlayerGiftFood",
+      "wallMs": 117.83370000000014,
+      "fromRevision": 0,
+      "toRevision": 1
+    },
+    {
+      "type": "MarchSet",
+      "wallMs": 148.35940000000005,
+      "fromRevision": 1,
+      "toRevision": 2
+    },
+    {
+      "type": "MarchSet",
+      "wallMs": 181.6217999999999,
+      "fromRevision": 5,
+      "toRevision": 6
+    },
+    {
+      "type": "MarchSet",
+      "wallMs": 184.73450000000003,
+      "fromRevision": 7,
+      "toRevision": 8
+    },
+    {
+      "type": "EncounterBegin",
+      "wallMs": 421.83190000000013,
+      "fromRevision": 18,
+      "toRevision": 19
+    },
+    {
+      "type": "EncounterAction",
+      "wallMs": 1510.6282,
+      "fromRevision": 19,
+      "toRevision": 25
+    },
+    {
+      "type": "EncounterAction",
+      "wallMs": 1719.2343999999994,
+      "fromRevision": 25,
+      "toRevision": 31
+    },
+    {
+      "type": "MarchSet",
+      "wallMs": 769.1573000000008,
+      "fromRevision": 31,
+      "toRevision": 32
+    },
+    {
+      "type": "MarchResume",
+      "wallMs": 901.5033000000003,
+      "fromRevision": 36,
+      "toRevision": 37
+    },
+    {
+      "type": "MarchResume",
+      "wallMs": 984.6504000000023,
+      "fromRevision": 41,
+      "toRevision": 42
+    },
+    {
+      "type": "MarchResume",
+      "wallMs": 1064.8944999999985,
+      "fromRevision": 46,
+      "toRevision": 47
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"dd599989-3df4-4d47-85c1-ab9af3710664\",\"expectedRevision\":0,\"type\":\"PlayerGiftFood\",\"payload\":{\"recipientId\":\"actor-2\"}}"
+    },
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"d46c2882-84cc-4cb4-b8ac-c8932a05b8a6\",\"type\":\"MarchSet\",\"payload\":{\"x\":16,\"y\":7}}"
+    },
+    {
+      "url": "/api/runtime/demo-stop",
+      "body": "{\"apiVersion\":1}"
+    },
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"e67d87ac-1540-4222-ab2e-2f6bab798ce0\",\"type\":\"MarchPause\",\"payload\":{}}"
+    },
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"18ff5860-7878-45cf-be7b-1e2a1888f580\",\"type\":\"MarchSet\",\"payload\":{\"x\":4,\"y\":7}}"
+    },
+    {
+      "url": "/api/runtime/demo-stop",
+      "body": "{\"apiVersion\":1}"
+    },
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"578c0777-b964-4840-bb12-b0a4d087e184\",\"type\":\"MarchPause\",\"payload\":{}}"
+    },
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"52618197-bba5-43df-9f0f-d16ef21aec09\",\"type\":\"MarchSet\",\"payload\":{\"x\":16,\"y\":7}}"
+    },
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"ae31b040-5e03-4cd1-b616-5ab55a069979\",\"expectedRevision\":18,\"type\":\"EncounterBegin\",\"payload\":{}}"
+    },
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"b0cf7780-7f72-4a95-8762-581be5e10290\",\"expectedRevision\":19,\"type\":\"EncounterAction\",\"payload\":{\"encounterId\":\"encounter-1\",\"action\":\"attack\"}}"
+    },
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"ccf0e984-864e-4220-9177-32b279e1680e\",\"expectedRevision\":25,\"type\":\"EncounterAction\",\"payload\":{\"encounterId\":\"encounter-1\",\"action\":\"attack\"}}"
+    },
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"8e0cf059-6c97-492b-99ee-5789ba758804\",\"type\":\"MarchSet\",\"payload\":{\"x\":4,\"y\":7}}"
+    },
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"c96da8f0-dc77-48a3-a9d2-be068af23a87\",\"type\":\"MarchResume\",\"payload\":{}}"
+    },
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"21c23033-af6e-47d0-ac98-8a664d42a226\",\"type\":\"MarchResume\",\"payload\":{}}"
+    },
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"2fc053fc-5ac1-468f-a272-0175de5c4527\",\"type\":\"MarchResume\",\"payload\":{}}"
+    }
+  ],
+  "hashes": {
+    "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+    "service-commit-r1.json": "8ddb6d089d51fa5a6c879ed027c3db707cee7208b6ab72e685277fcd751d8f53",
+    "service-commit-r10.json": "8c79d4f591aa2c9ab8b9ad791ec7748d573af59d3f2efe7f2dc1e48cd23c3d2f",
+    "service-commit-r12.json": "1367a3f23d6112a5cf527714b7b01e5eefe99d12eaebaf558153c0493e9bdf84",
+    "service-commit-r14.json": "098941b4350a5a6a3da4c21fb5d2ede7c99cc2105464a57962435c14df8a95c3",
+    "service-commit-r16.json": "f8f95e083c473a589169a1c85bc248246d8e0ff8d6eb312c84d7ba3ab509b350",
+    "service-commit-r18.json": "dd58f5ebd8cb57a4307730d4749c5271878d0e8f3fe1667dc48797cbcdd07785",
+    "service-commit-r19.json": "055e5e23ffdbc267d622f6fa63370422b9e812e67853981af2400ebb714c0293",
+    "service-commit-r2.json": "41e4c403a35b5f0ddba5cd6102a4844be26a4bd14297ee212d074373e134d91f",
+    "service-commit-r25.json": "b5874482ad1c342df568c72623b1a0e20302536326aeca5ef41bc1c7be2a6641",
+    "service-commit-r31.json": "a47cce630c209917a4c3fc6c78a3e25befa323c95fc1ab5633fb7036d1ef33de",
+    "service-commit-r32.json": "44f0566323949a4ac1ecfde7d5c557f6deccf97c767c56edf40701095e47ebd9",
+    "service-commit-r34.json": "cee4a623044dee9cd0fdef42774a46cbcc7c5b697ae2979fb1a13cbd1bcfde22",
+    "service-commit-r36.json": "e0934ac03536265099c24fcb44b0d4c3d253fa904524abc19a2b2e95bf906768",
+    "service-commit-r37.json": "cd6e8a363f9a959aa7b037758492596856d82f22dd6b278ba3a7ea73556a3fba",
+    "service-commit-r39.json": "afac29e23a343d8d227a6682535f7bc515b0c8db17ee09e44240c671ccd465ff",
+    "service-commit-r4.json": "0eb481cadc5f54e1e7096c9f15b4592b1ce032956eba4c6821f2e6bdb20d9f64",
+    "service-commit-r41.json": "6c9f3bba6c61a5053e6fc50f86a5eb0847f38ea3dcd331eaaf5db4018cc48698",
+    "service-commit-r42.json": "3684defcc8efab417034dbc799419b69629a4e9b52aa2708ed4a17ff0b9ba7a8",
+    "service-commit-r44.json": "343cd6836a8357a24af869fb5122ed38f943665645f4f4ec7c438d4e01b0817d",
+    "service-commit-r46.json": "1a9e5bf8a241cef2c1949fd81d6378031a6c6b0be60af70b5007e418bbf1090f",
+    "service-commit-r47.json": "bfa413d67ae9ec5f4673e9312020c9c2ac12e25b6f8caf9a64a52ca9622b0307",
+    "service-commit-r48.json": "42e2d7788b9187737026d5963fe8cb4f708fa47fb8abde94bae27e1e565efd77",
+    "service-commit-r5.json": "1f21e32e44b07e4f5efa43357716af7515a336a8e8429db54defadb9e58cebcb",
+    "service-commit-r6.json": "746991cf643268fafec37c4dfde57f81abe021b1332da9eda713f52125d6f3b5",
+    "service-commit-r7.json": "44efa0407209f5f09f08c90aa29f1cd23721b9c5003a5db18373a302d1d8aa56",
+    "service-commit-r8.json": "d3092347c01cc8e2908a6612ed81dae412bd080507200973211c0a706f37bbd6"
+  },
+  "projectionSignature": "5b5cf3c0b12a61c213bd36bdefd37bb915382e6b3ac68647268241c039da0cfd",
+  "final": {
+    "revision": 48,
+    "tick": 37,
+    "health": 920,
+    "wallet": 0,
+    "food": 19,
+    "position": {
+      "actorId": "actor-4",
+      "alive": true,
+      "location": "village",
+      "x": 4,
+      "y": 7
+    },
+    "resolution": "win"
+  },
+  "commands": 26,
+  "totalMs": 25228.5443,
+  "remainingLocks": []
+}

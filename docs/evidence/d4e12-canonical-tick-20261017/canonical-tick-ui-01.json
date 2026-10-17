@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/verify-d4e12-demo.mjs",
+    "artifacts/d4e12/canonical-tick-ui-01",
+    "--ui-only"
+  ],
+  "pid": 59008,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 25388.722,
+  "cpuMs": 16328.125,
+  "hardLimitMs": 600000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

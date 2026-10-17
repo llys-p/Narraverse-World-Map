@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-d4e12-canonical-tick.mjs",
+    "candidate",
+    "artifacts/d4e12/canonical-tick-b1"
+  ],
+  "pid": 63452,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 5938.415,
+  "cpuMs": 5984.375,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}
