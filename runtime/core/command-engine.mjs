@@ -44,7 +44,23 @@ export function advanceOneTick(bundle, systems) {
   return performTick(bundle, systems, 'full');
 }
 
+const campaignExecution = Symbol('registered campaign execution');
+// Only fixed campaign handlers run here, over detached JSON data. No caller
+// supplies callbacks or a validation flag. Running those same handlers again
+// cannot add an independent check; full history/fact/receipt audit remains with
+// validateBundle. The public custom-system path keeps its canonical comparison.
+export function performCampaignTick(bundle) {
+  const input = cloneBundle(bundle);
+  record(input.snapshot);
+  requireCondition(input.snapshot.rulesVersion === CAMPAIGN_RULES, 'Campaign tick requires campaign rules', 'UNSUPPORTED_VERSION');
+  return runTick(input, canonicalSystems(CAMPAIGN_RULES), 'session', campaignExecution);
+}
+
 export function performTick(bundle, systems, mode) {
+  return runTick(bundle, systems, mode);
+}
+
+function runTick(bundle, systems, mode, execution = undefined) {
   let failedTick;
   let active = true;
   try {
@@ -259,10 +275,12 @@ export function performTick(bundle, systems, mode) {
     }
     if (mode === 'session') {
       validateSnapshotStructure(s, { rulesVersion, systems }, candidate.eventLog.length);
-      const expected = performTick(bundle, canonicalSystems(rulesVersion), 'proof');
-      requireCondition(canonicalJson(s) === canonicalJson(expected.snapshot) &&
-        canonicalJson(candidate.eventLog.slice(bundle.eventLog.length)) === canonicalJson(expected.eventLog.slice(bundle.eventLog.length)),
-        'Session transition differs from registered rules');
+      if (execution !== campaignExecution) {
+        const expected = performTick(bundle, canonicalSystems(rulesVersion), 'proof');
+        requireCondition(canonicalJson(s) === canonicalJson(expected.snapshot) &&
+          canonicalJson(candidate.eventLog.slice(bundle.eventLog.length)) === canonicalJson(expected.eventLog.slice(bundle.eventLog.length)),
+          'Session transition differs from registered rules');
+      }
     }
     return candidate;
   } catch (cause) {

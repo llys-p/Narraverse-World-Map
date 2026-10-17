@@ -45,7 +45,7 @@ import {
 import { TICKS_PER_DAY } from './simulation-clock.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
 import { createSurvivalWorld, survivalRuntimeHooks } from './motivation-runtime.mjs';
-import { performTick, canonicalSystems } from './command-engine.mjs';
+import { performTick, performCampaignTick, canonicalSystems } from './command-engine.mjs';
 import { canPlayerIntent, playerIntentDuration } from './player-state.mjs';
 import { createRng } from './rng.mjs';
 
@@ -129,6 +129,10 @@ const WORLD_COMMAND_TYPES = Object.freeze([
 
 const FACT_TYPE = 'EncounterCommandResolved';
 const SOURCE_SYSTEM = 'encounter';
+
+function performSceneTick(bundle, systems, profile) {
+  return profile?.rules === 'd-campaign-v1' ? performCampaignTick(bundle) : performTick(bundle, systems, 'session');
+}
 
 const DTO_KEYS = Object.freeze([
   'commandId',
@@ -762,7 +766,7 @@ function executeIntentFor(bundle,dto,profile=null) {
     // L91: the encounter effect lands at the completion tick *before* that tick's
     // settlement, so the world is advanced to completionTick-1 first, the action is
     // applied there, and the final tick settles the post-action world.
-    for (let t = fromTick; t < tick - 1; t += 1) working = performTick(working, systems, 'session');
+    for (let t = fromTick; t < tick - 1; t += 1) working = performSceneTick(working, systems, profile);
     if (playerIsAlive(working.snapshot.world)) {
       const actedWorld = cloneData(working.snapshot.world);
       const playerBefore=playerOf(actedWorld).health,wolfBefore=encounterOf(actedWorld)?.wolfHealth;
@@ -787,15 +791,15 @@ function executeIntentFor(bundle,dto,profile=null) {
         }
       }
       working = { snapshot: cloneSnapshotWith(working.snapshot, actedWorld), eventLog: working.eventLog };
-      working = performTick(working, systems, 'session');
+      working = performSceneTick(working, systems, profile);
     } else {
       // L92: a settlement before completion killed the player — the action never lands,
       // but the clock still advances to the original target tick.
       midFlightDead = true;
-      for (let t = working.snapshot.tick; t < tick; t += 1) working = performTick(working, systems, 'session');
+      for (let t = working.snapshot.tick; t < tick; t += 1) working = performSceneTick(working, systems, profile);
     }
   } else if (plan.outcome === 'succeeded' && !instantCommit) {
-    for (let t = fromTick; t < tick; t += 1) working = performTick(working, systems, 'session');
+    for (let t = fromTick; t < tick; t += 1) working = performSceneTick(working, systems, profile);
   }
 
   const finalSnapshot = working.snapshot;
@@ -1372,7 +1376,7 @@ function hooksValidateHistory(snapshot, events, profile=null) {
     // produced by the registered main loop alone. The one full replay therefore advances the
     // fresh world through the real ticks; the terminal comparison below still owns the whole
     // world, the RNG, the counters and every committed fact byte for byte.
-    for (let t = 0; t < snapshot.tick; t += 1) replay = performTick(replay, systems, 'session');
+    for (let t = 0; t < snapshot.tick; t += 1) replay = performSceneTick(replay, systems, profile);
     requireCondition(replay.eventLog.length === events.length,
       'the committed log holds facts no replayed engine tick can produce', 'INVALID_INPUT');
     for (let seq = 1; seq <= events.length; seq += 1) {
@@ -1406,7 +1410,7 @@ function hooksValidateHistory(snapshot, events, profile=null) {
       'Encounter receipt time anchors are inconsistent or outside the committed clock', 'INVALID_INPUT');
 
     while (replay.snapshot.tick < receipt.fromTick) {
-      replay = performTick(replay, systems, 'session');
+      replay = performSceneTick(replay, systems, profile);
     }
     requireCondition(replay.snapshot.tick === receipt.fromTick &&
       replay.snapshot.revision === receipt.fromRevision,
@@ -1434,7 +1438,7 @@ function hooksValidateHistory(snapshot, events, profile=null) {
   requireCondition(snapshot.tick >= replay.snapshot.tick,
     'The committed terminal clock precedes replayed input time', 'INVALID_INPUT');
   while (replay.snapshot.tick < snapshot.tick) {
-    replay = performTick(replay, systems, 'session');
+    replay = performSceneTick(replay, systems, profile);
   }
   requireCondition(replay.snapshot.tick === snapshot.tick,
     'The replayed terminal clock does not match the committed clock', 'INVALID_INPUT');
