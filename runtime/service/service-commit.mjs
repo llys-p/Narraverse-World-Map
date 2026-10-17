@@ -13,6 +13,10 @@ import { createAuditedBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
 export const MAX_SERVICE_COMMANDS=128,MAX_SERVICE_FILES=128,MAX_PENDING_REQUESTS=16;
+// Certificates never cross the JSON boundary. Only private immutable envelopes
+// made by the two constructors below can reuse an already audited prefix.
+const auditedServiceCommits=new WeakSet();
+function freezeData(value){if(value&&typeof value==='object'){for(const child of Object.values(value))freezeData(child);Object.freeze(value);}return value;}
 export function timeReceipt(dto,toRevision){return {apiVersion:1,commandId:dto.commandId,status:'committed',fromRevision:dto.expectedRevision,toRevision,tick:toRevision};}
 // M2 contract §7 reserved namespaces; M3-4A adds the cognition set. Old profiles keep their
 // existing namespace rules unchanged — format6 rejects all seven internal prefixes on both
@@ -88,8 +92,31 @@ export function validateServiceCommit(envelope){
   requireCondition(isDeepStrictEqual(replay,envelope.bundle),'Service world does not match command replay');
 }
 export async function saveServiceCommit(envelope,directory,io=defaultIo){
-  validateServiceCommit(envelope);
+  if(!auditedServiceCommits.has(envelope))validateServiceCommit(envelope);
   return publishStateFile(envelope,path.join(path.resolve(directory),`service-commit-r${envelope.bundle.snapshot.revision}.json`),io);
+}
+export function createAuditedServiceCommit(envelope){
+  if(auditedServiceCommits.has(envelope))return envelope;
+  validateServiceCommit(envelope);
+  requireCondition(envelope.serviceFormatVersion===11,'Live service certification requires campaign format','UNSUPPORTED_VERSION');
+  const profile=runtimeProfile(envelope.bundle),options={rulesVersion:profile.rulesVersion,systems:profile.systems};
+  const immutable=Object.freeze({serviceFormatVersion:11,anchor:createAuditedBundle(envelope.anchor,options),
+    commands:freezeData(cloneData(envelope.commands)),bundle:createAuditedBundle(envelope.bundle,options)});
+  auditedServiceCommits.add(immutable);return immutable;
+}
+export function advanceAuditedServiceCommit(previous,raw){
+  previous=createAuditedServiceCommit(previous);
+  const dto=validateSceneCommandDto(raw,5);
+  requireCondition(previous.commands.length<MAX_SERVICE_COMMANDS,'Command history exceeds budget','LIMIT_EXCEEDED');
+  requireCondition(dto.expectedRevision===previous.bundle.snapshot.revision,'Service prefix revision mismatch','REVISION_CONFLICT');
+  requireCondition(!previous.commands.some(entry=>entry.dto.commandId===dto.commandId),'Duplicate service command','COMMAND_ID_CONFLICT');
+  // This is the SAME complete deterministic transition used by full replay. Its
+  // returned bundle has passed the full world/history audit, not a shape check.
+  const {bundle,receipt}=transitionAuditedServiceCommand(previous.bundle,dto);
+  const entry=freezeData({dto:cloneData(dto),receipt:cloneData(receipt)});
+  const next=Object.freeze({serviceFormatVersion:11,anchor:previous.anchor,
+    commands:Object.freeze([...previous.commands,entry]),bundle});
+  auditedServiceCommits.add(next);return next;
 }
 export async function loadServiceCommit(file,io=defaultIo){
   requireCondition(!/\.tmp$/i.test(file),'Temporary file is not a service commit','INVALID_SERVICE_COMMIT');
