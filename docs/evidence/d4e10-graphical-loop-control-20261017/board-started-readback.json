@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBZbUE",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZeOY",
+        "body": "D4E10 图形体验接入：已批准并开工。\n\n独立树 D:/Narraverse-World-Map-graphical-loop；分支 codex/world-runtime-graphical-loop；基准 fe66af943069bb62324a82aa1cd43d0b1bfb8212。\n\n地图/村庄真实投影绑定、确认回执战斗表现已实现，单一隔离世界实际页面赠粮→旅行→战斗胜利→返村已完成，根关闭重开验收进行中。仅静态资源白名单服务改动，无 runtime/** 改动。\n\n合同：https://github.com/llys-p/Narraverse-World-Map/blob/codex/world-runtime-control/tasks/D4E10-GRAPHICAL-LOOP-TASK.md\n\nD整体仍进行中，Issue3暂停。未合main、部署、迁移、视觉验收。"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

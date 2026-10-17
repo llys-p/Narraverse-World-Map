@@ -1,4 +1,14 @@
-# 外部探索 A / C 静态接入评审
+# 外部探索 A / B / C 接入评审
+
+## 2026-10-17 补收与 D4E10 接入结果
+
+本节替换当前收件状态；下方初轮表格保留为当时历史。实际已齐A5、B3、C5文件：B新增binding-matrix/README/DELIVERY，C补交DELIVERY且部分文件更新。根按本轮13份实际字节重新登记，接入前后SHA全部一致，不混用初轮九文件的版本。
+
+B锚定D4E9 `fe66af943069bb62324a82aa1cd43d0b1bfb8212`。复核修正：工作receipt的before/after仅wallet/fatigue、AdvanceTime result=null；attackTicks/canBegin已有投影；initialPlayerHealth不是健康上限；全知活动/人口不等于人物知识。现有攻击回执能驱动基本前后状态表现，不能编造逐击命中/暴击/武器伤害。C仍不直接复制MOCK与旧timer/跨树接法。
+
+用户批准后，D4E10在独立树接入A布局/B修正字段/C素材与播放思路，使用本候选已跟踪的五素材原字节。单次真实页面赠粮→旅行→战斗胜利→返村及关闭重开限定PASS，报告与精确证据：[D4E10](https://github.com/llys-p/Narraverse-World-Map/blob/6c60fe2d5b6276660936e1ab55a43385a79737ba/docs/runtime/D4E10-GRAPHICAL-LOOP-RESULT.md)。未运行外部原型、未改原件、未做视觉验收，不把该结果归成原型自身验收。
+
+## 初轮静态评审（历史快照）
 
 2026-10-17（Asia/Shanghai）。结论：**可提取设计与接法，当前不能当作真实业务交付或原样合入。** 本轮只读已有文件及源代码；未启动外部原型、浏览器、服务、第三方模型或新测试，也未修改外部目录、旧绘制源与当前Runtime。
 

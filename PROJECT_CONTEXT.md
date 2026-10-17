@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-17 10:03（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-17 10:56（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -22,7 +22,8 @@
 
 ## 集成基准与实际位置
 
-- 最新限定PASS任务候选：`D:\Narraverse-World-Map-d4-data-fast` / `codex/world-runtime-d4-data-fast`，交付 `b7e5a9e7c131ee79acd017276ff62910a549d5ad` 已推送读回、干净；唯一生产data-contract吸收DeepSeek安全复制并新增单次有界键名转义复用，完整实档链一致。上一轮 `D:\Narraverse-World-Map-d4-canonical` / `codex/world-runtime-d4-canonical` 的已验2936233426e990857f3c88a39ad58623832419fd保持不动、作为可回退基准；旧A/B/模型实验与标签均保留。未main/deploy/启动日常入口，不能称日常性能或D整体通过。
+- 当前最新限定PASS业务树：`D:/Narraverse-World-Map-graphical-loop` / `codex/world-runtime-graphical-loop` @ `6c60fe2d5b6276660936e1ab55a43385a79737ba`（D4E10接D4E9 fe66af9）；[图形体验结果](https://github.com/llys-p/Narraverse-World-Map/blob/6c60fe2d5b6276660936e1ab55a43385a79737ba/docs/runtime/D4E10-GRAPHICAL-LOOP-RESULT.md)。本机双击该树Start-D4E10.cmd可新开18338隔离世界；本轮未启动日常入口。
+- 长历史性能优化历史基准：`D:\Narraverse-World-Map-d4-data-fast` / `codex/world-runtime-d4-data-fast`，交付 `b7e5a9e7c131ee79acd017276ff62910a549d5ad` 已推送读回、干净；唯一生产data-contract吸收DeepSeek安全复制并新增单次有界键名转义复用，完整实档链一致。上一轮 `D:\Narraverse-World-Map-d4-canonical` / `codex/world-runtime-d4-canonical` 的已验2936233426e990857f3c88a39ad58623832419fd保持不动、作为可回退基准；旧A/B/模型实验与标签均保留。未main/deploy/启动日常入口，不能称日常性能或D整体通过。
 - GitHub 分支 `codex/world-runtime-d4-cp1a-review` 已读回A候选 `254c27d143f735dfff2051f561dee129012b5a99`；B分支 `codex/world-runtime-d4-acceptance` 已读回 `f0fa73dd2b41db6fb5aa1c11a221a3fa142ae30a`。存档标签 [checkpoint/d4-functional-20261014](https://github.com/llys-p/Narraverse-World-Map/tree/checkpoint/d4-functional-20261014) 指向B提交，包含A源码祖先；控制文档另在 `codex/world-runtime-control`。均未合入main或部署，ignored原始证据仍保留本地。执行树origin仍指本机clone，本次推送使用精确GitHub URL。
 
 - 控制文档树：`D:\Narraverse-World-Map-control`，分支 `codex/world-runtime-control`；
@@ -32,13 +33,13 @@
 
 ## 活动工作、阻塞与下一步
 
-- D4E10图形体验接入已获用户批准并开工：[冻结任务书](tasks/D4E10-GRAPHICAL-LOOP-TASK.md)。执行树D:/Narraverse-World-Map-graphical-loop，分支codex/world-runtime-graphical-loop，基准fe66af9。采用A布局/B修正绑定/C真实回执表现，不改Runtime规则/存档，当前施工未验收。三路已齐：A5、B3、C5文件；此前静态评审缺件状态为历史。旧18336日常服务现PID48192在监听，加入保护；18325/18327保持。
+- **D4E10图形体验接入限定PASS**：[合同](tasks/D4E10-GRAPHICAL-LOOP-TASK.md)，[结果与27份脱敏证据](https://github.com/llys-p/Narraverse-World-Map/blob/6c60fe2d5b6276660936e1ab55a43385a79737ba/docs/runtime/D4E10-GRAPHICAL-LOOP-RESULT.md)。树D:/Narraverse-World-Map-graphical-loop / codex/world-runtime-graphical-loop，接fe66af9，实现157c5dd、交付6c60fe2d5b6276660936e1ab55a43385a79737ba已推送精确读回/树干净。地图真实位置/地点入口、同版村庄人物、确认回执战斗表现；runtime/**与素材零改。纯3/3、语法7文件、根一次实际页面赠粮1→旅行→遭遇→攻击2胜利→返村，tick36/rev38/HP920/私粮19；全档审计、五投影/活动/六原回执/七档SHA跨重开一致。原八档/原97产品/原日常7文件/外部13/控制5文件与18325 PID2592、18327 PID4432、18336 PID48192保持；子62856正常exit0/无超时/无测试锁或进程。新Start-D4E10.cmd/18338日常目录未创建启动。外观/音效/性能未验，第二次播放中停止未捕获不冒称通过；RED/包装器GBK/选择器问题保留，无重发攻击。无main/deploy/迁移/DSH；本合同完成停止。Projects卡PVTI_lAHOEF9IDs4BmADfzhBZbUE先待验收再Done/已验收读回，最终只读查询首超时45秒、仅重试读取成功；D仍进行中，Issue3暂停。看板证据docs/evidence/d4e10-graphical-loop-control-20261017/。
 
-- **D4E9玩家工作收入闭环限定PASS**：用户确认6小时/工资20/疲劳+150/成功start间隔24小时；[冻结合同](tasks/D4E9-PLAYER-WORK-TASK.md)，[完整结果与脱敏证据](https://github.com/llys-p/Narraverse-World-Map/blob/fe66af943069bb62324a82aa1cd43d0b1bfb8212/docs/runtime/D4E9-PLAYER-WORK-RESULT.md)。执行树 `D:/Narraverse-World-Map-player-work` / `codex/world-runtime-player-work`，接f7bc328，实现a375acc、交付fe66af9已推送并读回SHA完全一致/树干净；新format10/DTO4隔离档。核心8/8、根旧DTO3两成员2/2；同一fresh世界真实页面work/buy2→HTTP Advance107→tick144→close/reopen，工资20/支出20/钱包0/私粮21、工作/日结各1、五投影/活动/原回执/4档SHA一致。原8档/旧93产品/控制5旧文件不变，97候选运行源验收前后匹配；无自有锁/进程，18325 PID2592/18327 PID4432保持。Start-D4E9.cmd新18336日常世界未创建/启动；实际短史重开23.6秒，不宣称性能合格；首败保留，无全量/视觉/长史/迁移/main/deploy/DSH。看板先待验收再Done/已验收逐字段读回；D整体仍进行中，Issue3暂停。
+- **D4E9玩家工作收入闭环限定PASS**：用户确认6小时/工资20/疲劳+150/成功start间隔24小时；[冻结合同](tasks/D4E9-PLAYER-WORK-TASK.md)，[完整结果与脱敏证据](https://github.com/llys-p/Narraverse-World-Map/blob/fe66af943069bb62324a82aa1cd43d0b1bfb8212/docs/runtime/D4E9-PLAYER-WORK-RESULT.md)。执行树 `D:/Narraverse-World-Map-player-work` / `codex/world-runtime-player-work`，接f7bc328，实现a375acc、交付fe66af9已推送并读回SHA完全一致/树干净；新format10/DTO4隔离档。核心8/8、根旧DTO3两成员2/2；同一fresh世界真实页面work/buy2→HTTP Advance107→tick144→close/reopen，工资20/支出20/钱包0/私粮21、工作/日结各1、五投影/活动/原回执/4档SHA一致。原8档/旧93产品/控制5旧文件不变，97候选运行源验收前后匹配；无自有锁/进程，18325 PID2592/18327 PID4432保持。D4E9验收时未启日常世界；D4E10开工已见18336 PID48192运行，保持；实际短史重开23.6秒，不宣称性能合格；首败保留，无全量/视觉/长史/迁移/main/deploy/DSH。看板先待验收再Done/已验收逐字段读回；D整体仍进行中，Issue3暂停。
 
 - **D4E8交易前余额/库存/数量提示限定PASS**：[复核](docs/runtime/D4E8-TRADE-FEEDBACK-REVIEW-20261016.md)，合同2fbb074；树`D:/Narraverse-World-Map-trade-feedback` / `codex/world-runtime-trade-feedback`接06e9222，实现99659a2仅地图html/mjs，服务与78runtime不变。性价比high工人静态检查后停写，root18334单一新世界真实验证0余额/0库存/0、11、小数数量禁用、本地输入不写档、卖4后买2可用、提交中全局禁用、完成余额0后重新禁买；两成功回执对等钱粮、刷新/正常重开五读取/三档与预算一致。0新增suite/0日结，不复跑旧链；原8档/其余91产品/5旧文件和18325 PID2592/18327 PID4432及既有9/3档保持，两自有CLI exit0无锁/残留，默认日常世界未创建。报告/说明/脱敏证据推送，板先待验收再Done/已验收读回；D仍进行中，Issue3暂停，无main/deploy/迁移/DSH/第三方模型。本片完成停止，新收入/NPC规则未实现。
 
-- **外部探索A/C已有产物，静态评审完成、业务未验收**：[评审](docs/runtime/EXTERNAL-EXPLORATION-STATIC-REVIEW-20261017.md)。A=exploration/EXT-A-map-place有5文件含DELIVERY，可借地图/地点布局，静态cast/玩家位置须绑定真实投影；C=EXT-C-battle-playback有4文件缺DELIVERY，需修actions大小写自检、旧屏震timer与固定跨树路径，模拟结果不等于真实战斗。B=EXT-B-view-bindings目录未见。旧绘制7b树有既存改动，六脚本中engine与HEAD字节不同，已记录逐文件散列；当前业务f7bc328干净。未运行原型/视觉/新测试、未改外部/旧源码、未派发/轮询外部模型或建探索板。后续完整交付再做实际绑定，不直接合入。
+- **外部探索A/B/C已齐并完成本轮接入取舍**：[评审及补收勘误](docs/runtime/EXTERNAL-EXPLORATION-STATIC-REVIEW-20261017.md)。当前A5/B3/C5共13文件均只读保护；B锚定D4E9 fe66af9，关键字段错误已纠正；C模拟伤害/错误ACTIONS/不可取消旧timer/跨树依赖未采用。采用A布局、B经核验投影、C素材/播放思路，实现结果见D4E10。旧评审的B未收/C缺DELIVERY为初轮历史；外部原型本身仍未运行或视觉验收，不原样合入、不改旧脏绘制源。
 
 - **D4E7既有交易到日结体验链限定PASS**：[复核](docs/runtime/D4E7-LIVELIHOOD-REVIEW-20261016.md)，合同2cdf3c6含业务前v1.1资金前提勘误；树`D:/Narraverse-World-Map-livelihood-loop` / `codex/world-runtime-livelihood-loop`接1cde888，93份产品源仍同D4E6 c7c2132。初始钱包0/私粮20，真实页面卖4粮→买2粮→唯一Advance144，三成功命令/一次日结，rev/tick146、私粮17、金币0；钱粮对等、ledger与真实日结逐项核对。刷新/正常重开五读取/四档字节与玩家卡四条记录一致；0新增suite运行，不重复旧证据。两CLI exit0、无超时/测试锁/残留，原8档/93产品/5旧文件及18325 PID2592、18327 PID4432的进程与9/3既有档保持，默认日常目录未创建。仅补入口说明，报告/脱敏证据推送，看板先待验收再Done/已验收读回；D仍进行中，Issue3暂停，无main/deploy/迁移/DSH/模型。本片收口停止；未实现NPC新行为/移动或长期生存。
 
