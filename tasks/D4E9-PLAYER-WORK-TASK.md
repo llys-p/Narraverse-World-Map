@@ -1,8 +1,8 @@
 # D4E9：玩家村庄劳务收入闭环（冻结施工合同 v1）
 
-2026-10-17（Asia/Shanghai）。**状态：2026-10-17 用户明确确认“按草案开工”；规则及接口冻结，实施中。** 用户在D4E8交付后要求继续；本草案把此前明确未实现的新增收入来源具体化。新增玩家命令、收入账本和档案版本属于重大玩法/数据语义变化，确认本节参数与边界后才能实施；当前D4E8体验版继续保留。
+2026-10-17（Asia/Shanghai）。**状态：2026-10-17 用户明确确认“按草案开工”；规则及接口冻结，实施中。** 用户在D4E8交付后要求继续；本合同把已确认的收入来源与版本边界具体化；当前D4E8体验版继续保留。
 
-## 给用户：做什么、为什么、需要确认什么
+## 给用户：已确认的功能与边界
 
 现在玩家初始有20份私粮、0金币；只能卖掉已有物资得到钱。NPC虽然有WorkForPay，但它属于NPC私账/日规划，玩家不是society agents，不能借NPC身份执行。
 
@@ -12,8 +12,8 @@
 |---|---|---|
 | 地点/身份 | 村庄，存活actor-4；非遭遇中 | 复用原玩家位置、生死与遭遇占用门 |
 | 工资 | 一班20金币，从公共可用金转给玩家 | 与现行NPC工资20一致；不增加总货币 |
-| 工时 | 36tick，即6小时 | **新增玩法参数，待确认**；1tick=10分钟 |
-| 成功间隔 | 两次成功工作的startTick至少差144tick | **新增玩法参数，待确认**；限制连续刷班 |
+| 工时 | 36tick，即6小时 | **用户已确认的新增玩法参数**；1tick=10分钟 |
+| 成功间隔 | 两次成功工作的startTick至少差144tick | **用户已确认的新增玩法参数**；限制连续刷班 |
 | 疲劳/身体门槛 | 完成时+150；开始/完成时health≥300且fatigue≤700 | 借现有NPC工作疲劳与身体门槛；不把NPC日规划搬给玩家 |
 | 食物产出 | 0；工作只支付工资，不直接给私粮或公粮 | 沿当前scene的workFood0；买粮仍真实扣公仓 |
 | 起始资产与NPC规则 | 私粮20、金币0，NPC旧规则不变 | 不靠改初始资产掩盖收入缺口 |
@@ -30,7 +30,7 @@
 - `encounter-runtime.mjs:738-781`真实推进及目标tick落地次序已冻结；新工作也须在完成tick的日结之前落地，不能仅移动时钟或把UI动画当劳动。
 - `runtime-owner.mjs:121-145`的profile、公开投影与提交路径，`service-commit.mjs:62-85`的完整journal/replay均需显式接新格式；禁止全局放宽版本/字段或新增trusted/skip校验开关。
 
-## 拟冻结规则与协议（确认后转正式合同）
+## 冻结规则与协议
 
 1. **隔离版本**：新opt-in fixture `scene-livelihood-village`、rules `d-scene-livelihood-v1`、serviceFormatVersion10；新memory-config-v7→society-config-v6→player-state-v4配对。既有schema3快照结构可保持，只有新rules配对接受新世界/玩家账本。旧profile、DTO1–3、format1–9和旧存档语义完全保留；旧scene拒绝PlayerWork，不自动升级/迁移/重写八档。
 2. **客户端只提意图**：新profile commandDtoVersion4；请求仍精确 `{version,commandId,expectedRevision,type,payload}`，新增type=`PlayerWork`、payload精确`{}`。客户端不能传工资、工时、疲劳、公共余额、目标actor或日期。新profile的既有旅行/交易/赠粮/遭遇/时间命令也使用DTO4；old profiles继续原版本，不做降级猜测。
@@ -46,7 +46,7 @@
 
 ## 实施切片、所有权与最少验证
 
-确认规则后先冻结最终文件白名单和接口，再分三片推进；目前不创建执行树、不运行样本、不派实现工人。
+规则、文件白名单和接口已冻结；按下方三片顺序集成，页面消费者可独立并行。执行树和所有权见末节。
 
 | 片 | 具体交付 | 验证范围/停止点 |
 |---|---|---|
@@ -58,7 +58,7 @@
 
 高耦合的A/B由中控或适合复杂规则的模型负责；C的既有UI接入可交性价比模型，单写文件分配，根代理独立核验。用户禁止全量/无关/视觉/边角扩展继续有效；新改职责必要的输入边界、权限、持久审计和恢复不能省略。
 
-## 文件影响面与预算（待冻结精确白名单，不是改动授权）
+## 文件影响面与预算（精确白名单见末节）
 
 - 核心：拟新`runtime/core/player-work.mjs`、`scene-livelihood-runtime.mjs`及新fixture；现有player-state、society、memory/motivation profile配对、scene/encounter工厂、command-engine、data-contract、event-log、world-state仅按新分支接入。不得把PlayerWork塞入旧scene规则；共享旧函数若需要参数化，保留旧参数默认值与精确拒绝语义，避免复制整套Runtime或搭通用插件框架。
 - 服务/知识：http-contract、service-commit、runtime-owner、runtime-server的显式新profile与格式门；必要的player/scene/encounter知识派生新profile支持、world-activity。没有新事实的NPC知识仍按本人可知过滤，不输全知bundle给角色。
@@ -74,11 +74,11 @@
 
 ## 保护、同步与停止
 
-本轮只写方案、外部产物静态评审和唯一状态；原八档/当前生产源码/五旧文件/18325及18327服务不动，不运行/上传私档。规划文档推送`codex/world-runtime-control`供用户/GitHub AI读取；看板可登记Todo/待确认，不登记实现进行中或已验收。待用户确认新玩法与版本隔离，再冻结施工合同并开工。D整体仍进行中，Issue3暂停，无main合并、部署、迁移、DSH或第三方模型调用。
+原八档/既有生产树/五旧文件/18325及18327服务不动，不运行/上传私档。任务合同推送`codex/world-runtime-control`；任务实施位于独立分支，看板按实际进展读回。新玩法与版本隔离已获用户确认；实施完成后按本合同独立验收。D整体仍进行中，Issue3暂停，无main合并、部署、迁移、DSH或第三方模型调用。
 
 ## 2026-10-17 用户确认后的施工冻结补充（优先于上文草案流程措辞）
 
-用户已确认6小时、20金币、疲劳+150、成功开始间隔144tick。上文“待确认/未开工/拟”仅保留设计沿革，全部规则和接口按第1–11条冻结。本轮实施树 `D:/Narraverse-World-Map-player-work`，分支 `codex/world-runtime-player-work`，基准 `f7bc32818f25053ef8ae564a389dcd26028bb7a0`。不合入main、不动旧存档/服务。
+用户已确认6小时、20金币、疲劳+150、成功开始间隔144tick。全部规则和接口按第1–11条冻结；原草案单独保留。本轮实施树 `D:/Narraverse-World-Map-player-work`，分支 `codex/world-runtime-player-work`，基准 `f7bc32818f25053ef8ae564a389dcd26028bb7a0`。不合入main、不动旧存档/服务。
 
 精确文件白名单和所有权：
 - 核心执行者：runtime/core/{player-work,scene-livelihood-runtime,player-state,society,hunter,memory-runtime,mind-runtime,motivation-runtime,scene-runtime,encounter-runtime,encounter-session,command-engine,data-contract,experience-state,event-log,world-state}.mjs；runtime/fixtures/scene-livelihood-village.mjs；runtime/knowledge/{player-knowledge,actor-knowledge,encounter-knowledge,scene-knowledge}.mjs；runtime/service/{http-contract,service-commit,runtime-owner,world-activity}.mjs；tests/simulation/player-work-{runtime,service}.test.mjs。只改新profile必要门和hooks，不改变旧profile规则。
@@ -87,4 +87,4 @@
 
 冻结导出：新模块导出LIVELIHOOD_RULES='d-scene-livelihood-v1'、LIVELIHOOD_PROFILE='scene-livelihood-village'；fixture导出createLivelihoodVillage/defaultLivelihoodVillageConfig/livelihoodSystems；新player.actions.work={wage:20,durationTicks:36,fatigueCost:150,nextWorkTick:null或安全整数}。新runtime owner.commandDtoVersion=4及playerWorkAvailable=true。完成工作receipt4 result精确字段沿第7条。
 
-最少运行命令：`node --test --test-concurrency=1 tests/simulation/player-work-runtime.test.mjs`（父硬限180s）；对应service文件（父硬限360s）；`node scripts/verify-d4e9-player-work.mjs`（单动作120s/总600s/退出5s）。只为新命令的版本/账/校验/重演/回滚/恢复运行相关断言，保留首次失败。真实页面DOM和交互采用隔离本机临时服务，无视觉检查。端口18336待启动前查空；新启动包独占artifacts/d4e9-daily/world。无授权旧八档重演、原始文件复制或全量测试。
+最少运行命令：`node --test --test-concurrency=1 tests/simulation/player-work-runtime.test.mjs`（父硬限180s）；对应service文件（父硬限360s）；`node scripts/verify-d4e9-player-work.mjs`（单动作120s/总600s/退出5s）。只为新命令的版本/账/校验/重演/回滚/恢复运行相关断言，保留首次失败。真实页面DOM和交互采用隔离本机临时服务，无视觉检查；脚本加`--browser`时由真实页面执行工作/买粮，后续沿同一档完成日结/重开。端口18336待启动前查空；新启动包独占artifacts/d4e9-daily/world。无授权旧八档重演、原始文件复制或全量测试。

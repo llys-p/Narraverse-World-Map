@@ -1,0 +1,24 @@
+{
+  "implementation": "a375acc283f8b0bf94291078b47b18f6af78be3c",
+  "delivery": "fe66af943069bb62324a82aa1cd43d0b1bfb8212",
+  "branch": "codex/world-runtime-player-work",
+  "remoteReadback": "fe66af943069bb62324a82aa1cd43d0b1bfb8212",
+  "executionTreeClean": true,
+  "boardItem": "PVTI_lAHOEF9IDs4BmADfzhBZCuc",
+  "boardStatus": "Done / 已验收",
+  "D": "In Progress / 进行中",
+  "protection": {
+    "originalEightUnchanged": 8,
+    "oldProductUnchanged": 93,
+    "controlUntrackedUnchanged": 5,
+    "candidateFilesUnchangedDuringAcceptance": 97,
+    "remainingTestLocks": [],
+    "supervisor": {
+      "pid": 52712,
+      "code": 0,
+      "signal": null,
+      "killed": null
+    },
+    "scope": "hashes only for originals; no archive replay/copy/upload"
+  }
+}
