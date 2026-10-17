@@ -1,0 +1,27 @@
+{
+  "sourceCommit": "157c5ddfe57e3ef53c2ee71df2001726b12d5369",
+  "baseCommit": "fe66af943069bb62324a82aa1cd43d0b1bfb8212",
+  "executedCommand": "node scripts/verify-d4e10-graphical-loop.mjs --browser",
+  "runDirectory": "D:\\Narraverse-World-Map-graphical-loop\\artifacts\\d4e10-acceptance\\2026-10-17T02-44-42-522Z",
+  "hardLimits": {
+    "phaseMs": 120000,
+    "totalMs": 600000,
+    "exitConfirmationMs": 5000,
+    "pureTestMs": 30000,
+    "eachSyntaxMs": 15000
+  },
+  "pureTestCommand": "node --test tests/simulation/graphical-playback.test.mjs",
+  "syntaxCommand": "node --check <each file in syntax-final.json>",
+  "testRuns": {
+    "pureRed": 1,
+    "pureGreen": 1,
+    "browserStory": 1,
+    "freshOldDto3ReadOnly": 1
+  },
+  "wrapperNote": {
+    "classification": "EVIDENCE_WRAPPER_PRINT_FAILURE",
+    "reconstructedFromToolResult": true,
+    "detail": "Python console output using GBK could not print Node checkmark characters (UnicodeEncodeError) after recording Node exit0 and raw stdout. No repeated test, evidence files read back independently."
+  },
+  "scope": "Synthetic world only; no original save bodies, browser screenshots, external source copies or credentials in this evidence package."
+}

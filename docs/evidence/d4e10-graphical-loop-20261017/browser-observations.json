@@ -1,0 +1,79 @@
+{
+  "mode": "real browser DOM, interactions and console; no screenshots or visual review",
+  "initialMap": {
+    "revision": 0,
+    "location": "village",
+    "actorId": "actor-4"
+  },
+  "remoteForestViewBeforeTravel": {
+    "revision": 0,
+    "cast": "",
+    "wolfPresent": false,
+    "attackDisabled": true
+  },
+  "initialVillage": {
+    "revision": 0,
+    "cast": "actor-4,actor-1,actor-2,actor-3"
+  },
+  "gift": {
+    "quantity": 1,
+    "recipient": "actor-2",
+    "memoryObserved": true
+  },
+  "afterTravelVillageView": {
+    "revision": 13,
+    "tick": 12,
+    "cast": "",
+    "emptyMessage": true
+  },
+  "forestMarker": {
+    "location": "forest",
+    "label": "玩家 actor-4 当前位置：森林"
+  },
+  "firstAttack": {
+    "revision": 20,
+    "tick": 18,
+    "health": 920,
+    "wolf": 150,
+    "playingObserved": true,
+    "attackDisabled": true,
+    "skipObserved": true
+  },
+  "secondAttack": {
+    "revision": 26,
+    "tick": 24,
+    "health": 920,
+    "wolf": 0,
+    "resolution": "win",
+    "playingWaitMissed": true,
+    "completedObserved": true,
+    "resetAtTerminalObserved": true
+  },
+  "returnedVillage": {
+    "revision": 38,
+    "tick": 36,
+    "health": 920,
+    "food": 19,
+    "cast": "actor-4,actor-1,actor-2,actor-3",
+    "giftMemory": true,
+    "mapMarker": "village"
+  },
+  "restored": {
+    "revision": 38,
+    "mapMarker": "village",
+    "forestPlayback": "idle",
+    "forestCast": "",
+    "wolfPresent": false,
+    "health": 920,
+    "wolfHealth": 0,
+    "villageCast": "actor-4,actor-1,actor-2,actor-3",
+    "giftMemory": true
+  },
+  "consoleWarningsAndErrors": [],
+  "automationIssues": [
+    "Two forest links have the same accessible name; retargeted the observed SVG id.",
+    "Second attack playing selector was missed after 1.4s playback completed. No command repeated.",
+    "Village revision was read on graphic-stage instead of village-cast after correcting selector."
+  ],
+  "tabClosed": true
+}

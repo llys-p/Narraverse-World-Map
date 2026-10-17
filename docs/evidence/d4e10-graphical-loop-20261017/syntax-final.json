@@ -1,0 +1,37 @@
+[
+  {
+    "file": "runtime-map.mjs",
+    "code": 0,
+    "error": ""
+  },
+  {
+    "file": "runtime-village.mjs",
+    "code": 0,
+    "error": ""
+  },
+  {
+    "file": "runtime-encounter.mjs",
+    "code": 0,
+    "error": ""
+  },
+  {
+    "file": "runtime-playback-state.mjs",
+    "code": 0,
+    "error": ""
+  },
+  {
+    "file": "runtime-presentation.mjs",
+    "code": 0,
+    "error": ""
+  },
+  {
+    "file": "runtime-server.mjs",
+    "code": 0,
+    "error": ""
+  },
+  {
+    "file": "scripts/verify-d4e10-graphical-loop.mjs",
+    "code": 0,
+    "error": ""
+  }
+]

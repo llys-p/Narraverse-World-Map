@@ -1,0 +1,32 @@
+[
+  {
+    "file": "runtime-map.mjs",
+    "code": 0,
+    "stderr": ""
+  },
+  {
+    "file": "runtime-village.mjs",
+    "code": 0,
+    "stderr": ""
+  },
+  {
+    "file": "runtime-encounter.mjs",
+    "code": 0,
+    "stderr": ""
+  },
+  {
+    "file": "runtime-playback-state.mjs",
+    "code": 0,
+    "stderr": ""
+  },
+  {
+    "file": "runtime-presentation.mjs",
+    "code": 0,
+    "stderr": ""
+  },
+  {
+    "file": "runtime-server.mjs",
+    "code": 0,
+    "stderr": ""
+  }
+]

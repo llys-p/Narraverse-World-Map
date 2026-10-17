@@ -1,0 +1,11 @@
+✔ place cast never moves player or reveals other-location actors (0.9718ms)
+✔ playback uses confirmed matching command and same revision only; no invented damage fields (0.2771ms)
+✔ cancel/new revision invalidates captured callbacks; duplicate receipts do not replay (0.1502ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 68.7291

@@ -1,0 +1,335 @@
+{
+  "verdict": "PASS",
+  "steps": [
+    {
+      "name": "fresh-open",
+      "wallMs": 204.27210000000002
+    },
+    {
+      "name": "browser-gift",
+      "wallMs": 35363.219099999995
+    },
+    {
+      "name": "browser-travel",
+      "wallMs": 9898.6368
+    },
+    {
+      "name": "browser-begin",
+      "wallMs": 15007.887000000002
+    },
+    {
+      "name": "browser-first-attack",
+      "wallMs": 113701.196
+    },
+    {
+      "name": "browser-second-attack",
+      "wallMs": 33347.2237
+    },
+    {
+      "name": "browser-return",
+      "wallMs": 30017.57190000001
+    },
+    {
+      "name": "full-file-audit",
+      "wallMs": 7897.935700000002
+    },
+    {
+      "name": "close",
+      "wallMs": 6.658500000019558
+    },
+    {
+      "name": "reopen",
+      "wallMs": 8342.087100000004
+    },
+    {
+      "name": "browser-restored-read-only",
+      "wallMs": 41505.70299999998
+    },
+    {
+      "name": "reclose",
+      "wallMs": 2.2789000000339
+    },
+    {
+      "name": "old-profile-read-only",
+      "wallMs": 155.1180999999633
+    }
+  ],
+  "environment": {
+    "node": "v24.14.0",
+    "platform": "win32"
+  },
+  "projectionSignature": "4fc83f2deb39cd43fd257a67ccd6fa34099f6e35c6418e6f0612121fb883c5ba",
+  "hashes": {
+    "service-commit-r0.json": "b9c7576b3bb2813da480bfc34de20d286b52c0afb1516c1a8989a74fcfc9bafd",
+    "service-commit-r1.json": "a7ad112b7624e311733151a15c1d7bdf5194fd4bd57b8da318bc7d4d18c0a147",
+    "service-commit-r13.json": "d4bb83f483651e09c64a3db72016ea29035b9b3ab63a091c38e82eda0208e4e1",
+    "service-commit-r14.json": "b4b2a6c54983ea29221e8404d9bfe56e724c4b632b70207c36192227a92a5dd5",
+    "service-commit-r20.json": "0e20707b866b478c2e6285e90bbeb1851044bbcb315f39147256e50536a022b8",
+    "service-commit-r26.json": "a0b2f70b64923b34741714854294ea7466fe8acae834b3b2b85703968d6744f4",
+    "service-commit-r38.json": "e7b8be933ade1df21fbfcc3f184cf2765f450f457e114993d7d4968c56056d50"
+  },
+  "receipts": [
+    {
+      "apiVersion": 1,
+      "commandId": "74fffe5d-39ff-409b-bf31-f0bf13002ea0",
+      "durationTicks": 0,
+      "fromRevision": 0,
+      "fromTick": 0,
+      "outcome": "succeeded",
+      "receiptVersion": 4,
+      "result": {
+        "donorId": "actor-4",
+        "product": "food",
+        "quantity": 1,
+        "reasonCode": null,
+        "recipientId": "actor-2",
+        "sourceEventSeq": 1
+      },
+      "status": "committed",
+      "tick": 0,
+      "toRevision": 1,
+      "type": "PlayerGiftFood"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "19d896e1-9c5f-4ef3-a309-b8b105d47a36",
+      "durationTicks": 12,
+      "fromRevision": 1,
+      "fromTick": 0,
+      "outcome": "succeeded",
+      "receiptVersion": 4,
+      "result": {
+        "actorId": "actor-4",
+        "after": {
+          "communalGold": 1000,
+          "fatigue": 100,
+          "inventory": {
+            "food": 19,
+            "herbs": 0
+          },
+          "location": "forest",
+          "publicStock": {
+            "food": 540,
+            "herbs": 20
+          },
+          "wallet": 0
+        },
+        "amount": 0,
+        "before": {
+          "communalGold": 1000,
+          "fatigue": 0,
+          "inventory": {
+            "food": 19,
+            "herbs": 0
+          },
+          "location": "village",
+          "publicStock": {
+            "food": 540,
+            "herbs": 20
+          },
+          "wallet": 0
+        },
+        "endTick": 12,
+        "product": null,
+        "quantity": 0,
+        "startTick": 0,
+        "type": "PlayerTravel",
+        "unitPrice": 0
+      },
+      "status": "committed",
+      "tick": 12,
+      "toRevision": 13,
+      "type": "PlayerTravel"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "b057da7c-da43-4c12-af64-ae7c5be573f8",
+      "durationTicks": 0,
+      "fromRevision": 13,
+      "fromTick": 12,
+      "outcome": "succeeded",
+      "receiptVersion": 4,
+      "result": {
+        "action": "begin",
+        "actorId": "actor-4",
+        "after": {
+          "availableWolves": 13,
+          "battleDeaths": 0,
+          "playerAlive": true,
+          "playerHealth": 1000,
+          "reservedWolves": 1,
+          "resolution": null,
+          "status": "active",
+          "tick": 12,
+          "totalLivingWolves": 14,
+          "wolfHealth": 300
+        },
+        "before": {
+          "availableWolves": 14,
+          "battleDeaths": 0,
+          "playerAlive": true,
+          "playerHealth": 1000,
+          "reservedWolves": 0,
+          "resolution": null,
+          "status": "none",
+          "tick": 12,
+          "totalLivingWolves": 14,
+          "wolfHealth": null
+        },
+        "encounterId": "encounter-1",
+        "reasonCode": null
+      },
+      "status": "committed",
+      "tick": 12,
+      "toRevision": 14,
+      "type": "EncounterBegin"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "37465759-8307-41c6-94f1-2541a5e4a736",
+      "durationTicks": 6,
+      "fromRevision": 14,
+      "fromTick": 12,
+      "outcome": "succeeded",
+      "receiptVersion": 4,
+      "result": {
+        "action": "attack",
+        "actorId": "actor-4",
+        "after": {
+          "availableWolves": 13,
+          "battleDeaths": 0,
+          "playerAlive": true,
+          "playerHealth": 920,
+          "reservedWolves": 1,
+          "resolution": null,
+          "status": "active",
+          "tick": 18,
+          "totalLivingWolves": 14,
+          "wolfHealth": 150
+        },
+        "before": {
+          "availableWolves": 13,
+          "battleDeaths": 0,
+          "playerAlive": true,
+          "playerHealth": 1000,
+          "reservedWolves": 1,
+          "resolution": null,
+          "status": "active",
+          "tick": 12,
+          "totalLivingWolves": 14,
+          "wolfHealth": 300
+        },
+        "encounterId": "encounter-1",
+        "reasonCode": null
+      },
+      "status": "committed",
+      "tick": 18,
+      "toRevision": 20,
+      "type": "EncounterAction"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "177a5b4a-a255-43ff-932a-b7bb7518ddad",
+      "durationTicks": 6,
+      "fromRevision": 20,
+      "fromTick": 18,
+      "outcome": "succeeded",
+      "receiptVersion": 4,
+      "result": {
+        "action": "attack",
+        "actorId": "actor-4",
+        "after": {
+          "availableWolves": 13,
+          "battleDeaths": 1,
+          "playerAlive": true,
+          "playerHealth": 920,
+          "reservedWolves": 0,
+          "resolution": "win",
+          "status": "closed",
+          "tick": 24,
+          "totalLivingWolves": 13,
+          "wolfHealth": 0
+        },
+        "before": {
+          "availableWolves": 13,
+          "battleDeaths": 0,
+          "playerAlive": true,
+          "playerHealth": 920,
+          "reservedWolves": 1,
+          "resolution": null,
+          "status": "active",
+          "tick": 18,
+          "totalLivingWolves": 14,
+          "wolfHealth": 150
+        },
+        "encounterId": "encounter-1",
+        "reasonCode": null
+      },
+      "status": "committed",
+      "tick": 24,
+      "toRevision": 26,
+      "type": "EncounterAction"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "ebf95df4-80a2-4bb1-b6c9-15b37d4b14ba",
+      "durationTicks": 12,
+      "fromRevision": 26,
+      "fromTick": 24,
+      "outcome": "succeeded",
+      "receiptVersion": 4,
+      "result": {
+        "actorId": "actor-4",
+        "after": {
+          "communalGold": 1000,
+          "fatigue": 200,
+          "inventory": {
+            "food": 19,
+            "herbs": 0
+          },
+          "location": "village",
+          "publicStock": {
+            "food": 540,
+            "herbs": 20
+          },
+          "wallet": 0
+        },
+        "amount": 0,
+        "before": {
+          "communalGold": 1000,
+          "fatigue": 100,
+          "inventory": {
+            "food": 19,
+            "herbs": 0
+          },
+          "location": "forest",
+          "publicStock": {
+            "food": 540,
+            "herbs": 20
+          },
+          "wallet": 0
+        },
+        "endTick": 36,
+        "product": null,
+        "quantity": 0,
+        "startTick": 24,
+        "type": "PlayerTravel",
+        "unitPrice": 0
+      },
+      "status": "committed",
+      "tick": 36,
+      "toRevision": 38,
+      "type": "PlayerTravel"
+    }
+  ],
+  "final": {
+    "tick": 36,
+    "revision": 38,
+    "health": 920,
+    "food": 19,
+    "location": "village",
+    "wolfHealth": 0,
+    "resolution": "win"
+  },
+  "remainingLocks": []
+}
