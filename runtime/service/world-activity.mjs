@@ -1,5 +1,6 @@
 import { cloneData, requireCondition } from '../core/data-contract.mjs';
 import { canonicalJson } from '../core/data-contract.mjs';
+import {LIVELIHOOD_RULES} from '../core/scene-livelihood-runtime.mjs';
 import { SCENE_RULES } from '../core/scene-runtime.mjs';
 import { validateBundle } from '../core/world-state.mjs';
 import { runtimeProfile } from './http-contract.mjs';
@@ -12,7 +13,7 @@ const STATUS = new Set(['succeeded','rejected','no-action','settled','waiting-re
 const ACTION_NAMES = Object.freeze({
   WorkForPay:'做工', Hunt:'狩猎', Rest:'休息', BuyFood:'买粮', BuyMedicine:'买药',
   UseMedicine:'用药', SellMedicine:'卖药', NoAction:'未行动', PlayerGiftFood:'赠粮',
-  PlayerTravel:'旅行', PlayerRest:'休整', PlayerBuy:'买入', PlayerSell:'卖出',
+  PlayerWork:'村庄工作', PlayerTravel:'旅行', PlayerRest:'休整', PlayerBuy:'买入', PlayerSell:'卖出',
   EncounterBegin:'遭遇开始', EncounterAction:'遭遇行动', EncounterCancel:'结束遭遇', AdvanceTime:'推进时间',
   attack:'攻击', flee:'逃跑',
 });
@@ -78,6 +79,7 @@ function commandSummary(dto, receipt, actorName) {
   }
   if (dto?.type === 'PlayerTravel' && ['village','forest'].includes(result?.before?.location) && ['village','forest'].includes(result?.after?.location))
     return `${actorName}旅行：${result.before.location === 'village' ? '村庄' : '森林'}→${result.after.location === 'village' ? '村庄' : '森林'}，已完成`;
+  if(dto?.type==='PlayerWork'&&receipt?.outcome==='succeeded'&&integer(result?.wage))return `${actorName}完成村庄工作（金币+${result.wage}，疲劳+${result.after.fatigue-result.before.fatigue}）`;
   if (dto?.type === 'AdvanceTime' && integer(receipt?.fromTick) && integer(receipt?.tick) && integer(receipt?.durationTicks))
     return `${actorName}推进时间：tick ${receipt.fromTick}→${receipt.tick}（${receipt.durationTicks}刻）`;
   if (['EncounterBegin','EncounterAction','EncounterCancel'].includes(dto?.type)) {
@@ -101,7 +103,7 @@ function commandSummary(dto, receipt, actorName) {
 /** A bounded, detached developer observation over the fully validated scene EventLog. */
 export function projectWorldActivity(bundle) {
   const profile = runtimeProfile(bundle);
-  requireCondition(profile.rulesVersion === SCENE_RULES && profile.serviceFormatVersion === 9,
+  requireCondition([SCENE_RULES,LIVELIHOOD_RULES].includes(profile.rulesVersion) && [9,10].includes(profile.serviceFormatVersion),
     'World activity requires the scene profile', 'UNSUPPORTED_VERSION');
   validateBundle(bundle, {rulesVersion:profile.rulesVersion,systems:profile.systems});
 
@@ -143,7 +145,8 @@ export function projectWorldActivity(bundle) {
       if (!status) continue;
       const result = receipt.result;
       let location = null, locationEvidence = 'unknown';
-      if (status === 'succeeded' && dto.type === 'PlayerTravel' && ['village','forest'].includes(result?.after?.location)) {
+      if(status==='succeeded'&&dto.type==='PlayerWork'&&result?.location==='village'){location='village';locationEvidence='event-location';}
+      else if (status === 'succeeded' && dto.type === 'PlayerTravel' && ['village','forest'].includes(result?.after?.location)) {
         location = result.after.location; locationEvidence = 'travel-receipt';
       } else if (status === 'succeeded' && typeof dto.type === 'string' && dto.type.startsWith('Encounter')) {
         // A fully replay-validated successful encounter command is admitted only in the

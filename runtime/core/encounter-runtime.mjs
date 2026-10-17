@@ -352,7 +352,7 @@ function makeReceipt(dto, base, outcome, result) {
     fromRevision: base.fromRevision,
     fromTick: base.fromTick,
     outcome,
-    receiptVersion: RECEIPT_VERSION,
+    receiptVersion: dto.version===4?4:RECEIPT_VERSION,
     result,
     status: 'committed',
     tick: base.tick,
@@ -729,7 +729,7 @@ function executeIntentFor(bundle,dto,profile=null) {
   // Step 4 — candidate audit (pure).
   const fromTick = snapshot.tick;
   const fromRevision = snapshot.revision;
-  const plan = profile&&dto.type==='PlayerGiftFood'?profile.auditGift(world):auditIntent(dto,world);
+  const plan = profile&&dto.type==='PlayerWork'?profile.auditWork(world,fromTick):profile&&dto.type==='PlayerGiftFood'?profile.auditGift(world):auditIntent(dto,world);
   if(profile){
     requireCondition(snapshot.pendingCommands.length<16,'Scene pending queue budget exhausted','LIMIT_EXCEEDED');
     requireCondition(fromTick<=Number.MAX_SAFE_INTEGER-plan.durationTicks&&fromRevision<=Number.MAX_SAFE_INTEGER-Math.max(1,plan.durationTicks)&&snapshot.instantCommits<Number.MAX_SAFE_INTEGER,'Scene clock/revision budget exhausted','LIMIT_EXCEEDED');
@@ -835,7 +835,8 @@ function executeIntentFor(bundle,dto,profile=null) {
   nextWorld.encounterModel.inputHistory.push({ dto: historyDto, receipt: historyReceipt });
 
   const progressionCauses = collectProgressionCauses(working.eventLog, initialEventCount);
-  let causationEventSeqs = giftFact?[giftFact.eventSeq]:[];
+  const workFact=dto.type==='PlayerWork'&&outcome==='succeeded'?working.eventLog.find(e=>e.type==='PlayerWorkCommitted'&&e.commandId===commandId):null;
+  let causationEventSeqs = giftFact?[giftFact.eventSeq]:workFact?[workFact.eventSeq]:[];
   if ((dto.type === TYPE_ACTION || dto.type === TYPE_CANCEL) &&
     isPlainObject(nextWorld.encounterModel.encounter)) {
     const beginCommandId = nextWorld.encounterModel.encounter.beginCommandId;
@@ -912,7 +913,7 @@ function describeActionsFor(bundle,profile=null) {
     canBegin: active === null && alive && inForest,
     canAct: active !== null && alive,
     canCancel: active !== null && alive,
-    blockedWorldActions: active !== null ? [...BLOCKED_WORLD_ACTIONS] : [],
+    blockedWorldActions: active !== null ? [...BLOCKED_WORLD_ACTIONS,...(profile?.auditWork?['PlayerWork']:[])] : [],
     encounterId: active !== null ? active.encounterId : null,
   };
 }
@@ -1455,8 +1456,8 @@ export function validateEncounterWorldState(world,snapshotContext={}){return val
 export function validateSceneEncounterWorldState(world,snapshotContext={}){return validateEncounterWorldStateFor(world,snapshotContext,'encounter-runtime-v2');}
 // Scene opt-in shares the encounter engine. CP1c has no accepted external commands.
 export function createSceneEncounterRuntimeHooks(baseHooks,scenePolicy){
- const profile=()=>({...scenePolicy,rules:'d-scene-survival-v1',fixture:'scene-survival-village',
-  systems:canonicalSystems('d-scene-survival-v1'),createWorld:hooks.createWorld,
+ const profile=()=>({...scenePolicy,rules:scenePolicy.rules??'d-scene-survival-v1',fixture:scenePolicy.fixture??'scene-survival-village',
+  systems:canonicalSystems(scenePolicy.rules??'d-scene-survival-v1'),createWorld:hooks.createWorld,
   validateWorld:validateSceneEncounterWorldState,executeIntent:hooks.executeIntent});
  const hooks={
   executeIntent:(bundle,dto)=>executeIntentFor(bundle,dto,profile()),

@@ -2,7 +2,7 @@ import { renderActivityRows, readActivity, renderPersonTracking } from './runtim
 const byId=id=>document.getElementById(id),status=byId('connection'),button=byId('refresh');let last=null,lastCapabilities=null,lastEncounter=null,lastActivity=null,lastActivityGroup=null;
 const occupations={chief:'村长',hunter:'猎人',merchant:'商人',player:'玩家'};
 const advance=byId('advance'),ticks=byId('advance-ticks'),commandStatus=byId('command-status');let writable=false,pending=null,submitting=false,lastPlayer=null,actionsAvailable=false;
-const actionControls=['travel-destination','travel-submit','rest-submit','trade-product','trade-quantity','buy-submit','sell-submit'];
+const actionControls=['travel-destination','travel-submit','rest-submit','work-submit','trade-product','trade-quantity','buy-submit','sell-submit'];
 function tradeBaseDisabled(){return !writable || !actionsAvailable || !lastPlayer?.self.identity.alive || submitting || pending!==null || lastEncounter?.encounter?.status==='active' || !readingsFresh || lastPlayer?.actions?.canTrade!==true;}
 function updateTradeFeedback(){const note=byId('trade-estimate'),product=byId('trade-product').value,quantity=byId('trade-quantity').valueAsNumber,actions=lastPlayer?.actions,self=lastPlayer?.self;
   const tradeInputs=['trade-product','trade-quantity','buy-submit','sell-submit'],baseDisabled=tradeBaseDisabled();
@@ -27,6 +27,21 @@ function updateTradeFeedback(){const note=byId('trade-estimate'),product=byId('t
 function controls(){const encounterActive=lastEncounter?.encounter?.status==='active';advance.disabled=!writable || !last || submitting || encounterActive || !readingsFresh;ticks.disabled=submitting || pending!==null || encounterActive || !readingsFresh;advance.textContent=pending?'重试同一请求':'推进世界时间';
   byId('encounter-block-note').hidden=!encounterActive;if(encounterActive)byId('encounter-block-note').textContent='遭遇进行中，旅行、休整、交易和世界时间操作已暂停。';
   for(const id of actionControls)byId(id).disabled=!writable || !actionsAvailable || !lastPlayer?.self.identity.alive || submitting || pending!==null || encounterActive || !readingsFresh;
+  const work=lastPlayer?.actions?.work,self=lastPlayer?.self;
+  const workEnabled=lastCapabilities?.playerWorkAvailable===true && lastCapabilities?.commandDtoVersion===4 &&
+    work && Object.keys(work).length===4 && ['wage','durationTicks','fatigueCost','nextWorkTick'].every(key=>Object.hasOwn(work,key)) &&
+    work.wage===20 && work.durationTicks===36 && work.fatigueCost===150 &&
+    (work.nextWorkTick===null || (Number.isSafeInteger(work.nextWorkTick) && work.nextWorkTick>=0));
+  const workButton=byId('work-submit'),workNote=byId('work-note');
+  workButton.hidden=!workEnabled;workNote.hidden=!workEnabled;
+  if(workEnabled){
+    const encounterBusy=encounterActive, cooling=work.nextWorkTick!==null && last.tick<work.nextWorkTick;
+    const reason=!self?.identity?.alive?'玩家已死亡':self.identity.location!=='village'?'需要在村庄工作':
+      !Number.isSafeInteger(self.health)||self.health<300?'生命值需至少300':
+      !Number.isSafeInteger(self.fatigue)||self.fatigue>700?'疲劳需不高于700':encounterBusy?'遭遇进行中':cooling?`冷却中，最早可在第 ${work.nextWorkTick} tick 开始`:'';
+    workNote.textContent=reason?`工作暂不可用：${reason}。公共付款能力由世界服务裁决。`:'村庄劳务：工作6小时，预计收入20金币；开始时需生命值≥300、疲劳≤700，每次成功工作间隔至少144 tick。';
+    workButton.disabled=!writable || !actionsAvailable || !readingsFresh || submitting || pending!==null || Boolean(reason);
+  }
   if(lastPlayer?.actions && !lastPlayer.actions.canTrade)for(const id of ['trade-product','trade-quantity','buy-submit','sell-submit'])byId(id).disabled=true;
   updateTradeFeedback();
 }
@@ -106,10 +121,18 @@ async function refresh(){
     if(capabilities.apiVersion!==1 || typeof capabilities.playerAvailable!=='boolean')throw new Error('未知世界能力');
     const encounterAvailable=capabilities.encounterAvailable===true;
     if(capabilities.activityAvailable!==undefined && typeof capabilities.activityAvailable!=='boolean')throw new Error('未知世界活动能力');
-    if(encounterAvailable && (capabilities.commandDtoVersion!==3 || capabilities.playerAvailable!==true))throw new Error('未知遭遇能力');
+    if(capabilities.commandDtoVersion!==undefined && ![1,2,3,4].includes(capabilities.commandDtoVersion))throw new Error('未知命令版本');
+    if(capabilities.playerWorkAvailable!==undefined && typeof capabilities.playerWorkAvailable!=='boolean')throw new Error('未知工作能力');
+    if(capabilities.commandDtoVersion===4 && capabilities.playerWorkAvailable!==true)throw new Error('DTO4缺少工作能力');
+    if(capabilities.playerWorkAvailable===true && capabilities.commandDtoVersion!==4)throw new Error('工作能力版本不匹配');
+    if(encounterAvailable && (![3,4].includes(capabilities.commandDtoVersion) || capabilities.playerAvailable!==true))throw new Error('未知遭遇能力');
     const {dto,player,encounter}=await readPair(capabilities.playerAvailable,encounterAvailable);
     const activity=await readActivity(capabilities,dto);
     if(capabilities.playerActionsAvailable===true && !player?.actions)throw new Error('动作读数缺失');
+    if(capabilities.playerWorkAvailable===true){const work=player?.actions?.work;
+      if(!work || Object.keys(work).length!==4 || !['wage','durationTicks','fatigueCost','nextWorkTick'].every(key=>Object.hasOwn(work,key)) ||
+        work.wage!==20 || work.durationTicks!==36 || work.fatigueCost!==150 ||
+        !(work.nextWorkTick===null || (Number.isSafeInteger(work.nextWorkTick)&&work.nextWorkTick>=0)))throw new Error('工作报价格式不符');}
     if(encounterAvailable && (!encounter || encounter.encounterViewVersion!==1))throw new Error('遭遇读数缺失');
     if(last && dto.revision<last.revision)throw Object.assign(new Error('忽略迟到读数'),{code:'READING_CONFLICT'});
     render(dto,capabilities.sceneAvailable===true,player?.self?.identity?.location);renderPlayer(player,capabilities.sceneAvailable===true);renderActions(player);renderActivity(activity,dto);byId('activity-stale').hidden=true;byId('activity-panel').dataset.stale='false';last=dto;lastPlayer=player;lastEncounter=encounter;lastCapabilities=capabilities;lastActivity=activity;
@@ -127,6 +150,20 @@ async function refresh(){
   finally{refreshing=false;button.disabled=false;controls();}
 }
 function validWorldActionResult(result,dto,receipt){
+  if(dto.type==='PlayerWork'){
+    const fields=['actorId','type','startTick','endTick','wage','location','nextWorkTick','before','after'];
+    const state=value=>value && typeof value==='object' && !Array.isArray(value) && Object.keys(value).length===2 &&
+      ['wallet','fatigue'].every(key=>Object.hasOwn(value,key)) && Number.isSafeInteger(value.wallet) && value.wallet>=0 &&
+      Number.isSafeInteger(value.fatigue) && value.fatigue>=0 && value.fatigue<=1000;
+    const resultOK=result && typeof result==='object' && !Array.isArray(result) && Object.keys(result).length===fields.length &&
+      fields.every(key=>Object.hasOwn(result,key)) && result.actorId==='actor-4' && result.type==='PlayerWork' &&
+      result.startTick===receipt.fromTick && result.endTick===receipt.tick && result.wage===20 && result.location==='village' &&
+      Number.isSafeInteger(result.startTick+144) && Number.isSafeInteger(result.nextWorkTick) && result.nextWorkTick===result.startTick+144 &&
+      state(result.before) && state(result.after) && result.after.wallet===result.before.wallet+20 &&
+      Number.isSafeInteger(result.before.wallet+20) && result.before.fatigue<=700 && result.after.fatigue===result.before.fatigue+150 &&
+      Number.isSafeInteger(result.before.fatigue+150);
+    return receipt.durationTicks===36 && resultOK;
+  }
   const fields=['actorId','type','startTick','endTick','product','quantity','unitPrice','amount','before','after'];
   const validState=row=>row && Object.keys(row).length===6 && ['location','fatigue','wallet','inventory','publicStock','communalGold'].every(key=>Object.hasOwn(row,key)) &&
     ['village','forest'].includes(row.location) && [row.fatigue,row.wallet,row.communalGold].every(n=>Number.isSafeInteger(n)&&n>=0) &&
@@ -143,16 +180,17 @@ function validWorldActionResult(result,dto,receipt){
 }
 function validReceipt(receipt,dto){
   if(!receipt || typeof receipt!=='object' || Array.isArray(receipt))return false;
-  if(dto.version===3){
+  if(dto.version===3 || dto.version===4){
     const fields=['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result'];
-    if(Object.keys(receipt).length!==fields.length || !fields.every(key=>Object.hasOwn(receipt,key)) || receipt.apiVersion!==1 || receipt.receiptVersion!==3 ||
+    if(Object.keys(receipt).length!==fields.length || !fields.every(key=>Object.hasOwn(receipt,key)) || receipt.apiVersion!==1 || receipt.receiptVersion!==dto.version ||
       receipt.commandId!==dto.commandId || receipt.status!=='committed' || receipt.fromRevision!==dto.expectedRevision || receipt.type!==dto.type ||
       !Number.isSafeInteger(receipt.fromRevision) || !Number.isSafeInteger(receipt.toRevision) || !Number.isSafeInteger(receipt.fromTick) ||
       !Number.isSafeInteger(receipt.tick) || !Number.isSafeInteger(receipt.durationTicks) || receipt.durationTicks<0 || receipt.fromTick>receipt.fromRevision ||
       receipt.tick!==receipt.fromTick+receipt.durationTicks || receipt.toRevision!==receipt.fromRevision+(receipt.durationTicks===0?1:receipt.durationTicks) ||
       !['succeeded','rejected'].includes(receipt.outcome))return false;
     const actions=lastPlayer?.actions;
-    const duration=dto.type==='AdvanceTime'?dto.payload.ticks:actions?.[dto.type==='PlayerTravel'?'travelTicks':dto.type==='PlayerRest'?'restTicks':'tradeTicks'];
+    const duration=dto.type==='AdvanceTime'?dto.payload.ticks:dto.type==='PlayerWork'?actions?.work?.durationTicks:
+      actions?.[dto.type==='PlayerTravel'?'travelTicks':dto.type==='PlayerRest'?'restTicks':'tradeTicks'];
     if(!Number.isSafeInteger(duration)||duration<1)return false;
     if(receipt.outcome==='rejected'){
       const result=receipt.result;
@@ -195,20 +233,23 @@ function validReceipt(receipt,dto){
       commandStatus.dataset.state='error';commandStatus.textContent=pending?'请求未能完成，可重试同一请求。':'请求被拒绝，请检查输入或重新读取世界。';return;}
     const receipt=await response.json();
     if(!validReceipt(receipt,pending))throw new Error('Invalid receipt');
-    const rejected=receipt.outcome==='rejected',action=pending.version===2||pending.version===3;
+    const rejected=receipt.outcome==='rejected',action=pending.version===2||pending.version===3||pending.version===4;
     const rejectionCode=receipt.result?.code;
     if(rejected && rejectionCode)commandStatus.textContent='动作被世界拒绝（'+rejectionCode+'），正在读取新的世界读数。';
     pending=null;commandStatus.dataset.state=rejected?'error':'ready';await refresh();
-    commandStatus.textContent=rejected && rejectionCode?'动作被世界拒绝（'+rejectionCode+'），正在读取新的世界读数。':rejected?'时间已推进，动作未完成。正在读取新的世界读数。':
+    const result=receipt.type==='PlayerWork' && !rejected?receipt.result:null;
+    commandStatus.textContent=result?`工作已完成：工资 ${result.wage} 金币；本人钱包 ${result.before.wallet} → ${result.after.wallet}，疲劳 ${result.before.fatigue} → ${result.after.fatigue}。读数已更新。`:
+      rejected && rejectionCode?'动作被世界拒绝（'+rejectionCode+'），正在读取新的世界读数。':rejected?'时间已推进，动作未完成。正在读取新的世界读数。':
       action?'动作已完成，正在读取新的世界读数。':'时间已提交，正在读取新的世界读数。';
   }catch{commandStatus.dataset.state='error';commandStatus.textContent='连接中断，结果尚未确认。重试同一请求不会重复执行。';}
   finally{submitting=false;controls();}
 }
-function submitTime(){const version=lastCapabilities?.commandDtoVersion===3?3:1;return submitIntent(pending??{version,commandId:crypto.randomUUID(),expectedRevision:last?.revision,type:'AdvanceTime',payload:{ticks:Number(ticks.value)}});}
+function submitTime(){const version=lastCapabilities?.commandDtoVersion===4?4:lastCapabilities?.commandDtoVersion===3?3:1;return submitIntent(pending??{version,commandId:crypto.randomUUID(),expectedRevision:last?.revision,type:'AdvanceTime',payload:{ticks:Number(ticks.value)}});}
 function submitAction(type,payload){if(pending || !actionsAvailable || !lastPlayer)return;
-  const version=lastCapabilities?.commandDtoVersion===3?3:2;return submitIntent({version,commandId:crypto.randomUUID(),expectedRevision:last.revision,type,payload});}
+  const version=lastCapabilities?.commandDtoVersion===4?4:lastCapabilities?.commandDtoVersion===3?3:2;return submitIntent({version,commandId:crypto.randomUUID(),expectedRevision:last.revision,type,payload});}
 byId('travel-form').addEventListener('submit',event=>{event.preventDefault();submitAction('PlayerTravel',{destination:byId('travel-destination').value});});
 byId('rest-submit').addEventListener('click',()=>submitAction('PlayerRest',{}));
+byId('work-submit').addEventListener('click',()=>submitAction('PlayerWork',{}));
 byId('trade-form').addEventListener('submit',event=>{event.preventDefault();submitAction(event.submitter?.id==='sell-submit'?'PlayerSell':'PlayerBuy',
   {product:byId('trade-product').value,quantity:Number(byId('trade-quantity').value)});});
 byId('trade-product').addEventListener('change',updateTradeFeedback);byId('trade-quantity').addEventListener('input',updateTradeFeedback);

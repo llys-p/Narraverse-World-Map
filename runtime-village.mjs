@@ -18,7 +18,7 @@ function canonicalCommand(dto) {
   return JSON.stringify({commandId:dto.commandId,expectedRevision:dto.expectedRevision,payload:dto.payload,type:dto.type,version:dto.version});
 }
 function commandIsValid(dto) {
-  return exact(dto,['version','commandId','expectedRevision','type','payload']) && dto.version === 3 &&
+  return exact(dto,['version','commandId','expectedRevision','type','payload']) && [3,4].includes(dto.version) &&
     typeof dto.commandId === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(dto.commandId) && safeInteger(dto.expectedRevision) &&
     ((dto.type === 'PlayerGiftFood' && exact(dto.payload,['recipientId']) && dto.payload.recipientId === 'actor-2') ||
     (dto.type === 'PlayerTravel' && exact(dto.payload,['destination']) && ['forest','village'].includes(dto.payload.destination)));
@@ -70,7 +70,9 @@ function validMemory(memory, actorId, tick) {
     gift.direction === 'received' && typeof gift.commandId === 'string';
 }
 function coherent(cap, scene, player, encounter) {
-  if (!(cap?.apiVersion === 1 && cap.commandDtoVersion === 3 && cap.sceneAvailable === true && cap.encounterAvailable === true &&
+  if (!(cap?.apiVersion === 1 && [3,4].includes(cap.commandDtoVersion) &&
+    (cap.commandDtoVersion === 4 ? cap.playerWorkAvailable === true : cap.playerWorkAvailable !== true) &&
+    (cap.playerWorkAvailable === undefined || typeof cap.playerWorkAvailable === 'boolean') && cap.sceneAvailable === true && cap.encounterAvailable === true &&
     cap.playerAvailable === true && typeof cap.writes === 'boolean' && scene?.apiVersion === 1 && scene.sceneViewVersion === 1 &&
     player?.apiVersion === 1 && encounter?.apiVersion === 1 && encounter.encounterViewVersion === 1 &&
     typeof scene.simulationId === 'string' && scene.simulationId.length > 0 && safeInteger(scene.revision) && safeInteger(scene.tick) &&
@@ -187,7 +189,7 @@ function validTravelResult(result, command, receipt) {
 }
 function receiptIsValid(receipt, saved) {
   const command = saved.dto;
-  if (!(exact(receipt,RECEIPT_FIELDS) && receipt.apiVersion === 1 && receipt.receiptVersion === 3 && receipt.status === 'committed' &&
+  if (!(exact(receipt,RECEIPT_FIELDS) && receipt.apiVersion === 1 && receipt.receiptVersion === command.version && receipt.status === 'committed' &&
     receipt.commandId === command.commandId && receipt.type === command.type && receipt.fromRevision === command.expectedRevision &&
     receipt.fromTick === saved.fromTick && [receipt.fromRevision,receipt.toRevision,receipt.fromTick,receipt.tick,receipt.durationTicks].every(safeInteger) &&
     receipt.tick === receipt.fromTick + receipt.durationTicks && receipt.toRevision === receipt.fromRevision + (receipt.durationTicks === 0 ? 1 : receipt.durationTicks) &&
@@ -205,6 +207,9 @@ function receiptIsValid(receipt, saved) {
 }
 async function sendPending() {
   if (!pending || submitting || storageBlocked || !current || current.cap.writes !== true || pending.simulationId !== current.scene.simulationId) return;
+  if (pending.dto.version !== current.cap.commandDtoVersion) {
+    setCommandStatus('待确认请求版本与当前世界能力不匹配；保留请求并暂停发送。', true); return;
+  }
   const command = pending; submitting = true; fresh = false; controls(); setCommandStatus('正在提交已保存的固定请求…');
   nodes['village-status'].textContent = '请求正在等待确认；显示上一组完整读数，其他操作已暂停。';
   try {
@@ -234,7 +239,7 @@ async function sendPending() {
 function start(type,payload) {
   if (!canWrite() || !current.scene.self.alive || current.encounter.encounter?.status === 'active') return;
   if (type === 'PlayerGiftFood' && !current.scene.actors.find(actor => actor.actorId === payload.recipientId)?.gift.available) return;
-  const dto = {version:3,commandId:crypto.randomUUID(),expectedRevision:current.scene.revision,type,payload};
+  const dto = {version:current.cap.commandDtoVersion,commandId:crypto.randomUUID(),expectedRevision:current.scene.revision,type,payload};
   const value = {simulationId:current.scene.simulationId,dto,body:canonicalCommand(dto),fromTick:current.scene.tick};
   if (!commandIsValid(dto) || !savePending(value)) { setCommandStatus('浏览器无法保存待确认请求，操作未发送。', true); controls(); return; }
   pending = value; void sendPending();

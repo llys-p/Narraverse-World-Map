@@ -50,9 +50,10 @@ export async function startRuntimeServer(options){
   const writable=options.writable??false,capabilities=Object.freeze({apiVersion:1,writes:writable,playerAvailable:owner.playerAvailable,
     playerActionsAvailable:owner.playerActionsAvailable,mindAvailable:inspectMind && owner.mindAvailable,
     commandDtoVersion:owner.commandDtoVersion,maxCommandBytes:MAX_COMMAND_BYTES,
-    maxAdvanceTicks:owner.commandDtoVersion===3?144000:MAX_SERVICE_ADVANCE_TICKS,
+    maxAdvanceTicks:[3,4].includes(owner.commandDtoVersion)?144000:MAX_SERVICE_ADVANCE_TICKS,
     ...(owner.encounterAvailable?{encounterAvailable:true}:{}),...(owner.sceneAvailable?{sceneAvailable:true}:{}),
-    ...(owner.activityAvailable?{activityAvailable:true}:{})});
+    ...(owner.activityAvailable?{activityAvailable:true}:{}),
+    ...(owner.playerWorkAvailable===true?{playerWorkAvailable:true}:{})});
   const server=http.createServer({maxHeaderSize:8192,requestTimeout:5000,headersTimeout:5000},async(req,res)=>{
     const send=(status,data,type='application/json; charset=utf-8',extra={})=>{
       const bytes=Buffer.isBuffer(data)?data:Buffer.from(JSON.stringify(data));
@@ -104,7 +105,7 @@ export async function startRuntimeServer(options){
         if(owner.sceneAvailable){
           requireCondition(sceneBodyReads<MAX_PENDING_REQUESTS,'Command body reads exceed budget','LIMIT_EXCEEDED');sceneBodyReads++;
           let dto;
-          try{dto=parseSceneCommandBytes(await readCommandBody(req));}
+          try{dto=parseSceneCommandBytes(await readCommandBody(req),owner.commandDtoVersion);}
           finally{sceneBodyReads--;}
           send(200,await owner.submit(dto));return;
         }

@@ -26,10 +26,10 @@ export function validateSceneWorldState(world,options={}){
  validateSceneBaseWorld(base);
  return validateSceneEncounterWorldState(world,{tick});
 }
-function preflightSceneIntent(dto){
+export function preflightSceneIntent(dto,version=3){
  inspectDescriptorTree(dto);fields(dto,['version','commandId','expectedRevision','type','payload']);
  requireCondition(new TextEncoder().encode(canonicalJson(dto)).length<=4096,'Scene intent exceeds byte budget','LIMIT_EXCEEDED');
- requireCondition(dto.version===3,'Unsupported scene DTO version','UNSUPPORTED_VERSION');
+ requireCondition(dto.version===version,'Unsupported scene DTO version','UNSUPPORTED_VERSION');
  identifier(dto.commandId);integer(dto.expectedRevision);identifier(dto.type);record(dto.payload);
  requireCondition(dto.commandId.length<=64&&/^[A-Za-z0-9_-]+$/.test(dto.commandId)&&
   !['society-day-','mind-day-','mind-settle-','motivation-day-','experience-day-','cognition-day-','cognition-eval-','survival-day-'].some(p=>dto.commandId.startsWith(p)),'Invalid or reserved scene command ID');
@@ -37,6 +37,7 @@ function preflightSceneIntent(dto){
  if(dto.type==='PlayerGiftFood'){fields(p,['recipientId']);requireCondition(p.recipientId==='actor-2','Unknown food gift recipient');}
  else if(dto.type==='AdvanceTime'){fields(p,['ticks']);integer(p.ticks,1);requireCondition(p.ticks<=144000,'Advance budget exceeded','LIMIT_EXCEEDED');}
  else if(dto.type==='PlayerTravel'){fields(p,['destination']);requireCondition(['village','forest'].includes(p.destination),'Unknown travel destination');}
+ else if(version===4 && dto.type==='PlayerWork')fields(p,[]);
  else if(['PlayerRest','EncounterBegin'].includes(dto.type))fields(p,[]);
  else if(['PlayerBuy','PlayerSell'].includes(dto.type)){fields(p,['product','quantity']);requireCondition(['food','herbs'].includes(p.product),'Unknown product');integer(p.quantity,1);requireCondition(p.quantity<=10,'Trade quantity budget exceeded','LIMIT_EXCEEDED');}
  else if(['EncounterAction','EncounterCancel'].includes(dto.type)){fields(p,dto.type==='EncounterAction'?['encounterId','action']:['encounterId']);identifier(p.encounterId);requireCondition(p.encounterId.length<=64,'Encounter ID budget exceeded');if(dto.type==='EncounterAction')requireCondition(['attack','flee'].includes(p.action),'Unknown encounter action');}
@@ -47,7 +48,7 @@ function giftParticipants(world){return {
  recipient:world.actorModel.actors.find(a=>a.actorId==='actor-2'),
  player:world.playerModel,estate:world.societyModel.agents.find(a=>a.state.actorId==='actor-2')
 };}
-function auditGift(world){
+export function auditGift(world){
  const {donor,recipient,player,estate}=giftParticipants(world);
  let reasonCode=null;
  if(!donor.alive)reasonCode='PLAYER_DEAD';
@@ -59,7 +60,7 @@ function auditGift(world){
  if(reasonCode===null)requireCondition(player.ledger.foodGiven<Number.MAX_SAFE_INTEGER&&estate.trade.foodReceived<Number.MAX_SAFE_INTEGER,'Gift ledger budget exceeded','LIMIT_EXCEEDED');
  return {outcome:reasonCode===null?'succeeded':'rejected',reasonCode,durationTicks:0};
 }
-function commitGift(world,dto,tick,eventSeq){
+export function commitGift(world,dto,tick,eventSeq){
  const {player,estate}=giftParticipants(world),donorFoodBefore=player.inventory.food,recipientFoodBefore=estate.state.inventory.food;
  player.inventory.food--;player.ledger.foodGiven++;estate.state.inventory.food++;estate.trade.foodReceived++;
  return {type:'FoodGiftCommitted',sourceSystem:'scene',commandId:dto.commandId,entityIds:['actor-4','actor-2'],causationEventSeqs:[],

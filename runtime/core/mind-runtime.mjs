@@ -28,6 +28,15 @@ export function prepareMindDay(input,tick){return prepareMindDayFor(input,tick);
 export function settleMindSocietyDay(input,sample){return settleMindSocietyDayFor(input,sample);}
 export function finishMindMemoryDay(input,events,tick){return finishMindMemoryDayFor(input,events,tick);}
 export function finishMindDay(input,events,tick){return finishMindDayFor(input,events,tick);}
+export const livelihoodMindRuntimeHooks=Object.freeze({
+ createWorld:(memory,mind)=>createMindWorldFor(memory,mind,'memory-config-v7'),
+ validateWorld:(world,sealed=true)=>validateMindWorldFor(world,sealed,'memory-config-v7'),
+ applyMindStimuliTick:(world,tick,append)=>applyMindStimuliTickFor(world,tick,append,'memory-config-v7'),
+ prepareMindDay:(input,tick)=>prepareMindDayFor(input,tick,'memory-config-v7'),
+ settleMindSocietyDay:(input,sample)=>settleMindSocietyDayFor(input,sample,'memory-config-v7'),
+ finishMindMemoryDay:(input,events,tick)=>finishMindMemoryDayFor(input,events,tick,'memory-config-v7'),
+ finishMindDay:(input,events,tick)=>finishMindDayFor(input,events,tick,'memory-config-v7')
+});
 // Explicit opt-in: old public mind creation and validation retain their version gates.
 export const sceneMindRuntimeHooks=Object.freeze({
  createWorld:(memory,mind)=>createMindWorldFor(memory,mind,true),
@@ -41,7 +50,7 @@ export const sceneMindRuntimeHooks=Object.freeze({
 
 function createMindWorldFor(memoryConfig,mindConfig,scene=false){
   record(memoryConfig);record(mindConfig);
-  requireCondition(scene?memoryConfig.version==='memory-config-v6':(memoryConfig.version==='memory-config-v4'||memoryConfig.version==='memory-config-v5'),'Mind requires the play memory configuration','UNSUPPORTED_VERSION');
+  requireCondition(scene?memoryConfig.version===(scene===true?'memory-config-v6':scene):(memoryConfig.version==='memory-config-v4'||memoryConfig.version==='memory-config-v5'),'Mind requires the play memory configuration','UNSUPPORTED_VERSION');
   const economics=memoryConfig.society.economics;
   requireCondition(economics.deadlineDays===20 && economics.maxFailures===3 && economics.cooldownDays===2,
     'Mind goal economics are frozen for this experiment','UNSUPPORTED_VERSION');
@@ -54,7 +63,7 @@ function createMindWorldFor(memoryConfig,mindConfig,scene=false){
 function validateMindWorldFor(world,sealed=true,scene=false){
   record(world);
   requireCondition(typeof sealed==='boolean','Invalid mind world seal mode');
-  requireCondition(scene?world.memoryModel?.config?.version==='memory-config-v6':(world.memoryModel?.config?.version==='memory-config-v4'||world.memoryModel?.config?.version==='memory-config-v5'),'Mind requires the play memory world','UNSUPPORTED_VERSION');
+  requireCondition(scene?world.memoryModel?.config?.version===(scene===true?'memory-config-v6':scene):(world.memoryModel?.config?.version==='memory-config-v4'||world.memoryModel?.config?.version==='memory-config-v5'),'Mind requires the play memory world','UNSUPPORTED_VERSION');
   const {mindModel,...base}=world;validateMemoryWorld(base);
   validateMindModel(mindModel,sealed);
   requireCondition(mindModel.config.actorIds.every(id=>base.actorModel.actors.some(a=>a.actorId===id)),'Mind bodies are missing');

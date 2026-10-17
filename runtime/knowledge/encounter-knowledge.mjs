@@ -13,6 +13,7 @@ import { SURVIVAL_ACTOR_ID, SURVIVAL_KNOWLEDGE_VERSION, SURVIVAL_INSPECTOR_VERSI
 import { deriveWorkExperience } from '../core/work-experience.mjs';
 import { ENCOUNTER_RULES } from '../core/encounter-runtime.mjs';
 import { encounterSystems } from '../fixtures/encounter-survival-village.mjs';
+import {LIVELIHOOD_RULES} from '../core/scene-livelihood-runtime.mjs';
 import {SCENE_RULES} from '../core/scene-runtime.mjs';
 import {canonicalSystems} from '../core/command-engine.mjs';
 
@@ -22,10 +23,10 @@ function audit(bundle,scene=false) {
   inspectDescriptorTree(bundle);
   fields(bundle, ['snapshot', 'eventLog']);
   record(bundle.snapshot);
-  const rules=scene?SCENE_RULES:ENCOUNTER_RULES;
+  const rules=scene?(bundle.snapshot.rulesVersion===LIVELIHOOD_RULES?LIVELIHOOD_RULES:SCENE_RULES):ENCOUNTER_RULES;
   requireCondition(bundle.snapshot.rulesVersion === rules,
     'Unknown encounter projection rules', 'UNSUPPORTED_VERSION');
-  validateBundle(bundle, { rulesVersion: rules, systems: scene?canonicalSystems(SCENE_RULES):encounterSystems() });
+  validateBundle(bundle, { rulesVersion: rules, systems: scene?canonicalSystems(rules):encounterSystems() });
 }
 
 function budget(value) {

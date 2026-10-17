@@ -5,6 +5,11 @@
 
 ## 独立项目入口
 
+- **D4E9 新世界体验入口：双击 `Start-D4E9.cmd`**，再打开 `http://127.0.0.1:18336/runtime-map.html`。玩家在村庄可工作6小时，成功获得20金币并增加150疲劳；两次成功工作的开始时间至少相隔24小时。工资从公共可用金支付，失败不会凭空发钱。可接着买粮、推进日结、查看村庄/森林及保存重开。
+  - 独占本树 `artifacts/d4e9-daily/world`，新profile `scene-livelihood-village`；不读取或升级旧D4档。
+  - 关闭：在本启动窗口输入 `quit` 回车，等待 `stopped`；再次双击同脚本继续同一世界。锁/坏档显式报错，保留文件排查，勿删除旧档强行启动。
+  - 这是有界收入与体验闭环；公共粮食有限，未承诺长期生存平衡或长历史流畅。实现与验证范围见[任务合同](tasks/D4E9-PLAYER-WORK-TASK.md)及[结果报告](docs/runtime/D4E9-PLAYER-WORK-RESULT.md)。
+
 - **D4 本地体验候选：双击 `Start-D4.cmd`**，地图地址 `http://127.0.0.1:18331/runtime-map.html`。使用本树独立世界与存档目录；世界活动是显式开发者全知观察，不属于玩家或人物可知信息；心智检查器仍关闭。本候选不触碰18325/18327用户实例；[启动、关闭、重开说明](docs/runtime/D4-EXPERIENCE-ENTRY.md)。
 
 - 仓库 AI 可直接运行 `node scripts/measure-data-contract-synthetic.mjs`，见[可移植短性能探针](docs/runtime/DATA-CONTRACT-PORTABLE-PROBE.md)。使用合成数据，无需本机私有存档；不代表真实长历史开档性能。

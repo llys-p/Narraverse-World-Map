@@ -3,9 +3,10 @@ import { fields,integer,requireCondition,cloneData,record,identifier,canonicalJs
 export const PLAYER_RULES='d-player-v1';
 export const PLAY_RULES='d-player-v2';
 const PLAY_LEDGER=['foodUsed','herbsUsed','foodBought','herbsBought','foodSold','herbsSold','spent','earned'];
-export function playerIntentDuration(intent){
+export function playerIntentDuration(intent,work=false){
  fields(intent,['commandId','type','payload']);identifier(intent.commandId);requireCondition(!intent.commandId.startsWith('society-day-'),'Reserved NPC command ID');
  if(intent.type==='PlayerTravel'){fields(intent.payload,['destination']);requireCondition(['village','forest'].includes(intent.payload.destination),'Unknown destination');return 12;}
+ if(work&&intent.type==='PlayerWork'){fields(intent.payload,[]);return 36;}
  if(intent.type==='PlayerRest'){fields(intent.payload,[]);return 6;}
  requireCondition(['PlayerBuy','PlayerSell'].includes(intent.type),'Unknown player intent');fields(intent.payload,['product','quantity']);
  requireCondition(['food','herbs'].includes(intent.payload.product),'Unknown player product');integer(intent.payload.quantity,1);requireCondition(intent.payload.quantity<=10,'Quantity exceeds action budget');return 1;
@@ -63,17 +64,19 @@ export function createPlayerState(config){
 }
 export function createPlayerPlayState(config){const p=createPlayerState(config);p.version='player-state-v2';p.ledger=Object.fromEntries(PLAY_LEDGER.map(k=>[k,0]));return p;}
 export function createPlayerV3State(config){const p=createPlayerState(config);p.version='player-state-v3';p.ledger=Object.fromEntries([...PLAY_LEDGER,'foodGiven'].map(k=>[k,0]));return p;}
+export function createPlayerV4State(config){const p=createPlayerV3State(config);p.version='player-state-v4';p.ledger.wages=0;p.ledger.workCount=0;p.lastWorkStartTick=null;return p;}
 export function validatePlayerState(world){
  const p=world.playerModel,c=world.societyModel.config.player;validatePlayerAllocation(c);
  // D3-5A: society-config-v4 carries the same play profile forward (player-state-v2), so the
  // identity/version gate accepts it too; v1/v2/v3 keep their exact old meanings.
  // D4A-CP1a: society-config-v5 upgrades to player-state-v3 (PLAY_LEDGER + foodGiven);
  // old v3/v4 (player-state-v2) semantics are preserved verbatim.
- const version=world.societyModel.config.version,play=['society-config-v3','society-config-v4','society-config-v5'].includes(version),gift=version==='society-config-v5';
- fields(p,['version','actorId','wallet','inventory','ledger']);requireCondition(p.version===(gift?'player-state-v3':play?'player-state-v2':'player-state-v1') && p.actorId===c.actorId,'Player identity/version mismatch');
- fields(p.inventory,['food','herbs']);fields(p.ledger,gift?[...PLAY_LEDGER,'foodGiven']:play?PLAY_LEDGER:['foodUsed']);for(const n of [p.wallet,...Object.values(p.inventory),...Object.values(p.ledger)])integer(n);
+ const version=world.societyModel.config.version,play=['society-config-v3','society-config-v4','society-config-v5','society-config-v6'].includes(version),gift=['society-config-v5','society-config-v6'].includes(version),work=version==='society-config-v6';
+ fields(p,['version','actorId','wallet','inventory','ledger',...(work?['lastWorkStartTick']:[])]);requireCondition(p.version===(work?'player-state-v4':gift?'player-state-v3':play?'player-state-v2':'player-state-v1') && p.actorId===c.actorId,'Player identity/version mismatch');
+ fields(p.inventory,['food','herbs']);fields(p.ledger,work?[...PLAY_LEDGER,'foodGiven','wages','workCount']:gift?[...PLAY_LEDGER,'foodGiven']:play?PLAY_LEDGER:['foodUsed']);for(const n of [p.wallet,...Object.values(p.inventory),...Object.values(p.ledger)])integer(n);
+ if(work){requireCondition(BigInt(p.ledger.wages)===BigInt(p.ledger.workCount)*20n,'Player wages ledger mismatch');requireCondition((p.ledger.workCount===0)===(p.lastWorkStartTick===null),'Player work time/count mismatch');if(p.lastWorkStartTick!==null){integer(p.lastWorkStartTick);requireCondition(p.lastWorkStartTick<=Number.MAX_SAFE_INTEGER-144,'Player work time overflow','LIMIT_EXCEEDED');}}
  if(play){requireCondition(p.inventory.food<=1000 && p.inventory.herbs<=1000 && p.ledger.herbsUsed===0,'Player inventory/use outside contract');
-  requireCondition(BigInt(p.wallet)===BigInt(c.initialWallet)-BigInt(p.ledger.spent)+BigInt(p.ledger.earned),'Player currency ledger mismatch');
+  requireCondition(BigInt(p.wallet)===BigInt(c.initialWallet)-BigInt(p.ledger.spent)+BigInt(p.ledger.earned)+(work?BigInt(p.ledger.wages):0n),'Player currency ledger mismatch');
   for(const id of ['food','herbs'])requireCondition(BigInt(p.inventory[id])===BigInt(c[id==='food'?'initialFood':'initialHerbs'])+BigInt(p.ledger[id+'Bought'])-BigInt(p.ledger[id+'Sold'])-BigInt(p.ledger[id+'Used'])-(gift && id==='food'?BigInt(p.ledger.foodGiven):0n),'Player item ledger mismatch');
  }else requireCondition(p.wallet===c.initialWallet && p.inventory.herbs===c.initialHerbs && BigInt(p.inventory.food)+BigInt(p.ledger.foodUsed)===BigInt(c.initialFood),'Player assets do not reconcile');
  requireCondition(world.actorModel.actors.some(a=>a.actorId===p.actorId && a.occupation==='player'),'Player body not registered');
@@ -91,5 +94,5 @@ export function playerDayFact(world,daily){
 export function validatePlayerDayPayload(payload){
  fields(payload,['day','actorId','privateFood','wallet','inventory','ledger']);integer(payload.day,1);requireCondition(payload.actorId==='actor-4','Foreign player daily identity');
  integer(payload.privateFood);requireCondition(payload.privateFood<=1,'Invalid player ration');integer(payload.wallet);fields(payload.inventory,['food','herbs']);
- integer(payload.inventory.food);integer(payload.inventory.herbs);record(payload.ledger);fields(payload.ledger,Object.hasOwn(payload.ledger,'foodGiven')?[...PLAY_LEDGER,'foodGiven']:Object.hasOwn(payload.ledger,'spent')?PLAY_LEDGER:['foodUsed']);Object.values(payload.ledger).forEach(n=>integer(n));
+ integer(payload.inventory.food);integer(payload.inventory.herbs);record(payload.ledger);fields(payload.ledger,Object.hasOwn(payload.ledger,'wages')?[...PLAY_LEDGER,'foodGiven','wages','workCount']:Object.hasOwn(payload.ledger,'foodGiven')?[...PLAY_LEDGER,'foodGiven']:Object.hasOwn(payload.ledger,'spent')?PLAY_LEDGER:['foodUsed']);Object.values(payload.ledger).forEach(n=>integer(n));
 }

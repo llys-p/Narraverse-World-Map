@@ -23,7 +23,8 @@
     <p id="player-needs"></p><p class="player-note">存活时，每天消耗一份本人存粮。这里可以观察状态与库存。</p><p id="encounter-block-note" class="player-note" role="status" hidden></p>
     <div id="action-panel" hidden>
       <div class="player-actions"><form id="travel-form"><label for="travel-destination">前往</label><select id="travel-destination"></select><button id="travel-submit" type="submit">旅行</button></form>
-      <button id="rest-submit" type="button">休整</button></div>
+      <button id="rest-submit" type="button">休整</button><button id="work-submit" type="button" hidden>工作6小时·预计20金币</button></div>
+      <p id="work-note" role="status" aria-live="polite" hidden></p>
       <p id="trade-prices"></p>
       <form id="trade-form" class="player-actions"><label for="trade-product">公仓商品</label><select id="trade-product"><option value="food">粮食</option><option value="herbs">药材</option></select>
         <label for="trade-quantity">数量</label><input id="trade-quantity" type="number" min="1" step="1" value="1" required>

@@ -19,7 +19,7 @@ function readJsonResponse(response, text) {
 function restorePending() {
   try {
     const value = JSON.parse(sessionStorage.getItem(PENDING_KEY) ?? 'null');
-    return value && value.version === 3 && typeof value.commandId === 'string' && safeInteger(value.expectedRevision) &&
+    return value && [3,4].includes(value.version) && typeof value.commandId === 'string' && safeInteger(value.expectedRevision) &&
       typeof value.type === 'string' && value.payload && typeof value.payload === 'object' ? value : null;
   } catch { return null; }
 }
@@ -41,7 +41,10 @@ function saveReceipts() {
   try { sessionStorage.setItem(RECEIPTS_KEY, JSON.stringify(receipts.slice(-24))); } catch { /* UI history is optional */ }
 }
 function validateCapabilities(value) {
-  return value?.apiVersion === 1 && value.commandDtoVersion === 3 && value.encounterAvailable === true && typeof value.writes === 'boolean';
+  return value?.apiVersion === 1 && [3,4].includes(value.commandDtoVersion) &&
+    (value.commandDtoVersion === 4 ? value.playerWorkAvailable === true : value.playerWorkAvailable !== true) &&
+    (value.playerWorkAvailable === undefined || typeof value.playerWorkAvailable === 'boolean') &&
+    value.encounterAvailable === true && typeof value.writes === 'boolean';
 }
 async function fetchJson(path) {
   const response = await fetch(path, {cache:'no-store', signal:AbortSignal.timeout(6000)});
@@ -144,7 +147,7 @@ async function refresh() {
   const payload = action === 'begin' ? {} : action === 'cancel' ? {encounterId:current.view.encounter?.encounterId} :
     {encounterId:current.view.encounter?.encounterId, action};
   if (action !== 'begin' && !payload.encounterId) return null;
-  return {version:3, commandId:crypto.randomUUID(), expectedRevision:current.view.revision, type, payload};
+  return {version:capabilities.commandDtoVersion, commandId:crypto.randomUUID(), expectedRevision:current.view.revision, type, payload};
 }
 function validEncounterResult(result, command, receipt) {
   const resultFields = ['actorId','encounterId','action','before','after','reasonCode'];
@@ -167,7 +170,7 @@ function validEncounterResult(result, command, receipt) {
 function receiptIsValid(receipt, command) {
   if (!receipt || typeof receipt !== 'object' || Object.keys(receipt).sort().join('|') !== [...RECEIPT_FIELDS].sort().join('|')) return false;
   const duration = receipt.durationTicks;
-  if (!(receipt.apiVersion === 1 && receipt.receiptVersion === 3 && receipt.commandId === command.commandId &&
+  if (!(receipt.apiVersion === 1 && receipt.receiptVersion === command.version && receipt.commandId === command.commandId &&
     receipt.type === command.type && receipt.status === 'committed' && receipt.fromRevision === command.expectedRevision &&
     safeInteger(receipt.fromRevision) && safeInteger(receipt.toRevision) && safeInteger(receipt.fromTick) && safeInteger(receipt.tick) &&
     safeInteger(duration) && receipt.fromTick <= receipt.fromRevision && receipt.tick === receipt.fromTick + duration &&
@@ -180,6 +183,9 @@ function receiptIsValid(receipt, command) {
 }
 async function sendPending() {
   if (!pending || submitting) return;
+  if (capabilities && pending.version !== capabilities.commandDtoVersion) {
+    nodes['scene-command-status'].textContent = '待确认请求版本与当前世界能力不匹配；保留请求并暂停发送。'; return;
+  }
   submitting = true;
   nodes['encounter-begin'].disabled = nodes['encounter-attack'].disabled = nodes['encounter-flee'].disabled = nodes['encounter-cancel'].disabled = true;
   nodes['encounter-retry'].hidden = true;

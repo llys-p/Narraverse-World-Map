@@ -21,12 +21,12 @@ export function defaultPersonalityConfig(){return {...defaultMemoryConfig(),vers
 // memory-config-v5 carries the play profile forward from v4: same fields, society-config-v4 and player-state-v2.
 // D4A-CP1b: memory-config-v6 is the gift profile. It keeps the play fields and is the only memory
 // version that pairs with society-config-v5 (player-state-v3) and memory-observer-v3.
-const MEMORY_VERSIONS=['memory-config-v1','memory-config-v2','memory-config-v3','memory-config-v4','memory-config-v5','memory-config-v6'];
+const MEMORY_VERSIONS=['memory-config-v1','memory-config-v2','memory-config-v3','memory-config-v4','memory-config-v5','memory-config-v6','memory-config-v7'];
 const isPlayConfig=version=>version==='memory-config-v4' || version==='memory-config-v5';
-const isGiftConfig=version=>version==='memory-config-v6';
+const isGiftConfig=version=>['memory-config-v6','memory-config-v7'].includes(version);
 const isLocatedConfig=version=>isPlayConfig(version) || isGiftConfig(version);
 const isPlayerConfig=version=>version==='memory-config-v3' || isLocatedConfig(version);
-const societyVersionOf=version=>isGiftConfig(version)?'society-config-v5':version==='memory-config-v5'?'society-config-v4':version==='memory-config-v4'?'society-config-v3':version==='memory-config-v3'?'society-config-v2':'society-config-v1';
+const societyVersionOf=version=>version==='memory-config-v7'?'society-config-v6':isGiftConfig(version)?'society-config-v5':version==='memory-config-v5'?'society-config-v4':version==='memory-config-v4'?'society-config-v3':version==='memory-config-v3'?'society-config-v2':'society-config-v1';
 const observerVersionOf=version=>isGiftConfig(version)?'memory-observer-v3':isPlayConfig(version)?'memory-observer-v2':'memory-observer-v1';
 function validateConfig(config){
   record(config);requireCondition(MEMORY_VERSIONS.includes(config.version),'Unknown memory configuration','UNSUPPORTED_VERSION');
@@ -104,7 +104,7 @@ export function settleMemorySocietyDay(input,sample){
 }
 // A scene command observes its newly committed suffix immediately. Existing observation times stay sealed.
 export function observeSceneCommand(world,events,tick){
- requireCondition(world.memoryModel.config.version==='memory-config-v6'&&world.memoryModel.observer.version==='memory-observer-v3','Scene observation version mismatch','UNSUPPORTED_VERSION');
+ requireCondition(['memory-config-v6','memory-config-v7'].includes(world.memoryModel.config.version)&&world.memoryModel.observer.version==='memory-observer-v3','Scene observation version mismatch','UNSUPPORTED_VERSION');
  const m=world.memoryModel;
  m.observer=reduceMemoryFacts(m.observer,events.slice(m.observer.cursor),tick);
  return world;

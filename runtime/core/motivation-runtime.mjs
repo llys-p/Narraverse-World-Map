@@ -1,7 +1,7 @@
 // Motivation and experience integration. The exported hooks objects are engine/fixture connections,
 // not a business API. Decision-phase Knowledge remains private to this module.
 import {fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,inputFingerprint,MAX_COLLECTION} from './data-contract.mjs';
-import {sceneMindRuntimeHooks,createMindWorld,validateMindWorld,applyMindStimuliTick,prepareMindDay,settleMindSocietyDay,finishMindMemoryDay,finishMindDay,pushMindObservation,mindRejectionObservation} from './mind-runtime.mjs';
+import {livelihoodMindRuntimeHooks,sceneMindRuntimeHooks,createMindWorld,validateMindWorld,applyMindStimuliTick,prepareMindDay,settleMindSocietyDay,finishMindMemoryDay,finishMindDay,pushMindObservation,mindRejectionObservation} from './mind-runtime.mjs';
 import {planSocietyDay,applySocietyAction,societyActionFact,societyCauses} from './society.mjs';
 import {projectActorEvent,projectSceneActorEvent} from './memory-observer.mjs';
 import {deriveMindBelief,validateMindConfig} from './mind-state.mjs';
@@ -56,6 +56,8 @@ const COGNITION_PROFILE=Object.freeze({experience:true,cognition:true,rules:COGN
 const SURVIVAL_PROFILE=Object.freeze({experience:true,cognition:true,survival:true,rules:SURVIVAL_RULES,
   knowledgeVersion:SURVIVAL_KNOWLEDGE_VERSION,knowledgeBytes:MAX_SURVIVAL_KNOWLEDGE_BYTES,label:'Survival'});
 const SCENE_BASE_PROFILE=Object.freeze({...SURVIVAL_PROFILE,scene:true,rules:'d-scene-survival-v1',label:'Scene'});
+const LIVELIHOOD_BASE_PROFILE=Object.freeze({...SCENE_BASE_PROFILE,livelihood:true,rules:'d-scene-livelihood-v1',label:'Livelihood'});
+const mindHooks=profile=>profile.livelihood?livelihoodMindRuntimeHooks:sceneMindRuntimeHooks;
 const lowerWorld=(world,profile)=>profile.cognition?withoutCognitionExperienceAndMotivation(world):
   profile.experience?withoutExperienceAndMotivation(world):withoutMotivation(world);
 function retainModels(base,world,profile){
@@ -100,7 +102,7 @@ function createWorldFor(memory,mind,motivation,experience,cognition,simulationId
   validateInputs(memory,mind,motivation,profile);
   if(profile.experience)validateExperienceConfig(experience);
   if(profile.cognition){validateExperienceConfig(experience);validateCognitionConfig(cognition);}
-  const world={...(profile.scene?sceneMindRuntimeHooks.createWorld:createMindWorld)(memory,mind),motivationModel:createMotivationModel(motivation)};
+  const world={...(profile.scene?mindHooks(profile).createWorld:createMindWorld)(memory,mind),motivationModel:createMotivationModel(motivation)};
   if(profile.experience){
     world.motivationModel.version=EXPERIENCE_MOTIVATION_STATE_VERSION;
     world.experienceModel=createExperienceModel(simulationId,experience);
@@ -144,7 +146,7 @@ function validateWorldFor(world,sealed,profile){
     else validateCognitionModel(world.cognitionModel);
     if(profile.survival)validateSurvivalMotivationModel(world.motivationModel);
     else validateCognitionMotivationModel(world.motivationModel);
-    (profile.scene?sceneMindRuntimeHooks.validateWorld:validateMindWorld)(lowerWorld(world,profile),sealed);
+    (profile.scene?mindHooks(profile).validateWorld:validateMindWorld)(lowerWorld(world,profile),sealed);
     if(sealed)requireCondition(world.mindModel.cursor===world.motivationModel.cursor&&
       world.motivationModel.cursor===world.experienceModel.cursor&&
       world.experienceModel.cursor===world.cognitionModel.cursor,
@@ -159,9 +161,9 @@ function validateWorldFor(world,sealed,profile){
     }
   }else if(profile.experience){
     validateExperienceModel(world.experienceModel);validateExperienceMotivationModel(world.motivationModel);
-    (profile.scene?sceneMindRuntimeHooks.validateWorld:validateMindWorld)(lowerWorld(world,profile),sealed);
+    (profile.scene?mindHooks(profile).validateWorld:validateMindWorld)(lowerWorld(world,profile),sealed);
     if(sealed)requireCondition(world.mindModel.cursor===world.motivationModel.cursor&&world.motivationModel.cursor===world.experienceModel.cursor,'Mind, motivation, and experience cursors must match when sealed');
-  }else{(profile.scene?sceneMindRuntimeHooks.validateWorld:validateMindWorld)(lowerWorld(world,profile),sealed);validateMotivationModel(world.motivationModel);}
+  }else{(profile.scene?mindHooks(profile).validateWorld:validateMindWorld)(lowerWorld(world,profile),sealed);validateMotivationModel(world.motivationModel);}
   const m=world.motivationModel;validateInputs(world.memoryModel.config,world.mindModel.config,m.config,profile);
   for(const mind of world.mindModel.actors)requireCondition(mind.lastDecision===null&&mind.lastOutcome===null,'M2 mind stores observations only');
   for(const entry of m.actors){const state=agent(world,entry.actorId),actor=body(world,entry.actorId);
@@ -421,10 +423,10 @@ function evaluateCognitionDay(snapshot,events,tick,append,profile){
 
 function beforeSystemsFor(snapshot,events,tick,append,commit,profile){
   const context=new Map(snapshot.world.motivationModel.actors.map(e=>[e.actorId,{transitions:[],requestSeqs:[],resolvedSeq:null,decisionId:null}]));
-  (profile.scene?sceneMindRuntimeHooks.applyMindStimuliTick:applyMindStimuliTick)(lowerWorld(snapshot.world,profile),tick,append);
+  (profile.scene?mindHooks(profile).applyMindStimuliTick:applyMindStimuliTick)(lowerWorld(snapshot.world,profile),tick,append);
   requestsTick(snapshot.world,tick,append,context);setCursors(snapshot.world,events,profile);
   if(tick%144!==0)return context;
-  const prepared=(profile.scene?sceneMindRuntimeHooks.prepareMindDay:prepareMindDay)(lowerWorld(snapshot.world,profile),tick);
+  const prepared=(profile.scene?mindHooks(profile).prepareMindDay:prepareMindDay)(lowerWorld(snapshot.world,profile),tick);
   snapshot.world=retainModels(prepared.world,snapshot.world,profile);
   for(const fact of prepared.facts)append(fact);setCursors(snapshot.world,events,profile);
   const cognitionReviews=profile.cognition?evaluateCognitionDay(snapshot,events,tick,append,profile):null;
@@ -565,7 +567,7 @@ function applyActionFor(input,payload,sample,profile){
     const temporaryFoodRest=profile.survival&&d?.mode==='review'&&d.choice==='Rest'&&
       d.gateReason==='URGENT_FATIGUE'&&d.goalId===null&&d.planId===null&&p?.kind===SURVIVAL_FOOD_PLAN_KIND&&
       d.actorId===SURVIVAL_ACTOR_ID&&d.actorId===payload.actorId&&d.tick===(input.societyModel.day+1)*144&&
-      (profile.scene?input.memoryModel.config.version==='memory-config-v6':input.memoryModel.config.version==='memory-config-v5')&&input.societyModel.day+1<=p.deadlineDay&&
+      (profile.scene?input.memoryModel.config.version===(profile.livelihood?'memory-config-v7':'memory-config-v6'):input.memoryModel.config.version==='memory-config-v5')&&input.societyModel.day+1<=p.deadlineDay&&
       payload.action==='Rest'&&payload.goalId===0;
     const normalBinding=d&&p&&d.choice===payload.action&&p.steps[p.stepIndex]===payload.action&&
       d.planId===p.planId&&d.goalId===p.goalId&&d.actorId===payload.actorId&&payload.goalId===(d.goalId??0);
@@ -657,7 +659,7 @@ function resolvedOutcome(item,receipt,world,profile=MOTIVATION_PROFILE){
 }
 
 function settleDayFor(input,sample,profile){
-  const result=(profile.scene?sceneMindRuntimeHooks.settleMindSocietyDay:settleMindSocietyDay)(lowerWorld(input,profile),sample);
+  const result=(profile.scene?mindHooks(profile).settleMindSocietyDay:settleMindSocietyDay)(lowerWorld(input,profile),sample);
   return {...result,world:retainModels(result.world,input,profile)};
 }
 
@@ -665,8 +667,8 @@ function afterSystemsFor(snapshot,events,tick,append,context,profile){
   if(tick%144===0){
     const daily=events.findLast(e=>e.type==='SocietyDaySettled'&&e.tick===tick);requireCondition(daily,'Missing motivation daily source');
     append(playerDayFact(snapshot.world,daily.payload));
-    let base=lowerWorld(snapshot.world,profile);const memory=(profile.scene?sceneMindRuntimeHooks.finishMindMemoryDay:finishMindMemoryDay)(base,events,tick);base=memory.world;append(memory.fact);
-    base=(profile.scene?sceneMindRuntimeHooks.finishMindDay:finishMindDay)(base,events,tick);snapshot.world=retainModels(base,snapshot.world,profile);
+    let base=lowerWorld(snapshot.world,profile);const memory=(profile.scene?mindHooks(profile).finishMindMemoryDay:finishMindMemoryDay)(base,events,tick);base=memory.world;append(memory.fact);
+    base=(profile.scene?mindHooks(profile).finishMindDay:finishMindDay)(base,events,tick);snapshot.world=retainModels(base,snapshot.world,profile);
   }
   for(const entry of snapshot.world.motivationModel.actors){const ctx=context.get(entry.actorId),a=body(snapshot.world,entry.actorId),state=agent(snapshot.world,entry.actorId);
     if(tick%144===0){const day=tick/144;
@@ -898,14 +900,17 @@ export function describeSurvivalPlayerActions(bundle){
 
 // Scene base hooks use the same surviving cognition/experience rules, with an explicit memory-v6 opt-in.
 export function validateSceneBaseWorld(world,sealed=true){inspectDescriptorTree(world);return validateWorldFor(world,sealed,SCENE_BASE_PROFILE);}
-export const sceneBaseRuntimeHooks=Object.freeze({
- createWorld:(memory,mind,motivation,experience,cognition,simulationId)=>{inspectDescriptorTree({memory,mind,motivation,experience,cognition,simulationId});return createWorldFor(memory,mind,motivation,experience,cognition,simulationId,SCENE_BASE_PROFILE);},
- beforeSystems:(snapshot,events,tick,append,commit)=>{inspectDescriptorTree({snapshot,events});return beforeSystemsFor(snapshot,events,tick,append,commit,SCENE_BASE_PROFILE);},
- afterSystems:(snapshot,events,tick,append,context)=>{inspectDescriptorTree({snapshot,events});return afterSystemsFor(snapshot,events,tick,append,context,SCENE_BASE_PROFILE);},
- applyAction:(input,payload,sample=null)=>{inspectDescriptorTree({input,payload,sample});return applyActionFor(input,payload,sample,SCENE_BASE_PROFILE);},
- settleDay:(input,sample)=>{inspectDescriptorTree({input,sample});return settleDayFor(input,sample,SCENE_BASE_PROFILE);},
- validateHistory:(snapshot,events)=>{inspectDescriptorTree({snapshot,events});return validateHistoryFor(snapshot,events,SCENE_BASE_PROFILE);}
-});
+export const sceneBaseRuntimeHooks=createSceneBaseHooks(SCENE_BASE_PROFILE);
+export const livelihoodBaseRuntimeHooks=createSceneBaseHooks(LIVELIHOOD_BASE_PROFILE);
+export function validateLivelihoodBaseWorld(world,sealed=true){inspectDescriptorTree(world);return validateWorldFor(world,sealed,LIVELIHOOD_BASE_PROFILE);}
+function createSceneBaseHooks(profile){return Object.freeze({
+ createWorld:(memory,mind,motivation,experience,cognition,simulationId)=>{inspectDescriptorTree({memory,mind,motivation,experience,cognition,simulationId});return createWorldFor(memory,mind,motivation,experience,cognition,simulationId,profile);},
+ beforeSystems:(snapshot,events,tick,append,commit)=>{inspectDescriptorTree({snapshot,events});return beforeSystemsFor(snapshot,events,tick,append,commit,profile);},
+ afterSystems:(snapshot,events,tick,append,context)=>{inspectDescriptorTree({snapshot,events});return afterSystemsFor(snapshot,events,tick,append,context,profile);},
+ applyAction:(input,payload,sample=null)=>{inspectDescriptorTree({input,payload,sample});return applyActionFor(input,payload,sample,profile);},
+ settleDay:(input,sample)=>{inspectDescriptorTree({input,sample});return settleDayFor(input,sample,profile);},
+ validateHistory:(snapshot,events)=>{inspectDescriptorTree({snapshot,events});return validateHistoryFor(snapshot,events,profile);}
+});}
 export const survivalRuntimeHooks=Object.freeze({createWorld:createSurvivalWorld,beforeSystems:survivalBeforeSystems,
   afterSystems:survivalAfterSystems,applyAction:survivalApplyAction,settleDay:survivalSettleDay,
   validateHistory:validateSurvivalHistory});

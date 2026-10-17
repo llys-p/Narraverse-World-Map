@@ -145,7 +145,7 @@ export function commandInput(raw, strictType = true) {
     if(input.type==='PlayerAction'){
       fields(input.payload,['startTick','intent']);integer(input.payload.startTick);const intent=input.payload.intent;fields(intent,['type','payload']);
       if(intent.type==='PlayerTravel'){fields(intent.payload,['destination']);requireCondition(['village','forest'].includes(intent.payload.destination),'Unknown destination');}
-      else if(intent.type==='PlayerRest')fields(intent.payload,[]);
+      else if(['PlayerRest','PlayerWork'].includes(intent.type))fields(intent.payload,[]);
       else{requireCondition(['PlayerBuy','PlayerSell'].includes(intent.type),'Unknown player action');fields(intent.payload,['product','quantity']);
         requireCondition(['food','herbs'].includes(intent.payload.product),'Unknown product');integer(intent.payload.quantity,1);requireCondition(intent.payload.quantity<=10,'Quantity budget exceeded');}
     }else if(input.type==='SocietyAction'){

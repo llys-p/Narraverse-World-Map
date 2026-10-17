@@ -6,6 +6,7 @@ import { createSimulationSession } from '../core/command-engine.mjs';
 import { projectPublicSnapshot,projectEncounterSnapshot,projectSceneSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,requireMotivationBackend,requireCognitionBackend,requireSurvivalBackend } from './http-contract.mjs';
 import { executePlayerIntent } from '../core/player-intents.mjs';
 import { executeEncounterIntent } from '../core/encounter-runtime.mjs';
+import {LIVELIHOOD_RULES,executeAuditedLivelihoodIntent} from '../core/scene-livelihood-runtime.mjs';
 import { SCENE_RULES,executeAuditedSceneIntent } from '../core/scene-runtime.mjs';
 import { createAuditedBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
@@ -21,15 +22,16 @@ const RESERVED_INTERNAL_PREFIXES={4:['mind-day-','society-day-'],5:['mind-day-',
   7:['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-',
     'survival-day-'],8:['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-','survival-day-']};
 function transitionSceneCommand(bundle,dto){
-  dto=validateSceneCommandDto(dto);
-  requireCondition(runtimeProfile(bundle).serviceFormatVersion===9,'Scene service profile mismatch','UNSUPPORTED_VERSION');
-  return executeAuditedSceneIntent(bundle,dto);
+  const format=runtimeProfile(bundle).serviceFormatVersion;
+  dto=validateSceneCommandDto(dto,format===10?4:3);
+  requireCondition([9,10].includes(format),'Scene service profile mismatch','UNSUPPORTED_VERSION');
+  return format===10?executeAuditedLivelihoodIntent(bundle,dto):executeAuditedSceneIntent(bundle,dto);
 }
 // Submit and journal audit use this same complete transition; the service owns no world rules.
 export function transitionAuditedServiceCommand(bundle,dto){
   // Select only the new rules using data descriptors; old DTO/profile validation order stays intact.
   const snapshot=bundle!==null && typeof bundle==='object'?Object.getOwnPropertyDescriptor(bundle,'snapshot')?.value:null;
-  if(snapshot!==null && typeof snapshot==='object' && Object.getOwnPropertyDescriptor(snapshot,'rulesVersion')?.value===SCENE_RULES)
+  if(snapshot!==null && typeof snapshot==='object' && [SCENE_RULES,LIVELIHOOD_RULES].includes(Object.getOwnPropertyDescriptor(snapshot,'rulesVersion')?.value))
     return transitionSceneCommand(bundle,dto);
   dto=validateServiceCommandDto(dto);
   // The reserved-namespace guard is a pure input check: it must fire before any profile or
@@ -56,26 +58,26 @@ export function transitionAuditedServiceCommand(bundle,dto){
 // Preserve detached mutable results for library consumers; only the owner/replay use the frozen path.
 export function transitionServiceCommand(bundle,dto){
   const result=transitionAuditedServiceCommand(bundle,dto);
-  return result.bundle.snapshot.rulesVersion===SCENE_RULES?
+  return [SCENE_RULES,LIVELIHOOD_RULES].includes(result.bundle.snapshot.rulesVersion)?
     {bundle:cloneData(result.bundle),receipt:cloneData(result.receipt)}:result;
 }
 export function validateServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
-  requireCondition([1,2,3,4,5,6,7,8,9].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
+  requireCondition([1,2,3,4,5,6,7,8,9,10].includes(envelope.serviceFormatVersion),'Unknown service format','UNSUPPORTED_VERSION');
   const profile=runtimeProfile(envelope.anchor),finalProfile=runtimeProfile(envelope.bundle);
   requireCondition(envelope.serviceFormatVersion===profile.serviceFormatVersion && envelope.serviceFormatVersion===finalProfile.serviceFormatVersion,
     'Service format/profile mismatch','UNSUPPORTED_VERSION');
   denseArray(envelope.commands,MAX_SERVICE_COMMANDS);
-  const anchor=envelope.serviceFormatVersion===9?createAuditedBundle(envelope.anchor,{rulesVersion:profile.rulesVersion,systems:profile.systems}):envelope.anchor;
-  const final=envelope.serviceFormatVersion===9?createAuditedBundle(envelope.bundle,{rulesVersion:finalProfile.rulesVersion,systems:finalProfile.systems}):envelope.bundle;
+  const anchor=[9,10].includes(envelope.serviceFormatVersion)?createAuditedBundle(envelope.anchor,{rulesVersion:profile.rulesVersion,systems:profile.systems}):envelope.anchor;
+  const final=[9,10].includes(envelope.serviceFormatVersion)?createAuditedBundle(envelope.bundle,{rulesVersion:finalProfile.rulesVersion,systems:finalProfile.systems}):envelope.bundle;
   projectPublicSnapshot(anchor);projectPublicSnapshot(final);
-  if([8,9].includes(envelope.serviceFormatVersion)){projectEncounterSnapshot(anchor);projectEncounterSnapshot(final);}
-  if(envelope.serviceFormatVersion===9){projectSceneSnapshot(anchor);projectSceneSnapshot(final);}
+  if([8,9,10].includes(envelope.serviceFormatVersion)){projectEncounterSnapshot(anchor);projectEncounterSnapshot(final);}
+  if([9,10].includes(envelope.serviceFormatVersion)){projectSceneSnapshot(anchor);projectSceneSnapshot(final);}
   const seen=new Set();let replay=anchor,revision=anchor.snapshot.revision;
   for(const entry of envelope.commands){
-    fields(entry,['dto','receipt']);const dto=envelope.serviceFormatVersion===9?validateSceneCommandDto(entry.dto):validateServiceCommandDto(entry.dto);
+    fields(entry,['dto','receipt']);const dto=[9,10].includes(envelope.serviceFormatVersion)?validateSceneCommandDto(entry.dto,envelope.serviceFormatVersion===10?4:3):validateServiceCommandDto(entry.dto);
     fields(entry.receipt,dto.version===1?['apiVersion','commandId','status','fromRevision','toRevision','tick']:
-      dto.version===3?['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result']:
+      [3,4].includes(dto.version)?['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result']:
       ['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','tick','type','outcome','result']);
     requireCondition(!seen.has(dto.commandId) && dto.expectedRevision===revision,'Invalid service command sequence');seen.add(dto.commandId);
     const next=transitionAuditedServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;

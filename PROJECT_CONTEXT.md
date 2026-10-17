@@ -1,16 +1,18 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-16 19:49（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
+更新时间：2026-10-17 10:01（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
 
-## 当前 D4E8 交付树
+## 当前 D4E9 交付树
 
-- 本树 `D:/Narraverse-World-Map-trade-feedback` / `codex/world-runtime-trade-feedback`，基准D4E7 `06e922217904d17cca81ae30bb07a273ed9a3693`，冻结合同2fbb074，实现 `99659a2e215dedacb396e927ba9137fc72c1704a`仅改地图html/mjs。
-- **交易前提示限定PASS**：[复核](docs/runtime/D4E8-TRADE-FEEDBACK-REVIEW-20261016.md)。显示当前预计金额/本人余额/可卖库存；无效数量、余额/库存不足对应禁用，现有全局禁止条件和服务端裁决保持。
-- root18334唯一新隔离scene seed42真实页面验证输入0/11/1.5、0余额/药材库存、输入不写档、筹资后的买入恢复和提交中全局禁用。仅卖4/买2两成功命令，rev/tick2、私粮18/金币0；刷新和正常重开预算、五读取与三档字节一致，控制台无error。0新增suite/0日结；旧日结、篡改/回滚等不变职责按原有效证据复用，不计新测。
-- 原八档、其余91产品文件（含全部78runtime）、控制5旧文件与用户18325 PID2592/18327 PID4432及既有9/3档保持。两自有CLI exit0、无超时/锁/测试进程；临时页已关，默认Start-D4的18331日常世界未创建/启动。
-- 源码/说明/报告/脱敏原字节证据推送，控制状态和Projects先待验收再限定Done/已验收读回；D仍进行中、Issue3开放且暂停。本片完成停止，未合main/部署/迁移/DSH/第三方模型调用。
+- 本树 `D:/Narraverse-World-Map-player-work` / `codex/world-runtime-player-work`，接D4E8基准 `f7bc32818f25053ef8ae564a389dcd26028bb7a0`；用户已明确批准[工作收入合同](tasks/D4E9-PLAYER-WORK-TASK.md)。
+- 核心与服务最终定向8/8、根旧DTO3受影响成员2/2；根同一个全新隔离世界实际页面工作/买2粮，随后HTTP Advance107至tick144并正常关闭重开。工资20/支出20/钱包0/私粮21、工作1次、日结1次；五投影/活动/原回执/4档SHA一致。详见[结果报告](docs/runtime/D4E9-PLAYER-WORK-RESULT.md)。
+- 新opt-in profile `scene-livelihood-village` / format10 / DTO4/receipt4 / memory7-society6-player4；工资真实公共金转账、36tick、疲劳+150、成功start间隔144tick。旧helper默认拒绝工作；原scene/DTO3保留。不跳过审计或历史重演。
+- 新入口 `Start-D4E9.cmd`，18336、`artifacts/d4e9-daily/world`；本日常世界尚未创建/启动。临时验收服务已正常关闭，网页已关；18325 PID2592/18327 PID4432未启停。
+- 原八档/旧D4E8的93产品源/控制5旧文件指纹未变；97份候选运行源验收前后匹配，无测试锁/进程残留。首轮转写语法错误与GBK包装器打印失败均保留；最终Node和监督器exit0，无超时。
+- 当前功能范围已通过，正提交/推送并同步看板；不是main合并/部署或D整体验收。Issue3保持暂停，未跑长历史/全量/视觉/DSH/第三方模型。
 
-## 边界与历史
+## 剩余边界
 
-- [D4E7交易日结](docs/runtime/D4E7-LIVELIHOOD-REVIEW-20261016.md)与D4E6人物追踪等保持各自限定证据。只读/过期/死亡/异地/遭遇与溢出门本片静态复核，未分别动态注入。没有新增收入、NPC行为、地图或长期生存/性能承诺。
-- [D4E7固定状态](https://github.com/llys-p/Narraverse-World-Map/blob/06e922217904d17cca81ae30bb07a273ed9a3693/PROJECT_CONTEXT.md)保留历史；外部探索待用户转交的登记和长期方向统一见控制树，不自动接入demo或新模型任务。
+- 只保证本次有界收入闭环；未新增农产/补货，有限公共粮食不保证长期生存平衡。
+- 实际重开本短历史样本约23.6秒；没有性能合格结论。页面工作/买粮检查55.2秒含操作等待，不能当动作性能数值。
+- D4E8与更早历史证据保持各自范围：[D4E8结果](docs/runtime/D4E8-TRADE-FEEDBACK-REVIEW-20261016.md)。外部原型/长期方向仍以控制树为准。
