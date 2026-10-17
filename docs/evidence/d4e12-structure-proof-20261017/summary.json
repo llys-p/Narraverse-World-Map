@@ -1,0 +1,402 @@
+{
+  "baseline": "7d746467b0104f9b8988045871f7cfe682729ab1",
+  "candidate": "1e5e16cfab302b56da89e93383b6eefdb13f3213",
+  "order": [
+    "a1",
+    "b1",
+    "b2",
+    "a2"
+  ],
+  "repetitionsPerVariant": 2,
+  "commands": 8,
+  "ticks": 16,
+  "filesReceiptsProjectionsEqual": true,
+  "data": {
+    "a1": {
+      "actions": {
+        "wallMs": 2624.6520000000005,
+        "cpuMs": 2765
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2891.1967,
+        "cpuMs": 2907
+      },
+      "steps": [
+        {
+          "name": "first-open",
+          "wallMs": 221.1851,
+          "cpuMs": 344
+        },
+        {
+          "name": "action-0",
+          "wallMs": 183.9067,
+          "cpuMs": 234
+        },
+        {
+          "name": "action-1",
+          "wallMs": 211.6857,
+          "cpuMs": 267
+        },
+        {
+          "name": "action-2",
+          "wallMs": 262.8872,
+          "cpuMs": 296
+        },
+        {
+          "name": "action-3",
+          "wallMs": 311.88980000000004,
+          "cpuMs": 344
+        },
+        {
+          "name": "action-4",
+          "wallMs": 342.94330000000014,
+          "cpuMs": 328
+        },
+        {
+          "name": "action-5",
+          "wallMs": 405.6209000000001,
+          "cpuMs": 438
+        },
+        {
+          "name": "action-6",
+          "wallMs": 430.8488000000002,
+          "cpuMs": 422
+        },
+        {
+          "name": "action-7",
+          "wallMs": 474.8696,
+          "cpuMs": 436
+        },
+        {
+          "name": "close",
+          "wallMs": 1.4912999999996828,
+          "cpuMs": 0
+        },
+        {
+          "name": "reopen",
+          "wallMs": 2891.1967,
+          "cpuMs": 2907
+        },
+        {
+          "name": "reclose",
+          "wallMs": 1.379399999999805,
+          "cpuMs": 0
+        }
+      ],
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-structure-proof.mjs",
+          "baseline",
+          "artifacts/d4e12/structure-proof-a1"
+        ],
+        "pid": 17580,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 5969.094,
+        "cpuMs": 6171.875,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b1": {
+      "actions": {
+        "wallMs": 2058.6262000000006,
+        "cpuMs": 1969
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2175.7765,
+        "cpuMs": 2312
+      },
+      "steps": [
+        {
+          "name": "first-open",
+          "wallMs": 133.0108,
+          "cpuMs": 156
+        },
+        {
+          "name": "action-0",
+          "wallMs": 142.085,
+          "cpuMs": 157
+        },
+        {
+          "name": "action-1",
+          "wallMs": 160.31579999999997,
+          "cpuMs": 156
+        },
+        {
+          "name": "action-2",
+          "wallMs": 206.26060000000007,
+          "cpuMs": 218
+        },
+        {
+          "name": "action-3",
+          "wallMs": 232.91319999999996,
+          "cpuMs": 220
+        },
+        {
+          "name": "action-4",
+          "wallMs": 266.53,
+          "cpuMs": 312
+        },
+        {
+          "name": "action-5",
+          "wallMs": 315.39840000000004,
+          "cpuMs": 250
+        },
+        {
+          "name": "action-6",
+          "wallMs": 352.1014,
+          "cpuMs": 328
+        },
+        {
+          "name": "action-7",
+          "wallMs": 383.0218000000002,
+          "cpuMs": 328
+        },
+        {
+          "name": "close",
+          "wallMs": 1.2878000000000611,
+          "cpuMs": 0
+        },
+        {
+          "name": "reopen",
+          "wallMs": 2175.7765,
+          "cpuMs": 2312
+        },
+        {
+          "name": "reclose",
+          "wallMs": 1.266700000000128,
+          "cpuMs": 0
+        }
+      ],
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-structure-proof.mjs",
+          "candidate",
+          "artifacts/d4e12/structure-proof-b1"
+        ],
+        "pid": 73944,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4548.98,
+        "cpuMs": 4625.0,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b2": {
+      "actions": {
+        "wallMs": 2033.6156000000003,
+        "cpuMs": 2033
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2172.3246999999997,
+        "cpuMs": 2124
+      },
+      "steps": [
+        {
+          "name": "first-open",
+          "wallMs": 129.48860000000002,
+          "cpuMs": 202
+        },
+        {
+          "name": "action-0",
+          "wallMs": 149.68540000000002,
+          "cpuMs": 125
+        },
+        {
+          "name": "action-1",
+          "wallMs": 166.37910000000005,
+          "cpuMs": 142
+        },
+        {
+          "name": "action-2",
+          "wallMs": 187.9887,
+          "cpuMs": 219
+        },
+        {
+          "name": "action-3",
+          "wallMs": 228.9647,
+          "cpuMs": 233
+        },
+        {
+          "name": "action-4",
+          "wallMs": 280.13790000000006,
+          "cpuMs": 297
+        },
+        {
+          "name": "action-5",
+          "wallMs": 303.40319999999997,
+          "cpuMs": 281
+        },
+        {
+          "name": "action-6",
+          "wallMs": 343.85069999999996,
+          "cpuMs": 361
+        },
+        {
+          "name": "action-7",
+          "wallMs": 373.20590000000016,
+          "cpuMs": 375
+        },
+        {
+          "name": "close",
+          "wallMs": 1.3270000000002256,
+          "cpuMs": 0
+        },
+        {
+          "name": "reopen",
+          "wallMs": 2172.3246999999997,
+          "cpuMs": 2124
+        },
+        {
+          "name": "reclose",
+          "wallMs": 1.4880999999995765,
+          "cpuMs": 0
+        }
+      ],
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-structure-proof.mjs",
+          "candidate",
+          "artifacts/d4e12/structure-proof-b2"
+        ],
+        "pid": 50464,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4518.628,
+        "cpuMs": 4562.5,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "a2": {
+      "actions": {
+        "wallMs": 2654.7250000000004,
+        "cpuMs": 2812
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2980.36,
+        "cpuMs": 2938
+      },
+      "steps": [
+        {
+          "name": "first-open",
+          "wallMs": 223.0334,
+          "cpuMs": 266
+        },
+        {
+          "name": "action-0",
+          "wallMs": 190.9948,
+          "cpuMs": 218
+        },
+        {
+          "name": "action-1",
+          "wallMs": 220.072,
+          "cpuMs": 220
+        },
+        {
+          "name": "action-2",
+          "wallMs": 259.88189999999986,
+          "cpuMs": 281
+        },
+        {
+          "name": "action-3",
+          "wallMs": 310.0588,
+          "cpuMs": 312
+        },
+        {
+          "name": "action-4",
+          "wallMs": 343.4776999999999,
+          "cpuMs": 344
+        },
+        {
+          "name": "action-5",
+          "wallMs": 397.58230000000026,
+          "cpuMs": 437
+        },
+        {
+          "name": "action-6",
+          "wallMs": 439.50570000000016,
+          "cpuMs": 454
+        },
+        {
+          "name": "action-7",
+          "wallMs": 493.1518000000001,
+          "cpuMs": 546
+        },
+        {
+          "name": "close",
+          "wallMs": 1.3870999999999185,
+          "cpuMs": 0
+        },
+        {
+          "name": "reopen",
+          "wallMs": 2980.36,
+          "cpuMs": 2938
+        },
+        {
+          "name": "reclose",
+          "wallMs": 1.6213999999999942,
+          "cpuMs": 0
+        }
+      ],
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-structure-proof.mjs",
+          "baseline",
+          "artifacts/d4e12/structure-proof-a2"
+        ],
+        "pid": 73396,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 6084.458,
+        "cpuMs": 6171.875,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    }
+  },
+  "medians": {
+    "actions": {
+      "wallMs": {
+        "baseline": 2639.6885,
+        "candidate": 2046.1209000000003,
+        "improvementPercent": 22.48627442215245
+      },
+      "cpuMs": {
+        "baseline": 2788.5,
+        "candidate": 2001.0,
+        "improvementPercent": 28.24098977945132
+      }
+    },
+    "reopen": {
+      "wallMs": {
+        "baseline": 2935.77835,
+        "candidate": 2174.0505999999996,
+        "improvementPercent": 25.946364445394877
+      },
+      "cpuMs": {
+        "baseline": 2922.5,
+        "candidate": 2218.0,
+        "improvementPercent": 24.10607356715141
+      }
+    }
+  }
+}

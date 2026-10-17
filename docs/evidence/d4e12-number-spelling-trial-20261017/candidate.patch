@@ -1,0 +1,15 @@
+diff --git a/runtime/core/data-contract.mjs b/runtime/core/data-contract.mjs
+index c1f4f0c..31ab8a1 100644
+--- a/runtime/core/data-contract.mjs
++++ b/runtime/core/data-contract.mjs
+@@ -82,7 +82,9 @@ function encodeCanonical(value, ancestors = new Set(), depth = 0, encodedKeys =
+   if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);
+   if (typeof value === 'number') {
+     requireCondition(Number.isFinite(value), 'Non-finite number');
+-    return value === 0 ? '0' : JSON.stringify(value);
++    // Finite primitive numbers use the same decimal spelling in JSON and String.
++    // Keep the zero branch explicit so negative zero remains canonical "0".
++    return value === 0 ? '0' : String(value);
+   }
+   requireCondition(typeof value === 'object', 'Non-JSON data');
+   requireCondition(!ancestors.has(value), 'Cyclic data');

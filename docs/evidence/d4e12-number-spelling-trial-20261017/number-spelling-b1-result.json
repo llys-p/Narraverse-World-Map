@@ -1,0 +1,203 @@
+{
+  "mode": "candidate",
+  "baseline": "7d746467b0104f9b8988045871f7cfe682729ab1",
+  "sources": [
+    {
+      "file": "runtime/core/data-contract.mjs",
+      "sha256": "c3abebba56e4c6d93d97933c7635a04b3d174fb443b038ed9eaa195341333c3d"
+    }
+  ],
+  "node": "v24.14.0",
+  "steps": [
+    {
+      "name": "first-open",
+      "wallMs": 241.5415,
+      "cpuMs": 296
+    },
+    {
+      "name": "action-0",
+      "wallMs": 201.51939999999996,
+      "cpuMs": 235
+    },
+    {
+      "name": "action-1",
+      "wallMs": 209.65120000000002,
+      "cpuMs": 234
+    },
+    {
+      "name": "action-2",
+      "wallMs": 245.66459999999995,
+      "cpuMs": 297
+    },
+    {
+      "name": "action-3",
+      "wallMs": 293.26379999999995,
+      "cpuMs": 297
+    },
+    {
+      "name": "action-4",
+      "wallMs": 336.38639999999987,
+      "cpuMs": 343
+    },
+    {
+      "name": "action-5",
+      "wallMs": 386.6138000000001,
+      "cpuMs": 500
+    },
+    {
+      "name": "action-6",
+      "wallMs": 450.0450000000001,
+      "cpuMs": 454
+    },
+    {
+      "name": "action-7",
+      "wallMs": 460.8904000000002,
+      "cpuMs": 452
+    },
+    {
+      "name": "close",
+      "wallMs": 1.4052000000001499,
+      "cpuMs": 0
+    },
+    {
+      "name": "reopen",
+      "wallMs": 2806.5552000000002,
+      "cpuMs": 2844
+    },
+    {
+      "name": "reclose",
+      "wallMs": 1.5145999999995183,
+      "cpuMs": 0
+    }
+  ],
+  "receipts": [
+    {
+      "apiVersion": 1,
+      "commandId": "equal-fixed-0",
+      "durationTicks": 2,
+      "fromRevision": 0,
+      "fromTick": 0,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 2,
+      "toRevision": 2,
+      "type": "AdvanceTime"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "equal-fixed-1",
+      "durationTicks": 2,
+      "fromRevision": 2,
+      "fromTick": 2,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 4,
+      "toRevision": 4,
+      "type": "AdvanceTime"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "equal-fixed-2",
+      "durationTicks": 2,
+      "fromRevision": 4,
+      "fromTick": 4,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 6,
+      "toRevision": 6,
+      "type": "AdvanceTime"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "equal-fixed-3",
+      "durationTicks": 2,
+      "fromRevision": 6,
+      "fromTick": 6,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 8,
+      "toRevision": 8,
+      "type": "AdvanceTime"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "equal-fixed-4",
+      "durationTicks": 2,
+      "fromRevision": 8,
+      "fromTick": 8,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 10,
+      "toRevision": 10,
+      "type": "AdvanceTime"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "equal-fixed-5",
+      "durationTicks": 2,
+      "fromRevision": 10,
+      "fromTick": 10,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 12,
+      "toRevision": 12,
+      "type": "AdvanceTime"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "equal-fixed-6",
+      "durationTicks": 2,
+      "fromRevision": 12,
+      "fromTick": 12,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 14,
+      "toRevision": 14,
+      "type": "AdvanceTime"
+    },
+    {
+      "apiVersion": 1,
+      "commandId": "equal-fixed-7",
+      "durationTicks": 2,
+      "fromRevision": 14,
+      "fromTick": 14,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 16,
+      "toRevision": 16,
+      "type": "AdvanceTime"
+    }
+  ],
+  "fiveProjectionSha256": "9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4",
+  "receiptsSha256": "aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2",
+  "files": {
+    "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+    "service-commit-r10.json": "1236af4fa5df2dce31f2bd4b042b06c60f9546dda9969cfc3d4a583d63c67d93",
+    "service-commit-r12.json": "835b5a02a6d689097e6a2e6d769c2414e55d0c3aaf07c7ccea4648f49388e18e",
+    "service-commit-r14.json": "bd785db7c9c67baeed6b35ec8a0c3839b4509f57f568442773bd7f6eb2ed89a9",
+    "service-commit-r16.json": "4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a",
+    "service-commit-r2.json": "ef5eac0768ac5bdd3f4e3f9e7cfe5fd5be02be3c054c6397adcb73b4bebb0650",
+    "service-commit-r4.json": "45784d1639a8050e21866668fdcd49769f7a4265ded105cb4d59ca542639cdb1",
+    "service-commit-r6.json": "b02b10b90f7d949364ee6d35540f07bf9d0190b42e528651c82461aaeddacd6b",
+    "service-commit-r8.json": "8038a5972d14144fbf43989b3d28a047ea9c62cdaa618a74b7f5d89898d9ef41"
+  },
+  "verdict": "PASS",
+  "tickCounts": {},
+  "remainingLocks": []
+}

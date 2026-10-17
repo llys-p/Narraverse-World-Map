@@ -1,0 +1,10 @@
+✔ proof keys use detached data even when a Proxy supplies different property values (55.7004ms)
+✔ a warmed structural proof cannot certify a forged historical fact (94.1784ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 328.3892

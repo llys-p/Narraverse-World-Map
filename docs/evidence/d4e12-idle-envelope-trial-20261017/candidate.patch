@@ -1,0 +1,56 @@
+diff --git a/runtime/core/command-engine.mjs b/runtime/core/command-engine.mjs
+index 28b24a6..4d28c77 100644
+--- a/runtime/core/command-engine.mjs
++++ b/runtime/core/command-engine.mjs
+@@ -227,7 +227,10 @@ function runTick(bundle, systems, mode, execution = undefined) {
+         ...([EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(rulesVersion)?{experienceConfig:world.experienceModel.config}:{}),
+         ...([COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(rulesVersion)?{cognitionConfig:world.cognitionModel.config}:{}) });
+     };
+-    const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
++    // No system callback can change this envelope when the due-task loop is
++    // empty. Keep the comparison for every actual dispatch and legacy path.
++    const compareSystems = execution !== campaignExecution || plan.dueTasks.length > 0;
++    const beforeSystems = compareSystems ? envelope() : null, previousEntityId = s.nextEntityId;
+     for (const due of plan.dueTasks) {
+       const context = { snapshot: s, rng,
+         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
+@@ -242,7 +245,7 @@ function runTick(bundle, systems, mode, execution = undefined) {
+         throw fault('INVALID_INPUT', 'Asynchronous systems are not supported');
+       }
+     }
+-    requireCondition(envelope() === beforeSystems, 'System changed protected snapshot fields');
++    if (compareSystems) requireCondition(envelope() === beforeSystems, 'System changed protected snapshot fields');
+     if([PLAYER_RULES,PLAY_RULES,MIND_RULES].includes(rulesVersion) && plan.dueTasks.length){
+       const daily=candidate.eventLog.findLast(e=>e.type==='SocietyDaySettled' && e.tick===failedTick);
+       requireCondition(daily,'Missing player daily source');append(playerDayFact(s.world,daily.payload));
+diff --git a/tests/simulation/campaign-canonical-tick.test.mjs b/tests/simulation/campaign-canonical-tick.test.mjs
+index 2ff161c..6d143ad 100644
+--- a/tests/simulation/campaign-canonical-tick.test.mjs
++++ b/tests/simulation/campaign-canonical-tick.test.mjs
+@@ -62,6 +62,26 @@ test('session mode rejects a structurally valid but non-canonical custom transit
+   }
+ });
+ 
++test('public session rejects a custom survival handler that changes a protected snapshot field', () => {
++  const { bundle } = createCampaignVillage(42);
++  const before = structuredClone(bundle);
++  const customSystems = {
++    ...campaignSystems(),
++    survival(ctx) {
++      ctx.snapshot.simulationId = 'another-valid-simulation';
++    },
++  };
++
++  assert.throws(
++    () => performTick(bundle, customSystems, 'session'),
++    (error) => {
++      assert.match(error.cause?.message ?? '', /System changed protected snapshot fields/);
++      return true;
++    },
++  );
++  assert.deepEqual(bundle, before, 'rejected custom transition leaves the input unchanged');
++});
++
+ test('campaign tick rejects accessor, wrong-profile, and invalid-data inputs', () => {
+   const { bundle } = createCampaignVillage(42);
+   let getterCalls = 0;

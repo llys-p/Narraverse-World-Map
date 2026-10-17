@@ -1,8 +1,63 @@
 # D4E12：模拟执行与入口响应分离
 
-2026-10-17（Asia/Shanghai）。用户要求自主阅读开源游戏并解决行动等待。线程隔离源码 `216cd124cb992bc593007ebdec2c154ad046daaa`；最新固定规则 tick 优化源码 `7e6806a4ac0c802fa9322cdc58c95b37d9010e79`，比较基准 `e26f386490ac54f7d6474556a4e7008c782df40c`。
+2026-10-17（Asia/Shanghai）。用户要求自主阅读开源游戏并解决行动等待。线程隔离源码 `216cd124cb992bc593007ebdec2c154ad046daaa`；固定规则tick优化 `7e6806a4ac0c802fa9322cdc58c95b37d9010e79`；最新结构证明复用源码 `1e5e16cfab302b56da89e93383b6eefdb13f3213`，本片比较基准 `7d746467b0104f9b8988045871f7cfe682729ab1`。
 
-**已隔离HTTP事件循环阻塞；最新短世界行动确认与完整重开审计分别改善20.65%/21.47%，长档冷开与持续流畅体验尚未解决，性能整体仍不判合格。** 没有把仍在等待的行动提前标成成功。现有18338/18340/18342实例未启停，新代码没有切换进这些进程。
+**已隔离HTTP事件循环阻塞；最新短世界行动确认与完整重开审计相对上一已采纳版再改善22.49%/25.95%，长档冷开与持续流畅体验尚未解决，性能整体仍不判合格。** 不把不同轮次的百分比相加，不把仍在等待的行动提前标成成功。现有18338/18340/18342实例未启停，新代码没有切换进这些进程。
+
+## 20:13 继续推进：按完整内容复用单条结构证明
+
+**本片功能限定PASS，短世界性能改善成立；整体性能仍需修正。** 执行树/分支不变。唯一生产修改为 `runtime/core/scene-campaign-runtime.mjs` 的 `validateCampaignWorldState`；新增定向测试与独立HTTP A/B工具。
+
+### 原因与证明边界
+
+相同世界状态经 `checkBudgets`、快照结构检查、事件结构检查及重演入口时，会反复校验整套嵌套模型和配置。新实现每次仍完整检查输入描述符、精确参数字段和tick，再复制为独立JSON数据，计算包含**完整world与options.tick**的规范字符串；只有与私有的一条已成功结构校验内容逐字符完全相同，才复用该结构谓词的证明。不同数据或tick重走原三项结构校验；没有哈希碰撞、可变对象identity信任或调用方跳过参数。
+
+该缓存只保留一条规范字符串和独立结果，key最多262144个UTF-16代码单元（约512KiB上限，不是262144个UTF-8字节）；更大内容照常完整验证但不写缓存。结果写入及每次返回均复制，调用方改返回值不能污染证明。只复用纯结构谓词，**没有缓存任何历史重演结果、事件/命令回执结论或磁盘完整性结论**。公开 `validateBundle` / `validateServiceCommit` 及每次从零历史重演仍调用；世界结构相同也不能使伪造历史事实通过。没有改耐久发布、失败回滚、幂等、时间或worker机制。
+
+独立只读复核未发现新增正确性/审计漏洞；代码检查了完整key、tick隔离、负零/空原型归一化和结果投毒。边界必须明确：反射/复制仍可能执行Proxy trap，不承诺拒绝所有Proxy；这里证明最终独立数据的结构合法。常规getter在复制前拒绝且测试执行次数0。完整重演的fresh-world、逐tick、事实和receipt比较保持原代码。复核是静态证据，不能替代下面的运行门。
+
+### 同机真实HTTP ABBA
+
+Windows / Node v24.14.0，固定seed42及相同commandId，8条 `AdvanceTime(2)` 至r16/tick16。每轮新隔离目录/随机端口/独立进程；都为 `runtimeWorker:false`，只比较同一放置下的计算。A用加载钩子读取上述固定基准的campaign模块，B用候选；记录原模块SHA，未插入规则、判定或缓存命中计数。每进程180秒/阶段120秒硬限，四轮退出0、无watchdog介入。
+
+| 轮次 | 新世界打开墙钟/CPU ms | 8条行动墙钟/CPU ms | 关闭墙钟/CPU ms | 完整重开墙钟/CPU ms |
+| --- | ---: | ---: | ---: | ---: |
+| A1 | 221.185 / 344 | 2624.652 / 2765 | 1.491 / 0 | 2891.197 / 2907 |
+| B1 | 133.011 / 156 | 2058.626 / 1969 | 1.288 / 0 | 2175.776 / 2312 |
+| B2 | 129.489 / 202 | 2033.616 / 2033 | 1.327 / 0 | 2172.325 / 2124 |
+| A2 | 223.033 / 266 | 2654.725 / 2812 | 1.387 / 0 | 2980.360 / 2938 |
+
+各版2次。行动墙钟中位2639.689→2046.121ms（**22.49%**），CPU2788.5→2001ms（**28.24%**）；完整重开2935.778→2174.051ms（**25.95%**），CPU2922.5→2218ms（24.11%）。行动墙钟范围A2625–2655/B2034–2059ms，重开A2891–2980/B2172–2176ms；样本量小，不作置信区间或长史外推。关闭近1ms，不追查波动；新世界打开样本有下降，也不能称长档冷开已解决。
+
+四轮9份正式文件逐文件SHA一致、8回执和五投影规范签名完全相同，完整重开逐项一致；原ID重试回原回执、无新档，关闭重开前后9文件SHA均保持。终点r16 SHA `4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a`，回执`aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2`，五投影`9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4`。
+
+### 定向门与真实页面
+
+- `structure-proof-core-01`：9/9 PASS，墙钟4592.941ms/CPU5265.625ms；包含新3项内容/tick变化重验、返回值防投毒、零getter与伪trusted字段拒绝，以及固定tick等价/日结RNG、通用自定义规则拒绝、全服务重演/篡改拒绝/发布失败回滚/worker恢复/幂等。
+- 后增的两项反例单独运行 `structure-proof-adversarial-01`：2/2 PASS，墙钟426.292ms/CPU78.125ms；Proxy提供不同数据不能复用先前证明；**结构证明已命中且world/tick未变时，仅把合法历史报价10篡改为11，公开完整审计仍拒绝**。不是一次11/11，不重复已绿成员。
+- `structure-proof-ui-01`：实际Edge隔离新世界26命令PASS，赠粮→行军暂停改道→NPC路遇→两回合胜利→返村→正常关闭；墙钟23425.970ms/Node CPU14390.625ms（不含浏览器CPU），终态r48/tick37、HP920/私粮19/钱包0、村庄(4,7)，errors0。该 `--ui-only` 链未包含工作交易休息、独立重演或重开；后两项由ABBA与核心分次覆盖，不声称单次全链全绿。无视觉检查，不把跨轮页面时长作为性能对照。
+
+命令（ABBA的k/variant依次a1/baseline、b1/candidate、b2/candidate、a2/baseline；完整展开命令见原始process.json）：
+
+```powershell
+python scripts/run-d4e12-check.py structure-proof-k 180 --phase-file artifacts/d4e12/structure-proof-k/phase.json node scripts/measure-d4e12-structure-proof.mjs variant artifacts/d4e12/structure-proof-k
+python scripts/run-d4e12-check.py structure-proof-core-01 180 node --test --test-isolation=none tests/simulation/campaign-structure-proof.test.mjs tests/simulation/campaign-canonical-tick.test.mjs tests/simulation/demo-service-certification.test.mjs tests/simulation/demo-worker.test.mjs
+python scripts/run-d4e12-check.py structure-proof-adversarial-01 180 node --test --test-name-pattern "Proxy|warmed structural" tests/simulation/campaign-structure-proof.test.mjs
+python scripts/run-d4e12-check.py structure-proof-ui-01 600 --phase-file artifacts/d4e12/structure-proof-ui-01/phase.json node scripts/verify-d4e12-demo.mjs artifacts/d4e12/structure-proof-ui-01 --ui-only
+```
+
+[原始数据与中位统计](../evidence/d4e12-structure-proof-20261017/summary.json)、[核心门](../evidence/d4e12-structure-proof-20261017/structure-proof-core-01.txt)、[后增反例](../evidence/d4e12-structure-proof-20261017/structure-proof-adversarial-01.txt)、[页面结果](../evidence/d4e12-structure-proof-20261017/structure-proof-ui-01-result.json)、[保护证据](../evidence/d4e12-structure-proof-20261017/protection.json)。同目录保留四轮result/process原始JSON，不上传存档。
+
+本轮前两项试验也保留失败选择，不混进已采纳收益：
+
+| 已撤回候选 | 行动墙钟/CPU中位变化 | 重开墙钟/CPU中位变化 | 结果 |
+| --- | --- | --- | --- |
+| 空系统循环省envelope | 2823.417→2656.985ms / 2851.5→2766ms | 3007.584→3202.573ms / 3007.5→3172.5ms | envelope384→38，但没有一致端到端收益；撤回 |
+| 有限数String编码 | 2714.713→2577.596ms / 2805→2773ms | 2939.555→2799.868ms / 2937→2836.5ms | 幅度小、CPU确认不足；撤回 |
+
+两试验各自ABBA各版2次，9档/回执/五投影/重开一致、退出0。新增测试仅撰写未运行，不计通过；源码/活动工具/新增测试均撤回，归档[空循环补丁与数据](../evidence/d4e12-idle-envelope-trial-20261017/summary.json)及[数值编码补丁与数据](../evidence/d4e12-number-spelling-trial-20261017/summary.json)。没有追查小幅波动或重新运行私有长档。
+
+原8档/16依赖/旧88源码/107既有日常文件与中控并行原型、脏摘要保持；18338/PID61236、18340/PID63160、18342/PID14520保持、未更新，测试进程/隔离锁无残留。无main/部署/迁移/存档上传/DSH外部模型。剩余瓶颈仍是历史增长下的完整重演及嵌套模型遍历；此单条结构证明不能消除不同历史状态的全部成本。较长档74.351秒旧样本本次未复跑，不能作为候选耗时或宣布已解决。Projects保持In Progress/需修正，继续按有界证据推进。
 
 ## 19:52 自动跟进：编码断言写法试验未采纳
 

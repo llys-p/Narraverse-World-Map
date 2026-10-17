@@ -1,0 +1,166 @@
+{
+  "baseline": "7d746467b0104f9b8988045871f7cfe682729ab1",
+  "decision": "DISCARDED_NO_CONSISTENT_BENEFIT",
+  "order": [
+    "a1",
+    "b1",
+    "b2",
+    "a2"
+  ],
+  "repetitionsPerVariant": 2,
+  "filesReceiptsProjectionsEqual": true,
+  "newCoreTestWrittenButNotRun": true,
+  "pageChainRun": false,
+  "data": {
+    "a1": {
+      "actions": {
+        "wallMs": 2717.7344000000003,
+        "cpuMs": 2703
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2962.5409,
+        "cpuMs": 2937
+      },
+      "envelopeCounts": {
+        "session": 384
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-idle-envelope.mjs",
+          "baseline",
+          "artifacts/d4e12/idle-envelope-a1"
+        ],
+        "pid": 56524,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 6287.239,
+        "cpuMs": 6187.5,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b1": {
+      "actions": {
+        "wallMs": 2636.9968,
+        "cpuMs": 2657
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2939.8302,
+        "cpuMs": 2922
+      },
+      "envelopeCounts": {
+        "session": 38
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-idle-envelope.mjs",
+          "candidate",
+          "artifacts/d4e12/idle-envelope-b1"
+        ],
+        "pid": 54204,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 5999.25,
+        "cpuMs": 6140.625,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b2": {
+      "actions": {
+        "wallMs": 2676.973,
+        "cpuMs": 2875
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 3465.3151000000003,
+        "cpuMs": 3423
+      },
+      "envelopeCounts": {
+        "session": 38
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-idle-envelope.mjs",
+          "candidate",
+          "artifacts/d4e12/idle-envelope-b2"
+        ],
+        "pid": 61536,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 6572.965,
+        "cpuMs": 6734.375,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "a2": {
+      "actions": {
+        "wallMs": 2929.1001000000006,
+        "cpuMs": 3000
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 3052.6265,
+        "cpuMs": 3078
+      },
+      "envelopeCounts": {
+        "session": 384
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-idle-envelope.mjs",
+          "baseline",
+          "artifacts/d4e12/idle-envelope-a2"
+        ],
+        "pid": 71664,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 6499.979,
+        "cpuMs": 6750.0,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    }
+  },
+  "medians": {
+    "actions": {
+      "wallMs": {
+        "baseline": 2823.4172500000004,
+        "candidate": 2656.9849,
+        "improvementPercent": 5.894713223842507
+      },
+      "cpuMs": {
+        "baseline": 2851.5,
+        "candidate": 2766.0,
+        "improvementPercent": 2.99842188321936
+      }
+    },
+    "reopen": {
+      "wallMs": {
+        "baseline": 3007.5837,
+        "candidate": 3202.57265,
+        "improvementPercent": -6.483242677502199
+      },
+      "cpuMs": {
+        "baseline": 3007.5,
+        "candidate": 3172.5,
+        "improvementPercent": -5.486284289276799
+      }
+    }
+  }
+}

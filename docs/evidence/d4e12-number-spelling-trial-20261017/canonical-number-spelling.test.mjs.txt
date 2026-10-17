@@ -1,0 +1,53 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { canonicalJson, payloadBudget } from '../../runtime/core/data-contract.mjs';
+
+const baseline = '7d746467b0104f9b8988045871f7cfe682729ab1';
+const source = execFileSync('git', ['show', `${baseline}:runtime/core/data-contract.mjs`], { encoding: 'utf8' });
+const oracle = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+
+function outcome(fn) {
+  try { return { value: fn() }; }
+  catch (error) { return { error: { code: error.code, message: error.message } }; }
+}
+
+function bitPatterns() {
+  const view = new DataView(new ArrayBuffer(8));
+  const values = [-0, 0, Number.MIN_VALUE, -Number.MIN_VALUE, Number.MAX_VALUE, -Number.MAX_VALUE,
+    Number.EPSILON, 1e-7, 1e-6, 1e20, 1e21, -1e-7, 1.2345678901234567];
+  let bits = 0x9e3779b97f4a7c15n;
+  for (let i = 0; i < 4096; i++) {
+    bits = (bits * 0x5851f42d4c957f2dn + 0x14057b7ef767814fn) & 0xffffffffffffffffn;
+    view.setBigUint64(0, bits);
+    const value = view.getFloat64(0);
+    if (Number.isFinite(value)) values.push(value);
+  }
+  return values;
+}
+
+test('finite IEEE-754 spellings and payload byte boundaries match the frozen oracle', () => {
+  const numbers = bitPatterns();
+  assert.ok(numbers.length > 4000);
+  assert.equal(canonicalJson(-0), '0');
+  assert.equal(canonicalJson(-0), oracle.canonicalJson(-0));
+  assert.equal(canonicalJson(numbers), oracle.canonicalJson(numbers));
+  assert.equal(canonicalJson({ nested: [numbers.slice(0, 100), { min: Number.MIN_VALUE, max: Number.MAX_VALUE }] }),
+    oracle.canonicalJson({ nested: [numbers.slice(0, 100), { min: Number.MIN_VALUE, max: Number.MAX_VALUE }] }));
+
+  for (const value of ['a'.repeat(65534), 'a'.repeat(65535)]) {
+    assert.deepEqual(outcome(() => payloadBudget(value)), outcome(() => oracle.payloadBudget(value)));
+  }
+});
+
+test('invalid values keep identical error codes and messages without invoking getters', () => {
+  const cyclic = {}; cyclic.self = cyclic;
+  for (const value of [NaN, Infinity, -Infinity, 1n, new Number(1), cyclic])
+    assert.deepEqual(outcome(() => canonicalJson(value)), outcome(() => oracle.canonicalJson(value)));
+
+  let currentGetterCalls = 0, oracleGetterCalls = 0;
+  const accessor = calls => { const value = {}; Object.defineProperty(value, 'x', { enumerable: true, get() { calls(); return 1; } }); return value; };
+  assert.deepEqual(outcome(() => canonicalJson(accessor(() => currentGetterCalls++))),
+    outcome(() => oracle.canonicalJson(accessor(() => oracleGetterCalls++))));
+  assert.deepEqual([currentGetterCalls, oracleGetterCalls], [0, 0]);
+});

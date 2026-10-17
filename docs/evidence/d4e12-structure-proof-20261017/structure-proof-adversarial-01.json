@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-name-pattern",
+    "Proxy|warmed structural",
+    "tests/simulation/campaign-structure-proof.test.mjs"
+  ],
+  "pid": 45464,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 426.292,
+  "cpuMs": 78.125,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

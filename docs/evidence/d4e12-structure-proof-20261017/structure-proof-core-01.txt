@@ -1,0 +1,17 @@
+✔ campaign canonical ticks match the legacy registered-system oracle for six ticks (315.1599ms)
+✔ one synthetic day-boundary primitive preserves settlement facts and RNG (414.1071ms)
+✔ session mode rejects a structurally valid but non-canonical custom transition (73.5325ms)
+✔ campaign tick rejects accessor, wrong-profile, and invalid-data inputs (42.3817ms)
+✔ identical campaign structures return detached validation results and cannot poison the cache (28.2754ms)
+✔ mutated actor, numeric config, map, tick, and forged trust data are revalidated (62.5023ms)
+✔ descriptor inspection rejects accessors before and after a successful cached proof (18.0569ms)
+✔ live immutable service prefix equals independent full replay and rejects external forgeries (2611.158ms)
+✔ worker preserves committed views, exact retries, full restore and tamper refusal (882.1255ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4514.7438

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-d4e12-idle-envelope.mjs",
+    "baseline",
+    "artifacts/d4e12/idle-envelope-a1"
+  ],
+  "pid": 56524,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 6287.239,
+  "cpuMs": 6187.5,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

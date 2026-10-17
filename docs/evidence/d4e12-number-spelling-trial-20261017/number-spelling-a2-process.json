@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-d4e12-number-spelling.mjs",
+    "baseline",
+    "artifacts/d4e12/number-spelling-a2"
+  ],
+  "pid": 73632,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 6189.202,
+  "cpuMs": 6234.375,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}
