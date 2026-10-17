@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12｜Demo村庄/森林真实接入：功能限定通过，性能仍需修正。\n\n最新交付 386602e7ccba295247e5e13f39e0499bf1e3372c，生产优化7e6806a4ac0c802fa9322cdc58c95b37d9010e79；任务分支codex/world-runtime-demo-integration已推送读回，报告API字节一致。\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/386602e7ccba295247e5e13f39e0499bf1e3372c/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md\n\n本片去除固定campaign tick的第二次相同计算；保留公开完整审计、从零全历史重演、每条事实/回执/终态比较、耐久发布/失败回滚/幂等及时间规则。通用自定义系统仍重算比较，调用方无跳过参数。\n同一seed42合成世界、8次真实HTTP AdvanceTime(2)、终点r16，独立进程ABBA各版2次：行动墙钟中位3333.452→2645.153ms（20.65%），CPU3367.5→2726.5ms（19.03%）；完整重开3699.334→2905.252ms（21.47%），CPU3633→2961ms（18.50%）。四轮192次session均保留，重复proof192→0；9文件SHA/8回执/五投影/重开逐项相同，重试无新档。\n核心6/6 PASS，包括日结/RNG等价、伪造拒绝、零getter、完整重演/恢复/回滚。实际Edge短页面26命令：赠粮/行军暂停改道/NPC路遇/两回合胜利/返村/正常关闭，r48/tick37/HP920/私粮19/村庄(4,7)，无错误。本页面链未测工作交易休息/完整独立审计/重开；后两项由核心与HTTP A/B分次覆盖，非一次全绿、无视觉验收。\n\n短样本改善不能外推长存档或持续流畅体验。原较长档74.351秒冷开仍未重测/解决；前轮token相等比较无收益已撤回。下一片继续定位历史增长下重复遍历，world-map自动跟进继续。\n原8档/16依赖/旧88源码/107既有日常文件/控制并行原型与摘要保护，无本轮测试进程/隔离锁。18338/PID61236、18340/PID63160、18342/PID14520未启停且未应用新代码。无main/部署/迁移/存档上传/DSH外部模型。D4E12保持In Progress/需修正，D阶段仍进行中；D4E11历史状态不改。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
