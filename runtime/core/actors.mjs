@@ -21,7 +21,7 @@ export function defaultActorConfig(market=calibratedMarketConfig()) {
 }
 
 function validateConfig(config){
-  fields(config,['version','market','initialActors']);requireCondition(['actor-config-v1','actor-config-v2','actor-config-v3','actor-config-v4'].includes(config.version),'Unknown Actor configuration','UNSUPPORTED_VERSION');
+  fields(config,['version','market','initialActors']);requireCondition(['actor-config-v1','actor-config-v2','actor-config-v3','actor-config-v4','actor-config-v5'].includes(config.version),'Unknown Actor configuration','UNSUPPORTED_VERSION');
   denseArray(config.initialActors,MAX_PERSISTENT_ACTORS);
   for(const actor of config.initialActors){fields(actor,INITIAL_FIELDS);identifier(actor.name);
     requireCondition(['chief','hunter','merchant',...(config.version!=='actor-config-v1'?['player']:[])].includes(actor.occupation),'Unknown Actor occupation');
@@ -54,8 +54,8 @@ export function validateActorWorld(world,privateFoodConsumed=0){
   integer(privateFoodConsumed);
   fields(world,['resources','resourceModel','ecologyModel','marketModel','actorModel']);
   const m=world.actorModel;fields(m,['config','configFingerprint','day','actors','ledger']);
-  // actor-config-v4 lets the player body die on the tick a real action completes, not only on a day boundary.
-  const v4=m.config.version==='actor-config-v4';
+  // actor-config-v4/v5 let the player body die on the tick a real action completes, not only on a day boundary.
+  const v4=['actor-config-v4','actor-config-v5'].includes(m.config.version);
   denseArray(m.actors,MAX_PERSISTENT_ACTORS);validateConfig(m.config);validateMarketWorld(marketPart(world));
   requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.market)===canonicalJson(world.marketModel.config),'Actor/market configuration mismatch');
   integer(m.day);requireCondition(m.day===world.marketModel.day && m.day<=MAX_RESOURCE_DAYS,'Actor day mismatch');
@@ -64,7 +64,7 @@ export function validateActorWorld(world,privateFoodConsumed=0){
   for(const [index,actor] of m.actors.entries()){
     fields(actor,ACTOR_FIELDS);const initial=m.config.initialActors[index];
     requireCondition(actor.actorId==='actor-'+(index+1) && actor.name===initial.name && actor.occupation===initial.occupation &&
-      (['actor-config-v3','actor-config-v4'].includes(m.config.version) && actor.actorId==='actor-4'?['village','forest'].includes(actor.location):actor.location==='village') && actor.simulationLevel==='L1','Actor identity changed');
+      (m.config.version==='actor-config-v5'?['village','forest','road'].includes(actor.location):(['actor-config-v3','actor-config-v4'].includes(m.config.version) && actor.actorId==='actor-4'?['village','forest'].includes(actor.location):actor.location==='village')) && actor.simulationLevel==='L1','Actor identity changed');
     for(const key of ['health','hunger','fatigue'])value1000(actor[key]);
     requireCondition(typeof actor.alive==='boolean' && actor.alive===(actor.health>0),'Actor life/health mismatch');
     integer(actor.lastNeedsTick);

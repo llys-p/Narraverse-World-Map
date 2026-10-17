@@ -352,7 +352,7 @@ function makeReceipt(dto, base, outcome, result) {
     fromRevision: base.fromRevision,
     fromTick: base.fromTick,
     outcome,
-    receiptVersion: dto.version===4?4:RECEIPT_VERSION,
+    receiptVersion: [4,5].includes(dto.version)?dto.version:RECEIPT_VERSION,
     result,
     status: 'committed',
     tick: base.tick,
@@ -726,10 +726,13 @@ function executeIntentFor(bundle,dto,profile=null) {
   requireCondition(model.inputHistory.length < MAX_INPUT_HISTORY,
     `the input history budget of ${MAX_INPUT_HISTORY} entries is exhausted`, 'LIMIT_EXCEEDED');
 
+  profile?.requireBudget?.(dto.type,MAX_INPUT_HISTORY-model.inputHistory.length,world);
+
   // Step 4 — candidate audit (pure).
   const fromTick = snapshot.tick;
   const fromRevision = snapshot.revision;
-  const plan = profile&&dto.type==='PlayerWork'?profile.auditWork(world,fromTick):profile&&dto.type==='PlayerGiftFood'?profile.auditGift(world):auditIntent(dto,world);
+  const originalPlan = profile?.auditMap?.(world,dto) ?? (profile&&dto.type==='PlayerWork'?profile.auditWork(world,fromTick):profile&&dto.type==='PlayerGiftFood'?profile.auditGift(world):auditIntent(dto,world));
+  const plan=profile?.adjustPlan?.(dto,world,originalPlan)??originalPlan;
   if(profile){
     requireCondition(snapshot.pendingCommands.length<16,'Scene pending queue budget exhausted','LIMIT_EXCEEDED');
     requireCondition(fromTick<=Number.MAX_SAFE_INTEGER-plan.durationTicks&&fromRevision<=Number.MAX_SAFE_INTEGER-Math.max(1,plan.durationTicks)&&snapshot.instantCommits<Number.MAX_SAFE_INTEGER,'Scene clock/revision budget exhausted','LIMIT_EXCEEDED');
@@ -747,12 +750,14 @@ function executeIntentFor(bundle,dto,profile=null) {
   const systems = profile?.systems??encounterSystems();
   const initialEventCount = eventLog.length;
   let working = { snapshot: cloneData(snapshot), eventLog: eventLog.map((event) => cloneData(event)) };
-  if (plan.outcome === 'succeeded' && !instantCommit && plan.worldCommand === true && dto.type !== TYPE_ADVANCE) {
+  if (plan.outcome === 'succeeded' && !instantCommit && plan.worldCommand === true && dto.type !== TYPE_ADVANCE && !plan.directTicks) {
     // The legacy intent commits inside its target tick, before that tick's settlement (L90).
     working = enqueueWorldAction(working, dto, fromTick, tick);
   }
 
   let midFlightDead = false;
+  const turnEvents=[];let combatPlayerHealth=null;
+  const hpEvent=(kind,actorId,targetId,beforeHealth,afterHealth)=>turnEvents.push({kind,actorId,targetId,beforeHealth,afterHealth});
   if (plan.outcome === 'succeeded' && !instantCommit && plan.worldCommand !== true) {
     // L91: the encounter effect lands at the completion tick *before* that tick's
     // settlement, so the world is advanced to completionTick-1 first, the action is
@@ -760,7 +765,19 @@ function executeIntentFor(bundle,dto,profile=null) {
     for (let t = fromTick; t < tick - 1; t += 1) working = performTick(working, systems, 'session');
     if (playerIsAlive(working.snapshot.world)) {
       const actedWorld = cloneData(working.snapshot.world);
+      const playerBefore=playerOf(actedWorld).health,wolfBefore=encounterOf(actedWorld)?.wolfHealth;
       applyIntent(actedWorld, dto, plan, tick);
+      if(profile?.campaign&&dto.type===TYPE_ACTION){
+        if(playerBefore!==playerOf(world).health)hpEvent('world-settlement',ACTOR_ID,null,playerOf(world).health,playerBefore);
+        if(dto.payload.action===ACTION_ATTACK){
+          const wolfAfter=encounterOf(actedWorld).wolfHealth;
+          hpEvent('player-strike',ACTOR_ID,plan.encounterId,wolfBefore,wolfAfter);
+          if(wolfAfter>0)hpEvent('wolf-counter',plan.encounterId,ACTOR_ID,playerBefore,playerOf(actedWorld).health);
+          if(wolfAfter===0)hpEvent('defeat',plan.encounterId,null,wolfBefore,0);
+          if(!playerIsAlive(actedWorld))hpEvent('defeat',ACTOR_ID,null,playerBefore,0);
+        }else hpEvent('flee',ACTOR_ID,null,null,null);
+        combatPlayerHealth=playerOf(actedWorld).health;
+      }
       // L83: a combat death is observed by the memory observer in the same atomic
       // completion, so the observer/world life boundary stays aligned at every tick.
       if (!playerIsAlive(actedWorld)) {
@@ -784,7 +801,7 @@ function executeIntentFor(bundle,dto,profile=null) {
   const finalSnapshot = working.snapshot;
   requireCondition(finalSnapshot.tick === tick, 'the real progression must end at the target tick', 'INVALID_INPUT');
   const nextWorld = cloneData(finalSnapshot.world);
-  if (instantCommit) applyIntent(nextWorld, dto, plan, tick);
+  if (instantCommit){if(plan.mapCommand){if(plan.outcome==='succeeded')profile.commitMap(nextWorld,dto,plan,tick);}else applyIntent(nextWorld, dto, plan, tick);}
   if(profile)requireCondition(finalSnapshot.nextEventSeq<=Number.MAX_SAFE_INTEGER-(dto.type==='PlayerGiftFood'&&plan.outcome==='succeeded'?2:1),'Scene event counter budget exhausted','LIMIT_EXCEEDED');
   let giftFact=null;
   if(profile&&dto.type==='PlayerGiftFood'&&plan.outcome==='succeeded'){
@@ -794,7 +811,8 @@ function executeIntentFor(bundle,dto,profile=null) {
 
   let outcome = plan.outcome;
   let result;
-  if(profile&&dto.type==='PlayerGiftFood'){
+  if(plan.mapCommand){result=profile.mapResult(world,nextWorld,dto,plan);
+  }else if(profile&&dto.type==='PlayerGiftFood'){
     result={donorId:ACTOR_ID,recipientId:'actor-2',product:'food',quantity:1,sourceEventSeq:giftFact?.eventSeq??null,reasonCode:plan.reasonCode};
   } else if (plan.worldCommand === true) {
     if (plan.outcome === 'succeeded' && dto.type === TYPE_ADVANCE) {
@@ -823,6 +841,12 @@ function executeIntentFor(bundle,dto,profile=null) {
     };
   }
 
+  if(profile?.campaign&&dto.type===TYPE_ACTION){
+    const before=combatPlayerHealth??playerOf(world).health,after=playerOf(nextWorld).health;
+    if(before!==after)hpEvent('world-settlement',ACTOR_ID,null,before,after);
+    if(after===0&&!turnEvents.some(e=>e.kind==='defeat'&&e.actorId===ACTOR_ID))hpEvent('defeat',ACTOR_ID,null,before,0);
+    result.turnEvents=turnEvents;
+  }
   const receipt = makeReceipt(
     dto,
     { durationTicks: plan.durationTicks, fromRevision, fromTick, tick, toRevision },
@@ -1458,13 +1482,13 @@ export function validateSceneEncounterWorldState(world,snapshotContext={}){retur
 export function createSceneEncounterRuntimeHooks(baseHooks,scenePolicy){
  const profile=()=>({...scenePolicy,rules:scenePolicy.rules??'d-scene-survival-v1',fixture:scenePolicy.fixture??'scene-survival-village',
   systems:canonicalSystems(scenePolicy.rules??'d-scene-survival-v1'),createWorld:hooks.createWorld,
-  validateWorld:validateSceneEncounterWorldState,executeIntent:hooks.executeIntent});
+  validateWorld:scenePolicy.validateWorld??validateSceneEncounterWorldState,executeIntent:hooks.executeIntent});
  const hooks={
   executeIntent:(bundle,dto)=>executeIntentFor(bundle,dto,profile()),
   describeActions:bundle=>describeActionsFor(bundle,profile()),
-  createWorld:(memory,mind,motivation,experience,cognition,id)=>hooksCreateWorld(memory,mind,motivation,experience,cognition,id,baseHooks,'encounter-runtime-v2'),
-  beforeSystems:(snapshot,events,tick,append,commit)=>hooksBeforeSystems(snapshot,events,tick,append,commit,baseHooks),
-  afterSystems:(snapshot,events,tick,append,context)=>hooksAfterSystems(snapshot,events,tick,append,context,baseHooks),
+  createWorld:(memory,mind,motivation,experience,cognition,id)=>{const world=hooksCreateWorld(memory,mind,motivation,experience,cognition,id,baseHooks,'encounter-runtime-v2');return scenePolicy.extendWorld?.(world)??world;},
+  beforeSystems:(snapshot,events,tick,append,commit)=>{scenePolicy.beforeTick?.(snapshot.world,tick,append);return hooksBeforeSystems(snapshot,events,tick,append,commit,baseHooks);},
+  afterSystems:(snapshot,events,tick,append,context)=>{const result=hooksAfterSystems(snapshot,events,tick,append,context,baseHooks);scenePolicy.afterTick?.(snapshot.world);return result;},
   applyAction:(input,payload,sample=null)=>hooksApplyAction(input,payload,sample,baseHooks),
   settleDay:(world,sample)=>hooksSettleDay(world,sample,baseHooks),
   validateHistory:(snapshot,events)=>hooksValidateHistory(snapshot,events,profile())

@@ -37,7 +37,7 @@ export function preflightSceneIntent(dto,version=3){
  if(dto.type==='PlayerGiftFood'){fields(p,['recipientId']);requireCondition(p.recipientId==='actor-2','Unknown food gift recipient');}
  else if(dto.type==='AdvanceTime'){fields(p,['ticks']);integer(p.ticks,1);requireCondition(p.ticks<=144000,'Advance budget exceeded','LIMIT_EXCEEDED');}
  else if(dto.type==='PlayerTravel'){fields(p,['destination']);requireCondition(['village','forest'].includes(p.destination),'Unknown travel destination');}
- else if(version===4 && dto.type==='PlayerWork')fields(p,[]);
+ else if([4,5].includes(version) && dto.type==='PlayerWork')fields(p,[]);
  else if(['PlayerRest','EncounterBegin'].includes(dto.type))fields(p,[]);
  else if(['PlayerBuy','PlayerSell'].includes(dto.type)){fields(p,['product','quantity']);requireCondition(['food','herbs'].includes(p.product),'Unknown product');integer(p.quantity,1);requireCondition(p.quantity<=10,'Trade quantity budget exceeded','LIMIT_EXCEEDED');}
  else if(['EncounterAction','EncounterCancel'].includes(dto.type)){fields(p,dto.type==='EncounterAction'?['encounterId','action']:['encounterId']);identifier(p.encounterId);requireCondition(p.encounterId.length<=64,'Encounter ID budget exceeded');if(dto.type==='EncounterAction')requireCondition(['attack','flee'].includes(p.action),'Unknown encounter action');}

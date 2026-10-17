@@ -24,15 +24,16 @@ import { SURVIVAL_RULES, SURVIVAL_FOOD_QUOTE_EVENT, SURVIVAL_WORK_OFFER_EVENT, M
   from './survival-state.mjs';
 import { COGNITIVE_REVIEW_STATE_VERSION, validateCognitiveReviewState } from './cognitive-review.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
-import { PLAYER_RULES,PLAY_RULES,validatePlayerDayPayload,validatePlayerActionResult } from './player-state.mjs';
+import { PLAYER_RULES,PLAY_RULES,validatePlayerDayPayload,validatePlayerActionResult,validateCampaignPlayerActionResult } from './player-state.mjs';
 import { ENCOUNTER_RULES, validateEncounterWorldState, encounterRuntimeHooks } from './encounter-runtime.mjs';
 import {LIVELIHOOD_RULES,validateLivelihoodWorldState,livelihoodRuntimeHooks} from './scene-livelihood-runtime.mjs';
+import {CAMPAIGN_RULES,validateCampaignWorldState,campaignRuntimeHooks} from './scene-campaign-runtime.mjs';
 import {validatePlayerWorkResult} from './player-work.mjs';
 import {SCENE_RULES,validateSceneWorldState,sceneRuntimeHooks,validateSceneGiftEvent} from './scene-runtime.mjs';
 
 // Returns only validated copies; the engine assigns sequence/tick/version.
 export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
-  if (rulesVersion === EXPERIENCE_RULES || rulesVersion === COGNITION_RULES || rulesVersion === SURVIVAL_RULES || rulesVersion === ENCOUNTER_RULES || rulesVersion === SCENE_RULES || rulesVersion === LIVELIHOOD_RULES)
+  if (rulesVersion === EXPERIENCE_RULES || rulesVersion === COGNITION_RULES || rulesVersion === SURVIVAL_RULES || rulesVersion === ENCOUNTER_RULES || rulesVersion === SCENE_RULES || rulesVersion === LIVELIHOOD_RULES || rulesVersion === CAMPAIGN_RULES)
     inspectDescriptorTree(raw);
   const fact = cloneData(raw);
   fields(fact, ['type', 'sourceSystem', 'commandId', 'causationEventSeqs', 'entityIds', 'payload']);
@@ -53,8 +54,8 @@ export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
     requireCondition(fact.type==='ActorDaySettled' && systemId==='actors','Invalid Actor fact');validateActorPayload(fact.payload);
   }else if(rulesVersion===HUNTER_RULES){
     requireCondition(fact.type==='HunterDaySettled' && systemId==='hunter','Invalid Hunter daily fact');validateHunterPayload(fact.payload);
-  }else if ([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES].includes(rulesVersion)) {
-    requireCondition(fact.type==='SocietyDaySettled' && systemId==='society','Invalid Society daily fact');([SCENE_RULES,LIVELIHOOD_RULES].includes(rulesVersion)?validateSceneSocietyPayload:validateSocietyPayload)(fact.payload);
+  }else if ([SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(rulesVersion)) {
+    requireCondition(fact.type==='SocietyDaySettled' && systemId==='society','Invalid Society daily fact');([SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(rulesVersion)?validateSceneSocietyPayload:validateSocietyPayload)(fact.payload);
   } else {
     requireCondition(fact.type === 'FixturePulse', 'Unknown system fact');
     fields(fact.payload, ['sample']);
@@ -82,6 +83,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
     denseArray(eventLog,MAX_RESOURCE_DAYS*4+100000);validateCognitionWorld(snapshot.world);
   } else if (snapshot.rulesVersion === SURVIVAL_RULES) {
     denseArray(eventLog,MAX_RESOURCE_DAYS*4+100000);validateSurvivalWorld(snapshot.world);
+  } else if(snapshot.rulesVersion===CAMPAIGN_RULES){
+    denseArray(eventLog,MAX_EVENTS);validateCampaignWorldState(snapshot.world,{tick:snapshot.tick});
   } else if(snapshot.rulesVersion===LIVELIHOOD_RULES){
     denseArray(eventLog,MAX_EVENTS);validateLivelihoodWorldState(snapshot.world,{tick:snapshot.tick});
   } else if(snapshot.rulesVersion===SCENE_RULES){
@@ -110,7 +113,7 @@ export function validateEventLog(eventLog, snapshot, systems) {
   const mindProfile=state.rulesVersion===MIND_RULES;
   const cognitionProfile=state.rulesVersion===COGNITION_RULES;
   const survivalProfile=state.rulesVersion===SURVIVAL_RULES;
-  const workProfile=state.rulesVersion===LIVELIHOOD_RULES,sceneProfile=state.rulesVersion===SCENE_RULES||workProfile;
+  const campaignProfile=state.rulesVersion===CAMPAIGN_RULES,workProfile=state.rulesVersion===LIVELIHOOD_RULES||campaignProfile,sceneProfile=state.rulesVersion===SCENE_RULES||workProfile;
   const encounterProfile=state.rulesVersion===ENCOUNTER_RULES||sceneProfile;
   // The encounter profile extends survival: it carries the same cognition/experience/motivation
   // models and publishes the same fact family, so it shares the survival gates. Legacy rules keep
@@ -166,11 +169,15 @@ export function validateEventLog(eventLog, snapshot, systems) {
     }else if(event.type==='PlayerWorkCommitted'){
       requireCondition(workProfile&&event.sourceSystem==='command-engine'&&event.entityIds.length===1&&event.entityIds[0]==='actor-4'&&event.causationEventSeqs.length===0,'Invalid work fact source');
       identifier(event.commandId);validatePlayerWorkResult(event.payload);requireCondition(event.tick===event.payload.endTick&&!commandEvents.has(event.commandId),'Invalid work fact clock/duplicate');commandEvents.set(event.commandId,event);
+    }else if(event.type==='CampaignRegionsChanged'){
+      requireCondition(campaignProfile&&event.sourceSystem==='campaign'&&event.commandId===null&&event.causationEventSeqs.length===0,'Campaign region fact outside profile');
+      fields(event.payload,['rows']);denseArray(event.payload.rows,4);requireCondition(event.payload.rows.length>0&&event.entityIds.length===event.payload.rows.length,'Invalid campaign region roster');
+      let previous='';for(const [i,row] of event.payload.rows.entries()){fields(row,['actorId','before','after']);requireCondition(['actor-1','actor-2','actor-3','actor-4'].includes(row.actorId)&&row.actorId>previous&&event.entityIds[i]===row.actorId&&['village','forest','road'].includes(row.before)&&['village','forest','road'].includes(row.after)&&row.before!==row.after,'Invalid campaign region row');previous=row.actorId;}
     }else if(event.type==='PlayerActionCommitted'){
-      requireCondition([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES].includes(state.rulesVersion) && event.sourceSystem==='command-engine' && event.entityIds.length===1 && event.entityIds[0]==='actor-4' && event.causationEventSeqs.length===0,'Invalid player action source');
-      identifier(event.commandId);validatePlayerActionResult(event.payload);requireCondition(event.tick===event.payload.endTick && !commandEvents.has(event.commandId),'Invalid player action clock/duplicate');commandEvents.set(event.commandId,event);
+      requireCondition([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(state.rulesVersion) && event.sourceSystem==='command-engine' && event.entityIds.length===1 && event.entityIds[0]==='actor-4' && event.causationEventSeqs.length===0,'Invalid player action source');
+      identifier(event.commandId);(campaignProfile?validateCampaignPlayerActionResult:validatePlayerActionResult)(event.payload);requireCondition(event.tick===event.payload.endTick && !commandEvents.has(event.commandId),'Invalid player action clock/duplicate');commandEvents.set(event.commandId,event);
     }else if(event.type==='PlayerDaySettled'){
-      requireCondition([PLAYER_RULES,PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES].includes(state.rulesVersion) && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player daily source');
+      requireCondition([PLAYER_RULES,PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(state.rulesVersion) && event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player daily source');
       if(workProfile)fields(event.payload.ledger,['foodUsed','herbsUsed','foodBought','herbsBought','foodSold','herbsSold','spent','earned','foodGiven','wages','workCount']);
       else if(sceneProfile)fields(event.payload.ledger,['foodUsed','herbsUsed','foodBought','herbsBought','foodSold','herbsSold','spent','earned','foodGiven']);
       validatePlayerDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Player closing clock mismatch');
@@ -346,9 +353,9 @@ export function validateEventLog(eventLog, snapshot, systems) {
     if (receipt.status === 'succeeded') {
       const event = commandEvents.get(id);
       requireCondition(event && receipt.eventSeqs.length === 1 && receipt.eventSeqs[0] === event.eventSeq, 'Success receipt missing its fact');
-      if([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES].includes(state.rulesVersion) && receipt.input.type==='PlayerAction'){
+      if([PLAY_RULES,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(state.rulesVersion) && receipt.input.type==='PlayerAction'){
         const isWork=receipt.input.payload.intent.type==='PlayerWork';requireCondition(!isWork||workProfile,'Work receipt requires livelihood rules');
-        (isWork?validatePlayerWorkResult:validatePlayerActionResult)(receipt.result);requireCondition(event.tick===receipt.input.targetTick && event.type===(isWork?'PlayerWorkCommitted':'PlayerActionCommitted') && canonicalJson(event.payload)===canonicalJson(receipt.result),'Player input/receipt/fact mismatch');
+        (isWork?validatePlayerWorkResult:campaignProfile?validateCampaignPlayerActionResult:validatePlayerActionResult)(receipt.result);requireCondition(event.tick===receipt.input.targetTick && event.type===(isWork?'PlayerWorkCommitted':'PlayerActionCommitted') && canonicalJson(event.payload)===canonicalJson(receipt.result),'Player input/receipt/fact mismatch');
       }else if(societyProfile && receipt.input.type==='SocietyAction'){
         validateSocietyActionResult(receipt.result);
         requireCondition(event.tick===receipt.input.targetTick && event.type==='SocietyActionCommitted' &&
@@ -385,7 +392,8 @@ export function validateEventLog(eventLog, snapshot, systems) {
   requireCondition(commandEvents.size === 0, 'Fact references missing receipt');
   if (resourceProfile) validateResourceHistory(state.world, resourcePayloads);
   if (ecologyProfile) validateEcologyHistory(state, events);
-  if(workProfile)livelihoodRuntimeHooks.validateHistory(state,events);
+  if(campaignProfile)campaignRuntimeHooks.validateHistory(state,events);
+  else if(workProfile)livelihoodRuntimeHooks.validateHistory(state,events);
   else if(sceneProfile)sceneRuntimeHooks.validateHistory(state,events);
   else if(encounterProfile)encounterRuntimeHooks.validateHistory(state,events);
   else if(survivalProfile)survivalRuntimeHooks.validateHistory(state,events);

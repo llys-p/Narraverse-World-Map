@@ -5,13 +5,15 @@ import { validateSocietyActionResult,validateSocietyPayload,validateSceneSociety
 import { MAX_PERSISTENT_ACTORS } from './actors.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
 import { validateMedicineAnnouncement } from './public-medicine.mjs';
-import { validatePlayerDayPayload,validatePlayerActionResult } from './player-state.mjs';
+import { validatePlayerDayPayload,validatePlayerActionResult,validateCampaignPlayerActionResult } from './player-state.mjs';
 
 export const MAX_ACTOR_MEMORIES=32;
 export const MEMORY_OBSERVER_VERSION='memory-observer-v1';
 // D4A-CP1b: memory-observer-v3 is the gift profile. It keeps every v2 meaning (location/travel
 // and the old projections) and additionally consumes FoodGiftCommitted; v1/v2 never see it.
-const OBSERVER_VERSIONS=['memory-observer-v1','memory-observer-v2','memory-observer-v3'];
+const OBSERVER_VERSIONS=['memory-observer-v1','memory-observer-v2','memory-observer-v3','memory-observer-v4'];
+const giftObserver=version=>['memory-observer-v3','memory-observer-v4'].includes(version);
+const campaignLocations=['village','forest','road'];
 const isLocatedObserver=version=>version!=='memory-observer-v1';
 const FOOD_GIFT_FIELDS=['donorId','recipientId','product','quantity','location','donorFoodBefore','donorFoodAfter','recipientFoodBefore','recipientFoodAfter'];
 const EVENT_LIMIT=MAX_RESOURCE_DAYS*4+100000;
@@ -34,13 +36,17 @@ function checkEvent(event,version=MEMORY_OBSERVER_VERSION){
     requireCondition(canonicalJson(ids)===canonicalJson(event.entityIds),'Personal source identity mismatch');
   }else if(event.type==='SocietyDaySettled'){
     requireCondition(event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0,'Invalid daily source');
-    (version==='memory-observer-v3'?validateSceneSocietyPayload:validateSocietyPayload)(event.payload);requireCondition(event.tick===event.payload.day*144,'Daily source clock mismatch');
+    (giftObserver(version)?validateSceneSocietyPayload:validateSocietyPayload)(event.payload);requireCondition(event.tick===event.payload.day*144,'Daily source clock mismatch');
   }else if(event.type==='PlayerDaySettled'){
     requireCondition(event.sourceSystem==='society' && event.commandId===null && event.entityIds.length===0 && event.causationEventSeqs.length===0,'Invalid player source');
     validatePlayerDayPayload(event.payload);requireCondition(event.tick===event.payload.day*144,'Player daily clock mismatch');
   }else if(event.type==='PlayerActionCommitted'){
     requireCondition(event.sourceSystem==='command-engine' && event.commandId!==null && event.entityIds.length===1 && event.entityIds[0]==='actor-4' && event.causationEventSeqs.length===0,'Invalid player action source');
-    validatePlayerActionResult(event.payload);requireCondition(event.tick===event.payload.endTick,'Player action source clock mismatch');
+    (version==='memory-observer-v4'?validateCampaignPlayerActionResult:validatePlayerActionResult)(event.payload);requireCondition(event.tick===event.payload.endTick,'Player action source clock mismatch');
+  }else if(event.type==='CampaignRegionsChanged'){
+    requireCondition(version==='memory-observer-v4'&&event.sourceSystem==='campaign'&&event.commandId===null&&event.causationEventSeqs.length===0,'Campaign location source outside profile');
+    fields(event.payload,['rows']);denseArray(event.payload.rows,4);requireCondition(event.payload.rows.length>0&&event.entityIds.length===event.payload.rows.length,'Invalid campaign location roster');
+    let prior='';for(const [i,row] of event.payload.rows.entries()){fields(row,['actorId','before','after']);requireCondition(['actor-1','actor-2','actor-3','actor-4'].includes(row.actorId)&&row.actorId>prior&&event.entityIds[i]===row.actorId&&campaignLocations.includes(row.before)&&campaignLocations.includes(row.after)&&row.before!==row.after,'Invalid campaign region change');prior=row.actorId;}
   }else if(event.type==='FoodGiftCommitted'){
     validateFoodGiftSource(event);
   }else if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type)){
@@ -75,13 +81,13 @@ function projectVersionedActorEvent(raw,actorId,location,version){
   // D4A-CP1b: the gift projection is the donor's/recipient's own view only, channel self / importance 1.
   // Old callers pass no version and default to v1, so they keep their old [] output verbatim.
   if(event.type==='FoodGiftCommitted'){
-    if(version!=='memory-observer-v3')return [];
+    if(!giftObserver(version))return [];
     if(actorId!==p.donorId && actorId!==p.recipientId)return [];
     const direction=actorId===p.donorId?'given':'received';
     return [entry(event,actorId,'self',1,{type:'food-gift',donorId:p.donorId,recipientId:p.recipientId,
       product:p.product,quantity:p.quantity,direction,commandId:event.commandId})];
   }
-  if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type))return location==='forest'?[]:[entry(event,actorId,'public',0,{type:event.type,...cloneData(p)})];
+  if(['MedicalRequestAnnounced','MedicineOfferAnnounced'].includes(event.type))return (version==='memory-observer-v4'?location!=='village':location==='forest')?[]:[entry(event,actorId,'public',0,{type:event.type,...cloneData(p)})];
   if(event.type==='PlayerActionCommitted')return actorId==='actor-4'?[entry(event,actorId,'self',1,{...cloneData(p),action:p.type,type:'player-action'})]:[];
   if(event.type==='SocietyActionCommitted'){
     if(!event.entityIds.includes(actorId))return [];
@@ -95,7 +101,7 @@ function projectVersionedActorEvent(raw,actorId,location,version){
   const row=p.actors.rows.find(a=>a.actorId===actorId),account=p.agents.find(a=>a.actorId===actorId);
   if(!row)return [];
   const market=p.actors.market,resources=market.ecology.resources.entries;
-  return [...(location==='forest'?[]:[entry(event,actorId,'public',0,{type:'village-market',food:resources.find(e=>e.resource==='food').closing,
+  return [...((version==='memory-observer-v4'?location!=='village':location==='forest')?[]:[entry(event,actorId,'public',0,{type:'village-market',food:resources.find(e=>e.resource==='food').closing,
     herbs:resources.find(e=>e.resource==='herbs').closing,prices:{food:market.prices.food.current,herbs:market.prices.herbs.current},
     routeOpen:market.routeOpen,alive:p.actors.populationClosing.totalAlive})]),
   ...(account?[entry(event,actorId,'self',1,{type:'own-day',actorId,alive:row.closing.alive,health:row.closing.health,hunger:row.closing.hunger,
@@ -108,7 +114,7 @@ export function createMemoryState(initialActors,version=MEMORY_OBSERVER_VERSION)
   denseArray(initialActors,MAX_PERSISTENT_ACTORS);requireCondition(initialActors.length>0,'Empty memory roster');const ids=new Set();
   for(const a of initialActors){fields(a,['actorId','alive',...(play?['location']:[])]);identifier(a.actorId);requireCondition(typeof a.alive==='boolean' && !ids.has(a.actorId),'Invalid/duplicate memory identity');if(play)requireCondition(a.location==='village','Unknown initial observer location');ids.add(a.actorId);}
   // D4A-CP1b: the gift profile projects both gift participants, so both must be on the roster.
-  if(version==='memory-observer-v3'){
+  if(giftObserver(version)){
     for(const id of ['actor-2','actor-4'])requireCondition(ids.has(id),'Food gift roster is missing a participant');
   }
   const actors=cloneData(initialActors).sort((a,b)=>byId(a.actorId,b.actorId));
@@ -124,7 +130,7 @@ export function validateMemoryState(state){
   denseArray(state.actors,MAX_PERSISTENT_ACTORS);requireCondition(state.actors.length===initial.actors.length,'Missing memory identity');
   for(const [i,a] of state.actors.entries()){
     fields(a,['actorId','alive','memories','relationships',...(play?['location']:[])]);requireCondition(a.actorId===initial.actors[i].actorId && typeof a.alive==='boolean','Memory identity mismatch');
-    if(play)requireCondition(a.actorId==='actor-4'?['village','forest'].includes(a.location):a.location==='village','Memory location mismatch');
+    if(play)requireCondition(state.version==='memory-observer-v4'?campaignLocations.includes(a.location):a.actorId==='actor-4'?['village','forest'].includes(a.location):a.location==='village','Memory location mismatch');
     denseArray(a.memories,MAX_ACTOR_MEMORIES);let previous=null;
     for(const m of a.memories){
       fields(m,['memoryId','sourceEventSeq','occurrenceTick','observedTick','channel','importance','observable']);identifier(m.memoryId);
@@ -134,7 +140,7 @@ export function validateMemoryState(state){
       requireCondition(previous===null || chronological(previous,m)<0,'Duplicate/unordered memories');previous=m;record(m.observable);payloadBudget(m.observable);
       if(m.observable.type==='food-gift'){
         const gift=m.observable;fields(gift,['type','donorId','recipientId','product','quantity','direction','commandId']);identifier(gift.commandId);
-        requireCondition(state.version==='memory-observer-v3' && m.channel==='self' && m.observedTick===m.occurrenceTick &&
+        requireCondition(giftObserver(state.version) && m.channel==='self' && m.observedTick===m.occurrenceTick &&
           gift.donorId==='actor-4' && gift.recipientId==='actor-2' && gift.product==='food' && gift.quantity===1 &&
           ((a.actorId===gift.donorId && gift.direction==='given') || (a.actorId===gift.recipientId && gift.direction==='received')),'Invalid immediate food gift memory');
       }
@@ -156,7 +162,7 @@ function sourceLog(events,observedTick,offset=0,initialActors=[],version=MEMORY_
       requireCondition(!commands.has(e.commandId) && e.tick===e.payload.day*144,'Repeated/off-clock personal source');commands.add(e.commandId);
     }
     if(e.type==='FoodGiftCommitted'){
-      requireCondition(version==='memory-observer-v3','Food gift outside observer version');
+      requireCondition(giftObserver(version),'Food gift outside observer version');
       requireCondition(!commands.has(e.commandId),'Repeated food gift source');commands.add(e.commandId);
     }
   }
@@ -168,6 +174,7 @@ function consume(state,events,observedTick,startIndex=state.cursor){
       const participants=[event.payload.donorId,event.payload.recipientId].map(id=>state.actors.find(a=>a.actorId===id));
       requireCondition(participants.every(a=>a && a.alive && a.location==='village'),'Food gift contradicts observer life/location');
     }
+    if(event.type==='CampaignRegionsChanged')for(const row of event.payload.rows){const actor=state.actors.find(a=>a.actorId===row.actorId);requireCondition(actor&&actor.location===row.before,'Campaign observer location source mismatch');actor.location=row.after;}
     for(const a of state.actors){
       if(!a.alive)continue;
       // D4A-CP1b: narrow internal version dispatch. Old callers keep the v1 default and their old output.

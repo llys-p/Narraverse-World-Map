@@ -1,7 +1,7 @@
 // Motivation and experience integration. The exported hooks objects are engine/fixture connections,
 // not a business API. Decision-phase Knowledge remains private to this module.
 import {fields,record,integer,identifier,denseArray,cloneData,canonicalJson,requireCondition,inputFingerprint,MAX_COLLECTION} from './data-contract.mjs';
-import {livelihoodMindRuntimeHooks,sceneMindRuntimeHooks,createMindWorld,validateMindWorld,applyMindStimuliTick,prepareMindDay,settleMindSocietyDay,finishMindMemoryDay,finishMindDay,pushMindObservation,mindRejectionObservation} from './mind-runtime.mjs';
+import {livelihoodMindRuntimeHooks,campaignMindRuntimeHooks,sceneMindRuntimeHooks,createMindWorld,validateMindWorld,applyMindStimuliTick,prepareMindDay,settleMindSocietyDay,finishMindMemoryDay,finishMindDay,pushMindObservation,mindRejectionObservation} from './mind-runtime.mjs';
 import {planSocietyDay,applySocietyAction,societyActionFact,societyCauses} from './society.mjs';
 import {projectActorEvent,projectSceneActorEvent} from './memory-observer.mjs';
 import {deriveMindBelief,validateMindConfig} from './mind-state.mjs';
@@ -57,7 +57,8 @@ const SURVIVAL_PROFILE=Object.freeze({experience:true,cognition:true,survival:tr
   knowledgeVersion:SURVIVAL_KNOWLEDGE_VERSION,knowledgeBytes:MAX_SURVIVAL_KNOWLEDGE_BYTES,label:'Survival'});
 const SCENE_BASE_PROFILE=Object.freeze({...SURVIVAL_PROFILE,scene:true,rules:'d-scene-survival-v1',label:'Scene'});
 const LIVELIHOOD_BASE_PROFILE=Object.freeze({...SCENE_BASE_PROFILE,livelihood:true,rules:'d-scene-livelihood-v1',label:'Livelihood'});
-const mindHooks=profile=>profile.livelihood?livelihoodMindRuntimeHooks:sceneMindRuntimeHooks;
+const CAMPAIGN_BASE_PROFILE=Object.freeze({...LIVELIHOOD_BASE_PROFILE,campaign:true,rules:'d-campaign-v1'});
+const mindHooks=profile=>profile.campaign?campaignMindRuntimeHooks:profile.livelihood?livelihoodMindRuntimeHooks:sceneMindRuntimeHooks;
 const lowerWorld=(world,profile)=>profile.cognition?withoutCognitionExperienceAndMotivation(world):
   profile.experience?withoutExperienceAndMotivation(world):withoutMotivation(world);
 function retainModels(base,world,profile){
@@ -567,7 +568,7 @@ function applyActionFor(input,payload,sample,profile){
     const temporaryFoodRest=profile.survival&&d?.mode==='review'&&d.choice==='Rest'&&
       d.gateReason==='URGENT_FATIGUE'&&d.goalId===null&&d.planId===null&&p?.kind===SURVIVAL_FOOD_PLAN_KIND&&
       d.actorId===SURVIVAL_ACTOR_ID&&d.actorId===payload.actorId&&d.tick===(input.societyModel.day+1)*144&&
-      (profile.scene?input.memoryModel.config.version===(profile.livelihood?'memory-config-v7':'memory-config-v6'):input.memoryModel.config.version==='memory-config-v5')&&input.societyModel.day+1<=p.deadlineDay&&
+      (profile.scene?input.memoryModel.config.version===(profile.campaign?'memory-config-v8':profile.livelihood?'memory-config-v7':'memory-config-v6'):input.memoryModel.config.version==='memory-config-v5')&&input.societyModel.day+1<=p.deadlineDay&&
       payload.action==='Rest'&&payload.goalId===0;
     const normalBinding=d&&p&&d.choice===payload.action&&p.steps[p.stepIndex]===payload.action&&
       d.planId===p.planId&&d.goalId===p.goalId&&d.actorId===payload.actorId&&payload.goalId===(d.goalId??0);
@@ -903,6 +904,8 @@ export function validateSceneBaseWorld(world,sealed=true){inspectDescriptorTree(
 export const sceneBaseRuntimeHooks=createSceneBaseHooks(SCENE_BASE_PROFILE);
 export const livelihoodBaseRuntimeHooks=createSceneBaseHooks(LIVELIHOOD_BASE_PROFILE);
 export function validateLivelihoodBaseWorld(world,sealed=true){inspectDescriptorTree(world);return validateWorldFor(world,sealed,LIVELIHOOD_BASE_PROFILE);}
+export const campaignBaseRuntimeHooks=createSceneBaseHooks(CAMPAIGN_BASE_PROFILE);
+export function validateCampaignBaseWorld(world,sealed=true){inspectDescriptorTree(world);return validateWorldFor(world,sealed,CAMPAIGN_BASE_PROFILE);}
 function createSceneBaseHooks(profile){return Object.freeze({
  createWorld:(memory,mind,motivation,experience,cognition,simulationId)=>{inspectDescriptorTree({memory,mind,motivation,experience,cognition,simulationId});return createWorldFor(memory,mind,motivation,experience,cognition,simulationId,profile);},
  beforeSystems:(snapshot,events,tick,append,commit)=>{inspectDescriptorTree({snapshot,events});return beforeSystemsFor(snapshot,events,tick,append,commit,profile);},

@@ -37,6 +37,15 @@ export const livelihoodMindRuntimeHooks=Object.freeze({
  finishMindMemoryDay:(input,events,tick)=>finishMindMemoryDayFor(input,events,tick,'memory-config-v7'),
  finishMindDay:(input,events,tick)=>finishMindDayFor(input,events,tick,'memory-config-v7')
 });
+export const campaignMindRuntimeHooks=Object.freeze({
+ createWorld:(memory,mind)=>createMindWorldFor(memory,mind,'memory-config-v8'),
+ validateWorld:(world,sealed=true)=>validateMindWorldFor(world,sealed,'memory-config-v8'),
+ applyMindStimuliTick:(world,tick,append)=>applyMindStimuliTickFor(world,tick,append,'memory-config-v8'),
+ prepareMindDay:(input,tick)=>prepareMindDayFor(input,tick,'memory-config-v8'),
+ settleMindSocietyDay:(input,sample)=>settleMindSocietyDayFor(input,sample,'memory-config-v8'),
+ finishMindMemoryDay:(input,events,tick)=>finishMindMemoryDayFor(input,events,tick,'memory-config-v8'),
+ finishMindDay:(input,events,tick)=>finishMindDayFor(input,events,tick,'memory-config-v8')
+});
 // Explicit opt-in: old public mind creation and validation retain their version gates.
 export const sceneMindRuntimeHooks=Object.freeze({
  createWorld:(memory,mind)=>createMindWorldFor(memory,mind,true),

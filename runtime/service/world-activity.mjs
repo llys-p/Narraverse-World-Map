@@ -1,5 +1,6 @@
 import { cloneData, requireCondition } from '../core/data-contract.mjs';
 import { canonicalJson } from '../core/data-contract.mjs';
+import {CAMPAIGN_RULES} from '../core/scene-campaign-runtime.mjs';
 import {LIVELIHOOD_RULES} from '../core/scene-livelihood-runtime.mjs';
 import { SCENE_RULES } from '../core/scene-runtime.mjs';
 import { validateBundle } from '../core/world-state.mjs';
@@ -15,7 +16,7 @@ const ACTION_NAMES = Object.freeze({
   UseMedicine:'用药', SellMedicine:'卖药', NoAction:'未行动', PlayerGiftFood:'赠粮',
   PlayerWork:'村庄工作', PlayerTravel:'旅行', PlayerRest:'休整', PlayerBuy:'买入', PlayerSell:'卖出',
   EncounterBegin:'遭遇开始', EncounterAction:'遭遇行动', EncounterCancel:'结束遭遇', AdvanceTime:'推进时间',
-  attack:'攻击', flee:'逃跑',
+  attack:'攻击', flee:'逃跑', MarchSet:'设置行军路线',MarchStep:'行军',MarchPause:'暂停行军',MarchResume:'继续行军',
 });
 const REASONS = Object.freeze({
   RULE_REJECTED:'规则拒绝', ENCOUNTER_BUSY:'遭遇进行中', PLAYER_DEAD:'玩家已死亡',
@@ -36,7 +37,7 @@ function addEntry(rows, event, fields) {
     sourceItemIndex:fields.sourceItemIndex,
     tick:event.tick,
     actorIds:cleanIds(fields.actorIds ?? []),
-    location:['village','forest'].includes(fields.location) ? fields.location : null,
+    location:['village','forest','road'].includes(fields.location) ? fields.location : null,
     locationEvidence:fields.locationEvidence ?? 'unknown',
     kind:fields.kind,
     status:fields.status,
@@ -103,7 +104,7 @@ function commandSummary(dto, receipt, actorName) {
 /** A bounded, detached developer observation over the fully validated scene EventLog. */
 export function projectWorldActivity(bundle) {
   const profile = runtimeProfile(bundle);
-  requireCondition([SCENE_RULES,LIVELIHOOD_RULES].includes(profile.rulesVersion) && [9,10].includes(profile.serviceFormatVersion),
+  requireCondition([SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(profile.rulesVersion) && [9,10,11].includes(profile.serviceFormatVersion),
     'World activity requires the scene profile', 'UNSUPPORTED_VERSION');
   validateBundle(bundle, {rulesVersion:profile.rulesVersion,systems:profile.systems});
 

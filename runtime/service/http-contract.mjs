@@ -21,6 +21,9 @@ import { encounterSystems } from '../fixtures/encounter-survival-village.mjs';
 import { projectEncounterInspector, projectSceneMindInspector } from '../knowledge/encounter-knowledge.mjs';
 import {LIVELIHOOD_RULES,LIVELIHOOD_PROFILE,describeLivelihoodEncounterActions,describeLivelihoodGiftAvailability} from '../core/scene-livelihood-runtime.mjs';
 import {livelihoodSystems} from '../fixtures/scene-livelihood-village.mjs';
+import {CAMPAIGN_RULES,CAMPAIGN_PROFILE,preflightCampaignIntent,describeCampaignEncounterActions,describeCampaignGiftAvailability} from '../core/scene-campaign-runtime.mjs';
+import {campaignSystems} from '../fixtures/campaign-village.mjs';
+import {mapView,mapDistance} from '../core/campaign-map.mjs';
 import {nextPlayerWorkTick} from '../core/player-work.mjs';
 import { SCENE_RULES, SCENE_PROFILE, describeSceneEncounterActions, describeSceneGiftAvailability } from '../core/scene-runtime.mjs';
 import { sceneSystems } from '../fixtures/scene-survival-village.mjs';
@@ -213,8 +216,10 @@ function validateEncounterCommandDto(dto,scene=false,commandDtoVersion=3){
   return cloneData(dto);
 }
 export function validateSceneCommandDto(dto,commandDtoVersion=3){
-  requireCondition([3,4].includes(commandDtoVersion),'Unknown scene command mode','UNSUPPORTED_VERSION');
-  const command=validateEncounterCommandDto(dto,true,commandDtoVersion);
+  requireCondition([3,4,5].includes(commandDtoVersion),'Unknown scene command mode','UNSUPPORTED_VERSION');
+  let command;
+  if(commandDtoVersion===5){preflightCampaignIntent(dto);requireCondition(/^[A-Za-z0-9_-]{1,64}$/.test(dto.commandId),'Invalid action command ID');command=cloneData(dto);}
+  else command=validateEncounterCommandDto(dto,true,commandDtoVersion);
   for(const prefix of ['mind-day-','mind-settle-','society-day-','motivation-day-','experience-day-','cognition-day-','cognition-eval-','survival-day-'])
     requireCondition(!command.commandId.startsWith(prefix),'Reserved internal command ID');
   return command;
@@ -266,6 +271,7 @@ export function runtimeProfile(bundle){
   if(s.rulesVersion===ENCOUNTER_RULES && s.fixtureId===ENCOUNTER_PROFILE){
     return {serviceFormatVersion:ENCOUNTER_SERVICE_FORMAT,rulesVersion:ENCOUNTER_RULES,systems:encounterSystems()};
   }
+  if(s.rulesVersion===CAMPAIGN_RULES && s.fixtureId===CAMPAIGN_PROFILE)return {serviceFormatVersion:11,rulesVersion:CAMPAIGN_RULES,systems:campaignSystems()};
   if(s.rulesVersion===LIVELIHOOD_RULES && s.fixtureId===LIVELIHOOD_PROFILE)return {serviceFormatVersion:10,rulesVersion:LIVELIHOOD_RULES,systems:livelihoodSystems()};
   if(s.rulesVersion===SCENE_RULES && s.fixtureId===SCENE_PROFILE){
     return {serviceFormatVersion:SCENE_SERVICE_FORMAT,rulesVersion:SCENE_RULES,systems:sceneSystems()};
@@ -274,12 +280,12 @@ export function runtimeProfile(bundle){
 }
 export function projectPlayerSnapshot(bundle){
   const profile=runtimeProfile(bundle);let actions;
-  if([5,6,7,8,9,10].includes(profile.serviceFormatVersion)){
+  if([5,6,7,8,9,10,11].includes(profile.serviceFormatVersion)){
     validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});
     const s=bundle.snapshot,p=s.world.playerModel,a=s.world.actorModel.actors.find(actor=>actor.actorId==='actor-4');
     requireCondition(p.actorId==='actor-4' && a,'Player identity is missing');
     const {actorId,name,occupation,location,simulationLevel,alive,deathTick,health,hunger,fatigue,needs}=a;
-    actions=[8,9,10].includes(profile.serviceFormatVersion)?describeEncounterWorldActions(bundle):profile.serviceFormatVersion===7?requireSurvivalBackend().runtime.describeSurvivalPlayerActions(bundle):
+    actions=[8,9,10,11].includes(profile.serviceFormatVersion)?describeEncounterWorldActions(bundle):profile.serviceFormatVersion===7?requireSurvivalBackend().runtime.describeSurvivalPlayerActions(bundle):
       profile.serviceFormatVersion===6?requireCognitionBackend().runtime.describeCognitionPlayerActions(bundle):
       requireMotivationBackend().runtime.describeMotivationPlayerActions(bundle);
     return cloneData({apiVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,
@@ -297,8 +303,8 @@ function describeEncounterWorldActions(bundle){
     canPlayerIntent(w,{commandId:'service-action-view',type,payload:{product,quantity:1}})));
   return {travelTicks:playerIntentDuration({commandId:'service-action-view',type:'PlayerTravel',payload:{destination:a.location==='forest'?'village':'forest'}}),
     restTicks:playerIntentDuration({commandId:'service-action-view',type:'PlayerRest',payload:{}}),tradeTicks:1,maxQuantity:10,
-    ...(bundle.snapshot.rulesVersion===LIVELIHOOD_RULES?{work:{wage:20,durationTicks:36,fatigueCost:150,nextWorkTick:nextPlayerWorkTick(w)}}:{}),
-    locations:['village','forest'],prices,canTrade:a.alive && a.location==='village' && canTrade};
+    ...([LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(bundle.snapshot.rulesVersion)?{work:{wage:20,durationTicks:36,fatigueCost:150,nextWorkTick:nextPlayerWorkTick(w)}}:{}),
+    locations:['village','forest'],prices,canTrade:a.alive && a.location==='village' && canTrade && w.mapModel?.order?.status!=='marching'};
 }
 export function projectPublicSnapshot(bundle){
   const {rulesVersion,systems}=runtimeProfile(bundle);validateBundle(bundle,{rulesVersion,systems});
@@ -312,7 +318,7 @@ export function projectPublicSnapshot(bundle){
 export function projectEncounterSnapshot(bundle){
   inspectDescriptorTree(bundle);
   const profile=runtimeProfile(bundle);
-  requireCondition([ENCOUNTER_SERVICE_FORMAT,SCENE_SERVICE_FORMAT,10].includes(profile.serviceFormatVersion),'Encounter projection requires the encounter profile','UNSUPPORTED_VERSION');
+  requireCondition([ENCOUNTER_SERVICE_FORMAT,SCENE_SERVICE_FORMAT,10,11].includes(profile.serviceFormatVersion),'Encounter projection requires the encounter profile','UNSUPPORTED_VERSION');
   validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});
   const s=bundle.snapshot,w=s.world,actor=w.actorModel.actors.find(entry=>entry.actorId==='actor-4');
   requireCondition(actor,'Encounter actor is missing');
@@ -321,15 +327,21 @@ export function projectEncounterSnapshot(bundle){
     self:{alive:actor.alive,health:actor.health,location:actor.location,deathTick:actor.deathTick},
     encounter:w.encounterModel.encounter===null?null:cloneData(w.encounterModel.encounter),
     population:{totalLivingWolves:wolves,availableWolves:wolves-reserved,reservedWolves:reserved,
-      battleDeaths:w.ecologyModel.ledger.wolves.battleDeaths},actions:profile.serviceFormatVersion===10?describeLivelihoodEncounterActions(bundle):profile.serviceFormatVersion===SCENE_SERVICE_FORMAT?describeSceneEncounterActions(bundle):describeEncounterActions(bundle)});
+      battleDeaths:w.ecologyModel.ledger.wolves.battleDeaths},actions:profile.serviceFormatVersion===11?describeCampaignEncounterActions(bundle):profile.serviceFormatVersion===10?describeLivelihoodEncounterActions(bundle):profile.serviceFormatVersion===SCENE_SERVICE_FORMAT?describeSceneEncounterActions(bundle):describeEncounterActions(bundle)});
 }
 export function projectSceneSnapshot(bundle){
   inspectDescriptorTree(bundle);
   const profile=runtimeProfile(bundle);
-  requireCondition([SCENE_SERVICE_FORMAT,10].includes(profile.serviceFormatVersion),'Scene projection requires the scene profile','UNSUPPORTED_VERSION');
+  requireCondition([SCENE_SERVICE_FORMAT,10,11].includes(profile.serviceFormatVersion),'Scene projection requires the scene profile','UNSUPPORTED_VERSION');
   validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});
   const s=bundle.snapshot,w=s.world,player=w.actorModel.actors.find(actor=>actor.actorId==='actor-4');
   requireCondition(player && w.playerModel.actorId==='actor-4','Scene player identity is missing');
+  if(profile.serviceFormatVersion===11){
+    const map=mapView(bundle,0),gift=describeCampaignGiftAvailability(bundle);
+    return cloneData({apiVersion:1,sceneViewVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,
+      location:player.location,self:{actorId:'actor-4',alive:player.alive,food:w.playerModel.inventory.food},
+      actors:map.actors.filter(a=>mapDistance(map.self,a)<=1).map(a=>({...a,gift:a.actorId==='actor-2'?gift:{available:false,reasonCode:'INVALID_INPUT'}}))});
+  }
   const knowledge=projectSceneKnowledge(bundle,'actor-4'),gift=profile.serviceFormatVersion===10?describeLivelihoodGiftAvailability(bundle):describeSceneGiftAvailability(bundle);
   const actors=player.location==='village'?knowledge.visibleActors.map(actor=>({...actor,
     receivedGifts:projectSceneKnowledge(bundle,actor.actorId).giftMemories.filter(entry=>
@@ -352,3 +364,5 @@ export function projectMindInspector(bundle){
   if(format===9||format===10)return cloneData(projectSceneMindInspector(bundle));
   return cloneData(_mindBackend.knowledge.projectMindInspector(bundle));
 }
+
+export function projectMapSnapshot(bundle,remainingCommands){const p=runtimeProfile(bundle);requireCondition(p.serviceFormatVersion===11,'Map projection requires campaign profile','UNSUPPORTED_VERSION');validateBundle(bundle,{rulesVersion:p.rulesVersion,systems:p.systems});return mapView(bundle,remainingCommands);}

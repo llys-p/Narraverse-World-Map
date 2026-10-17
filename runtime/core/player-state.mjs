@@ -42,13 +42,15 @@ export function applyPlayerAction(input,command){
  a.needs={food:a.hunger,healing:1000-a.health,rest:a.fatigue};
  return {world,success:true,result:{actorId:'actor-4',type:intent.type,startTick,endTick:command.targetTick,product,quantity,unitPrice,amount,before,after:actionView(world)}};
 }
-export function validatePlayerActionResult(r){
+export function validatePlayerActionResult(r){return validateActionResult(r,false);}
+export function validateCampaignPlayerActionResult(r){return validateActionResult(r,true);}
+function validateActionResult(r,campaign){
   fields(r,['actorId','type','startTick','endTick','product','quantity','unitPrice','amount','before','after']);requireCondition(r.actorId==='actor-4','Foreign player action identity');
  record(r.after);
  integer(r.startTick);integer(r.endTick);for(const n of [r.quantity,r.unitPrice,r.amount])integer(n);
  const payload=r.type==='PlayerTravel'?{destination:r.after.location}:r.type==='PlayerRest'?{}:{product:r.product,quantity:r.quantity};
  requireCondition(r.endTick===r.startTick+playerIntentDuration({commandId:'validated',type:r.type,payload}),'Committed action duration mismatch');
- for(const v of [r.before,r.after]){fields(v,['location','fatigue','wallet','inventory','publicStock','communalGold']);requireCondition(['village','forest'].includes(v.location),'Unknown action location');
+ for(const v of [r.before,r.after]){fields(v,['location','fatigue','wallet','inventory','publicStock','communalGold']);requireCondition((campaign?['village','forest','road']:['village','forest']).includes(v.location),'Unknown action location');
   for(const n of [v.fatigue,v.wallet,v.communalGold])integer(n);requireCondition(v.fatigue<=1000,'Invalid action fatigue');for(const bag of [v.inventory,v.publicStock]){fields(bag,['food','herbs']);integer(bag.food);integer(bag.herbs);}}
  if(['PlayerTravel','PlayerRest'].includes(r.type))requireCondition(r.product===null && r.quantity===0 && r.unitPrice===0 && r.amount===0,'Movement has trade quantity');
  else requireCondition(r.unitPrice>0 && BigInt(r.amount)===BigInt(r.quantity)*BigInt(r.unitPrice),'Action cash/quote mismatch');
@@ -71,7 +73,7 @@ export function validatePlayerState(world){
  // identity/version gate accepts it too; v1/v2/v3 keep their exact old meanings.
  // D4A-CP1a: society-config-v5 upgrades to player-state-v3 (PLAY_LEDGER + foodGiven);
  // old v3/v4 (player-state-v2) semantics are preserved verbatim.
- const version=world.societyModel.config.version,play=['society-config-v3','society-config-v4','society-config-v5','society-config-v6'].includes(version),gift=['society-config-v5','society-config-v6'].includes(version),work=version==='society-config-v6';
+ const version=world.societyModel.config.version,play=['society-config-v3','society-config-v4','society-config-v5','society-config-v6','society-config-v7'].includes(version),gift=['society-config-v5','society-config-v6','society-config-v7'].includes(version),work=['society-config-v6','society-config-v7'].includes(version);
  fields(p,['version','actorId','wallet','inventory','ledger',...(work?['lastWorkStartTick']:[])]);requireCondition(p.version===(work?'player-state-v4':gift?'player-state-v3':play?'player-state-v2':'player-state-v1') && p.actorId===c.actorId,'Player identity/version mismatch');
  fields(p.inventory,['food','herbs']);fields(p.ledger,work?[...PLAY_LEDGER,'foodGiven','wages','workCount']:gift?[...PLAY_LEDGER,'foodGiven']:play?PLAY_LEDGER:['foodUsed']);for(const n of [p.wallet,...Object.values(p.inventory),...Object.values(p.ledger)])integer(n);
  if(work){requireCondition(BigInt(p.ledger.wages)===BigInt(p.ledger.workCount)*20n,'Player wages ledger mismatch');requireCondition((p.ledger.workCount===0)===(p.lastWorkStartTick===null),'Player work time/count mismatch');if(p.lastWorkStartTick!==null){integer(p.lastWorkStartTick);requireCondition(p.lastWorkStartTick<=Number.MAX_SAFE_INTEGER-144,'Player work time overflow','LIMIT_EXCEEDED');}}
