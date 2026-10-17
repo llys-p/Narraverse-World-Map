@@ -1,0 +1,13 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "--test-name-pattern=CP2a-S[24] ",
+    "tests/simulation/scene-gift-service.test.mjs"
+  ],
+  "pid": 35644,
+  "seconds": 0.5740327835083008,
+  "exitCode": 0,
+  "timedOut": false
+}

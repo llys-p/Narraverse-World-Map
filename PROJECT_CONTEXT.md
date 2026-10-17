@@ -9,7 +9,7 @@
 - 新opt-in profile `scene-livelihood-village` / format10 / DTO4/receipt4 / memory7-society6-player4；工资真实公共金转账、36tick、疲劳+150、成功start间隔144tick。旧helper默认拒绝工作；原scene/DTO3保留。不跳过审计或历史重演。
 - 新入口 `Start-D4E9.cmd`，18336、`artifacts/d4e9-daily/world`；本日常世界尚未创建/启动。临时验收服务已正常关闭，网页已关；18325 PID2592/18327 PID4432未启停。
 - 原八档/旧D4E8的93产品源/控制5旧文件指纹未变；97份候选运行源验收前后匹配，无测试锁/进程残留。首轮转写语法错误与GBK包装器打印失败均保留；最终Node和监督器exit0，无超时。
-- 当前功能范围已通过，正提交/推送并同步看板；不是main合并/部署或D整体验收。Issue3保持暂停，未跑长历史/全量/视觉/DSH/第三方模型。
+- 当前功能范围限定PASS；实现a375acc与报告/脱敏证据随本分支交付，远端与看板最终读回见控制状态；不是main合并/部署或D整体验收。Issue3保持暂停，未跑长历史/全量/视觉/DSH/第三方模型。
 
 ## 剩余边界
 

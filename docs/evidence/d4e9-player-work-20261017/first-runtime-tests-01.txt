@@ -1,0 +1,13 @@
+✔ D4E9-R1 exact profile pairing and old scene rejects work without mutation (110.9755ms)
+✔ D4E9-R2 pure work guard, completion recheck, transfer conservation and safe integer boundaries (61.4839ms)
+✔ D4E9-R3 real work journal is idempotent, cooldown is a zero tick receipt and tampering cannot survive replay (13271.9286ms)
+✔ D4E9-R4 completion exactly on daily tick pays before settlement and settles food once (16716.0475ms)
+✔ D4E9-R5 completion rejection retains real elapsed ticks and starvation settlement without wages (18681.9281ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 48983.7303

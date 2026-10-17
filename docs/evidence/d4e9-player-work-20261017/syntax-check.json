@@ -1,0 +1,32 @@
+[
+  {
+    "file": "runtime-map.mjs",
+    "code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "file": "runtime-village.mjs",
+    "code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "file": "runtime-encounter.mjs",
+    "code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "file": "runtime-server.mjs",
+    "code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "file": "scripts/verify-d4e9-player-work.mjs",
+    "code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,129 @@
+{
+  "base": "f7bc32818f25053ef8ae564a389dcd26028bb7a0",
+  "branch": "codex/world-runtime-player-work",
+  "scope": "core A/B only; no git commit; no HTTP/browser by core executor",
+  "sourceSHA256": {
+    "runtime/core/player-work.mjs": "9554461f792c00efe920d045eadd05e833ba21187f8a95f860a4e3ca576a872c",
+    "runtime/core/scene-livelihood-runtime.mjs": "121dbf3d5d684e9adf053c01a66c421315f75f6119eb63a873dc85e2f13e535f",
+    "runtime/core/player-state.mjs": "c5a0cd7bbc7a0cffe8c4ccefaaeab9a415f896cea3c36112ea6cbcaf723af723",
+    "runtime/core/society.mjs": "8385bca2d71b660fcfedb47dbef03dacd87677b3a9bb7564550d26bcd1670b0d",
+    "runtime/core/memory-runtime.mjs": "2a53921d4beb21d3e24cff39b78933648508eb926b58c4d3ac08c91a2e9d43c3",
+    "runtime/core/mind-runtime.mjs": "838d65f205c8ba4fea971f8cf9c9314fac5817f37204aad78615225c99c7c481",
+    "runtime/core/motivation-runtime.mjs": "18e7b28363123ea434ac3ec36dbb3c20dd525d6a896a2038619b1a999c8d68c1",
+    "runtime/core/scene-runtime.mjs": "7f40209ac2add0f20007f16d5c583801b24445220a88bcab5c4a63e90752dc8d",
+    "runtime/core/encounter-runtime.mjs": "cfb05d5f542918dc556a1f6ce17efa5a97f9c879c2468532c30ba8814121014f",
+    "runtime/core/command-engine.mjs": "1a2fc8ac78650f964f2e33acc97e062d93bfc170576888d6f1d866418f486a34",
+    "runtime/core/data-contract.mjs": "1efa69bda22c2d16dda2865c3bfec58cf94d7fdf55b574df4054d0195091ed83",
+    "runtime/core/event-log.mjs": "7e4be767a95cdec4d87256dfe145cc5d6a6c371d9f56dafddd5404f2c536af97",
+    "runtime/core/world-state.mjs": "897d19c617fe083ce833b45292c3cfdbc047cd1ed2bf39db2e4362cb2d26ca39",
+    "runtime/core/experience-state.mjs": "db3ec8e429c1a6cf1c0ce20d3651113961b02ff061ef9a3628ac18aa661e8bfa",
+    "runtime/fixtures/scene-livelihood-village.mjs": "587cc9a342d70b0c1a72d645ad68e2c748160644e2365c490380e676ce001b17",
+    "runtime/knowledge/encounter-knowledge.mjs": "8d3b988f450d90539748b093ae84e42c1d6ea5476a23d1fee127a74ea2c61d2e",
+    "runtime/knowledge/scene-knowledge.mjs": "e9f92a068c5efc0e60934980905f69afc08c1a0d3124f59a3edb51126dc3bdd5",
+    "runtime/service/http-contract.mjs": "4bcec2a8f4e5f607f999bfd6c827ed30d2f0cc26326630d19118dded57de0e74",
+    "runtime/service/service-commit.mjs": "5c7c45c6ccd013924f2d6beecf07069ad016c3f01fc5ba27581f9a39fe6030c5",
+    "runtime/service/runtime-owner.mjs": "13b4cd028766ae3a202a5bc4149b8d26cdf75f9bfeddb7edfb4220cb6b32ddd4",
+    "runtime/service/world-activity.mjs": "d0f9b6efc656e81cb6c7a4f3640bf072d0c4a6d6ccd2252f928c932a17069f00",
+    "tests/simulation/player-work-runtime.test.mjs": "19524d97d0a9c1642fcb0c0b26197fdf41432bbcf2313c2d41d0b711157ccabd",
+    "tests/simulation/player-work-service.test.mjs": "2d286704b99f4224b7514932a0c6556d7cef13701586a3fd3b19fb8e8cea3002"
+  },
+  "runs": {
+    "smoke-01": {
+      "command": [
+        "node",
+        "artifacts/d4e9-core/smoke.mjs"
+      ],
+      "limitSeconds": 60,
+      "seconds": 0.06386208534240723,
+      "exitCode": 1,
+      "timedOut": false
+    },
+    "smoke-02": {
+      "command": [
+        "node",
+        "artifacts/d4e9-core/smoke.mjs"
+      ],
+      "limitSeconds": 60,
+      "seconds": 0.06308865547180176,
+      "exitCode": 1,
+      "timedOut": false
+    },
+    "smoke-03": {
+      "command": [
+        "node",
+        "artifacts/d4e9-core/smoke.mjs"
+      ],
+      "limitSeconds": 60,
+      "seconds": 2.6000750064849854,
+      "exitCode": 0,
+      "timedOut": false
+    },
+    "owner-smoke-01": {
+      "command": [
+        "node",
+        "artifacts/d4e9-core/owner-smoke.mjs"
+      ],
+      "limitSeconds": 120,
+      "seconds": 55.291972160339355,
+      "exitCode": 0,
+      "timedOut": false
+    },
+    "runtime-tests-01": {
+      "command": [
+        "node",
+        "--test",
+        "--test-concurrency=1",
+        "tests/simulation/player-work-runtime.test.mjs"
+      ],
+      "limitSeconds": 180,
+      "seconds": 49.037532329559326,
+      "exitCode": 0,
+      "timedOut": false
+    },
+    "runtime-tests-02": {
+      "command": [
+        "node",
+        "--test",
+        "--test-concurrency=1",
+        "tests/simulation/player-work-runtime.test.mjs"
+      ],
+      "pid": 52512,
+      "limitSeconds": 180,
+      "seconds": 49.922306537628174,
+      "exitCode": 0,
+      "timedOut": false
+    },
+    "service-tests-01": {
+      "command": [
+        "node",
+        "--test",
+        "--test-concurrency=1",
+        "tests/simulation/player-work-service.test.mjs"
+      ],
+      "pid": 36288,
+      "limitSeconds": 360,
+      "seconds": 58.930049419403076,
+      "exitCode": 0,
+      "timedOut": false
+    }
+  },
+  "firstFailures": [
+    "smoke-01 and smoke-02: mechanical replacement malformed memory version expression; fixed before passing smoke-03",
+    "runtime-tests-01: Node 5/5 passed; Python wrapper failed printing check marks to GBK stdout after saving full log; fixed explicit UTF-8 stdout; runtime-tests-02 both Node and wrapper exit 0"
+  ],
+  "staticReviewCorrections": [
+    "playerIntentDuration work gate defaults false; only new rules pending timing enables it",
+    "completed PlayerWork receipt requires livelihood rules",
+    "S3 expected tick corrected from mistaken handwritten 30 to 37 before first service run",
+    "new profile active encounter blockedWorldActions includes PlayerWork; old list unchanged"
+  ],
+  "notRun": [
+    "full suite",
+    "old archives",
+    "long history or performance profiling",
+    "browser or HTTP by core executor",
+    "paid or third party models"
+  ],
+  "retainedSyntheticWorld": "D:\\Narraverse-World-Map-player-work\\artifacts\\d4e9-core\\owner-smoke-world",
+  "productionFrozen": true
+}

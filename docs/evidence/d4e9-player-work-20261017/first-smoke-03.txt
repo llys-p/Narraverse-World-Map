@@ -1,0 +1,64 @@
+created {
+  actorId: 'actor-4',
+  inventory: { food: 20, herbs: 0 },
+  lastWorkStartTick: null,
+  ledger: {
+    earned: 0,
+    foodBought: 0,
+    foodGiven: 0,
+    foodSold: 0,
+    foodUsed: 0,
+    herbsBought: 0,
+    herbsSold: 0,
+    herbsUsed: 0,
+    spent: 0,
+    wages: 0,
+    workCount: 0
+  },
+  version: 'player-state-v4',
+  wallet: 0
+}
+{
+  apiVersion: 1,
+  commandId: 'work',
+  durationTicks: 36,
+  fromRevision: 0,
+  fromTick: 0,
+  outcome: 'succeeded',
+  receiptVersion: 4,
+  result: {
+    actorId: 'actor-4',
+    after: { fatigue: 150, wallet: 20 },
+    before: { fatigue: 0, wallet: 0 },
+    endTick: 36,
+    location: 'village',
+    nextWorkTick: 144,
+    startTick: 0,
+    type: 'PlayerWork',
+    wage: 20
+  },
+  status: 'committed',
+  tick: 36,
+  toRevision: 36,
+  type: 'PlayerWork'
+}
+{
+  actorId: 'actor-4',
+  inventory: { food: 20, herbs: 0 },
+  lastWorkStartTick: 0,
+  ledger: {
+    earned: 0,
+    foodBought: 0,
+    foodGiven: 0,
+    foodSold: 0,
+    foodUsed: 0,
+    herbsBought: 0,
+    herbsSold: 0,
+    herbsUsed: 0,
+    spent: 0,
+    wages: 20,
+    workCount: 1
+  },
+  version: 'player-state-v4',
+  wallet: 20
+}

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/player-work-service.test.mjs"
+  ],
+  "pid": 36288,
+  "limitSeconds": 360,
+  "seconds": 58.930049419403076,
+  "exitCode": 0,
+  "timedOut": false
+}

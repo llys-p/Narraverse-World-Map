@@ -1,0 +1,14 @@
+{
+  "originalEightUnchanged": 8,
+  "oldProductUnchanged": 93,
+  "controlUntrackedUnchanged": 5,
+  "candidateFilesUnchangedDuringAcceptance": 97,
+  "remainingTestLocks": [],
+  "supervisor": {
+    "pid": 52712,
+    "code": 0,
+    "signal": null,
+    "killed": null
+  },
+  "scope": "hashes only for originals; no archive replay/copy/upload"
+}

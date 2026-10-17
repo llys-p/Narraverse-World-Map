@@ -1,0 +1,204 @@
+{
+  "verdict": "PASS",
+  "environment": {
+    "node": "v24.14.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "steps": [
+    {
+      "name": "fresh-open",
+      "wallMs": 212.7668,
+      "cpu": {
+        "user": 250000,
+        "system": 47000
+      }
+    },
+    {
+      "name": "browser-work-and-buy",
+      "wallMs": 55208.892,
+      "cpu": {
+        "user": 9860000,
+        "system": 281000
+      }
+    },
+    {
+      "name": "one-day",
+      "wallMs": 21300.109699999994,
+      "cpu": {
+        "user": 19515000,
+        "system": 1515000
+      }
+    },
+    {
+      "name": "full-disk-audit",
+      "wallMs": 17943.838099999994,
+      "cpu": {
+        "user": 15359000,
+        "system": 2047000
+      }
+    },
+    {
+      "name": "close",
+      "wallMs": 1.965600000010454,
+      "cpu": {
+        "user": 0,
+        "system": 0
+      }
+    },
+    {
+      "name": "reopen",
+      "wallMs": 23623.9893,
+      "cpu": {
+        "user": 21735000,
+        "system": 1422000
+      }
+    },
+    {
+      "name": "reclose",
+      "wallMs": 3.3922999999922467,
+      "cpu": {
+        "user": 0,
+        "system": 0
+      }
+    },
+    {
+      "name": "legacy-profile-isolation",
+      "wallMs": 155.24129999999423,
+      "cpu": {
+        "user": 156000,
+        "system": 31000
+      }
+    }
+  ],
+  "projectionSignature": "ad2d492f2014d1764858f4735a65c089cc9b2c635ff80f50daeedc74e3424426",
+  "hashes": {
+    "service-commit-r0.json": "b9c7576b3bb2813da480bfc34de20d286b52c0afb1516c1a8989a74fcfc9bafd",
+    "service-commit-r144.json": "44d9397a663f4917651d47d2d1b39e4366430d782477d02919802a44c73745ba",
+    "service-commit-r36.json": "68c76bdb0d1443ed3edb1cbe3e353efde787695a173ba06fa73fa9f043bcc5ce",
+    "service-commit-r37.json": "99597f970ab28cdbdedcb0f6e10aa9371de9de64fdb41aeefe95e06b79d1f392"
+  },
+  "receipts": {
+    "work": {
+      "apiVersion": 1,
+      "commandId": "ffc704c3-e951-44d6-8d5a-aaf6c68a5706",
+      "durationTicks": 36,
+      "fromRevision": 0,
+      "fromTick": 0,
+      "outcome": "succeeded",
+      "receiptVersion": 4,
+      "result": {
+        "actorId": "actor-4",
+        "after": {
+          "fatigue": 150,
+          "wallet": 20
+        },
+        "before": {
+          "fatigue": 0,
+          "wallet": 0
+        },
+        "endTick": 36,
+        "location": "village",
+        "nextWorkTick": 144,
+        "startTick": 0,
+        "type": "PlayerWork",
+        "wage": 20
+      },
+      "status": "committed",
+      "tick": 36,
+      "toRevision": 36,
+      "type": "PlayerWork"
+    },
+    "buy": {
+      "apiVersion": 1,
+      "commandId": "03e90958-4c8a-405d-a181-4a07837fef8e",
+      "durationTicks": 1,
+      "fromRevision": 36,
+      "fromTick": 36,
+      "outcome": "succeeded",
+      "receiptVersion": 4,
+      "result": {
+        "actorId": "actor-4",
+        "after": {
+          "communalGold": 1000,
+          "fatigue": 150,
+          "inventory": {
+            "food": 22,
+            "herbs": 0
+          },
+          "location": "village",
+          "publicStock": {
+            "food": 538,
+            "herbs": 20
+          },
+          "wallet": 0
+        },
+        "amount": 20,
+        "before": {
+          "communalGold": 980,
+          "fatigue": 150,
+          "inventory": {
+            "food": 20,
+            "herbs": 0
+          },
+          "location": "village",
+          "publicStock": {
+            "food": 540,
+            "herbs": 20
+          },
+          "wallet": 20
+        },
+        "endTick": 37,
+        "product": "food",
+        "quantity": 2,
+        "startTick": 36,
+        "type": "PlayerBuy",
+        "unitPrice": 10
+      },
+      "status": "committed",
+      "tick": 37,
+      "toRevision": 37,
+      "type": "PlayerBuy"
+    },
+    "day": {
+      "apiVersion": 1,
+      "commandId": "d4e9-day",
+      "durationTicks": 107,
+      "fromRevision": 37,
+      "fromTick": 37,
+      "outcome": "succeeded",
+      "receiptVersion": 4,
+      "result": null,
+      "status": "committed",
+      "tick": 144,
+      "toRevision": 144,
+      "type": "AdvanceTime"
+    }
+  },
+  "finalPlayer": {
+    "actorId": "actor-4",
+    "inventory": {
+      "food": 21,
+      "herbs": 0
+    },
+    "lastWorkStartTick": 0,
+    "ledger": {
+      "earned": 0,
+      "foodBought": 2,
+      "foodGiven": 0,
+      "foodSold": 0,
+      "foodUsed": 1,
+      "herbsBought": 0,
+      "herbsSold": 0,
+      "herbsUsed": 0,
+      "spent": 20,
+      "wages": 20,
+      "workCount": 1
+    },
+    "version": "player-state-v4",
+    "wallet": 0
+  },
+  "originalSaveAccess": false,
+  "remainingLocks": [],
+  "scope": "fresh income chain plus isolated legacy rejection; no performance acceptance"
+}

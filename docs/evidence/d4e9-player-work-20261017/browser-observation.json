@@ -1,0 +1,36 @@
+{
+  "method": "CUA real page, accessibility and read-only DOM; no screenshots/visual review",
+  "url": "http://127.0.0.1:7503/runtime-map.html",
+  "afterWork": {
+    "revision": 36,
+    "tick": 36,
+    "wallet": 20,
+    "fatigue": 150,
+    "food": 20,
+    "workDisabled": true,
+    "buyDisabled": false
+  },
+  "afterBuy": {
+    "revision": 37,
+    "tick": 37,
+    "wallet": 0,
+    "food": 22,
+    "workDisabled": true,
+    "buyDisabled": true
+  },
+  "readOnlyPages": {
+    "village": {
+      "revision": 37,
+      "tick": 37,
+      "food": 22,
+      "workActivityRows": 1
+    },
+    "forest": {
+      "revision": 37,
+      "tick": 37,
+      "actualPlayerLocation": "village",
+      "encounterBeginDisabled": true
+    }
+  },
+  "consoleWarningsOrErrors": []
+}

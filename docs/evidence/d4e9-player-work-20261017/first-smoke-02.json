@@ -1,0 +1,10 @@
+{
+  "command": [
+    "node",
+    "artifacts/d4e9-core/smoke.mjs"
+  ],
+  "limitSeconds": 60,
+  "seconds": 0.06308865547180176,
+  "exitCode": 1,
+  "timedOut": false
+}

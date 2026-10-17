@@ -1,0 +1,11 @@
+✔ D4E9-S1 explicit DTO4 parsing rejects injected wages/accessors and wrong versions before submission (2.4807ms)
+✔ D4E9-S2 durable failure rolls back whole work; retry/reopen idempotence and latest tamper fail closed (15769.1586ms)
+✔ D4E9-S3 DTO4 gift, travel, encounter, busy refusal, attack, cancel, return, rest and sell keep dispatch semantics (42960.5074ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 58876.3903

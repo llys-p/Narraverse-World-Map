@@ -1,0 +1,12 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/player-work-runtime.test.mjs"
+  ],
+  "limitSeconds": 180,
+  "seconds": 49.037532329559326,
+  "exitCode": 0,
+  "timedOut": false
+}
