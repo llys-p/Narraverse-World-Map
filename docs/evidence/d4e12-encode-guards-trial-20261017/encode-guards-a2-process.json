@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-d4e12-encode-guards.mjs",
+    "baseline",
+    "artifacts/d4e12/encode-guards-a2"
+  ],
+  "pid": 67544,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 5921.37,
+  "cpuMs": 5921.875,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

@@ -1,0 +1,156 @@
+{
+  "baseline": "59adfe9871a9cee772155725dfd98a942552b263",
+  "decision": "DISCARDED_NO_MEANINGFUL_BENEFIT",
+  "repetitionsPerVariant": 2,
+  "order": [
+    "a1",
+    "b1",
+    "b2",
+    "a2"
+  ],
+  "commands": 8,
+  "ticks": 16,
+  "data": {
+    "a1": {
+      "actions": {
+        "wallMs": 2609.1036,
+        "cpuMs": 2579
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2813.3230999999996,
+        "cpuMs": 2672
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-encode-guards.mjs",
+          "baseline",
+          "artifacts/d4e12/encode-guards-a1"
+        ],
+        "pid": 24572,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 6060.724,
+        "cpuMs": 5687.5,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b1": {
+      "actions": {
+        "wallMs": 2562.8997999999997,
+        "cpuMs": 2609
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2834.9782,
+        "cpuMs": 2970
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-encode-guards.mjs",
+          "candidate",
+          "artifacts/d4e12/encode-guards-b1"
+        ],
+        "pid": 39912,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 5802.038,
+        "cpuMs": 5968.75,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b2": {
+      "actions": {
+        "wallMs": 2594.5821,
+        "cpuMs": 2734
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2842.2506,
+        "cpuMs": 2702
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-encode-guards.mjs",
+          "candidate",
+          "artifacts/d4e12/encode-guards-b2"
+        ],
+        "pid": 68108,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 5830.002,
+        "cpuMs": 5921.875,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "a2": {
+      "actions": {
+        "wallMs": 2618.633500000001,
+        "cpuMs": 2578
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2864.8729,
+        "cpuMs": 2844
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-encode-guards.mjs",
+          "baseline",
+          "artifacts/d4e12/encode-guards-a2"
+        ],
+        "pid": 67544,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 5921.37,
+        "cpuMs": 5921.875,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    }
+  },
+  "filesReceiptsProjectionsEqual": true,
+  "additionalCoreTestsRun": false,
+  "pageChainRun": false,
+  "medians": {
+    "actions": {
+      "wallMs": {
+        "baseline": 2613.86855,
+        "candidate": 2578.74095,
+        "improvementPercent": 1.3438931349474381
+      },
+      "cpuMs": {
+        "baseline": 2578.5,
+        "candidate": 2671.5,
+        "improvementPercent": -3.6067481093659204
+      }
+    },
+    "reopen": {
+      "wallMs": {
+        "baseline": 2839.098,
+        "candidate": 2838.6144,
+        "improvementPercent": 0.017033578974734453
+      },
+      "cpuMs": {
+        "baseline": 2758.0,
+        "candidate": 2836.0,
+        "improvementPercent": -2.8281363306744023
+      }
+    }
+  }
+}
