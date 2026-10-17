@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12｜Demo村庄/森林真实接入：功能限定通过，性能仍需修正。\n最新生产d22bc5d2462d4f5ccdfbad237534c3b9f3ae698d；交付b6aa958e5647937be77244abd7bb021e6c491bf7已推送精确读回，报告API字节一致：https://github.com/llys-p/Narraverse-World-Map/blob/b6aa958e5647937be77244abd7bb021e6c491bf7/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md\n\n23:41纯初始模板复用：仅memory-config-v8按完整配置内容匹配一条私有createSocietyWorld模板，每次输入/输出复制，复制后重验v8。key<=65536、模板规范表示<=262144 UTF-16单元才保存。实时world、RNG、tick、事实/回执和历史审计结论不缓存；v6/v7旧路径保持。公开完整审计、从零重演、账本指纹/身份、耐久发布/回滚/幂等/时间规则保持。\n最终源码同一seed42短世界HTTP 8×AdvanceTime(2)、ABBA各版2次：行动墙钟中位3452.313→3134.592ms（9.20%）/CPU3710.5→3312.5ms（10.73%）；完整重开3822.379→3103.438ms（18.81%）/CPU3898.5→3203ms（17.84%）。四轮9档SHA/8回执/五投影/重开/原ID重试完全一致，均退出0。只比较本轮，不叠加跨轮百分比或外推长档。\n独立复核指出复制后版本需再核验，Proxy反例先RED，修正后最终核心16/16 PASS。覆盖初始模板防投毒、配置改变重验/getter0、v6/v7及合法v8 frozen-oracle、日结RNG、暖结构证明下历史伪造拒绝、全重演/回滚/恢复/幂等。v8多重非法直接构造输入可能改变首错顺序，非法仍拒绝；非Proxy全拒绝承诺。\n页面在最终Proxy加固前实际Edge隔离26命令胜利返村/关闭，r48/tick37/HP920/私粮19/钱包0/村庄(4,7)，errors0；最终源码未重复页面，不冒称最终页面复验。最终HTTP ABBA和16项为最终源码证据。页面不含工作交易休息/完整独立重演/重开，后两项分次覆盖，无视觉验收。加固前15项和ABBA另存，不混入最终统计。\n23:35开工前已发现18338/18340/18342无监听、旧PID61236/63160/14520已退出；结束时仍无监听，启停动作0，不猜退出原因，不重启或操作日常存档。原8档/16依赖/旧88源码/107既有日常文件/并行原型脏摘要保持，无测试进程/隔离锁。无main/部署/迁移/存档上传/DSH外部模型。\n较长档74.351秒旧样本未复跑，历史增长及持续流畅体验仍待解决。此前LRU/数值等小候选已撤回，不重复微调。D4E12 In Progress/需修正、D阶段进行中，D4E11历史不改；继续有界推进。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "initialFailure": "TLS handshake timeout on final GraphQL readback",
+  "mutationReplay": false,
+  "readOnlyRetry": true,
+  "bodyAndRevisionFieldsConfirmed": true,
+  "stageStillInProgress": true
+}
