@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-d4e12-march.mjs",
+    "artifacts/d4e12/compare-trial-ui"
+  ],
+  "pid": 19568,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 3371.483,
+  "cpuMs": 1593.75,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

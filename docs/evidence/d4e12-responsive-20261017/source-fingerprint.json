@@ -1,0 +1,10 @@
+{
+  "runtime-server.mjs": "7d0007d5625f5153dfb745a2e6d63c61dfe89f99b65d05d9e2e80c0505a63325",
+  "runtime/service/runtime-owner.mjs": "16bdd8b9c56fd58d7c25c9c1d0af8d4cb66123c8e962ccccb7936f67288fb234",
+  "runtime/service/runtime-owner-worker.mjs": "53f9b358c325076084f3e5a6c232f166d2d841c38ac21bd17c44a88486460502",
+  "runtime/service/runtime-owner-thread.mjs": "59014ae057903d624af40fe6414ca9f4b242bbb8240fc2c6adeee52f85598237",
+  "runtime/core/encounter-runtime.mjs": "aa7113f62f5aec18bd277eb28cf63f36d898009f702a115c7f5057ccc52d50f5",
+  "runtime/core/command-engine.mjs": "ffb66b1e6492a4f820da4726832c8feea7271d3053f06a2c7c763c61ecb1bff9",
+  "scripts/measure-d4e12-responsive.mjs": "f322c1adce907ae35acea50741be12bc5510f51b0a1f35d31bca829ffca31ffa",
+  "tests/simulation/demo-worker.test.mjs": "5200a91e7d8e7762febd97b10869c0039f11cbcf17da827431f70a556181a784"
+}

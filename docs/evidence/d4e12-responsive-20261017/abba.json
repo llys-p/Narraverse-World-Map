@@ -1,0 +1,524 @@
+[
+  {
+    "runtimeWorker": false,
+    "totalMs": 916.2664,
+    "cpuMs": 907,
+    "beforeCommit": true,
+    "reads": [
+      {
+        "timerLagMs": 858.428,
+        "httpMs": 9.695500000000038,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.7912000000001171,
+        "httpMs": 2.949200000000019,
+        "revision": 12
+      }
+    ],
+    "receipt": {
+      "apiVersion": 1,
+      "commandId": "responsive-fixed",
+      "durationTicks": 12,
+      "fromRevision": 0,
+      "fromTick": 0,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 12,
+      "toRevision": 12,
+      "type": "AdvanceTime"
+    },
+    "sha256": "e579083e98cb4d7b056f46e66e94a59811ceccb9d216c355f9496adb0ebb1032"
+  },
+  {
+    "runtimeWorker": true,
+    "totalMs": 964.4907000000001,
+    "cpuMs": 1032,
+    "beforeCommit": true,
+    "reads": [
+      {
+        "timerLagMs": 0.08369999999990796,
+        "httpMs": 2.783000000000129,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.5078999999998359,
+        "httpMs": 2.5440000000000964,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.3771999999999025,
+        "httpMs": 2.6735000000001037,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.5592999999998938,
+        "httpMs": 2.564000000000078,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 3.78670000000011,
+        "httpMs": 2.854899999999816,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.3222000000000662,
+        "httpMs": 2.374900000000025,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.16669999999999163,
+        "httpMs": 2.5364999999999327,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.7921000000001186,
+        "httpMs": 2.3442999999999756,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.4194999999999709,
+        "httpMs": 2.2782999999999447,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.6097999999999502,
+        "httpMs": 2.3805999999999585,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.4779000000000906,
+        "httpMs": 3.092100000000073,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.35369999999988977,
+        "httpMs": 2.3985000000000127,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.0464999999999236,
+        "httpMs": 4.086800000000039,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.2858000000001084,
+        "httpMs": 2.1802999999999884,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.5008000000000266,
+        "httpMs": 2.732400000000098,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.07089999999993779,
+        "httpMs": 2.516399999999976,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.15480000000002292,
+        "httpMs": 2.128199999999879,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.6516999999998916,
+        "httpMs": 2.156600000000026,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.15820000000007894,
+        "httpMs": 3.133199999999988,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.11899999999991451,
+        "httpMs": 2.130300000000034,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.7739000000001397,
+        "httpMs": 2.1370999999999185,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.5913000000000466,
+        "httpMs": 2.115600000000086,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 1.737199999999575,
+        "httpMs": 2.2254000000002634,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.049399999999877764,
+        "httpMs": 2.6141999999999825,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.7728000000001884,
+        "httpMs": 2.074700000000121,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.02510000000029322,
+        "httpMs": 2.4200000000000728,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.3829000000000633,
+        "httpMs": 2.612699999999677,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.024799999999686406,
+        "httpMs": 2.9812000000001717,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.41679999999996653,
+        "httpMs": 2.8587000000002263,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 1.9299000000000888,
+        "httpMs": 5.453299999999672,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.16420000000016444,
+        "httpMs": 2.9445999999998094,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.15750000000025466,
+        "httpMs": 2.250500000000102,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 2.011699999999564,
+        "httpMs": 2.4358000000001994,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.9421000000002095,
+        "httpMs": 1.9302999999999884,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.06829999999990832,
+        "httpMs": 2.0396999999998116,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.06259999999974752,
+        "httpMs": 2.133100000000013,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.46749999999974534,
+        "httpMs": 2.159700000000157,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.1957999999999629,
+        "httpMs": 2.0183999999999287,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.20320000000037908,
+        "httpMs": 2.0346999999997024,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.26250000000027285,
+        "httpMs": 2.110099999999875,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.25860000000011496,
+        "httpMs": 2.0020999999997002,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.8434000000002015,
+        "httpMs": 1.7398999999995794,
+        "revision": 12
+      }
+    ],
+    "receipt": {
+      "apiVersion": 1,
+      "commandId": "responsive-fixed",
+      "durationTicks": 12,
+      "fromRevision": 0,
+      "fromTick": 0,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 12,
+      "toRevision": 12,
+      "type": "AdvanceTime"
+    },
+    "sha256": "e579083e98cb4d7b056f46e66e94a59811ceccb9d216c355f9496adb0ebb1032"
+  },
+  {
+    "runtimeWorker": true,
+    "totalMs": 900.8281999999999,
+    "cpuMs": 1047,
+    "beforeCommit": true,
+    "reads": [
+      {
+        "timerLagMs": 0.5644000000002052,
+        "httpMs": 1.9864999999999782,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.2593000000001666,
+        "httpMs": 1.8434000000002015,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 1.788000000000011,
+        "httpMs": 2.0742999999997664,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.6684999999997672,
+        "httpMs": 2.3119000000001506,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 1.0426000000002205,
+        "httpMs": 2.402900000000045,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.7353000000002794,
+        "httpMs": 2.1619000000000597,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.22899999999981446,
+        "httpMs": 1.7888000000002648,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.13850000000002183,
+        "httpMs": 1.9245999999998276,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.29169999999976426,
+        "httpMs": 1.894800000000032,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.9263999999998305,
+        "httpMs": 2.7220000000002074,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.8322000000002845,
+        "httpMs": 2.3372999999996864,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.3065000000001419,
+        "httpMs": 1.8288000000002285,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.6213999999999942,
+        "httpMs": 1.814900000000307,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.2750999999998385,
+        "httpMs": 2.054500000000189,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.06430000000000291,
+        "httpMs": 2.1024999999999636,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.0625,
+        "httpMs": 1.76070000000027,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.09680000000025757,
+        "httpMs": 1.736000000000331,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.15380000000004657,
+        "httpMs": 1.8085999999998421,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.2304999999996653,
+        "httpMs": 1.8661999999999352,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.6238000000003012,
+        "httpMs": 2.013799999999719,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 2.2001000000000204,
+        "httpMs": 2.3429000000000997,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.4636999999997897,
+        "httpMs": 1.9954000000002452,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.7595000000001164,
+        "httpMs": 1.7993000000001302,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.6570999999999003,
+        "httpMs": 1.818699999999808,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.23320000000012442,
+        "httpMs": 1.878400000000056,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 1.3587999999999738,
+        "httpMs": 2.062800000000152,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 1.6275000000000546,
+        "httpMs": 2.1082000000001244,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.04710000000022774,
+        "httpMs": 1.8166000000001077,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.24159999999983484,
+        "httpMs": 1.8969999999999345,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.7723999999998341,
+        "httpMs": 2.01070000000027,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.6455000000000837,
+        "httpMs": 1.765599999999722,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.004500000000007276,
+        "httpMs": 1.9184000000000196,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.12399999999979627,
+        "httpMs": 2.2604999999998654,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.014900000000125146,
+        "httpMs": 2.5493999999998778,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.7222999999999047,
+        "httpMs": 2.1644000000001142,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.3124000000002525,
+        "httpMs": 1.860400000000027,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.31570000000010623,
+        "httpMs": 1.7280000000000655,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 1.5734000000002197,
+        "httpMs": 1.7786999999998443,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 1.633100000000013,
+        "httpMs": 2.387499999999818,
+        "revision": 0
+      },
+      {
+        "timerLagMs": 0.14019999999982247,
+        "httpMs": 1.9999000000002525,
+        "revision": 12
+      }
+    ],
+    "receipt": {
+      "apiVersion": 1,
+      "commandId": "responsive-fixed",
+      "durationTicks": 12,
+      "fromRevision": 0,
+      "fromTick": 0,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 12,
+      "toRevision": 12,
+      "type": "AdvanceTime"
+    },
+    "sha256": "e579083e98cb4d7b056f46e66e94a59811ceccb9d216c355f9496adb0ebb1032"
+  },
+  {
+    "runtimeWorker": false,
+    "totalMs": 846.0740999999998,
+    "cpuMs": 797,
+    "beforeCommit": true,
+    "reads": [
+      {
+        "timerLagMs": 801.3475000000003,
+        "httpMs": 2.8629000000000815,
+        "revision": 0
+      },
+      {
+        "timerLagMs": -0.11520000000018626,
+        "httpMs": 1.6909999999998035,
+        "revision": 12
+      }
+    ],
+    "receipt": {
+      "apiVersion": 1,
+      "commandId": "responsive-fixed",
+      "durationTicks": 12,
+      "fromRevision": 0,
+      "fromTick": 0,
+      "outcome": "succeeded",
+      "receiptVersion": 5,
+      "result": null,
+      "status": "committed",
+      "tick": 12,
+      "toRevision": 12,
+      "type": "AdvanceTime"
+    },
+    "sha256": "e579083e98cb4d7b056f46e66e94a59811ceccb9d216c355f9496adb0ebb1032"
+  }
+]

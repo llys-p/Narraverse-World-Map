@@ -1,0 +1,10 @@
+✔ campaign owner publishes all projections together only after durable save (407.151ms)
+✔ live immutable service prefix equals independent full replay and rejects external forgeries (4656.9927ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5137.8255

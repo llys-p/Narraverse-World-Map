@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-d4e12-responsive.mjs",
+    "artifacts/d4e12/responsive-abba-01"
+  ],
+  "pid": 62524,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 4790.477,
+  "cpuMs": 5234.375,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

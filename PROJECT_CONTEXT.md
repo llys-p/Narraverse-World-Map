@@ -1,8 +1,10 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-17 16:26（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
+更新时间：2026-10-17 16:50（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
 
 ## D4E12 Demo真实接入
+
+- 用户授权自主参考开源游戏处理等待；新增[线程隔离结果/Reference Review](docs/runtime/D4E12-RESPONSIVE-RUNTIME.md)，源码216cd124cb992bc593007ebdec2c154ad046daaa。新Demo将原owner完整计算/审计/保存放进worker，HTTP只读已提交投影。ABBA真实Advance12各版2次，最长读取阻塞804–868→4.5–7.4ms，四轮存档SHA一致；确认总耗时约0.85–0.96秒，未证明加速。worker定向最终1/1，实际页面26命令胜利返村/关闭通过；短档完整重演恢复/篡改拒绝通过。长档冷开及行动确认成本仍未解决，D4E12仍需修正。原型/旧8档/现有服务保留，未切换日常实例。
 
 - 本树 `D:/Narraverse-World-Map-demo-integration` / `codex/world-runtime-demo-integration`，接80d6206；产品9899d9ee88fc97a21b6ae06a574af69832818c7d。
 - 用户已选村庄/森林、现有三NPC与日式回合制；[合同](tasks/D4E12-DEMO-RUNTIME-TASK.md)、[完整结果/失败与证据](docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md)。
