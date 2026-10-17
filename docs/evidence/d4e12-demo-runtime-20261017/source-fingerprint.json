@@ -1,0 +1,15 @@
+{
+  "runtime-server.mjs": "dfc7d910408c3464f035cc761739ccb89ca40835433ce10a303f18f77127258b",
+  "runtime/service/runtime-owner.mjs": "175de716971abec39ff3a47191816e8ffa2bf29a961fd942367102b7e99a4c59",
+  "runtime/service/service-commit.mjs": "613bc9fe6dd53fe6bec2f9fd75bb04ac663b55e4b0446d3e9860d8c12bc65032",
+  "runtime/service/march-runner.mjs": "e71e3609d97eae2e7e42a5ff1047a47fcaee43459bbb1d4f74f78fd39587a19a",
+  "demo-runtime.html": "f92b68418677ef87418574bb594ad22fb25532f2df343204220047c99b79d887",
+  "demo-runtime.css": "1ad78a4db57183826e61d5f2a6facd0eab10879a8fa3422e273c7059b1547238",
+  "demo-runtime-prototype.mjs": "a46c2c28a3f6d23012fcad9f9362d8413296bbf6bf7c1bb6be252012506ecd9e",
+  "demo-runtime-bridge.mjs": "2ebdfa84b582854aef0b4269e66f550abc7cad5f5ae5c29cfd31d97d0f132d2a",
+  "Start-Demo.cmd": "6bc622d6e658fd7e6bd57d0eeed65b623e8e4523f19b66f0c7536d4d58d3557d",
+  "scripts/demo-browser-client.mjs": "b2ad6434672eeb5189ea8d7a0e3c6c0a5a75abdc070dd32a2aef0d5ffd40a3d7",
+  "scripts/run-d4e12-check.py": "93f3b11b717bde2d8b1c72fa67dc6e99e6d4a7bea1666c02f1cb3b7a19c40e6a",
+  "scripts/verify-d4e12-demo.mjs": "1d66c72c4168a0ee366706133456746f058dcd7a90de6b9544f246897650d3b7",
+  "scripts/verify-d4e12-restore.mjs": "fa4ba09f360a1798e5703ecc8befa8b42ef9ad0cf43b734dfa782ba72713f2fc"
+}

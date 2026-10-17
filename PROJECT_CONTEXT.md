@@ -1,16 +1,12 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-17 14:46（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
+更新时间：2026-10-17 15:58（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
 
-## D4E11 候选交付：尚未验收
+## D4E12 Demo真实接入
 
-- 本树 `D:/Narraverse-World-Map-campaign-jrpg` / `codex/world-runtime-campaign-jrpg`，接 D4E10 `6c60fe2d5b6276660936e1ab55a43385a79737ba`。已确认持续行军可暂停/改道、地图NPC相遇与日式回合制；[执行合同](tasks/D4E11-CAMPAIGN-JRPG-TASK.md)。
-- 核心27ddaba51e080ef9db38361eaafe1c09c9863b57、页面e7f622350be5912082239ddaab5d20f406b50b03；campaign-village/DTO5/format11已接核心、服务和页面。分次8个不同定向功能成员有通过证据，非一次8/8，108运行产品SHA匹配。[完整裁定及证据](docs/runtime/D4E11-CAMPAIGN-JRPG-RESULT.md)。
-- 真实NPC坐标/路线/相遇纳入重演；记忆仅新增observer-v4以记录区域事实，旧profile/观察器规则不放宽。原5素材和外部样例不改。
-- 原8档、旧98产品、5素材、13外部交付、17日常世界文件不变；控制并行修改的dual-presentation-demo.html及原型摘要保留。测试锁/进程已清，现有18338/PID61236保持；18325/18327/18336实际未监听，未启停。Start-D4E11.cmd拟18340，日常目录未创建/未启动。无main合并、部署、迁移、DSH或付费模型。
-
-## 尚待收口
-
-- 页面已完成赠粮、行军、暂停改道、猎人路遇记忆与森林两击胜利；最终r50/tick40/26命令，玩家road(9,7)、商人相遇暂停，目标村庄(4,7)，HP920/粮19。原600秒、首300秒及用户继续独立300秒接续均已结束，最新触发120秒阶段上限；返村与最终正常关闭重开未完成。下一业务运行需新的有界授权，不重置旧预算或重打战斗。D4E10仍为上一已验业务树，D整体进行中。
-- 本轮没有截图、视觉、长历史、全量或无关检查；128命令预算与两tick批次边界保留，不宣称无限长期游玩或性能合格。
-- 用户已明确授权将本次候选源码及脱敏证据推送到当前公开仓库，不含存档或新增素材；此前私有要求造成的本次推送暂缓已解除。远端提交和Projects最终读回见控制树状态；不改变未验收裁定或推定素材许可。
+- 本树 `D:/Narraverse-World-Map-demo-integration` / `codex/world-runtime-demo-integration`，接80d6206；产品9899d9ee88fc97a21b6ae06a574af69832818c7d。
+- 用户已选村庄/森林、现有三NPC与日式回合制；[合同](tasks/D4E12-DEMO-RUNTIME-TASK.md)、[完整结果/失败与证据](docs/runtime/D4E12-DEMO-RUNTIME-RESULT.md)。
+- **功能限定通过，性能未达标，D4E12仍需修正。** 最终核心4/4；真实页面短链26命令到r48/tick37胜利返村、正常关闭；较长档30命令r92/tick81的完整重演/五投影/文件SHA恢复分次通过，原失败保留，非一次全绿。
+- 原型画面/绘制资源接真实状态；服务端执行MarchStep，页面只下订单/暂停/改道。外部档完整审计保留，私有不可变认证消除重复认证；最终较长档冷开74.351秒，短样本攻击2.29/2.48秒，尚不能宣称流畅。
+- `Start-Demo.cmd`拟18342，新档artifacts/d4e12-daily/world尚未创建、固定端口未启动；旧18338/18340与原8档、原型、16依赖、旧88源码保护通过。无测试进程/锁残留，无main/部署/迁移/存档上传。
+- 机械提取只用既有Codex性价比子代理；未调用DSH/外部付费服务。外观、音效听感未验。D4E11历史未完成验收状态不变；下一步处理同步审计与历史增长成本，再扩地点/NPC。

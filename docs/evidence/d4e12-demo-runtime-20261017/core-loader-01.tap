@@ -1,0 +1,12 @@
+✔ runner owns bounded steps, reserves pause and ignores offline wall time (129.8905ms)
+✔ HTTP orders persist ordinary DTO5 commands and disconnect stops further marching (3703.8339ms)
+✔ campaign owner publishes all projections together only after durable save (495.5165ms)
+✔ live immutable service prefix equals independent full replay and rejects external forgeries (7164.9345ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11772.161

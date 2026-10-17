@@ -1,0 +1,10 @@
+✔ runner owns bounded steps, reserves pause and ignores offline wall time (127.9865ms)
+✔ HTTP orders persist ordinary DTO5 commands and disconnect stops further marching (3321.138ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3541.9779

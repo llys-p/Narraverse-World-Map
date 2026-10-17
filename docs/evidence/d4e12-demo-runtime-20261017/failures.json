@@ -1,0 +1,127 @@
+{
+  "consumer01": {
+    "verdict": "FAIL",
+    "steps": [],
+    "timings": [],
+    "errors": [],
+    "requests": [],
+    "error": {
+      "message": "Uncaught",
+      "stack": "Error: Uncaught\n    at Object.read (file:///D:/Narraverse-World-Map-demo-integration/scripts/demo-browser-client.mjs:35:142)\n    at async waitFor (file:///D:/Narraverse-World-Map-demo-integration/scripts/verify-d4e12-demo.mjs:20:116)\n    at async ready (file:///D:/Narraverse-World-Map-demo-integration/scripts/verify-d4e12-demo.mjs:21:24)\n    at async file:///D:/Narraverse-World-Map-demo-integration/scripts/verify-d4e12-demo.mjs:35:7\n    at async phase (file:///D:/Narraverse-World-Map-demo-integration/scripts/verify-d4e12-demo.mjs:18:11)\n    at async file:///D:/Narraverse-World-Map-demo-integration/scripts/verify-d4e12-demo.mjs:29:2"
+    },
+    "totalMs": 888.5055,
+    "remainingLocks": []
+  },
+  "runner01": {
+    "command": [
+      "node",
+      "--test",
+      "--test-isolation=none",
+      "tests/simulation/demo-march-runner.test.mjs"
+    ],
+    "pid": 23064,
+    "exitCode": 1,
+    "timedOut": false,
+    "unconfirmed": false,
+    "wallMs": 2339.994,
+    "cpuMs": 1218.75,
+    "hardLimitMs": 180000.0
+  },
+  "consumer02": {
+    "error": {
+      "message": "fetch failed",
+      "stack": "TypeError: fetch failed"
+    },
+    "steps": [
+      {
+        "name": "start",
+        "wallMs": 1184.6545,
+        "cpuMs": 610
+      },
+      {
+        "name": "village-person-and-gift",
+        "wallMs": 283.0917000000002,
+        "cpuMs": 188
+      },
+      {
+        "name": "work-trade-rest",
+        "wallMs": 6659.2157,
+        "cpuMs": 6515
+      },
+      {
+        "name": "march-pause-replan-forest",
+        "wallMs": 32880.6679,
+        "cpuMs": 28766
+      },
+      {
+        "name": "jrpg-two-turns",
+        "wallMs": 17094.5812,
+        "cpuMs": 13969
+      }
+    ]
+  },
+  "tail": {
+    "completedPhaseMs": 231183.34149999998,
+    "elapsedSinceProcessMs": 366694.1711,
+    "inferredPhaseMs": 135510.8296,
+    "verdict": "PHASE_LIMIT",
+    "pid": 4932,
+    "reason": "Event-loop timer cannot preempt synchronous audit; external supervisor stops owned process",
+    "phase": "reopen"
+  },
+  "ui03": {
+    "verdict": "FAIL",
+    "steps": [
+      {
+        "name": "start",
+        "wallMs": 1269.4391999999998,
+        "cpuMs": 454
+      },
+      {
+        "name": "village-person-and-gift",
+        "wallMs": 415.53999999999996,
+        "cpuMs": 233
+      }
+    ],
+    "timings": [
+      {
+        "type": "PlayerGiftFood",
+        "wallMs": 285.93589999999995,
+        "fromRevision": 0,
+        "toRevision": 1
+      },
+      {
+        "type": "MarchSet",
+        "wallMs": 184.37639999999988,
+        "fromRevision": 1,
+        "toRevision": 2
+      }
+    ],
+    "errors": [],
+    "requests": [
+      {
+        "url": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"f636f550-3906-4553-b509-1eb0145c79de\",\"expectedRevision\":0,\"type\":\"PlayerGiftFood\",\"payload\":{\"recipientId\":\"actor-2\"}}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"7af358c5-391a-421a-9e43-583732b05e44\",\"type\":\"MarchSet\",\"payload\":{\"x\":16,\"y\":7}}"
+      },
+      {
+        "url": "/api/runtime/demo-stop",
+        "body": "{\"apiVersion\":1}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"35898e7d-e234-471f-bee0-f7ed90a4b603\",\"type\":\"MarchPause\",\"payload\":{}}"
+      }
+    ],
+    "error": {
+      "message": "Button unavailable: #toVillage",
+      "stack": "Error: Button unavailable: #toVillage\n    at Object.click (file:///D:/Narraverse-World-Map-demo-integration/scripts/demo-browser-client.mjs:40:17)\n    at async clickCommand (file:///D:/Narraverse-World-Map-demo-integration/scripts/verify-d4e12-demo.mjs:24:71)\n    at async file:///D:/Narraverse-World-Map-demo-integration/scripts/verify-d4e12-demo.mjs:46:3\n    at async phase (file:///D:/Narraverse-World-Map-demo-integration/scripts/verify-d4e12-demo.mjs:19:11)\n    at async file:///D:/Narraverse-World-Map-demo-integration/scripts/verify-d4e12-demo.mjs:42:2"
+    },
+    "totalMs": 2685.3944,
+    "remainingLocks": []
+  },
+  "note": "Original local files retained. No private/original save files included."
+}

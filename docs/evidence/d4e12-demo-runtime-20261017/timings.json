@@ -1,0 +1,275 @@
+{
+  "consumer02": {
+    "verdict": "FAIL",
+    "steps": [
+      {
+        "name": "start",
+        "wallMs": 1184.6545,
+        "cpuMs": 610
+      },
+      {
+        "name": "village-person-and-gift",
+        "wallMs": 283.0917000000002,
+        "cpuMs": 188
+      },
+      {
+        "name": "work-trade-rest",
+        "wallMs": 6659.2157,
+        "cpuMs": 6515
+      },
+      {
+        "name": "march-pause-replan-forest",
+        "wallMs": 32880.6679,
+        "cpuMs": 28766
+      },
+      {
+        "name": "jrpg-two-turns",
+        "wallMs": 17094.5812,
+        "cpuMs": 13969
+      }
+    ],
+    "timings": [
+      {
+        "type": "PlayerGiftFood",
+        "wallMs": 223.28480000000013,
+        "fromRevision": 0,
+        "toRevision": 1
+      },
+      {
+        "type": "PlayerWork",
+        "wallMs": 3102.9413999999997,
+        "fromRevision": 1,
+        "toRevision": 37
+      },
+      {
+        "type": "PlayerBuy",
+        "wallMs": 1527.5414,
+        "fromRevision": 37,
+        "toRevision": 38
+      },
+      {
+        "type": "PlayerRest",
+        "wallMs": 2022.4103999999998,
+        "fromRevision": 38,
+        "toRevision": 44
+      },
+      {
+        "type": "MarchSet",
+        "wallMs": 1739.3585999999996,
+        "fromRevision": 44,
+        "toRevision": 45
+      },
+      {
+        "type": "MarchSet",
+        "wallMs": 1982.9478,
+        "fromRevision": 47,
+        "toRevision": 48
+      },
+      {
+        "type": "MarchSet",
+        "wallMs": 1929.0655000000006,
+        "fromRevision": 48,
+        "toRevision": 49
+      },
+      {
+        "type": "MarchResume",
+        "wallMs": 2326.339,
+        "fromRevision": 51,
+        "toRevision": 52
+      },
+      {
+        "type": "MarchResume",
+        "wallMs": 2948.1919000000016,
+        "fromRevision": 58,
+        "toRevision": 59
+      },
+      {
+        "type": "EncounterBegin",
+        "wallMs": 3434.8017000000036,
+        "fromRevision": 62,
+        "toRevision": 63
+      },
+      {
+        "type": "EncounterAction",
+        "wallMs": 5131.139900000002,
+        "fromRevision": 63,
+        "toRevision": 69
+      },
+      {
+        "type": "EncounterAction",
+        "wallMs": 8517.444300000003,
+        "fromRevision": 69,
+        "toRevision": 75
+      },
+      {
+        "type": "MarchSet",
+        "wallMs": 4965.087800000001,
+        "fromRevision": 75,
+        "toRevision": 76
+      }
+    ],
+    "error": {
+      "message": "fetch failed",
+      "stack": "TypeError: fetch failed"
+    }
+  },
+  "tail": {
+    "steps": [
+      {
+        "name": "start",
+        "wallMs": 93810.0536,
+        "cpuMs": 90234
+      },
+      {
+        "name": "return-village",
+        "wallMs": 41653.09340000001,
+        "cpuMs": 36953
+      },
+      {
+        "name": "full-independent-replay",
+        "wallMs": 95708.704,
+        "cpuMs": 91563
+      },
+      {
+        "name": "close",
+        "wallMs": 11.490499999985332,
+        "cpuMs": 15
+      }
+    ],
+    "externalStop": {
+      "completedPhaseMs": 231183.34149999998,
+      "elapsedSinceProcessMs": 366694.1711,
+      "inferredPhaseMs": 135510.8296,
+      "verdict": "PHASE_LIMIT",
+      "pid": 4932,
+      "reason": "Event-loop timer cannot preempt synchronous audit; external supervisor stops owned process",
+      "phase": "reopen"
+    },
+    "process": {
+      "command": [
+        "node",
+        "scripts/verify-d4e12-demo.mjs",
+        "artifacts/d4e12/consumer-02-tail",
+        "artifacts/d4e12/consumer-02/world"
+      ],
+      "pid": 4932,
+      "exitCode": 4294967295,
+      "timedOut": false,
+      "unconfirmed": false,
+      "wallMs": 366819.978,
+      "cpuMs": 349515.625,
+      "hardLimitMs": 600000.0,
+      "jobProtected": true
+    }
+  },
+  "ui04": [
+    {
+      "type": "PlayerGiftFood",
+      "wallMs": 264.83910000000014,
+      "fromRevision": 0,
+      "toRevision": 1
+    },
+    {
+      "type": "MarchSet",
+      "wallMs": 273.8575999999998,
+      "fromRevision": 1,
+      "toRevision": 2
+    },
+    {
+      "type": "MarchSet",
+      "wallMs": 374.48199999999997,
+      "fromRevision": 5,
+      "toRevision": 6
+    },
+    {
+      "type": "MarchSet",
+      "wallMs": 429.0547000000006,
+      "fromRevision": 7,
+      "toRevision": 8
+    },
+    {
+      "type": "EncounterBegin",
+      "wallMs": 881.0687000000016,
+      "fromRevision": 18,
+      "toRevision": 19
+    },
+    {
+      "type": "EncounterAction",
+      "wallMs": 2290.1761000000006,
+      "fromRevision": 19,
+      "toRevision": 25
+    },
+    {
+      "type": "EncounterAction",
+      "wallMs": 2482.8271000000004,
+      "fromRevision": 25,
+      "toRevision": 31
+    },
+    {
+      "type": "MarchSet",
+      "wallMs": 1549.9066000000003,
+      "fromRevision": 31,
+      "toRevision": 32
+    },
+    {
+      "type": "MarchResume",
+      "wallMs": 1569.6319000000003,
+      "fromRevision": 36,
+      "toRevision": 37
+    },
+    {
+      "type": "MarchResume",
+      "wallMs": 1883.6604999999981,
+      "fromRevision": 41,
+      "toRevision": 42
+    },
+    {
+      "type": "MarchResume",
+      "wallMs": 2012.9037000000026,
+      "fromRevision": 46,
+      "toRevision": 47
+    }
+  ],
+  "restore01": [
+    {
+      "name": "independent-world-projections",
+      "wallMs": 3187.7743,
+      "cpuMs": 3297
+    },
+    {
+      "name": "single-audit-cold-reopen",
+      "wallMs": 74351.4855,
+      "cpuMs": 72140
+    },
+    {
+      "name": "five-projection-sha-and-fixed-retry",
+      "wallMs": 34.45040000000154,
+      "cpuMs": 63
+    },
+    {
+      "name": "browser-restored-scene-assets-and-turn-state",
+      "wallMs": 1416.7908000000025,
+      "cpuMs": 204
+    },
+    {
+      "name": "normal-close-and-file-protection",
+      "wallMs": 72.42290000000503,
+      "cpuMs": 46
+    }
+  ],
+  "phaseProbe": {
+    "command": [
+      "node",
+      "artifacts/d4e12/phase-probe.mjs"
+    ],
+    "pid": 49792,
+    "exitCode": 9,
+    "timedOut": true,
+    "unconfirmed": false,
+    "wallMs": 223.0,
+    "cpuMs": 187.5,
+    "hardLimitMs": 10000.0,
+    "jobProtected": true,
+    "phaseKilled": "blocked-loop-probe"
+  }
+}

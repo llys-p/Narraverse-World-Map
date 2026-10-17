@@ -1,0 +1,394 @@
+{
+  "functional": "SCOPED_PASS",
+  "performance": "NOT_ACCEPTED",
+  "visual": "NOT_RUN",
+  "source": "9899d9ee88fc97a21b6ae06a574af69832818c7d",
+  "core": {
+    "command": [
+      "node",
+      "--test",
+      "--test-isolation=none",
+      "tests/simulation/demo-service-certification.test.mjs",
+      "tests/simulation/demo-march-runner.test.mjs",
+      "tests/simulation/demo-owner-publication.test.mjs"
+    ],
+    "pid": 61376,
+    "exitCode": 0,
+    "timedOut": false,
+    "unconfirmed": false,
+    "wallMs": 11962.949,
+    "cpuMs": 9921.875,
+    "hardLimitMs": 180000.0,
+    "jobProtected": true,
+    "phaseKilled": null
+  },
+  "ui": {
+    "verdict": "PASS",
+    "coverage": {
+      "workTradeRest": false,
+      "fullIndependentReplay": false,
+      "reopen": false
+    },
+    "environment": {
+      "node": "v24.14.0",
+      "platform": "win32"
+    },
+    "steps": [
+      {
+        "name": "start",
+        "wallMs": 1627.1738,
+        "cpuMs": 562
+      },
+      {
+        "name": "village-person-and-gift",
+        "wallMs": 414.54140000000007,
+        "cpuMs": 297
+      },
+      {
+        "name": "march-pause-replan-forest",
+        "wallMs": 8199.591699999999,
+        "cpuMs": 4875
+      },
+      {
+        "name": "jrpg-two-turns",
+        "wallMs": 5664.2765,
+        "cpuMs": 3782
+      },
+      {
+        "name": "return-village",
+        "wallMs": 24403.9453,
+        "cpuMs": 20047
+      },
+      {
+        "name": "close",
+        "wallMs": 10.810999999994237,
+        "cpuMs": 0
+      }
+    ],
+    "timings": [
+      {
+        "type": "PlayerGiftFood",
+        "wallMs": 264.83910000000014,
+        "fromRevision": 0,
+        "toRevision": 1
+      },
+      {
+        "type": "MarchSet",
+        "wallMs": 273.8575999999998,
+        "fromRevision": 1,
+        "toRevision": 2
+      },
+      {
+        "type": "MarchSet",
+        "wallMs": 374.48199999999997,
+        "fromRevision": 5,
+        "toRevision": 6
+      },
+      {
+        "type": "MarchSet",
+        "wallMs": 429.0547000000006,
+        "fromRevision": 7,
+        "toRevision": 8
+      },
+      {
+        "type": "EncounterBegin",
+        "wallMs": 881.0687000000016,
+        "fromRevision": 18,
+        "toRevision": 19
+      },
+      {
+        "type": "EncounterAction",
+        "wallMs": 2290.1761000000006,
+        "fromRevision": 19,
+        "toRevision": 25
+      },
+      {
+        "type": "EncounterAction",
+        "wallMs": 2482.8271000000004,
+        "fromRevision": 25,
+        "toRevision": 31
+      },
+      {
+        "type": "MarchSet",
+        "wallMs": 1549.9066000000003,
+        "fromRevision": 31,
+        "toRevision": 32
+      },
+      {
+        "type": "MarchResume",
+        "wallMs": 1569.6319000000003,
+        "fromRevision": 36,
+        "toRevision": 37
+      },
+      {
+        "type": "MarchResume",
+        "wallMs": 1883.6604999999981,
+        "fromRevision": 41,
+        "toRevision": 42
+      },
+      {
+        "type": "MarchResume",
+        "wallMs": 2012.9037000000026,
+        "fromRevision": 46,
+        "toRevision": 47
+      }
+    ],
+    "errors": [],
+    "requests": [
+      {
+        "url": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"b17d1163-7696-4856-b138-1637c623b23e\",\"expectedRevision\":0,\"type\":\"PlayerGiftFood\",\"payload\":{\"recipientId\":\"actor-2\"}}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"8e51de46-730d-4996-b634-51e7d3396e12\",\"type\":\"MarchSet\",\"payload\":{\"x\":16,\"y\":7}}"
+      },
+      {
+        "url": "/api/runtime/demo-stop",
+        "body": "{\"apiVersion\":1}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"7001d9a5-c9da-417d-a902-87672e8b4a0f\",\"type\":\"MarchPause\",\"payload\":{}}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"f1f36f5c-eaa4-4b89-8474-9adc7530e819\",\"type\":\"MarchSet\",\"payload\":{\"x\":4,\"y\":7}}"
+      },
+      {
+        "url": "/api/runtime/demo-stop",
+        "body": "{\"apiVersion\":1}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"956c08b5-f21e-429c-888a-a24b8d833a0b\",\"type\":\"MarchPause\",\"payload\":{}}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"62756ff1-ab73-42e5-bd3d-bcd8c8f9d350\",\"type\":\"MarchSet\",\"payload\":{\"x\":16,\"y\":7}}"
+      },
+      {
+        "url": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"35f35dd2-670e-44fe-accc-b0681d5b0944\",\"expectedRevision\":18,\"type\":\"EncounterBegin\",\"payload\":{}}"
+      },
+      {
+        "url": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"3bc25ac0-f76b-4af9-a152-bfc020e1105d\",\"expectedRevision\":19,\"type\":\"EncounterAction\",\"payload\":{\"encounterId\":\"encounter-1\",\"action\":\"attack\"}}"
+      },
+      {
+        "url": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"1cab8fc4-6231-49b8-9d86-f109e3217241\",\"expectedRevision\":25,\"type\":\"EncounterAction\",\"payload\":{\"encounterId\":\"encounter-1\",\"action\":\"attack\"}}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"57d8551b-34a7-4501-8cbe-f353881340e7\",\"type\":\"MarchSet\",\"payload\":{\"x\":4,\"y\":7}}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"e29779ad-3385-4a74-9096-865268819b9a\",\"type\":\"MarchResume\",\"payload\":{}}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"a6de7f22-a80e-462b-b0ce-e87285b73028\",\"type\":\"MarchResume\",\"payload\":{}}"
+      },
+      {
+        "url": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"db564289-8feb-4784-93e2-0cc7e5a1a7cc\",\"type\":\"MarchResume\",\"payload\":{}}"
+      }
+    ],
+    "hashes": {
+      "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+      "service-commit-r1.json": "dfefa512a5f184e9efe99383877d49a2d1196ee81fe7a8209d259606832db563",
+      "service-commit-r10.json": "08fd940824c39ffbf0fbf5fe791358385112ca7ef6a53912e55f73ed08a6fe8f",
+      "service-commit-r12.json": "6534cb35dee7eee1535e86eb5c4741e03bb2f858da5520a71cc151f32f988ef9",
+      "service-commit-r14.json": "bfb46372e1f52c14a1b969550bedec2bbf773be77ad516402a31ed9a9aaa770c",
+      "service-commit-r16.json": "b6049e577907b18fa0d8663cd4c5c9d7fae47e72ad59e7f8b888acb34c98bd4a",
+      "service-commit-r18.json": "e40692b0713ec030bf45febff954fe04dd43623e2f1da97419536459ac385a52",
+      "service-commit-r19.json": "b1a13035cf8e2321c58294d767362db1765ff0860effabd909b59ba3548a6875",
+      "service-commit-r2.json": "677c3833deb208b3bb78a58c88483643b05ea835299efbc47f497c90a69a5101",
+      "service-commit-r25.json": "eb32434d0bcf2e4b0a9d0a2b794eaf3bd4ce1f3a40bda2bbe6dd7588a34da0d0",
+      "service-commit-r31.json": "20620557a6474ec115e3aca99965bb865e6ec374d38a0e2986899ac2aa2fe250",
+      "service-commit-r32.json": "af1f2c7ba5e24e16bb5eea261e252665b148bdad6371970bbebc2431d0c1c694",
+      "service-commit-r34.json": "d7a68775de75c1e55d2f54b8df0a9b1a602ff938712e5e4ebefa05fd279dcf57",
+      "service-commit-r36.json": "c1f45dfccca1ef48a32e2a040740a41bf6c780fd9c532b8f6b0562a8a96843b5",
+      "service-commit-r37.json": "84e7b98c8b0f1554bb727a9126d1ec8ea51e69d75bdc2fdedfd34355e6659743",
+      "service-commit-r39.json": "325c42669b355cf520a50db8afaf1be995b3e92c8d98ebf8b001031806056927",
+      "service-commit-r4.json": "53bae16595ca6202f557d265cdfb774e74345949d6d2c4bfd532932bdcb0a7dd",
+      "service-commit-r41.json": "54c30b9031379d8e365bf28f474131b7ca0133c3c404d0caea0697cfd3cd2dc5",
+      "service-commit-r42.json": "9b7383b64c7993a5127128be74c4a404010708097495b96aa8a75a1d8e8fce78",
+      "service-commit-r44.json": "d58bd984e719aeb402c514fd16aedd7d384d583ba9fb20da69e1d46d2438a463",
+      "service-commit-r46.json": "e71cd21e84e554053db6d30603ea1091f541dad666134a5fdda263bca29bf340",
+      "service-commit-r47.json": "437dc3d6597cbe87a5a4bfdb01794a152e3f839bd5c3f6ace4ff5c5a365c87f6",
+      "service-commit-r48.json": "d14ffedf1630cad5da86305e967c97413244bd95088ef58fd2e86132421c4344",
+      "service-commit-r5.json": "2c63e663a5469515967aa07b74f69e1b12f1ade654b6cf4901bc23e0ff8ab0fa",
+      "service-commit-r6.json": "b37f8ce382947f7fe4390645325666ead0b734de02e7578d73588dbb7c9a8575",
+      "service-commit-r7.json": "48cf0c05b545a105bd68d7e966f61cfdb956e159855ab9f767654c7eab3cc2c2",
+      "service-commit-r8.json": "edd5d7f9d2b7926f61f123889457b680aa63212c8dc487c86146e981bd17fab3"
+    },
+    "projectionSignature": "79d73cd36a391a4a7166a0fdb72c410b8dd262f7f6653d42561e03173f933155",
+    "final": {
+      "revision": 48,
+      "tick": 37,
+      "health": 920,
+      "wallet": 0,
+      "food": 19,
+      "position": {
+        "actorId": "actor-4",
+        "alive": true,
+        "location": "village",
+        "x": 4,
+        "y": 7
+      },
+      "resolution": "win"
+    },
+    "commands": 26,
+    "totalMs": 40369.756,
+    "remainingLocks": []
+  },
+  "restore": {
+    "verdict": "PASS",
+    "environment": {
+      "node": "v24.14.0",
+      "platform": "win32"
+    },
+    "steps": [
+      {
+        "name": "independent-world-projections",
+        "wallMs": 3187.7743,
+        "cpuMs": 3297
+      },
+      {
+        "name": "single-audit-cold-reopen",
+        "wallMs": 74351.4855,
+        "cpuMs": 72140
+      },
+      {
+        "name": "five-projection-sha-and-fixed-retry",
+        "wallMs": 34.45040000000154,
+        "cpuMs": 63
+      },
+      {
+        "name": "browser-restored-scene-assets-and-turn-state",
+        "wallMs": 1416.7908000000025,
+        "cpuMs": 204
+      },
+      {
+        "name": "normal-close-and-file-protection",
+        "wallMs": 72.42290000000503,
+        "cpuMs": 46
+      }
+    ],
+    "errors": [],
+    "hashes": {
+      "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+      "service-commit-r1.json": "ebc0bc6345c74ef13c3999aa3c334aa5d94ba11f9fb4f4390a99d3b620e78aa9",
+      "service-commit-r37.json": "14357a20eec575859a278d7503ef93d8c6c26980dcbec3e1e4dc579218360179",
+      "service-commit-r38.json": "c72b794152e7a351a041f8732fc5cc784923b6ddf6b0bc252a750994eec44897",
+      "service-commit-r44.json": "e96624625bcfd7ffaad1ab2467fca5e39c40d9a043c78f34a127d18220974ab0",
+      "service-commit-r45.json": "464a4f64271508eebeaf7c5d8de955224ced879e6f14b7ada23edba38a12643f",
+      "service-commit-r47.json": "bc965153ac5d21147dbaec9227b66415310bfd66180b239fbcc3488254d3c526",
+      "service-commit-r48.json": "19bf8642c39ffc2583ab2810b0b3bf3c73c17f36ea318856d0ecc87e3b8c4e24",
+      "service-commit-r49.json": "20bea949ab587b8bacafb4ad6c8565f61f4f8d7aee4fe2ff4770d2fb1ccf56ca",
+      "service-commit-r51.json": "08eb5b6a6babc43f0890ba9db33220ce5bc88a032a5c214d482e3f2bb495fb6a",
+      "service-commit-r52.json": "368c9a2b50b93e8fe0e2ca836d7bb0e33194edcbbfbedbc4a07a573a34bab76a",
+      "service-commit-r54.json": "c78efa07409b8f70a9539a0ce70771c7688f57a1325040fd8443aee98cb8400d",
+      "service-commit-r56.json": "b3b4e6eb05d5865149f5d33ee97ecc36e7012f413f36340c1810e4e5a6b34692",
+      "service-commit-r58.json": "85f018ed0aae521030328bfe59066e67b814a83587e4065624332540d412e5df",
+      "service-commit-r59.json": "e6dc8579175c6a1c3378d97fc0c7354e2e2f03b0fd03b258005321923ccfa329",
+      "service-commit-r61.json": "cbaef8641a1e868a3b2a554e87efa05009c48d33051fe40b0d4a05559a9e46fc",
+      "service-commit-r62.json": "234dc36a7415de0941ee1d24147c13ea06a3bffdaf9ae8b3589ecccae181cbcd",
+      "service-commit-r63.json": "2083ed0e14d2849e3b04f6910f2961fb07a414d788027af7395804f0a54f6153",
+      "service-commit-r69.json": "6f30b6f1494fa0e3f8641807620e038d70c13351611ca354bc283fc78f2be78f",
+      "service-commit-r75.json": "e0ae586ff9e297aa985e4f930a68056ca55309cc74fe71927519d9a01676b122",
+      "service-commit-r76.json": "6371a7b861b7a230fb071db254e3f6956ebd3a1b87699630e3a4d82ecd196ad2",
+      "service-commit-r78.json": "d4f4d6bcec7df04c030c647dfa62aa1a4958bac47f88baaeae5fb892d8324ba4",
+      "service-commit-r79.json": "a22981efbab5f75f027cc446468ce32ca8d9c6e55897af180d3551529affffd8",
+      "service-commit-r81.json": "517d72d7fd74c8d2681c8847d3076d1d7b4af1d94e78bae8f9f34daa5052facb",
+      "service-commit-r83.json": "a00e2cd6e595179c748810ef00b57b67a93f26083db2c538a45e185e4de0bc88",
+      "service-commit-r84.json": "e1dba3c0c76a8d95f7f385d42a4d1a2d64062b3f6837a995a2f965c228556733",
+      "service-commit-r86.json": "d16d013afbb16949e0aed0e67ba1ad323b839010985bf494dcfb5c6476d1b798",
+      "service-commit-r88.json": "e1a7102913b75fb8b66473585ca7da58f80f2aee65fcc607aeb5e1174a443ca7",
+      "service-commit-r90.json": "fb5470bff592ede394360155c8e27732c4c91942cd72aac95b4fbf3adc120ba6",
+      "service-commit-r91.json": "aa5a30ca85e4b50185457d2f3d32e24e93c8098c50ff877081d57ff17f8ede87",
+      "service-commit-r92.json": "02370e9566adc4e38e6988baa69864a10e13fa317bdec681e00b5c290b2958a7"
+    },
+    "projectionSignature": "fcb3505b0f0368932249ee4371cbfa8ad1e73da9b86b6b9eca87160ec00e6f32",
+    "final": {
+      "revision": 92,
+      "tick": 81,
+      "position": {
+        "actorId": "actor-4",
+        "alive": true,
+        "location": "village",
+        "x": 4,
+        "y": 7
+      },
+      "health": 920,
+      "wallet": 10,
+      "food": 20,
+      "resolution": "win"
+    },
+    "commandCount": 30,
+    "remainingLocks": []
+  },
+  "uiProcess": {
+    "command": [
+      "node",
+      "scripts/verify-d4e12-demo.mjs",
+      "artifacts/d4e12/consumer-ui-04",
+      "--ui-only"
+    ],
+    "pid": 53288,
+    "exitCode": 0,
+    "timedOut": false,
+    "unconfirmed": false,
+    "wallMs": 40644.156,
+    "cpuMs": 29921.875,
+    "hardLimitMs": 600000.0,
+    "jobProtected": true,
+    "phaseKilled": null
+  },
+  "restoreProcess": {
+    "command": [
+      "node",
+      "scripts/verify-d4e12-restore.mjs",
+      "artifacts/d4e12/restore-01",
+      "artifacts/d4e12/consumer-02/world"
+    ],
+    "pid": 62092,
+    "exitCode": 0,
+    "timedOut": false,
+    "unconfirmed": false,
+    "wallMs": 79339.486,
+    "cpuMs": 75968.75,
+    "hardLimitMs": 180000.0,
+    "jobProtected": true,
+    "phaseKilled": null
+  },
+  "environment": {
+    "os": {
+      "Caption": "Microsoft Windows 11 家庭版 中文版",
+      "Version": "10.0.26200"
+    },
+    "cpu": {
+      "Name": "13th Gen Intel(R) Core(TM) i5-13500HX",
+      "NumberOfCores": 14,
+      "NumberOfLogicalProcessors": 20
+    },
+    "node": "v24.14.0",
+    "oldServices": [
+      {
+        "LocalPort": 18340,
+        "OwningProcess": 63160
+      },
+      {
+        "LocalPort": 18338,
+        "OwningProcess": 61236
+      }
+    ],
+    "ownedResidual": [],
+    "dailyDirectoryExists": false,
+    "dailyPortListening": []
+  },
+  "note": "UI04 is a short UI chain; work/trade/rest use preserved consumer02 evidence; larger save replay and restore use tail and restore01. Not one all-green run."
+}

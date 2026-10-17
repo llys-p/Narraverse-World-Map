@@ -1,0 +1,96 @@
+{
+  "verdict": "PROTECTION_OK",
+  "originalEight": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r1.json": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+    "service-commit-r145.json": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+    "service-commit-r157.json": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+    "service-commit-r158.json": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+    "service-commit-r164.json": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+    "service-commit-r170.json": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+    "service-commit-r182.json": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c"
+  },
+  "demoOriginal": "dcf65a984698dba5f2ff65c41d8efab683f970fc0b8007b7154894735a023c8e",
+  "assets": {
+    "stickman-engine.js": {
+      "control": "c59e5290c6b40cf7ccd57e94cde1a161cba27a5e4d13db6c38d1883a3fff1dd8",
+      "candidate": "c59e5290c6b40cf7ccd57e94cde1a161cba27a5e4d13db6c38d1883a3fff1dd8"
+    },
+    "world-combat-fx.js": {
+      "control": "0a2fef080e7daa24f26479c988f18af7e80fc2cbc869d51b7850e24a42a6d5c2",
+      "candidate": "0a2fef080e7daa24f26479c988f18af7e80fc2cbc869d51b7850e24a42a6d5c2"
+    },
+    "kit/core.js": {
+      "control": "18ee0cbdc85c21eb12c9f96c9741902c27d5fa89441c2cddfe72253d0366ee3c",
+      "candidate": "18ee0cbdc85c21eb12c9f96c9741902c27d5fa89441c2cddfe72253d0366ee3c"
+    },
+    "kit/effects.js": {
+      "control": "367f170274601480aecdd0f806d56df2e5a2fbd1073852a870560a39a70c4ccb",
+      "candidate": "367f170274601480aecdd0f806d56df2e5a2fbd1073852a870560a39a70c4ccb"
+    },
+    "kit/humanoid.js": {
+      "control": "8556bf5487153523171282e19a8392273d555a772419ffb7b8da4d577fa9f1c4",
+      "candidate": "8556bf5487153523171282e19a8392273d555a772419ffb7b8da4d577fa9f1c4"
+    },
+    "kit/appearance-modern.js": {
+      "control": "ac8e13c1a2c2e1d7ea195ec047fb3733cd0bd71142300e11b28675f347721d17",
+      "candidate": "ac8e13c1a2c2e1d7ea195ec047fb3733cd0bd71142300e11b28675f347721d17"
+    },
+    "kit/accessories.js": {
+      "control": "8cdd5ec11853523a0f48c9acb06e59f5940e367f1c4d9a59d66000fcb71fb25b",
+      "candidate": "8cdd5ec11853523a0f48c9acb06e59f5940e367f1c4d9a59d66000fcb71fb25b"
+    },
+    "kit/structures-lib.js": {
+      "control": "293b3e8f327fba726e23e53e9727f4bf68ee4a359c9f7f2ae88e0cb4bb455f83",
+      "candidate": "293b3e8f327fba726e23e53e9727f4bf68ee4a359c9f7f2ae88e0cb4bb455f83"
+    },
+    "kit/furniture-lib.js": {
+      "control": "17c637bd8377fb9fd8ca047109d685c02a5c62a79b8d8f0e2123e2da300445b0",
+      "candidate": "17c637bd8377fb9fd8ca047109d685c02a5c62a79b8d8f0e2123e2da300445b0"
+    },
+    "kit/fixtures.js": {
+      "control": "64d21465e7ce3f9002d1e36bd029f422bd8c97a65212e2f100cdfb3f6d0c33f8",
+      "candidate": "64d21465e7ce3f9002d1e36bd029f422bd8c97a65212e2f100cdfb3f6d0c33f8"
+    },
+    "stickart/stickart-core.js": {
+      "control": "4d9da570d65cc27f768c0199bca41aae8c66367721b9071c3b6735056a892450",
+      "candidate": "4d9da570d65cc27f768c0199bca41aae8c66367721b9071c3b6735056a892450"
+    },
+    "stickart/beasts/quad.js": {
+      "control": "fb36f1b148055fd819efb51a522e0e266845920158c729897104db81a9736822",
+      "candidate": "fb36f1b148055fd819efb51a522e0e266845920158c729897104db81a9736822"
+    },
+    "stickart/beasts/deep.js": {
+      "control": "09757eed4473a9c941982254210465451ce883c876d7df53b927d60dd791fae3",
+      "candidate": "09757eed4473a9c941982254210465451ce883c876d7df53b927d60dd791fae3"
+    },
+    "stickart/beasts/serpent.js": {
+      "control": "0b715adf62959270334779f9ee46cb8b85c1bbc349e60fe59cfb8e22401180d0",
+      "candidate": "0b715adf62959270334779f9ee46cb8b85c1bbc349e60fe59cfb8e22401180d0"
+    },
+    "stickart/beasts/mountain.js": {
+      "control": "b7e58f42d21a2e7cb3ca41112a38d5c2418f7b9b198ed020ddf3653ee0f0ebf7",
+      "candidate": "b7e58f42d21a2e7cb3ca41112a38d5c2418f7b9b198ed020ddf3653ee0f0ebf7"
+    },
+    "stickart/beasts/village.js": {
+      "control": "01798db8b53ef3fefd0687e430c06f21dec8b1727823456ed2bcaae555f4e995",
+      "candidate": "01798db8b53ef3fefd0687e430c06f21dec8b1727823456ed2bcaae555f4e995"
+    }
+  },
+  "oldSourceFilesUnchanged": 88,
+  "foreignControlFilesUnchanged": 4,
+  "previousDailyFilesUnchanged": 50,
+  "oldServices": [
+    {
+      "LocalPort": 18340,
+      "OwningProcess": 63160
+    },
+    {
+      "LocalPort": 18338,
+      "OwningProcess": 61236
+    }
+  ],
+  "ownedResidual": [],
+  "newDailyWorldCreated": false,
+  "newDailyPortListening": []
+}
