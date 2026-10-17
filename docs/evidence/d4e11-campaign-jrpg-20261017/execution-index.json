@@ -581,11 +581,22 @@
   ],
   "protectionNote": "98 source products, five drawing assets, 13 external deliverables, eight original saves and 17 preexisting world files unchanged. Four of five control untracked files unchanged; dual-presentation-demo.html changed externally during concurrent work and was neither edited nor restored by this task.",
   "productManifestCount": 108,
-  "remoteDelivery": {
+  "remoteDeliveryAtLocalArchive": {
     "repository": "llys-p/Narraverse-World-Map",
     "observedIsPrivate": false,
     "pushed": false,
     "boardUpdated": false,
     "reason": "AGENTS.md requires private repository; awaiting explicit publication or private visibility decision"
+  },
+  "publicDeliveryAuthorization": {
+    "authorized": true,
+    "userReply": "允许推送至当前公开仓库",
+    "scope": "This D4E11 candidate source and sanitized acceptance evidence",
+    "excluded": [
+      "saved worlds",
+      "new artwork"
+    ],
+    "acceptanceUnchanged": "INCOMPLETE_NOT_ACCEPTED",
+    "finalRemoteReadback": "Control PROJECT_CONTEXT.md and GitHub Projects evidence"
   }
 }

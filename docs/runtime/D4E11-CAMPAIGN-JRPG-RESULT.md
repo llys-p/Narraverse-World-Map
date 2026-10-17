@@ -39,7 +39,7 @@
 
 本报告与检查器授权标识修正另随交付提交。运行产品108项 [SHA256清单](../evidence/d4e11-campaign-jrpg-20261017/product-sha256.json) 已逐项确认匹配；不含本报告和检查器脚本。环境 Windows `10.0.26200.0` / Node.js `v24.14.0` / PowerShell，仅内置Node模块，无依赖安装、模型或付费调用。
 
-远端发布状态：2026-10-17本轮 `gh repo view llys-p/Narraverse-World-Map --json isPrivate,url` 实际返回 `isPrivate:false`。与本项目AGENTS.md“保持私有、素材许可未核实”要求冲突；先完成本地精确提交，未向公开远端推送本候选或更新Projects，等待用户明确公开范围或恢复私有的决定。
+远端发布授权：2026-10-17 `gh repo view llys-p/Narraverse-World-Map --json isPrivate,url` 返回 `isPrivate:false`，因此先在本地提交1bf24ff并暂缓公开推送。用户随后明确回复“允许推送至当前公开仓库”，授权范围为本次候选源码及脱敏验收证据，不含存档或新增素材；该范围内的公开推送授权现已具备。最终远端提交与Projects读回见控制树PROJECT_CONTEXT.md；发布不改变本报告“未验收”裁定，不表示素材许可已核定。
 
 新合同为 campaign-village / d-campaign-v1 / serviceFormat11 / DTO5、receipt5；actor5、society7、memory8、observer4，工资账仍player-state4。MarchSet/Pause/Resume为0刻、revision+1；MarchStep至多2刻。确定性有限路由、桥梁碰撞、距离隐私、累计路程费用和预算保留位均进审计。
 
