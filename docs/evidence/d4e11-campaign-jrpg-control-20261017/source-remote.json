@@ -1,0 +1,10 @@
+{
+  "sourceBranch": "codex/world-runtime-campaign-jrpg",
+  "expectedSha": "80d6206ab2382f8bc96a20ef3e650fbcda1b9e97",
+  "readbackSha": "80d6206ab2382f8bc96a20ef3e650fbcda1b9e97",
+  "reportBlobSha": "55976af7b9afc9b2cdb5ffd57f3ab425a9dfeedc",
+  "repositoryIsPrivate": false,
+  "explicitPublicAuthorization": true,
+  "acceptance": "INCOMPLETE_NOT_ACCEPTED",
+  "businessChecksRerunThisDelivery": false
+}
