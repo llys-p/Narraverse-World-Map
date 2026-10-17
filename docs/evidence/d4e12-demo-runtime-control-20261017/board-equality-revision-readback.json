@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12仍In Progress/需修正。线程隔离源码216cd124cb992bc593007ebdec2c154ad046daaa保持；长档冷开和行动确认计算成本仍未解决。\n\n17:27自动跟进只做一个有界试验：保留完整校验/重演的token相等比较。定向5/5 PASS，真实HTTP同一seed42/相同ID的8×AdvanceTime2，独立进程ABBA各版2次，9份正式档SHA/原回执/五投影与正常重开逐项一致。行动墙钟中位3279/3307ms，CPU3384/3383ms；重开3654/3615ms，无可采纳收益。候选全部撤回；只推送弃用补丁/测试和脚本的非活动文本副本/原始证据，生产源码零diff，不冒称修复。下一步定位逐tick重演及重复遍历，不重复clone+deepEqual或token相等比较。\n\n原8档/16依赖/旧88源码/107份既有日常文件及中控并行原型保护，18338/PID61236、18340/PID63160、18342/PID14520保持；5个测量/测试PID退出、无隔离锁。未运行私档/全量/视觉/长链，未启停旧服务、合main/部署/迁移/上传存档。自动跟进world-map继续；本轮中性结果不打扰用户。\n\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/e26f386490ac54f7d6474556a4e7008c782df40c/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md\n证据交付：e26f386490ac54f7d6474556a4e7008c782df40c，远端SHA及报告API字节已读回一致。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
