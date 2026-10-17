@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#d9c997">
+  <title>边境行记 · Campaign</title>
+  <link rel="stylesheet" href="/runtime-campaign.css">
+  <script defer src="/runtime-art/stickman-engine.js"></script>
+  <script defer src="/runtime-art/stickart-core.js"></script>
+  <script defer src="/runtime-art/quad.js"></script>
+  <script defer src="/runtime-art/deep.js"></script>
+  <script defer src="/runtime-art/world-combat-fx.js"></script>
+  <script type="module" src="/runtime-campaign.mjs"></script>
+</head>
+<body>
+<main class="campaign-shell">
+  <header class="masthead">
+    <div><p class="kicker">边境行记 · 一段仍在发生的旅程</p><h1>群山与河谷</h1><p class="subtitle">点选道路上的地点，队伍便从此处启程。</p></div>
+    <div class="world-stamp" aria-label="世界状态"><span class="stamp-dot"></span><span id="campaign-world-status" role="status" aria-live="polite">正在读取世界…</span><small>修订 <b id="campaign-revision">—</b> · 第 <b id="campaign-tick">—</b> 刻</small></div>
+  </header>
+
+  <section class="map-frame" aria-label="边境地图与行军控制">
+    <div class="map-heading"><span>北境边疆</span><span id="campaign-location">位置读取中</span></div>
+    <div class="map-window" id="campaign-map-window">
+      <svg id="campaign-map" viewBox="0 0 1200 720" role="img" aria-label="可点击选择目的地的手绘羊皮纸地图" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="parchment" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e8d9ac"/><stop offset=".48" stop-color="#d9c99a"/><stop offset="1" stop-color="#e5d5a7"/></linearGradient>
+          <linearGradient id="river" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#668d8a"/><stop offset=".5" stop-color="#a4b7a1"/><stop offset="1" stop-color="#547d7c"/></linearGradient>
+          <pattern id="grain" width="96" height="90" patternUnits="userSpaceOnUse"><path d="M10 24q8-3 14 1m24 43q6-4 12 0m27-47q4 2 8 0M34 10l4 2m31 67 4-1" fill="none" stroke="#927e54" stroke-opacity=".12" stroke-width="2"/><circle cx="78" cy="20" r="1.4" fill="#796a49" fill-opacity=".17"/></pattern>
+          <filter id="soft"><feGaussianBlur stdDeviation="5"/></filter>
+        </defs>
+        <rect width="1200" height="720" fill="url(#parchment)"/><rect width="1200" height="720" fill="url(#grain)"/>
+        <g id="map-land"></g><g id="map-routes"></g><g id="map-water"></g><g id="map-settlement"></g><g id="map-markers"></g><g id="map-persons"></g><g id="map-labels"></g>
+        <rect x="22" y="22" width="1156" height="676" rx="7" fill="none" stroke="#665a40" stroke-width="2" stroke-opacity=".7"/>
+        <g class="compass" transform="translate(1100 95)"><circle r="34" fill="#e8dab4" fill-opacity=".7" stroke="#695e43"/><path d="M0-25 8 0 0 25-8 0Z" fill="#564b35"/><path d="M0-25 0 25 8 0Z" fill="#9b4c37"/><text y="-43" text-anchor="middle">北</text></g>
+        <text x="600" y="678" text-anchor="middle" class="map-caption">河流只在古桥处可渡 · 山林深处藏着尚未写下的故事</text>
+      </svg>
+      <div class="map-vignette" aria-hidden="true"></div>
+      <div class="map-zoom" aria-label="地图镜头"><button id="campaign-follow" type="button" aria-pressed="true" title="让地图跟随我">◎</button><button id="campaign-zoom-out" type="button" aria-label="缩小地图">−</button><button id="campaign-zoom-in" type="button" aria-label="放大地图">＋</button></div>
+    </div>
+    <div class="map-legend"><span><i class="legend-road"></i>商道</span><span><i class="legend-river"></i>河流</span><span><i class="legend-bridge"></i>石桥</span><span><i class="legend-person"></i>附近人物</span></div>
+  </section>
+
+  <section class="journey-bar" aria-label="行军状态">
+    <div class="journey-mark"><span class="journey-glyph">⚑</span></div>
+    <div class="journey-copy"><small id="campaign-order-state">旅程尚未开始</small><strong id="campaign-order-text">选择一处目的地</strong><span id="campaign-contact-line">沿路也许会遇见熟悉的人。</span></div>
+    <div class="journey-buttons"><button id="campaign-pause" type="button" disabled>暂停行军</button><button id="campaign-resume" class="primary" type="button" disabled>继续行军</button></div>
+  </section>
+
+  <section class="map-tools" aria-label="目的地备用输入与请求恢复">
+    <form id="campaign-coordinate-form"><label for="campaign-x">目的地坐标</label><input id="campaign-x" name="x" type="number" min="0" max="19" value="16" required><span>,</span><input id="campaign-y" name="y" type="number" min="0" max="11" value="7" required><button type="submit">设为目的地</button></form>
+    <button id="campaign-refresh" type="button">重新读取</button><button id="campaign-retry" type="button" hidden>重试同一请求</button>
+    <span id="campaign-command-status" role="status" aria-live="polite">地图读取不会推进世界时间。</span>
+  </section>
+
+  <section id="campaign-person-card" class="person-card" hidden aria-live="polite"></section>
+  <details class="other-actions"><summary>营地与交易</summary><p class="fold-note">这些行动会先暂停行军，并只在真实服务条件满足时启用。</p><div id="campaign-actions" class="action-list"></div></details>
+
+  <section id="campaign-battle-wrap" class="battle-wrap" hidden aria-label="森林遭遇战"><div class="battle-title"><div><p class="kicker">森林遭遇 · JRPG</p><h2>战斗场景</h2></div><button id="campaign-back-to-map" type="button">返回地图</button></div><div id="campaign-battle"></div></section>
+</main>
+</body>
+</html>

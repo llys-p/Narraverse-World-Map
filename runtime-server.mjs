@@ -22,6 +22,7 @@ const encounterStaticFiles=new Map([['/runtime-encounter.html',['runtime-encount
   ['/runtime-encounter.mjs',['runtime-encounter.mjs','text/javascript; charset=utf-8']],['/runtime-encounter.css',['runtime-encounter.css','text/css; charset=utf-8']]]);
 const villageStaticFiles=new Map([['/runtime-village.html',['runtime-village.html','text/html; charset=utf-8']],
   ['/runtime-village.mjs',['runtime-village.mjs','text/javascript; charset=utf-8']],['/runtime-village.css',['runtime-village.css','text/css; charset=utf-8']]]);
+const campaignStaticFiles=new Map(['runtime-campaign.html','runtime-campaign.mjs','runtime-campaign.css','runtime-campaign-contract.mjs','runtime-campaign-battle.mjs','runtime-campaign-battle.css'].map(file=>['/'+file,[file,file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8']]));
 const mindRoutes=['/api/runtime/minds',...mindStaticFiles.keys()];
 const envelope=(code,message)=>({apiVersion:1,error:{code,message}});
 function readCommandBody(req){
@@ -53,12 +54,17 @@ export async function startRuntimeServer(options){
     try{villageAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});}
     catch(error){await owner.close();throw error;}
   }
+  const campaignAssets=new Map();if(owner.mapAvailable)for(const [url,[file,type]] of campaignStaticFiles){
+    try{campaignAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});}
+    catch(error){await owner.close();throw error;}
+  }
+  if(owner.mapAvailable)assets.set('/',campaignAssets.get('/runtime-campaign.html'));
   const writable=options.writable??false,capabilities=Object.freeze({apiVersion:1,writes:writable,playerAvailable:owner.playerAvailable,
     playerActionsAvailable:owner.playerActionsAvailable,mindAvailable:inspectMind && owner.mindAvailable,
     commandDtoVersion:owner.commandDtoVersion,maxCommandBytes:MAX_COMMAND_BYTES,
-    maxAdvanceTicks:[3,4].includes(owner.commandDtoVersion)?144000:MAX_SERVICE_ADVANCE_TICKS,
+    maxAdvanceTicks:[3,4,5].includes(owner.commandDtoVersion)?144000:MAX_SERVICE_ADVANCE_TICKS,
     ...(owner.encounterAvailable?{encounterAvailable:true}:{}),...(owner.sceneAvailable?{sceneAvailable:true}:{}),
-    ...(owner.activityAvailable?{activityAvailable:true}:{}),
+    ...(owner.activityAvailable?{activityAvailable:true}:{}),...(owner.mapAvailable?{mapAvailable:true}:{}),
     ...(owner.playerWorkAvailable===true?{playerWorkAvailable:true}:{})});
   const server=http.createServer({maxHeaderSize:8192,requestTimeout:5000,headersTimeout:5000},async(req,res)=>{
     const send=(status,data,type='application/json; charset=utf-8',extra={})=>{
@@ -90,6 +96,14 @@ export async function startRuntimeServer(options){
         if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
         if(route==='/api/runtime/scene')send(200,owner.getScene());
         else{const asset=villageAssets.get(route);send(200,asset.bytes,asset.type);}
+        return;
+      }
+      if(route==='/api/runtime/map' || campaignStaticFiles.has(route)){
+        if(!owner.mapAvailable){send(404,envelope('MAP_UNAVAILABLE','当前世界没有地图投影。'));return;}
+        if(!['GET','HEAD'].includes(req.method)){send(405,envelope('WRITE_DISABLED','当前接口只支持读取。'),undefined,{Allow:'GET, HEAD',Connection:'close'});return;}
+        if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
+        if(route==='/api/runtime/map')send(200,owner.getMap());
+        else{const asset=campaignAssets.get(route);send(200,asset.bytes,asset.type);}
         return;
       }
       if(route==='/api/runtime/encounter'){
