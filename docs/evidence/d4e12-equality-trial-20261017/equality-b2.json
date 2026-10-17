@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-d4e12-equality.mjs",
+    "candidate",
+    "artifacts/d4e12/equality-b2"
+  ],
+  "pid": 31640,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 7317.813,
+  "cpuMs": 7437.5,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

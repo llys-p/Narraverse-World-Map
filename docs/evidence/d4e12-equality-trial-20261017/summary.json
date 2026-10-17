@@ -1,0 +1,176 @@
+{
+  "verdict": "DISCARDED_NO_PERFORMANCE_BENEFIT",
+  "baseCommit": "24ee9f909d4532742ea3a4da695420869ce53fb6",
+  "rows": [
+    {
+      "label": "equality-a1",
+      "mode": "baseline",
+      "actionsWallMs": 3282.411,
+      "actionsCpuMs": 3313,
+      "reopenWallMs": 3601.7675999999997,
+      "reopenCpuMs": 3562,
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-equality.mjs",
+          "baseline",
+          "artifacts/d4e12/equality-a1"
+        ],
+        "pid": 41800,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 7395.92,
+        "cpuMs": 7296.875,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      },
+      "files": {
+        "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+        "service-commit-r10.json": "1236af4fa5df2dce31f2bd4b042b06c60f9546dda9969cfc3d4a583d63c67d93",
+        "service-commit-r12.json": "835b5a02a6d689097e6a2e6d769c2414e55d0c3aaf07c7ccea4648f49388e18e",
+        "service-commit-r14.json": "bd785db7c9c67baeed6b35ec8a0c3839b4509f57f568442773bd7f6eb2ed89a9",
+        "service-commit-r16.json": "4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a",
+        "service-commit-r2.json": "ef5eac0768ac5bdd3f4e3f9e7cfe5fd5be02be3c054c6397adcb73b4bebb0650",
+        "service-commit-r4.json": "45784d1639a8050e21866668fdcd49769f7a4265ded105cb4d59ca542639cdb1",
+        "service-commit-r6.json": "b02b10b90f7d949364ee6d35540f07bf9d0190b42e528651c82461aaeddacd6b",
+        "service-commit-r8.json": "8038a5972d14144fbf43989b3d28a047ea9c62cdaa618a74b7f5d89898d9ef41"
+      },
+      "receiptsSha256": "aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2",
+      "fiveProjectionSha256": "9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4"
+    },
+    {
+      "label": "equality-b1",
+      "mode": "candidate",
+      "actionsWallMs": 3328.7492000000007,
+      "actionsCpuMs": 3390,
+      "reopenWallMs": 3628.9078,
+      "reopenCpuMs": 3672,
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-equality.mjs",
+          "candidate",
+          "artifacts/d4e12/equality-b1"
+        ],
+        "pid": 60576,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 7395.925,
+        "cpuMs": 7578.125,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      },
+      "files": {
+        "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+        "service-commit-r10.json": "1236af4fa5df2dce31f2bd4b042b06c60f9546dda9969cfc3d4a583d63c67d93",
+        "service-commit-r12.json": "835b5a02a6d689097e6a2e6d769c2414e55d0c3aaf07c7ccea4648f49388e18e",
+        "service-commit-r14.json": "bd785db7c9c67baeed6b35ec8a0c3839b4509f57f568442773bd7f6eb2ed89a9",
+        "service-commit-r16.json": "4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a",
+        "service-commit-r2.json": "ef5eac0768ac5bdd3f4e3f9e7cfe5fd5be02be3c054c6397adcb73b4bebb0650",
+        "service-commit-r4.json": "45784d1639a8050e21866668fdcd49769f7a4265ded105cb4d59ca542639cdb1",
+        "service-commit-r6.json": "b02b10b90f7d949364ee6d35540f07bf9d0190b42e528651c82461aaeddacd6b",
+        "service-commit-r8.json": "8038a5972d14144fbf43989b3d28a047ea9c62cdaa618a74b7f5d89898d9ef41"
+      },
+      "receiptsSha256": "aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2",
+      "fiveProjectionSha256": "9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4"
+    },
+    {
+      "label": "equality-b2",
+      "mode": "candidate",
+      "actionsWallMs": 3284.2739,
+      "actionsCpuMs": 3376,
+      "reopenWallMs": 3600.6742,
+      "reopenCpuMs": 3625,
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-equality.mjs",
+          "candidate",
+          "artifacts/d4e12/equality-b2"
+        ],
+        "pid": 31640,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 7317.813,
+        "cpuMs": 7437.5,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      },
+      "files": {
+        "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+        "service-commit-r10.json": "1236af4fa5df2dce31f2bd4b042b06c60f9546dda9969cfc3d4a583d63c67d93",
+        "service-commit-r12.json": "835b5a02a6d689097e6a2e6d769c2414e55d0c3aaf07c7ccea4648f49388e18e",
+        "service-commit-r14.json": "bd785db7c9c67baeed6b35ec8a0c3839b4509f57f568442773bd7f6eb2ed89a9",
+        "service-commit-r16.json": "4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a",
+        "service-commit-r2.json": "ef5eac0768ac5bdd3f4e3f9e7cfe5fd5be02be3c054c6397adcb73b4bebb0650",
+        "service-commit-r4.json": "45784d1639a8050e21866668fdcd49769f7a4265ded105cb4d59ca542639cdb1",
+        "service-commit-r6.json": "b02b10b90f7d949364ee6d35540f07bf9d0190b42e528651c82461aaeddacd6b",
+        "service-commit-r8.json": "8038a5972d14144fbf43989b3d28a047ea9c62cdaa618a74b7f5d89898d9ef41"
+      },
+      "receiptsSha256": "aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2",
+      "fiveProjectionSha256": "9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4"
+    },
+    {
+      "label": "equality-a2",
+      "mode": "baseline",
+      "actionsWallMs": 3275.6196999999997,
+      "actionsCpuMs": 3455,
+      "reopenWallMs": 3706.3856000000005,
+      "reopenCpuMs": 3656,
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-equality.mjs",
+          "baseline",
+          "artifacts/d4e12/equality-a2"
+        ],
+        "pid": 58320,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 7460.873,
+        "cpuMs": 7656.25,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      },
+      "files": {
+        "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+        "service-commit-r10.json": "1236af4fa5df2dce31f2bd4b042b06c60f9546dda9969cfc3d4a583d63c67d93",
+        "service-commit-r12.json": "835b5a02a6d689097e6a2e6d769c2414e55d0c3aaf07c7ccea4648f49388e18e",
+        "service-commit-r14.json": "bd785db7c9c67baeed6b35ec8a0c3839b4509f57f568442773bd7f6eb2ed89a9",
+        "service-commit-r16.json": "4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a",
+        "service-commit-r2.json": "ef5eac0768ac5bdd3f4e3f9e7cfe5fd5be02be3c054c6397adcb73b4bebb0650",
+        "service-commit-r4.json": "45784d1639a8050e21866668fdcd49769f7a4265ded105cb4d59ca542639cdb1",
+        "service-commit-r6.json": "b02b10b90f7d949364ee6d35540f07bf9d0190b42e528651c82461aaeddacd6b",
+        "service-commit-r8.json": "8038a5972d14144fbf43989b3d28a047ea9c62cdaa618a74b7f5d89898d9ef41"
+      },
+      "receiptsSha256": "aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2",
+      "fiveProjectionSha256": "9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4"
+    }
+  ],
+  "candidateSourceSha256": {
+    "runtime/core/data-contract.mjs": "2f1779e053718aec184387d2b90821dcb34f4828911b7903956694ceb12c86c8",
+    "runtime/core/encounter-runtime.mjs": "baebff9c6e40b9b394cb86d77c101da1e59cee3d8246bf57d20efdbc4bd81b8e"
+  },
+  "productionChangeRetained": false,
+  "activeTestsRetained": false,
+  "baseline": {
+    "actionsWallMs": 3279.0153499999997,
+    "actionsCpuMs": 3384.0,
+    "reopenWallMs": 3654.0766000000003,
+    "reopenCpuMs": 3609.0
+  },
+  "candidate": {
+    "actionsWallMs": 3306.51155,
+    "actionsCpuMs": 3383.0,
+    "reopenWallMs": 3614.791,
+    "reopenCpuMs": 3648.5
+  }
+}

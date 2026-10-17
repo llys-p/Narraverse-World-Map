@@ -1,0 +1,13 @@
+✔ canonicalDataEqual matches canonicalJson equality for valid data (8.6878ms)
+✔ canonicalDataEqual matches canonicalJson equality for differences (0.1924ms)
+✔ canonicalDataEqual preserves validation errors and traversal behavior (2.107ms)
+✔ live immutable service prefix equals independent full replay and rejects external forgeries (4281.2113ms)
+✔ worker preserves committed views, exact retries, full restore and tamper refusal (1332.8739ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5778.1987

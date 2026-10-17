@@ -1,0 +1,130 @@
+diff --git a/runtime/core/data-contract.mjs b/runtime/core/data-contract.mjs
+index c1f4f0c..b61f7e3 100644
+--- a/runtime/core/data-contract.mjs
++++ b/runtime/core/data-contract.mjs
+@@ -125,6 +125,40 @@ function encodeCanonical(value, ancestors = new Set(), depth = 0, encodedKeys =
+ export function canonicalJson(value) {
+   return encodeCanonical(value);
+ }
++
++// Canonical equality without escaped JSON strings or detached object clones.
++// Container markers cannot collide with JSON primitives. Both operands still
++// receive the complete canonical preflight, in the original left/right order.
++const arrayStart = Symbol('array'), recordStart = Symbol('record'), dataEnd = Symbol('end');
++export function canonicalDataEqual(left, right) {
++  const tokens = [], ancestors = new Set();
++  let comparing = false, index = 0, equal = true;
++  const emit = token => {
++    if (comparing) { if (tokens[index++] !== token) equal = false; }
++    else tokens.push(token);
++  };
++  const visit = (value, depth) => {
++    requireCondition(depth <= 64, 'Data nesting budget exceeded', 'LIMIT_EXCEEDED');
++    if (value === null || typeof value === 'string' || typeof value === 'boolean') { emit(value); return; }
++    if (typeof value === 'number') {
++      requireCondition(Number.isFinite(value), 'Non-finite number'); emit(value); return;
++    }
++    requireCondition(typeof value === 'object', 'Non-JSON data');
++    requireCondition(!ancestors.has(value), 'Cyclic data'); ancestors.add(value);
++    try {
++      if (Array.isArray(value)) {
++        denseArray(value, MAX_EVENTS); emit(arrayStart); const length = value.length;
++        for (let i = 0; i < length; i++) visit(value[i], depth + 1);
++      } else {
++        record(value); emit(recordStart);
++        for (const key of Object.keys(value).sort()) { emit(key); visit(value[key], depth + 1); }
++      }
++      emit(dataEnd);
++    } finally { ancestors.delete(value); }
++  };
++  visit(left, 0); comparing = true; visit(right, 0);
++  return equal && index === tokens.length;
++}
+ export function payloadBudget(value) {
+   requireCondition(new TextEncoder().encode(canonicalJson(value)).length <= MAX_PAYLOAD_BYTES, 'Payload budget exceeded', 'LIMIT_EXCEEDED');
+ }
+diff --git a/runtime/core/encounter-runtime.mjs b/runtime/core/encounter-runtime.mjs
+index ce8e898..dfda4f8 100644
+--- a/runtime/core/encounter-runtime.mjs
++++ b/runtime/core/encounter-runtime.mjs
+@@ -33,7 +33,7 @@
+  */
+ 
+ import {
+-  canonicalJson,
++  canonicalJson, canonicalDataEqual,
+   cloneData,
+   fields,
+   identifier,
+@@ -1376,7 +1376,7 @@ function hooksValidateHistory(snapshot, events, profile=null) {
+     requireCondition(replay.eventLog.length === events.length,
+       'the committed log holds facts no replayed engine tick can produce', 'INVALID_INPUT');
+     for (let seq = 1; seq <= events.length; seq += 1) {
+-      requireCondition(canonicalJson(replay.eventLog[seq - 1]) === canonicalJson(events[seq - 1]),
++      requireCondition(canonicalDataEqual(replay.eventLog[seq - 1], events[seq - 1]),
+         `the replayed engine fact #${seq} does not match the committed fact`, 'INVALID_INPUT');
+     }
+   }
+@@ -1419,13 +1419,13 @@ function hooksValidateHistory(snapshot, events, profile=null) {
+       'the journal entry ' + entry.dto.commandId + ' has no published fact', 'INVALID_INPUT');
+     requireCondition(published.eventSeq > 0 && published.eventSeq <= replay.eventLog.length,
+       'the published fact for ' + entry.dto.commandId + ' sits outside the replayed log', 'INVALID_INPUT');
+-    requireCondition(canonicalJson(outcome.receipt) === canonicalJson(entry.receipt),
++    requireCondition(canonicalDataEqual(outcome.receipt, entry.receipt),
+       'the replayed receipt for ' + entry.dto.commandId + ' does not match the journal', 'INVALID_INPUT');
+ 
+     requireCondition(replay.eventLog.length <= events.length,
+       'the replay produced more facts than the committed log', 'INVALID_INPUT');
+     for (let seq = comparedFactCount; seq < replay.eventLog.length; seq += 1) {
+-      requireCondition(canonicalJson(replay.eventLog[seq]) === canonicalJson(events[seq]),
++      requireCondition(canonicalDataEqual(replay.eventLog[seq], events[seq]),
+         'the replayed fact #' + (seq + 1) + ' does not match the committed fact', 'INVALID_INPUT');
+     }
+     comparedFactCount = replay.eventLog.length;
+@@ -1441,7 +1441,7 @@ function hooksValidateHistory(snapshot, events, profile=null) {
+   requireCondition(replay.eventLog.length <= events.length,
+     'the replay produced more facts than the committed log', 'INVALID_INPUT');
+   for (let seq = comparedFactCount; seq < replay.eventLog.length; seq += 1) {
+-    requireCondition(canonicalJson(replay.eventLog[seq]) === canonicalJson(events[seq]),
++    requireCondition(canonicalDataEqual(replay.eventLog[seq], events[seq]),
+       'the replayed fact #' + (seq + 1) + ' does not match the committed fact', 'INVALID_INPUT');
+   }
+   requireCondition(replay.eventLog.length === events.length,
+@@ -1449,30 +1449,30 @@ function hooksValidateHistory(snapshot, events, profile=null) {
+ 
+   if (journalOnly) {
+     // Pure journal bundle: the journal replay owns the whole snapshot.
+-    requireCondition(canonicalJson(replay.snapshot) === canonicalJson(snapshot),
++    requireCondition(canonicalDataEqual(replay.snapshot, snapshot),
+       'the replayed snapshot does not match the committed snapshot', 'INVALID_INPUT');
+   } else {
+     // World-ticked bundle: the one full replay owns the world, the RNG and every fact,
+     // so the terminal world must equal the committed world byte for byte. Comparing the
+     // whole world also closes every encounter-effect tampering (reservation, damage,
+     // population, ledger) against a hand-edited terminal snapshot.
+-    requireCondition(canonicalJson(replay.snapshot.world) === canonicalJson(snapshot.world),
++    requireCondition(canonicalDataEqual(replay.snapshot.world, snapshot.world),
+       'the replayed terminal world does not match the committed world', 'INVALID_INPUT');
+     requireCondition(replay.snapshot.tick === snapshot.tick &&
+       replay.snapshot.revision === snapshot.revision &&
+       replay.snapshot.instantCommits === snapshot.instantCommits &&
+       replay.snapshot.nextEventSeq === snapshot.nextEventSeq &&
+-      canonicalJson(replay.snapshot.rng) === canonicalJson(snapshot.rng) &&
+-      canonicalJson(replay.snapshot.scheduledTasks) === canonicalJson(snapshot.scheduledTasks) &&
++      canonicalDataEqual(replay.snapshot.rng, snapshot.rng) &&
++      canonicalDataEqual(replay.snapshot.scheduledTasks, snapshot.scheduledTasks) &&
+       replay.snapshot.nextEntityId === snapshot.nextEntityId,
+       'the replayed terminal counters do not match the committed snapshot', 'INVALID_INPUT');
+-    requireCondition(canonicalJson(replay.snapshot.commandReceipts) === canonicalJson(snapshot.commandReceipts),
++    requireCondition(canonicalDataEqual(replay.snapshot.commandReceipts, snapshot.commandReceipts),
+       'the replayed encounter receipts do not match the committed receipts', 'INVALID_INPUT');
+     requireCondition(replay.snapshot.nextInputSeq === snapshot.nextInputSeq &&
+-      canonicalJson(replay.snapshot.pendingCommands) === canonicalJson(snapshot.pendingCommands),
++      canonicalDataEqual(replay.snapshot.pendingCommands, snapshot.pendingCommands),
+       'the replayed encounter input history does not match the committed counters', 'INVALID_INPUT');
+   }
+-  if(profile)requireCondition(canonicalJson(replay.snapshot)===canonicalJson(snapshot),'Scene full snapshot/replay mismatch','INVALID_INPUT');
++  if(profile)requireCondition(canonicalDataEqual(replay.snapshot, snapshot),'Scene full snapshot/replay mismatch','INVALID_INPUT');
+   return { valid: true, errors: [] };
+ }
+ 

@@ -1,8 +1,10 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-17 16:50（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
+更新时间：2026-10-17 17:27（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
 
 ## D4E12 Demo真实接入
+
+- 17:27自动跟进：保留完整校验/重演的token相等比较试验未获收益，已全部撤回，生产仍216cd12。5/5定向PASS；同一合成HTTP 8×Advance2的ABBA各版2次，行动墙钟中位3279/3307ms、CPU3384/3383ms，完整重开3654/3615ms；四轮9档SHA、原回执、五投影与重开均一致，不追查微小波动。弃用补丁/原始数据见线程隔离报告的新节；活动目录无残留测试/候选代码。下一步细分逐tick重演/重复遍历，不重复相等比较优化；性能仍未达标。
 
 - 用户授权自主参考开源游戏处理等待；新增[线程隔离结果/Reference Review](docs/runtime/D4E12-RESPONSIVE-RUNTIME.md)，源码216cd124cb992bc593007ebdec2c154ad046daaa。新Demo将原owner完整计算/审计/保存放进worker，HTTP只读已提交投影。ABBA真实Advance12各版2次，最长读取阻塞804–868→4.5–7.4ms，四轮存档SHA一致；确认总耗时约0.85–0.96秒，未证明加速。worker定向最终1/1，实际页面26命令胜利返村/关闭通过；短档完整重演恢复/篡改拒绝通过。长档冷开及行动确认成本仍未解决，D4E12仍需修正。原型/旧8档/现有服务保留，未切换日常实例。
 
