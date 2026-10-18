@@ -6,6 +6,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import { registerHooks } from 'node:module';
 import path from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
 
 const baseline = '63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef';
 const mode = process.argv[2];
@@ -48,8 +49,11 @@ registerHooks({ load(url, context, next) {
 } });
 
 const { startRuntimeServer } = await import('../runtime-server.mjs');
-const { loadRuntimeServiceCommit } = await import('../runtime/service/service-commit.mjs');
+const { loadRuntimeServiceCommit, transitionAuditedServiceCommand } = await import('../runtime/service/service-commit.mjs');
 const { createSimulationSession } = await import('../runtime/core/command-engine.mjs');
+const { deriveCampaignBundle } = await import('../runtime/core/world-state.mjs');
+const { executeAuditedCampaignIntent } = await import('../runtime/core/scene-campaign-runtime.mjs');
+const { validateSceneCommandDto } = await import('../runtime/service/http-contract.mjs');
 const { runtimeProfile, projectPublicSnapshot, projectPlayerSnapshot, projectEncounterSnapshot, projectSceneSnapshot, projectMapSnapshot } = await import('../runtime/service/http-contract.mjs');
 const { canonicalJson } = await import('../runtime/core/data-contract.mjs');
 const { validateCampaignReceipt } = await import('../runtime-campaign-contract.mjs');
@@ -84,6 +88,33 @@ function five(group) {
   return Object.fromEntries(['snapshot', 'map', 'player', 'encounter', 'scene'].map(key => [key, group[key]]));
 }
 
+function replayFromAuditedAnchor(commit, transition) {
+  let replay = commit.anchor;
+  const receipts = [];
+  for (const entry of commit.commands) {
+    const next = transition(replay, entry.dto);
+    assert.deepEqual(next.receipt, entry.receipt);
+    replay = next.bundle;
+    receipts.push(next.receipt);
+  }
+  assert(isDeepStrictEqual(replay, commit.bundle), 'replay must reconstruct the audited final bundle');
+  return receipts;
+}
+
+function replayWithValidatedCampaignDto(commit) {
+  let replay = commit.anchor;
+  const receipts = [];
+  for (const entry of commit.commands) {
+    const dto = validateSceneCommandDto(entry.dto, 5);
+    const next = executeAuditedCampaignIntent(replay, dto);
+    assert.deepEqual(next.receipt, entry.receipt);
+    replay = next.bundle;
+    receipts.push(next.receipt);
+  }
+  assert(isDeepStrictEqual(replay, commit.bundle), 'validated campaign replay must reconstruct the audited final bundle');
+  return receipts;
+}
+
 try {
   await phase('first-open', async () => {
     server = await startRuntimeServer({ directory, seed: 42, profile: 'campaign-village', writable: true, continuousMarch: true, runtimeWorker: false, port: 0 });
@@ -105,6 +136,18 @@ try {
     commit = await loadRuntimeServiceCommit(path.join(directory, 'service-commit-r16.json'));
   });
   report.journalFullAuditMarks = globalThis.__coldOpenAuditMarks;
+  let publicReplay, derivedReplay, validatedReplay;
+  await phase('journal-public-transition', () => {
+    publicReplay = replayFromAuditedAnchor(commit, transitionAuditedServiceCommand);
+  });
+  await phase('journal-private-derivation', () => {
+    derivedReplay = replayFromAuditedAnchor(commit, deriveCampaignBundle);
+  });
+  await phase('journal-validated-campaign', () => {
+    validatedReplay = replayWithValidatedCampaignDto(commit);
+  });
+  assert.deepEqual(derivedReplay, publicReplay);
+  assert.deepEqual(validatedReplay, publicReplay);
   await phase('projection-build', () => {
     const { systems } = runtimeProfile(commit.bundle);
     createSimulationSession(commit.bundle, systems);

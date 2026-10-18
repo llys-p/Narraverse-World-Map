@@ -7,7 +7,7 @@
 - 独立树：`D:/Narraverse-World-Map-cold-open`，分支 `codex/world-runtime-cold-open`，基线 `63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef`。未触碰 control、demo-gameplay、原型原件、任务草案或看板。
 - 实际候选仅改 `runtime/service/service-commit.mjs`：公共完整审计继续完整验证 anchor，逐 DTO 使用原固定转移和完整 world audit，并精确比较最终 replay 与磁盘 raw final。删除的是此前已被该精确比较蕴含的 raw final 第二次完整 audit 与投影构造。
 - 为保留直接库调用的输入隔离，`createAuditedServiceCommit` 只在其已分离的副本上继续执行私有认证。没有新增 public `trusted`/`skip` 输入、缓存、格式、时间规则、预算或持久化语义。
-- 最终候选 `runtime/service/service-commit.mjs` SHA-256：`ca6e1e6b85180c15b1ecc737adea6d44eb47a14c87cb69bb0d61bf457c0e0091`；测量器 `scripts/measure-d4e12-cold-open.mjs` SHA-256：`7a15c3ade781b02e09328253e12321843d6967d8a416dfd10ec602ab46a4ac73`。
+- 最终候选 `runtime/service/service-commit.mjs` SHA-256：`ca6e1e6b85180c15b1ecc737adea6d44eb47a14c87cb69bb0d61bf457c0e0091`；最终 ABBA 使用的测量器 SHA-256：`7a15c3ade781b02e09328253e12321843d6967d8a416dfd10ec602ab46a4ac73`。后续路径归因将同一测量器扩展为 SHA-256 `3f3736ea26435e4d5d5309dc12ecb838654e19765abb4bb9d056945493e6184e`，不改变生产源码。
 
 ## 归因
 
@@ -16,6 +16,12 @@
 - 初始分段样本显示完整 audit 5140.545ms / 冷重开 5541.565ms，而五投影构造仅 15.853ms；投影不是冷开的主瓶颈。
 - 最终 B5 的冷开 audit 内部时间为 anchor 38.087ms、raw final 第二次 audit 674.507ms、投影预检及 journal replay 3849.482ms。C5 保留 anchor 45.941ms，取消 raw final 重复 audit，journal replay 仍为 3705.614ms。
 - 因此本片只消除已证明重复的约一段 final audit；完整 journal replay 仍保留且仍是主要成本。没有把这个结果说成“冷开问题已解决”。
+
+### 后续 journal 路径归因（未采纳生产改动）
+
+在同一已完整认证 r16 commit 上，测量器逐条复算并对每条 receipt 与最终 bundle 做精确比对；四种输出仍为既有正式文件、五投影与回执 hash。`journal-path-attribution-c1` 中，公开完整转移为 2321.952ms，私有认证前缀 derivation 为 791.050ms。`journal-path-attribution-c2` 重测为 1618.622ms 与 759.727ms；一个只移除 audit loop 内重复 DTO 校验、但仍调用原完整 campaign 转移的候选为 1754.250ms，较公开路径更慢，已拒收。
+
+私有 derivation 的快结果不进入公开 `validateServiceCommit` 或冷加载：它的前提是 WeakMap 中仅进程内可得的已认证前缀，而公开 JSON/冷加载合同要求保留原完整 oracle。把它用于公开审计会改变该明确边界，即使本次合成输出相同也不擅自采纳。上述两个回执均退出 0、180 秒硬限内；原始数据在 `artifacts/d4e12/journal-path-attribution-{c1,c2}/result.json`，仅含合成指标、hash 和回执。
 
 ## 最终同机 ABBA
 
