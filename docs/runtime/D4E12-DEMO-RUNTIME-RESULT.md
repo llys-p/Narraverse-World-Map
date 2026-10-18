@@ -1,9 +1,9 @@
 # D4E12结果入口
 
-[最新报告与诊断](https://github.com/llys-p/Narraverse-World-Map/blob/669256348d3c5f07e47cd0f17cddf1da3c4700ff/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md) · [运行中前缀审计补充合同草案](https://github.com/llys-p/Narraverse-World-Map/blob/669256348d3c5f07e47cd0f17cddf1da3c4700ff/tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md)。
+[最新运行中审计限定验收](https://github.com/llys-p/Narraverse-World-Map/blob/63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef/docs/runtime/D4E12-LIVE-SESSION-AUDIT-RESULT.md) · [已批准补充合同](https://github.com/llys-p/Narraverse-World-Map/blob/63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef/tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md)。
 
-当前待用户决定是否调整原任务书实现约束第4条。草案经独立只读复核，尚未批准、未实施、未派发，不改写冻结合同。拟只调整当前live owner已提交前缀的运行中核验方式；外部JSON、冷加载及公开独立完整重演保留。六组安全反例与逐步验收已列，不承诺冷开加速。
+用户2026-10-18明确批准后实施。生产1b6211c67dc1bf4287a327648d94520233166846，交付63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef，新树D:/Narraverse-World-Map-live-session-audit / codex/world-runtime-live-session-audit；完整推送及报告、合同、原始汇总API字节一致。
 
-生产保持d22bc5d。此前16项和同轮短世界9.20%/18.81%改善按原范围保留，不能代表长档或最终页面复验。本轮actor v5构造虽4440→1，端到端无收益，全部候选/活动脚本/未运行测试已撤回，只发布原始数据与决策草案。
+短世界ABBA各版2次，行动确认平均墙钟改善56.40%、CPU53.18%，约0.236秒/次，文件/回执/五投影一致；12个定向成员分批覆盖，最终隔离页面25.121秒完成闭环。运行中证明只从当前耐久head派生，公开JSON/冷加载/独立完整重演保持。并发、旧head、重复writer、持久失败/确认丢失恢复及幂等通过；页面未重开，core/HTTP另验，未做视觉验收。
 
-原八档等保护通过，三旧端口仍无监听，启停动作0；无main/部署/迁移/存档上传。D4E12性能仍需修正，D未收口；交付669256348d3c5f07e47cd0f17cddf1da3c4700ff及两份文档API已读回核实。
+长档冷开仍未解决，旧74.351秒样本未复跑，不能称性能整体合格。日常入口未切换，三旧端口开工时已无监听、启停0；原档/日常文件/并行原型脏摘要保护。无main/部署/迁移/私档上传/外部模型，D4E12仍需修正，D进行中。

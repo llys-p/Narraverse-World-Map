@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12：功能限定通过，运行中审计优化已完成；长档冷开仍需修正。\n用户已于2026-10-18批准审计补充合同。生产候选1b6211c67dc1bf4287a327648d94520233166846，完整交付63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef，独立树D:/Narraverse-World-Map-live-session-audit / codex/world-runtime-live-session-audit；精确推送及API报告/合同/原始汇总字节已读回。\n同机合成HTTP ABBA各版2次，8次行动墙钟改善56.40%、CPU53.18%，平均每次确认0.236秒。9文件SHA/8回执/五投影一致；12个定向成员分批覆盖，最终隔离页面25.121秒完成赠粮→行军改道/路遇→两回合胜利→返村→正常关闭。页面未重开，全审/重开在core与HTTP另测。\n数学派生与durable head分离；raw JSON/冷加载/公开独立全重演保留。旧head、重复writer、跨owner、Getter/Proxy、持久失败及确认丢失恢复/幂等均有反例。原8档/16依赖/旧88源码/107日常文件/并行原型脏摘要保持，3旧端口无监听，启停0，无自有进程或测试锁。\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef/docs/runtime/D4E12-LIVE-SESSION-AUDIT-RESULT.md\n冷开仍完整审计，私有长档未复跑，不宣称其性能合格。日常入口未切换，无main/部署/迁移/上传存档/外部模型。D4E12保持In Progress/需修正，Stage D进行中。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

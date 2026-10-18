@@ -1,0 +1,21 @@
+{
+  "head": "63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef",
+  "remoteHead": "63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef",
+  "files": [
+    {
+      "path": "docs/runtime/D4E12-LIVE-SESSION-AUDIT-RESULT.md",
+      "sha256": "1ea33ef721dbfa8c214520f030542f3af774fb181f2c2a331016a5bd2eec4153",
+      "bytesEqual": true
+    },
+    {
+      "path": "tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md",
+      "sha256": "9c0cec295f56c36e4d3483c5de564cd0a870657ef154c7db03dd61a3cfa722d2",
+      "bytesEqual": true
+    },
+    {
+      "path": "docs/evidence/d4e12-live-session-audit-20261018/summary.json",
+      "sha256": "073334d23b19e89161cf82ee84efcf3f002514a155b355e1c577d5be224c2d9b",
+      "bytesEqual": true
+    }
+  ]
+}
