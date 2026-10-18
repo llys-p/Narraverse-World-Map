@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12：Demo现有功能接线继续推进；性能已拆到独立对话，不阻塞功能。\n功能树D:/Narraverse-World-Map-demo-gameplay / codex/world-runtime-demo-gameplay，源码fee737ddd8861a37d0fe67886306561f90def25d，交付4c6b69c8a66588f6241cabdb0a4b27014e4b7a03。用户选择先结合demo完善现有功能，新增村长工作、商人按1–10数量买卖、行囊找商人/休整，均沿用真实命令与原规则。药草不伪装直接服用。新静态模块显式登记，core/service/持久化无修改。\n定向3/3、最终真实Edge卖2粮→买1粮→工作→休整→正常关闭→原独立完整审计→重开PASS，49.657秒；r44/tick44，金币20/粮食19/疲劳50，五投影与5份正式档SHA跨重开一致。非法数量/距离变化的旧面板不发POST，开关面板不写世界。失败3轮（Edge启动、模块未登记阶段超时、测试body导航竞态）均保留并修复后通过，r2自有锁仅在确认PID退出后清理。无视觉、全量、长档重跑。\n功能报告：https://github.com/llys-p/Narraverse-World-Map/blob/4c6b69c8a66588f6241cabdb0a4b27014e4b7a03/docs/runtime/D4E12-DEMO-GAMEPLAY-RESULT.md\n性能线程01a14d49-bc97-7ce3-a47e-18c4f92edea8专责cold-open独立树/分支，不写功能树/中控/看板。已交付live优化63b3ddf行动改善56.40%/CPU53.18%，原长档冷开仍未解决。D4E12整体In Progress/需修正，Stage D进行中；主线当前优先功能。\n原8档/16依赖/旧88源码/107日常文件/并行原型及2行脏摘要保持；三旧端口无监听，启停0；无自有测试进程/锁。日常入口未切换，无main/部署/迁移/私档上传/外部付费模型。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

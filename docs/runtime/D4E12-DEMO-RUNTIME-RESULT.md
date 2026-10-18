@@ -1,5 +1,7 @@
 # D4E12结果入口
 
+当前优先：先结合demo完善现有功能，[人物交互/交易/行囊限定验收](https://github.com/llys-p/Narraverse-World-Map/blob/4c6b69c8a66588f6241cabdb0a4b27014e4b7a03/docs/runtime/D4E12-DEMO-GAMEPLAY-RESULT.md)已交付。功能源码fee737d/交付4c6b69c8a66588f6241cabdb0a4b27014e4b7a03；完整页面与重开通过，日常入口未切换。性能已另开对话01a14d49-bc97-7ce3-a47e-18c4f92edea8，独立cold-open树/分支；其余以下内容为前序运行中审计结果。
+
 [最新运行中审计限定验收](https://github.com/llys-p/Narraverse-World-Map/blob/63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef/docs/runtime/D4E12-LIVE-SESSION-AUDIT-RESULT.md) · [已批准补充合同](https://github.com/llys-p/Narraverse-World-Map/blob/63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef/tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md)。
 
 用户2026-10-18明确批准后实施。生产1b6211c67dc1bf4287a327648d94520233166846，交付63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef，新树D:/Narraverse-World-Map-live-session-audit / codex/world-runtime-live-session-audit；完整推送及报告、合同、原始汇总API字节一致。
