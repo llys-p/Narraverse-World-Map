@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "scripts/verify-demo-person-navigation.mjs",
+    "artifacts/d4e12/person-navigation-ui-r2-world"
+  ],
+  "pid": 63640,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 7688.174,
+  "cpuMs": 6421.875,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

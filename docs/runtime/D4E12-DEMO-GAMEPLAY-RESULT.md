@@ -1,4 +1,35 @@
-# D4E12-F2 Demo行动结果与本次记录
+# D4E12-F3 Demo人物定位与接近
+
+2026-10-18（Asia/Shanghai）。继续现有Demo地图/人物/背包衔接。**本轮功能限定通过，未新增世界规则或全知位置。**
+
+- 基准 `31a40794e52ce84498c2b5fe05d87b70bf9ef18e`，源码 `626630eafd86920ce7439820b87a8301d791d3d5`；树D:/Narraverse-World-Map-demo-gameplay，分支codex/world-runtime-demo-gameplay。
+- 背包新增“在地图找商人”；人物卡新增“在地图查看”和“前往当前位置”，地图可“回到玩家位置”。查看/切换镜头不发世界命令，不移动玩家、不推进时间。
+- 只读取当前公开map.actors（原规则仅周围4格范围），离开视野不补后台坐标、不保留旧坐标。看不见时找商人禁用并说明需要探索；不谎称全地图导航。
+- 前往时重新读取该人物最新公开坐标、复制成MarchSet目标；只前往点击时的位置，不自动追踪移动人物。仍由原运行时生成MarchStep，保持路遇暂停、暂停/改道、命令预算/保留位、断连停止及持久确认规则。
+- 战斗、忙碌/待确认、死亡、已在交互范围、剩余命令不足3条及无效坐标均不能启用接近；输入/投影不可变边界仍由原client/后端保障。
+
+## 本轮验证与失败记录
+
+- 最终5/5：新导航2项（只用当前视野、坐标复制隔离、移动后新位置、消失清空、预算/战斗/连接等门）＋原交互3项，169.732ms监督墙钟；先写测试缺少导出红灯，生产后转绿。
+- 真实合成世界先合法AdvanceTime(24)，商人在视野内但不可交互；背包定位→人物卡坐标→回到玩家→再定位，全程POST0、五投影不变；点击前往只发一次MarchSet(6,8)，页面不发MarchStep；运行时按路遇规则停在玩家(5,7)/商人(6,8)，商人变可交互，交易面板实际打开。
+- 正常关闭→原公开完整审计→重开，五投影与4份正式文件SHA完全一致，r27/tick26。完整页面进程7688.174ms，exit0，无超时/退出不明，页面异常0，最终自有进程/锁0。
+- 首轮UI测试错误要求必须arrived；实际正确路遇已在tick25暂停，断言等待110秒后失败（监督115518.570ms，exit1、无硬超时、正常关闭无锁）。按已冻结的路遇规则改为“抵达或商人路遇暂停且runner停止”，保留全部目标坐标、真实距离、交互、命令及持久恢复断言；生产规则没有为测试改变。首轮失败原样保留。
+- 最终r27 SHA `f5676fa4182fccb0f18f95b35d926a15678d3a9a4c33a1c6464aad9d2071798c`；五投影签名 `85b7cc40711e475e872901351385de3364664030158d875c28b1a3bedde8f5ae`。仅上传合成指标/回执/文件SHA，不上传world目录。
+
+```powershell
+python scripts/run-d4e12-check.py person-navigation-final 180 node --test --test-concurrency=1 tests/simulation/demo-person-navigation.test.mjs tests/simulation/demo-interaction-actions.test.mjs
+python scripts/run-d4e12-check.py person-navigation-ui-r2 180 --phase-file artifacts/d4e12/person-navigation-ui-r2-world/phase.json node scripts/verify-demo-person-navigation.mjs artifacts/d4e12/person-navigation-ui-r2-world
+```
+
+原8档仅核SHA、不复跑，16绘制依赖、旧88源码、107既有日常文件、并行原型与中控2行脏摘要保持。三旧端口无监听、启停动作0，未切换日常入口；无main/部署/迁移/私档上传/外部模型、无全量/视觉/长档检查。`runtime/`与runtime-server.mjs无diff；未做性能A/B，不以此证明性能合格。性能独立对话继续推进，本功能线未合入其并行提交。
+
+Reference Review：复用Demo地图镜头/人物卡、现有公开视野与MarchSet订单；只新增展示导航，不另造寻路、跟随AI或暴露开发者全知坐标。
+
+[本轮完整原始数据](../evidence/d4e12-person-navigation-20261018/ui-r2-result.json)
+
+---
+
+## D4E12-F2 历史：Demo行动结果与本次记录
 
 2026-10-18（Asia/Shanghai）。用户继续要求结合demo完善现有功能。**本轮展示接线限定通过，真实世界规则与后端没有修改。**
 

@@ -1,0 +1,63 @@
+{
+  "verdict": "PASS",
+  "steps": [
+    {
+      "name": "synthetic-visible-distant-merchant",
+      "wallMs": 1843.0746
+    },
+    {
+      "name": "bag-locate-and-camera-only-no-world-write",
+      "wallMs": 186.54679999999985
+    },
+    {
+      "name": "existing-march-order-to-click-time-position",
+      "wallMs": 731.9138000000003
+    },
+    {
+      "name": "normal-close-independent-audit-and-reopen",
+      "wallMs": 4740.1878
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"922ff7fb-4a27-4c90-b5b4-93a542526c92\",\"type\":\"MarchSet\",\"payload\":{\"x\":6,\"y\":8}}"
+    }
+  ],
+  "clickTimeTarget": {
+    "x": 6,
+    "y": 8
+  },
+  "files": {
+    "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+    "service-commit-r24.json": "4e0c476231c30e5bc021e86702ae0c0c0f279a8c0607db980ea81ecb11e47bee",
+    "service-commit-r25.json": "261a42ee8b43f1ab3aedb5b4ef7ca4207a3dcdb24ac984c9740804f2210ac23f",
+    "service-commit-r27.json": "f5676fa4182fccb0f18f95b35d926a15678d3a9a4c33a1c6464aad9d2071798c"
+  },
+  "projectionSignature": "85b7cc40711e475e872901351385de3364664030158d875c28b1a3bedde8f5ae",
+  "final": {
+    "revision": 27,
+    "tick": 26,
+    "position": {
+      "actorId": "actor-4",
+      "alive": true,
+      "location": "village",
+      "x": 5,
+      "y": 7
+    },
+    "merchant": {
+      "actorId": "actor-3",
+      "alive": true,
+      "canInteract": true,
+      "condition": "healthy",
+      "location": "road",
+      "name": "商人",
+      "occupation": "merchant",
+      "receivedGifts": [],
+      "x": 6,
+      "y": 8
+    }
+  },
+  "remainingLocks": []
+}

@@ -1,0 +1,13 @@
+✔ existing jobs, gift and merchant trade follow the real actor and committed projection (1.186ms)
+✔ distance, cooldown, battle, pending or invalid quantity cannot enable actions (0.1837ms)
+✔ marching, dead or missing actors and bag rest expose only supported capabilities (0.6169ms)
+✔ navigation uses only the current visible projection and returns detached coordinates (1.1085ms)
+✔ dead, nearby, pending, active combat, invalid cells and reserved budget disable approach (0.2083ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 116.2506

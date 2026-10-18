@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/simulation/demo-person-navigation.test.mjs"
+  ],
+  "pid": 69956,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 105.11,
+  "cpuMs": 62.5,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

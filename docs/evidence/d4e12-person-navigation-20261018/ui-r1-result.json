@@ -1,0 +1,29 @@
+{
+  "verdict": "FAIL",
+  "steps": [
+    {
+      "name": "synthetic-visible-distant-merchant",
+      "wallMs": 2572.8247
+    },
+    {
+      "name": "bag-locate-and-camera-only-no-world-write",
+      "wallMs": 157.90170000000035
+    },
+    {
+      "name": "existing-march-order-to-click-time-position",
+      "wallMs": 110042.13369999999
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "url": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"1f58b5fc-264d-4d69-b5a0-0e1ac9051b43\",\"type\":\"MarchSet\",\"payload\":{\"x\":6,\"y\":8}}"
+    }
+  ],
+  "error": {
+    "message": "Person navigation condition timed out",
+    "stack": "Error: Person navigation condition timed out\n    at wait (file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-person-navigation.mjs:17:226)\n    at async file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-person-navigation.mjs:46:3\n    at async phase (file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-person-navigation.mjs:18:171)\n    at async file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-person-navigation.mjs:44:2"
+  },
+  "remainingLocks": []
+}
