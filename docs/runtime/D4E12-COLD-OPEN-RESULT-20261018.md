@@ -2,6 +2,31 @@
 
 2026-10-18（Asia/Shanghai）。本报告只覆盖 D4E12 campaign/format11 合成短世界的冷重开；它不是私有长档、128 命令上限、日常入口或整体验收结论。
 
+## 2026-10-18 16:23 复核修正与合并建议（Asia/Shanghai）
+
+结论：**PASS，建议将本片修正后候选提交交由集成线合并；尚未执行合并。** 复核目标 `45288ec1b66a5cdf5a37b391cd8bfd2f9eb952b2`，修正源码提交 `478d4aee55ca261c1fd21585ce4a973f870ef850`，生产文件 SHA-256 `00383c1a24c92f8e10a082970d28c260afdd2b9e8339e4d025dbc1086146644b`。无剩余 P0/P1/P2 阻断；这是同一对话的复核后修正与重新验证，未声称另一个独立模型已审查修正提交。
+
+- 恢复最终 replay 的 public/encounter/scene 投影门，放在与 raw final 精确相等之后；未恢复 raw final 的重复完整 audit。此前“投影可用性”P2 是恢复原验收边界的审慎要求，未复现合法世界无法投影的实例，不能把它写成已确认产品故障。
+- 原既有稀疏超限测试失败确认为预算检查晚于复制：外层 clone 先报 INVALID_INPUT。增加私有共用分离入口，先拒绝外壳访问器，再以 MAX_SERVICE_COMMANDS 检查命令数组，随后执行原完整 clone/audit。公开验证和私有认证共用；原断言不放宽。新增反例先 RED（`merge-repair-budget-red-01`，1 fail），覆盖稀疏/稠密超限、预算内稀疏和两种 getter 执行次数 0。
+- `merge-review-core-01` 的 17 pass/1 fail 和 `merge-review-boundaries-01` 的 2 pass 均保留，不能合称一次全绿。修正后 `merge-repair-core-02` 六个文件一次 **21/21 PASS**，0 fail/skip/cancel，退出 0、墙钟 37028.556ms、180 秒硬限。覆盖旧格式 service commit、认证、derivation、owner、worker、跨日/RNG、地图及 JRPG 回放。监督回执的父进程 CPU 不代表 Node 子测试总 CPU。源码/测试语法与 diff 检查通过。
+
+修正后固定 seed42、8×AdvanceTime(2)、r16 的 ABBA 如下，单位 ms；baseline 仍为 `63b3ddf`。每轮独立进程/目录/随机端口、180 秒硬限，顺序 B2→C1→C2→B3：
+
+| 轮次 | 冷重开墙钟 / CPU | 完整 journal audit 墙钟 / CPU |
+| --- | ---: | ---: |
+| B2 | 1840.869 / 1750 | 1864.283 / 1829 |
+| C1 | 1555.538 / 1563 | 1578.012 / 1610 |
+| C2 | 1628.942 / 1609 | 1602.659 / 1578 |
+| B3 | 1971.231 / 1798 | 1857.410 / 1766 |
+
+冷重开均值 1906.050→1592.240，墙钟改善 **16.46%**；CPU 1774→1586，改善 **10.60%**。四轮 PASS、退出 0、无超时、残余锁 0；正式文件、五投影、回执三组 hash 与下方历史 ABBA 相同。首个 `merge-repair-perf-b1` 与测试末尾短暂重叠，仅保留原始回执，不纳入统计。不得将本轮绝对耗时与前轮不同负载的绝对耗时比较来宣称额外收益，也不推断长档、p95 或稳定性。
+
+复现：`python scripts/run-d4e12-check.py merge-repair-core-02 180 node --test --test-concurrency=1 tests/simulation/service-commit.test.mjs tests/simulation/demo-service-certification.test.mjs tests/simulation/campaign-live-derivation.test.mjs tests/simulation/campaign-live-owner.test.mjs tests/simulation/demo-worker.test.mjs tests/simulation/campaign-live-world-boundaries.test.mjs`。标签已存在，重跑须新标签。性能命令沿用本报告测量器，标签 `merge-repair-perf-{b2,c1,c2,b3}`，模式依次 baseline/candidate/candidate/baseline；每轮传 `--phase-file artifacts/d4e12/<label>/phase.json`，输出 `artifacts/d4e12/<label>`。原始数据保留本树忽略目录，未上传存档。
+
+独立项目使用 Node v24.14.0 / Windows，自带 runtime-server，无 Denova 可执行文件。HTTP 关闭重开和投影一致性由上述隔离测量器验证，端口为每轮系统分配（未单独记录 URL 数字）；worker/耐久失败回滚由本次自动化门验证。未跑全量、浏览器/视觉、私有长档、日常目录或现有服务；不阻塞这片审计去重合并，但阻塞宣称整体性能完成。主线唯一状态及看板由控制树管理，本次仅更新本工作树摘要，未同步控制树。下一步只进入集成合并决策；D4E12/Stage D 整体验收未完成。
+
+以下为原候选与历史测量记录，修正后的源码及裁定以上节为准。
+
 ## 范围与源码
 
 - 独立树：`D:/Narraverse-World-Map-cold-open`，分支 `codex/world-runtime-cold-open`，基线 `63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef`。未触碰 control、demo-gameplay、原型原件、任务草案或看板。
