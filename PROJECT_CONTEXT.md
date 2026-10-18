@@ -1,6 +1,6 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-18 12:45（Asia/Shanghai）。当前进度仅在本文件维护。
+更新时间：2026-10-18 15:59（Asia/Shanghai）。当前进度仅在本文件维护。
 本轮改写前的完整版本固定于控制仓库远端提交 `3361d653a61d0ee7901426f3edd41b951017e2d6`，Git blob `c07b928553f57c5a9fab1d55280a84504e0b1ddb` 已核实与旧字节哈希相符，可从远端链接恢复：
 [旧版 PROJECT_CONTEXT](https://github.com/llys-p/Narraverse-World-Map/blob/3361d653a61d0ee7901426f3edd41b951017e2d6/PROJECT_CONTEXT.md)。
 旧字节 SHA256：`9adb3accdd3a31261f2e60dd2f117da537813b79ac0dae8b2a3e0c8d81f77777`。
@@ -33,7 +33,7 @@
 
 ## 活动工作、阻塞与下一步
 
-- **当前优先功能：结合Demo完善现有玩法；优化另开对话并行**：用户2026-10-18明确要求拆分。功能树D:/Narraverse-World-Map-demo-gameplay / codex/world-runtime-demo-gameplay，源码fee737ddd8861a37d0fe67886306561f90def25d、交付4c6b69c8a66588f6241cabdb0a4b27014e4b7a03已推送精确读回，报告API字节一致；[功能限定验收](https://github.com/llys-p/Narraverse-World-Map/blob/4c6b69c8a66588f6241cabdb0a4b27014e4b7a03/docs/runtime/D4E12-DEMO-GAMEPLAY-RESULT.md)。村长人物卡工作、商人按1–10数量买卖、行囊交易/休整接真实命令，药草不伪装服用。新前端策略3/3，真实页面卖2粮→买1粮→工作→休整→正常关闭→独立完整审计→重开通过49.657秒，r44/tick44/金币20/粮食19/疲劳50，5文件SHA/五投影一致。原core/service/持久化无diff，仅新展示模块显式登记；不新增NPC/地点/战斗规则。3轮失败及修复证据保留，r2阶段120秒Job终止后确认PID退出，仅清自有隔离锁；最终无进程/锁。原8档/16依赖/旧88源码/107日常文件/并行脏摘要保持，未启停旧服务/未切日常入口，无main/部署/迁移/私档上传/外部模型/全量视觉测试。优化对话`01a14d49-bc97-7ce3-a47e-18c4f92edea8`专责冷开独立树/分支，不写功能树/中控/看板；本主线独占唯一状态与看板。原world-map自动化已PAUSED，未重启。D4E12整体仍In Progress/需修正，性能不阻塞现有功能推进，Stage D进行中。
+- **当前优先功能：结合Demo完善现有玩法；优化另开对话并行**：用户2026-10-18明确拆分，功能树D:/Narraverse-World-Map-demo-gameplay / codex/world-runtime-demo-gameplay；F2源码ad7be29858741b062a7fa70c7cb6193c0a9283c7，交付31a40794e52ce84498c2b5fe05d87b70bf9ef18e已推送精确读回、报告API字节一致；[功能限定验收](https://github.com/llys-p/Narraverse-World-Map/blob/31a40794e52ce84498c2b5fe05d87b70bf9ef18e/docs/runtime/D4E12-DEMO-GAMEPLAY-RESULT.md)。F1村长工作/商人数量交易/行囊休整保留；F2已验证回执展示真实钱粮/疲劳/时间变化，拒绝明确未完成及已知原因，本次记录8条、同ID去重、重开清空页面记录但保留存档。定向7/7(新结果3、交互3、pending重试1)，真实页面卖2粮→买1粮→工作→休整→真实规则拒绝→正常关闭→完整独立审计→重开18.936秒PASS，r45/tick44/金币20/粮食19/疲劳50；拒绝仅revision+1，无tick/资产变化，6档SHA/五投影一致。未改backend/时间/存档或审计机制，无本地假账本；没重跑战斗全链/私有长档/全量/视觉检查，不作性能结论。原8档/16依赖/旧88源码/107日常文件/原型与2行脏摘要保持，旧三端口无监听、启停0，无自有进程/锁；未切日常入口，无main/部署/迁移/私档上传/新增外部模型。独立性能对话01a14d49-bc97-7ce3-a47e-18c4f92edea8负责冷开，不写功能树/中控/看板；主线维护唯一状态与卡，原world-map自动化PAUSED不变。D4E12整体In Progress/需修正，Stage D进行中，性能不阻塞功能。
 
 - **D4E12 Demo村庄/森林接入：运行中审计已交付，短世界确认明显改善；长档冷开仍需修正**：[限定验收报告](https://github.com/llys-p/Narraverse-World-Map/blob/63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef/docs/runtime/D4E12-LIVE-SESSION-AUDIT-RESULT.md) / [已批准补充合同](https://github.com/llys-p/Narraverse-World-Map/blob/63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef/tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md)。用户2026-10-18明确批准，独立树D:/Narraverse-World-Map-live-session-audit / codex/world-runtime-live-session-audit；生产1b6211c67dc1bf4287a327648d94520233166846，完整交付63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef已精确推送，报告/合同/原始汇总API字节读回一致。ABBA各版2次，8次行动确认墙钟改善56.40%/CPU53.18%，每次平均0.236秒，9文件SHA/8回执/五投影一致。12个定向成员分批覆盖，最终8项core/owner全过、日界/RNG与完整地图战斗差分全过；最终页面25.121秒赠粮→行军暂停改道/路遇→两回合胜利→返村→正常关闭，页面未重开，全审/重开在core与HTTP另测，无视觉结论。只对当前owner当前已耐久提交、深冻结完整服务前缀归纳核验；旧head/跨owner/重复writer拒绝，数学bundle证明与durable head分离，持久确认后发布，失败/不明结果必须完整恢复，外部JSON/冷加载/公开独立全审保留。冷开本轮约5秒短样本，旧长档74.351秒未复跑、不承诺冷开加速/无限流畅；原128命令/时间/格式11规则保留。原8档/16依赖/旧88源码/107日常文件/并行原型脏摘要保护，三旧端口仍无监听，启停动作0，无自有进程/测试锁；日常入口未切换，无main/部署/迁移/私档上传/外部模型。原Projects卡In Progress/需修正，Stage D进行中，原D4E11历史不改；后续继续只做有证据的有界修复。
 

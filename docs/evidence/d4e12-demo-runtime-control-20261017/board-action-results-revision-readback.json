@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12：功能优先，Demo已补人物/行囊接线与行动结果/本次记录，性能另有独立对话。\n功能树D:/Narraverse-World-Map-demo-gameplay / codex/world-runtime-demo-gameplay；本轮源码ad7be29858741b062a7fa70c7cb6193c0a9283c7，交付31a40794e52ce84498c2b5fe05d87b70bf9ef18e已推送读回，报告API字节一致。\n本轮F2：验证后的真实回执显示钱粮/疲劳/时间变化；拒绝显示未完成和已知原因，不臆断RULE_REJECTED的具体成因；本次记录最多8条、按commandId去重，重开清空页面记录但真实存档保持。无本地账本、后端或持久化修改。\n定向7/7(新结果3、既有交互3、SSE pending同字节重试1)。真实Edge卖2粮→买1粮→村长工作→行囊休整→真实规则拒绝→正常关闭→原独立完整审计→重开通过18.936秒；r45/tick44/金币20/粮食19/疲劳50。拒绝只有revision+1，tick与资产不变；5条DOM记录，重开0条，6档SHA/五投影跨重开一致。没有重跑战斗全链/私有长档/全量/视觉检查，没有性能A/B结论。\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/31a40794e52ce84498c2b5fe05d87b70bf9ef18e/docs/runtime/D4E12-DEMO-GAMEPLAY-RESULT.md\n前序F1人物卡工作/商人交易/行囊休整限定PASS保留，失败与保护证据均保留。原8档/16依赖/旧88源码/107日常文件/并行原型及脏摘要保持；三旧端口无监听、启停0，无自有进程/锁；日常入口未切换，无main/部署/迁移/上传私档/新增外部模型。\n性能线程01a14d49-bc97-7ce3-a47e-18c4f92edea8独立推进冷开，不写本功能树/中控/看板。D4E12整体仍In Progress/需修正，Stage D进行中，性能不阻塞现有功能推进。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
