@@ -81,10 +81,9 @@ function auditServiceCommit(envelope){
     'Service format/profile mismatch','UNSUPPORTED_VERSION');
   denseArray(envelope.commands,MAX_SERVICE_COMMANDS);
   const anchor=[9,10,11].includes(envelope.serviceFormatVersion)?createAuditedBundle(envelope.anchor,{rulesVersion:profile.rulesVersion,systems:profile.systems}):envelope.anchor;
-  const final=[9,10,11].includes(envelope.serviceFormatVersion)?createAuditedBundle(envelope.bundle,{rulesVersion:finalProfile.rulesVersion,systems:finalProfile.systems}):envelope.bundle;
-  projectPublicSnapshot(anchor);projectPublicSnapshot(final);
-  if([8,9,10,11].includes(envelope.serviceFormatVersion)){projectEncounterSnapshot(anchor);projectEncounterSnapshot(final);}
-  if([9,10,11].includes(envelope.serviceFormatVersion)){projectSceneSnapshot(anchor);projectSceneSnapshot(final);}
+  projectPublicSnapshot(anchor);
+  if([8,9,10,11].includes(envelope.serviceFormatVersion))projectEncounterSnapshot(anchor);
+  if([9,10,11].includes(envelope.serviceFormatVersion))projectSceneSnapshot(anchor);
   const seen=new Set();let replay=anchor,revision=anchor.snapshot.revision;
   for(const entry of envelope.commands){
     fields(entry,['dto','receipt']);const dto=envelope.serviceFormatVersion===11?validateSceneCommandDto(entry.dto,5):[9,10].includes(envelope.serviceFormatVersion)?validateSceneCommandDto(entry.dto,envelope.serviceFormatVersion===10?4:3):validateServiceCommandDto(entry.dto);
@@ -95,8 +94,11 @@ function auditServiceCommit(envelope){
     const next=transitionAuditedServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;
     requireCondition(isDeepStrictEqual(entry.receipt,next.receipt),'Service receipt does not match replay');
   }
+  // `replay` is fully audited at every transition. Exact equality makes the raw
+  // final envelope subject to that same proof, so auditing it once before the
+  // replay would only repeat work without adding an acceptance condition.
   requireCondition(isDeepStrictEqual(replay,envelope.bundle),'Service world does not match command replay');
-  return {anchor,final};
+  return {anchor,final:replay};
 }
 export async function saveServiceCommit(envelope,directory,io=defaultIo){
   if(!auditedServiceCommits.has(envelope))validateServiceCommit(envelope);
@@ -104,10 +106,12 @@ export async function saveServiceCommit(envelope,directory,io=defaultIo){
 }
 export function createAuditedServiceCommit(envelope){
   if(auditedServiceCommits.has(envelope))return envelope;
-  const {anchor,final}=auditServiceCommit(envelope);
-  requireCondition(envelope.serviceFormatVersion===11,'Live service certification requires campaign format','UNSUPPORTED_VERSION');
+  // Direct library callers do not get to supply descriptor-bearing mutable data
+  // to the private proof path. Disk and public validation already arrive cloned.
+  const detached=cloneData(envelope),{anchor,final}=auditServiceCommit(detached);
+  requireCondition(detached.serviceFormatVersion===11,'Live service certification requires campaign format','UNSUPPORTED_VERSION');
   const immutable=Object.freeze({serviceFormatVersion:11,anchor,
-    commands:freezeData(cloneData(envelope.commands)),bundle:final});
+    commands:freezeData(cloneData(detached.commands)),bundle:final});
   auditedServiceCommits.add(immutable);return immutable;
 }
 export function advanceAuditedServiceCommit(previous,raw){

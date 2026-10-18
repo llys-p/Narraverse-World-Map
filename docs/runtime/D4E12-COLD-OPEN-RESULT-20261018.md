@@ -1,0 +1,53 @@
+# D4E12 冷开完整审计去重：限定结果
+
+2026-10-18（Asia/Shanghai）。本报告只覆盖 D4E12 campaign/format11 合成短世界的冷重开；它不是私有长档、128 命令上限、日常入口或整体验收结论。
+
+## 范围与源码
+
+- 独立树：`D:/Narraverse-World-Map-cold-open`，分支 `codex/world-runtime-cold-open`，基线 `63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef`。未触碰 control、demo-gameplay、原型原件、任务草案或看板。
+- 实际候选仅改 `runtime/service/service-commit.mjs`：公共完整审计继续完整验证 anchor，逐 DTO 使用原固定转移和完整 world audit，并精确比较最终 replay 与磁盘 raw final。删除的是此前已被该精确比较蕴含的 raw final 第二次完整 audit 与投影构造。
+- 为保留直接库调用的输入隔离，`createAuditedServiceCommit` 只在其已分离的副本上继续执行私有认证。没有新增 public `trusted`/`skip` 输入、缓存、格式、时间规则、预算或持久化语义。
+- 最终候选 `runtime/service/service-commit.mjs` SHA-256：`ca6e1e6b85180c15b1ecc737adea6d44eb47a14c87cb69bb0d61bf457c0e0091`；测量器 `scripts/measure-d4e12-cold-open.mjs` SHA-256：`7a15c3ade781b02e09328253e12321843d6967d8a416dfd10ec602ab46a4ac73`。
+
+## 归因
+
+新的测量器先新建 seed42 短世界，提交固定 ID 的 `8 × AdvanceTime(2)` 至 r16，关闭后分别执行完整 `loadRuntimeServiceCommit`、独立投影构造和真实 HTTP 冷重开。各进程由 `scripts/run-d4e12-check.py` 以 180 秒硬限监督，目录与端口均独立。
+
+- 初始分段样本显示完整 audit 5140.545ms / 冷重开 5541.565ms，而五投影构造仅 15.853ms；投影不是冷开的主瓶颈。
+- 最终 B5 的冷开 audit 内部时间为 anchor 38.087ms、raw final 第二次 audit 674.507ms、投影预检及 journal replay 3849.482ms。C5 保留 anchor 45.941ms，取消 raw final 重复 audit，journal replay 仍为 3705.614ms。
+- 因此本片只消除已证明重复的约一段 final audit；完整 journal replay 仍保留且仍是主要成本。没有把这个结果说成“冷开问题已解决”。
+
+## 最终同机 ABBA
+
+Windows / Node v24.14.0；顺序 B5→C5→C6→B6；每轮新进程、新目录、随机端口，`runtimeWorker:false`，相同 seed42 和相同 8 个命令。数值单位为 ms。
+
+| 轮次 | 版本 | 冷重开墙钟 / CPU | 全量 journal audit 墙钟 / CPU | 投影构造墙钟 |
+| --- | --- | ---: | ---: | ---: |
+| B5 | baseline | 4644.692 / 4548.000 | 4358.617 / 4281.000 | 12.453 |
+| C5 | candidate | 3843.309 / 3563.000 | 3599.839 / 3515.000 | 14.484 |
+| C6 | candidate | 3715.066 / 3546.000 | 3452.415 / 3391.000 | 8.999 |
+| B6 | baseline | 4340.291 / 4156.000 | 3951.052 / 4000.000 | 11.242 |
+
+- 冷重开平均：4492.492 → 3779.188（墙钟 **15.88%** 改善），CPU 4352.000 → 3554.500（**18.32%** 改善）。
+- 完整 journal audit 平均：4154.834 → 3526.127（墙钟 **15.13%** 改善）。样本仅各两次，不作 p95、长历史或日常体验承诺。
+- 四轮均 `PASS`、退出 0、未超时、无残余 lock。所有轮次的 9 个正式 service 文件聚合 SHA-256 都是 `b05514a96600f45770be54947ee7738e389e79d0adb30515c5727b04e1663e0f`；五投影 SHA-256 都是 `9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4`；八个回执 SHA-256 都是 `04f78b838c70147bf2c3fb9f788530166b083abcafcf98f179eda8ed9bfe0dba`。
+- 未提交的脱敏逐轮原始结果在本树 `artifacts/d4e12/cold-open-final-{b5,c5,c6,b6}/result.json`，每轮的监督回执在相邻 `artifacts/d4e12/cold-open-final-*.json`。它们只含合成指标、hash 和回执，不含 world 目录或用户存档。
+
+## 定向验证
+
+下列均为最终候选、180 秒硬限、退出 0；没有运行全量、视觉检查、私有长档或旧补验。
+
+```powershell
+python scripts/run-d4e12-check.py cold-open-final-core-owner 180 node --test --test-concurrency=1 tests/simulation/campaign-live-derivation.test.mjs tests/simulation/campaign-live-owner.test.mjs tests/simulation/demo-service-certification.test.mjs tests/simulation/demo-worker.test.mjs
+python scripts/run-d4e12-check.py cold-open-final-boundaries 180 node --test --test-concurrency=1 tests/simulation/campaign-live-world-boundaries.test.mjs
+```
+
+这些门覆盖 live derivation/owner、完整 service certification、worker、跨日和地图/JRPG replay 边界；公开 `validateServiceCommit`、冷加载、非法篡改拒绝、失败回滚、同 ID 重试、耐久后发布和格式11/DTO5边界保持原合同。
+
+`cold-open-c3` 曾因量测器只识别旧返回字面量而在 import 阶段退出 1；没有进入服务、没有生成 world 或性能样本。失败回执保留，测量器修复后使用新标签完成最终 ABBA；不把该次失败计入通过结果。
+
+## 未验范围与结论
+
+此优化予以保留，理由是受控 HTTP 冷重开和 CPU 都有超过最终两轮同版波动的端到端收益，且正式文件、回执和五投影完全一致。它不改变运行中前缀审计成果，亦不替代冷加载和公开独立审计。
+
+未运行私有长档、128 命令极限、多人并发、浏览器页面链、视觉/听感、日常目录或任何 18338/18340/18342 服务。没有合 main、部署、迁移、模型调用或上传存档；D4E12 性能整体仍需修正，Stage D 仍进行中。
