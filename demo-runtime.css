@@ -32,6 +32,23 @@ body#demo-runtime-root{min-width:1000px}
 .live-person{padding:18px;display:flex;gap:20px;background:#1b2521;border:1px solid #627660;border-radius:8px;font-size:13px}
 .live-person p{margin:10px 0;white-space:pre-wrap}
 .live-person h2{font-size:17px}
+#demo-runtime-root .live-person button{margin:4px 6px 4px 0}
+#demo-runtime-root .live-trade,#demo-runtime-root .live-bag{display:block;max-width:860px}
+#demo-runtime-root .live-trade>h2,#demo-runtime-root .live-bag>h2{margin-bottom:10px}
+#demo-runtime-root .live-trade>p,#demo-runtime-root .live-bag>p{color:var(--text-secondary)}
+#demo-runtime-root .trade-goods{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:12px;margin:14px 0}
+#demo-runtime-root .trade-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:7px}
+#demo-runtime-root .trade-item{display:grid;grid-template-columns:auto auto;gap:7px 14px;align-items:center}
+#demo-runtime-root .trade-item strong{grid-row:span 2;color:var(--text-primary);font-size:14px}
+#demo-runtime-root .trade-item span{color:var(--text-secondary);white-space:nowrap}
+#demo-runtime-root .trade-item span span{color:var(--accent-gold)}
+#demo-runtime-root .trade-actions{display:flex;gap:6px}
+#demo-runtime-root .trade-actions button,#demo-runtime-root #bagTrade,#demo-runtime-root #bagRest{white-space:nowrap}
+#demo-runtime-root .trade-quantity{display:inline-flex;align-items:center;gap:8px;margin-right:12px;color:var(--text-secondary)}
+#demo-runtime-root #tradeQuantity{width:64px;padding:7px;background:var(--bg-main);border:1px solid var(--border);border-radius:5px;color:var(--text-primary)}
+#demo-runtime-root #bagRules{color:var(--text-secondary)}
+#demo-runtime-root #bagActionHint{min-height:1em;color:var(--accent-gold)}
+#demo-runtime-root .live-bag>div{margin-top:8px}
 .live-note{font-size:12px;color:#8b949e;line-height:1.8;padding:4px}
 .live-evidence{font-size:12px;color:#8b949e;padding:12px;background:#161b22;border-radius:8px}
 .live-evidence pre{max-height:260px;overflow:auto;white-space:pre-wrap;margin-top:12px}

@@ -1,5 +1,6 @@
 // Presentation extracted from the preserved demo. No local gameplay simulation.
 import {createDemoClient} from './demo-runtime-bridge.mjs';
+import {interactionActions} from './demo-runtime-interactions.mjs';
 const $=id=>document.getElementById(id),K=window.SandboxDrawingKit;
 const stageContainer=$('stageContainer'),sceneCanvas=$('sceneCanvas'),sceneCtx=sceneCanvas.getContext('2d');
 const villageStickCanvas=$('villageStickCanvas'),villageDecorCanvas=$('villageDecorCanvas'),villageDecorCtx=villageDecorCanvas.getContext('2d');
@@ -1498,12 +1499,37 @@ function showPerson(id){
  $('personDetail').textContent=actor.actorId+' · '+place(actor.location)+' · '+(actor.condition==='wounded'?'受伤':actor.alive?'存活':'已逝')+'\n'+(actor.canInteract?'就在附近，可以交互。':'距离较远，先走到人物附近。');
  $('personMemory').textContent=actor.receivedGifts.length?'人物记得收到你的赠粮：'+actor.receivedGifts.map(m=>'世界时刻 '+m.occurrenceTick).join('、'):'当前投影没有这位人物收到你赠粮的记忆。';
  const gift=group.scene.actors.find(a=>a.actorId===id)?.gift;
- $('personGift').hidden=id!=='actor-2';$('personGift').disabled=!gift?.available||!canWrite();
+ const actions=interactionActions(group,canWrite()&&!playbackBusy,id);
+ $('personGift').hidden=id!=='actor-2';$('personGift').disabled=!actions.gift;
+ $('personWork').hidden=id!=='actor-1';$('personWork').disabled=!actions.work;
+ $('personTrade').hidden=id!=='actor-3';$('personTrade').disabled=!actions.trade;
+ $('personActionHint').textContent=!actor.canInteract?'先走到人物附近，再进行交互。':id==='actor-1'?
+  (actions.work?'村庄工作会推进6小时，成功领20金币。':'工作暂不可用：请确认疲劳、行军/战斗状态或下次工作时间。'):id==='actor-3'?
+  (actions.trade?'可买卖粮食和药草，成交后按真实回执更新。':'交易暂不可用，请先抵达村庄并停止行军或战斗。'):
+  (gift?.available?'赠粮后，对方会记得这次交付。':'赠粮暂不可用，请查看当前状态。');
  const canvas=$('portraitCanvas'),ctx=canvas.getContext('2d');ctx.clearRect(0,0,140,140);
  K.drawEntity(ctx,{archetype:id==='actor-2'?'archer':id==='actor-1'?'priest':'rogue',appearance:{color:id==='actor-2'?'#566444':'#7a5a44'}},{x:0,y:0,width:140,height:140,theme:{accent:'#d5a17d',foreground:'#edf0e9',surface:'#202522'}});
 }
 function canWrite(){const s=client.state();return !!(group&&s.connected&&!s.busy&&!s.pending&&!s.blocked&&group.player.self.identity.alive&&group.capabilities.writes&&group.map.budget.remainingCommands>0);}
 function setHealth(p,w){$('playerHpText').textContent=p+' / 1000';$('enemyHpText').textContent=(w??0)+' / 300';$('playerHpBar').style.width=p/10+'%';$('enemyHpBar').style.width=(w??0)/3+'%';}
+function paintTrade(){
+ if(!group)return;const quantity=Number($('tradeQuantity').value),actions=interactionActions(group,canWrite()&&!playbackBusy,'actor-3',quantity);
+ const merchant=group.map.actors.find(a=>a.actorId==='actor-3');
+ $('tradeTitle').textContent=(merchant?.name??'商人')+' · 交易';
+ $('tradeHint').textContent=!actions.trade?'交易已暂停：需要商人在附近、位于村庄且当前可行动。':!actions.quantityValid?'每笔数量请输入1至10的整数。':'每笔推进1刻；交易以服务端确认后的资产为准。';
+ for(const [id,key] of [['food','Food'],['herbs','Herbs']]){
+  const price=group.player.actions.prices[id];$('trade'+key+'Count').textContent=String(group.player.self.inventory[id]);
+  $('trade'+key+'Price').textContent='买入 '+price.buy+' / 卖出 '+price.sell+' 金币';
+  $('tradeBuy'+key).disabled=!actions[id].buy;$('tradeSell'+key).disabled=!actions[id].sell;
+ }
+ $('bagTrade').disabled=!actions.trade;
+ $('bagRest').disabled=!interactionActions(group,canWrite()&&!playbackBusy,null).rest;
+ $('bagActionHint').textContent=actions.trade?'商人就在附近，可以处理行囊里的货物。':'交易需要走到村庄商人附近；地图上可以查看他的位置。';
+}
+function openTrade(){
+ if(!interactionActions(group,canWrite()&&!playbackBusy,'actor-3').trade){showStatus('请先走到村庄商人附近，并结束当前活动。',true);return;}
+ $('tradePanel').hidden=false;paintTrade();$('tradeQuantity').focus();
+}
 function paintReadings(){
  if(!group)return;const p=group.player.self,m=group.map,e=group.encounter.encounter,s=client.state(),write=canWrite()&&!playbackBusy;document.body.dataset.worldConnected=String(s.connected);
  $('worldClockText').textContent='世界时刻 '+m.tick+' · '+place(m.self.location);$('revisionText').textContent='修订 '+m.revision;
@@ -1524,7 +1550,7 @@ function paintReadings(){
  $('retryPending').hidden=!s.canRetry;$('retryPending').disabled=!s.canRetry;
  $('priceText').textContent='粮食 买/卖 '+group.player.actions.prices.food.buy+'/'+group.player.actions.prices.food.sell+'；药草 '+group.player.actions.prices.herbs.buy+'/'+group.player.actions.prices.herbs.sell;
  $('battleState').textContent=playbackBusy?'正在表现已确认回合':e?.status==='active'?'第 '+(e.attackCount+1)+' 回合 · 请选择指令':e?'战斗结束 · '+({win:'胜利',lose:'败北',flee:'逃离',cancel:'取消'}[e.resolution]??e.resolution):'尚无遭遇';
- if(!playbackBusy)setHealth(p.health,e?.wolfHealth);if(selectedActorId)showPerson(selectedActorId);
+ if(!playbackBusy)setHealth(p.health,e?.wolfHealth);paintTrade();if(selectedActorId)showPerson(selectedActorId);
 }
 function acceptState(value){
  const previous=group;group=value;const now=performance.now(),target=pixel(value.map.self);
@@ -1580,6 +1606,22 @@ action('goCoordinate','MarchSet',()=>({x:Number($('targetX').value),y:Number($('
 action('work','PlayerWork');action('rest','PlayerRest');
 for(const [id,type,product] of [['buyFood','PlayerBuy','food'],['sellFood','PlayerSell','food'],['buyHerbs','PlayerBuy','herbs'],['sellHerbs','PlayerSell','herbs']])action(id,type,()=>({product,quantity:1}));
 action('giftFood','PlayerGiftFood',()=>({recipientId:'actor-2'}));action('personGift','PlayerGiftFood',()=>({recipientId:'actor-2'}));
+// Contextual entries reuse the same single-writer client and command DTOs.
+// A stale open panel cannot submit after movement, disconnect or combat.
+const contextual=(id,actor,permission,type,payload=()=>({}))=>$(id).addEventListener('click',()=>handle(()=>{
+ if(!interactionActions(group,canWrite()&&!playbackBusy,actor)[permission])throw Error('当前状态无法执行这项操作。');
+ return client.submit(type,payload());
+}));
+contextual('personWork','actor-1','work','PlayerWork');contextual('bagRest',null,'rest','PlayerRest');
+$('personTrade').addEventListener('click',openTrade);$('bagTrade').addEventListener('click',openTrade);
+$('closeTrade').addEventListener('click',()=>{$('tradePanel').hidden=true;});$('tradeQuantity').addEventListener('input',paintTrade);
+for(const [product,key] of [['food','Food'],['herbs','Herbs']])for(const [kind,type] of [['buy','PlayerBuy'],['sell','PlayerSell']]){
+ $('trade'+(kind==='buy'?'Buy':'Sell')+key).addEventListener('click',()=>handle(()=>{
+  const quantity=Number($('tradeQuantity').value),actions=interactionActions(group,canWrite()&&!playbackBusy,'actor-3',quantity);
+  if(!actions[product][kind])throw Error('请确认交易距离、数量与现有金币/物品。');
+  return client.submit(type,{product,quantity});
+ }));
+}
 action('beginEncounter','EncounterBegin');action('attack','EncounterAction',()=>({encounterId:group.encounter.encounter.encounterId,action:'attack'}));action('flee','EncounterAction',()=>({encounterId:group.encounter.encounter.encounterId,action:'flee'}));action('cancelEncounter','EncounterCancel',()=>({encounterId:group.encounter.encounter.encounterId}));
 $('refreshWorld').addEventListener('click',()=>handle(()=>client.refresh()));$('retryPending').addEventListener('click',()=>handle(()=>client.retry()));
 $('closePerson').addEventListener('click',()=>{selectedActorId=null;$('personCard').hidden=true;});
@@ -1593,7 +1635,7 @@ function mapClick(event,context=false){
  const target={x:Math.floor(at.x/80),y:Math.floor(at.y/(920/12))};$('targetX').value=target.x;$('targetY').value=target.y;handle(()=>client.submit('MarchSet',target));
 }
 worldMapCanvas.addEventListener('click',event=>mapClick(event));worldMapCanvas.addEventListener('contextmenu',event=>{event.preventDefault();mapClick(event,true);});
-window.addEventListener('keydown',event=>{if(event.target.matches('input,button')||event.repeat)return;const key=event.key.toLowerCase();if(key==='b'||key==='i')$('tabBagBtn').click();else if(key==='escape'){selectedActorId=null;$('personCard').hidden=true;$('bagPanel').hidden=true;}else if(key===' '&&currentMode==='world'){event.preventDefault();handle(()=>client.pause());}});
+window.addEventListener('keydown',event=>{if(event.target.matches('input,button')||event.repeat)return;const key=event.key.toLowerCase();if(key==='b'||key==='i')$('tabBagBtn').click();else if(key==='escape'){selectedActorId=null;$('personCard').hidden=true;$('bagPanel').hidden=true;$('tradePanel').hidden=true;}else if(key===' '&&currentMode==='world'){event.preventDefault();handle(()=>client.pause());}});
 new ResizeObserver(resizeLayers).observe(stageContainer);window.addEventListener('resize',resizeLayers);
 let lastFrame=performance.now(),fatalFrameError=false;
 function loop(now){

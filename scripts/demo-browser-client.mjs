@@ -26,8 +26,11 @@ export async function openDemoBrowser({directory,url,onEvent=()=>{}}){
  });}
  try{
   const start=performance.now();let port;
-  while(performance.now()-start<12000){try{port=Number((await fs.readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);break;}catch{await delay(100);}}
-  if(!port)throw Error('Isolated Edge did not start');
+  while(performance.now()-start<30000){
+   if(edge.exitCode!==null)throw Error('Isolated Edge exited before CDP: '+edge.exitCode);
+   try{port=Number((await fs.readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);break;}catch{await delay(100);}
+  }
+  if(!port)throw Error('Isolated Edge did not expose CDP within 30 seconds (pid '+edge.pid+')');
   const pages=await (await fetch(`http://127.0.0.1:${port}/json/list`)).json(),page=pages.find(p=>p.type==='page');
   socket=new WebSocket(page.webSocketDebuggerUrl);await once(socket,'open');
   socket.addEventListener('message',event=>{const value=JSON.parse(event.data);if(value.id){const item=pending.get(value.id);if(item){pending.delete(value.id);value.error?item.reject(Error(value.error.message)):item.resolve(value.result);}}else onEvent(value);});

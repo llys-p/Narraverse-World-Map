@@ -25,7 +25,7 @@ const encounterStaticFiles=new Map([['/runtime-encounter.html',['runtime-encount
 const villageStaticFiles=new Map([['/runtime-village.html',['runtime-village.html','text/html; charset=utf-8']],
   ['/runtime-village.mjs',['runtime-village.mjs','text/javascript; charset=utf-8']],['/runtime-village.css',['runtime-village.css','text/css; charset=utf-8']]]);
 const campaignStaticFiles=new Map(['runtime-campaign.html','runtime-campaign.mjs','runtime-campaign.css','runtime-campaign-contract.mjs','runtime-campaign-battle.mjs','runtime-campaign-battle.css'].map(file=>['/'+file,[file,file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8']]));
-const demoStaticFiles=new Map(['demo-runtime.html','demo-runtime.css','demo-runtime-prototype.mjs','demo-runtime-bridge.mjs',
+const demoStaticFiles=new Map(['demo-runtime.html','demo-runtime.css','demo-runtime-prototype.mjs','demo-runtime-bridge.mjs','demo-runtime-interactions.mjs',
  'stickman-engine.js','world-combat-fx.js','kit/core.js','kit/effects.js','kit/humanoid.js','kit/appearance-modern.js','kit/accessories.js','kit/structures-lib.js','kit/furniture-lib.js','kit/fixtures.js',
  'stickart/stickart-core.js','stickart/beasts/quad.js','stickart/beasts/deep.js','stickart/beasts/serpent.js','stickart/beasts/mountain.js','stickart/beasts/village.js'].map(file=>['/'+file,[file,file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8']]));
 const mindRoutes=['/api/runtime/minds',...mindStaticFiles.keys()];

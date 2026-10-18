@@ -24,8 +24,16 @@
 <section class="live-readings" aria-label="玩家状态"><strong id="identityText">actor-4</strong><span id="healthText">生命 —</span><span id="walletText">金币 —</span><span id="foodText">粮食 —</span><span id="herbsText">药草 —</span><span id="fatigueText">疲劳 —</span><span id="orderText">—</span><span id="budgetText">—</span></section>
 <section class="live-controls" id="worldActions" aria-label="地点活动"><button id="work">工作 · 6小时 / 20金币</button><button id="rest">休整 · 1小时</button><button id="buyFood">买1份粮食</button><button id="sellFood">卖1份粮食</button><button id="buyHerbs">买1份药草</button><button id="sellHerbs">卖1份药草</button><button id="giftFood">给猎人1份粮食</button><button id="beginEncounter">遭遇森林狼</button><span id="priceText"></span></section>
 <section class="live-message"><p id="connectionStatus" role="status" aria-live="polite">正在连接…</p><button id="retryPending" hidden>重试待确认请求</button><p id="receiptSummary"></p></section>
-<aside id="personCard" class="live-person" hidden><canvas id="portraitCanvas" width="140" height="140" aria-hidden="true"></canvas><div><h2 id="personName"></h2><p id="personDetail"></p><p id="personMemory"></p><button id="personGift">赠送1份粮食</button><button id="closePerson">关闭</button></div></aside>
-<section id="bagPanel" class="live-person" hidden><h2>🎒 行囊</h2><p id="bagContents"></p><button id="closeBag">关闭</button></section>
+<aside id="personCard" class="live-person" hidden><canvas id="portraitCanvas" width="140" height="140" aria-hidden="true"></canvas><div><h2 id="personName"></h2><p id="personDetail"></p><p id="personMemory"></p><p id="personActionHint"></p><button id="personGift">赠送1份粮食</button><button id="personWork">村庄工作·6小时</button><button id="personTrade">与商人交易</button><button id="closePerson">关闭</button></div></aside>
+<section id="tradePanel" class="live-person live-trade" hidden aria-labelledby="tradeTitle">
+<h2 id="tradeTitle">商人交易</h2><p id="tradeHint"></p>
+<div class="trade-goods" aria-label="交易商品">
+<div class="trade-row"><div class="trade-item"><strong>粮食</strong><span>持有 <span id="tradeFoodCount">—</span></span><span>价格 <span id="tradeFoodPrice">—</span></span></div><div class="trade-actions"><button id="tradeBuyFood">买入</button><button id="tradeSellFood">卖出</button></div></div>
+<div class="trade-row"><div class="trade-item"><strong>药草</strong><span>持有 <span id="tradeHerbsCount">—</span></span><span>价格 <span id="tradeHerbsPrice">—</span></span></div><div class="trade-actions"><button id="tradeBuyHerbs">买入</button><button id="tradeSellHerbs">卖出</button></div></div>
+</div>
+<label class="trade-quantity">数量 <input id="tradeQuantity" type="number" min="1" max="10" step="1" value="1"></label><button id="closeTrade">关闭</button>
+</section>
+<section id="bagPanel" class="live-person live-bag" hidden><h2>🎒 行囊</h2><p id="bagContents"></p><p id="bagRules">粮食按世界规则消耗；药草暂不支持直接服用。</p><p id="bagActionHint"></p><div><button id="bagTrade">找商人交易</button><button id="bagRest">休整1小时</button><button id="closeBag">关闭</button></div></section>
 <p class="live-note">村庄 / 森林真实世界接入。行军和耗时活动推进世界，暂停、路遇和回合选招时等待；离页后停止续跑。修炼、偷窃、装备与其他地点尚未接入。每档128条命令，额度不足时停止。</p>
 <details class="live-evidence"><summary>最近命令回执</summary><pre id="lastReceipt">尚无命令</pre></details>
 </main></body></html>
