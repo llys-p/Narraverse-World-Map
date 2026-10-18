@@ -1,0 +1,74 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { defaultCampaignVillageConfig } from '../../runtime/fixtures/campaign-village.mjs';
+import { createActorWorld, validateActorWorld } from '../../runtime/core/actors.mjs';
+
+const baseline = 'b6aa958e5647937be77244abd7bb021e6c491bf7';
+const baseUrl = new URL('../../runtime/core/actors.mjs', import.meta.url);
+const source = execFileSync('git', ['show', `${baseline}:runtime/core/actors.mjs`], { encoding: 'utf8' })
+  .replace(/from\s+(['"])(\.[^'"]+)\1/g, (_match, _quote, specifier) => `from '${new URL(specifier, baseUrl).href}'`);
+const oracle = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+const campaignActors = () => structuredClone(defaultCampaignVillageConfig().memory.society.actors);
+const valid = world => assert.doesNotThrow(() => validateActorWorld(world));
+
+test('campaign actor templates return independent resources, config, actors, and needs', () => {
+  const config = campaignActors();
+  const first = createActorWorld(config), second = createActorWorld(structuredClone(config));
+  assert.deepEqual(second, first);
+  assert.notStrictEqual(first.resources, second.resources);
+  assert.notStrictEqual(first.actorModel.config, second.actorModel.config);
+  assert.notStrictEqual(first.actorModel.actors[0], second.actorModel.actors[0]);
+  assert.notStrictEqual(first.actorModel.actors[0].needs, second.actorModel.actors[0].needs);
+  first.resources.food = 0;
+  first.actorModel.config.market.products.food.basePrice = 999;
+  first.actorModel.actors[0].health = 0;
+  const third = createActorWorld(config);
+  assert.deepEqual(third, second);
+  valid(third);
+});
+
+test('warm cache still rejects changed configuration, accessors, and Proxy drift or added fields', () => {
+  const config = campaignActors();
+  createActorWorld(config);
+  const rejectRestore = (change, restore) => {
+    change(); assert.throws(() => createActorWorld(config)); restore(); valid(createActorWorld(config));
+  };
+  rejectRestore(() => { config.initialActors[0].health = -1; }, () => { config.initialActors[0].health = 1000; });
+  rejectRestore(() => { config.market.ecology.resources.resources.food.consumption.numerator = 2; },
+    () => { config.market.ecology.resources.resources.food.consumption.numerator = 1; });
+  rejectRestore(() => { config.extra = true; }, () => { delete config.extra; });
+
+  let getterCalls = 0;
+  const accessor = campaignActors();
+  Object.defineProperty(accessor, 'version', { enumerable: true, get() { getterCalls++; return 'actor-config-v5'; } });
+  assert.throws(() => createActorWorld(accessor));
+  assert.equal(getterCalls, 0);
+
+  const driftTarget = campaignActors(); let reads = 0;
+  const drift = new Proxy(driftTarget, { get(target, key, receiver) {
+    if (key === 'version') return ++reads === 1 ? 'actor-config-v5' : 'actor-config-v4';
+    return Reflect.get(target, key, receiver);
+  } });
+  assert.throws(() => createActorWorld(drift), /Detached campaign actor configuration version changed/);
+
+  const extraTarget = campaignActors(); let copied = false;
+  const extra = new Proxy(extraTarget, {
+    get(target, key, receiver) { if (key === 'version') copied = true; return key === 'extra' ? true : Reflect.get(target, key, receiver); },
+    ownKeys(target) { return copied ? [...Reflect.ownKeys(target), 'extra'] : Reflect.ownKeys(target); },
+    getOwnPropertyDescriptor(target, key) { return key === 'extra' ? { value: true, enumerable: true, writable: true, configurable: true } : Reflect.getOwnPropertyDescriptor(target, key); },
+  });
+  assert.throws(() => createActorWorld(extra), /Fields do not match schema/);
+});
+
+test('v5 variations and legacy v4/v1 output match the frozen actors oracle', () => {
+  const configs = [campaignActors(), campaignActors(), campaignActors()];
+  configs[0].initialActors[0].health = 900;
+  configs[1].version = 'actor-config-v4';
+  configs[2].version = 'actor-config-v1'; configs[2].initialActors = configs[2].initialActors.slice(0, 3);
+  for (const config of configs) {
+    const current = createActorWorld(config), expected = oracle.createActorWorld(config);
+    assert.deepEqual(current, expected, config.version);
+    valid(current);
+  }
+});

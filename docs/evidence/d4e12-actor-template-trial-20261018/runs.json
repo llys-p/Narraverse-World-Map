@@ -1,0 +1,898 @@
+{
+  "a1": {
+    "result": {
+      "mode": "baseline",
+      "baseline": "b6aa958e5647937be77244abd7bb021e6c491bf7",
+      "sources": [
+        {
+          "file": "runtime/core/actors.mjs",
+          "sha256": "408ad1c2d820a11fced5616f56f97d0d83600d3e216e1390fe2871aa262b6158"
+        }
+      ],
+      "node": "v24.14.0",
+      "steps": [
+        {
+          "name": "first-open",
+          "wallMs": 137.66690000000003,
+          "cpuMs": 218
+        },
+        {
+          "name": "action-0",
+          "wallMs": 149.08840000000004,
+          "cpuMs": 157
+        },
+        {
+          "name": "action-1",
+          "wallMs": 151.10970000000003,
+          "cpuMs": 140
+        },
+        {
+          "name": "action-2",
+          "wallMs": 194.81510000000003,
+          "cpuMs": 219
+        },
+        {
+          "name": "action-3",
+          "wallMs": 221.0258,
+          "cpuMs": 234
+        },
+        {
+          "name": "action-4",
+          "wallMs": 268.1223,
+          "cpuMs": 250
+        },
+        {
+          "name": "action-5",
+          "wallMs": 287.6418000000001,
+          "cpuMs": 281
+        },
+        {
+          "name": "action-6",
+          "wallMs": 307.6386,
+          "cpuMs": 328
+        },
+        {
+          "name": "action-7",
+          "wallMs": 427.3763999999999,
+          "cpuMs": 422
+        },
+        {
+          "name": "close",
+          "wallMs": 1.6622000000002117,
+          "cpuMs": 0
+        },
+        {
+          "name": "reopen",
+          "wallMs": 2004.6818999999996,
+          "cpuMs": 2015
+        },
+        {
+          "name": "reclose",
+          "wallMs": 1.443699999999808,
+          "cpuMs": 0
+        }
+      ],
+      "receipts": [
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-0",
+          "durationTicks": 2,
+          "fromRevision": 0,
+          "fromTick": 0,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 2,
+          "toRevision": 2,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-1",
+          "durationTicks": 2,
+          "fromRevision": 2,
+          "fromTick": 2,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 4,
+          "toRevision": 4,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-2",
+          "durationTicks": 2,
+          "fromRevision": 4,
+          "fromTick": 4,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 6,
+          "toRevision": 6,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-3",
+          "durationTicks": 2,
+          "fromRevision": 6,
+          "fromTick": 6,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 8,
+          "toRevision": 8,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-4",
+          "durationTicks": 2,
+          "fromRevision": 8,
+          "fromTick": 8,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 10,
+          "toRevision": 10,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-5",
+          "durationTicks": 2,
+          "fromRevision": 10,
+          "fromTick": 10,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 12,
+          "toRevision": 12,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-6",
+          "durationTicks": 2,
+          "fromRevision": 12,
+          "fromTick": 12,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 14,
+          "toRevision": 14,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-7",
+          "durationTicks": 2,
+          "fromRevision": 14,
+          "fromTick": 14,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 16,
+          "toRevision": 16,
+          "type": "AdvanceTime"
+        }
+      ],
+      "fiveProjectionSha256": "9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4",
+      "receiptsSha256": "aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2",
+      "files": {
+        "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+        "service-commit-r10.json": "1236af4fa5df2dce31f2bd4b042b06c60f9546dda9969cfc3d4a583d63c67d93",
+        "service-commit-r12.json": "835b5a02a6d689097e6a2e6d769c2414e55d0c3aaf07c7ccea4648f49388e18e",
+        "service-commit-r14.json": "bd785db7c9c67baeed6b35ec8a0c3839b4509f57f568442773bd7f6eb2ed89a9",
+        "service-commit-r16.json": "4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a",
+        "service-commit-r2.json": "ef5eac0768ac5bdd3f4e3f9e7cfe5fd5be02be3c054c6397adcb73b4bebb0650",
+        "service-commit-r4.json": "45784d1639a8050e21866668fdcd49769f7a4265ded105cb4d59ca542639cdb1",
+        "service-commit-r6.json": "b02b10b90f7d949364ee6d35540f07bf9d0190b42e528651c82461aaeddacd6b",
+        "service-commit-r8.json": "8038a5972d14144fbf43989b3d28a047ea9c62cdaa618a74b7f5d89898d9ef41"
+      },
+      "verdict": "PASS",
+      "actorTemplateCounts": {
+        "marketConstructions": 4440
+      },
+      "remainingLocks": []
+    },
+    "process": {
+      "command": [
+        "node",
+        "scripts/measure-d4e12-actor-template.mjs",
+        "baseline",
+        "artifacts/d4e12/actor-template-a1"
+      ],
+      "pid": 30828,
+      "exitCode": 0,
+      "timedOut": false,
+      "unconfirmed": false,
+      "wallMs": 4388.992,
+      "cpuMs": 4531.25,
+      "hardLimitMs": 180000.0,
+      "jobProtected": true,
+      "phaseKilled": null
+    }
+  },
+  "b1": {
+    "result": {
+      "mode": "candidate",
+      "baseline": "b6aa958e5647937be77244abd7bb021e6c491bf7",
+      "sources": [
+        {
+          "file": "runtime/core/actors.mjs",
+          "sha256": "b390508358a1c4633e859e28a9616e7227baa4183c73b7411803bca4838fafc5"
+        }
+      ],
+      "node": "v24.14.0",
+      "steps": [
+        {
+          "name": "first-open",
+          "wallMs": 134.3499,
+          "cpuMs": 188
+        },
+        {
+          "name": "action-0",
+          "wallMs": 140.7115,
+          "cpuMs": 156
+        },
+        {
+          "name": "action-1",
+          "wallMs": 148.2396,
+          "cpuMs": 141
+        },
+        {
+          "name": "action-2",
+          "wallMs": 183.15099999999995,
+          "cpuMs": 234
+        },
+        {
+          "name": "action-3",
+          "wallMs": 208.38479999999993,
+          "cpuMs": 188
+        },
+        {
+          "name": "action-4",
+          "wallMs": 236.58580000000006,
+          "cpuMs": 312
+        },
+        {
+          "name": "action-5",
+          "wallMs": 303.63429999999994,
+          "cpuMs": 282
+        },
+        {
+          "name": "action-6",
+          "wallMs": 329.5104000000001,
+          "cpuMs": 265
+        },
+        {
+          "name": "action-7",
+          "wallMs": 357.4686999999999,
+          "cpuMs": 360
+        },
+        {
+          "name": "close",
+          "wallMs": 1.4342000000001462,
+          "cpuMs": 15
+        },
+        {
+          "name": "reopen",
+          "wallMs": 1932.0584000000003,
+          "cpuMs": 1845
+        },
+        {
+          "name": "reclose",
+          "wallMs": 1.4512999999997191,
+          "cpuMs": 0
+        }
+      ],
+      "receipts": [
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-0",
+          "durationTicks": 2,
+          "fromRevision": 0,
+          "fromTick": 0,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 2,
+          "toRevision": 2,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-1",
+          "durationTicks": 2,
+          "fromRevision": 2,
+          "fromTick": 2,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 4,
+          "toRevision": 4,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-2",
+          "durationTicks": 2,
+          "fromRevision": 4,
+          "fromTick": 4,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 6,
+          "toRevision": 6,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-3",
+          "durationTicks": 2,
+          "fromRevision": 6,
+          "fromTick": 6,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 8,
+          "toRevision": 8,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-4",
+          "durationTicks": 2,
+          "fromRevision": 8,
+          "fromTick": 8,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 10,
+          "toRevision": 10,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-5",
+          "durationTicks": 2,
+          "fromRevision": 10,
+          "fromTick": 10,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 12,
+          "toRevision": 12,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-6",
+          "durationTicks": 2,
+          "fromRevision": 12,
+          "fromTick": 12,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 14,
+          "toRevision": 14,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-7",
+          "durationTicks": 2,
+          "fromRevision": 14,
+          "fromTick": 14,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 16,
+          "toRevision": 16,
+          "type": "AdvanceTime"
+        }
+      ],
+      "fiveProjectionSha256": "9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4",
+      "receiptsSha256": "aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2",
+      "files": {
+        "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+        "service-commit-r10.json": "1236af4fa5df2dce31f2bd4b042b06c60f9546dda9969cfc3d4a583d63c67d93",
+        "service-commit-r12.json": "835b5a02a6d689097e6a2e6d769c2414e55d0c3aaf07c7ccea4648f49388e18e",
+        "service-commit-r14.json": "bd785db7c9c67baeed6b35ec8a0c3839b4509f57f568442773bd7f6eb2ed89a9",
+        "service-commit-r16.json": "4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a",
+        "service-commit-r2.json": "ef5eac0768ac5bdd3f4e3f9e7cfe5fd5be02be3c054c6397adcb73b4bebb0650",
+        "service-commit-r4.json": "45784d1639a8050e21866668fdcd49769f7a4265ded105cb4d59ca542639cdb1",
+        "service-commit-r6.json": "b02b10b90f7d949364ee6d35540f07bf9d0190b42e528651c82461aaeddacd6b",
+        "service-commit-r8.json": "8038a5972d14144fbf43989b3d28a047ea9c62cdaa618a74b7f5d89898d9ef41"
+      },
+      "verdict": "PASS",
+      "actorTemplateCounts": {
+        "marketConstructions": 1
+      },
+      "remainingLocks": []
+    },
+    "process": {
+      "command": [
+        "node",
+        "scripts/measure-d4e12-actor-template.mjs",
+        "candidate",
+        "artifacts/d4e12/actor-template-b1"
+      ],
+      "pid": 5664,
+      "exitCode": 0,
+      "timedOut": false,
+      "unconfirmed": false,
+      "wallMs": 4155.966,
+      "cpuMs": 4140.625,
+      "hardLimitMs": 180000.0,
+      "jobProtected": true,
+      "phaseKilled": null
+    }
+  },
+  "b2": {
+    "result": {
+      "mode": "candidate",
+      "baseline": "b6aa958e5647937be77244abd7bb021e6c491bf7",
+      "sources": [
+        {
+          "file": "runtime/core/actors.mjs",
+          "sha256": "b390508358a1c4633e859e28a9616e7227baa4183c73b7411803bca4838fafc5"
+        }
+      ],
+      "node": "v24.14.0",
+      "steps": [
+        {
+          "name": "first-open",
+          "wallMs": 128.3392,
+          "cpuMs": 157
+        },
+        {
+          "name": "action-0",
+          "wallMs": 130.4665,
+          "cpuMs": 171
+        },
+        {
+          "name": "action-1",
+          "wallMs": 140.7797,
+          "cpuMs": 126
+        },
+        {
+          "name": "action-2",
+          "wallMs": 188.94310000000002,
+          "cpuMs": 233
+        },
+        {
+          "name": "action-3",
+          "wallMs": 213.81820000000005,
+          "cpuMs": 188
+        },
+        {
+          "name": "action-4",
+          "wallMs": 237.96000000000015,
+          "cpuMs": 234
+        },
+        {
+          "name": "action-5",
+          "wallMs": 281.86210000000005,
+          "cpuMs": 281
+        },
+        {
+          "name": "action-6",
+          "wallMs": 314.16100000000006,
+          "cpuMs": 312
+        },
+        {
+          "name": "action-7",
+          "wallMs": 392.8849,
+          "cpuMs": 390
+        },
+        {
+          "name": "close",
+          "wallMs": 1.5936000000001513,
+          "cpuMs": 0
+        },
+        {
+          "name": "reopen",
+          "wallMs": 2082.6667,
+          "cpuMs": 2031
+        },
+        {
+          "name": "reclose",
+          "wallMs": 1.4639999999999418,
+          "cpuMs": 0
+        }
+      ],
+      "receipts": [
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-0",
+          "durationTicks": 2,
+          "fromRevision": 0,
+          "fromTick": 0,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 2,
+          "toRevision": 2,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-1",
+          "durationTicks": 2,
+          "fromRevision": 2,
+          "fromTick": 2,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 4,
+          "toRevision": 4,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-2",
+          "durationTicks": 2,
+          "fromRevision": 4,
+          "fromTick": 4,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 6,
+          "toRevision": 6,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-3",
+          "durationTicks": 2,
+          "fromRevision": 6,
+          "fromTick": 6,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 8,
+          "toRevision": 8,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-4",
+          "durationTicks": 2,
+          "fromRevision": 8,
+          "fromTick": 8,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 10,
+          "toRevision": 10,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-5",
+          "durationTicks": 2,
+          "fromRevision": 10,
+          "fromTick": 10,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 12,
+          "toRevision": 12,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-6",
+          "durationTicks": 2,
+          "fromRevision": 12,
+          "fromTick": 12,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 14,
+          "toRevision": 14,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-7",
+          "durationTicks": 2,
+          "fromRevision": 14,
+          "fromTick": 14,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 16,
+          "toRevision": 16,
+          "type": "AdvanceTime"
+        }
+      ],
+      "fiveProjectionSha256": "9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4",
+      "receiptsSha256": "aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2",
+      "files": {
+        "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+        "service-commit-r10.json": "1236af4fa5df2dce31f2bd4b042b06c60f9546dda9969cfc3d4a583d63c67d93",
+        "service-commit-r12.json": "835b5a02a6d689097e6a2e6d769c2414e55d0c3aaf07c7ccea4648f49388e18e",
+        "service-commit-r14.json": "bd785db7c9c67baeed6b35ec8a0c3839b4509f57f568442773bd7f6eb2ed89a9",
+        "service-commit-r16.json": "4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a",
+        "service-commit-r2.json": "ef5eac0768ac5bdd3f4e3f9e7cfe5fd5be02be3c054c6397adcb73b4bebb0650",
+        "service-commit-r4.json": "45784d1639a8050e21866668fdcd49769f7a4265ded105cb4d59ca542639cdb1",
+        "service-commit-r6.json": "b02b10b90f7d949364ee6d35540f07bf9d0190b42e528651c82461aaeddacd6b",
+        "service-commit-r8.json": "8038a5972d14144fbf43989b3d28a047ea9c62cdaa618a74b7f5d89898d9ef41"
+      },
+      "verdict": "PASS",
+      "actorTemplateCounts": {
+        "marketConstructions": 1
+      },
+      "remainingLocks": []
+    },
+    "process": {
+      "command": [
+        "node",
+        "scripts/measure-d4e12-actor-template.mjs",
+        "candidate",
+        "artifacts/d4e12/actor-template-b2"
+      ],
+      "pid": 4012,
+      "exitCode": 0,
+      "timedOut": false,
+      "unconfirmed": false,
+      "wallMs": 4280.868,
+      "cpuMs": 4328.125,
+      "hardLimitMs": 180000.0,
+      "jobProtected": true,
+      "phaseKilled": null
+    }
+  },
+  "a2": {
+    "result": {
+      "mode": "baseline",
+      "baseline": "b6aa958e5647937be77244abd7bb021e6c491bf7",
+      "sources": [
+        {
+          "file": "runtime/core/actors.mjs",
+          "sha256": "408ad1c2d820a11fced5616f56f97d0d83600d3e216e1390fe2871aa262b6158"
+        }
+      ],
+      "node": "v24.14.0",
+      "steps": [
+        {
+          "name": "first-open",
+          "wallMs": 127.11020000000002,
+          "cpuMs": 171
+        },
+        {
+          "name": "action-0",
+          "wallMs": 134.40610000000004,
+          "cpuMs": 173
+        },
+        {
+          "name": "action-1",
+          "wallMs": 137.81780000000003,
+          "cpuMs": 140
+        },
+        {
+          "name": "action-2",
+          "wallMs": 169.64589999999998,
+          "cpuMs": 188
+        },
+        {
+          "name": "action-3",
+          "wallMs": 204.39569999999992,
+          "cpuMs": 202
+        },
+        {
+          "name": "action-4",
+          "wallMs": 243.47130000000004,
+          "cpuMs": 282
+        },
+        {
+          "name": "action-5",
+          "wallMs": 273.9145000000001,
+          "cpuMs": 281
+        },
+        {
+          "name": "action-6",
+          "wallMs": 301.58259999999996,
+          "cpuMs": 297
+        },
+        {
+          "name": "action-7",
+          "wallMs": 338.8421000000001,
+          "cpuMs": 328
+        },
+        {
+          "name": "close",
+          "wallMs": 1.9157000000000153,
+          "cpuMs": 15
+        },
+        {
+          "name": "reopen",
+          "wallMs": 1970.5004000000004,
+          "cpuMs": 1985
+        },
+        {
+          "name": "reclose",
+          "wallMs": 1.350800000000163,
+          "cpuMs": 0
+        }
+      ],
+      "receipts": [
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-0",
+          "durationTicks": 2,
+          "fromRevision": 0,
+          "fromTick": 0,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 2,
+          "toRevision": 2,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-1",
+          "durationTicks": 2,
+          "fromRevision": 2,
+          "fromTick": 2,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 4,
+          "toRevision": 4,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-2",
+          "durationTicks": 2,
+          "fromRevision": 4,
+          "fromTick": 4,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 6,
+          "toRevision": 6,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-3",
+          "durationTicks": 2,
+          "fromRevision": 6,
+          "fromTick": 6,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 8,
+          "toRevision": 8,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-4",
+          "durationTicks": 2,
+          "fromRevision": 8,
+          "fromTick": 8,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 10,
+          "toRevision": 10,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-5",
+          "durationTicks": 2,
+          "fromRevision": 10,
+          "fromTick": 10,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 12,
+          "toRevision": 12,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-6",
+          "durationTicks": 2,
+          "fromRevision": 12,
+          "fromTick": 12,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 14,
+          "toRevision": 14,
+          "type": "AdvanceTime"
+        },
+        {
+          "apiVersion": 1,
+          "commandId": "equal-fixed-7",
+          "durationTicks": 2,
+          "fromRevision": 14,
+          "fromTick": 14,
+          "outcome": "succeeded",
+          "receiptVersion": 5,
+          "result": null,
+          "status": "committed",
+          "tick": 16,
+          "toRevision": 16,
+          "type": "AdvanceTime"
+        }
+      ],
+      "fiveProjectionSha256": "9e6cddddfd6bbc2a185223c60e36cfdd8b09b481f667342b90d0ca6e1dafa1e4",
+      "receiptsSha256": "aca4cd5210750995837d963dd1b15d0df26b84cc06718ae8a69eeab1425be4a2",
+      "files": {
+        "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+        "service-commit-r10.json": "1236af4fa5df2dce31f2bd4b042b06c60f9546dda9969cfc3d4a583d63c67d93",
+        "service-commit-r12.json": "835b5a02a6d689097e6a2e6d769c2414e55d0c3aaf07c7ccea4648f49388e18e",
+        "service-commit-r14.json": "bd785db7c9c67baeed6b35ec8a0c3839b4509f57f568442773bd7f6eb2ed89a9",
+        "service-commit-r16.json": "4d6c6b2f3fbe33a7b1639fcb4cb00ec78a20d334a3a1382c9d37550ed97a6f9a",
+        "service-commit-r2.json": "ef5eac0768ac5bdd3f4e3f9e7cfe5fd5be02be3c054c6397adcb73b4bebb0650",
+        "service-commit-r4.json": "45784d1639a8050e21866668fdcd49769f7a4265ded105cb4d59ca542639cdb1",
+        "service-commit-r6.json": "b02b10b90f7d949364ee6d35540f07bf9d0190b42e528651c82461aaeddacd6b",
+        "service-commit-r8.json": "8038a5972d14144fbf43989b3d28a047ea9c62cdaa618a74b7f5d89898d9ef41"
+      },
+      "verdict": "PASS",
+      "actorTemplateCounts": {
+        "marketConstructions": 4440
+      },
+      "remainingLocks": []
+    },
+    "process": {
+      "command": [
+        "node",
+        "scripts/measure-d4e12-actor-template.mjs",
+        "baseline",
+        "artifacts/d4e12/actor-template-a2"
+      ],
+      "pid": 66616,
+      "exitCode": 0,
+      "timedOut": false,
+      "unconfirmed": false,
+      "wallMs": 4121.16,
+      "cpuMs": 4250.0,
+      "hardLimitMs": 180000.0,
+      "jobProtected": true,
+      "phaseKilled": null
+    }
+  }
+}

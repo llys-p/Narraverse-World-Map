@@ -4,6 +4,27 @@
 
 **已隔离HTTP事件循环阻塞；最新短世界行动确认与完整重开审计相对上一已采纳版再改善9.20%/18.81%，长档冷开与持续流畅体验尚未解决，性能整体仍不判合格。** 不把不同轮次的百分比相加，不提前确认行动。23:35本轮开工只读核验发现18338/18340/18342已无监听，原PID61236/63160/14520已退出；不是本轮启停，未重启或操作日常存档，新代码未投入日常入口。
 
+## 2026-10-18 12:08 跟进：撤回actor模板，提交审计组织方式草案
+
+基准 `b6aa958e5647937be77244abd7bb021e6c491bf7`。试验仅对actor-config-v5复用按完整内容核验的初始市场模板，输入和输出分离、复制后重验字段/版本；实时角色与账本校验及完整历史重演保持。四轮同seed42/同ID/HTTP 8×AdvanceTime(2)至r16，新进程/目录/随机端口、ABBA各版2次、180秒总限/阶段120秒，均退出0。
+
+| 轮次 | 行动墙钟/CPU ms | 完整重开墙钟/CPU ms | 初始市场构造数 |
+| --- | ---: | ---: | ---: |
+| A1原版 | 2006.818 / 2031 | 2004.682 / 2015 | 4440 |
+| B1候选 | 1907.686 / 1938 | 1932.058 / 1845 | 1 |
+| B2候选 | 1900.876 / 1935 | 2082.667 / 2031 | 1 |
+| A2原版 | 1804.076 / 1891 | 1970.500 / 1985 | 4440 |
+
+行动墙钟中位1905.447→1904.281ms（0.06%），CPU1961→1936.5ms（1.25%）；重开1987.591→2007.363ms（反慢0.99%），CPU2000→1938ms（3.10%）。构造次数下降不能代表真实收益。**候选、活动工具和未运行的3项补充测试全部撤回；生产保持d22bc5d，不宣称新修复。** 四轮9档SHA/8回执/五投影/重开/原ID重试一致，无新档或隔离锁；不追加核心或页面运行，不把未运行测试计PASS。
+
+[原始result/process](../evidence/d4e12-actor-template-trial-20261018/runs.json)、[统计/决策](../evidence/d4e12-actor-template-trial-20261018/summary.json)、[弃用补丁](../evidence/d4e12-actor-template-trial-20261018/candidate.patch)、[保护](../evidence/d4e12-actor-template-trial-20261018/protection.json)。测量器和测试仅保留`.txt`审阅副本，需在独立树应用补丁并恢复原路径后复现，非活动代码。完整命令见runs.json：`python scripts/run-d4e12-check.py actor-template-k 180 --phase-file artifacts/d4e12/actor-template-k/phase.json node scripts/measure-d4e12-actor-template.mjs variant artifacts/d4e12/actor-template-k`，k/variant依次a1/baseline、b1/candidate、b2/candidate、a2/baseline。
+
+进一步核对的合同边界：[原D4E12任务书](../../tasks/D4E12-DEMO-RUNTIME-TASK.md)实现约束第4条仍要求每次新世界转移执行原完整校验；[原接入报告](D4E12-DEMO-RUNTIME-RESULT.md)明确新提交保持完整world/history核验。源码 `executeAuditedCampaignIntent→createAuditedBundle→validateBundle→hooksValidateHistory` 仍走该路径。这是每次行动仍须承担历史相关工作的一项明确来源；本次构造微优化不能消除它，不将此解释为所有剩余耗时均来自重演。
+
+已准备[运行中前缀审计补充合同草案](../../tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md)，并经独立只读风险审查。拟仅对当前owner的已耐久提交、深冻结、全commit认证前缀作归纳转移核验，外部JSON/冷加载/公开独立审计保留原全历史重演；whole-commit证明、当前head隔离、输入分离和持久成功先于发布必须具备。**该草案需要用户明确批准合同变化，尚未批准、未实施、未派发。** 不把“继续”当作允许删除完整重演，也不承诺此草案能加速冷开。若保留原合同，就仅继续等价实现优化，不能承诺消除每步的历史增长成本。
+
+本轮原8档/16依赖/旧88源码/107既有日常文件、中控并行原型和脏摘要保持。三个旧体验端口开工与结束仍无监听，启停动作0，未操作存档；测试进程/隔离锁无残留，无main/部署/迁移/存档上传/DSH外部模型。D4E12及D阶段均未收口；新增审计方式在用户决定前不执行，已有功能/性能证据仍各按原范围有效。
+
 ## 23:41 继续推进：复用 campaign v8 纯配置初始模板
 
 **本片功能限定PASS，最终短世界行动/重开样本改善成立；整体性能仍需修正。** 唯一生产修改为 `runtime/core/memory-runtime.mjs` 私有 `validateConfig`，另新增定向测试与HTTP测量工具。

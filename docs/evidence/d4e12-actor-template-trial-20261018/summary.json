@@ -1,0 +1,168 @@
+{
+  "baseline": "b6aa958e5647937be77244abd7bb021e6c491bf7",
+  "decision": "DISCARDED_NO_MEANINGFUL_END_TO_END_BENEFIT",
+  "order": [
+    "a1",
+    "b1",
+    "b2",
+    "a2"
+  ],
+  "repetitionsPerVariant": 2,
+  "commands": 8,
+  "ticks": 16,
+  "filesReceiptsProjectionsEqual": true,
+  "writtenTestsRun": false,
+  "pageChainRun": false,
+  "data": {
+    "a1": {
+      "actions": {
+        "wallMs": 2006.8181,
+        "cpuMs": 2031
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2004.6818999999996,
+        "cpuMs": 2015
+      },
+      "actorTemplateCounts": {
+        "marketConstructions": 4440
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-actor-template.mjs",
+          "baseline",
+          "artifacts/d4e12/actor-template-a1"
+        ],
+        "pid": 30828,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4388.992,
+        "cpuMs": 4531.25,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b1": {
+      "actions": {
+        "wallMs": 1907.6861,
+        "cpuMs": 1938
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 1932.0584000000003,
+        "cpuMs": 1845
+      },
+      "actorTemplateCounts": {
+        "marketConstructions": 1
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-actor-template.mjs",
+          "candidate",
+          "artifacts/d4e12/actor-template-b1"
+        ],
+        "pid": 5664,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4155.966,
+        "cpuMs": 4140.625,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "b2": {
+      "actions": {
+        "wallMs": 1900.8755000000003,
+        "cpuMs": 1935
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 2082.6667,
+        "cpuMs": 2031
+      },
+      "actorTemplateCounts": {
+        "marketConstructions": 1
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-actor-template.mjs",
+          "candidate",
+          "artifacts/d4e12/actor-template-b2"
+        ],
+        "pid": 4012,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4280.868,
+        "cpuMs": 4328.125,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    },
+    "a2": {
+      "actions": {
+        "wallMs": 1804.076,
+        "cpuMs": 1891
+      },
+      "reopen": {
+        "name": "reopen",
+        "wallMs": 1970.5004000000004,
+        "cpuMs": 1985
+      },
+      "actorTemplateCounts": {
+        "marketConstructions": 4440
+      },
+      "process": {
+        "command": [
+          "node",
+          "scripts/measure-d4e12-actor-template.mjs",
+          "baseline",
+          "artifacts/d4e12/actor-template-a2"
+        ],
+        "pid": 66616,
+        "exitCode": 0,
+        "timedOut": false,
+        "unconfirmed": false,
+        "wallMs": 4121.16,
+        "cpuMs": 4250.0,
+        "hardLimitMs": 180000.0,
+        "jobProtected": true,
+        "phaseKilled": null
+      }
+    }
+  },
+  "medians": {
+    "actions": {
+      "wallMs": {
+        "baseline": 1905.44705,
+        "candidate": 1904.2808,
+        "improvementPercent": 0.06120610908605384
+      },
+      "cpuMs": {
+        "baseline": 1961.0,
+        "candidate": 1936.5,
+        "improvementPercent": 1.249362570117285
+      }
+    },
+    "reopen": {
+      "wallMs": {
+        "baseline": 1987.59115,
+        "candidate": 2007.3625500000003,
+        "improvementPercent": -0.9947418008980469
+      },
+      "cpuMs": {
+        "baseline": 2000.0,
+        "candidate": 1938.0,
+        "improvementPercent": 3.1000000000000028
+      }
+    }
+  }
+}

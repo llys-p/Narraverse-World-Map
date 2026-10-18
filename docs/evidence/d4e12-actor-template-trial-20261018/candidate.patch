@@ -1,0 +1,33 @@
+diff --git a/runtime/core/actors.mjs b/runtime/core/actors.mjs
+index 07dbbf0..c3824e4 100644
+--- a/runtime/core/actors.mjs
++++ b/runtime/core/actors.mjs
+@@ -20,8 +20,19 @@ export function defaultActorConfig(market=calibratedMarketConfig()) {
+   ]};
+ }
+ 
++// Reuse only a pure initial market template for the campaign's actor-config-v5.
++// Exact detached configuration content owns the proof; mutable actor state,
++// current ledgers, RNG and event/history validation never enter this cache.
++let campaignActorTemplate = null;
+ function validateConfig(config){
+   fields(config,['version','market','initialActors']);requireCondition(['actor-config-v1','actor-config-v2','actor-config-v3','actor-config-v4','actor-config-v5'].includes(config.version),'Unknown Actor configuration','UNSUPPORTED_VERSION');
++  let key;
++  if(config.version==='actor-config-v5'){
++    config=cloneData(config);fields(config,['version','market','initialActors']);
++    requireCondition(config.version==='actor-config-v5','Detached campaign actor configuration version changed','UNSUPPORTED_VERSION');
++    key=canonicalJson(config);
++    if(campaignActorTemplate?.key===key)return cloneData(campaignActorTemplate.world);
++  }
+   denseArray(config.initialActors,MAX_PERSISTENT_ACTORS);
+   for(const actor of config.initialActors){fields(actor,INITIAL_FIELDS);identifier(actor.name);
+     requireCondition(['chief','hunter','merchant',...(config.version!=='actor-config-v1'?['player']:[])].includes(actor.occupation),'Unknown Actor occupation');
+@@ -31,6 +42,8 @@ function validateConfig(config){
+     'Named population overlaps aggregate injury shares');
+   const food=config.market.ecology.resources.resources.food.consumption;
+   requireCondition(food.numerator===1 && food.denominator===1,'C1 requires one ration per living resident');
++  if(key!==undefined&&key.length<=65536&&canonicalJson(world).length<=262144)
++    campaignActorTemplate={key,world:cloneData(world)};
+   return world;
+ }
+ 
