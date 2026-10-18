@@ -1,0 +1,28 @@
+✖ fixed successors equal the unchanged complete oracle, including rejected and zero-tick commands (132.729ms)
+✔ copies, arbitrary candidates, unknown profiles and getters cannot acquire a successor proof (178.1926ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 564.902
+
+✖ failing tests:
+
+test at tests\simulation\campaign-live-derivation.test.mjs:8:1
+✖ fixed successors equal the unchanged complete oracle, including rejected and zero-tick commands (132.729ms)
+  Error: Fields do not match schema
+      at fault (file:///D:/Narraverse-World-Map-live-session-audit/runtime/core/data-contract.mjs:8:24)
+      at requireCondition (file:///D:/Narraverse-World-Map-live-session-audit/runtime/core/data-contract.mjs:11:25)
+      at fields (file:///D:/Narraverse-World-Map-live-session-audit/runtime/core/data-contract.mjs:28:3)
+      at preflightSceneIntent (file:///D:/Narraverse-World-Map-live-session-audit/runtime/core/scene-runtime.mjs:37:34)
+      at preflightCampaignIntent (file:///D:/Narraverse-World-Map-live-session-audit/runtime/core/scene-campaign-runtime.mjs:21:8)
+      at deriveCampaignBundle (file:///D:/Narraverse-World-Map-live-session-audit/runtime/core/world-state.mjs:65:55)
+      at TestContext.<anonymous> (file:///D:/Narraverse-World-Map-live-session-audit/tests/simulation/campaign-live-derivation.test.mjs:14:14)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17) {
+    code: 'INVALID_INPUT'
+  }

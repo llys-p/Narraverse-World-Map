@@ -1,0 +1,16 @@
+✔ fixed successors equal the unchanged complete oracle, including rejected and zero-tick commands (2624.0423ms)
+✔ copies, arbitrary candidates, unknown profiles and getters cannot acquire a successor proof (177.3936ms)
+✔ owner serializes revision races, deduplicates retries, and detaches caller data (397.4806ms)
+✔ failed link publication preserves projections and files, then retries at the same revision (413.8403ms)
+✔ reopen preserves short history and JSON commit copies receive full independent audit (2903.8008ms)
+✔ uncertain publication exposes no success or continuation until full reopen resolves it (1011.5474ms)
+✔ campaign live writer requires the latest audited durable head and releases its realpath claim on close (941.0964ms)
+✔ independent owners cannot exchange projections or forged candidate authority (719.4874ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9653.9203

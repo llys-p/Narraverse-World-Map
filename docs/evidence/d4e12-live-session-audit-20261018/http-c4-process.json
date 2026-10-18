@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-d4e12-live-session.mjs",
+    "candidate",
+    "artifacts/d4e12/live-http-c4-world"
+  ],
+  "pid": 56132,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 7672.221,
+  "cpuMs": 7921.875,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

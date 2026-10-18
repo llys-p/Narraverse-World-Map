@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/campaign-live-derivation.test.mjs",
+    "tests/simulation/campaign-live-owner.test.mjs"
+  ],
+  "pid": 26456,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 7251.521,
+  "cpuMs": 109.375,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

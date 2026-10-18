@@ -1,0 +1,18 @@
+{
+  "verdict": "PROTECTION_OK",
+  "originalEight": {
+    "service-commit-r0.json": "85e64edf68191c897831d01abc5edadbaac278f8c92f1f85cac3d86d15cd3b7b",
+    "service-commit-r1.json": "01055647588a97c2cf52586c945de35dafbedce553e6cba039fa362fab1ec682",
+    "service-commit-r145.json": "867ce2730c7fb01cc96f5451e4c690ab836ebe2b64b002da0fd62f9df3267e1e",
+    "service-commit-r157.json": "7670a2007b4e4aaf679eec5d83ac37b20037cea90abb4862bd895a0d4000792b",
+    "service-commit-r158.json": "86c08be81faed693d9b33d58ca953c6c7abf8e033de6ae87d688ae50822dc73e",
+    "service-commit-r164.json": "812fb209293b49beaa55f8d1d32da2c4d345dfa6cb6d53683b2ee4c35dcd786c",
+    "service-commit-r170.json": "3bf39f7cf0b9e7adb5a39a1969dbf0bc111ec20d18fb5b4b7e92c907969450dd",
+    "service-commit-r182.json": "d2a1ed275945b8126fb2c79c18c5b3c4fa09390b5cc619f263263b488a3f972c"
+  },
+  "prototypeSha256": "dcf65a984698dba5f2ff65c41d8efab683f970fc0b8007b7154894735a023c8e",
+  "assetsUnchanged": 16,
+  "oldSourceUnchanged": 88,
+  "dailyFilesUnchanged": 107,
+  "foreignSummaryPreserved": true
+}

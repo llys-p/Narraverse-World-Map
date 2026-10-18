@@ -1,0 +1,16 @@
+{
+  "candidate": "1b6211c67dc1bf4287a327648d94520233166846",
+  "baseline": "669256348d3c5f07e47cd0f17cddf1da3c4700ff",
+  "files": {
+    "runtime/core/event-log.mjs": "52cbb98916f4393d41dec15e401526e2954708ee624ba4ac93e3faec79a579d9",
+    "runtime/core/scene-campaign-runtime.mjs": "187e18094325355d88f1130ae362444a95edb2d24359a99b80e6c9b6314177bc",
+    "runtime/core/world-state.mjs": "afe53ca30429818af0f51b260c00d81a44d6c3e9036a9860a03c3af071939594",
+    "runtime/service/runtime-owner.mjs": "becdbe5909167485bb530522d96a990291b9981c7fa3934c29127e885ef2ceff",
+    "runtime/service/service-commit.mjs": "f7d03d9b429ccc096587f3a3beb90b69068fbf3e8a66156c2a1fd50b4c3c9486",
+    "scripts/measure-d4e12-live-session.mjs": "9b85706df3d191a2b86ef1097114c9d169d5ea50041972d12f374e70525b6985",
+    "tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md": "85c0e528c464ce1cf655896712c42e96427fbf758c8226e3499d9a9e08e26bdb",
+    "tests/simulation/campaign-live-derivation.test.mjs": "e007a19ed95a4381be93bb52e68e62332e774b72f642883abc49c122c65938aa",
+    "tests/simulation/campaign-live-owner.test.mjs": "c8cc28a5d09848d3a9806ce7c113cb3cf8683d03976171ad957bd2be46ae1caa",
+    "tests/simulation/campaign-live-world-boundaries.test.mjs": "b0226b06c08a8e59edcc256ec139dc0da6681ae759ba6d8d92c33fb5a51044be"
+  }
+}

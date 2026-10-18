@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/verify-d4e12-demo.mjs",
+    "artifacts/d4e12/live-ui-final-world",
+    "--ui-only"
+  ],
+  "pid": 67392,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 25121.312,
+  "cpuMs": 10578.125,
+  "hardLimitMs": 600000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}
