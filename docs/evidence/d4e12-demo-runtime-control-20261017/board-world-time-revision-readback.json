@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12：功能优先，F4已接显式等待、世界日期时分与工作冷却；性能独立线处理。\n功能树D:/Narraverse-World-Map-demo-gameplay / codex/world-runtime-demo-gameplay；源码766442f18a50359061e30b60890e9f8e15c41fd0，交付02e6ffefce79a30e0d8070a81e364f030f53417f已推送读回，报告API字节一致。\n全局/行囊“等待1小时”只提交已有AdvanceTime(6)，不额外减疲劳、不按现实时间补算或自动连等。日期时分从已确认tick取，第0天沿原合同。工作提示说明实际公开条件与冷却，补health>=300已有门，fatigue<=700；隐藏公共资金不臆测，后端仍权威。后端/审计/存档/时间/预算无修改。\n新时间2项+原交互3项=5/5；真实Edge一次17.660秒通过：合成工作tick36/06:00/疲劳150/冷却18小时→全局等待tick42/07:00/17小时，NPC实际更新→行囊等待tick48/08:00/16小时，玩家状态不变→真实休整tick54/09:00/15小时/疲劳50→正常关闭→完整独立审计→重开，5档SHA/五投影一致。页面异常0，进程/锁0。无全量/视觉/私有长档/战斗全链重跑，无性能结论。\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/02e6ffefce79a30e0d8070a81e364f030f53417f/docs/runtime/D4E12-DEMO-GAMEPLAY-RESULT.md\nF1人物工作/交易/行囊、F2真实结果/8条记录、F3视野内定位与接近及原路遇暂停均保留。原8档/16依赖/旧88源码/107日常文件/并行原型与2行脏摘要保持；三旧端口无监听，启停0，日常入口未切换，无main/部署/迁移/私档上传/新增外部模型。\n独立性能线程01a14d49-bc97-7ce3-a47e-18c4f92edea8在cold-open树推进，不写功能树/中控/卡。D4E12整体In Progress/需修正、Stage D进行中，性能不阻塞功能。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
