@@ -1,6 +1,6 @@
 // Presentation extracted from the preserved demo. No local gameplay simulation.
 import {createDemoClient} from './demo-runtime-bridge.mjs';
-import {interactionActions} from './demo-runtime-interactions.mjs';
+import {interactionActions,describeActionReceipt,recordConfirmedAction} from './demo-runtime-interactions.mjs';
 const $=id=>document.getElementById(id),K=window.SandboxDrawingKit;
 const stageContainer=$('stageContainer'),sceneCanvas=$('sceneCanvas'),sceneCtx=sceneCanvas.getContext('2d');
 const villageStickCanvas=$('villageStickCanvas'),villageDecorCanvas=$('villageDecorCanvas'),villageDecorCtx=villageDecorCanvas.getContext('2d');
@@ -1574,8 +1574,22 @@ function drawBattle(now){
  enemyCtx.drawImage(wolfOff,stageW*.72-w/2,stageH-18-(wolfOff.height-4)*scale,w,h);
 }
 function waitPresentation(ms,ticket){return new Promise(resolve=>{const start=performance.now();function frame(now){if(ticket!==playbackEpoch||now-start>=ms){resolve();return;}requestAnimationFrame(frame);}requestAnimationFrame(frame);});}
+let confirmedActions=[];
+function paintActionResult(receipt,dto){
+ const view=describeActionReceipt(receipt,dto);if(!view)return;
+ confirmedActions=recordConfirmedAction(confirmedActions,receipt,dto);
+ $('actionResult').hidden=false;$('actionResult').dataset.outcome=view.outcome;$('actionResult').dataset.commandType=view.type;
+ $('actionTitle').textContent=view.summary;$('actionChanges').textContent=view.reason||view.changes.join(' · ')||'操作已确认，当前状态已保存。';
+ $('actionTime').textContent=view.time;$('receiptSummary').textContent=view.summary;
+ $('actionHistoryEmpty').hidden=confirmedActions.length>0;$('actionHistory').replaceChildren();
+ for(const entry of confirmedActions){
+  const item=document.createElement('li'),title=document.createElement('strong'),detail=document.createElement('p'),time=document.createElement('p');
+  item.dataset.commandId=entry.commandId;item.dataset.outcome=entry.outcome;title.textContent=entry.summary;
+  detail.textContent=entry.reason||entry.changes.join(' · ')||'操作已确认。';time.textContent=entry.time;item.append(title,detail,time);$('actionHistory').append(item);
+ }
+}
 async function playReceipt(receipt,dto){
- $('lastReceipt').textContent=JSON.stringify(receipt,null,2);$('receiptSummary').textContent='已保存 '+dto.type+' · 世界时刻 '+receipt.fromTick+' → '+receipt.tick;
+ $('lastReceipt').textContent=JSON.stringify(receipt,null,2);paintActionResult(receipt,dto);
  if(dto.type==='EncounterBegin'&&receipt.outcome==='succeeded')setMode('battle');
  const events=receipt.outcome==='succeeded'?receipt.result?.turnEvents:[];
  if(dto.type!=='EncounterAction'||!events?.length){paintReadings();return;}

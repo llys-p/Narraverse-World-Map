@@ -29,6 +29,16 @@ body#demo-runtime-root{min-width:1000px}
 .live-readings{color:#c9d1d9;justify-content:space-between}
 .live-message{padding:12px 16px;background:#161b22;border:1px solid #30363d;border-radius:8px;min-height:62px;font-size:13px}
 .live-message [data-error=true]{color:#ff7b72}
+#demo-runtime-root .live-action-result{padding:14px 16px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;font-size:13px}
+#demo-runtime-root .live-action-result h2{margin-bottom:8px;font-size:16px}
+#demo-runtime-root .live-action-result p{margin:6px 0;line-height:1.55;white-space:pre-wrap}
+#demo-runtime-root .live-action-result[data-outcome="succeeded"]{border-color:var(--accent-green)}
+#demo-runtime-root .live-action-result[data-outcome="rejected"]{border-color:var(--accent-gold)}
+#demo-runtime-root .live-action-history{padding:12px 16px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:13px}
+#demo-runtime-root .live-action-history summary{cursor:pointer;font-weight:600}
+#demo-runtime-root .live-action-history>p{margin:8px 0;color:var(--text-secondary);line-height:1.5}
+#demo-runtime-root #actionHistory{padding-left:24px}
+#demo-runtime-root #actionHistory li{padding:9px 4px 9px 2px;border-top:1px solid var(--border);line-height:1.55;white-space:pre-wrap}
 .live-person{padding:18px;display:flex;gap:20px;background:#1b2521;border:1px solid #627660;border-radius:8px;font-size:13px}
 .live-person p{margin:10px 0;white-space:pre-wrap}
 .live-person h2{font-size:17px}

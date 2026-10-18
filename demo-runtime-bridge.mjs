@@ -1,5 +1,6 @@
 // Same DTO5 projection contract used by the campaign consumer.
 import {validateCampaignReceipt} from './runtime-campaign-contract.mjs';
+import {describeActionReceipt} from './demo-runtime-interactions.mjs';
 const WIDTH=20,HEIGHT=12,safeInt=n=>Number.isSafeInteger(n)&&n>=0;
 const exact=(v,keys)=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k));
 const cellKey=({x,y})=>`${x},${y}`;
@@ -75,8 +76,9 @@ export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
    const dto=order?response.command:input,receipt=order?response.receipt:response;
    if(order&&(!dto||dto.commandId!==input.requestId||dto.type!==input.type||JSON.stringify(dto.payload)!==JSON.stringify(input.payload)))throw Error('订单确认与输入不一致');
    if(!validateCampaignReceipt(receipt,dto,order?receipt?.fromTick:item.fromTick))throw Error('命令回执无效，已保留待确认请求');
+   const view=describeActionReceipt(receipt,dto);
    clear();await refresh();await onReceipt(receipt,dto,group);
-   status(receipt.outcome==='succeeded'?'已保存 · '+dto.type:'命令被世界规则拒绝 · '+(receipt.result.reasonCode??receipt.result.code));
+   status(view.summary+(view.reason?'：'+view.reason:''),receipt.outcome==='rejected');
    return receipt;
   }catch(error){if(error.confirmed)clear();status(pending?'确认中断：请重试原请求，避免重复操作。':error.message,true);throw error;}
   finally{busy=false;onBusy(false);}
