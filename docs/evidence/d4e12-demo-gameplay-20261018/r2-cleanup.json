@@ -1,0 +1,7 @@
+{
+  "pid": 72240,
+  "jobExitConfirmed": true,
+  "ownerProcessAbsentBeforeCleanup": true,
+  "removedOnlyOwnIsolatedLock": true,
+  "otherFilesPreserved": true
+}

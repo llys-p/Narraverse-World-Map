@@ -1,0 +1,14 @@
+{
+  "base": "63b3ddf3483b5486e3d9dc2c19fc2f0b1c4e4bef",
+  "source": "fee737ddd8861a37d0fe67886306561f90def25d",
+  "files": {
+    "demo-runtime-interactions.mjs": "458505ff1f4098a08523c313c5f46254716517af8ae735345d2cd9bf7e1db6cf",
+    "demo-runtime-prototype.mjs": "6b4d3e1bb8e21724cacd1a309007f93de7ab9daac6862660dae360a70ffce94c",
+    "demo-runtime.css": "28d05989dae8b15bc414370abb97ddb2099f16bf0772bbbfcd7abc0b0a88f4cb",
+    "demo-runtime.html": "d05c294727a49a1a3b07dad27c0e49fedac7f89f9f801661c2ef4485d4deb134",
+    "runtime-server.mjs": "190e08fe27e3f4a6676303a20bd6895aacc50cd7751ed7815d2b25aede22883c",
+    "scripts/demo-browser-client.mjs": "bb1d0ea6c9741011e416eee5d9f2b88d34bbf5e37d5e9113bd360f7387b0fa40",
+    "scripts/verify-demo-context-actions.mjs": "6a2d7f3e6055d1ce169d601a38e77677a0e60b824646fcc4d5c0a86e6bf00122",
+    "tests/simulation/demo-interaction-actions.test.mjs": "d5591daec143005519141d60e5fc8d527bcdf3d549e5abfa06afc27fba264adc"
+  }
+}

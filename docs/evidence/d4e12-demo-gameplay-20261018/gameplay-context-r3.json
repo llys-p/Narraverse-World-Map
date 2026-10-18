@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "scripts/verify-demo-context-actions.mjs",
+    "artifacts/d4e12/gameplay-context-r3-world"
+  ],
+  "pid": 52228,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 8144.499,
+  "cpuMs": 1187.5,
+  "hardLimitMs": 180000.0,
+  "jobProtected": true,
+  "phaseKilled": null
+}

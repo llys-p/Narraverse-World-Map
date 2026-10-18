@@ -1,0 +1,16 @@
+{
+  "verdict": "FAIL",
+  "steps": [
+    {
+      "name": "open-demo",
+      "wallMs": 3930.8078
+    }
+  ],
+  "errors": [],
+  "requests": [],
+  "error": {
+    "message": "TypeError: Cannot read properties of null (reading 'dataset')\n    at <anonymous>:1:15",
+    "stack": "Error: TypeError: Cannot read properties of null (reading 'dataset')\n    at <anonymous>:1:15\n    at Object.read (file:///D:/Narraverse-World-Map-demo-gameplay/scripts/demo-browser-client.mjs:38:142)\n    at async wait (file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-context-actions.mjs:16:184)\n    at async file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-context-actions.mjs:35:7\n    at async phase (file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-context-actions.mjs:17:171)\n    at async file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-context-actions.mjs:27:2"
+  },
+  "remainingLocks": []
+}

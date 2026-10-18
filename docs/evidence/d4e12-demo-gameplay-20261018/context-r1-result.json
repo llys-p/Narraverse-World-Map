@@ -1,0 +1,16 @@
+{
+  "verdict": "FAIL",
+  "steps": [
+    {
+      "name": "open-demo",
+      "wallMs": 20343.0573
+    }
+  ],
+  "errors": [],
+  "requests": [],
+  "error": {
+    "message": "Isolated Edge did not start",
+    "stack": "Error: Isolated Edge did not start\n    at openDemoBrowser (file:///D:/Narraverse-World-Map-demo-gameplay/scripts/demo-browser-client.mjs:30:18)\n    at async file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-context-actions.mjs:29:11\n    at async phase (file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-context-actions.mjs:17:171)\n    at async file:///D:/Narraverse-World-Map-demo-gameplay/scripts/verify-demo-context-actions.mjs:27:2"
+  },
+  "remainingLocks": []
+}

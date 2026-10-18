@@ -1,0 +1,11 @@
+✔ existing jobs, gift and merchant trade follow the real actor and committed projection (398.511ms)
+✔ distance, cooldown, battle, pending or invalid quantity cannot enable actions (0.3528ms)
+✔ marching, dead or missing actors and bag rest expose only supported capabilities (0.2275ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1361.8741
