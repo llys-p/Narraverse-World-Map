@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12｜Demo村庄/森林真实接入：功能限定通过，性能仍需修正；当前待用户决定审计补充合同，未获批/未实施。\n最新文档证据669256348d3c5f07e47cd0f17cddf1da3c4700ff已推送精确读回，报告及草案API字节一致。生产保持d22bc5d2462d4f5ccdfbad237534c3b9f3ae698d。\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/669256348d3c5f07e47cd0f17cddf1da3c4700ff/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md\n待决定草案：https://github.com/llys-p/Narraverse-World-Map/blob/669256348d3c5f07e47cd0f17cddf1da3c4700ff/tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md\n\n2026-10-18本轮actor v5初始模板试验：同一短世界seed42/HTTP8×Advance2/ABBA各版2次，市场构造4440→1但行动墙钟中位1905.447→1904.281ms仅0.06%，重开1987.591→2007.363ms反慢0.99%。9档SHA/8回执/五投影/重开/幂等一致，均退出0，无实际收益，候选/活动脚本/3项未运行补充测试全撤回，不计新PASS，不追加页面或无关检查。\n\n原任务书实现约束#4要求每次新世界转移原完整world校验，报告明确完整world/history。不能把继续当作批准用增量核验替换。已写可审阅草案并独立只读复核：拟仅当前live owner当前已耐久提交、深冻结、全commit认证前缀，内部计算固定转移并核验完整转移关系后延伸证明；原独立完整oracle、外部JSON/冷加载全历史重演保留；whole-commit、当前head/跨owner隔离、输入分离、原子持久成功先于发布、六组反例均列明。新方案尚未批准、未派发、未实施，不改原冻结合同；不承诺改善冷开，不新增可信快照/签名/压缩/历史裁剪。用户可批准该条款调整或保留原每步完整重演。决定前不实施依赖变更。\n\n已保留生产证据：上一轮最终16项PASS和同轮ABBA行动墙钟9.20%/重开18.81%改善，不跨轮累计。其页面26命令发生在最终Proxy加固前，未冒称最终页面复验；较长档74.351秒旧样本未重跑，整体性能未过。\n原8档/16依赖/旧88源码/107日常文件/控制并行原型脏摘要保护，三旧端口仍无监听且启停动作0，无测试进程/隔离锁。无main/部署/迁移/上传存档/DSH外部模型。D4E12 In Progress/需修正、D阶段进行中，D4E11历史不改，不发布新业务阶段。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

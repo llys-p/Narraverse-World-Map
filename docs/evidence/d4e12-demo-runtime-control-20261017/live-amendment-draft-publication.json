@@ -1,0 +1,21 @@
+{
+  "branch": "codex/world-runtime-demo-integration",
+  "head": "669256348d3c5f07e47cd0f17cddf1da3c4700ff",
+  "productionSourceUnchanged": "d22bc5d2462d4f5ccdfbad237534c3b9f3ae698d",
+  "remoteMatches": true,
+  "files": [
+    {
+      "file": "docs/runtime/D4E12-RESPONSIVE-RUNTIME.md",
+      "url": "https://github.com/llys-p/Narraverse-World-Map/blob/669256348d3c5f07e47cd0f17cddf1da3c4700ff/docs/runtime/D4E12-RESPONSIVE-RUNTIME.md",
+      "sha256": "72f9c823abc591168c38e4773f4271131b2f058d2afaa7fe6b7de8be7a9bd8b3",
+      "apiMatchesGitBlob": true
+    },
+    {
+      "file": "tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md",
+      "url": "https://github.com/llys-p/Narraverse-World-Map/blob/669256348d3c5f07e47cd0f17cddf1da3c4700ff/tasks/D4E12-LIVE-SESSION-AUDIT-AMENDMENT-DRAFT.md",
+      "sha256": "7e05f571651b48907f3f37bcd5a5de08e814698e8d21c33751fe84e58a34f14e",
+      "apiMatchesGitBlob": true
+    }
+  ],
+  "amendmentStatus": "DRAFT_NOT_APPROVED_NOT_IMPLEMENTED"
+}
