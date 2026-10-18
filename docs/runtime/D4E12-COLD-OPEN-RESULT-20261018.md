@@ -23,6 +23,14 @@
 
 私有 derivation 的快结果不进入公开 `validateServiceCommit` 或冷加载：它的前提是 WeakMap 中仅进程内可得的已认证前缀，而公开 JSON/冷加载合同要求保留原完整 oracle。把它用于公开审计会改变该明确边界，即使本次合成输出相同也不擅自采纳。上述两个回执均退出 0、180 秒硬限内；原始数据在 `artifacts/d4e12/journal-path-attribution-{c1,c2}/result.json`，仅含合成指标、hash 和回执。
 
+### 再次 CPU 归因与停止线（未采纳生产改动）
+
+继续对最终候选做一次 `--cpu-prof` 短采样，仍使用独立 seed42/r16 世界和 180 秒硬限。监督进程 `cold-open-cpu-profile-run` 退出 0，墙钟 9050.961ms、CPU 9218.750ms；其中完整 journal audit 1771.220ms、公开逐命令转移 1755.780ms、冷重开 1740.260ms。正式文件、五投影和回执聚合 hash 与最终 ABBA 完全一致，残余 lock 为 0。
+
+该样本只有 10 条事实：8 条 `EncounterCommandResolved`、1 条 `CampaignRegionsChanged`、1 条 `SurvivalFoodQuoteAnnounced`。`event-log.mjs` 中 4 处 `find/filter` 因此不构成本次可量化瓶颈。采样 Self 热点仍集中在 `encodeCanonical` 约 2220.3ms、`requireCondition` 约 2182.4ms、`cloneData` 约 1121.6ms、描述符递归 `visit` 约 811.0ms 和 `record` 约 619.2ms；这些是跨审计调用累加的诊断值，不是单阶段耗时，也不能直接相加解释冷开墙钟。
+
+已有受控试验已经分别拒收编码断言写法、副本复用和规范相等比较替代；本轮不重复这些候选。把私有前缀证明用于公开恢复虽能明显缩短时间，却会削弱本任务明确要求保留的公开完整审计边界。因此在不运行私有长档、不裁剪重演、不新增 trusted/skip/cache 的授权范围内，没有发现第二个同时满足合同与可量化收益的生产改动，本次继续到此停止。原始 profile 和结果仅保留在本树忽略的 `artifacts/d4e12/cold-open-cpu-profile*`，不上传存档。
+
 ## 最终同机 ABBA
 
 Windows / Node v24.14.0；顺序 B5→C5→C6→B6；每轮新进程、新目录、随机端口，`runtimeWorker:false`，相同 seed42 和相同 8 个命令。数值单位为 ms。
