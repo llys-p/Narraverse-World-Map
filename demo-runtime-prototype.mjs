@@ -1,6 +1,6 @@
 // Presentation extracted from the preserved demo. No local gameplay simulation.
 import {createDemoClient} from './demo-runtime-bridge.mjs';
-import {interactionActions,describeActionReceipt,recordConfirmedAction} from './demo-runtime-interactions.mjs';
+import {interactionActions,personNavigation,describeActionReceipt,recordConfirmedAction} from './demo-runtime-interactions.mjs';
 const $=id=>document.getElementById(id),K=window.SandboxDrawingKit;
 const stageContainer=$('stageContainer'),sceneCanvas=$('sceneCanvas'),sceneCtx=sceneCanvas.getContext('2d');
 const villageStickCanvas=$('villageStickCanvas'),villageDecorCanvas=$('villageDecorCanvas'),villageDecorCtx=villageDecorCanvas.getContext('2d');
@@ -12,7 +12,7 @@ const LOCATION_DATA={village:{theme:'forest',npcs:[]},forest:{theme:'wild',npcs:
 const aliases={'actor-1':'elder','actor-2':'hunter','actor-3':'merchant'};
 const WORLD_W=1600,WORLD_H=920,worldCam={x:0,y:0},worldPlayer={x:360,y:575};
 const pixel=p=>({x:(p.x+.5)*80,y:(p.y+.5)*920/12});
-let WORLD_LOCS=[],WORLD_ZONES=[];const worldMonsters=[];
+let WORLD_LOCS=[],WORLD_ZONES=[],mapFocusActorId=null;const worldMonsters=[];
 let interpolation=null,wolfPose='idle',wolfPhase=0;
 const wolfOff=document.createElement('canvas'),wolfOffCtx=wolfOff.getContext('2d'),wolfAsset=window.StickArt.get('shadow_wolf');
 wolfOff.width=wolfAsset.size.width;wolfOff.height=wolfAsset.size.height;
@@ -1500,6 +1500,9 @@ function showPerson(id){
  $('personMemory').textContent=actor.receivedGifts.length?'人物记得收到你的赠粮：'+actor.receivedGifts.map(m=>'世界时刻 '+m.occurrenceTick).join('、'):'当前投影没有这位人物收到你赠粮的记忆。';
  const gift=group.scene.actors.find(a=>a.actorId===id)?.gift;
  const actions=interactionActions(group,canWrite()&&!playbackBusy,id);
+ const navigation=personNavigation(group,canWrite()&&!playbackBusy,id);
+ $('personLocate').disabled=!navigation.visible;$('personApproach').disabled=!navigation.canApproach;
+ $('personNavigationHint').textContent='当前视野位置 ('+actor.x+', '+actor.y+')。前往点击时的位置，不自动追踪移动人物。';
  $('personGift').hidden=id!=='actor-2';$('personGift').disabled=!actions.gift;
  $('personWork').hidden=id!=='actor-1';$('personWork').disabled=!actions.work;
  $('personTrade').hidden=id!=='actor-3';$('personTrade').disabled=!actions.trade;
@@ -1523,8 +1526,9 @@ function paintTrade(){
   $('tradeBuy'+key).disabled=!actions[id].buy;$('tradeSell'+key).disabled=!actions[id].sell;
  }
  $('bagTrade').disabled=!actions.trade;
+ $('bagFindMerchant').disabled=!personNavigation(group,false,'actor-3').visible;
  $('bagRest').disabled=!interactionActions(group,canWrite()&&!playbackBusy,null).rest;
- $('bagActionHint').textContent=actions.trade?'商人就在附近，可以处理行囊里的货物。':'交易需要走到村庄商人附近；地图上可以查看他的位置。';
+ $('bagActionHint').textContent=actions.trade?'商人就在附近，可以处理行囊里的货物。':merchant?'商人在当前视野内，可以先查看位置，再决定前往。':'商人未在当前视野内；请探索附近，位置不会从后台补入。';
 }
 function openTrade(){
  if(!interactionActions(group,canWrite()&&!playbackBusy,'actor-3').trade){showStatus('请先走到村庄商人附近，并结束当前活动。',true);return;}
@@ -1554,6 +1558,8 @@ function paintReadings(){
 }
 function acceptState(value){
  const previous=group;group=value;const now=performance.now(),target=pixel(value.map.self);
+ if(mapFocusActorId&&!value.map.actors.some(a=>a.actorId===mapFocusActorId))mapFocusActorId=null;
+ $('mapFollowPlayer').hidden=mapFocusActorId===null;
  if(!previous||previous.snapshot.revision!==value.snapshot.revision)interpolation={from:{...worldPlayer},to:target,start:now,duration:previous&&value.map.tick>previous.map.tick&&!matchMedia('(prefers-reduced-motion: reduce)').matches?420:0};
  WORLD_LOCS=value.map.landmarks.map(l=>({...pixel(l),key:l.id,name:l.name,desc:l.id==='village'?'村庄 · 工作、交易与休整':'森林 · 狼群遭遇',color:l.id==='village'?'#3fb950':'#cf222e',icon:l.id==='village'?'🏡':'🌲'}));
  WORLD_ZONES=[{name:'村庄',cx:360,cy:575,r:180},{name:'森林',cx:1320,cy:575,r:215}];
@@ -1612,6 +1618,20 @@ async function playReceipt(receipt,dto){
 const client=createDemoClient({onState:acceptState,onStatus:showStatus,onReceipt:playReceipt,onBusy:paintReadings});
 const handle=run=>{Promise.resolve().then(run).catch(error=>showStatus(error.message,true));};
 const action=(id,type,payload=()=>({}))=>$(id).addEventListener('click',()=>handle(()=>client.submit(type,payload())));
+function locatePerson(id){
+ if(!personNavigation(group,false,id).visible){showStatus('这位人物已不在当前视野内。',true);return;}
+ mapFocusActorId=id;setMode('world');showPerson(id);$('mapFollowPlayer').hidden=false;
+ $('stageContainer').scrollIntoView({block:'center',behavior:'instant'});
+}
+$('personLocate').addEventListener('click',()=>locatePerson(selectedActorId));
+$('bagFindMerchant').addEventListener('click',()=>locatePerson('actor-3'));
+$('mapFollowPlayer').addEventListener('click',()=>{mapFocusActorId=null;$('mapFollowPlayer').hidden=true;});
+$('personApproach').addEventListener('click',()=>handle(()=>{
+ const navigation=personNavigation(group,canWrite()&&!playbackBusy,selectedActorId);
+ if(!navigation.canApproach)throw Error('当前无法前往，请检查视野、连接、距离、战斗或剩余命令。');
+ mapFocusActorId=null;$('mapFollowPlayer').hidden=true;setMode('world');
+ return client.submit('MarchSet',navigation.target);
+}));
 $('tabWorldBtn').addEventListener('click',()=>setMode('world'));$('tabSceneBtn').addEventListener('click',()=>setMode('scene'));$('tabBattleBtn').addEventListener('click',()=>setMode('battle'));
 $('enterLocation').addEventListener('click',()=>setMode('scene'));$('battleReturn').addEventListener('click',()=>setMode('world'));
 $('pauseMarch').addEventListener('click',()=>handle(()=>client.pause()));action('resumeMarch','MarchResume');
@@ -1656,7 +1676,8 @@ function loop(now){
  try{
   const delta=Math.min(.1,(now-lastFrame)/1000);lastFrame=now;globalPhase=now/1000%1;
   if(interpolation){const t=interpolation.duration?Math.min(1,(now-interpolation.start)/interpolation.duration):1;worldPlayer.x=interpolation.from.x+(interpolation.to.x-interpolation.from.x)*t;worldPlayer.y=interpolation.from.y+(interpolation.to.y-interpolation.from.y)*t;}
-  worldCam.x=Math.max(0,Math.min(WORLD_W-stageW,worldPlayer.x-stageW/2));worldCam.y=Math.max(0,Math.min(WORLD_H-stageH,worldPlayer.y-stageH/2));
+  const focused=group?.map.actors.find(a=>a.actorId===mapFocusActorId),center=focused?pixel(focused):worldPlayer;
+  worldCam.x=Math.max(0,Math.min(WORLD_W-stageW,center.x-stageW/2));worldCam.y=Math.max(0,Math.min(WORLD_H-stageH,center.y-stageH/2));
   if(currentMode==='world')drawWorldMap(now);else if(currentMode==='scene')drawVillageScene(delta);else drawBattle(now);
  }catch(error){if(!fatalFrameError){fatalFrameError=true;console.error(error);showStatus('绘制失败：'+error.message,true);void client.stop().catch(()=>{});}}
  requestAnimationFrame(loop);

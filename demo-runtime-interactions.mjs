@@ -14,6 +14,13 @@ export function interactionActions(group,writable,actorId,quantity=1){
   trade:!!trade,quantityValid:valid,food:product('food'),herbs:product('herbs')};
 }
 
+export function personNavigation(group,writable,actorId){
+ const actor=group?.map.actors.find(a=>a.actorId===actorId),valid=actor&&Number.isSafeInteger(actor.x)&&actor.x>=0&&actor.x<20&&Number.isSafeInteger(actor.y)&&actor.y>=0&&actor.y<12;
+ if(!valid)return {visible:false,canApproach:false,target:null};
+ return {visible:true,canApproach:!!(writable&&actor.alive&&!actor.canInteract&&group.player.self.identity.alive&&
+  group.encounter.encounter?.status!=='active'&&group.map.budget.remainingCommands>=3),target:{x:actor.x,y:actor.y}};
+}
+
 const actionNames={PlayerWork:'村庄工作',PlayerRest:'休整',PlayerGiftFood:'赠送粮食',AdvanceTime:'等待',
  MarchSet:'下达行军目的地',MarchPause:'暂停行军',MarchResume:'继续行军',MarchStep:'行军',
  EncounterBegin:'开始遭遇',EncounterAction:'战斗回合',EncounterCancel:'取消遭遇'};
