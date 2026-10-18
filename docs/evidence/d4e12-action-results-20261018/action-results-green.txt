@@ -1,0 +1,15 @@
+✔ real sale, purchase, work and rest receipts show actual deltas without mutating data (2.9175ms)
+✔ rejection has no claimed gains, malformed or unconfirmed input never becomes a result (0.208ms)
+✔ history deduplicates receipt retries, keeps rejection, and stores only the latest eight (0.3477ms)
+✔ existing jobs, gift and merchant trade follow the real actor and committed projection (1.3221ms)
+✔ distance, cooldown, battle, pending or invalid quantity cannot enable actions (0.1892ms)
+✔ marching, dead or missing actors and bag rest expose only supported capabilities (0.6413ms)
+✔ SSE keeps an in-flight recovered request pending and retry confirms only on its POST receipt (325.2162ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 744.948

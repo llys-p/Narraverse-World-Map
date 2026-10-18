@@ -1,4 +1,32 @@
-# D4E12-F1 Demo人物交互与行囊接线
+# D4E12-F2 Demo行动结果与本次记录
+
+2026-10-18（Asia/Shanghai）。用户继续要求结合demo完善现有功能。**本轮展示接线限定通过，真实世界规则与后端没有修改。**
+
+- 基准 `4c6b69c8a66588f6241cabdb0a4b27014e4b7a03`，功能源码 `ad7be29858741b062a7fa70c7cb6193c0a9283c7`；同树D:/Narraverse-World-Map-demo-gameplay / codex/world-runtime-demo-gameplay。
+- 新行动结果卡把已经验证的真实DTO5回执翻译为中文：买卖钱粮/药草变化、工作金币和疲劳、休整疲劳、赠粮交付、地图目的地与真实战斗生命变化；不通过动画或本地预测造结果。
+- 规则拒绝单独标为“未完成”并解释已知原因；RULE_REJECTED只说明条件不满足并列可能检查项，不臆断成精确的冷却/库存原因。按实际回执报告耗时，不能一概说所有拒绝都不推进世界。
+- 本次打开后的已确认记录最多8条，按commandId去重，同ID重试不重复记一条；不上传/新增世界日志，重开清空页面记录、保留真实存档。使用textContent渲染，不把回执字符串作为HTML。
+
+## 本轮验证
+
+- 最终定向7/7：新格式化/拒绝资格/去重与上限3项、已有交互策略3项、已有SSE pending/同字节重试1项；先写新测试报缺少export，生产实现后全过（638.706ms监督墙钟）。
+- 最终真实Edge页面：开商人面板不写世界，非法数量不发POST，卖2粮/买1粮显示真实变化，村长工作显示金币+20/疲劳+150/6小时，行囊休整显示疲劳-100；再通过测试派发合法但条件不满足的工作DTO，取得真实后端rejected回执，页面显示未完成、无收益、未推进时间、记录恰5条。
+- 正常关闭后用原公开loadServiceCommit独立完整审计，再正常重开；五投影完全一致、6份正式文件SHA不变，页面记录0条（按已声明范围重新开始），钱包/行囊保持。整个消费者18936.473ms、exit0，无超时/退出不明、采集页面异常0。
+- 最终r45/tick44，金币20/粮食19/疲劳50；最后一笔rejected使revision增加1、tick与资产不变。r45 SHA `dc2f2966aad53c717140ad4f3be59bfa9cdfdf7a1c93a4ba7a3e99f87f7cbcce`，五投影签名 `080919806c07859c9ce49ccb9f453fd0d987a24c097f06d5daf5935a3341d92b`。原始回执/DOM记录/阶段耗时/文件SHA见[本轮证据](../evidence/d4e12-action-results-20261018/ui-result.json)。
+- 此轮无新失败业务重跑；红灯是新增测试缺少待实现导出，保留原始证据。F1既有三轮失败仍见下方历史，不改为通过。
+
+```powershell
+python scripts/run-d4e12-check.py action-results-final 180 node --test --test-concurrency=1 tests/simulation/demo-action-results.test.mjs tests/simulation/demo-interaction-actions.test.mjs tests/simulation/demo-pending-status.test.mjs
+python scripts/run-d4e12-check.py action-results-ui-r1 180 --phase-file artifacts/d4e12/action-results-ui-r1-world/phase.json node scripts/verify-demo-context-actions.mjs artifacts/d4e12/action-results-ui-r1-world
+```
+
+均为新合成目录，180秒外部硬限/阶段120秒/退出确认5秒。原8档仅核SHA、不复跑；16素材/旧88源码/107日常文件/并行原型及中控2行脏摘要保持。三旧端口无监听，启停动作0，最终无自有进程/测试锁。未切换日常入口、未合main/部署/迁移/私档上传、未新增模型调用。未重跑战斗整链、全量/长档或视觉验收，不作性能结论。性能仍由独立对话01a14d49-bc97-7ce3-a47e-18c4f92edea8处理。
+
+Reference Review：复用原Demo结果呈现、原validateCampaignReceipt、单写者client与同ID重试；把自研限于中文展示映射与8条页面记录，不新增账本、后端日志或持久化缓存。
+
+---
+
+## D4E12-F1 历史：Demo人物交互与行囊接线
 
 2026-10-18（Asia/Shanghai）。用户要求先推进功能，性能独立对话处理，并选择“先结合demo完善现有功能”。**本轮现有玩法接线限定通过，未新增世界规则。**
 

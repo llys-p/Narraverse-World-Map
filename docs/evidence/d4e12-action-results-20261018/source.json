@@ -1,0 +1,14 @@
+{
+  "base": "4c6b69c8a66588f6241cabdb0a4b27014e4b7a03",
+  "source": "ad7be29858741b062a7fa70c7cb6193c0a9283c7",
+  "files": {
+    "demo-runtime-bridge.mjs": "d8381e4945c019e520ec9eebf51d435709b791e19254415d62e6d8233773caee",
+    "demo-runtime-interactions.mjs": "b9b8e8dc72293e0f4d790c602655b8c345e61e96fb6601bc79831eb0024bdb49",
+    "demo-runtime-prototype.mjs": "be81341d0b5bb9d083dbea1c851ef72c825f4c761e43351b95fc8948d352494f",
+    "demo-runtime.css": "b621b7d0fee07f1c5723dc18c95d404ebd27cd661ce248e4904177dd7d89c2bd",
+    "demo-runtime.html": "c6137696a6a01264ce1744ab05ac59ff096e253e280624b1774fd3662a9e108c",
+    "scripts/verify-demo-context-actions.mjs": "2a869eb9127ecff9196a9f204c5197e2bb4c40d9ba6e93556c7d1dd03f78c1e2",
+    "tests/simulation/demo-action-results.test.mjs": "2b2f8bf684b0602b1ae8e682f1d65a338bbeaa027d867cfb0b339bd8789a0991"
+  },
+  "backendAndPersistenceUnchanged": true
+}

@@ -1,0 +1,25 @@
+file:///D:/Narraverse-World-Map-demo-gameplay/tests/simulation/demo-action-results.test.mjs:4
+import {describeActionReceipt,recordConfirmedAction} from '../../demo-runtime-interactions.mjs';
+        ^^^^^^^^^^^^^^^^^^^^^
+SyntaxError: The requested module '../../demo-runtime-interactions.mjs' does not provide an export named 'describeActionReceipt'
+    at #asyncInstantiate (node:internal/modules/esm/module_job:319:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:422:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:661:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.14.0
+✖ tests\simulation\demo-action-results.test.mjs (77.3664ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 86.2985
+
+✖ failing tests:
+
+test at tests\simulation\demo-action-results.test.mjs:1:1
+✖ tests\simulation\demo-action-results.test.mjs (77.3664ms)
+  'test failed'

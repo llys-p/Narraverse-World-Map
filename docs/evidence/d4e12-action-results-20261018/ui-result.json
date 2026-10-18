@@ -1,0 +1,356 @@
+{
+  "verdict": "PASS",
+  "steps": [
+    {
+      "name": "open-demo",
+      "wallMs": 1436.0898000000002
+    },
+    {
+      "name": "merchant-open-is-read-only-and-quantity-guard",
+      "wallMs": 395.9601
+    },
+    {
+      "name": "merchant-real-sale-and-purchase",
+      "wallMs": 383.14430000000016
+    },
+    {
+      "name": "elder-work-and-bag-rest",
+      "wallMs": 2358.7819
+    },
+    {
+      "name": "real-rule-rejection-is-recorded-without-gains",
+      "wallMs": 72.45559999999932
+    },
+    {
+      "name": "normal-close",
+      "wallMs": 278.09869999999955
+    },
+    {
+      "name": "independent-complete-audit",
+      "wallMs": 4430.805299999999
+    },
+    {
+      "name": "reopen-same-assets-and-context",
+      "wallMs": 7066.946300000001
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"1f481a78-6cfc-4406-bd67-597666d45870\",\"expectedRevision\":0,\"type\":\"PlayerSell\",\"payload\":{\"product\":\"food\",\"quantity\":2}}"
+    },
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"157061d8-689a-4a18-b829-c4ecaef3810e\",\"expectedRevision\":1,\"type\":\"PlayerBuy\",\"payload\":{\"product\":\"food\",\"quantity\":1}}"
+    },
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"67e2a604-2ef8-4d9d-8153-030cfb7f9a0b\",\"expectedRevision\":2,\"type\":\"PlayerWork\",\"payload\":{}}"
+    },
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"27b4c113-d152-45b4-a0ca-d005cc4ee96a\",\"expectedRevision\":38,\"type\":\"PlayerRest\",\"payload\":{}}"
+    },
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"1dcb085d-a1b6-46d9-94bf-82de5e020046\",\"expectedRevision\":44,\"type\":\"PlayerWork\",\"payload\":{}}"
+    }
+  ],
+  "actionHistory": [
+    {
+      "commandId": "1dcb085d-a1b6-46d9-94bf-82de5e020046",
+      "outcome": "rejected",
+      "text": "村庄工作 · 未完成当前条件不满足；请检查所在地点、疲劳、工作间隔或可用资产。世界时刻 44 → 44 · 未推进世界时间"
+    },
+    {
+      "commandId": "27b4c113-d152-45b4-a0ca-d005cc4ee96a",
+      "outcome": "succeeded",
+      "text": "休整 · 已完成疲劳 -100世界时刻 38 → 44 · 推进1小时（6刻）"
+    },
+    {
+      "commandId": "67e2a604-2ef8-4d9d-8153-030cfb7f9a0b",
+      "outcome": "succeeded",
+      "text": "村庄工作 · 已完成金币 +20 · 疲劳 +150世界时刻 2 → 38 · 推进6小时（36刻）"
+    },
+    {
+      "commandId": "157061d8-689a-4a18-b829-c4ecaef3810e",
+      "outcome": "succeeded",
+      "text": "买入粮食 · 已完成金币 -10 · 粮食 +1世界时刻 1 → 2 · 推进10分钟（1刻）"
+    },
+    {
+      "commandId": "1f481a78-6cfc-4406-bd67-597666d45870",
+      "outcome": "succeeded",
+      "text": "卖出粮食 · 已完成金币 +10 · 粮食 -2世界时刻 0 → 1 · 推进10分钟（1刻）"
+    }
+  ],
+  "files": {
+    "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+    "service-commit-r1.json": "c84188815c3da66cd4c8af882766b48fc9ae3360316961e1aab0637a631f57f4",
+    "service-commit-r2.json": "61bcf5c25dc5d7d353c183018111329d45407326173965e9108881e4e6cfd489",
+    "service-commit-r38.json": "582893f568549316783a898b32bb2d355a673c0690a0bc3cbef03dfecd9ddef5",
+    "service-commit-r44.json": "0b0844b9a50c3005d128f5cadf8b964af426cf24132ffa479276cb53b4275496",
+    "service-commit-r45.json": "dc2f2966aad53c717140ad4f3be59bfa9cdfdf7a1c93a4ba7a3e99f87f7cbcce"
+  },
+  "projectionSignature": "080919806c07859c9ce49ccb9f453fd0d987a24c097f06d5daf5935a3341d92b",
+  "final": {
+    "revision": 45,
+    "tick": 44,
+    "wallet": 20,
+    "food": 19,
+    "fatigue": 50
+  },
+  "commands": [
+    {
+      "dto": {
+        "commandId": "1f481a78-6cfc-4406-bd67-597666d45870",
+        "expectedRevision": 0,
+        "payload": {
+          "product": "food",
+          "quantity": 2
+        },
+        "type": "PlayerSell",
+        "version": 5
+      },
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "1f481a78-6cfc-4406-bd67-597666d45870",
+        "durationTicks": 1,
+        "fromRevision": 0,
+        "fromTick": 0,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "actorId": "actor-4",
+          "after": {
+            "communalGold": 990,
+            "fatigue": 0,
+            "inventory": {
+              "food": 18,
+              "herbs": 0
+            },
+            "location": "village",
+            "publicStock": {
+              "food": 542,
+              "herbs": 20
+            },
+            "wallet": 10
+          },
+          "amount": 10,
+          "before": {
+            "communalGold": 1000,
+            "fatigue": 0,
+            "inventory": {
+              "food": 20,
+              "herbs": 0
+            },
+            "location": "village",
+            "publicStock": {
+              "food": 540,
+              "herbs": 20
+            },
+            "wallet": 0
+          },
+          "endTick": 1,
+          "product": "food",
+          "quantity": 2,
+          "startTick": 0,
+          "type": "PlayerSell",
+          "unitPrice": 5
+        },
+        "status": "committed",
+        "tick": 1,
+        "toRevision": 1,
+        "type": "PlayerSell"
+      }
+    },
+    {
+      "dto": {
+        "commandId": "157061d8-689a-4a18-b829-c4ecaef3810e",
+        "expectedRevision": 1,
+        "payload": {
+          "product": "food",
+          "quantity": 1
+        },
+        "type": "PlayerBuy",
+        "version": 5
+      },
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "157061d8-689a-4a18-b829-c4ecaef3810e",
+        "durationTicks": 1,
+        "fromRevision": 1,
+        "fromTick": 1,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "actorId": "actor-4",
+          "after": {
+            "communalGold": 1000,
+            "fatigue": 0,
+            "inventory": {
+              "food": 19,
+              "herbs": 0
+            },
+            "location": "village",
+            "publicStock": {
+              "food": 541,
+              "herbs": 20
+            },
+            "wallet": 0
+          },
+          "amount": 10,
+          "before": {
+            "communalGold": 990,
+            "fatigue": 0,
+            "inventory": {
+              "food": 18,
+              "herbs": 0
+            },
+            "location": "village",
+            "publicStock": {
+              "food": 542,
+              "herbs": 20
+            },
+            "wallet": 10
+          },
+          "endTick": 2,
+          "product": "food",
+          "quantity": 1,
+          "startTick": 1,
+          "type": "PlayerBuy",
+          "unitPrice": 10
+        },
+        "status": "committed",
+        "tick": 2,
+        "toRevision": 2,
+        "type": "PlayerBuy"
+      }
+    },
+    {
+      "dto": {
+        "commandId": "67e2a604-2ef8-4d9d-8153-030cfb7f9a0b",
+        "expectedRevision": 2,
+        "payload": {},
+        "type": "PlayerWork",
+        "version": 5
+      },
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "67e2a604-2ef8-4d9d-8153-030cfb7f9a0b",
+        "durationTicks": 36,
+        "fromRevision": 2,
+        "fromTick": 2,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "actorId": "actor-4",
+          "after": {
+            "fatigue": 150,
+            "wallet": 20
+          },
+          "before": {
+            "fatigue": 0,
+            "wallet": 0
+          },
+          "endTick": 38,
+          "location": "village",
+          "nextWorkTick": 146,
+          "startTick": 2,
+          "type": "PlayerWork",
+          "wage": 20
+        },
+        "status": "committed",
+        "tick": 38,
+        "toRevision": 38,
+        "type": "PlayerWork"
+      }
+    },
+    {
+      "dto": {
+        "commandId": "27b4c113-d152-45b4-a0ca-d005cc4ee96a",
+        "expectedRevision": 38,
+        "payload": {},
+        "type": "PlayerRest",
+        "version": 5
+      },
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "27b4c113-d152-45b4-a0ca-d005cc4ee96a",
+        "durationTicks": 6,
+        "fromRevision": 38,
+        "fromTick": 38,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "actorId": "actor-4",
+          "after": {
+            "communalGold": 980,
+            "fatigue": 50,
+            "inventory": {
+              "food": 19,
+              "herbs": 0
+            },
+            "location": "village",
+            "publicStock": {
+              "food": 541,
+              "herbs": 20
+            },
+            "wallet": 20
+          },
+          "amount": 0,
+          "before": {
+            "communalGold": 980,
+            "fatigue": 150,
+            "inventory": {
+              "food": 19,
+              "herbs": 0
+            },
+            "location": "village",
+            "publicStock": {
+              "food": 541,
+              "herbs": 20
+            },
+            "wallet": 20
+          },
+          "endTick": 44,
+          "product": null,
+          "quantity": 0,
+          "startTick": 38,
+          "type": "PlayerRest",
+          "unitPrice": 0
+        },
+        "status": "committed",
+        "tick": 44,
+        "toRevision": 44,
+        "type": "PlayerRest"
+      }
+    },
+    {
+      "dto": {
+        "commandId": "1dcb085d-a1b6-46d9-94bf-82de5e020046",
+        "expectedRevision": 44,
+        "payload": {},
+        "type": "PlayerWork",
+        "version": 5
+      },
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "1dcb085d-a1b6-46d9-94bf-82de5e020046",
+        "durationTicks": 0,
+        "fromRevision": 44,
+        "fromTick": 44,
+        "outcome": "rejected",
+        "receiptVersion": 5,
+        "result": {
+          "code": "RULE_REJECTED"
+        },
+        "status": "committed",
+        "tick": 44,
+        "toRevision": 45,
+        "type": "PlayerWork"
+      }
+    }
+  ],
+  "remainingLocks": []
+}
