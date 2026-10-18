@@ -22,7 +22,7 @@
 <div id="combatCommands" class="live-controls" hidden><button id="attack" class="primary">攻击 · 森林狼</button><button id="flee">逃跑</button><button id="cancelEncounter">取消未开始的遭遇</button><button id="skipPlayback">跳过表现</button><button id="battleReturn">返回世界地图</button><span id="battleState">等待指令</span></div>
 </section>
 <section class="live-readings" aria-label="玩家状态"><strong id="identityText">actor-4</strong><span id="healthText">生命 —</span><span id="walletText">金币 —</span><span id="foodText">粮食 —</span><span id="herbsText">药草 —</span><span id="fatigueText">疲劳 —</span><span id="orderText">—</span><span id="budgetText">—</span></section>
-<section class="live-controls" id="worldActions" aria-label="地点活动"><button id="work">工作 · 6小时 / 20金币</button><button id="rest">休整 · 1小时</button><button id="buyFood">买1份粮食</button><button id="sellFood">卖1份粮食</button><button id="buyHerbs">买1份药草</button><button id="sellHerbs">卖1份药草</button><button id="giftFood">给猎人1份粮食</button><button id="beginEncounter">遭遇森林狼</button><span id="priceText"></span></section>
+<section class="live-controls" id="worldActions" aria-label="地点活动"><button id="work">工作 · 6小时 / 20金币</button><button id="rest">休整 · 1小时</button><button id="waitHour">等待1小时</button><button id="buyFood">买1份粮食</button><button id="sellFood">卖1份粮食</button><button id="buyHerbs">买1份药草</button><button id="sellHerbs">卖1份药草</button><button id="giftFood">给猎人1份粮食</button><button id="beginEncounter">遭遇森林狼</button><span id="priceText"></span><span id="workTimingText"></span></section>
 <section class="live-message"><p id="connectionStatus" role="status" aria-live="polite">正在连接…</p><button id="retryPending" hidden>重试待确认请求</button><p id="receiptSummary"></p></section>
 <section id="actionResult" class="live-action-result" hidden aria-labelledby="actionTitle"><h2 id="actionTitle">行动结果</h2><p id="actionChanges"></p><p id="actionTime"></p></section>
 <details class="live-action-history"><summary>本次行动记录</summary><p id="actionHistoryHint">只记录本次打开后已确认的行动，最多8条；重新打开后重新开始。</p><p id="actionHistoryEmpty">还没有已确认的行动。</p><ol id="actionHistory"></ol></details>
@@ -35,7 +35,7 @@
 </div>
 <label class="trade-quantity">数量 <input id="tradeQuantity" type="number" min="1" max="10" step="1" value="1"></label><button id="closeTrade">关闭</button>
 </section>
-<section id="bagPanel" class="live-person live-bag" hidden><h2>🎒 行囊</h2><p id="bagContents"></p><p id="bagRules">粮食按世界规则消耗；药草暂不支持直接服用。</p><p id="bagActionHint"></p><div><button id="bagFindMerchant">在地图找商人</button><button id="bagTrade">找商人交易</button><button id="bagRest">休整1小时</button><button id="closeBag">关闭</button></div></section>
+<section id="bagPanel" class="live-person live-bag" hidden><h2>🎒 行囊</h2><p id="bagContents"></p><p id="bagRules">粮食按世界规则消耗；药草暂不支持直接服用。</p><p id="waitRules">等待会推进世界和人物活动，不提供休整的额外减疲劳效果；不会按现实时间自动续等。</p><p id="bagActionHint"></p><div><button id="bagFindMerchant">在地图找商人</button><button id="bagTrade">找商人交易</button><button id="bagRest">休整1小时</button><button id="bagWait">等待1小时</button><button id="closeBag">关闭</button></div></section>
 <p class="live-note">村庄 / 森林真实世界接入。行军和耗时活动推进世界，暂停、路遇和回合选招时等待；离页后停止续跑。修炼、偷窃、装备与其他地点尚未接入。每档128条命令，额度不足时停止。</p>
 <details class="live-evidence"><summary>最近命令回执</summary><pre id="lastReceipt">尚无命令</pre></details>
 </main></body></html>

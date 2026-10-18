@@ -27,6 +27,7 @@ body#demo-runtime-root{min-width:1000px}
 .live-controls button.primary{background:#1f6feb;border-color:#58a6ff}
 .live-controls input{width:56px;background:#0d1117;border:1px solid #484f58;color:#e6edf3;padding:6px;border-radius:4px}
 .live-readings{color:#c9d1d9;justify-content:space-between}
+#demo-runtime-root #workTimingText{flex-basis:100%;font-size:12px;color:var(--text-secondary)}
 .live-message{padding:12px 16px;background:#161b22;border:1px solid #30363d;border-radius:8px;min-height:62px;font-size:13px}
 .live-message [data-error=true]{color:#ff7b72}
 #demo-runtime-root .live-action-result{padding:14px 16px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;font-size:13px}
@@ -58,6 +59,7 @@ body#demo-runtime-root{min-width:1000px}
 #demo-runtime-root .trade-quantity{display:inline-flex;align-items:center;gap:8px;margin-right:12px;color:var(--text-secondary)}
 #demo-runtime-root #tradeQuantity{width:64px;padding:7px;background:var(--bg-main);border:1px solid var(--border);border-radius:5px;color:var(--text-primary)}
 #demo-runtime-root #bagRules{color:var(--text-secondary)}
+#demo-runtime-root #waitRules{color:var(--text-secondary)}
 #demo-runtime-root #bagActionHint{min-height:1em;color:var(--accent-gold)}
 #demo-runtime-root .live-bag>div{margin-top:8px}
 .live-note{font-size:12px;color:#8b949e;line-height:1.8;padding:4px}

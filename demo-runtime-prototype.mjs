@@ -1,6 +1,6 @@
 // Presentation extracted from the preserved demo. No local gameplay simulation.
 import {createDemoClient} from './demo-runtime-bridge.mjs';
-import {interactionActions,personNavigation,describeActionReceipt,recordConfirmedAction} from './demo-runtime-interactions.mjs';
+import {interactionActions,personNavigation,worldTimeView,describeActionReceipt,recordConfirmedAction} from './demo-runtime-interactions.mjs';
 const $=id=>document.getElementById(id),K=window.SandboxDrawingKit;
 const stageContainer=$('stageContainer'),sceneCanvas=$('sceneCanvas'),sceneCtx=sceneCanvas.getContext('2d');
 const villageStickCanvas=$('villageStickCanvas'),villageDecorCanvas=$('villageDecorCanvas'),villageDecorCtx=villageDecorCanvas.getContext('2d');
@@ -1507,7 +1507,7 @@ function showPerson(id){
  $('personWork').hidden=id!=='actor-1';$('personWork').disabled=!actions.work;
  $('personTrade').hidden=id!=='actor-3';$('personTrade').disabled=!actions.trade;
  $('personActionHint').textContent=!actor.canInteract?'先走到人物附近，再进行交互。':id==='actor-1'?
-  (actions.work?'村庄工作会推进6小时，成功领20金币。':'工作暂不可用：请确认疲劳、行军/战斗状态或下次工作时间。'):id==='actor-3'?
+  (actions.work?'村庄工作会推进6小时，成功领20金币。':worldTimeView(group,canWrite()&&!playbackBusy).workHint):id==='actor-3'?
   (actions.trade?'可买卖粮食和药草，成交后按真实回执更新。':'交易暂不可用，请先抵达村庄并停止行军或战斗。'):
   (gift?.available?'赠粮后，对方会记得这次交付。':'赠粮暂不可用，请查看当前状态。');
  const canvas=$('portraitCanvas'),ctx=canvas.getContext('2d');ctx.clearRect(0,0,140,140);
@@ -1536,7 +1536,9 @@ function openTrade(){
 }
 function paintReadings(){
  if(!group)return;const p=group.player.self,m=group.map,e=group.encounter.encounter,s=client.state(),write=canWrite()&&!playbackBusy;document.body.dataset.worldConnected=String(s.connected);
- $('worldClockText').textContent='世界时刻 '+m.tick+' · '+place(m.self.location);$('revisionText').textContent='修订 '+m.revision;
+ const timing=worldTimeView(group,write);
+ $('worldClockText').textContent=timing.clockText+' · '+place(m.self.location)+' · 时刻 '+m.tick;$('revisionText').textContent='修订 '+m.revision;
+ $('workTimingText').textContent=timing.workHint;$('waitHour').disabled=!timing.canWait;$('bagWait').disabled=!timing.canWait;
  $('identityText').textContent=p.identity.name+' · actor-4';$('healthText').textContent='生命 '+p.health+'/1000';$('walletText').textContent='金币 '+p.wallet;
  $('foodText').textContent='粮食 '+p.inventory.food;$('herbsText').textContent='药草 '+p.inventory.herbs;$('fatigueText').textContent='疲劳 '+p.fatigue+'/1000';
  const status={marching:group.runner.active?'行军中':'已停止续跑，等待继续',paused:'已暂停',arrived:'已抵达'}[m.order?.status]??'尚无行军订单';
@@ -1546,7 +1548,7 @@ function paintReadings(){
  for(const id of ['toVillage','toForest','resumeMarch','goCoordinate','work','rest','buyFood','sellFood','buyHerbs','sellHerbs','giftFood','beginEncounter','attack','flee','cancelEncounter'])$(id).disabled=!write;
  $('pauseMarch').disabled=!s.connected||s.blocked;$('resumeMarch').disabled=!write||!['marching','paused'].includes(m.order?.status)||group.runner.active;
  $('enterLocation').disabled=!['village','forest'].includes(m.self.location)||m.order?.status==='marching';
- $('work').disabled=!write||p.identity.location!=='village'||m.order?.status==='marching'||e?.status==='active'||p.fatigue>700||(group.player.actions.work.nextWorkTick??0)>m.tick;
+ $('work').disabled=!timing.workReady;
  $('rest').disabled=!write||e?.status==='active';for(const id of ['buyFood','sellFood','buyHerbs','sellHerbs'])$(id).disabled=!write||!group.player.actions.canTrade;
  const gift=group.scene.actors.find(a=>a.actorId==='actor-2')?.gift;$('giftFood').disabled=!write||!gift?.available;
  $('beginEncounter').disabled=!write||!group.encounter.actions.canBegin;$('attack').disabled=!write||!group.encounter.actions.canAct;$('flee').disabled=$('attack').disabled;
@@ -1647,6 +1649,10 @@ const contextual=(id,actor,permission,type,payload=()=>({}))=>$(id).addEventList
  return client.submit(type,payload());
 }));
 contextual('personWork','actor-1','work','PlayerWork');contextual('bagRest',null,'rest','PlayerRest');
+for(const id of ['waitHour','bagWait'])$(id).addEventListener('click',()=>handle(()=>{
+ if(!worldTimeView(group,canWrite()&&!playbackBusy).canWait)throw Error('当前无法等待，请先结束行军、战斗或待确认操作。');
+ return client.submit('AdvanceTime',{ticks:6});
+}));
 $('personTrade').addEventListener('click',openTrade);$('bagTrade').addEventListener('click',openTrade);
 $('closeTrade').addEventListener('click',()=>{$('tradePanel').hidden=true;});$('tradeQuantity').addEventListener('input',paintTrade);
 for(const [product,key] of [['food','Food'],['herbs','Herbs']])for(const [kind,type] of [['buy','PlayerBuy'],['sell','PlayerSell']]){

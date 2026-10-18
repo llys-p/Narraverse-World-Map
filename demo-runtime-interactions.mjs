@@ -9,9 +9,26 @@ export function interactionActions(group,writable,actorId,quantity=1){
  const valid=Number.isSafeInteger(quantity)&&quantity>=1&&quantity<=Math.min(10,group?.player.actions.maxQuantity??10);
  const product=id=>({buy:!!(trade&&valid&&p.wallet>=group.player.actions.prices[id].buy*quantity&&p.inventory[id]<=1000-quantity),
    sell:!!(trade&&valid&&p.inventory[id]>=quantity)});
- return {rest:ready,work:!!(ready&&near&&actorId==='actor-1'&&village&&work&&p.fatigue<=700&&work.nextWorkTick<=group.map.tick),
+ return {rest:ready,work:!!(ready&&near&&actorId==='actor-1'&&village&&work&&p.health>=300&&p.fatigue<=700&&(work.nextWorkTick??0)<=group.map.tick),
   gift:!!(ready&&near&&actorId==='actor-2'&&group.scene.actors.find(a=>a.actorId===actorId)?.gift?.available),
   trade:!!trade,quantityValid:valid,food:product('food'),herbs:product('herbs')};
+}
+
+export function worldTimeView(group,writable){
+ const tick=group.map.tick,day=Math.floor(tick/144),hour=Math.floor(tick%144/6),minute=tick%6*10;
+ const p=group.player.self,active=group.encounter.encounter?.status==='active',marching=group.map.order?.status==='marching';
+ const canWait=!!(writable&&p.identity.alive&&!active&&!marching),remaining=Math.max(0,(group.player.actions.work?.nextWorkTick??0)-tick);
+ let workHint='已满足工作间隔；是否成功仍以世界确认为准。';
+ if(!p.identity.alive)workHint='玩家已死亡，无法工作。';
+ else if(!writable)workHint='连接或当前操作尚未就绪。';
+ else if(active)workHint='请先结束战斗。';
+ else if(marching)workHint='请先暂停行军。';
+ else if(p.identity.location!=='village')workHint='需要位于村庄才能工作。';
+ else if(p.health<300)workHint='生命不足300，暂不能工作。';
+ else if(p.fatigue>700)workHint='疲劳高于700，请先休整。';
+ else if(remaining){const hours=Math.floor(remaining/6),minutes=remaining%6*10;workHint='距离下次可开始工作还需 '+(hours?hours+'小时':'')+(minutes?minutes+'分钟':'')+'（世界时间）。';}
+ return {clockText:'第 '+day+' 天 '+String(hour).padStart(2,'0')+':'+String(minute).padStart(2,'0'),canWait,
+  workReady:!!(canWait&&p.identity.location==='village'&&p.health>=300&&p.fatigue<=700&&remaining===0&&group.player.actions.work),workHint};
 }
 
 export function personNavigation(group,writable,actorId){
