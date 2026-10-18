@@ -1,7 +1,7 @@
 import { createRng, restoreRng } from './rng.mjs';
 import { restoreClock } from './simulation-clock.mjs';
 import { createScheduler, restoreScheduler } from './scheduler.mjs';
-import { validateEventLog } from './event-log.mjs';
+import { validateEventLog,validateCampaignEventData } from './event-log.mjs';
 import { RESOURCE_RULES, MAX_RESOURCE_DAYS, validateResourceWorld } from './resource-ledger.mjs';
 import { ECOLOGY_RULES, validateEcologyWorld } from './ecology.mjs';
 import { MARKET_RULES, validateMarketWorld } from './market.mjs';
@@ -17,7 +17,9 @@ import { COGNITION_RULES } from './cognition-state.mjs';
 import { SURVIVAL_RULES } from './survival-state.mjs';
 import { ENCOUNTER_RULES, validateEncounterWorldState } from './encounter-runtime.mjs';
 import {LIVELIHOOD_RULES,LIVELIHOOD_PROFILE,validateLivelihoodWorldState} from './scene-livelihood-runtime.mjs';
-import {CAMPAIGN_RULES,CAMPAIGN_PROFILE,validateCampaignWorldState} from './scene-campaign-runtime.mjs';
+import {CAMPAIGN_RULES,CAMPAIGN_PROFILE,validateCampaignWorldState,preflightCampaignIntent,computeCampaignIntent} from './scene-campaign-runtime.mjs';
+import {canonicalSystems} from './command-engine.mjs';
+import {isDeepStrictEqual} from 'node:util';
 import {validatePlayerWorkResult} from './player-work.mjs';
 import {SCENE_RULES,SCENE_PROFILE,validateSceneWorldState} from './scene-runtime.mjs';
 const schema3Rules=rules=>[ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(rules);
@@ -52,6 +54,40 @@ export function createAuditedBundle(bundle, options) {
   if ([SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(options.rulesVersion)) auditedSceneBundles.set(immutable,
     {rulesVersion: options.rulesVersion, systems: Object.freeze({...options.systems})});
   return immutable;
+}
+
+// Mathematical successor proof only. This cannot establish an owner's current
+// head or durable success. Raw/frozen copies must first pass the full audit.
+export function deriveCampaignBundle(previous,raw){
+  const systems=canonicalSystems(CAMPAIGN_RULES),proof=auditedSceneBundles.get(previous);
+  requireCondition(proof?.rulesVersion===CAMPAIGN_RULES&&sameSystems(proof.systems,systems),
+    'Campaign derivation requires an audited immutable parent','INVALID_INPUT');
+  inspectDescriptorTree(raw);const dto=cloneData(raw);preflightCampaignIntent(dto);
+  requireCondition(dto.expectedRevision===previous.snapshot.revision,'Campaign parent revision mismatch','REVISION_CONFLICT');
+  requireCondition(!previous.snapshot.world.encounterModel.inputHistory.some(e=>e.dto.commandId===dto.commandId),
+    'Campaign derivation requires a new command','COMMAND_ID_CONFLICT');
+  const computed=computeCampaignIntent(previous,dto);
+  const next=freezeData(cloneBundle(computed.bundle)),receipt=freezeData(cloneData(computed.receipt));
+  const options={rulesVersion:CAMPAIGN_RULES,systems};
+  validateSnapshotStructure(next.snapshot,options,next.eventLog.length);
+  validateCampaignEventData(next.eventLog,next.snapshot,systems);
+  for(const key of ['simulationId','rulesVersion','fixtureId','fixtureVersion','schemaVersion','tickMinutes'])
+    requireCondition(next.snapshot[key]===previous.snapshot[key],'Campaign successor identity changed');
+  requireCondition(next.snapshot.rng.seed===previous.snapshot.rng.seed,'Campaign RNG seed changed');
+  requireCondition(isDeepStrictEqual(next.eventLog.slice(0,previous.eventLog.length),previous.eventLog),'Campaign event prefix changed');
+  const before=previous.snapshot.world.encounterModel.inputHistory,after=next.snapshot.world.encounterModel.inputHistory;
+  requireCondition(after.length===before.length+1&&isDeepStrictEqual(after.slice(0,-1),before)&&
+    isDeepStrictEqual(after.at(-1),{dto,receipt}),'Campaign input/receipt append mismatch');
+  requireCondition(receipt.fromRevision===previous.snapshot.revision&&receipt.fromTick===previous.snapshot.tick&&
+    receipt.toRevision===next.snapshot.revision&&receipt.tick===next.snapshot.tick&&
+    receipt.durationTicks===next.snapshot.tick-previous.snapshot.tick,'Campaign receipt clock mismatch');
+  // Audit the complete new transfer from the proven parent, including ledger,
+  // facts, RNG, schedule and counters. Never replay or truncate the old prefix.
+  const replay=computeCampaignIntent(previous,dto);
+  requireCondition(isDeepStrictEqual(next,replay.bundle)&&isDeepStrictEqual(receipt,replay.receipt),
+    'Campaign successor differs from canonical transfer');
+  auditedSceneBundles.set(next,{rulesVersion:CAMPAIGN_RULES,systems:Object.freeze({...systems})});
+  return {bundle:next,receipt};
 }
 
 export function cloneBundle(bundle) {

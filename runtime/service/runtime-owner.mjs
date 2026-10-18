@@ -19,7 +19,7 @@ import { parseStrictJson } from './strict-json.mjs';
 import { fields,record,requireCondition,integer,cloneData,fault,canonicalJson } from '../core/data-contract.mjs';
 import { projectPublicSnapshot,projectPlayerSnapshot,projectMindInspector,projectEncounterSnapshot,projectSceneSnapshot,projectMapSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,loadMotivationBackend,requireMotivationBackend,loadCognitionBackend,requireCognitionBackend,loadSurvivalBackend,requireSurvivalBackend } from './http-contract.mjs';
 import { projectWorldActivity } from './world-activity.mjs';
-import { saveServiceCommit,loadRuntimeServiceCommit,transitionAuditedServiceCommand,createAuditedServiceCommit,advanceAuditedServiceCommit,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
+import { saveServiceCommit,loadRuntimeServiceCommit,transitionAuditedServiceCommand,createAuditedServiceCommit,advanceAuditedServiceCommit,createCampaignLiveWriter,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 const MAX_ENCOUNTER_SERVICE_FILES=MAX_SERVICE_FILES+1;
 const serviceFileLimit=format=>[8,9,10,11].includes(format)?MAX_ENCOUNTER_SERVICE_FILES:MAX_SERVICE_FILES;
@@ -140,6 +140,7 @@ export async function createRuntimeOwner(options,io=fs){
       if(state)await saveServiceCommit(state,directory,io);
       else await saveCheckpoint(bundle,{directory,rulesVersion:PERSONALITY_RULES,systems},io);
     }
+    const liveWriter=serviceFormatVersion===11?await createCampaignLiveWriter(state,directory,token,io,inspectActivity):null;
     let tail=Promise.resolve(),pending=0,closing=false,closePromise;
     const submit=raw=>{
       try{
@@ -183,6 +184,12 @@ export async function createRuntimeOwner(options,io=fs){
           const inventory=await inspectDirectory(directory,io);
           requireCondition(inventory.length<serviceFileLimit(serviceFormatVersion),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
           requireCondition(inventory.length>0 && inventory[0].kind==='service-commit' && inventory[0].revision===projection.revision,'Runtime state files changed','INVALID_SERVICE_COMMIT');
+          if(liveWriter){
+            const committed=await liveWriter.submit(dto);
+            state=committed.state;session=committed.session;projection=committed.projection;playerProjection=committed.playerProjection;
+            encounterProjection=committed.encounterProjection;sceneProjection=committed.sceneProjection;
+            mapProjection=committed.mapProjection;activityProjection=committed.activityProjection;return cloneData(committed.receipt);
+          }
           const certifiedNext=serviceFormatVersion===11?advanceAuditedServiceCommit(state,dto):null;
           const {bundle:nextBundle,receipt}=certifiedNext?{bundle:certifiedNext.bundle,receipt:certifiedNext.commands.at(-1).receipt}:transitionAuditedServiceCommand(state.bundle,dto),candidate=createSimulationSession(nextBundle,systems),
             nextProjection=projectPublicSnapshot(nextBundle),nextPlayerProjection=playerAvailable?projectPlayerSnapshot(nextBundle):null,
@@ -214,6 +221,6 @@ export async function createRuntimeOwner(options,io=fs){
       ...(sceneAvailable?{sceneAvailable:true,
         getScene(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(sceneProjection);}}:{}),
       submit,
-      close(){if(!closePromise){closing=true;closePromise=tail.then(async()=>{session=null;await release();});}return closePromise;}});
+      close(){if(!closePromise){closing=true;closePromise=tail.then(async()=>{if(liveWriter)await liveWriter.close();session=null;await release();});}return closePromise;}});
   }catch(cause){await release();throw cause;}
 }

@@ -3,19 +3,21 @@ import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { fields,denseArray,requireCondition,cloneData,fault } from '../core/data-contract.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
-import { projectPublicSnapshot,projectEncounterSnapshot,projectSceneSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,requireMotivationBackend,requireCognitionBackend,requireSurvivalBackend } from './http-contract.mjs';
+import { projectPublicSnapshot,projectPlayerSnapshot,projectMapSnapshot,projectEncounterSnapshot,projectSceneSnapshot,runtimeProfile,validateServiceCommandDto,validateSceneCommandDto,mindBackend,requireMotivationBackend,requireCognitionBackend,requireSurvivalBackend } from './http-contract.mjs';
+import {projectWorldActivity} from './world-activity.mjs';
 import { executePlayerIntent } from '../core/player-intents.mjs';
 import { executeEncounterIntent } from '../core/encounter-runtime.mjs';
 import {LIVELIHOOD_RULES,executeAuditedLivelihoodIntent} from '../core/scene-livelihood-runtime.mjs';
 import { SCENE_RULES,executeAuditedSceneIntent } from '../core/scene-runtime.mjs';
 import { CAMPAIGN_RULES,executeAuditedCampaignIntent } from '../core/scene-campaign-runtime.mjs';
-import { createAuditedBundle } from '../core/world-state.mjs';
+import { createAuditedBundle,deriveCampaignBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
 export const MAX_SERVICE_COMMANDS=128,MAX_SERVICE_FILES=128,MAX_PENDING_REQUESTS=16;
 // Certificates never cross the JSON boundary. Only private immutable envelopes
-// made by the two constructors below can reuse an already audited prefix.
+// constructed here can reuse an already audited prefix.
 const auditedServiceCommits=new WeakSet();
+const activeCampaignWriters=new Set();
 function freezeData(value){if(value&&typeof value==='object'){for(const child of Object.values(value))freezeData(child);Object.freeze(value);}return value;}
 export function timeReceipt(dto,toRevision){return {apiVersion:1,commandId:dto.commandId,status:'committed',fromRevision:dto.expectedRevision,toRevision,tick:toRevision};}
 // M2 contract §7 reserved namespaces; M3-4A adds the cognition set. Old profiles keep their
@@ -68,7 +70,8 @@ export function transitionServiceCommand(bundle,dto){
     {bundle:cloneData(result.bundle),receipt:cloneData(result.receipt)}:result;
 }
 export function validateServiceCommit(envelope){
-  auditServiceCommit(envelope);
+  // Independent public audit never inherits an in-memory successor proof.
+  auditServiceCommit(cloneData(envelope));
 }
 function auditServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
@@ -120,6 +123,59 @@ export function advanceAuditedServiceCommit(previous,raw){
   const next=Object.freeze({serviceFormatVersion:11,anchor:previous.anchor,
     commands:Object.freeze([...previous.commands,entry]),bundle});
   auditedServiceCommits.add(next);return next;
+}
+
+// Only this closure owns the current durable head. Core successor certificates
+// prove mathematical transfers; they confer no service publication authority.
+export async function createCampaignLiveWriter(initial,directory,lockToken,io=defaultIo,inspectActivity=false){
+  requireCondition(auditedServiceCommits.has(initial)&&initial.serviceFormatVersion===11,
+    'Live writer requires an audited service head','INVALID_SERVICE_COMMIT');
+  requireCondition(typeof lockToken==='string'&&typeof inspectActivity==='boolean','Invalid live writer options');
+  directory=await io.realpath(path.resolve(directory));
+  const identity=process.platform==='win32'?directory.toLowerCase():directory;
+  requireCondition(!activeCampaignWriters.has(identity),'Runtime already has a live writer','OWNER_BUSY');
+  activeCampaignWriters.add(identity);
+  try{
+  const lock=path.join(directory,'.runtime-owner.lock');
+  const owns=async()=>requireCondition(await io.readFile(lock,'utf8')===lockToken,'Runtime ownership changed','OWNER_BUSY');
+  const checkHead=async current=>{
+    await owns();
+    const revisions=(await io.readdir(directory)).filter(n=>/^service-commit-r\d+\.json$/.test(n)).map(n=>Number(n.match(/r(\d+)/)[1]));
+    requireCondition(revisions.length>0&&revisions.length<=MAX_SERVICE_FILES+1&&Math.max(...revisions)===current.bundle.snapshot.revision,
+      'Live head is not the current durable revision','INVALID_SERVICE_COMMIT');
+    const persisted=parseStrictJson(await readStateFile(path.join(directory,`service-commit-r${current.bundle.snapshot.revision}.json`),io),MAX_STATE_FILE_BYTES);
+    requireCondition(isDeepStrictEqual(persisted,current),'Live head does not match durable state','INVALID_SERVICE_COMMIT');
+  };
+  await checkHead(initial);
+  let head=initial,tail=Promise.resolve(),closed=false,closePromise;
+  return Object.freeze({submit(raw){
+    // Detach synchronously, before queuing: callers cannot mutate queued DTOs.
+    let dto;try{requireCondition(!closed,'Live writer is closed','OWNER_CLOSED');dto=validateSceneCommandDto(cloneData(raw),5);}catch(error){return Promise.reject(error);}
+    const operation=tail.then(async()=>{
+      const parent=head;
+      requireCondition(dto.expectedRevision===parent.bundle.snapshot.revision,'Live head revision mismatch','REVISION_CONFLICT');
+      requireCondition(parent.commands.length<MAX_SERVICE_COMMANDS,'Command history exceeds budget','LIMIT_EXCEEDED');
+      requireCondition(!parent.commands.some(e=>e.dto.commandId===dto.commandId),'Duplicate service command','COMMAND_ID_CONFLICT');
+      await checkHead(parent);
+      const {bundle,receipt}=deriveCampaignBundle(parent.bundle,dto);
+      const next=Object.freeze({serviceFormatVersion:11,anchor:parent.anchor,
+        commands:Object.freeze([...parent.commands,freezeData({dto:cloneData(dto),receipt:cloneData(receipt)})]),bundle});
+      const systems=runtimeProfile(bundle).systems;
+      // Prepare every fallible consumer before the durable commit point.
+      const prepared={state:next,receipt,session:createSimulationSession(bundle,systems),
+        projection:projectPublicSnapshot(bundle),playerProjection:projectPlayerSnapshot(bundle),
+        encounterProjection:projectEncounterSnapshot(bundle),sceneProjection:projectSceneSnapshot(bundle),
+        mapProjection:projectMapSnapshot(bundle,MAX_SERVICE_COMMANDS-bundle.snapshot.world.encounterModel.inputHistory.length),
+        activityProjection:inspectActivity?projectWorldActivity(bundle):null};
+      requireCondition(head===parent,'Live head changed','REVISION_CONFLICT');await checkHead(parent);
+      // Direct private publication, never a public skip-validation parameter.
+      // A failed/uncertain publication leaves no advanceable service certificate.
+      await publishStateFile(next,path.join(directory,`service-commit-r${bundle.snapshot.revision}.json`),io);
+      head=next;auditedServiceCommits.add(next);return prepared;
+    });
+    tail=operation.catch(()=>{});return operation;
+  },close(){if(!closePromise){closed=true;closePromise=tail.then(()=>{activeCampaignWriters.delete(identity);});}return closePromise;}});
+  }catch(error){activeCampaignWriters.delete(identity);throw error;}
 }
 export async function loadServiceCommit(file,io=defaultIo){
   return readServiceCommit(file,io,false);

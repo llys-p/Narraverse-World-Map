@@ -60,3 +60,9 @@ export function describeCampaignGiftAvailability(bundle){validateBundle(bundle,{
 export function executeAuditedCampaignIntent(bundle,dto){inspectDescriptorTree({bundle,dto});preflightCampaignIntent(dto);const systems=canonicalSystems(CAMPAIGN_RULES);
  validateBundle(bundle,{rulesVersion:CAMPAIGN_RULES,systems});const result=hooks().executeIntent(bundle,dto);
  return {bundle:createAuditedBundle(result.bundle,{rulesVersion:CAMPAIGN_RULES,systems}),receipt:cloneData(result.receipt)};}
+
+// Pure fixed-rule computation, not an audit or a durable-owner certificate.
+export function computeCampaignIntent(bundle,dto){
+ inspectDescriptorTree({bundle,dto});preflightCampaignIntent(dto);
+ return hooks().executeIntent(bundle,dto);
+}

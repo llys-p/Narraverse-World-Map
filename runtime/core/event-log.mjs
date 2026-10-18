@@ -66,6 +66,15 @@ export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
 }
 
 export function validateEventLog(eventLog, snapshot, systems) {
+  return validateEventLogData(eventLog,snapshot,systems,true);
+}
+// Fact/causation/receipt checks only: no certificate is issued by this helper.
+// Public validateEventLog always performs its original complete history replay.
+export function validateCampaignEventData(eventLog,snapshot,systems){
+  requireCondition(snapshot.rulesVersion===CAMPAIGN_RULES,'Campaign event data required','UNSUPPORTED_VERSION');
+  return validateEventLogData(eventLog,snapshot,systems,false);
+}
+function validateEventLogData(eventLog, snapshot, systems, replay) {
   if (preflightExperienceData(snapshot)) inspectDescriptorTree(eventLog);
   normalizeSystems(systems); denseArray(eventLog, MAX_EVENTS);
   record(snapshot);
@@ -390,6 +399,7 @@ export function validateEventLog(eventLog, snapshot, systems) {
     }
   }
   requireCondition(commandEvents.size === 0, 'Fact references missing receipt');
+  if(!replay)return;
   if (resourceProfile) validateResourceHistory(state.world, resourcePayloads);
   if (ecologyProfile) validateEcologyHistory(state, events);
   if(campaignProfile)campaignRuntimeHooks.validateHistory(state,events);
