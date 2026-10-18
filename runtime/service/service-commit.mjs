@@ -71,7 +71,13 @@ export function transitionServiceCommand(bundle,dto){
 }
 export function validateServiceCommit(envelope){
   // Independent public audit never inherits an in-memory successor proof.
-  auditServiceCommit(cloneData(envelope));
+  auditServiceCommit(cloneServiceCommit(envelope));
+}
+function cloneServiceCommit(envelope){
+  // Check the service budget before recursive copying; fields rejects accessors.
+  fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
+  denseArray(envelope.commands,MAX_SERVICE_COMMANDS);
+  return cloneData(envelope);
 }
 function auditServiceCommit(envelope){
   fields(envelope,['serviceFormatVersion','anchor','commands','bundle']);
@@ -98,6 +104,10 @@ function auditServiceCommit(envelope){
   // final envelope subject to that same proof, so auditing it once before the
   // replay would only repeat work without adding an acceptance condition.
   requireCondition(isDeepStrictEqual(replay,envelope.bundle),'Service world does not match command replay');
+  // Keep final consumer gates on the audited replay, without auditing raw final twice.
+  projectPublicSnapshot(replay);
+  if([8,9,10,11].includes(envelope.serviceFormatVersion))projectEncounterSnapshot(replay);
+  if([9,10,11].includes(envelope.serviceFormatVersion))projectSceneSnapshot(replay);
   return {anchor,final:replay};
 }
 export async function saveServiceCommit(envelope,directory,io=defaultIo){
@@ -108,7 +118,7 @@ export function createAuditedServiceCommit(envelope){
   if(auditedServiceCommits.has(envelope))return envelope;
   // Direct library callers do not get to supply descriptor-bearing mutable data
   // to the private proof path. Disk and public validation already arrive cloned.
-  const detached=cloneData(envelope),{anchor,final}=auditServiceCommit(detached);
+  const detached=cloneServiceCommit(envelope),{anchor,final}=auditServiceCommit(detached);
   requireCondition(detached.serviceFormatVersion===11,'Live service certification requires campaign format','UNSUPPORTED_VERSION');
   const immutable=Object.freeze({serviceFormatVersion:11,anchor,
     commands:freezeData(cloneData(detached.commands)),bundle:final});

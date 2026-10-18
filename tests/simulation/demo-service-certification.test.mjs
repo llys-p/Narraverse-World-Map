@@ -5,6 +5,22 @@ import path from 'node:path';
 import {createCampaignVillage} from '../../runtime/fixtures/campaign-village.mjs';
 import {createAuditedServiceCommit,advanceAuditedServiceCommit,validateServiceCommit,saveServiceCommit,loadServiceCommit,loadRuntimeServiceCommit} from '../../runtime/service/service-commit.mjs';
 
+test('service audit checks command budget before copying and never invokes accessors',()=>{
+ const {bundle}=createCampaignVillage(42,'audit-budget');
+ const genesis={serviceFormatVersion:11,anchor:bundle,commands:[],bundle};
+ for(const audit of [validateServiceCommit,createAuditedServiceCommit]){
+  for(const commands of [Array(129),Array(129).fill(null)])
+   assert.throws(()=>audit({...genesis,commands}),{code:'LIMIT_EXCEEDED'});
+  assert.throws(()=>audit({...genesis,commands:Array(1)}),{code:'INVALID_INPUT'});
+  let calls=0;
+  const accessor={...genesis};Object.defineProperty(accessor,'commands',{enumerable:true,get(){calls++;return [];}});
+  assert.throws(()=>audit(accessor),{code:'INVALID_INPUT'});
+  const commands=[];Object.defineProperty(commands,'0',{enumerable:true,get(){calls++;return null;}});
+  assert.throws(()=>audit({...genesis,commands}),{code:'INVALID_INPUT'});
+  assert.equal(calls,0);
+ }
+});
+
 test('live immutable service prefix equals independent full replay and rejects external forgeries',async()=>{
  const directory=await fs.mkdtemp(path.resolve('artifacts/d4e12/cert-'));
  const {bundle}=createCampaignVillage(42,'demo-cert');
