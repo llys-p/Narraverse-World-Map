@@ -1,0 +1,61 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzhBbReM",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "需修正",
+              "optionId": "73c6c57e",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "DI_lAHOEF9IDs4BmADfzgLZkBc",
+        "body": "D4E12：功能优先，F3已完成视野内人物定位与接近；性能由独立对话负责。\n功能树D:/Narraverse-World-Map-demo-gameplay / codex/world-runtime-demo-gameplay，源码626630eafd86920ce7439820b87a8301d791d3d5，交付49577a54b3b79d9d320ac070fd0ed48a893bdcc9已推送精确读回，报告API字节一致。\n背包新增在地图找商人，人物卡可在地图查看/前往当前位置，地图可回到玩家。只用当前公开map.actors视野内位置，不泄露视野外坐标，不保留过期位置。前往采用点击时目标，不自动追踪移动人物，复用MarchSet/运行时MarchStep；原路遇暂停与时间/预算/持久规则不变。\n新导航2+既有交互3=5/5通过。最终真实Edge 7.688秒PASS：合成Advance24使商人可见但远→背包定位/镜头回玩家/再定位(POST0，五投影不变)→明确MarchSet(6,8)→真实路遇停止，玩家(5,7)/商人(6,8)可交互并打开交易→正常关闭→完整独立审计→重开，r27/tick26，4档SHA/五投影一致。首轮测试错误要求arrived，实际路遇已暂停，110秒等待失败保留，修正测试接受正确路遇暂停而不改生产规则。\n报告：https://github.com/llys-p/Narraverse-World-Map/blob/49577a54b3b79d9d320ac070fd0ed48a893bdcc9/docs/runtime/D4E12-DEMO-GAMEPLAY-RESULT.md\nF1人物工作/商人交易/行囊休整、F2结果与8条记录按既有证据保留。无backend/持久化改动，无全量/视觉/私有长档重跑，不作性能结论。原8档/16依赖/旧88源码/107日常文件/并行原型脏摘要保持，三旧端口无监听、启停0，最终无自有进程/锁；日常入口未切换，无main/部署/迁移/私档上传/外部模型。\n性能线程01a14d49-bc97-7ce3-a47e-18c4f92edea8独立cold-open推进，不写功能树/中控/卡。D4E12整体In Progress/需修正，Stage D进行中，性能不阻塞功能。\n"
+      },
+      {
+        "id": "PVTI_lAHOEF9IDs4BmADfzg_BwCU",
+        "fieldValues": {
+          "nodes": [
+            {},
+            {
+              "name": "In Progress",
+              "optionId": "47fc9ee4",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqu74"
+              }
+            },
+            {
+              "name": "进行中",
+              "optionId": "6c9977dc",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvHY"
+              }
+            },
+            {
+              "name": "D",
+              "optionId": "fb6df519",
+              "field": {
+                "id": "PVTSSF_lAHOEF9IDs4BmADfzhkqvJY"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
