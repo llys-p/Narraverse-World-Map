@@ -1,0 +1,14 @@
+{
+  "base": "49577a54b3b79d9d320ac070fd0ed48a893bdcc9",
+  "source": "766442f18a50359061e30b60890e9f8e15c41fd0",
+  "files": {
+    "demo-runtime-interactions.mjs": "23f3adf6ac8d098bcece2956cf557c6064c66cd82225d116f064fe00711ff9d1",
+    "demo-runtime-prototype.mjs": "42ffc8e7fdaccd22a3180b726bb793e569cd6888007c2669200e7e8b5516666e",
+    "demo-runtime.css": "898a8aca67078d072a4281bd4a7dc2a105bc0e64d5cc51aba94845e4400b4c10",
+    "demo-runtime.html": "c666e19d8326c31dd57370115d2f81573565b3a802826da89f41947e424388c8",
+    "scripts/verify-demo-world-time.mjs": "d7a90631f5cca700e002ceeee01ee504e2b709672100ec42635070753d349064",
+    "tests/simulation/demo-interaction-actions.test.mjs": "5e14319b0e6919d59320634c53972412b606e7670536c0cd234a2f1eabc72acc",
+    "tests/simulation/demo-world-time.test.mjs": "388c0aa5ea6b23ae477f547059e36212394209ecce4a59e5bb15d0438c42015d"
+  },
+  "backendAndPersistenceUnchanged": true
+}

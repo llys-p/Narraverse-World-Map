@@ -1,0 +1,13 @@
+✔ existing jobs, gift and merchant trade follow the real actor and committed projection (1.2203ms)
+✔ distance, cooldown, battle, pending or invalid quantity cannot enable actions (0.1901ms)
+✔ marching, dead or missing actors and bag rest expose only supported capabilities (0.5993ms)
+✔ world time and work cooldown are derived from committed ticks only (0.6908ms)
+✔ waiting is disabled during a march, combat, unresolved write or death; work keeps its health threshold (0.1806ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.5853

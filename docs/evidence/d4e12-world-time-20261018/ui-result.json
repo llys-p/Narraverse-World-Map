@@ -1,0 +1,204 @@
+{
+  "verdict": "PASS",
+  "steps": [
+    {
+      "name": "synthetic-work-then-open",
+      "wallMs": 2554.6532
+    },
+    {
+      "name": "world-wait-advances-time-and-NPCs-without-rest-effect",
+      "wallMs": 495.2093
+    },
+    {
+      "name": "bag-wait-versus-real-rest-and-no-auto-catchup",
+      "wallMs": 981.7211000000002
+    },
+    {
+      "name": "normal-close-full-audit-reopen-with-cooldown",
+      "wallMs": 11067.6522
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"2c49298c-e00b-4700-9f20-e6b4bd703be7\",\"expectedRevision\":36,\"type\":\"AdvanceTime\",\"payload\":{\"ticks\":6}}"
+    },
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"d261d552-6621-4467-9e79-ba4f8264a228\",\"expectedRevision\":42,\"type\":\"AdvanceTime\",\"payload\":{\"ticks\":6}}"
+    },
+    {
+      "url": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"46b125cd-691c-4904-9a76-da8ec72bbfa2\",\"expectedRevision\":48,\"type\":\"PlayerRest\",\"payload\":{}}"
+    }
+  ],
+  "files": {
+    "service-commit-r0.json": "32aeeb76c6b0e7f61b9f51b2ddd6aa2a24cebcc8f1ea8dd617ab4ed301949164",
+    "service-commit-r36.json": "384dcaedc593f5f0b93dad9e0ec889c91e2919b9dacfc114a3d376520e2791b5",
+    "service-commit-r42.json": "c4c7f948ae71573b2f7ea58d1a534cf97bba44edf8f0f2fb97e9797401255a12",
+    "service-commit-r48.json": "9981a36c5bab37e8b34b89641f2e5fc14961e96074b31dbacf7fc38eaf7d7f1e",
+    "service-commit-r54.json": "c568113efca6889c525ae980287dfe20ffcbdb6421d45dfa1b3764d8c0a1438f"
+  },
+  "projectionSignature": "7bd06c1c57475cd099586eab0fa6112f25d962427eb79c0b8f68cac350084741",
+  "commands": [
+    {
+      "dto": {
+        "commandId": "time-setup-work",
+        "expectedRevision": 0,
+        "payload": {},
+        "type": "PlayerWork",
+        "version": 5
+      },
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "time-setup-work",
+        "durationTicks": 36,
+        "fromRevision": 0,
+        "fromTick": 0,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "actorId": "actor-4",
+          "after": {
+            "fatigue": 150,
+            "wallet": 20
+          },
+          "before": {
+            "fatigue": 0,
+            "wallet": 0
+          },
+          "endTick": 36,
+          "location": "village",
+          "nextWorkTick": 144,
+          "startTick": 0,
+          "type": "PlayerWork",
+          "wage": 20
+        },
+        "status": "committed",
+        "tick": 36,
+        "toRevision": 36,
+        "type": "PlayerWork"
+      }
+    },
+    {
+      "dto": {
+        "commandId": "2c49298c-e00b-4700-9f20-e6b4bd703be7",
+        "expectedRevision": 36,
+        "payload": {
+          "ticks": 6
+        },
+        "type": "AdvanceTime",
+        "version": 5
+      },
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "2c49298c-e00b-4700-9f20-e6b4bd703be7",
+        "durationTicks": 6,
+        "fromRevision": 36,
+        "fromTick": 36,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": null,
+        "status": "committed",
+        "tick": 42,
+        "toRevision": 42,
+        "type": "AdvanceTime"
+      }
+    },
+    {
+      "dto": {
+        "commandId": "d261d552-6621-4467-9e79-ba4f8264a228",
+        "expectedRevision": 42,
+        "payload": {
+          "ticks": 6
+        },
+        "type": "AdvanceTime",
+        "version": 5
+      },
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "d261d552-6621-4467-9e79-ba4f8264a228",
+        "durationTicks": 6,
+        "fromRevision": 42,
+        "fromTick": 42,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": null,
+        "status": "committed",
+        "tick": 48,
+        "toRevision": 48,
+        "type": "AdvanceTime"
+      }
+    },
+    {
+      "dto": {
+        "commandId": "46b125cd-691c-4904-9a76-da8ec72bbfa2",
+        "expectedRevision": 48,
+        "payload": {},
+        "type": "PlayerRest",
+        "version": 5
+      },
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "46b125cd-691c-4904-9a76-da8ec72bbfa2",
+        "durationTicks": 6,
+        "fromRevision": 48,
+        "fromTick": 48,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "actorId": "actor-4",
+          "after": {
+            "communalGold": 980,
+            "fatigue": 50,
+            "inventory": {
+              "food": 20,
+              "herbs": 0
+            },
+            "location": "village",
+            "publicStock": {
+              "food": 540,
+              "herbs": 20
+            },
+            "wallet": 20
+          },
+          "amount": 0,
+          "before": {
+            "communalGold": 980,
+            "fatigue": 150,
+            "inventory": {
+              "food": 20,
+              "herbs": 0
+            },
+            "location": "village",
+            "publicStock": {
+              "food": 540,
+              "herbs": 20
+            },
+            "wallet": 20
+          },
+          "endTick": 54,
+          "product": null,
+          "quantity": 0,
+          "startTick": 48,
+          "type": "PlayerRest",
+          "unitPrice": 0
+        },
+        "status": "committed",
+        "tick": 54,
+        "toRevision": 54,
+        "type": "PlayerRest"
+      }
+    }
+  ],
+  "final": {
+    "revision": 54,
+    "tick": 54,
+    "wallet": 20,
+    "food": 20,
+    "fatigue": 50,
+    "nextWorkTick": 144
+  },
+  "remainingLocks": []
+}

@@ -1,4 +1,35 @@
-# D4E12-F3 Demo人物定位与接近
+# D4E12-F4 Demo等待、世界时间与工作提示
+
+2026-10-18（Asia/Shanghai）。继续完善现有Demo时间与行动反馈。**本轮功能限定通过，没有修改世界规则或存档格式。**
+
+- 基准 `49577a54b3b79d9d320ac070fd0ed48a893bdcc9`，源码 `766442f18a50359061e30b60890e9f8e15c41fd0`；同功能树/分支D:/Narraverse-World-Map-demo-gameplay / codex/world-runtime-demo-gameplay。
+- 地点快捷操作与行囊新增“等待1小时”，严格提交现有AdvanceTime(ticks6)。只在连接可写、无待确认/忙碌、玩家存活且不在行军/战斗时启用；点击时再检查，不能用旧面板绕过。
+- 世界时间显示第0天起的日期与时分，严格取已确认tick（10分钟/刻，144刻/日），不读取现实时间、不后台补算、不自动连等。沿用原时钟合同，第0天不是擅自改为第1天。
+- 工作提示显示明确的世界时间间隔；同时补齐已有health>=300门槛，保持fatigue<=700，人物卡与全局入口一致。位置/战斗/行军/生命/疲劳/间隔可解释，公共资金等后台条件不臆测，成功仍以原世界回执为准。
+- 等待会推进NPC/世界活动，不提供PlayerRest的额外减疲劳；日结等世界规则仍可能改变状态，不能承诺等待永远不改变生命/资产。
+
+## 本轮证据
+
+- 最终5/5：新时间/等待/冷却及原health边界2项，原人物交互3项（补实际health字段及299门）；先写测试缺少导出红灯后转绿，最终监督176.608ms。
+- 真实合成世界先合法工作至tick36/金币20/疲劳150，页面显示第0天06:00、距离下次开始工作18小时；全局等待→tick42/07:00/17小时，公开NPC位置变化；行囊等待→tick48/08:00/16小时，玩家公开状态仍不变；真实休整→tick54/09:00/15小时，疲劳50、金币20。闲置250ms没有新增POST或世界状态变化（仅该有界观察，不宣称永久时序证明）。
+- 正常关闭→原公开完整独立审计→重开并再次读页面时钟/工作冷却；五投影、5份正式文件SHA全部一致。命令精确为PlayerWork、AdvanceTime(6)、AdvanceTime(6)、PlayerRest，均succeeded。
+- 整个页面进程17660.331ms、exit0，页面异常0、无超时/退出不明、自有进程与锁0；本轮唯一业务链一次通过，无失败重跑。红灯新增测试保留，不改前序失败记录。
+- 最终r54/tick54，金币20/粮食20/疲劳50/nextWorkTick144；r54 SHA `c568113efca6889c525ae980287dfe20ffcbdb6421d45dfa1b3764d8c0a1438f`，五投影签名 `7bd06c1c57475cd099586eab0fa6112f25d962427eb79c0b8f68cac350084741`。
+
+```powershell
+python scripts/run-d4e12-check.py world-time-final 180 node --test --test-concurrency=1 tests/simulation/demo-world-time.test.mjs tests/simulation/demo-interaction-actions.test.mjs
+python scripts/run-d4e12-check.py world-time-ui-r1 180 --phase-file artifacts/d4e12/world-time-ui-r1-world/phase.json node scripts/verify-demo-world-time.mjs artifacts/d4e12/world-time-ui-r1-world
+```
+
+新合成目录/随机端口，180秒外部硬限、阶段120秒、退出确认5秒。原8档仅核SHA，16依赖、旧88源码、107日常文件、并行原型和中控2行脏摘要保持；三旧端口无监听、启停0。未切日常入口、未合main/部署/迁移/上传私档/新增外部模型，无全量/视觉/战斗全链/私有长档检查，不作性能A/B或长档性能结论。backend/core/service/持久化无diff。
+
+Reference Review：复用原deriveClockReading的第0天/10分钟时基、已有AdvanceTime和PlayerRest区分、PLAYER_WORK阈值与nextWorkTick公开投影。前端只解释与调度现有命令，不自造时间推进、睡觉回血或规则快进。
+
+[本轮原始页面/命令/文件SHA证据](../evidence/d4e12-world-time-20261018/ui-result.json)
+
+---
+
+## D4E12-F3 历史：Demo人物定位与接近
 
 2026-10-18（Asia/Shanghai）。继续现有Demo地图/人物/背包衔接。**本轮功能限定通过，未新增世界规则或全知位置。**
 
