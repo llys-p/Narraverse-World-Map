@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: bounded route uses the bridge and authority derives region
+ok 1 - bounded route uses the bridge and authority derives region
+  ---
+  duration_ms: 1.444198
+  type: 'test'
+  ...
+# Subtest: pause and replan retain actual position and cumulative fatigue
+ok 2 - pause and replan retain actual position and cumulative fatigue
+  ---
+  duration_ms: 2.476117
+  type: 'test'
+  ...
+# Subtest: newly met NPC pauses a real order; no duplicate encounter while adjacent
+ok 3 - newly met NPC pauses a real order; no duplicate encounter while adjacent
+  ---
+  duration_ms: 0.498969
+  type: 'test'
+  ...
+# Subtest: hunter moves for a known opportunity, earns once, carries the same plan to food and really eats
+ok 4 - hunter moves for a known opportunity, earns once, carries the same plan to food and really eats
+  ---
+  duration_ms: 35799.876549
+  type: 'test'
+  ...
+# Subtest: one gift keeps the food need, two gifts pause buying and preserve earned wages and the owned plan
+ok 5 - one gift keeps the food need, two gifts pause buying and preserve earned wages and the owned plan
+  ---
+  duration_ms: 7525.270854
+  type: 'test'
+  ...
+# Subtest: a late opportunity cannot pay remotely; an actual unpaid job remains a failed experience
+ok 6 - a late opportunity cannot pay remotely; an actual unpaid job remains a failed experience
+  ---
+  duration_ms: 13428.915499
+  type: 'test'
+  ...
+# Subtest: empty food supply does not create a trip or ration, death stops movement, and preparation reads no hidden balances
+ok 7 - empty food supply does not create a trip or ration, death stops movement, and preparation reads no hidden balances
+  ---
+  duration_ms: 6781.554939
+  type: 'test'
+  ...
+# Subtest: legacy route remains frozen; version splices and plausible but unearned hunter positions fail replay
+ok 8 - legacy route remains frozen; version splices and plausible but unearned hunter positions fail replay
+  ---
+  duration_ms: 1275.654572
+  type: 'test'
+  ...
+# Subtest: campaign input and reserved pause budget reject without reading getters or changing old DTO gates
+ok 9 - campaign input and reserved pause budget reject without reading getters or changing old DTO gates
+  ---
+  duration_ms: 2.327928
+  type: 'test'
+  ...
+# Subtest: campaign cross-day attack separates real settlement from strike/counter and keeps local knowledge
+ok 10 - campaign cross-day attack separates real settlement from strike/counter and keeps local knowledge
+  ---
+  duration_ms: 17578.844908
+  type: 'test'
+  ...
+# Subtest: death before completion emits settlement/defeat, never a fictitious strike or further movement
+ok 11 - death before completion emits settlement/defeat, never a fictitious strike or further movement
+  ---
+  duration_ms: 16723.070801
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 99502.925614

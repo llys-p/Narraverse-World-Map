@@ -1,5 +1,20 @@
 # 当前状态与接手方向
 
+更新时间：2026-10-23（Asia/Shanghai）。本分支 `codex/single-npc-agency-20261023` 接命令恢复候选 `d482b57f8d31a6683cdf61f533fc04ee7101993f`，按用户确认优先推进单个 NPC 生存行动。主线唯一进度源仍为 `codex/world-runtime-control`；本轮未回写控制树或 Projects，以下是本分支的功能验证，不是 D4E12 整体验收。
+
+## 本分支交接：NPC1 猎人村内行动
+
+- **限定功能通过，待主线复核。** 新入口 `Start-Single-NPC.cmd`，端口18344、目录 `artifacts/npc1-village/world`、profile `campaign-npc-village`。持久化为既有 campaign fixture 的版本2、map版本2；DTO5、format11与公开地图字段保持兼容。旧版本1重建与路线保持不变，版本拼接被拒绝，不升级旧档。
+- actor-2每4刻用自己的 Knowledge 和现有纯规划器预判下一日结动作，向工作点(5,6)、粮摊(3,7)或歇脚处(5,8)走一步。预判不提交未来决策、计划或经历；正式计划仍在日结提交。实地工作/买粮须到对应坐标，继续通过真实工资、钱包、库存与机会时限校验。玩家路遇不会永久冻结猎人，离开接触范围即清除接触。
+- 默认沿用 earn-then-buy 配方：tick100获知工作机会，tick104起前往工作点，tick144领20金币，tick148起持同一计划前往粮摊，tick288花10金币买1份粮并在日结吃掉。地图新增三个公开地点标记；玩家看不到视野外的猎人位置或私人资产、计划。
+- 受赠1份粮仍有需求；受赠2份后改去歇脚处，下一日结暂停买粮，保留工资与原计划，日结后按实际余粮继续判断。迟来的工作机会赶不到地点时拒绝发薪；真实工资不足记录失败经历；无粮不造粮，死亡不再移动。
+- 最终定向 **12/12 PASS**（核心与相邻旧规则11项、真实HTTP消费者1项），0 fail/skip/cancel/todo、exit0、无超时。核心240秒硬限，实际99.618秒；服务360秒硬限，实际40.305秒。真实worker在tick148途中保存并正常重开，五投影/正式文件SHA相同；SSE与demo-order驱动玩家行军到森林，猎人继续在村内买粮。最终完整bundle等于从中途状态连续确定性执行的结果，同DTO重试不增存档或重复结算。核心另与完整公开重放逐字对照通过。
+- 最初三个失败均为测试接线/预期问题：工作经历事件名写反、最短路平局方向假定错误、连续行军模式误发底层March命令。保留原始日志并修正测试，未放宽服务规则；详见[证据索引](docs/evidence/npc1-village-agency-20261023/index.json)、[核心最终日志](docs/evidence/npc1-village-agency-20261023/core-green.tap)、[HTTP最终日志](docs/evidence/npc1-village-agency-20261023/service-green.tap)。`node --check demo-runtime-prototype.mjs`与diff空白检查通过。
+- 验证环境Linux / Node v24.19.0。未做真浏览器/Windows启动器外观、私有存档或长历史性能验收；未启动18344日常实例、未操作旧实例或调用模型。冷开优化候选仍未合入。当前只有一次有限工作机会、每日一次外部动作和有限公共粮食，尚非长期自治或任意NPC系统；失败经验暂沿用统一“执行拒绝”分类。
+- 用户接手：在本候选启动新入口，通过行动或“等待1小时”推进世界时间，可在村内观察猎人改变目的地；关闭输入`quit`等待`stopped`，再开恢复。AI接手：范围与停止点见[任务合同](tasks/NPC1-VILLAGE-AGENCY-TASK.md)，重点代码 `campaign-npc-agency.mjs`、`scene-campaign-runtime.mjs`、`campaign-map.mjs`。本候选到草稿PR停止；下一片优先补充玩家能观察到的行动反馈与失败原因，再讨论持续工作机会，不直接扩大NPC数量。
+
+以下为继承的历史记录，只代表各次交付当时的状态。
+
 更新时间：2026-10-22（Asia/Shanghai）。本分支 `codex/d4e12-command-recovery-20261022` 接功能基准 `02e6ffefce79a30e0d8070a81e364f030f53417f`，按用户“新开分支并自行推进”的授权修复命令确认恢复。主线唯一进度源仍为控制分支 `codex/world-runtime-control`；本轮未回写控制树或 Projects 卡，不将本分支裁定当作 D4E12 整体验收。
 
 ## 本分支交接：行动确认恢复

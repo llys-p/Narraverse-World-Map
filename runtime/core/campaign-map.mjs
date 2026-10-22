@@ -1,10 +1,15 @@
 // One bounded campaign map. Positions, orders and NPC travel are replayed world facts.
 import {fields,record,integer,denseArray,requireCondition,cloneData,canonicalJson} from './data-contract.mjs';
 import {inspectDescriptorTree} from './experience-state.mjs';
+import {NPC_MAP_VERSION,HUNTER_SITES,initialHunterIntent,validateHunterIntent} from './campaign-npc-agency.mjs';
 export const CAMPAIGN_MAP_ID='village-forest-v1',MAP_WIDTH=20,MAP_HEIGHT=12,MAX_ROUTE_STEPS=48;
 export const MARCH_TYPES=Object.freeze(['MarchSet','MarchPause','MarchResume','MarchStep']);
 export function requireMarchBudget(type,remaining,world){integer(remaining);if(world?.mapModel?.order?.status==='marching'&&type!=='MarchPause')requireCondition(remaining>=2,'Last command is reserved for pause','LIMIT_EXCEEDED');if(['MarchSet','MarchResume'].includes(type))requireCondition(remaining>=3,'March requires a reserved pause command','LIMIT_EXCEEDED');if(type==='MarchStep')requireCondition(remaining>=2,'Last command is reserved for pause','LIMIT_EXCEEDED');}
 export const LANDMARKS=Object.freeze([{id:'village',name:'村庄',x:4,y:7},{id:'forest',name:'森林',x:16,y:7}]);
+const NPC_LANDMARKS=Object.freeze([...LANDMARKS,
+ {id:'village-work',name:'村内工作点',...HUNTER_SITES.WorkForPay},
+ {id:'village-food',name:'粮摊',...HUNTER_SITES.BuyFood},
+ {id:'village-rest',name:'歇脚处',...HUNTER_SITES.Rest}]);
 const NPC_IDS=['actor-1','actor-2','actor-3'];
 const line=(from,to,y)=>Array.from({length:to-from+1},(_,i)=>({x:from+i,y}));
 const thereAndBack=path=>[...path,...path.slice(1,-1).reverse()];
@@ -24,17 +29,20 @@ export function mapRoute(from,to){
  }
  return null;
 }
-export function createCampaignMap(){return {version:'campaign-map-v1',mapId:CAMPAIGN_MAP_ID,position:{x:4,y:7},travelledSteps:0,
- npcs:NPC_IDS.map((actorId,i)=>({actorId,...ROUTES[i][0],routeIndex:0})),order:null,contact:null};}
+export function createCampaignMap(npcAgency=false){return {version:npcAgency?NPC_MAP_VERSION:'campaign-map-v1',mapId:CAMPAIGN_MAP_ID,position:{x:4,y:7},travelledSteps:0,
+ npcs:NPC_IDS.map((actorId,i)=>({actorId,...ROUTES[i][0],routeIndex:0})),order:null,contact:null,...(npcAgency?{hunterIntent:initialHunterIntent()}:{})};}
 export function validateCampaignMap(world,tick){
- const m=world.mapModel;fields(m,['version','mapId','position','travelledSteps','npcs','order','contact']);
- requireCondition(m.version==='campaign-map-v1'&&m.mapId===CAMPAIGN_MAP_ID,'Unsupported campaign map','UNSUPPORTED_VERSION');
+ const m=world.mapModel,npcAgency=m.version===NPC_MAP_VERSION;fields(m,['version','mapId','position','travelledSteps','npcs','order','contact',...(npcAgency?['hunterIntent']:[])]);
+ requireCondition((m.version==='campaign-map-v1'||npcAgency)&&m.mapId===CAMPAIGN_MAP_ID,'Unsupported campaign map','UNSUPPORTED_VERSION');
+ if(npcAgency)validateHunterIntent(m.hunterIntent,tick);
  validateMapPoint(m.position);requireCondition(mapWalkable(m.position),'Player stands on blocked terrain');integer(m.travelledSteps);integer(tick);
  const actors=world.actorModel.actors,player=actors.find(a=>a.actorId==='actor-4');
  requireCondition(player&&player.location===mapLocation(m.position),'Player map/region mismatch');
  denseArray(m.npcs,3);requireCondition(m.npcs.length===3,'Campaign NPC roster mismatch');
  for(let i=0;i<3;i++){const n=m.npcs[i];fields(n,['actorId','x','y','routeIndex']);integer(n.routeIndex);
-  requireCondition(n.actorId===NPC_IDS[i]&&n.routeIndex<ROUTES[i].length&&same(n,ROUTES[i][n.routeIndex]),'NPC route position mismatch');
+  requireCondition(n.actorId===NPC_IDS[i],'NPC identity mismatch');
+  if(npcAgency&&i===1){validateMapPoint({x:n.x,y:n.y});requireCondition(n.routeIndex===0&&mapLocation(n)==='village'&&mapWalkable(n),'Hunter must stay in the village');}
+  else requireCondition(n.routeIndex<ROUTES[i].length&&same(n,ROUTES[i][n.routeIndex]),'NPC route position mismatch');
   requireCondition(actors[i].actorId===n.actorId&&actors[i].location===mapLocation(n),'NPC map/region mismatch');}
  if(m.order!==null){const o=m.order;fields(o,['target','path','index','status']);validateMapPoint(o.target);denseArray(o.path,MAX_ROUTE_STEPS+1);
   requireCondition(o.path.length>=2&&['marching','paused','arrived'].includes(o.status),'Invalid march order');integer(o.index);requireCondition(o.index<o.path.length,'March cursor outside route');
@@ -69,7 +77,12 @@ export function advanceMapTick(world,tick,append){
  const priorLocations=new Map(world.actorModel.actors.map(a=>[a.actorId,a.location]));
  const m=world.mapModel,p=world.actorModel.actors[3],wasMarching=m.order?.status==='marching';
  const before=new Set(m.npcs.filter(n=>mapDistance(m.position,n)<=1).map(n=>n.actorId));
- for(let i=0;i<3;i++){const n=m.npcs[i],a=world.actorModel.actors[i];if(a.alive&&PERIODS[i]&&tick%PERIODS[i]===0&&m.contact?.actorId!==n.actorId){n.routeIndex=(n.routeIndex+1)%ROUTES[i].length;Object.assign(n,ROUTES[i][n.routeIndex]);}a.location=mapLocation(n);}
+ for(let i=0;i<3;i++){const n=m.npcs[i],a=world.actorModel.actors[i];
+  if(m.version===NPC_MAP_VERSION&&i===1){
+   if(a.alive&&tick%4===0){const route=mapRoute({x:n.x,y:n.y},HUNTER_SITES[m.hunterIntent.action]);if(route?.length>1)Object.assign(n,route[1]);}
+  }else if(a.alive&&PERIODS[i]&&tick%PERIODS[i]===0&&m.contact?.actorId!==n.actorId){n.routeIndex=(n.routeIndex+1)%ROUTES[i].length;Object.assign(n,ROUTES[i][n.routeIndex]);}
+  a.location=mapLocation(n);
+ }
  if(wasMarching&&p.alive&&world.encounterModel.encounter?.status!=='active'){
   const o=m.order;requireCondition(m.travelledSteps<Number.MAX_SAFE_INTEGER,'March distance overflow','LIMIT_EXCEEDED');
   const old=BigInt(m.travelledSteps),next=old+1n,cost=Number((next*100n+11n)/12n-(old*100n+11n)/12n);
@@ -83,13 +96,14 @@ export function advanceMapTick(world,tick,append){
  if(rows.length&&append)append({type:'CampaignRegionsChanged',sourceSystem:'campaign',commandId:null,entityIds:rows.map(r=>r.actorId),causationEventSeqs:[],payload:{rows}});
 }
 export function finishMapTick(world){const m=world.mapModel;if(!world.actorModel.actors[3].alive&&m.order?.status==='marching')m.order.status='paused';
- if(m.contact&&!world.actorModel.actors.find(a=>a.actorId===m.contact.actorId)?.alive)m.contact=null;}
+ if(m.contact&&(!world.actorModel.actors.find(a=>a.actorId===m.contact.actorId)?.alive||
+  (m.version===NPC_MAP_VERSION&&mapDistance(m.position,m.npcs.find(n=>n.actorId===m.contact.actorId))>1)))m.contact=null;}
 export function marchResult(before,after,dto,plan){return plan.outcome!=='succeeded'?{code:plan.reasonCode}:{action:dto.type,before:{...before.mapModel.position},after:{...after.mapModel.position},
  stepsMoved:after.mapModel.travelledSteps-before.mapModel.travelledSteps,status:after.mapModel.order?.status??'idle',contact:cloneData(after.mapModel.contact)};}
 export function mapView(bundle,remainingCommands){
  inspectDescriptorTree(bundle);const s=bundle.snapshot,w=s.world,m=w.mapModel,p=w.actorModel.actors[3];validateCampaignMap(w,s.tick);
  const blocked=Array.from({length:MAP_HEIGHT},(_,y)=>({x:10,y})).filter(p=>p.y!==7);
- return cloneData({apiVersion:1,mapViewVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,mapId:m.mapId,width:MAP_WIDTH,height:MAP_HEIGHT,blocked,landmarks:LANDMARKS,
+ return cloneData({apiVersion:1,mapViewVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,mapId:m.mapId,width:MAP_WIDTH,height:MAP_HEIGHT,blocked,landmarks:m.version===NPC_MAP_VERSION?NPC_LANDMARKS:LANDMARKS,
   self:{actorId:p.actorId,...m.position,location:p.location,alive:p.alive},order:m.order,contact:m.contact,
   actors:m.npcs.filter(n=>mapDistance(m.position,n)<=4).map(n=>{const a=w.actorModel.actors.find(a=>a.actorId===n.actorId),near=mapDistance(m.position,n)<=1;
    const observer=w.memoryModel.observer.actors.find(o=>o.actorId===a.actorId);

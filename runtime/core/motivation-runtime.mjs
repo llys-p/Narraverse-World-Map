@@ -560,10 +560,11 @@ function observeResolvedWork(snapshot,events,item,resolvedSeq,append,profile){
     }
 }
 
-function applyActionFor(input,payload,sample,profile){
+function applyActionFor(input,payload,sample,profile,spatiallyRejected=false){
   validateWorldFor(input,false,profile);
+  requireCondition(typeof spatiallyRejected==='boolean'&&(!spatiallyRejected||profile.campaign),'Invalid spatial action gate');
   const entry=entryOf(input,payload.actorId);
-  let purchaseReject=false;
+  let purchaseReject=spatiallyRejected;
   if(entry){const d=entry.lastDecision,p=entry.activePlan;
     const temporaryFoodRest=profile.survival&&d?.mode==='review'&&d.choice==='Rest'&&
       d.gateReason==='URGENT_FATIGUE'&&d.goalId===null&&d.planId===null&&p?.kind===SURVIVAL_FOOD_PLAN_KIND&&
@@ -906,11 +907,31 @@ export const livelihoodBaseRuntimeHooks=createSceneBaseHooks(LIVELIHOOD_BASE_PRO
 export function validateLivelihoodBaseWorld(world,sealed=true){inspectDescriptorTree(world);return validateWorldFor(world,sealed,LIVELIHOOD_BASE_PROFILE);}
 export const campaignBaseRuntimeHooks=createSceneBaseHooks(CAMPAIGN_BASE_PROFILE);
 export function validateCampaignBaseWorld(world,sealed=true){inspectDescriptorTree(world);return validateWorldFor(world,sealed,CAMPAIGN_BASE_PROFILE);}
+// A detached forecast for locomotion only. It reads the same own Knowledge and pure
+// review/planners as the daily decision, at the next settlement boundary. No review
+// state, proposed plan, decision ID or synthetic evaluation reference is committed.
+// New facts, gifts and body changes can change the forecast before the real decision.
+export function campaignSurvivalTravel(world,events,tick,simulationId){
+  const actorId=SURVIVAL_ACTOR_ID,entry=entryOf(world,actorId);
+  if(!body(world,actorId).alive)return {action:'NoAction',planId:null};
+  const dayTick=Math.ceil(tick/144)*144;
+  const knowledge=decisionKnowledge(world,events,actorId,dayTick,simulationId,CAMPAIGN_BASE_PROFILE);
+  const model=world.cognitionModel,actor=model.actors.find(a=>a.actorId===actorId);
+  const importance=model.config.profiles.find(p=>p.actorId===actorId).importancePermille;
+  const signals=deriveActorSurvivalSignals(knowledge,importance,actor.signalBaseline,ownPreviousExecution(entry,simulationId));
+  const {decision}=evaluateCognitiveReview(actor.reviewState,signals.input);
+  const context={evaluationEventSeq:events.length+1,sourceReviewDecisionId:decision.mode==='maintain'?actor.lastReviewDecisionId:null,
+    sourceReviewEventSeq:decision.mode==='maintain'?actor.lastReviewEventSeq:null};
+  const proposed=decision.mode==='maintain'?continueSurvivalPlan(knowledge,context):planSurvivalDecision(knowledge,context,true);
+  const action=['WorkForPay','BuyFood','Rest'].includes(proposed.decision.choice)?proposed.decision.choice:'NoAction';
+  const owned=[entry.activePlan,entry.suspendedPlan].find(p=>p!==null&&p.planId===proposed.decision.planId);
+  return {action,planId:owned?.planId??null};
+}
 function createSceneBaseHooks(profile){return Object.freeze({
  createWorld:(memory,mind,motivation,experience,cognition,simulationId)=>{inspectDescriptorTree({memory,mind,motivation,experience,cognition,simulationId});return createWorldFor(memory,mind,motivation,experience,cognition,simulationId,profile);},
  beforeSystems:(snapshot,events,tick,append,commit)=>{inspectDescriptorTree({snapshot,events});return beforeSystemsFor(snapshot,events,tick,append,commit,profile);},
  afterSystems:(snapshot,events,tick,append,context)=>{inspectDescriptorTree({snapshot,events});return afterSystemsFor(snapshot,events,tick,append,context,profile);},
- applyAction:(input,payload,sample=null)=>{inspectDescriptorTree({input,payload,sample});return applyActionFor(input,payload,sample,profile);},
+ applyAction:(input,payload,sample=null,spatiallyRejected=false)=>{inspectDescriptorTree({input,payload,sample,spatiallyRejected});return applyActionFor(input,payload,sample,profile,spatiallyRejected);},
  settleDay:(input,sample)=>{inspectDescriptorTree({input,sample});return settleDayFor(input,sample,profile);},
  validateHistory:(snapshot,events)=>{inspectDescriptorTree({snapshot,events});return validateHistoryFor(snapshot,events,profile);}
 });}
