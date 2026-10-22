@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-22",
+  "timezone": "Asia/Shanghai",
+  "branch": "codex/d4e12-command-recovery-20261022",
+  "baseCommit": "02e6ffefce79a30e0d8070a81e364f030f53417f",
+  "platform": "linux",
+  "node": "v24.19.0",
+  "candidateCommit": null,
+  "candidateSourceSha256": {
+    "demo-runtime-bridge.mjs": "cafbf48daa00cc4d16edf4270aa6dfeb045f390702eefeee09d08384c4e68d21",
+    "tests/simulation/demo-command-recovery.test.mjs": "26c160d46f7af3c2d7f0110a9a8da963c625a173463ff943c05633a985c90eb6",
+    "tests/simulation/demo-pending-status.test.mjs": "220bc313c09eb745545e9e9e62a2a907eba98420888b966832242b11f89b4db9",
+    "tests/simulation/demo-action-results.test.mjs": "2b2f8bf684b0602b1ae8e682f1d65a338bbeaa027d867cfb0b339bd8789a0991"
+  },
+  "runs": {
+    "red": {
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "tests/simulation/demo-command-recovery.test.mjs"
+      ],
+      "exitCode": 1,
+      "timedOut": false,
+      "unconfirmed": false,
+      "wallMs": 1202.694,
+      "cpuMs": null,
+      "hardLimitMs": 180000.0,
+      "tests": 4,
+      "pass": 1,
+      "fail": 3
+    },
+    "green": {
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "tests/simulation/demo-command-recovery.test.mjs",
+        "tests/simulation/demo-pending-status.test.mjs",
+        "tests/simulation/demo-action-results.test.mjs"
+      ],
+      "exitCode": 0,
+      "timedOut": false,
+      "unconfirmed": false,
+      "wallMs": 2605.449,
+      "cpuMs": null,
+      "hardLimitMs": 180000.0,
+      "tests": 8,
+      "pass": 8,
+      "fail": 0
+    }
+  },
+  "scope": "Client request recovery; one synthetic durable sale over real HTTP and worker, clean server reopen and exact retry. Browser/SSE globals mocked in Node. Runtime production source unchanged.",
+  "notValidated": [
+    "real browser",
+    "Windows launcher",
+    "private saves",
+    "long-history performance",
+    "D4E12 overall acceptance"
+  ],
+  "evidenceSha256": {
+    "green-process.json": "0ea97ca560c58076f4ad1792d632a88462e04aaaf92105d27884973b2072b550",
+    "green.tap": "b1657d1f8fa66a0a7b5e7d4304505c8123e5b517a4bb98c0cf56620fcee8e748",
+    "red-process.json": "ff347532272f80cd3fb1278166f5b3d7c1684a3926ff9bafeabfd41bb95e5e5b",
+    "red.tap": "0fe5701a3c6e348cbd144e5f0c2c81dabde122db29c2761a2ee64dd72e9e07fa"
+  }
+}

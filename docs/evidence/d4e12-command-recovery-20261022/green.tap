@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: real sale, purchase, work and rest receipts show actual deltas without mutating data
+ok 1 - real sale, purchase, work and rest receipts show actual deltas without mutating data
+  ---
+  duration_ms: 2.688729
+  type: 'test'
+  ...
+# Subtest: rejection has no claimed gains, malformed or unconfirmed input never becomes a result
+ok 2 - rejection has no claimed gains, malformed or unconfirmed input never becomes a result
+  ---
+  duration_ms: 0.541656
+  type: 'test'
+  ...
+# Subtest: history deduplicates receipt retries, keeps rejection, and stores only the latest eight
+ok 3 - history deduplicates receipt retries, keeps rejection, and stores only the latest eight
+  ---
+  duration_ms: 0.42478
+  type: 'test'
+  ...
+# Subtest: a 503 after a durable sale survives reload and full server reopen without a second sale
+ok 4 - a 503 after a durable sale survives reload and full server reopen without a second sale
+  ---
+  duration_ms: 1267.509238
+  type: 'test'
+  ...
+# Subtest: uncertain order errors retain exact bytes and never enable another intent
+ok 5 - uncertain order errors retain exact bytes and never enable another intent
+  ---
+  duration_ms: 207.838637
+  type: 'test'
+  ...
+# Subtest: a protocol-matching POST revision rejection clears only the rejected request
+ok 6 - a protocol-matching POST revision rejection clears only the rejected request
+  ---
+  duration_ms: 128.622418
+  type: 'test'
+  ...
+# Subtest: a confirmed receipt stays recoverable through refresh errors and stale views
+ok 7 - a confirmed receipt stays recoverable through refresh errors and stale views
+  ---
+  duration_ms: 184.180577
+  type: 'test'
+  ...
+# Subtest: SSE keeps an in-flight recovered request pending and retry confirms only on its POST receipt
+ok 8 - SSE keeps an in-flight recovered request pending and retry confirms only on its POST receipt
+  ---
+  duration_ms: 352.898957
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2505.419684

@@ -1,0 +1,83 @@
+TAP version 13
+# Subtest: a 503 after a durable sale survives reload and full server reopen without a second sale
+not ok 1 - a 503 after a durable sale survives reload and full server reopen without a second sale
+  ---
+  duration_ms: 452.199131
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/demo-command-recovery.test.mjs:60:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    a server error does not prove that the sale was rolled back
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/demo-command-recovery.test.mjs:90:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: uncertain order errors retain exact bytes and never enable another intent
+not ok 2 - uncertain order errors retain exact bytes and never enable another intent
+  ---
+  duration_ms: 172.854887
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/demo-command-recovery.test.mjs:119:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/demo-command-recovery.test.mjs:136:12)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: a protocol-matching POST revision rejection clears only the rejected request
+ok 3 - a protocol-matching POST revision rejection clears only the rejected request
+  ---
+  duration_ms: 134.059383
+  type: 'test'
+  ...
+# Subtest: a confirmed receipt stays recoverable through refresh errors and stale views
+not ok 4 - a confirmed receipt stays recoverable through refresh errors and stale views
+  ---
+  duration_ms: 202.810072
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/demo-command-recovery.test.mjs:154:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    a GET error cannot reject the already confirmed POST
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/demo-command-recovery.test.mjs:171:10)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 1
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1108.226654

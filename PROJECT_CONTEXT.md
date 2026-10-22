@@ -1,6 +1,16 @@
 # 当前状态与接手方向
 
-更新时间：2026-10-17 17:27（Asia/Shanghai）。主线唯一进度源为控制树 `D:/Narraverse-World-Map-control/PROJECT_CONTEXT.md`。
+更新时间：2026-10-22（Asia/Shanghai）。本分支 `codex/d4e12-command-recovery-20261022` 接功能基准 `02e6ffefce79a30e0d8070a81e364f030f53417f`，按用户“新开分支并自行推进”的授权修复命令确认恢复。主线唯一进度源仍为控制分支 `codex/world-runtime-control`；本轮未回写控制树或 Projects 卡，不将本分支裁定当作 D4E12 整体验收。
+
+## 本分支交接：行动确认恢复
+
+- **功能限定通过，待主线复核。** 只改 `demo-runtime-bridge.mjs`：503/500、超时/限流及未知错误保留原请求；只有匹配当前 API 协议的确定 POST 拒绝才清除。成功回执之后的状态读取失败、过期投影或消费者错误也保留恢复入口，显式重试继续使用相同字节、ID 和修订号。
+- 根因是原 `json()` 把全部非2xx响应标为 `confirmed`，外层 catch 清除待确认记录；另外原成功路径在刷新状态前就清除。新增定向反例在原代码上 **1 pass / 3 fail**，修复后连同相邻请求状态与结果显示回归 **8/8 PASS**，0 fail/skip/cancel、exit0、无超时。证据：[任务范围](tasks/D4E12-COMMAND-RECOVERY-TASK.md)、[运行索引](docs/evidence/d4e12-command-recovery-20261022/index.json)、[最终TAP](docs/evidence/d4e12-command-recovery-20261022/green.tap)、[原始RED](docs/evidence/d4e12-command-recovery-20261022/red.tap)。
+- Linux / Node v24.19.0，180秒进程硬限，最终运行墙钟2605.449ms；这是功能测试耗时，不是性能对照。真实HTTP/worker/落盘卖出一份粮食后在客户端传输边界注入503，正常关闭重开服务、重建页面客户端并重试：原回执、五投影、两份正式文件SHA一致，完整公开加载审计确认仅一条命令，关闭后锁释放。
+- 浏览器环境及SSE在Node测试中模拟；没有真实浏览器、Windows启动器、长档、视觉或整体性能复验。没有改后端、审计、存档格式、预算或时间规则；未合入冷开性能候选、main或部署，没有操作真实存档或调用模型。
+- 用户接手：错误后保留“重试原请求”，避免重新生成一次买卖/等待等行动；在收到有效回执及更新后的世界状态后才恢复新操作。AI接手：先审本分支与功能基准间diff；本片到草稿PR交付停止，控制树/看板收口仍待主线完成。
+
+以下为继承的历史记录，只代表各次交付当时的状态。
 
 ## D4E12 Demo真实接入
 
