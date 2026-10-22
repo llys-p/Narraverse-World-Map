@@ -1,0 +1,35 @@
+TAP version 13
+# Subtest: HTTP worker saves a hunter mid-trip, reopens the same person, and continues while the player is away without duplicate pay
+not ok 1 - HTTP worker saves a hunter mid-trip, reopens the same person, and continues while the player is away without duplicate pay
+  ---
+  duration_ms: 27262.059535
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/campaign-npc-service.test.mjs:20:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"apiVersion":1,"error":{"code":"COMMAND_UNSUPPORTED","message":"世界请求未能完成。"}}
+    
+    400 !== 200
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 400
+  operator: 'strictEqual'
+  stack: |-
+    post (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/campaign-npc-service.test.mjs:27:41)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async follow (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/campaign-npc-service.test.mjs:45:61)
+    async TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/campaign-npc-service.test.mjs:48:3)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 27433.608966

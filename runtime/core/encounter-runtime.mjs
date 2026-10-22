@@ -702,7 +702,7 @@ function executeIntentFor(bundle,dto,profile=null) {
   requireCondition(isPlainObject(snapshot), 'bundle.snapshot must be an object', 'INVALID_INPUT');
   record(snapshot);
   (profile?.preflight??preflightIntent)(dto);
-  if(profile)requireCondition(snapshot.rulesVersion===profile.rules&&snapshot.fixtureId===profile.fixture&&snapshot.fixtureVersion==='1'&&snapshot.schemaVersion===3,'Unsupported scene profile','UNSUPPORTED_VERSION');
+  if(profile)requireCondition(snapshot.rulesVersion===profile.rules&&snapshot.fixtureId===profile.fixture&&snapshot.fixtureVersion===(profile.fixtureVersion??'1')&&snapshot.schemaVersion===3,'Unsupported scene profile','UNSUPPORTED_VERSION');
   else requireEncounterProfileMetadata(snapshot);
   const world = snapshot.world;
   requireCondition(isPlainObject(world), 'bundle.snapshot.world must be an object', 'INVALID_INPUT');
@@ -920,7 +920,7 @@ function describeActionsFor(bundle,profile=null) {
   const snapshot = bundle.snapshot;
   requireCondition(isPlainObject(snapshot), 'describeEncounterActions expects a bundle snapshot', 'INVALID_INPUT');
   record(snapshot);
-  if(profile)requireCondition(snapshot.rulesVersion===profile.rules&&snapshot.fixtureId===profile.fixture&&snapshot.fixtureVersion==='1'&&snapshot.schemaVersion===3,'Unsupported scene profile','UNSUPPORTED_VERSION');
+  if(profile)requireCondition(snapshot.rulesVersion===profile.rules&&snapshot.fixtureId===profile.fixture&&snapshot.fixtureVersion===(profile.fixtureVersion??'1')&&snapshot.schemaVersion===3,'Unsupported scene profile','UNSUPPORTED_VERSION');
   else requireEncounterProfileMetadata(snapshot);
   const world = snapshot.world;
   requireCondition(isPlainObject(world), 'describeEncounterActions expects bundle.snapshot.world', 'INVALID_INPUT');
@@ -1491,7 +1491,7 @@ export function createSceneEncounterRuntimeHooks(baseHooks,scenePolicy){
   executeIntent:(bundle,dto)=>executeIntentFor(bundle,dto,profile()),
   describeActions:bundle=>describeActionsFor(bundle,profile()),
   createWorld:(memory,mind,motivation,experience,cognition,id)=>{const world=hooksCreateWorld(memory,mind,motivation,experience,cognition,id,baseHooks,'encounter-runtime-v2');return scenePolicy.extendWorld?.(world)??world;},
-  beforeSystems:(snapshot,events,tick,append,commit)=>{scenePolicy.beforeTick?.(snapshot.world,tick,append);return hooksBeforeSystems(snapshot,events,tick,append,commit,baseHooks);},
+  beforeSystems:(snapshot,events,tick,append,commit)=>{scenePolicy.beforeTick?.(snapshot.world,tick,append,events,snapshot.simulationId);return hooksBeforeSystems(snapshot,events,tick,append,commit,baseHooks);},
   afterSystems:(snapshot,events,tick,append,context)=>{const result=hooksAfterSystems(snapshot,events,tick,append,context,baseHooks);scenePolicy.afterTick?.(snapshot.world);return result;},
   applyAction:(input,payload,sample=null)=>hooksApplyAction(input,payload,sample,baseHooks),
   settleDay:(world,sample)=>hooksSettleDay(world,sample,baseHooks),

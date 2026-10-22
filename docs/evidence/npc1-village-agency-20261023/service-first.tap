@@ -1,0 +1,43 @@
+TAP version 13
+# Subtest: HTTP worker saves a hunter mid-trip, reopens the same person, and continues while the player is away without duplicate pay
+not ok 1 - HTTP worker saves a hunter mid-trip, reopens the same person, and continues while the player is away without duplicate pay
+  ---
+  duration_ms: 7603.034292
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/campaign-npc-service.test.mjs:20:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      {
+    +   x: 5,
+    +   y: 7
+    -   x: 4,
+    -   y: 6
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    x: 4
+    y: 6
+  actual:
+    x: 5
+    y: 7
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/campaign-npc-service.test.mjs:33:68)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7753.829455

@@ -1563,7 +1563,10 @@ function acceptState(value){
  if(mapFocusActorId&&!value.map.actors.some(a=>a.actorId===mapFocusActorId))mapFocusActorId=null;
  $('mapFollowPlayer').hidden=mapFocusActorId===null;
  if(!previous||previous.snapshot.revision!==value.snapshot.revision)interpolation={from:{...worldPlayer},to:target,start:now,duration:previous&&value.map.tick>previous.map.tick&&!matchMedia('(prefers-reduced-motion: reduce)').matches?420:0};
- WORLD_LOCS=value.map.landmarks.map(l=>({...pixel(l),key:l.id,name:l.name,desc:l.id==='village'?'村庄 · 工作、交易与休整':'森林 · 狼群遭遇',color:l.id==='village'?'#3fb950':'#cf222e',icon:l.id==='village'?'🏡':'🌲'}));
+ const villageSites={'village-work':['村内的工作地点','⚒'], 'village-food':['村内售粮地点','🌾'], 'village-rest':['村内歇脚处','🪑']};
+ WORLD_LOCS=value.map.landmarks.map(l=>({...pixel(l),key:l.id,name:l.name,
+  desc:villageSites[l.id]?.[0]??(l.id==='village'?'村庄 · 工作、交易与休整':'森林 · 狼群遭遇'),
+  color:l.id==='forest'?'#cf222e':'#3fb950',icon:villageSites[l.id]?.[1]??(l.id==='village'?'🏡':'🌲')}));
  WORLD_ZONES=[{name:'村庄',cx:360,cy:575,r:180},{name:'森林',cx:1320,cy:575,r:215}];
  worldRoamingNpcs=value.map.actors.filter(a=>a.alive).map(a=>({...pixel(a),id:a.actorId,name:a.name,title:role(a.occupation),color:'#79c0ff',icon:a.actorId==='actor-2'?'🏹':a.actorId==='actor-3'?'🪙':'杖'}));
  const day=value.snapshot.clock?.hour??Math.floor((value.map.tick%144)/6);simPeriod=day<6?'night':day<12?'morning':day<18?'noon':'evening';

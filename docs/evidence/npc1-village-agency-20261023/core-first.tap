@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: hunter moves for a known opportunity, earns once, carries the same plan to food and really eats
+ok 1 - hunter moves for a known opportunity, earns once, carries the same plan to food and really eats
+  ---
+  duration_ms: 28030.545197
+  type: 'test'
+  ...
+# Subtest: one gift keeps the food need, two gifts pause buying and preserve earned wages and the owned plan
+ok 2 - one gift keeps the food need, two gifts pause buying and preserve earned wages and the owned plan
+  ---
+  duration_ms: 7304.17501
+  type: 'test'
+  ...
+# Subtest: a late opportunity cannot pay remotely; an actual unpaid job remains a failed experience
+not ok 3 - a late opportunity cannot pay remotely; an actual unpaid job remains a failed experience
+  ---
+  duration_ms: 12126.972284
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/campaign-npc-agency.test.mjs:57:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(refused.eventLog.some(e=>e.type==='WorkExperienceObserved'&&e.payload.actorId==='actor-2'))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/campaign-npc-agency.test.mjs:67:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: empty food supply does not create a trip or ration, death stops movement, and preparation reads no hidden balances
+ok 4 - empty food supply does not create a trip or ration, death stops movement, and preparation reads no hidden balances
+  ---
+  duration_ms: 6399.826703
+  type: 'test'
+  ...
+# Subtest: legacy route remains frozen; version splices and plausible but unearned hunter positions fail replay
+ok 5 - legacy route remains frozen; version splices and plausible but unearned hunter positions fail replay
+  ---
+  duration_ms: 1135.471101
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 4
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 55167.005965
