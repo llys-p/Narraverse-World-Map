@@ -3,6 +3,21 @@ import {validateCampaignReceipt} from './runtime-campaign-contract.mjs';
 import {describeActionReceipt} from './demo-runtime-interactions.mjs';
 const WIDTH=20,HEIGHT=12,safeInt=n=>Number.isSafeInteger(n)&&n>=0;
 const exact=(v,keys)=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k));
+// These existing API responses reject this POST before it can commit. A 5xx,
+// timeout, rate limit or unknown response cannot establish the durable outcome.
+const rejectionCodes=new Map([
+ [400,['INVALID_INPUT','UNSUPPORTED_VERSION','COMMAND_UNSUPPORTED']],
+ [403,['ORIGIN_REJECTED']],[404,['ROUTE_NOT_FOUND']],[405,['WRITE_DISABLED']],
+ [409,['REVISION_CONFLICT','COMMAND_ID_CONFLICT']],[413,['LIMIT_EXCEEDED']],
+ [415,['INVALID_INPUT']],[422,['RULE_REJECTED']],
+]);
+function definitiveRejection(response,body){
+ const code=body?.error?.code,revisionConflict=code==='REVISION_CONFLICT';
+ return rejectionCodes.get(response.status)?.includes(code)===true&&
+  exact(body,revisionConflict?['apiVersion','error','currentRevision']:['apiVersion','error'])&&body.apiVersion===1&&
+  exact(body.error,['code','message'])&&typeof body.error.message==='string'&&
+  (!revisionConflict||safeInt(body.currentRevision));
+}
 const cellKey=({x,y})=>`${x},${y}`;
 function validCoord(p){return p&&Number.isInteger(p.x)&&p.x>=0&&p.x<WIDTH&&Number.isInteger(p.y)&&p.y>=0&&p.y<HEIGHT;}
 function regionAt({x,y}){return x>=3&&x<=5&&y>=6&&y<=8?'village':x>=14&&x<=19&&y>=2&&y<=11?'forest':'road';}
@@ -55,7 +70,7 @@ export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
  const status=(text,error=false)=>onStatus(text,error);
  async function json(url,options={}){
   const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(120000),...options});
-  const body=await response.json();if(!response.ok)throw Object.assign(new Error(body.error?.code??`HTTP ${response.status}`),{confirmed:true});return body;
+  const body=await response.json();if(!response.ok)throw Object.assign(new Error(body?.error?.code??`HTTP ${response.status}`),{definitiveRejection:definitiveRejection(response,body)});return body;
  }
  function apply(value){
   if(!coherent(value))throw new Error('世界投影版本或身份不一致，已停止操作。');
@@ -71,16 +86,20 @@ export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
  async function perform(item){
   busy=true;onBusy(true);status('指令已发送，正在确认…');
   try{
-   const response=await json(item.endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:item.body});
+   let response;
+   try{response=await json(item.endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:item.body});}
+   catch(error){if(error.definitiveRejection)clear();throw error;}
    const input=JSON.parse(item.body),order=item.endpoint.endsWith('demo-order');
    const dto=order?response.command:input,receipt=order?response.receipt:response;
    if(order&&(!dto||dto.commandId!==input.requestId||dto.type!==input.type||JSON.stringify(dto.payload)!==JSON.stringify(input.payload)))throw Error('订单确认与输入不一致');
    if(!validateCampaignReceipt(receipt,dto,order?receipt?.fromTick:item.fromTick))throw Error('命令回执无效，已保留待确认请求');
    const view=describeActionReceipt(receipt,dto);
-   clear();await refresh();await onReceipt(receipt,dto,group);
+   await refresh();
+   if(group.snapshot.revision<receipt.toRevision||group.snapshot.tick<receipt.tick)throw Error('世界状态尚未更新到本次回执，请重试原请求。');
+   await onReceipt(receipt,dto,group);clear();
    status(view.summary+(view.reason?'：'+view.reason:''),receipt.outcome==='rejected');
    return receipt;
-  }catch(error){if(error.confirmed)clear();status(pending?'确认中断：请重试原请求，避免重复操作。':error.message,true);throw error;}
+  }catch(error){status(pending?'确认中断：请重试原请求，避免重复操作。':error.message,true);throw error;}
   finally{busy=false;onBusy(false);}
  }
  async function submit(type,payload={}){
