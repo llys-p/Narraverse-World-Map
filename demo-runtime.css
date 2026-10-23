@@ -45,6 +45,11 @@ body#demo-runtime-root{min-width:1000px}
 .live-person h2{font-size:17px}
 #demo-runtime-root #personNavigationHint{font-size:12px;color:var(--text-secondary)}
 #demo-runtime-root .live-person button{margin:4px 6px 4px 0}
+#demo-runtime-root .live-person>canvas{flex-shrink:0}
+#demo-runtime-root .social-interactions{max-width:780px;padding:12px;border:1px solid #627660;border-radius:6px;margin:12px 0}
+#demo-runtime-root .social-interactions blockquote{padding:10px 14px;border-left:3px solid var(--accent-gold);background:#141d18;line-height:1.6;white-space:pre-wrap}
+#demo-runtime-root .social-interactions select{padding:7px;background:var(--bg-main);color:var(--text-primary);border:1px solid var(--border);border-radius:4px}
+#demo-runtime-root .social-note{font-size:12px;color:var(--text-secondary);line-height:1.6}
 #demo-runtime-root .live-trade,#demo-runtime-root .live-bag{display:block;max-width:860px}
 #demo-runtime-root .live-trade>h2,#demo-runtime-root .live-bag>h2{margin-bottom:10px}
 #demo-runtime-root .live-trade>p,#demo-runtime-root .live-bag>p{color:var(--text-secondary)}

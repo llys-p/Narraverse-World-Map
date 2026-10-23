@@ -1,6 +1,6 @@
 // Presentation extracted from the preserved demo. No local gameplay simulation.
 import {createDemoClient} from './demo-runtime-bridge.mjs';
-import {interactionActions,personNavigation,worldTimeView,describeActionReceipt,recordConfirmedAction} from './demo-runtime-interactions.mjs';
+import {interactionActions,personNavigation,worldTimeView,describeActionReceipt,recordConfirmedAction,socialInteractionActions,socialActionNames} from './demo-runtime-interactions.mjs';
 const $=id=>document.getElementById(id),K=window.SandboxDrawingKit;
 const stageContainer=$('stageContainer'),sceneCanvas=$('sceneCanvas'),sceneCtx=sceneCanvas.getContext('2d');
 const villageStickCanvas=$('villageStickCanvas'),villageDecorCanvas=$('villageDecorCanvas'),villageDecorCtx=villageDecorCanvas.getContext('2d');
@@ -1497,7 +1497,16 @@ function showPerson(id){
  selectedActorId=id;const actor=group?.map.actors.find(a=>a.actorId===id);if(!actor){$('personCard').hidden=true;return;}
  $('personCard').hidden=false;$('personName').textContent=actor.name+' · '+role(actor.occupation);
  $('personDetail').textContent=actor.actorId+' · '+place(actor.location)+' · '+(actor.condition==='wounded'?'受伤':actor.alive?'存活':'已逝')+'\n'+(actor.canInteract?'就在附近，可以交互。':'距离较远，先走到人物附近。');
- $('personMemory').textContent=actor.receivedGifts.length?'人物记得收到你的赠粮：'+actor.receivedGifts.map(m=>'世界时刻 '+m.occurrenceTick).join('、'):'当前投影没有这位人物收到你赠粮的记忆。';
+ const social=id==='actor-2'?group.map.social:null;
+ $('personMemory').textContent=social?'询问共同经历，听他自己谈起记住的事。':actor.receivedGifts.length?'人物记得收到你的赠粮：'+actor.receivedGifts.map(m=>'世界时刻 '+m.occurrenceTick).join('、'):'当前投影没有这位人物收到你赠粮的记忆。';
+ $('personSocial').hidden=!social;
+ if(social){
+  const permissions=socialInteractionActions(group,canWrite()&&!playbackBusy);
+  for(const key of Object.keys(socialActionNames))$('social-'+key).disabled=!permissions[key];
+  $('socialStance').textContent=social.npc?'眼前的态度：'+({calm:'平静',warm:'亲近',wary:'戒备',afraid:'畏惧'})[social.npc.stance]:'走近一些，才能观察他的态度。';
+  $('socialSpeech').textContent=social.npc?.speech?('他上次对你说：“'+social.npc.speech+'”'+(social.npc.memoryRefs.length?'（提起了过去的经历）':'')):'还没有听到新的回应。';
+  $('socialAsset').textContent=social.asset?'猎人的工具包 · 耐久 '+social.asset.condition+'/100 · '+(social.asset.holderId==='actor-4'?'由你持有':'放在歇脚处'):'工具包不在当前视野内。';
+ }
  const gift=group.scene.actors.find(a=>a.actorId===id)?.gift;
  const actions=interactionActions(group,canWrite()&&!playbackBusy,id);
  const navigation=personNavigation(group,canWrite()&&!playbackBusy,id);
@@ -1509,7 +1518,7 @@ function showPerson(id){
  $('personActionHint').textContent=!actor.canInteract?'先走到人物附近，再进行交互。':id==='actor-1'?
   (actions.work?'村庄工作会推进6小时，成功领20金币。':worldTimeView(group,canWrite()&&!playbackBusy).workHint):id==='actor-3'?
   (actions.trade?'可买卖粮食和药草，成交后按真实回执更新。':'交易暂不可用，请先抵达村庄并停止行军或战斗。'):
-  (gift?.available?'赠粮后，对方会记得这次交付。':'赠粮暂不可用，请查看当前状态。');
+  social?'选择一种举动；他会按自己的经历和当前处境回应。':(gift?.available?'赠粮后，对方会记得这次交付。':'赠粮暂不可用，请查看当前状态。');
  const canvas=$('portraitCanvas'),ctx=canvas.getContext('2d');ctx.clearRect(0,0,140,140);
  K.drawEntity(ctx,{archetype:id==='actor-2'?'archer':id==='actor-1'?'priest':'rogue',appearance:{color:id==='actor-2'?'#566444':'#7a5a44'}},{x:0,y:0,width:140,height:140,theme:{accent:'#d5a17d',foreground:'#edf0e9',surface:'#202522'}});
 }
@@ -1544,7 +1553,7 @@ function paintReadings(){
  const status={marching:group.runner.active?'行军中':'已停止续跑，等待继续',paused:'已暂停',arrived:'已抵达'}[m.order?.status]??'尚无行军订单';
  $('orderText').textContent=status;$('budgetText').textContent='剩余命令 '+m.budget.remainingCommands;
  $('viewCaption').textContent=m.contact?'路遇 '+(m.actors.find(a=>a.actorId===m.contact.actorId)?.name??m.contact.actorId)+' · 已停下':status+' · 位置 ('+m.self.x+', '+m.self.y+')';
- $('bagContents').textContent='金币 '+p.wallet+' · 粮食 '+p.inventory.food+' · 药草 '+p.inventory.herbs+'。此处只显示已保存的真实资产。';
+ $('bagContents').textContent='金币 '+p.wallet+' · 粮食 '+p.inventory.food+' · 药草 '+p.inventory.herbs+'。'+(m.social?.asset?.holderId==='actor-4'?'携带猎人的工具包，耐久 '+m.social.asset.condition+'/100；所有者仍是猎人。':'')+'此处只显示已保存的真实资产。';
  for(const id of ['toVillage','toForest','resumeMarch','goCoordinate','work','rest','buyFood','sellFood','buyHerbs','sellHerbs','giftFood','beginEncounter','attack','flee','cancelEncounter'])$(id).disabled=!write;
  $('pauseMarch').disabled=!s.connected||s.blocked;$('resumeMarch').disabled=!write||!['marching','paused'].includes(m.order?.status)||group.runner.active;
  $('enterLocation').disabled=!['village','forest'].includes(m.self.location)||m.order?.status==='marching';
@@ -1645,6 +1654,10 @@ action('goCoordinate','MarchSet',()=>({x:Number($('targetX').value),y:Number($('
 action('work','PlayerWork');action('rest','PlayerRest');
 for(const [id,type,product] of [['buyFood','PlayerBuy','food'],['sellFood','PlayerSell','food'],['buyHerbs','PlayerBuy','herbs'],['sellHerbs','PlayerSell','herbs']])action(id,type,()=>({product,quantity:1}));
 action('giftFood','PlayerGiftFood',()=>({recipientId:'actor-2'}));action('personGift','PlayerGiftFood',()=>({recipientId:'actor-2'}));
+for(const socialAction of Object.keys(socialActionNames))$('social-'+socialAction).addEventListener('click',()=>handle(()=>{
+ if(selectedActorId!=='actor-2'||!socialInteractionActions(group,canWrite()&&!playbackBusy)[socialAction])throw Error('当前无法执行，请检查人物、工具的距离与当前活动。');
+ return client.submit('PlayerInteract',{targetId:'actor-2',action:socialAction,...(socialAction==='talk'?{topic:$('socialTopic').value}:{})});
+}));
 // Contextual entries reuse the same single-writer client and command DTOs.
 // A stale open panel cannot submit after movement, disconnect or combat.
 const contextual=(id,actor,permission,type,payload=()=>({}))=>$(id).addEventListener('click',()=>handle(()=>{
@@ -1678,7 +1691,7 @@ function mapClick(event,context=false){
  const target={x:Math.floor(at.x/80),y:Math.floor(at.y/(920/12))};$('targetX').value=target.x;$('targetY').value=target.y;handle(()=>client.submit('MarchSet',target));
 }
 worldMapCanvas.addEventListener('click',event=>mapClick(event));worldMapCanvas.addEventListener('contextmenu',event=>{event.preventDefault();mapClick(event,true);});
-window.addEventListener('keydown',event=>{if(event.target.matches('input,button')||event.repeat)return;const key=event.key.toLowerCase();if(key==='b'||key==='i')$('tabBagBtn').click();else if(key==='escape'){selectedActorId=null;$('personCard').hidden=true;$('bagPanel').hidden=true;$('tradePanel').hidden=true;}else if(key===' '&&currentMode==='world'){event.preventDefault();handle(()=>client.pause());}});
+window.addEventListener('keydown',event=>{if(event.target.matches('input,button,select')||event.repeat)return;const key=event.key.toLowerCase();if(key==='b'||key==='i')$('tabBagBtn').click();else if(key==='escape'){selectedActorId=null;$('personCard').hidden=true;$('bagPanel').hidden=true;$('tradePanel').hidden=true;}else if(key===' '&&currentMode==='world'){event.preventDefault();handle(()=>client.pause());}});
 new ResizeObserver(resizeLayers).observe(stageContainer);window.addEventListener('resize',resizeLayers);
 let lastFrame=performance.now(),fatalFrameError=false;
 function loop(now){

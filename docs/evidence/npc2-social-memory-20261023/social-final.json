@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "tests/simulation/npc-social.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 27741.129,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

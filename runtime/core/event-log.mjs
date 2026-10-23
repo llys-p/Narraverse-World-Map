@@ -178,6 +178,9 @@ function validateEventLogData(eventLog, snapshot, systems, replay) {
     }else if(event.type==='PlayerWorkCommitted'){
       requireCondition(workProfile&&event.sourceSystem==='command-engine'&&event.entityIds.length===1&&event.entityIds[0]==='actor-4'&&event.causationEventSeqs.length===0,'Invalid work fact source');
       identifier(event.commandId);validatePlayerWorkResult(event.payload);requireCondition(event.tick===event.payload.endTick&&!commandEvents.has(event.commandId),'Invalid work fact clock/duplicate');commandEvents.set(event.commandId,event);
+    }else if(event.type==='NpcPerceptionRecorded'){
+      requireCondition(campaignProfile&&state.fixtureVersion==='3'&&event.sourceSystem==='campaign'&&event.commandId===null&&event.entityIds.length===1&&event.entityIds[0]==='actor-2'&&event.causationEventSeqs.length===0,'Invalid perception source');
+      fields(event.payload,['actorId','kind','text']);requireCondition(event.payload.actorId==='actor-2'&&['missing','damage','overdue'].includes(event.payload.kind)&&typeof event.payload.text==='string'&&event.payload.text.length<=300,'Invalid perception payload');
     }else if(event.type==='CampaignRegionsChanged'){
       requireCondition(campaignProfile&&event.sourceSystem==='campaign'&&event.commandId===null&&event.causationEventSeqs.length===0,'Campaign region fact outside profile');
       fields(event.payload,['rows']);denseArray(event.payload.rows,4);requireCondition(event.payload.rows.length>0&&event.entityIds.length===event.payload.rows.length,'Invalid campaign region roster');
