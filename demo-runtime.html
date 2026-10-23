@@ -29,6 +29,14 @@
 <aside id="personCard" class="live-person" hidden><canvas id="portraitCanvas" width="140" height="140" aria-hidden="true"></canvas><div><h2 id="personName"></h2><p id="personDetail"></p><p id="personMemory"></p><p id="personActionHint"></p>
 <section id="personSocial" class="social-interactions" hidden aria-label="与猎人互动">
 <p id="socialStance"></p><blockquote id="socialSpeech" aria-live="polite"></blockquote><p id="socialAsset"></p>
+<form id="socialTextForm" class="social-text-form" aria-label="用文字与猎人互动">
+<label for="socialText">想说什么或做什么</label>
+<textarea id="socialText" rows="3" placeholder="例如：最近缺什么？／帮你修一下工具／工具借我一天" aria-describedby="socialTextHint socialTextStatus"></textarea>
+<p id="socialTextHint" class="social-note">一次说一个意思，240字以内。先查看动作，再点击执行；不清楚的表达会请你选择或改写。输入不会改变世界。</p>
+<p id="socialTextStatus" role="status" aria-live="polite">写下想说的话或想做的事。</p>
+<div id="socialTextChoices" role="group" aria-label="选择这次的意思" hidden></div>
+<button id="socialTextReview" type="button" hidden>重新理解这句话</button><button id="socialTextExecute" type="submit" disabled>先写下想法</button>
+</form>
 <label for="socialTopic">谈些什么</label> <select id="socialTopic"><option value="needs">近况与需要</option><option value="past">共同经历</option><option value="relationship">彼此关系</option></select>
 <div><button id="social-talk">交流</button><button id="social-help">帮助修理</button><button id="social-ask-help">请求借工具</button><button id="social-return">归还工具</button><button id="social-apologize">道歉</button></div>
 <div><button id="social-steal">尝试偷工具</button><button id="social-rob">抢夺工具</button><button id="social-smash">砸工具</button><button id="social-threaten">威胁</button></div>
@@ -44,6 +52,6 @@
 <label class="trade-quantity">数量 <input id="tradeQuantity" type="number" min="1" max="10" step="1" value="1"></label><button id="closeTrade">关闭</button>
 </section>
 <section id="bagPanel" class="live-person live-bag" hidden><h2>🎒 行囊</h2><p id="bagContents"></p><p id="bagRules">粮食按世界规则消耗；药草暂不支持直接服用。</p><p id="waitRules">等待会推进世界和人物活动，不提供休整的额外减疲劳效果；不会按现实时间自动续等。</p><p id="bagActionHint"></p><div><button id="bagFindMerchant">在地图找商人</button><button id="bagTrade">找商人交易</button><button id="bagRest">休整1小时</button><button id="bagWait">等待1小时</button><button id="closeBag">关闭</button></div></section>
-<p class="live-note">村庄 / 森林真实世界接入。行军和耗时活动推进世界，暂停、路遇和回合选招时等待；离页后停止续跑。修炼、偷窃、装备与其他地点尚未接入。每档128条命令，额度不足时停止。</p>
+<p class="live-note">村庄 / 森林真实世界接入。行军和耗时活动推进世界，暂停、路遇和回合选招时等待；离页后停止续跑。猎人的工具互动只在对应新世界开启；修炼、装备与其他地点尚未接入。每档128条命令，额度不足时停止。</p>
 <details class="live-evidence"><summary>最近命令回执</summary><pre id="lastReceipt">尚无命令</pre></details>
 </main></body></html>

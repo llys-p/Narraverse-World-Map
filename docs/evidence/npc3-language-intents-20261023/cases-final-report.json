@@ -1,0 +1,1255 @@
+{
+  "scope": "Author-written public development examples only; no held-out, independent labels, model evaluation or E1 admission.",
+  "version": "npc-language-v1",
+  "cases": 75,
+  "correct": 75,
+  "supported": 36,
+  "accepted": 36,
+  "correctAccepted": 36,
+  "falseReady": 0,
+  "abstainBaseline": {
+    "accepted": 0,
+    "correctAccepted": 0,
+    "falseReady": 0
+  },
+  "families": {
+    "current-needs": {
+      "cases": 2,
+      "correct": 2
+    },
+    "food-question": {
+      "cases": 1,
+      "correct": 1
+    },
+    "shared-history": {
+      "cases": 1,
+      "correct": 1
+    },
+    "claimed-history-question": {
+      "cases": 1,
+      "correct": 1
+    },
+    "unknown-culprit-question": {
+      "cases": 1,
+      "correct": 1
+    },
+    "trust-question": {
+      "cases": 2,
+      "correct": 2
+    },
+    "fear-question": {
+      "cases": 1,
+      "correct": 1
+    },
+    "repair-offer": {
+      "cases": 2,
+      "correct": 2
+    },
+    "repair-disposal": {
+      "cases": 1,
+      "correct": 1
+    },
+    "repair-normalization": {
+      "cases": 1,
+      "correct": 1
+    },
+    "borrow-request": {
+      "cases": 2,
+      "correct": 2
+    },
+    "borrow-verb-first": {
+      "cases": 2,
+      "correct": 2
+    },
+    "return-object-first": {
+      "cases": 1,
+      "correct": 1
+    },
+    "return-disposal": {
+      "cases": 1,
+      "correct": 1
+    },
+    "return-verb-first": {
+      "cases": 1,
+      "correct": 1
+    },
+    "apology": {
+      "cases": 3,
+      "correct": 3
+    },
+    "explicit-theft": {
+      "cases": 3,
+      "correct": 3
+    },
+    "explicit-robbery": {
+      "cases": 1,
+      "correct": 1
+    },
+    "robbery-disposal": {
+      "cases": 1,
+      "correct": 1
+    },
+    "explicit-damage": {
+      "cases": 1,
+      "correct": 1
+    },
+    "damage-disposal": {
+      "cases": 1,
+      "correct": 1
+    },
+    "explicit-threat": {
+      "cases": 1,
+      "correct": 1
+    },
+    "conditional-coercion": {
+      "cases": 2,
+      "correct": 2
+    },
+    "negated-harm": {
+      "cases": 3,
+      "correct": 3
+    },
+    "negated-help": {
+      "cases": 1,
+      "correct": 1
+    },
+    "double-negation": {
+      "cases": 1,
+      "correct": 1
+    },
+    "contrast-negation": {
+      "cases": 1,
+      "correct": 1
+    },
+    "reported-threat": {
+      "cases": 1,
+      "correct": 1
+    },
+    "quoted-action": {
+      "cases": 2,
+      "correct": 2
+    },
+    "metalinguistic": {
+      "cases": 1,
+      "correct": 1
+    },
+    "hypothetical": {
+      "cases": 2,
+      "correct": 2
+    },
+    "conditional-help": {
+      "cases": 1,
+      "correct": 1
+    },
+    "past-claim": {
+      "cases": 2,
+      "correct": 2
+    },
+    "promise-only": {
+      "cases": 1,
+      "correct": 1
+    },
+    "other-actor": {
+      "cases": 2,
+      "correct": 2
+    },
+    "other-object": {
+      "cases": 2,
+      "correct": 2
+    },
+    "sarcasm": {
+      "cases": 1,
+      "correct": 1
+    },
+    "mixed-language": {
+      "cases": 1,
+      "correct": 1
+    },
+    "instruction-injection": {
+      "cases": 3,
+      "correct": 3
+    },
+    "multiple-actions": {
+      "cases": 2,
+      "correct": 2
+    },
+    "multiple-topics": {
+      "cases": 1,
+      "correct": 1
+    },
+    "unsupported-remainder": {
+      "cases": 1,
+      "correct": 1
+    },
+    "ambiguous-taking": {
+      "cases": 1,
+      "correct": 1
+    },
+    "ambiguous-help": {
+      "cases": 2,
+      "correct": 2
+    },
+    "tool-pronoun": {
+      "cases": 4,
+      "correct": 4
+    },
+    "elliptical-followup": {
+      "cases": 2,
+      "correct": 2
+    },
+    "outside-scope": {
+      "cases": 2,
+      "correct": 2
+    },
+    "empty-input": {
+      "cases": 1,
+      "correct": 1
+    },
+    "invisible-control": {
+      "cases": 1,
+      "correct": 1
+    }
+  },
+  "rows": [
+    {
+      "id": "needs-01",
+      "family": "current-needs",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:needs"
+      ],
+      "actual": [
+        "talk:needs"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "needs"
+      ]
+    },
+    {
+      "id": "needs-02",
+      "family": "current-needs",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:needs"
+      ],
+      "actual": [
+        "talk:needs"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "needs"
+      ]
+    },
+    {
+      "id": "needs-03",
+      "family": "food-question",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:needs"
+      ],
+      "actual": [
+        "talk:needs"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "needs"
+      ]
+    },
+    {
+      "id": "past-01",
+      "family": "shared-history",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:past"
+      ],
+      "actual": [
+        "talk:past"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "past"
+      ]
+    },
+    {
+      "id": "past-02",
+      "family": "claimed-history-question",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:past"
+      ],
+      "actual": [
+        "talk:past"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "past"
+      ]
+    },
+    {
+      "id": "past-03",
+      "family": "unknown-culprit-question",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:past"
+      ],
+      "actual": [
+        "talk:past"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "past"
+      ]
+    },
+    {
+      "id": "relation-01",
+      "family": "trust-question",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:relationship"
+      ],
+      "actual": [
+        "talk:relationship"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "relationship"
+      ]
+    },
+    {
+      "id": "relation-02",
+      "family": "trust-question",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:relationship"
+      ],
+      "actual": [
+        "talk:relationship"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "relationship"
+      ]
+    },
+    {
+      "id": "relation-03",
+      "family": "fear-question",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:relationship"
+      ],
+      "actual": [
+        "talk:relationship"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "relationship"
+      ]
+    },
+    {
+      "id": "help-01",
+      "family": "repair-offer",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "help"
+      ],
+      "actual": [
+        "help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "repair-verb"
+      ]
+    },
+    {
+      "id": "help-02",
+      "family": "repair-offer",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "help"
+      ],
+      "actual": [
+        "help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "repair-verb"
+      ]
+    },
+    {
+      "id": "help-03",
+      "family": "repair-disposal",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "help"
+      ],
+      "actual": [
+        "help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "repair-object"
+      ]
+    },
+    {
+      "id": "help-04",
+      "family": "repair-normalization",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "help"
+      ],
+      "actual": [
+        "help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "repair-verb"
+      ]
+    },
+    {
+      "id": "borrow-01",
+      "family": "borrow-request",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "ask-help"
+      ],
+      "actual": [
+        "ask-help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "borrow-object"
+      ]
+    },
+    {
+      "id": "borrow-02",
+      "family": "borrow-request",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "ask-help"
+      ],
+      "actual": [
+        "ask-help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "borrow-object"
+      ]
+    },
+    {
+      "id": "borrow-03",
+      "family": "borrow-verb-first",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "ask-help"
+      ],
+      "actual": [
+        "ask-help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "borrow-verb"
+      ]
+    },
+    {
+      "id": "borrow-04",
+      "family": "borrow-verb-first",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "ask-help"
+      ],
+      "actual": [
+        "ask-help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "borrow-recipient"
+      ]
+    },
+    {
+      "id": "return-01",
+      "family": "return-object-first",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "return"
+      ],
+      "actual": [
+        "return"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "return-object"
+      ]
+    },
+    {
+      "id": "return-02",
+      "family": "return-disposal",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "return"
+      ],
+      "actual": [
+        "return"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "return-object"
+      ]
+    },
+    {
+      "id": "return-03",
+      "family": "return-verb-first",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "return"
+      ],
+      "actual": [
+        "return"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "return-verb"
+      ]
+    },
+    {
+      "id": "apology-01",
+      "family": "apology",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "apologize"
+      ],
+      "actual": [
+        "apologize"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "apology"
+      ]
+    },
+    {
+      "id": "apology-02",
+      "family": "apology",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "apologize"
+      ],
+      "actual": [
+        "apologize"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "apology"
+      ]
+    },
+    {
+      "id": "apology-03",
+      "family": "apology",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "apologize"
+      ],
+      "actual": [
+        "apologize"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "apology"
+      ]
+    },
+    {
+      "id": "steal-01",
+      "family": "explicit-theft",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "steal"
+      ],
+      "actual": [
+        "steal"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "theft-unnoticed"
+      ]
+    },
+    {
+      "id": "steal-02",
+      "family": "explicit-theft",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "steal"
+      ],
+      "actual": [
+        "steal"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "theft-unnoticed"
+      ]
+    },
+    {
+      "id": "steal-03",
+      "family": "explicit-theft",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "steal"
+      ],
+      "actual": [
+        "steal"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "theft-explicit"
+      ]
+    },
+    {
+      "id": "rob-01",
+      "family": "explicit-robbery",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "rob"
+      ],
+      "actual": [
+        "rob"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "robbery-verb"
+      ]
+    },
+    {
+      "id": "rob-02",
+      "family": "robbery-disposal",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "rob"
+      ],
+      "actual": [
+        "rob"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "robbery-object"
+      ]
+    },
+    {
+      "id": "smash-01",
+      "family": "explicit-damage",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "smash"
+      ],
+      "actual": [
+        "smash"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "damage-verb"
+      ]
+    },
+    {
+      "id": "smash-02",
+      "family": "damage-disposal",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "smash"
+      ],
+      "actual": [
+        "smash"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "damage-object"
+      ]
+    },
+    {
+      "id": "threat-01",
+      "family": "explicit-threat",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "threaten"
+      ],
+      "actual": [
+        "threaten"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "threat-direct"
+      ]
+    },
+    {
+      "id": "threat-02",
+      "family": "conditional-coercion",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "threaten"
+      ],
+      "actual": [
+        "threaten"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "threat-condition"
+      ]
+    },
+    {
+      "id": "threat-03",
+      "family": "conditional-coercion",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "threaten"
+      ],
+      "actual": [
+        "threaten"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "threat-consequence"
+      ]
+    },
+    {
+      "id": "deny-01",
+      "family": "negated-harm",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "deny-02",
+      "family": "negated-harm",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "deny-03",
+      "family": "negated-harm",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "deny-04",
+      "family": "negated-help",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "deny-05",
+      "family": "double-negation",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "deny-06",
+      "family": "contrast-negation",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "quote-01",
+      "family": "reported-threat",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "quote-02",
+      "family": "quoted-action",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "quote-03",
+      "family": "quoted-action",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "quote-04",
+      "family": "metalinguistic",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "hyp-01",
+      "family": "hypothetical",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "hyp-02",
+      "family": "hypothetical",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "hyp-03",
+      "family": "conditional-help",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "claim-01",
+      "family": "past-claim",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "claim-02",
+      "family": "past-claim",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "claim-03",
+      "family": "promise-only",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "person-01",
+      "family": "other-actor",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "person-02",
+      "family": "other-actor",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "person-03",
+      "family": "other-object",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "person-04",
+      "family": "other-object",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "irony-01",
+      "family": "sarcasm",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "mixed-01",
+      "family": "mixed-language",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "inject-01",
+      "family": "instruction-injection",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "inject-02",
+      "family": "instruction-injection",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "inject-03",
+      "family": "instruction-injection",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "multi-01",
+      "family": "multiple-actions",
+      "expectedStatus": "clarify",
+      "actualStatus": "clarify",
+      "expected": [
+        "help",
+        "ask-help"
+      ],
+      "actual": [
+        "help",
+        "ask-help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "multiple-intents"
+      ]
+    },
+    {
+      "id": "multi-02",
+      "family": "multiple-actions",
+      "expectedStatus": "clarify",
+      "actualStatus": "clarify",
+      "expected": [
+        "steal",
+        "rob"
+      ],
+      "actual": [
+        "steal",
+        "rob"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "multiple-intents"
+      ]
+    },
+    {
+      "id": "multi-03",
+      "family": "multiple-topics",
+      "expectedStatus": "clarify",
+      "actualStatus": "clarify",
+      "expected": [
+        "talk:needs",
+        "talk:relationship"
+      ],
+      "actual": [
+        "talk:needs",
+        "talk:relationship"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "multiple-intents"
+      ]
+    },
+    {
+      "id": "multi-04",
+      "family": "unsupported-remainder",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "vague-01",
+      "family": "ambiguous-taking",
+      "expectedStatus": "clarify",
+      "actualStatus": "clarify",
+      "expected": [
+        "ask-help",
+        "steal",
+        "rob"
+      ],
+      "actual": [
+        "ask-help",
+        "steal",
+        "rob"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "ambiguous-taking"
+      ]
+    },
+    {
+      "id": "vague-02",
+      "family": "ambiguous-help",
+      "expectedStatus": "clarify",
+      "actualStatus": "clarify",
+      "expected": [
+        "talk:needs",
+        "help"
+      ],
+      "actual": [
+        "talk:needs",
+        "help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "ambiguous-offer"
+      ]
+    },
+    {
+      "id": "vague-03",
+      "family": "ambiguous-help",
+      "expectedStatus": "clarify",
+      "actualStatus": "clarify",
+      "expected": [
+        "ask-help",
+        "talk:needs"
+      ],
+      "actual": [
+        "ask-help",
+        "talk:needs"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "ambiguous-request"
+      ]
+    },
+    {
+      "id": "ref-01",
+      "family": "tool-pronoun",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "help"
+      ],
+      "actual": [
+        "help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "repair-verb"
+      ]
+    },
+    {
+      "id": "ref-02",
+      "family": "tool-pronoun",
+      "expectedStatus": "clarify",
+      "actualStatus": "clarify",
+      "expected": [
+        "help"
+      ],
+      "actual": [
+        "help"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "repair-verb"
+      ]
+    },
+    {
+      "id": "ref-03",
+      "family": "tool-pronoun",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "return"
+      ],
+      "actual": [
+        "return"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "return-object"
+      ]
+    },
+    {
+      "id": "ref-04",
+      "family": "tool-pronoun",
+      "expectedStatus": "clarify",
+      "actualStatus": "clarify",
+      "expected": [
+        "return"
+      ],
+      "actual": [
+        "return"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "return-object"
+      ]
+    },
+    {
+      "id": "why-01",
+      "family": "elliptical-followup",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
+      "expected": [
+        "talk:relationship"
+      ],
+      "actual": [
+        "talk:relationship"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "followup-why"
+      ]
+    },
+    {
+      "id": "why-02",
+      "family": "elliptical-followup",
+      "expectedStatus": "clarify",
+      "actualStatus": "clarify",
+      "expected": [
+        "talk:needs",
+        "talk:past",
+        "talk:relationship"
+      ],
+      "actual": [
+        "talk:needs",
+        "talk:past",
+        "talk:relationship"
+      ],
+      "correct": true,
+      "ruleIds": [
+        "followup-unknown"
+      ]
+    },
+    {
+      "id": "unknown-01",
+      "family": "outside-scope",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "unknown-02",
+      "family": "outside-scope",
+      "expectedStatus": "unsupported",
+      "actualStatus": "unsupported",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "empty-01",
+      "family": "empty-input",
+      "expectedStatus": "empty",
+      "actualStatus": "empty",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    },
+    {
+      "id": "invisible-01",
+      "family": "invisible-control",
+      "expectedStatus": "invalid",
+      "actualStatus": "invalid",
+      "expected": [],
+      "actual": [],
+      "correct": true,
+      "ruleIds": []
+    }
+  ],
+  "dataSha256": "e9484471face77c7bf9bc85b1f96487470fc9a5077e58ae7331b36116047304f",
+  "parserSha256": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87"
+}

@@ -1,0 +1,86 @@
+[
+  {
+    "command": [
+      "node",
+      "--check",
+      "demo-social-language.mjs"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "demo-social-composer.mjs"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "demo-runtime-prototype.mjs"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "runtime-server.mjs"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/check-npc-language.mjs"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "tests/simulation/npc-language.test.mjs"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "tests/simulation/npc-language-service.test.mjs"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "check": "core, fixtures, service commit, wire contracts and bridge unchanged from parent",
+    "paths": [
+      "runtime/core",
+      "runtime/fixtures",
+      "runtime/service",
+      "runtime-campaign-contract.mjs",
+      "runtime-social-contract.mjs",
+      "demo-runtime-bridge.mjs"
+    ],
+    "passed": true
+  }
+]
