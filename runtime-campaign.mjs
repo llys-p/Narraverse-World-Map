@@ -1,4 +1,5 @@
 import {validSocialMapView} from './runtime-social-contract.mjs';
+import {validNegotiationView} from './runtime-negotiation-contract.mjs';
 import { mountCampaignBattle } from './runtime-campaign-battle.mjs';
 import { validateCampaignReceipt } from './runtime-campaign-contract.mjs';
 
@@ -41,12 +42,13 @@ function point({x,y}){return{x:(x+.5)*CX,y:(y+.5)*CY};}
 function validCoord(p){return p&&Number.isInteger(p.x)&&p.x>=0&&p.x<WIDTH&&Number.isInteger(p.y)&&p.y>=0&&p.y<HEIGHT;}
 function regionAt({x,y}){return x>=3&&x<=5&&y>=6&&y<=8?'village':x>=14&&x<=19&&y>=2&&y<=11?'forest':'road';}
 function validMap(map){
-  const fields=['apiVersion','mapViewVersion','simulationId','revision','tick','mapId','width','height','blocked','landmarks','self','order','contact','actors','movement','budget',...(map?.mapViewVersion===2?['social']:[])];
-  if(!exact(map,fields)||map.apiVersion!==1||![1,2].includes(map.mapViewVersion)||map.mapId!=='village-forest-v1'||map.width!==WIDTH||map.height!==HEIGHT||
+  const fields=['apiVersion','mapViewVersion','simulationId','revision','tick','mapId','width','height','blocked','landmarks','self','order','contact','actors','movement','budget',...([2,3].includes(map?.mapViewVersion)?['social']:[]),...(map?.mapViewVersion===3?['negotiation']:[])];
+  if(!exact(map,fields)||map.apiVersion!==1||![1,2,3].includes(map.mapViewVersion)||map.mapId!=='village-forest-v1'||map.width!==WIDTH||map.height!==HEIGHT||
     !Array.isArray(map.blocked)||!Array.isArray(map.landmarks)||!exact(map.self,['actorId','x','y','location','alive'])||!validCoord(map.self)||
     map.self.actorId!=='actor-4'||!['village','forest','road'].includes(map.self.location)||map.self.location!==regionAt(map.self)||typeof map.self.alive!=='boolean'||!exact(map.movement,['maxSteps','ticksPerStep','batchTicks'])||
     map.movement.maxSteps!==48||map.movement.ticksPerStep!==1||map.movement.batchTicks!==2||!exact(map.budget,['remainingCommands'])||!safeInt(map.budget.remainingCommands))return false;
-  if(map.mapViewVersion===2&&!validSocialMapView(map))return false;
+  if([2,3].includes(map.mapViewVersion)&&!validSocialMapView(map))return false;
+  if(map.mapViewVersion===3&&!validNegotiationView(map.negotiation,map.tick))return false;
   if(!map.blocked.every(cell=>validCoord(cell)&&exact(cell,['x','y'])))return false;
   if(!map.landmarks.every(item=>item&&typeof item==='object'&&!Array.isArray(item)&&
     (exact(item,['id','name','x','y'])||exact(item,['id','name','x','y','location']))&&typeof item.id==='string'&&typeof item.name==='string'&&validCoord(item)&&

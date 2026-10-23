@@ -2,6 +2,8 @@
 import {createDemoClient} from './demo-runtime-bridge.mjs';
 import {interactionActions,personNavigation,worldTimeView,describeActionReceipt,recordConfirmedAction,socialInteractionActions,socialActionNames} from './demo-runtime-interactions.mjs';
 import {createSocialTextComposer} from './demo-social-composer.mjs';
+import {createNpcDialogue} from './demo-npc-dialogue.mjs';
+const npcDialogue=createNpcDialogue();
 const socialTextComposer=createSocialTextComposer();
 const $=id=>document.getElementById(id),K=window.SandboxDrawingKit;
 const stageContainer=$('stageContainer'),sceneCanvas=$('sceneCanvas'),sceneCtx=sceneCanvas.getContext('2d');
@@ -1496,9 +1498,9 @@ function syncScene(){
  people.forEach((a,i)=>{const b=document.createElement('button');b.textContent=a.name+' · '+a.actorId;b.dataset.actorId=a.actorId;b.style.left=positions[i%3]*100+'%';b.addEventListener('click',()=>showPerson(a.actorId));$('scenePeople').append(b);});
 }
 function showPerson(id){
- if(selectedActorId!==id)socialTextComposer.reset();
- selectedActorId=id;const actor=group?.map.actors.find(a=>a.actorId===id);if(!actor){socialTextComposer.reset();$('personCard').hidden=true;return;}
- socialTextComposer.observe(group,id);
+ if(selectedActorId!==id){socialTextComposer.reset();npcDialogue.reset();}
+ selectedActorId=id;const actor=group?.map.actors.find(a=>a.actorId===id);if(!actor){socialTextComposer.reset();npcDialogue.reset();$('personCard').hidden=true;return;}
+ socialTextComposer.observe(group,id);npcDialogue.observe(group,id);
  $('personCard').hidden=false;$('personName').textContent=actor.name+' · '+role(actor.occupation);
  $('personDetail').textContent=actor.actorId+' · '+place(actor.location)+' · '+(actor.condition==='wounded'?'受伤':actor.alive?'存活':'已逝')+'\n'+(actor.canInteract?'就在附近，可以交互。':'距离较远，先走到人物附近。');
  const social=id==='actor-2'?group.map.social:null;
@@ -1508,9 +1510,9 @@ function showPerson(id){
   const permissions=socialInteractionActions(group,canWrite()&&!playbackBusy);
   for(const key of Object.keys(socialActionNames))$('social-'+key).disabled=!permissions[key];
   $('socialStance').textContent=social.npc?'眼前的态度：'+({calm:'平静',warm:'亲近',wary:'戒备',afraid:'畏惧'})[social.npc.stance]:'走近一些，才能观察他的态度。';
-  $('socialSpeech').textContent=social.npc?.speech?('他上次对你说：“'+social.npc.speech+'”'+(social.npc.memoryRefs.length?'（提起了过去的经历）':'')):'还没有听到新的回应。';
+  $('socialSpeech').textContent=social.npc?.speech?('上次互动的回应：“'+social.npc.speech+'”'+(social.npc.memoryRefs.length?'（提起了过去的经历）':'')):'还没有听到新的回应。';
   $('socialAsset').textContent=social.asset?'猎人的工具包 · 耐久 '+social.asset.condition+'/100 · '+(social.asset.holderId==='actor-4'?'由你持有':'放在歇脚处'):'工具包不在当前视野内。';
-  paintSocialText();
+  paintSocialText();paintNpcNegotiation();
  }
  const gift=group.scene.actors.find(a=>a.actorId===id)?.gift;
  const actions=interactionActions(group,canWrite()&&!playbackBusy,id);
@@ -1544,7 +1546,22 @@ function paintSocialText(){
  }
  for(const button of $('socialTextChoices').children){button.disabled=pending;button.setAttribute('aria-pressed',String(button.textContent===state.selected));}
 }
-function closePerson(){selectedActorId=null;socialTextComposer.reset();$('socialText').value='';$('personCard').hidden=true;}
+function paintNpcNegotiation(){
+ const n=group?.map.negotiation;$('npcNegotiation').hidden=!n;if(!n)return;
+ const write=canWrite()&&!playbackBusy,state=npcDialogue.view(group,write,selectedActorId),pending=client.state().busy||client.state().pending;
+ if($('npcDialogueText').value!==state.text)$('npcDialogueText').value=state.text;
+ $('npcDialogueText').disabled=pending;$('npcDialogueStatus').textContent=state.message;
+ $('npcDialogueGenerate').disabled=!state.canGenerate;$('npcDialogueCommit').disabled=!state.canCommit;
+ $('npcDialoguePreview').hidden=!state.reply;$('npcDialoguePreview').textContent=state.reply;
+ $('npcDialogueAct').hidden=!state.proposal;$('npcDialogueAct').disabled=!state.canAct;$('npcDialogueAct').textContent='确认建议：'+state.proposalLabel;
+ $('npcDialogueHistory').textContent=n.lastTurn?'上次已保存的交谈：你说“'+n.lastTurn.utterance+'”；猎人回应“'+n.lastTurn.reply+'”。':'';
+ const at=t=>'第 '+Math.floor(t/144)+' 天 '+String(Math.floor(t%144/6)).padStart(2,'0')+':'+String(t%6*10).padStart(2,'0');
+ const a=n.agreement,status={offered:'待你接受',accepted:'等待实际修理',ready:'可按约领取',borrowed:'借用中',fulfilled:'已按时归还',breached:'已经逾期', 'returned-late':'逾期后已归还',expired:'已经过期',cancelled:'已谢绝',invalidated:'已经失效'};
+ $('npcAgreement').textContent=a?'当前约定：修理'+a.terms.repairAmount+'点至'+a.targetCondition+'耐久，换借'+a.terms.loanTicks/6+'小时；'+status[a.status]+'。修理进度 '+a.repairProgress+'/'+a.terms.repairAmount+'。'+(a.dueTick!==null?'归还截止：'+at(a.dueTick)+'。':'接受/履约截止：'+at(a.expiresTick)+'。'):'还没有修理换借用的约定。';
+ $('npcPropose').disabled=!(write&&n.canPropose);$('npcAccept').disabled=!(write&&n.canAccept);$('npcDecline').disabled=!(write&&n.canDecline);$('npcClaim').disabled=!(write&&n.canClaim);
+ $('npcRepair').disabled=pending;$('npcLoan').disabled=pending;
+}
+function closePerson(){selectedActorId=null;socialTextComposer.reset();npcDialogue.reset();$('socialText').value='';$('personCard').hidden=true;}
 function canWrite(){const s=client.state();return !!(group&&s.connected&&!s.busy&&!s.pending&&!s.blocked&&group.player.self.identity.alive&&group.capabilities.writes&&group.map.budget.remainingCommands>0);}
 function setHealth(p,w){$('playerHpText').textContent=p+' / 1000';$('enemyHpText').textContent=(w??0)+' / 300';$('playerHpBar').style.width=p/10+'%';$('enemyHpBar').style.width=(w??0)/3+'%';}
 function paintTrade(){
@@ -1632,7 +1649,7 @@ function paintActionResult(receipt,dto){
  }
 }
 async function playReceipt(receipt,dto,confirmedGroup){
- socialTextComposer.confirmed(receipt,dto,confirmedGroup);
+ socialTextComposer.confirmed(receipt,dto,confirmedGroup);npcDialogue.confirmed(receipt,dto,confirmedGroup);
  $('lastReceipt').textContent=JSON.stringify(receipt,null,2);paintActionResult(receipt,dto);
  if(dto.type==='EncounterBegin'&&receipt.outcome==='succeeded')setMode('battle');
  const events=receipt.outcome==='succeeded'?receipt.result?.turnEvents:[];
@@ -1656,6 +1673,18 @@ async function playReceipt(receipt,dto,confirmedGroup){
 const client=createDemoClient({onState:acceptState,onStatus:showStatus,onReceipt:playReceipt,onBusy:paintReadings});
 const handle=run=>{Promise.resolve().then(run).catch(error=>showStatus(error.message,true));};
 const action=(id,type,payload=()=>({}))=>$(id).addEventListener('click',()=>handle(()=>client.submit(type,payload())));
+$('npcDialogueText').addEventListener('input',()=>{npcDialogue.edit($('npcDialogueText').value,group,selectedActorId);paintNpcNegotiation();});
+$('npcDialogueForm').addEventListener('submit',event=>{event.preventDefault();handle(async()=>{const pending=npcDialogue.generate(group,canWrite()&&!playbackBusy,selectedActorId);paintNpcNegotiation();await pending;paintNpcNegotiation();});});
+$('npcDialogueCommit').addEventListener('click',()=>handle(()=>client.submit('PlayerDialogue',npcDialogue.command(group,canWrite()&&!playbackBusy,selectedActorId))));
+$('npcDialogueAct').addEventListener('click',()=>handle(()=>{const p=npcDialogue.proposal(group,canWrite()&&!playbackBusy,selectedActorId);return client.submit(p.type,p.payload);}));
+$('npcTermsForm').addEventListener('submit',event=>{event.preventDefault();handle(()=>{
+ if(selectedActorId!=='actor-2'||!canWrite()||playbackBusy||!group.map.negotiation?.canPropose)throw Error('当前无法提议，请先靠近猎人和工具。');
+ return client.submit('PlayerNegotiate',{targetId:'actor-2',terms:{repairAmount:Number($('npcRepair').value),loanTicks:Number($('npcLoan').value)}});
+});});
+for(const [id,action,permission] of [['npcAccept','accept','canAccept'],['npcDecline','decline','canDecline'],['npcClaim','claim','canClaim']])$(id).addEventListener('click',()=>handle(()=>{
+ if(selectedActorId!=='actor-2'||!canWrite()||playbackBusy||!group.map.negotiation?.[permission])throw Error('当前约定无法进行这项操作。');
+ return client.submit('PlayerAgreement',{targetId:'actor-2',agreementId:group.map.negotiation.agreement.id,action});
+}));
 $('socialText').addEventListener('input',()=>{socialTextComposer.edit($('socialText').value,group,selectedActorId);paintSocialText();});
 $('socialTextReview').addEventListener('click',()=>{socialTextComposer.edit($('socialText').value,group,selectedActorId);paintSocialText();});
 $('socialTextForm').addEventListener('submit',event=>{event.preventDefault();handle(()=>client.submit('PlayerInteract',socialTextComposer.command(group,canWrite()&&!playbackBusy,selectedActorId)));});

@@ -8,6 +8,7 @@ import { MAX_PENDING_REQUESTS } from './runtime/service/service-commit.mjs';
 import { record,fields,integer,requireCondition,fault } from './runtime/core/data-contract.mjs';
 import {parseStrictJson} from './runtime/service/strict-json.mjs';
 import {createMarchRunner} from './runtime/service/march-runner.mjs';
+import {createNpcLanguageProvider,npcLanguageConfig} from './runtime/service/npc-language-provider.mjs';
 const root=fileURLToPath(new URL('./',import.meta.url));
 // Fixed public drawing assets already tracked in this checkout. Never read another worktree.
 const presentationFiles=[['/runtime-presentation.mjs','runtime-presentation.mjs'],['/runtime-playback-state.mjs','runtime-playback-state.mjs'],
@@ -24,9 +25,9 @@ const encounterStaticFiles=new Map([['/runtime-encounter.html',['runtime-encount
   ['/runtime-encounter.mjs',['runtime-encounter.mjs','text/javascript; charset=utf-8']],['/runtime-encounter.css',['runtime-encounter.css','text/css; charset=utf-8']]]);
 const villageStaticFiles=new Map([['/runtime-village.html',['runtime-village.html','text/html; charset=utf-8']],
   ['/runtime-village.mjs',['runtime-village.mjs','text/javascript; charset=utf-8']],['/runtime-village.css',['runtime-village.css','text/css; charset=utf-8']]]);
-const campaignStaticFiles=new Map(['runtime-campaign.html','runtime-campaign.mjs','runtime-campaign.css','runtime-campaign-contract.mjs','runtime-social-contract.mjs','runtime-campaign-battle.mjs','runtime-campaign-battle.css'].map(file=>['/'+file,[file,file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8']]));
+const campaignStaticFiles=new Map(['runtime-campaign.html','runtime-campaign.mjs','runtime-campaign.css','runtime-campaign-contract.mjs','runtime-social-contract.mjs','runtime-negotiation-contract.mjs','runtime-campaign-battle.mjs','runtime-campaign-battle.css'].map(file=>['/'+file,[file,file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8']]));
 const demoStaticFiles=new Map(['demo-runtime.html','demo-runtime.css','demo-runtime-prototype.mjs','demo-runtime-bridge.mjs','demo-runtime-interactions.mjs',
- 'demo-social-language.mjs','demo-social-composer.mjs',
+ 'demo-social-language.mjs','demo-social-composer.mjs','demo-npc-dialogue.mjs',
  'stickman-engine.js','world-combat-fx.js','kit/core.js','kit/effects.js','kit/humanoid.js','kit/appearance-modern.js','kit/accessories.js','kit/structures-lib.js','kit/furniture-lib.js','kit/fixtures.js',
  'stickart/stickart-core.js','stickart/beasts/quad.js','stickart/beasts/deep.js','stickart/beasts/serpent.js','stickart/beasts/mountain.js','stickart/beasts/village.js'].map(file=>['/'+file,[file,file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8']]));
 const mindRoutes=['/api/runtime/minds',...mindStaticFiles.keys()];
@@ -44,7 +45,7 @@ function readCommandBody(req){
   });
 }
 export async function startRuntimeServer(options){
-  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','port','writable','inspectMind','inspectActivity','continuousMarch','runtimeWorker'].includes(k)),'Unknown service option');
+  record(options);requireCondition(Object.keys(options).every(k=>['directory','seed','checkpoint','profile','port','writable','inspectMind','inspectActivity','continuousMarch','runtimeWorker','npcLanguage'].includes(k)),'Unknown service option');
   const port=options.port??18314;integer(port);requireCondition(port<=65535,'Invalid runtime port');
   const inspectMind=options.inspectMind??false;requireCondition(typeof inspectMind==='boolean','Invalid mind inspector mode');
   const inspectActivity=options.inspectActivity??false;requireCondition(typeof inspectActivity==='boolean','Invalid activity inspector mode');
@@ -52,7 +53,8 @@ export async function startRuntimeServer(options){
   const mindAssets=new Map();for(const [url,[file,type]] of mindStaticFiles)mindAssets.set(url,{bytes:await fs.readFile(path.join(root,file)),type});
   const continuousMarch=options.continuousMarch??false;requireCondition(typeof continuousMarch==='boolean','Invalid march runner mode');
   const runtimeWorker=options.runtimeWorker??continuousMarch;requireCondition(typeof runtimeWorker==='boolean'&&(!runtimeWorker||continuousMarch),'Worker mode requires continuous demo');
-  const {port:ignored,inspectMind:ignoredInspector,inspectActivity:ignoredActivity,continuousMarch:ignoredMarch,runtimeWorker:ignoredWorker,...ownerOptions}=options,
+  const language=createNpcLanguageProvider(options.npcLanguage);
+  const {port:ignored,inspectMind:ignoredInspector,inspectActivity:ignoredActivity,continuousMarch:ignoredMarch,runtimeWorker:ignoredWorker,npcLanguage:ignoredLanguage,...ownerOptions}=options,
     createOwner=runtimeWorker?(await import('./runtime/service/runtime-owner-thread.mjs')).createThreadedRuntimeOwner:createRuntimeOwner,
     owner=await createOwner({...ownerOptions,inspectActivity});let actualPort=port,closed=false,pendingRequests=0,sceneBodyReads=0;
   const encounterAssets=new Map();if(owner.encounterAvailable)for(const [url,[file,type]] of encounterStaticFiles){
@@ -81,7 +83,7 @@ export async function startRuntimeServer(options){
     maxAdvanceTicks:[3,4,5].includes(owner.commandDtoVersion)?144000:MAX_SERVICE_ADVANCE_TICKS,
     ...(owner.encounterAvailable?{encounterAvailable:true}:{}),...(owner.sceneAvailable?{sceneAvailable:true}:{}),
     ...(owner.activityAvailable?{activityAvailable:true}:{}),...(owner.mapAvailable?{mapAvailable:true}:{}),
-    ...(owner.playerWorkAvailable===true?{playerWorkAvailable:true}:{}),...(continuousMarch?{continuousMarch:true}:{})});
+    ...(owner.playerWorkAvailable===true?{playerWorkAvailable:true}:{}),...(continuousMarch?{continuousMarch:true,npcLanguage:{enabled:language.enabled}}:{})});
   const streams=new Set();let runner;
   const demoState=()=>({apiVersion:1,capabilities,snapshot:owner.getSnapshot(),map:owner.getMap(),player:owner.getPlayer(),encounter:owner.getEncounter(),scene:owner.getScene(),runner:runner.status()});
   function broadcast(){if(!streams.size)return;const bytes='data: '+JSON.stringify(demoState())+'\n\n';for(const res of streams){if(res.destroyed||res.writableEnded)continue;if(!res.write(bytes))res.destroy();}}
@@ -105,11 +107,18 @@ export async function startRuntimeServer(options){
       if(route.startsWith('/api/runtime/demo-')||demoStaticFiles.has(route)){
         if(!continuousMarch){send(404,envelope('ROUTE_NOT_FOUND','当前入口未启用demo接入。'));return;}
         if(url.search){send(400,envelope('INVALID_INPUT','不接受查询参数。'));return;}
-        if(['/api/runtime/demo-order','/api/runtime/demo-stop'].includes(route)){
+        if(['/api/runtime/demo-order','/api/runtime/demo-stop','/api/runtime/demo-npc-compose'].includes(route)){
           requireCondition(req.method==='POST','Demo orders require POST');
           requireCondition(/^application\/json(?:;\s*charset=utf-8)?$/i.test(req.headers['content-type']??''),'Demo orders require UTF8 JSON');
           requireCondition(sceneBodyReads<MAX_PENDING_REQUESTS,'Command body reads exceed budget','LIMIT_EXCEEDED');sceneBodyReads++;
           let body;try{body=parseStrictJson(await readCommandBody(req),MAX_COMMAND_BYTES);}finally{sceneBodyReads--;}
+          if(route==='/api/runtime/demo-npc-compose'){
+            requireCondition(language.enabled,'Language provider is disabled','MODEL_UNAVAILABLE');
+            requireCondition(owner.getMap().negotiation,'Dialogue requires a new negotiation world','UNSUPPORTED_VERSION');
+            const draft=await language.compose(body,owner.getNpcContext()),snapshot=owner.getSnapshot();
+            if(draft.simulationId!==snapshot.simulationId||draft.revision!==snapshot.revision)throw Object.assign(fault('REVISION_CONFLICT','Dialogue became stale'),{currentRevision:snapshot.revision});
+            send(200,draft);return;
+          }
           if(route==='/api/runtime/demo-stop'){fields(body,['apiVersion']);requireCondition(body.apiVersion===1,'Invalid demo version');await runner.stopAndWait('view-hidden');send(200,{apiVersion:1,runner:runner.status()});return;}
           fields(body,['apiVersion','requestId','type','payload']);requireCondition(body.apiVersion===1&&['MarchSet','MarchPause','MarchResume'].includes(body.type),'Invalid demo order');
           validateSceneCommandDto({version:5,commandId:body.requestId,expectedRevision:0,type:body.type,payload:body.payload},5);
@@ -174,6 +183,10 @@ export async function startRuntimeServer(options){
           try{dto=parseSceneCommandBytes(await readCommandBody(req),owner.commandDtoVersion);}
           finally{sceneBodyReads--;}
           if(continuousMarch)requireCondition(!dto.type.startsWith('March'),'Use runtime order intent','COMMAND_UNSUPPORTED');
+          // Durable retries keep their exact original DTO, even after the signing
+          // secret rotates on restart. The owner still verifies ID/body equality.
+          if(dto.type==='PlayerDialogue'&&!owner.getCommittedCommand(dto.commandId))
+            requireCondition(language.verify(owner.getSnapshot().simulationId,dto),'Invalid or expired dialogue draft','RULE_REJECTED');
           send(200,await (runner?runner.command(dto):owner.submit(dto)));return;
         }
         requireCondition(pendingRequests<MAX_PENDING_REQUESTS,'Command requests exceed budget','LIMIT_EXCEEDED');pendingRequests++;
@@ -195,7 +208,7 @@ export async function startRuntimeServer(options){
     }catch(error){
       const codes={INVALID_INPUT:400,UNSUPPORTED_VERSION:400,COMMAND_UNSUPPORTED:400,RULE_REJECTED:422,LIMIT_EXCEEDED:413,
         REVISION_CONFLICT:409,COMMAND_ID_CONFLICT:409,SAVE_FAILED:503,OWNER_BUSY:503,INVALID_SERVICE_COMMIT:503,
-        MIND_UNAVAILABLE:404,MIND_ACTOR_UNAVAILABLE:404};
+        MIND_UNAVAILABLE:404,MIND_ACTOR_UNAVAILABLE:404,MODEL_UNAVAILABLE:503,MODEL_BUSY:429,MODEL_BUDGET:429,MODEL_TIMEOUT:504,MODEL_OUTPUT_INVALID:502};
       const status=codes[error.code]??500,body=envelope(status===500?'RUNTIME_UNAVAILABLE':error.code,status===409?'读数或请求已发生冲突，请重新读取。':'世界请求未能完成。');
       if(error.code==='REVISION_CONFLICT')body.currentRevision=error.currentRevision;
       send(status,body,undefined,{Connection:'close'});
@@ -209,7 +222,7 @@ export async function startRuntimeServer(options){
   });
   try{await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});actualPort=server.address().port;}
   catch(cause){await owner.close();throw Object.assign(fault(cause.code==='EADDRINUSE'?'PORT_IN_USE':'SERVER_START_FAILED','Runtime service could not listen'),{cause});}
-  return Object.freeze({url:`http://127.0.0.1:${actualPort}`,async close(){if(closed)return;closed=true;if(runner)await runner.close();for(const res of streams)res.end();await new Promise((resolve,reject)=>server.close(e=>e?reject(e):resolve()));await owner.close();}});
+  return Object.freeze({url:`http://127.0.0.1:${actualPort}`,async close(){if(closed)return;closed=true;language.close();if(runner)await runner.close();for(const res of streams)res.end();await new Promise((resolve,reject)=>server.close(e=>e?reject(e):resolve()));await owner.close();}});
 }
 if(process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   try{
@@ -222,7 +235,7 @@ if(process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.
     const options={directory:flags.get('--data-dir')??path.join(root,'artifacts','world-runtime-d1','dev-world'),
       ...(flags.has('--port')?{port:decimal(flags.get('--port'))}:{}),...(flags.has('--seed')?{seed:decimal(flags.get('--seed'))}:{}),
       ...(flags.has('--checkpoint')?{checkpoint:flags.get('--checkpoint')}:{}),...(flags.has('--profile')?{profile:flags.get('--profile')}:{}),writable:flags.get('--writable')==='true',
-      inspectMind:flags.get('--inspect-mind')==='true',inspectActivity:flags.get('--inspect-activity')==='true',continuousMarch:flags.get('--continuous-march')==='true'};
+      inspectMind:flags.get('--inspect-mind')==='true',inspectActivity:flags.get('--inspect-activity')==='true',continuousMarch:flags.get('--continuous-march')==='true',npcLanguage:npcLanguageConfig()};
     const service=await startRuntimeServer(options);console.log(JSON.stringify({status:'ready',url:service.url,writes:options.writable}));
     let stopping=false;const stop=async()=>{if(stopping)return;stopping=true;await service.close();process.stdin.pause();console.log(JSON.stringify({status:'stopped'}));};
     process.once('SIGINT',()=>{stop().catch(()=>{process.exitCode=1;});});process.once('SIGTERM',()=>{stop().catch(()=>{process.exitCode=1;});});

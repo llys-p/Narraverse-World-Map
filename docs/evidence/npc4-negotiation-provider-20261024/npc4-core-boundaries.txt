@@ -1,0 +1,68 @@
+TAP version 13
+# Subtest: hunter counters duration/repair terms; accepted promise requires real work before a unique loan and timely return
+ok 1 - hunter counters duration/repair terms; accepted promise requires real work before a unique loan and timely return
+  ---
+  duration_ms: 706.630876
+  type: 'test'
+  ...
+# Subtest: overdue loan records breach once, retains harm after late return, and replays exactly
+ok 2 - overdue loan records breach once, retains harm after late return, and replays exactly
+  ---
+  duration_ms: 3575.548367
+  type: 'test'
+  ...
+# Subtest: stale offer, duplicate acceptance, expiry, changed tool condition and unaffordable repair claims do not grant a loan
+ok 3 - stale offer, duplicate acceptance, expiry, changed tool condition and unaffordable repair claims do not grant a loan
+  ---
+  duration_ms: 7787.117616
+  type: 'test'
+  ...
+# Subtest: dialogue is attributed speech, proposals never execute, private context excludes other actors and fabricated references are refused
+ok 4 - dialogue is attributed speech, proposals never execute, private context excludes other actors and fabricated references are refused
+  ---
+  duration_ms: 110.375467
+  type: 'test'
+  ...
+# Subtest: legacy social fixture refuses new commands and its original repair/loan behavior remains available
+ok 5 - legacy social fixture refuses new commands and its original repair/loan behavior remains available
+  ---
+  duration_ms: 269.976748
+  type: 'test'
+  ...
+# Subtest: agreement knowledge waits for discovery of unseen theft; unavailable and dying parties cannot complete a deal
+not ok 6 - agreement knowledge waits for discovery of unseen theft; unavailable and dying parties cannot complete a deal
+  ---
+  duration_ms: 15076.447095
+  type: 'test'
+  location: '<repo>/tests/simulation/npc-negotiation.test.mjs:79:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'accepted'
+    - 'invalidated'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'invalidated'
+  actual: 'accepted'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<repo>/tests/simulation/npc-negotiation.test.mjs:96:79)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 5
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 27690.262111

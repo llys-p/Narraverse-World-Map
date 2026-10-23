@@ -45,7 +45,7 @@ export function personNavigation(group,writable,actorId){
   group.encounter.encounter?.status!=='active'&&group.map.budget.remainingCommands>=3),target:{x:actor.x,y:actor.y}};
 }
 
-const actionNames={PlayerWork:'村庄工作',PlayerRest:'休整',PlayerGiftFood:'赠送粮食',AdvanceTime:'等待',
+const actionNames={PlayerNegotiate:'提出修理换借用',PlayerAgreement:'处理约定',PlayerDialogue:'与猎人交谈',PlayerWork:'村庄工作',PlayerRest:'休整',PlayerGiftFood:'赠送粮食',AdvanceTime:'等待',
  MarchSet:'下达行军目的地',MarchPause:'暂停行军',MarchResume:'继续行军',MarchStep:'行军',
  EncounterBegin:'开始遭遇',EncounterAction:'战斗回合',EncounterCancel:'取消遭遇'};
 const reasons={RULE_REJECTED:'当前条件不满足；请检查所在地点、疲劳、工作间隔或可用资产。',
@@ -64,7 +64,7 @@ export function describeActionReceipt(receipt,dto){
   for(const [key,label] of [['wallet','金币'],['fatigue','疲劳'],['playerHealth','生命'],['wolfHealth','森林狼生命']])delta(label,result?.before?.[key],result?.after?.[key]);
   for(const [key,label] of [['food','粮食'],['herbs','药草']])delta(label,result?.before?.inventory?.[key],result?.after?.inventory?.[key]);
   if(dto.type==='PlayerGiftFood')changes.push('粮食 -'+result.quantity,'对方已收到粮食');
-  if(dto.type==='PlayerInteract'){
+  if(['PlayerInteract','PlayerNegotiate','PlayerAgreement','PlayerDialogue'].includes(dto.type)){
    if(result.speech)changes.push('猎人：'+result.speech);
    if(result.asset){delta('工具耐久',result.asset.before.condition,result.asset.after.condition);
     if(result.asset.before.holderId!==result.asset.after.holderId)changes.push(result.asset.after.holderId==='actor-4'?'工具由你持有；所有者仍为猎人。':'工具已交还猎人。');}
@@ -74,7 +74,7 @@ export function describeActionReceipt(receipt,dto){
  }
  const minutes=receipt.durationTicks*10,hours=Math.floor(minutes/60),remaining=minutes%60;
  const elapsed=Number.isSafeInteger(minutes)?(hours?hours+'小时':'')+(remaining?remaining+'分钟':''):receipt.durationTicks+'刻';
- const socialEffect=dto.type==='PlayerInteract'&&succeeded?({caught:'被发现并阻止',resisted:'对方抵抗',refused:'对方拒绝',taken:'已拿走工具',lent:'对方同意借出'})[result.effect]:null;
+ const socialEffect=['PlayerInteract','PlayerNegotiate','PlayerAgreement'].includes(dto.type)&&succeeded?({offered:'条件已提出',countered:'对方提出调整条件',accepted:'约定已接受',declined:'提议已拒绝',caught:'被发现并阻止',resisted:'对方抵抗',refused:'对方拒绝',taken:'已拿走工具',lent:'对方同意借出'})[result.effect]:null;
  return {commandId:receipt.commandId,type:dto.type,outcome:receipt.outcome,summary:name+' · '+(socialEffect??(succeeded?'已完成':'未完成')),changes,
   reason:succeeded?'':reasons[result?.reasonCode??result?.code]??'当前世界状态不允许完成这项操作。',
   time:'世界时刻 '+receipt.fromTick+' → '+receipt.tick+' · '+(receipt.durationTicks?'推进'+elapsed+'（'+receipt.durationTicks+'刻）':'未推进世界时间')};

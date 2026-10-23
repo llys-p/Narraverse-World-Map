@@ -1,0 +1,13 @@
+file://<detached-parent>/runtime/core/data-contract.mjs:8
+  return Object.assign(new Error(message), { code });
+                       ^
+
+Error: Campaign derivation requires an audited immutable parent
+    at fault (file://<detached-parent>/runtime/core/data-contract.mjs:8:24)
+    at requireCondition (file://<detached-parent>/runtime/core/data-contract.mjs:11:25)
+    at Module.deriveCampaignBundle (file://<detached-parent>/runtime/core/world-state.mjs:63:3)
+    at file://<repo>/scripts/check-npc4-legacy-replay.mjs:22:56 {
+  code: 'INVALID_INPUT'
+}
+
+Node.js v24.19.0

@@ -10,12 +10,16 @@ import {validateBundle,createAuditedBundle} from './world-state.mjs';
 import {MARCH_TYPES,requireMarchBudget,createCampaignMap,validateMapPoint,validateCampaignMap,advanceMapTick,finishMapTick,auditMarch,commitMarch,marchResult,mapDistance} from './campaign-map.mjs';
 import {NPC_MAP_VERSION,prepareHunterTravel,hunterActionAtSite} from './campaign-npc-agency.mjs';
 import {SOCIAL_MAP_VERSION,SOCIAL_COMMAND,preflightSocialPayload,auditSocial,commitSocial,observeSocialGift,observeSocialTick} from './npc-social.mjs';
+import {NEGOTIATION_MAP_VERSION,NEGOTIATION_COMMANDS} from '../../runtime-negotiation-contract.mjs';
+import {preflightNegotiation,auditNegotiation,commitNegotiation,observeAgreementAction,observeAgreementTick} from './npc-negotiation.mjs';
 export const CAMPAIGN_RULES='d-campaign-v1',CAMPAIGN_PROFILE='campaign-village';
 export function preflightCampaignIntent(dto){
  inspectDescriptorTree(dto);fields(dto,['version','commandId','expectedRevision','type','payload']);
  requireCondition(dto.version===5,'Campaign requires command DTO5','UNSUPPORTED_VERSION');
  requireCondition(dto.type!=='PlayerTravel','Campaign travel requires a march order','COMMAND_UNSUPPORTED');
- if(dto.type===SOCIAL_COMMAND){
+ if(NEGOTIATION_COMMANDS.includes(dto.type)){
+  preflightSceneIntent({...dto,type:'PlayerRest',payload:{}},5);preflightNegotiation(dto);
+ }else if(dto.type===SOCIAL_COMMAND){
   preflightSceneIntent({...dto,type:'PlayerRest',payload:{}},5);preflightSocialPayload(dto.payload);
  }else if(MARCH_TYPES.includes(dto.type)){
   // Reuse the exact scene envelope, ID/namespace and byte-budget checks.
@@ -31,7 +35,7 @@ const base=Object.freeze({
   const map=s.world.mapModel;
   // The base planner needs its exact field set. Reattach the authoritative map only
   // while its committed command passes through the engine's spatial action gate.
-  const commit=[NPC_MAP_VERSION,SOCIAL_MAP_VERSION].includes(map.version)?raw=>{
+  const commit=[NPC_MAP_VERSION,SOCIAL_MAP_VERSION,NEGOTIATION_MAP_VERSION].includes(map.version)?raw=>{
    s.world.mapModel=map;try{return c(raw);}finally{delete s.world.mapModel;}
   }:c;
   return detached(s,()=>campaignBaseRuntimeHooks.beforeSystems(s,e,t,a,commit));
@@ -44,14 +48,15 @@ function campaignGift(world){const plan=auditGift(world),n=world.mapModel.npcs.f
  return plan.outcome==='succeeded'&&mapDistance(world.mapModel.position,n)>1?{...plan,outcome:'rejected',reasonCode:'NOT_COLOCATED'}:plan;}
 const cached=new Map();
 function hooks(version='1'){
- requireCondition(['1','2','3'].includes(version),'Unsupported campaign fixture','UNSUPPORTED_VERSION');
+ requireCondition(['1','2','3','4'].includes(version),'Unsupported campaign fixture','UNSUPPORTED_VERSION');
  if(cached.has(version))return cached.get(version);
- const npcAgency=version!=='1',social=version==='3';
+ const npcAgency=version!=='1',social=['3','4'].includes(version);
  const result=createSceneEncounterRuntimeHooks(base,{rules:CAMPAIGN_RULES,fixture:CAMPAIGN_PROFILE,fixtureVersion:version,campaign:true,
  preflight:preflightCampaignIntent,auditGift:campaignGift,commitGift:(world,...args)=>{const fact=commitGift(world,...args);if(social)observeSocialGift(world,fact);return fact;},auditWork:auditPlayerWork,observe:observeSceneCommand,
- extendWorld:world=>({...world,mapModel:createCampaignMap(npcAgency,social)}),validateWorld:validateCampaignWorldState,
- beforeTick:(world,tick,append,events,id)=>{if(social)observeSocialTick(world,tick,append);if(npcAgency)prepareHunterTravel(world,events,tick,id);advanceMapTick(world,tick,append);},
- auditDirect:auditSocial,commitDirect:commitSocial,
+ extendWorld:world=>({...world,mapModel:createCampaignMap(npcAgency,social,version==='4')}),validateWorld:validateCampaignWorldState,
+ beforeTick:(world,tick,append,events,id)=>{if(social)observeSocialTick(world,tick,append);if(version==='4')observeAgreementTick(world,tick,append);if(npcAgency)prepareHunterTravel(world,events,tick,id);advanceMapTick(world,tick,append);},
+ auditDirect:(world,dto)=>auditNegotiation(world,dto)??auditSocial(world,dto),
+ commitDirect:(world,dto,tick,seq)=>NEGOTIATION_COMMANDS.includes(dto.type)?commitNegotiation(world,dto,tick,seq):observeAgreementAction(world,dto,commitSocial(world,dto,tick,seq),tick,seq),
  afterTick:finishMapTick,auditMap:auditMarch,commitMap:commitMarch,mapResult:marchResult,requireBudget:requireMarchBudget,
  adjustPlan:(dto,world,plan)=>world.mapModel.order?.status==='marching'&&!MARCH_TYPES.includes(dto.type)?{...plan,outcome:'rejected',reasonCode:'RULE_REJECTED',durationTicks:0}:plan});
  cached.set(version,result);return result;
@@ -64,6 +69,7 @@ export const campaignRuntimeHooks=Object.freeze({
 });
 export const createNpcCampaignWorld=(...args)=>hooks('2').createWorld(...args);
 export const createSocialCampaignWorld=(...args)=>hooks('3').createWorld(...args);
+export const createNegotiationCampaignWorld=(...args)=>hooks('4').createWorld(...args);
 // A single bounded proof of this pure structural predicate, keyed by exact JSON
 // bytes and tick, never by mutable identity or a caller-provided trust flag.
 // Input descriptors are always inspected and detached before comparing bytes.

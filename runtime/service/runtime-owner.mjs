@@ -6,7 +6,8 @@ import { createPlayerVillage } from '../fixtures/player-village.mjs';
 import { createPlayerPlayVillage } from '../fixtures/player-play-village.mjs';
 import { createEncounterVillage } from '../fixtures/encounter-survival-village.mjs';
 import {createLivelihoodVillage} from '../fixtures/scene-livelihood-village.mjs';
-import {createCampaignVillage,createNpcCampaignVillage,createSocialCampaignVillage} from '../fixtures/campaign-village.mjs';
+import {createCampaignVillage,createNpcCampaignVillage,createSocialCampaignVillage,createNegotiationCampaignVillage} from '../fixtures/campaign-village.mjs';
+import {npcDialogueContext} from '../core/npc-negotiation.mjs';
 import {requireMarchBudget} from '../core/campaign-map.mjs';
 import { createSceneVillage } from '../fixtures/scene-survival-village.mjs';
 import { memorySystems } from '../fixtures/memory-village.mjs';
@@ -82,7 +83,7 @@ export async function createRuntimeOwner(options,io=fs){
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
   const inspectActivity=options.inspectActivity??false;requireCondition(typeof inspectActivity==='boolean','Invalid activity inspector mode');
-  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village','encounter-survival-village','scene-survival-village','scene-livelihood-village','campaign-village','campaign-npc-village','campaign-social-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
+  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village','encounter-survival-village','scene-survival-village','scene-livelihood-village','campaign-village','campaign-npc-village','campaign-social-village','campaign-negotiation-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
   requireCondition(options.profile===undefined || options.checkpoint===undefined,'Profile and checkpoint are mutually exclusive');
   if(options.seed!==undefined){integer(options.seed);requireCondition(options.seed<=0xffffffff,'Invalid runtime seed');}
   if(options.checkpoint!==undefined)requireCondition(typeof options.checkpoint==='string' && options.checkpoint.length>0 && options.seed===undefined,'Checkpoint cannot reset seed');
@@ -117,6 +118,7 @@ export async function createRuntimeOwner(options,io=fs){
         options.profile==='campaign-village'?createCampaignVillage:
         options.profile==='campaign-npc-village'?createNpcCampaignVillage:
         options.profile==='campaign-social-village'?createSocialCampaignVillage:
+        options.profile==='campaign-negotiation-village'?createNegotiationCampaignVillage:
         options.profile==='scene-livelihood-village'?createLivelihoodVillage:
         options.profile==='scene-survival-village'?createSceneVillage:
         options.profile==='player-play-village'?createPlayerPlayVillage:options.profile==='player-village'?createPlayerVillage:createPersonalityNeutral;
@@ -212,6 +214,7 @@ export async function createRuntimeOwner(options,io=fs){
     return Object.freeze({playerAvailable,playerActionsAvailable,mindAvailable,encounterAvailable,commandDtoVersion:serviceFormatVersion===11?5:serviceFormatVersion===10?4:encounterAvailable?3:1,
       ...([10,11].includes(serviceFormatVersion)?{playerWorkAvailable:true}:{}),
       ...(mapAvailable?{mapAvailable:true,getMap(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(mapProjection);},
+        getNpcContext(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return npcDialogueContext(state.bundle);},
         getCommittedCommands(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData([...new Map([...state.bundle.snapshot.world.encounterModel.inputHistory,...state.commands].map(entry=>[entry.dto.commandId,entry])).values()]);},
         getCommittedCommand(commandId){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');const entry=state.commands.find(c=>c.dto.commandId===commandId)??state.bundle.snapshot.world.encounterModel.inputHistory.find(c=>c.dto.commandId===commandId);return entry?cloneData(entry):null;}}:{}),
       getSnapshot(){requireCondition(session!==null,'Runtime owner is closed','OWNER_CLOSED');return cloneData(projection);},

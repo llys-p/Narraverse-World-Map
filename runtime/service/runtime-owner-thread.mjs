@@ -137,6 +137,7 @@ export async function createThreadedRuntimeOwner(options) {
     getEncounter() { return readProjection('getEncounter'); },
     getScene() { return readProjection('getScene'); },
     getMap() { return readProjection('getMap'); },
+    getNpcContext() { return readProjection('getNpcContext'); },
     getActivity() { return readProjection('getActivity'); },
     getMindInspector() { return readProjection('getMindInspector'); },
     getCommittedCommand(commandId) {

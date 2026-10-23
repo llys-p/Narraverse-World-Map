@@ -1,0 +1,55 @@
+TAP version 13
+# Subtest: hunter counters duration/repair terms; accepted promise requires real work before a unique loan and timely return
+ok 1 - hunter counters duration/repair terms; accepted promise requires real work before a unique loan and timely return
+  ---
+  duration_ms: 649.672629
+  type: 'test'
+  ...
+# Subtest: overdue loan records breach once, retains harm after late return, and replays exactly
+ok 2 - overdue loan records breach once, retains harm after late return, and replays exactly
+  ---
+  duration_ms: 3315.042819
+  type: 'test'
+  ...
+# Subtest: stale offer, duplicate acceptance, expiry, changed tool condition and unaffordable repair claims do not grant a loan
+not ok 3 - stale offer, duplicate acceptance, expiry, changed tool condition and unaffordable repair claims do not grant a loan
+  ---
+  duration_ms: 54.194235
+  type: 'test'
+  location: '<repo>/tests/simulation/npc-negotiation.test.mjs:49:1'
+  failureType: 'testCodeFailure'
+  error: 'Invalid negotiation result'
+  code: 'INVALID_INPUT'
+  stack: |-
+    fault (file://<repo>/runtime/core/data-contract.mjs:8:24)
+    requireCondition (file://<repo>/runtime/core/data-contract.mjs:11:25)
+    commitNegotiation (file://<repo>/runtime/core/npc-negotiation.mjs:73:2)
+    Object.commitDirect (file://<repo>/runtime/core/scene-campaign-runtime.mjs:59:77)
+    executeIntentFor (file://<repo>/runtime/core/encounter-runtime.mjs:822:42)
+    Object.executeIntent (file://<repo>/runtime/core/encounter-runtime.mjs:1496:31)
+    computeCampaignIntent (file://<repo>/runtime/core/scene-campaign-runtime.mjs:97:47)
+    deriveCampaignBundle (file://<repo>/runtime/core/world-state.mjs:69:18)
+    run (file://<repo>/tests/simulation/npc-negotiation.test.mjs:14:29)
+    TestContext.<anonymous> (file://<repo>/tests/simulation/npc-negotiation.test.mjs:50:18)
+  ...
+# Subtest: dialogue is attributed speech, proposals never execute, private context excludes other actors and fabricated references are refused
+ok 4 - dialogue is attributed speech, proposals never execute, private context excludes other actors and fabricated references are refused
+  ---
+  duration_ms: 90.075579
+  type: 'test'
+  ...
+# Subtest: legacy social fixture refuses new commands and its original repair/loan behavior remains available
+ok 5 - legacy social fixture refuses new commands and its original repair/loan behavior remains available
+  ---
+  duration_ms: 200.746208
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 4
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4437.732055

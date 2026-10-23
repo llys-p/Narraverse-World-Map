@@ -1,0 +1,226 @@
+{
+  "task": "NPC4 repair-for-loan agreement and optional language provider",
+  "date": "2026-10-24",
+  "branch": "codex/npc-negotiation-provider-20261023",
+  "parent": "c1790e55a4b5730dacf2d41b9616de9286bf2cad",
+  "environment": {
+    "platform": "Linux",
+    "node": "v24.19.0"
+  },
+  "final": {
+    "distinctTests": 36,
+    "newTests": 11,
+    "adjacentTests": 25,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "legacyFixturesByteEqual": [
+      "1",
+      "2",
+      "3"
+    ],
+    "actualModelCalls": 0,
+    "actualBrowserVerified": false,
+    "windowsLauncherVerified": false
+  },
+  "runs": {
+    "delivery": "npc4-delivery-final: 11/11, 30694.260 ms / 180000 ms",
+    "adjacent": "npc4-adjacent-final: 22/22, 38038.512 ms / 180000 ms",
+    "service": "npc4-service-final: 4/4, 16986.192 ms / 180000 ms; NPC4 consumer also counted in delivery, do not double-count",
+    "legacy": "npc4-legacy-green: 3 fixtures, 4/4/8 commands, 4668.605 ms / 120000 ms; not additional unit tests"
+  },
+  "provenance": "Delivery reruns all 11 new tests after replacing the NPC4 numeric-tick deadline wording with player-facing time. Adjacent tests and the parent-tree comparison preceded only that NPC4 wording/UI change and indentation. Tests use controlled local HTTP responses, not a real language model. All terminal runs exit 0 without timeout.",
+  "red": [
+    {
+      "log": "npc4-core-first.txt",
+      "result": "4/5",
+      "cause": "Production compared repair-term objects using JSON key order after canonical cloning. Replaced with structural comparison and direct field comparison; expected terms unchanged."
+    },
+    {
+      "log": "npc4-core-boundaries.txt",
+      "result": "5/6",
+      "cause": "New test expected the before-tick observer to record death caused later by that tick settlement. Updated test to verify immediate action rejection at tick144 and closure observation at tick145. No runtime death/action gate weakened."
+    },
+    {
+      "log": "npc4-legacy-final.txt",
+      "result": "probe failed before comparison",
+      "cause": "Probe supplied current-tree system functions to baseline-tree certification. Each detached tree now uses its own canonical registry; production code unchanged."
+    }
+  ],
+  "reviewFix": "An unseen theft/damage could have changed the agreement knowledge before the hunter saw it. Agreement updates now wait for actual witness or discovery; discovery does not name a culprit. The final core test covers this.",
+  "limits": [
+    "Only one hunter repair-for-loan agreement, fixed persona and recent/important memory selection; not arbitrary negotiation, autonomous missions, rumor propagation or personality adaptation.",
+    "Strict JSON, valid references and HMAC protect structure/authority, not language truth or semantic interpretation. Actual provider quality/cost/latency untested.",
+    "Browser/SSE globals are simulated; real worker, HTTP, save files, normal reopen and public audit are exercised.",
+    "Midnight death immediately blocks actions; agreement closure is observed on the following elapsed tick.",
+    "Existing world128-command budget, cold-open/long-history cost and limited employment remain.",
+    "No deployment, main merge, actual save migration, daily-service changes, paid calls or E1/Laya restart. Control tree and Projects require their own review."
+  ],
+  "sourceSha256": {
+    ".env.example": "0f43c5527a6a25daf48cc7333b50f2714b9919a4afe9af349199e6d3ff708c73",
+    "PROJECT_CONTEXT.md": "b81d0191dec71cf420a74eb1faa09caf1580ce4bd168cb8489be3eb2cdcd82f5",
+    "README.md": "123d0ea20c6b6f2d4c0c5829509e16528c4455f4d387fe54c21f534514bc61e3",
+    "Start-NPC-Negotiation.cmd": "7ec267849edd64b286e77630aa4f58a3ee0d9ed0a1f40e136304a7c24494d58d",
+    "demo-npc-dialogue.mjs": "37e6225939e422b30092860555a49247b7fe35c166ef0c7ad3b1d302ee0caa05",
+    "demo-runtime-bridge.mjs": "b04ec662e03cf36e2f151398853c862fafcf288887dd23acba94e4f27651fb45",
+    "demo-runtime-interactions.mjs": "b74f081196ffd0c3f7a07de450b52b4c2e6cd233370915af3cf0414476ac82d6",
+    "demo-runtime-prototype.mjs": "6c1b81b1643584caebe2aac50d69470da349f8bd21738ed8078b8b1a1a328e68",
+    "demo-runtime.html": "92bc2207089a0844449404654bc2a8d999b5b6f345476d3643abc8c021834036",
+    "docs/runtime/NPC4-NEGOTIATION-PROVIDER.md": "8dbf86a112f97bfcc87197ac7bf71a70695c43743a33a119606df85a7b73d317",
+    "runtime-campaign-contract.mjs": "435f0a549bd3dbd4756ad3458ea76ede52fe5239895d6ffc173e19ec9b97e11c",
+    "runtime-campaign.mjs": "015a54c5f7e8796302248cef37ad5ab8b8dfaff0596dcfa798a95f8c78cc6b11",
+    "runtime-negotiation-contract.mjs": "1dffab4cb7e2889d920e7b106967aca33c37586b6f2f9b2525040a77bd799e8a",
+    "runtime-server.mjs": "1cb3c8b7cb4c85676d91ef2f0ff22d5c6a1c3d77b8117ba20a2a715081d1c968",
+    "runtime/core/campaign-map.mjs": "1eba17157ca95bd4e9c7c3ea927288dccfa7e4d4ca1785d754c97f8d95c70282",
+    "runtime/core/campaign-npc-agency.mjs": "3a1c27ab4525a789425a241f4f290ed16c956fac669299e7b61c3c695900b239",
+    "runtime/core/event-log.mjs": "c8c7a4f61437c3c85a87a2919e2d03709baeae14c2ad725e379d09e70b78f93f",
+    "runtime/core/npc-negotiation.mjs": "76170460fa0aaee7ad9aaa74b4e78e4bb0907917439645d5e7977dc2bedae67c",
+    "runtime/core/npc-social.mjs": "01fc0c28531785f496fe3937b664423f171b0e520897325e1eaa65286bfb63ca",
+    "runtime/core/scene-campaign-runtime.mjs": "c7fd4ab438310387a009588cd975f611c5763b274ca8bd36ff146ef460fe07bc",
+    "runtime/core/world-state.mjs": "5087517da2740bbec24a50bd2e998c1359c4df1818cc3002b22a0b114fefa8f4",
+    "runtime/fixtures/campaign-village.mjs": "ae0f8a8c457560dd6e3a530a772bbe1a664dd79ce46a6985bca627841fef73f4",
+    "runtime/service/http-contract.mjs": "810773af1bf0cd988ffa316a045ffe6f540668d052bef84d9096ddda90a6e0ab",
+    "runtime/service/npc-language-provider.mjs": "f77ef7b937b1aae588d2420ca61c588aeef6b7e686084a794023862cd61bf63c",
+    "runtime/service/runtime-owner-thread.mjs": "303a60864f2824c96036d70d27d876a158a13e13aa9b85b706232ec4a8b9bd30",
+    "runtime/service/runtime-owner-worker.mjs": "2bff457263c4298b950aef23be3eb8e71de28fcf8a72a388f55373b510e58f24",
+    "runtime/service/runtime-owner.mjs": "bb3f3c6a9d4197d32500d0893635db6fa2180db68661253adb453b10350bf2cb",
+    "scripts/check-npc4-legacy-replay.mjs": "121e1e28dee67845345fef1843652e83e0b9efd6f67aa219a98a9682189007ca",
+    "scripts/run-d4e12-check.py": "436214d623822903b79f5ffb1a272ce811c9c79d6c0a979bb1f6d2a1a4ca4ab5",
+    "tasks/NPC4-NEGOTIATION-PROVIDER-TASK.md": "3ed2382498e6fb853a0bae17dbdafcc8b4e94018ed823e4fbe3e57a10c245eca",
+    "tests/simulation/demo-action-results.test.mjs": "2b2f8bf684b0602b1ae8e682f1d65a338bbeaa027d867cfb0b339bd8789a0991",
+    "tests/simulation/demo-command-recovery.test.mjs": "26c160d46f7af3c2d7f0110a9a8da963c625a173463ff943c05633a985c90eb6",
+    "tests/simulation/demo-owner-publication.test.mjs": "251dd275205d40afa25db8cc2f016ce582939945c031758cb020facd49063683",
+    "tests/simulation/npc-language-provider.test.mjs": "be89019ec9ccef855002b10ddb99ea0da426fba597627a32e7a190fe745fadf0",
+    "tests/simulation/npc-language-service.test.mjs": "4a31f9927a9d874167146a7394ec0ab3aabe9bb6118e722524f6a9ddac150c06",
+    "tests/simulation/npc-language.test.mjs": "1ad901e1f39e046e883680bb04a0a1ce64226686fb83d4d0c58fc61630412b3b",
+    "tests/simulation/npc-negotiation-service.test.mjs": "d4d2fdc71998696766c7d82ab733a2ae325d17f9b581dfccd0898039c153183a",
+    "tests/simulation/npc-negotiation.test.mjs": "71ab1c5fa14d42a394851d97665aee0da1a2159eab0378322c9b7c137c5f6b3e",
+    "tests/simulation/npc-social-service.test.mjs": "cb41e07f642a5df02adf95ee6887860152577a6907bfc43b5ec310f9895cb9a9",
+    "tests/simulation/npc-social.test.mjs": "90d7c2bb356af27475e10b4abe94a827e2c01d74402b2bdcba55533fcf1b3004"
+  },
+  "evidence": {
+    "npc4-adjacent-final.json": {
+      "bytes": 490,
+      "sha256": "1e2ab4a3dfbfe55e95b3cec69622763da1142e157873eac68b776f25cf6ba9be"
+    },
+    "npc4-adjacent-final.txt": {
+      "bytes": 5892,
+      "sha256": "947f554cd8ec51343f3898523fba89d1bc14de98087033deb068acb0955d6581"
+    },
+    "npc4-core-boundaries.json": {
+      "bytes": 341,
+      "sha256": "955978229ca4fd371d08ec4a4d5a34f29d5c99db3fff5551c0a78d510e1fc016"
+    },
+    "npc4-core-boundaries.txt": {
+      "bytes": 2689,
+      "sha256": "319d95f0140b122a19cf60cdc1de61b8b209abc1168c2e5b54421d0079c226f0"
+    },
+    "npc4-core-final.json": {
+      "bytes": 395,
+      "sha256": "7ee41f74532d0cd3ec57f363f955bc9a93fa7e0e02866263123bb1b3e7b9153f"
+    },
+    "npc4-core-final.txt": {
+      "bytes": 3063,
+      "sha256": "40969a1eaa183d0064d9d81ab58c76cb205675b58fce160f1aaa8b00ea186d8d"
+    },
+    "npc4-core-first.json": {
+      "bytes": 340,
+      "sha256": "4bb6b921978d51adfd18a4564f4a1a37d025dd3474bef1ec1890ddade935f3cd"
+    },
+    "npc4-core-first.txt": {
+      "bytes": 2538,
+      "sha256": "4dc1653c3851faffff117a27c8ad038b814e355fd00bfd2df23ccf0bed471e64"
+    },
+    "npc4-core-fixed.json": {
+      "bytes": 341,
+      "sha256": "958e11d187ce1006510636d47f998b774b86be117114384208cda7ebba4d4d36"
+    },
+    "npc4-core-fixed.txt": {
+      "bytes": 1572,
+      "sha256": "fc9d80b94f772052eb2dd7ceb15a34fd9b388bc7a6b11f12c5c55ebfbc918e04"
+    },
+    "npc4-delivery-final.json": {
+      "bytes": 452,
+      "sha256": "d704af7c8870a7bd8a61cd4d210b800961f828d2776df52b5051a4da201cdbb6"
+    },
+    "npc4-delivery-final.txt": {
+      "bytes": 3481,
+      "sha256": "dce6ba3c66acfb664f589b3a9f71f64ffa430b5a03332fd6ccb63522e2f4416e"
+    },
+    "npc4-legacy-final.json": {
+      "bytes": 290,
+      "sha256": "533054dec35492ded77798223ad8859c8e6c681a74f31e9f4613db0e7aa0dfdd"
+    },
+    "npc4-legacy-final.txt": {
+      "bytes": 572,
+      "sha256": "47e564debb4115a67ec332d291b86dfce34f03b7f9434e88e6baf079345b13a1"
+    },
+    "npc4-legacy-green.json": {
+      "bytes": 291,
+      "sha256": "24e09d8608b6449d00467b371d12b30d1283415bc56ef740a1430897e4431105"
+    },
+    "npc4-legacy-green.txt": {
+      "bytes": 504,
+      "sha256": "df38d22b3c06073465507faac9eee4a71b83ecff90b5e7e20da254bf0fbba1f8"
+    },
+    "npc4-provider-first.json": {
+      "bytes": 345,
+      "sha256": "3b145440fee4b3772a6ae92a5499274bb8947a7f721a2214feb30df9aa33284e"
+    },
+    "npc4-provider-first.txt": {
+      "bytes": 1312,
+      "sha256": "827e8eaf113e702aa4c516521243d89e15d3b65ea411f87dbec68d5f3cbda537"
+    },
+    "npc4-service-final.json": {
+      "bytes": 511,
+      "sha256": "ab82fed6275c7849513b12cee5c680186466af40d8a7689cc8fd09f360ff9774"
+    },
+    "npc4-service-final.txt": {
+      "bytes": 1386,
+      "sha256": "d7c5850d9b792e6ddf0522932e4cc814e9c8840c0f7965c6dedec667e96a9751"
+    },
+    "npc4-service-first.json": {
+      "bytes": 347,
+      "sha256": "a08c3934b7cc45ba693f42289b7fa7d40ba17a83c81c814301d5e3cc565303b1"
+    },
+    "npc4-service-first.txt": {
+      "bytes": 538,
+      "sha256": "d41dc3955d2b8b6d2f6723fdfef2d815785bdf6d5c746e4720d2e0336b2f6b70"
+    },
+    "static-checks.json": {
+      "bytes": 1597,
+      "sha256": "8e59cbab46845645141094f230a7519fcd42448e06806903425f5b0fcb89e45a"
+    }
+  },
+  "publicationRedaction": {
+    "reason": "Automatic approval rejected publishing new absolute scratch-workspace paths. Public evidence replaces those path prefixes only; original local run logs remain under artifacts/d4e12. No outcome or assertion edited.",
+    "files": {
+      "npc4-legacy-green.json": {
+        "originalSha256": "82ce24793448dc13c8d72e7874a43f579c51da0a7b1d12b397049afb7d374b1c",
+        "originalBytes": 317,
+        "replacementOnly": "Absolute transient checkout prefixes replaced with <repo> / <detached-parent>; test assertions, errors, counts, timing and whitespace retained."
+      },
+      "npc4-core-first.txt": {
+        "originalSha256": "780ea62249e2a45651bca83f3873f9196033dab5029df3a1d407d92fb0ddb530",
+        "originalBytes": 3044,
+        "replacementOnly": "Absolute transient checkout prefixes replaced with <repo> / <detached-parent>; test assertions, errors, counts, timing and whitespace retained."
+      },
+      "npc4-legacy-final.txt": {
+        "originalSha256": "f93fb0662981916543f4e0c71dc3b89196154faa603c7ac641c73d48cb73809b",
+        "originalBytes": 722,
+        "replacementOnly": "Absolute transient checkout prefixes replaced with <repo> / <detached-parent>; test assertions, errors, counts, timing and whitespace retained."
+      },
+      "npc4-legacy-final.json": {
+        "originalSha256": "81b16775f40d118bee6f713af02603e53e47b161bdc3a3d099a141c82e4d5744",
+        "originalBytes": 316,
+        "replacementOnly": "Absolute transient checkout prefixes replaced with <repo> / <detached-parent>; test assertions, errors, counts, timing and whitespace retained."
+      },
+      "npc4-core-boundaries.txt": {
+        "originalSha256": "b454a674fb7fd7fd36308516aec6f6b09a7acd81f52ea1e6874b337bc4da8762",
+        "originalBytes": 2781,
+        "replacementOnly": "Absolute transient checkout prefixes replaced with <repo> / <detached-parent>; test assertions, errors, counts, timing and whitespace retained."
+      }
+    }
+  }
+}

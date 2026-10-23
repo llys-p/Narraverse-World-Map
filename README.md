@@ -5,6 +5,10 @@
 
 ## 独立项目入口
 
+- **NPC4 协商与可配置对话候选：`Start-NPC-Negotiation.cmd`**。独立端口18348、新档 `artifacts/npc4-negotiation/world`、profile `campaign-negotiation-village`。点击猎人，可提出“实际修理工具换借用”的条件，接受条款、实际修理、领取、按期或逾期归还；口头声称完成不算履约。原偷抢砸、交流、威胁、帮助等互动保留。
+  - 自然对话接口已接入，**默认关闭，真实模型效果未验**。仅本项目 `NPC_LLM_*` 显式配置后才可生成预览；确认交谈才保存，行动建议另行确认并经世界审核。猎人只读取自己的可知经历，聊天内容与实际事件分开保存。模型/费用预算尚未配置，本轮仅用本机受控HTTP回复验证，未付费调用。
+  - 新fixture4/map4，不迁移旧档。使用方式、协议、限制与待验项见[NPC4说明](docs/runtime/NPC4-NEGOTIATION-PROVIDER.md)、[任务合同](tasks/NPC4-NEGOTIATION-PROVIDER-TASK.md)及[当前状态](PROJECT_CONTEXT.md)。Node 24；真实浏览器与Windows启动器未验。输入`quit`等待`stopped`关闭，再开恢复。
+
 - **NPC 互动与记忆候选：`Start-NPC-Social.cmd`**。独立端口18346，页面 `/demo-runtime.html`，新档位于 `artifacts/npc2-social/world`；profile `campaign-social-village`。点击猎人，选择近况/共同经历/关系交流，或威胁、偷取、抢夺、砸工具、帮助修理、借用、归还、道歉。
   - **NPC3文字入口**：在猎人人物卡输入“最近缺什么”“帮你修一下工具”“工具借我一天”等，先查看识别出的动作，再点击执行。有多个意思时选一个；否定、转述、过去自述、未知动作不会直接执行或写成记忆。世界状态变化后需重新理解；“它”等短指代只沿用当前已确认的交互，刷新后清除。复用原按钮的距离、物品与请求恢复规则，输入本身不推进世界。见[文字入口合同](tasks/NPC3-LANGUAGE-INTENTS-TASK.md)及[75条公开开发样例](benchmarks/npc-language-v1/README.md)。
   - 工具包放在歇脚处(5,8)，有唯一所有者、持有人和实际耐久。初始耐久60；修理每次+20，砸坏每次-40；无法远程拿取或修理。偷窃被猎人看见会被阻止；未看见则可能后来发现失物，但不会凭空认出小偷。抢夺可能抵抗或交出工具，尚无NPC战斗系统。
