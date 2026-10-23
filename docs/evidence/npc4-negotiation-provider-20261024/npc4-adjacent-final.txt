@@ -1,0 +1,142 @@
+TAP version 13
+# Subtest: real sale, purchase, work and rest receipts show actual deltas without mutating data
+ok 1 - real sale, purchase, work and rest receipts show actual deltas without mutating data
+  ---
+  duration_ms: 2.675167
+  type: 'test'
+  ...
+# Subtest: rejection has no claimed gains, malformed or unconfirmed input never becomes a result
+ok 2 - rejection has no claimed gains, malformed or unconfirmed input never becomes a result
+  ---
+  duration_ms: 0.250388
+  type: 'test'
+  ...
+# Subtest: history deduplicates receipt retries, keeps rejection, and stores only the latest eight
+ok 3 - history deduplicates receipt retries, keeps rejection, and stores only the latest eight
+  ---
+  duration_ms: 0.494836
+  type: 'test'
+  ...
+# Subtest: a 503 after a durable sale survives reload and full server reopen without a second sale
+ok 4 - a 503 after a durable sale survives reload and full server reopen without a second sale
+  ---
+  duration_ms: 1093.877164
+  type: 'test'
+  ...
+# Subtest: uncertain order errors retain exact bytes and never enable another intent
+ok 5 - uncertain order errors retain exact bytes and never enable another intent
+  ---
+  duration_ms: 129.855325
+  type: 'test'
+  ...
+# Subtest: a protocol-matching POST revision rejection clears only the rejected request
+ok 6 - a protocol-matching POST revision rejection clears only the rejected request
+  ---
+  duration_ms: 121.511369
+  type: 'test'
+  ...
+# Subtest: a confirmed receipt stays recoverable through refresh errors and stale views
+ok 7 - a confirmed receipt stays recoverable through refresh errors and stale views
+  ---
+  duration_ms: 202.682052
+  type: 'test'
+  ...
+# Subtest: 75 labeled public development examples cover supported and withheld intents without false ready results
+ok 8 - 75 labeled public development examples cover supported and withheld intents without false ready results
+  ---
+  duration_ms: 10.87199
+  type: 'test'
+  ...
+# Subtest: negation, quotation, attributed speech, unsupported clauses and invalid input never become a ready action
+ok 9 - negation, quotation, attributed speech, unsupported clauses and invalid input never become a ready action
+  ---
+  duration_ms: 1.127141
+  type: 'test'
+  ...
+# Subtest: development report distinguishes always-abstaining and always-acting baselines; rejects duplicate labels
+ok 10 - development report distinguishes always-abstaining and always-acting baselines; rejects duplicate labels
+  ---
+  duration_ms: 0.664012
+  type: 'test'
+  ...
+# Subtest: drafts, clarification and selecting one intent are pure; selected payload cannot mutate later commands
+ok 11 - drafts, clarification and selecting one intent are pure; selected payload cannot mutate later commands
+  ---
+  duration_ms: 78.949861
+  type: 'test'
+  ...
+# Subtest: stale revisions, other people/worlds, unavailable tools and the shared write gate block execution
+ok 12 - stale revisions, other people/worlds, unavailable tools and the shared write gate block execution
+  ---
+  duration_ms: 44.028041
+  type: 'test'
+  ...
+# Subtest: only the validated current client receipt establishes a short referent; advance, reset, rejection and unrelated actions clear it
+ok 13 - only the validated current client receipt establishes a short referent; advance, reset, rejection and unrelated actions clear it
+  ---
+  duration_ms: 301.189179
+  type: 'test'
+  ...
+# Subtest: actual repairs build trust, borrowing and returning conserve one owned tool; refusal is not a transfer
+ok 14 - actual repairs build trust, borrowing and returning conserve one owned tool; refusal is not a transfer
+  ---
+  duration_ms: 671.476495
+  type: 'test'
+  ...
+# Subtest: seen theft is caught; robbery meets resistance or yields under an actual imbalance
+ok 15 - seen theft is caught; robbery meets resistance or yields under an actual imbalance
+  ---
+  duration_ms: 871.364305
+  type: 'test'
+  ...
+# Subtest: unseen theft is later discovered without inventing a culprit; lost tools block wages
+ok 16 - unseen theft is later discovered without inventing a culprit; lost tools block wages
+  ---
+  duration_ms: 8880.659282
+  type: 'test'
+  ...
+# Subtest: unseen damage is discovered without blame, and death during an interaction prevents its effect
+ok 17 - unseen damage is discovered without blame, and death during an interaction prevents its effect
+  ---
+  duration_ms: 10739.08396
+  type: 'test'
+  ...
+# Subtest: damage disables work, repair is real, and helpful acts do not erase witnessed harm
+ok 18 - damage disables work, repair is real, and helpful acts do not erase witnessed harm
+  ---
+  duration_ms: 461.986376
+  type: 'test'
+  ...
+# Subtest: threat changes travel, action completion rechecks distance, waiting away calms fear without repairing trust
+ok 19 - threat changes travel, action completion rechecks distance, waiting away calms fear without repairing trust
+  ---
+  duration_ms: 3141.673675
+  type: 'test'
+  ...
+# Subtest: a known broken promise is recorded once, while repeated recollection never reapplies relationship damage
+ok 20 - a known broken promise is recorded once, while repeated recollection never reapplies relationship damage
+  ---
+  duration_ms: 9670.217715
+  type: 'test'
+  ...
+# Subtest: new history equals full replay; plausible relation, asset, reply, event and fixture forgeries fail audit
+ok 21 - new history equals full replay; plausible relation, asset, reply, event and fixture forgeries fail audit
+  ---
+  duration_ms: 900.713859
+  type: 'test'
+  ...
+# Subtest: strict browser consumption binds results to action and actual deltas; UI permissions use only visible affordances
+ok 22 - strict browser consumption binds results to action and actual deltas; UI permissions use only visible affordances
+  ---
+  duration_ms: 125.154661
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 37951.267682

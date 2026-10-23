@@ -1,5 +1,6 @@
 // Strict DTO5 receipt consumption. Presentation never derives a combat outcome.
 import {SOCIAL_REASONS,validSocialPayload,validSocialResult} from './runtime-social-contract.mjs';
+import {NEGOTIATION_COMMANDS,validNegotiationPayload,validNegotiationResult} from './runtime-negotiation-contract.mjs';
 const safeInteger=n=>Number.isSafeInteger(n)&&n>=0;
 const exact=(v,keys)=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k));
 const point=p=>exact(p,['x','y'])&&safeInteger(p.x)&&p.x<20&&safeInteger(p.y)&&p.y<12;
@@ -72,9 +73,10 @@ export function validateCampaignReceipt(r,dto,fromTick){
  const keys=['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result'];
  if(dto?.version!==5||!exact(r,keys)||r.apiVersion!==1||r.receiptVersion!==5||r.status!=='committed'||r.commandId!==dto.commandId||r.type!==dto.type||r.fromRevision!==dto.expectedRevision||r.fromTick!==fromTick||
    ![r.fromRevision,r.toRevision,r.fromTick,r.tick,r.durationTicks].every(safeInteger)||r.fromTick>r.fromRevision||r.tick!==r.fromTick+r.durationTicks||r.toRevision!==r.fromRevision+Math.max(1,r.durationTicks)||!['succeeded','rejected'].includes(r.outcome))return false;
- const duration=dto.type==='MarchStep'?null:dto.type==='AdvanceTime'?dto.payload.ticks:dto.type==='PlayerWork'?36:['PlayerRest','EncounterAction'].includes(dto.type)?6:['PlayerBuy','PlayerSell','PlayerInteract'].includes(dto.type)?1:0;
+ const duration=dto.type==='MarchStep'?null:dto.type==='AdvanceTime'?dto.payload.ticks:dto.type==='PlayerWork'?36:['PlayerRest','EncounterAction'].includes(dto.type)?6:['PlayerBuy','PlayerSell','PlayerInteract','PlayerNegotiate','PlayerAgreement'].includes(dto.type)?1:0;
  if(duration!==null&&!(r.durationTicks===duration||r.outcome==='rejected'&&r.durationTicks===0))return false;
  if(r.type==='PlayerInteract')return validSocialPayload(dto.payload)&&(r.outcome==='succeeded'?validSocialResult(r.result,dto.payload):exact(r.result,['code'])&&SOCIAL_REASONS.includes(r.result.code));
+ if(NEGOTIATION_COMMANDS.includes(r.type))return validNegotiationPayload(dto.type,dto.payload)&&(r.outcome==='succeeded'?validNegotiationResult(r.result,dto,r.tick):exact(r.result,['code'])&&SOCIAL_REASONS.includes(r.result.code));
  if(r.type.startsWith('March')){
    if(!['MarchSet','MarchPause','MarchResume','MarchStep'].includes(r.type))return false;
    if(r.outcome==='rejected')return r.durationTicks===0&&exact(r.result,['code'])&&['RULE_REJECTED','PLAYER_DEAD','ENCOUNTER_BUSY'].includes(r.result.code);

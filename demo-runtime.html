@@ -29,8 +29,28 @@
 <aside id="personCard" class="live-person" hidden><canvas id="portraitCanvas" width="140" height="140" aria-hidden="true"></canvas><div><h2 id="personName"></h2><p id="personDetail"></p><p id="personMemory"></p><p id="personActionHint"></p>
 <section id="personSocial" class="social-interactions" hidden aria-label="与猎人互动">
 <p id="socialStance"></p><blockquote id="socialSpeech" aria-live="polite"></blockquote><p id="socialAsset"></p>
+<section id="npcNegotiation" hidden aria-label="协商和自然对话">
+<form id="npcDialogueForm" class="social-text-form">
+<label for="npcDialogueText">与猎人自然交谈</label>
+<textarea id="npcDialogueText" rows="3" maxlength="240" placeholder="例如：我替你把工具修好，能借我半天吗？" aria-describedby="npcDialogueStatus"></textarea>
+<p id="npcDialogueStatus" role="status" aria-live="polite"></p>
+<blockquote id="npcDialoguePreview" hidden></blockquote>
+<button id="npcDialogueGenerate" type="submit">生成对话预览</button>
+<button id="npcDialogueCommit" type="button" disabled>确认交谈并保存</button>
+<button id="npcDialogueAct" type="button" hidden disabled>确认行动建议</button>
+</form>
+<p id="npcDialogueHistory" class="social-note"></p>
+<p id="npcAgreement" aria-live="polite"></p>
+<form id="npcTermsForm">
+<label for="npcRepair">愿意修理</label> <select id="npcRepair"><option value="20">20点耐久</option><option value="40">40点耐久</option></select>
+<label for="npcLoan">希望借用</label> <select id="npcLoan"><option value="36">6小时</option><option value="72" selected>12小时</option><option value="144">24小时</option></select>
+<button id="npcPropose" type="submit">向猎人提出条件</button>
+</form>
+<div><button id="npcAccept" type="button">接受当前条款</button><button id="npcDecline" type="button">谢绝条款</button><button id="npcClaim" type="button">按约领取工具</button></div>
+<p class="social-note">接受后，点击“帮助修理”实际履约；达到条件再领取，借期从领取开始。归还使用下方“归还工具”。聊天中的承诺本身不会转移工具或完成修理。</p>
+</section>
 <form id="socialTextForm" class="social-text-form" aria-label="用文字与猎人互动">
-<label for="socialText">想说什么或做什么</label>
+<label for="socialText">快捷文字动作（有限句式）</label>
 <textarea id="socialText" rows="3" placeholder="例如：最近缺什么？／帮你修一下工具／工具借我一天" aria-describedby="socialTextHint socialTextStatus"></textarea>
 <p id="socialTextHint" class="social-note">一次说一个意思，240字以内。先查看动作，再点击执行；不清楚的表达会请你选择或改写。输入不会改变世界。</p>
 <p id="socialTextStatus" role="status" aria-live="polite">写下想说的话或想做的事。</p>

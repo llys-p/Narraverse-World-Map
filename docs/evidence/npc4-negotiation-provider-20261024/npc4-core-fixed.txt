@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: hunter counters duration/repair terms; accepted promise requires real work before a unique loan and timely return
+ok 1 - hunter counters duration/repair terms; accepted promise requires real work before a unique loan and timely return
+  ---
+  duration_ms: 804.45172
+  type: 'test'
+  ...
+# Subtest: overdue loan records breach once, retains harm after late return, and replays exactly
+ok 2 - overdue loan records breach once, retains harm after late return, and replays exactly
+  ---
+  duration_ms: 3595.643167
+  type: 'test'
+  ...
+# Subtest: stale offer, duplicate acceptance, expiry, changed tool condition and unaffordable repair claims do not grant a loan
+ok 3 - stale offer, duplicate acceptance, expiry, changed tool condition and unaffordable repair claims do not grant a loan
+  ---
+  duration_ms: 7226.686928
+  type: 'test'
+  ...
+# Subtest: dialogue is attributed speech, proposals never execute, private context excludes other actors and fabricated references are refused
+ok 4 - dialogue is attributed speech, proposals never execute, private context excludes other actors and fabricated references are refused
+  ---
+  duration_ms: 98.795015
+  type: 'test'
+  ...
+# Subtest: legacy social fixture refuses new commands and its original repair/loan behavior remains available
+ok 5 - legacy social fixture refuses new commands and its original repair/loan behavior remains available
+  ---
+  duration_ms: 217.776447
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12129.361015

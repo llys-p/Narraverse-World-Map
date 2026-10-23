@@ -31,6 +31,7 @@ function projectionGroup() {
     encounter: owner.encounterAvailable ? owner.getEncounter() : null,
     scene: owner.sceneAvailable ? owner.getScene() : null,
     map: owner.mapAvailable ? owner.getMap() : null,
+    npcContext: owner.mapAvailable ? owner.getNpcContext() : null,
     activity: owner.activityAvailable ? owner.getActivity() : null,
   };
 }

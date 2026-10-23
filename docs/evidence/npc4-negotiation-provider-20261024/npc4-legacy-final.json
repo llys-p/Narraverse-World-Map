@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "scripts/check-npc4-legacy-replay.mjs",
+    "<detached-parent>"
+  ],
+  "pid": 6,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 465.292,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
