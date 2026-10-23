@@ -1,6 +1,8 @@
 // Presentation extracted from the preserved demo. No local gameplay simulation.
 import {createDemoClient} from './demo-runtime-bridge.mjs';
 import {interactionActions,personNavigation,worldTimeView,describeActionReceipt,recordConfirmedAction,socialInteractionActions,socialActionNames} from './demo-runtime-interactions.mjs';
+import {createSocialTextComposer} from './demo-social-composer.mjs';
+const socialTextComposer=createSocialTextComposer();
 const $=id=>document.getElementById(id),K=window.SandboxDrawingKit;
 const stageContainer=$('stageContainer'),sceneCanvas=$('sceneCanvas'),sceneCtx=sceneCanvas.getContext('2d');
 const villageStickCanvas=$('villageStickCanvas'),villageDecorCanvas=$('villageDecorCanvas'),villageDecorCtx=villageDecorCanvas.getContext('2d');
@@ -1494,7 +1496,9 @@ function syncScene(){
  people.forEach((a,i)=>{const b=document.createElement('button');b.textContent=a.name+' · '+a.actorId;b.dataset.actorId=a.actorId;b.style.left=positions[i%3]*100+'%';b.addEventListener('click',()=>showPerson(a.actorId));$('scenePeople').append(b);});
 }
 function showPerson(id){
- selectedActorId=id;const actor=group?.map.actors.find(a=>a.actorId===id);if(!actor){$('personCard').hidden=true;return;}
+ if(selectedActorId!==id)socialTextComposer.reset();
+ selectedActorId=id;const actor=group?.map.actors.find(a=>a.actorId===id);if(!actor){socialTextComposer.reset();$('personCard').hidden=true;return;}
+ socialTextComposer.observe(group,id);
  $('personCard').hidden=false;$('personName').textContent=actor.name+' · '+role(actor.occupation);
  $('personDetail').textContent=actor.actorId+' · '+place(actor.location)+' · '+(actor.condition==='wounded'?'受伤':actor.alive?'存活':'已逝')+'\n'+(actor.canInteract?'就在附近，可以交互。':'距离较远，先走到人物附近。');
  const social=id==='actor-2'?group.map.social:null;
@@ -1506,6 +1510,7 @@ function showPerson(id){
   $('socialStance').textContent=social.npc?'眼前的态度：'+({calm:'平静',warm:'亲近',wary:'戒备',afraid:'畏惧'})[social.npc.stance]:'走近一些，才能观察他的态度。';
   $('socialSpeech').textContent=social.npc?.speech?('他上次对你说：“'+social.npc.speech+'”'+(social.npc.memoryRefs.length?'（提起了过去的经历）':'')):'还没有听到新的回应。';
   $('socialAsset').textContent=social.asset?'猎人的工具包 · 耐久 '+social.asset.condition+'/100 · '+(social.asset.holderId==='actor-4'?'由你持有':'放在歇脚处'):'工具包不在当前视野内。';
+  paintSocialText();
  }
  const gift=group.scene.actors.find(a=>a.actorId===id)?.gift;
  const actions=interactionActions(group,canWrite()&&!playbackBusy,id);
@@ -1522,6 +1527,24 @@ function showPerson(id){
  const canvas=$('portraitCanvas'),ctx=canvas.getContext('2d');ctx.clearRect(0,0,140,140);
  K.drawEntity(ctx,{archetype:id==='actor-2'?'archer':id==='actor-1'?'priest':'rogue',appearance:{color:id==='actor-2'?'#566444':'#7a5a44'}},{x:0,y:0,width:140,height:140,theme:{accent:'#d5a17d',foreground:'#edf0e9',surface:'#202522'}});
 }
+function paintSocialText(){
+ const state=socialTextComposer.view(group,canWrite()&&!playbackBusy,selectedActorId),pending=client.state().busy||client.state().pending;
+ if($('socialText').value!==state.text)$('socialText').value=state.text;
+ $('socialText').disabled=pending;$('socialTextStatus').textContent=state.message;
+ $('socialTextReview').hidden=state.status!=='stale';$('socialTextReview').disabled=pending;
+ $('socialTextExecute').disabled=!state.canSubmit;
+ $('socialTextExecute').textContent=state.selected?'执行：'+state.selected:state.status==='empty'?'先写下想法':'请先明确一个意思';
+ $('socialTextChoices').hidden=state.status!=='clarify';
+ // Keep focused choice buttons stable across heartbeat paints.
+ const choices=JSON.stringify(state.choices);
+ if($('socialTextChoices').dataset.choices!==choices){
+  $('socialTextChoices').dataset.choices=choices;$('socialTextChoices').replaceChildren();
+  for(const choice of state.choices){const button=document.createElement('button');button.type='button';button.textContent=choice.label;
+   button.addEventListener('click',()=>handle(()=>{socialTextComposer.choose(choice.index,group,selectedActorId);paintSocialText();}));$('socialTextChoices').append(button);}
+ }
+ for(const button of $('socialTextChoices').children){button.disabled=pending;button.setAttribute('aria-pressed',String(button.textContent===state.selected));}
+}
+function closePerson(){selectedActorId=null;socialTextComposer.reset();$('socialText').value='';$('personCard').hidden=true;}
 function canWrite(){const s=client.state();return !!(group&&s.connected&&!s.busy&&!s.pending&&!s.blocked&&group.player.self.identity.alive&&group.capabilities.writes&&group.map.budget.remainingCommands>0);}
 function setHealth(p,w){$('playerHpText').textContent=p+' / 1000';$('enemyHpText').textContent=(w??0)+' / 300';$('playerHpBar').style.width=p/10+'%';$('enemyHpBar').style.width=(w??0)/3+'%';}
 function paintTrade(){
@@ -1608,7 +1631,8 @@ function paintActionResult(receipt,dto){
   detail.textContent=entry.reason||entry.changes.join(' · ')||'操作已确认。';time.textContent=entry.time;item.append(title,detail,time);$('actionHistory').append(item);
  }
 }
-async function playReceipt(receipt,dto){
+async function playReceipt(receipt,dto,confirmedGroup){
+ socialTextComposer.confirmed(receipt,dto,confirmedGroup);
  $('lastReceipt').textContent=JSON.stringify(receipt,null,2);paintActionResult(receipt,dto);
  if(dto.type==='EncounterBegin'&&receipt.outcome==='succeeded')setMode('battle');
  const events=receipt.outcome==='succeeded'?receipt.result?.turnEvents:[];
@@ -1632,6 +1656,9 @@ async function playReceipt(receipt,dto){
 const client=createDemoClient({onState:acceptState,onStatus:showStatus,onReceipt:playReceipt,onBusy:paintReadings});
 const handle=run=>{Promise.resolve().then(run).catch(error=>showStatus(error.message,true));};
 const action=(id,type,payload=()=>({}))=>$(id).addEventListener('click',()=>handle(()=>client.submit(type,payload())));
+$('socialText').addEventListener('input',()=>{socialTextComposer.edit($('socialText').value,group,selectedActorId);paintSocialText();});
+$('socialTextReview').addEventListener('click',()=>{socialTextComposer.edit($('socialText').value,group,selectedActorId);paintSocialText();});
+$('socialTextForm').addEventListener('submit',event=>{event.preventDefault();handle(()=>client.submit('PlayerInteract',socialTextComposer.command(group,canWrite()&&!playbackBusy,selectedActorId)));});
 function locatePerson(id){
  if(!personNavigation(group,false,id).visible){showStatus('这位人物已不在当前视野内。',true);return;}
  mapFocusActorId=id;setMode('world');showPerson(id);$('mapFollowPlayer').hidden=false;
@@ -1680,7 +1707,7 @@ for(const [product,key] of [['food','Food'],['herbs','Herbs']])for(const [kind,t
 }
 action('beginEncounter','EncounterBegin');action('attack','EncounterAction',()=>({encounterId:group.encounter.encounter.encounterId,action:'attack'}));action('flee','EncounterAction',()=>({encounterId:group.encounter.encounter.encounterId,action:'flee'}));action('cancelEncounter','EncounterCancel',()=>({encounterId:group.encounter.encounter.encounterId}));
 $('refreshWorld').addEventListener('click',()=>handle(()=>client.refresh()));$('retryPending').addEventListener('click',()=>handle(()=>client.retry()));
-$('closePerson').addEventListener('click',()=>{selectedActorId=null;$('personCard').hidden=true;});
+$('closePerson').addEventListener('click',closePerson);
 $('tabBagBtn').addEventListener('click',()=>{$('bagPanel').hidden=!$('bagPanel').hidden;});$('closeBag').addEventListener('click',()=>{$('bagPanel').hidden=true;});
 $('tabAudioBtn').addEventListener('click',()=>{safeAudio(()=>{AudioManager.init();const mute=AudioManager.toggleMute();$('tabAudioBtn').textContent=mute?'🔇 音效关闭':'🔊 音效开启';$('tabAudioBtn').setAttribute('aria-pressed',String(!mute));if(!mute)AudioManager.startBgm(currentMode);});});
 $('skipPlayback').addEventListener('click',()=>{playbackEpoch++;playbackBusy=false;paintReadings();});
@@ -1691,7 +1718,7 @@ function mapClick(event,context=false){
  const target={x:Math.floor(at.x/80),y:Math.floor(at.y/(920/12))};$('targetX').value=target.x;$('targetY').value=target.y;handle(()=>client.submit('MarchSet',target));
 }
 worldMapCanvas.addEventListener('click',event=>mapClick(event));worldMapCanvas.addEventListener('contextmenu',event=>{event.preventDefault();mapClick(event,true);});
-window.addEventListener('keydown',event=>{if(event.target.matches('input,button,select')||event.repeat)return;const key=event.key.toLowerCase();if(key==='b'||key==='i')$('tabBagBtn').click();else if(key==='escape'){selectedActorId=null;$('personCard').hidden=true;$('bagPanel').hidden=true;$('tradePanel').hidden=true;}else if(key===' '&&currentMode==='world'){event.preventDefault();handle(()=>client.pause());}});
+window.addEventListener('keydown',event=>{if(event.target.matches('input,button,select,textarea')||event.repeat)return;const key=event.key.toLowerCase();if(key==='b'||key==='i')$('tabBagBtn').click();else if(key==='escape'){closePerson();$('bagPanel').hidden=true;$('tradePanel').hidden=true;}else if(key===' '&&currentMode==='world'){event.preventDefault();handle(()=>client.pause());}});
 new ResizeObserver(resizeLayers).observe(stageContainer);window.addEventListener('resize',resizeLayers);
 let lastFrame=performance.now(),fatalFrameError=false;
 function loop(now){

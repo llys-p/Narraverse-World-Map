@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: real sale, purchase, work and rest receipts show actual deltas without mutating data
+ok 1 - real sale, purchase, work and rest receipts show actual deltas without mutating data
+  ---
+  duration_ms: 2.202019
+  type: 'test'
+  ...
+# Subtest: rejection has no claimed gains, malformed or unconfirmed input never becomes a result
+ok 2 - rejection has no claimed gains, malformed or unconfirmed input never becomes a result
+  ---
+  duration_ms: 0.260151
+  type: 'test'
+  ...
+# Subtest: history deduplicates receipt retries, keeps rejection, and stores only the latest eight
+ok 3 - history deduplicates receipt retries, keeps rejection, and stores only the latest eight
+  ---
+  duration_ms: 0.41294
+  type: 'test'
+  ...
+# Subtest: a 503 after a durable sale survives reload and full server reopen without a second sale
+ok 4 - a 503 after a durable sale survives reload and full server reopen without a second sale
+  ---
+  duration_ms: 827.65801
+  type: 'test'
+  ...
+# Subtest: uncertain order errors retain exact bytes and never enable another intent
+ok 5 - uncertain order errors retain exact bytes and never enable another intent
+  ---
+  duration_ms: 112.598954
+  type: 'test'
+  ...
+# Subtest: a protocol-matching POST revision rejection clears only the rejected request
+ok 6 - a protocol-matching POST revision rejection clears only the rejected request
+  ---
+  duration_ms: 103.059753
+  type: 'test'
+  ...
+# Subtest: a confirmed receipt stays recoverable through refresh errors and stale views
+ok 7 - a confirmed receipt stays recoverable through refresh errors and stale views
+  ---
+  duration_ms: 160.571416
+  type: 'test'
+  ...
+# Subtest: 75 labeled public development examples cover supported and withheld intents without false ready results
+ok 8 - 75 labeled public development examples cover supported and withheld intents without false ready results
+  ---
+  duration_ms: 8.171687
+  type: 'test'
+  ...
+# Subtest: negation, quotation, attributed speech, unsupported clauses and invalid input never become a ready action
+ok 9 - negation, quotation, attributed speech, unsupported clauses and invalid input never become a ready action
+  ---
+  duration_ms: 1.017839
+  type: 'test'
+  ...
+# Subtest: development report distinguishes always-abstaining and always-acting baselines; rejects duplicate labels
+ok 10 - development report distinguishes always-abstaining and always-acting baselines; rejects duplicate labels
+  ---
+  duration_ms: 0.651558
+  type: 'test'
+  ...
+# Subtest: drafts, clarification and selecting one intent are pure; selected payload cannot mutate later commands
+ok 11 - drafts, clarification and selecting one intent are pure; selected payload cannot mutate later commands
+  ---
+  duration_ms: 67.172567
+  type: 'test'
+  ...
+# Subtest: stale revisions, other people/worlds, unavailable tools and the shared write gate block execution
+ok 12 - stale revisions, other people/worlds, unavailable tools and the shared write gate block execution
+  ---
+  duration_ms: 34.789386
+  type: 'test'
+  ...
+# Subtest: only the validated current client receipt establishes a short referent; advance, reset, rejection and unrelated actions clear it
+ok 13 - only the validated current client receipt establishes a short referent; advance, reset, rejection and unrelated actions clear it
+  ---
+  duration_ms: 174.300458
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1776.227065

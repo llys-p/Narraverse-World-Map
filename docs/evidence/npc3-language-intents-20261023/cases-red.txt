@@ -1,0 +1,23 @@
+{
+  "cases": 75,
+  "correct": 74,
+  "supported": 36,
+  "accepted": 36,
+  "falseReady": 0,
+  "failures": [
+    {
+      "id": "multi-01",
+      "family": "multiple-actions",
+      "expectedStatus": "clarify",
+      "actualStatus": "unsupported",
+      "expected": [
+        "help",
+        "ask-help"
+      ],
+      "actual": [],
+      "correct": false,
+      "ruleIds": []
+    }
+  ],
+  "report": "artifacts/d4e12/npc3-language-first-report.json"
+}

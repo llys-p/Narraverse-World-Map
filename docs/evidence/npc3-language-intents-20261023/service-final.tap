@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: text consumer performs real tool interactions, keeps claims out of memory and recovers one lost response across worker reopen
+ok 1 - text consumer performs real tool interactions, keeps claims out of memory and recovers one lost response across worker reopen
+  ---
+  duration_ms: 4937.89268
+  type: 'test'
+  ...
+# Subtest: real HTTP worker persists social effects and memories, reopens identical views, and retries without a second effect
+ok 2 - real HTTP worker persists social effects and memories, reopens identical views, and retries without a second effect
+  ---
+  duration_ms: 2488.90799
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7636.038603

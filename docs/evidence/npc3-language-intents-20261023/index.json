@@ -1,0 +1,116 @@
+{
+  "task": "NPC3 bounded Chinese text intent entry",
+  "date": "2026-10-23",
+  "branch": "codex/npc-language-intents-20261023",
+  "parent": "721e371dcec96f5fdd1bd75fa484058e0d4aba86",
+  "environment": {
+    "platform": "Linux",
+    "node": "v24.19.0"
+  },
+  "scope": "15 distinct final tests: 6 language/composer, 7 existing action result/recovery, 1 text HTTP consumer, 1 existing social HTTP consumer. The 75 author-written public examples are not additional independent tests, held-out labels or E1 admission.",
+  "red": "74/75; multi-01 wrongly unsupported because a comma followed by a conjunction produced an empty clause. Fixed delimiter grouping. Data and labels unchanged; first output and report retained verbatim.",
+  "final": {
+    "tests": 15,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "cases": 75,
+    "casesExpected": 75,
+    "ready": 36,
+    "falseReady": 0
+  },
+  "provenance": "Final unit run includes same-revision cross-world context regression; final service run and final example report are on final production code. First green logs are retained but not counted twice.",
+  "limits": [
+    "Browser globals and SSE are simulated in Node consumer tests; HTTP, worker, files, reopen and audit are real. No actual browser or Windows acceptance.",
+    "No model calls, E1 reopening, daily instance changes, real-save migration, main merge or deployment.",
+    "Existing 128-command and cold-open/long-history costs remain."
+  ],
+  "mainContextRead": {
+    "commit": "a7a10f2e335a97fbcc8afe1b9e8a040e96f54b0e",
+    "path": "PROJECT_CONTEXT.md",
+    "conclusion": "Old Laya A/B screening archived, no admission; E is optional Provider branch, not runtime dependency."
+  },
+  "sourceSha256": {
+    "README.md": "d828b9c8f0e6e7666637b7187d13d5bf524500eb6c183e320b8847ffb714837a",
+    "PROJECT_CONTEXT.md": "62c6f5cc7656ccc1cbe0ac3fd87bccd6d65decea01a3e5eda15e51f4485fb81b",
+    "tasks/NPC3-LANGUAGE-INTENTS-TASK.md": "d7b6174900c1932bd22176071354b12710257e57837f9863282e91c98dcb53d6",
+    "benchmarks/npc-language-v1/README.md": "bac0df22b410f9f8f926ecb0116b9ec4d05d1f8549673b1215c754045099a5be",
+    "benchmarks/npc-language-v1/cases.json": "e9484471face77c7bf9bc85b1f96487470fc9a5077e58ae7331b36116047304f",
+    "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+    "demo-social-composer.mjs": "59afa1dff60f271f235613170d25596ec5daff599c9f1e767b359678ea61803c",
+    "demo-runtime-prototype.mjs": "72b16ea88a66987e01c5d273b2247e8b4767bc0ded4c63b8ca55c0ef6b1f54ed",
+    "demo-runtime.html": "a058c7357d2fd707936f78166048c5da656a02d1df11a5ccbec79a3df5363268",
+    "demo-runtime.css": "1cff3e098e36649c436ddabdad6bffd5e162f058d01ddbb3116a8ef23866ac56",
+    "runtime-server.mjs": "1c3f16aedabe755aaedf84af821d212a4a14a6ef39b660d716658c43b6526db0",
+    "scripts/check-npc-language.mjs": "ec6d61c8b750b70d11a89cca58178af8f48dc5d50bc985fca7f2ecbe7ba4581c",
+    "tests/simulation/npc-language.test.mjs": "1ad901e1f39e046e883680bb04a0a1ce64226686fb83d4d0c58fc61630412b3b",
+    "tests/simulation/npc-language-service.test.mjs": "4a31f9927a9d874167146a7394ec0ab3aabe9bb6118e722524f6a9ddac150c06",
+    "tests/simulation/demo-command-recovery.test.mjs": "26c160d46f7af3c2d7f0110a9a8da963c625a173463ff943c05633a985c90eb6",
+    "tests/simulation/demo-action-results.test.mjs": "2b2f8bf684b0602b1ae8e682f1d65a338bbeaa027d867cfb0b339bd8789a0991",
+    "tests/simulation/npc-social-service.test.mjs": "cb41e07f642a5df02adf95ee6887860152577a6907bfc43b5ec310f9895cb9a9",
+    "scripts/run-d4e12-check.py": "436214d623822903b79f5ffb1a272ce811c9c79d6c0a979bb1f6d2a1a4ca4ab5"
+  },
+  "evidence": {
+    "cases-final-report.json": {
+      "bytes": 24893,
+      "sha256": "29ada19b1ef45385d4800f14bd3272d4f275fd065ef605698cd2c510b3ddc2a1"
+    },
+    "cases-final-run.json": {
+      "bytes": 319,
+      "sha256": "a266c1150fb21d9ba19652220e0c3132434eea35c295a681299558bd8c72552b"
+    },
+    "cases-final.txt": {
+      "bytes": 178,
+      "sha256": "16cf5ee7e7fd52113cc7712ea9435afea5aedaed2ae0bc9944b6aaf8aa56b751"
+    },
+    "cases-red-report.json": {
+      "bytes": 24822,
+      "sha256": "12ec4c8c9f24e309634fb742d3ff94b7d341b3cf75522bcb16d89b5ec9181d82"
+    },
+    "cases-red-run.json": {
+      "bytes": 313,
+      "sha256": "3e697a1fe720417e7a0d569da39bf476d8b9109d375ca64327a5e45bc75777c7"
+    },
+    "cases-red.txt": {
+      "bytes": 447,
+      "sha256": "8370d726600d41642dad93cf4f25fe8eef1e6d0cf6970a24cbcbfefb99fae376"
+    },
+    "service-final-run.json": {
+      "bytes": 397,
+      "sha256": "c70bc48c8b69fade15449a2b1858b0d9b5c6b1b80242d66bf47f40ff97b09871"
+    },
+    "service-final.tap": {
+      "bytes": 746,
+      "sha256": "d5e16c7d393479b0e38b5d9ff15d30cb209cefd4a5dac976b14e3020b8982c24"
+    },
+    "service-first-run.json": {
+      "bytes": 369,
+      "sha256": "87fb7e5f4ccd97b21cb9702fff07d268f099565161a6f79994c0357ce31dfb66"
+    },
+    "service-first.tap": {
+      "bytes": 748,
+      "sha256": "c1278922dadfe970bc829038e02c364b4f53faad0ecf27910bbf73d33a44c3ce"
+    },
+    "static-checks.json": {
+      "bytes": 1411,
+      "sha256": "d16bd9012c25c7eb442716e7f5ad10f8b97427a1bfc94d27deae3285a016e2fe"
+    },
+    "unit-final-run.json": {
+      "bytes": 445,
+      "sha256": "fbd7750b09f538ee6ee8fec05b9c4ac264bc065fa968016403a8d879aa44337f"
+    },
+    "unit-final.tap": {
+      "bytes": 3474,
+      "sha256": "e666b1409b769a1d0893de0755b8f6697f1ac11c38eb4f5a634fb35ae0297598"
+    },
+    "unit-first-run.json": {
+      "bytes": 445,
+      "sha256": "5225fd1c896969ad01546de28ea3eb74e5e6edc61d835966b605837c932bc2c7"
+    },
+    "unit-first.tap": {
+      "bytes": 3475,
+      "sha256": "90cc3abb0acbf3cf760cc46f1bbf854a8193b10ba78d2341ca5cda8f4b7d6cae"
+    }
+  }
+}
