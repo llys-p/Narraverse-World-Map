@@ -1,0 +1,136 @@
+{
+  "task": "NPC2 social interaction and knowledge-bounded memory",
+  "date": "2026-10-23",
+  "branch": "codex/npc-social-memory-20261023",
+  "parent": "4742c702ab772df204e30ad65cefa2fb9854088d",
+  "runtime": {
+    "os": "Linux",
+    "node": "v24.19.0"
+  },
+  "runs": [
+    {
+      "label": "core-red",
+      "log": "core-red.tap",
+      "metadata": "core-red.json",
+      "logSha256": "5369701ea9742c30b16c88acce70d9cc62dcd10bc6326f29b7adb724347a1172",
+      "tests": 8,
+      "pass": 6,
+      "fail": 2,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "core-green",
+      "log": "core-green.tap",
+      "metadata": "core-green.json",
+      "logSha256": "5daab5907c2bb9c772eb18efb8f8c668cafce97c936e5ed125e9e6b70d9e18ce",
+      "tests": 26,
+      "pass": 26,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "service-first",
+      "log": "service-first.tap",
+      "metadata": "service-first.json",
+      "logSha256": "033d5339ae24fbee84cf1586e89958a2c387c639d28abe0b3be662e1dc191d78",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "social-final",
+      "log": "social-final.tap",
+      "metadata": "social-final.json",
+      "logSha256": "85eb00ece1f11ad3d409aa0f6b656d48abd96cf92fb986adf927a7bdcd1e45fe",
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "service-final",
+      "log": "service-final.tap",
+      "metadata": "service-final.json",
+      "logSha256": "268dc764686221f85520620433488e45b36d721a12fbfe98b2366a85b53e6234",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "label": "consumer-final",
+      "log": "consumer-final.tap",
+      "metadata": "consumer-final.json",
+      "logSha256": "e6a1d6f6d77478566de6b9ca3713e6e8c54860d3b1099b788c32ad27ede89745",
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  ],
+  "uniquePassingChecks": 28,
+  "counting": "18 adjacent checks from core-green + 9 social-final + 1 service-final; consumer-final rechecks one of those 9 after tightening rejected-receipt input validation. Runs are not added together.",
+  "firstFailures": [
+    "Test assumed the hunter left interaction range at tick8, but two four-tick movement steps from the rest site put it at tick12. Corrected setup to tick11 before the one-tick interaction.",
+    "Test tried event.payload.result instead of event.payload.receipt.result. Corrected the mutation to reach the real journal receipt."
+  ],
+  "validated": [
+    "actual asset transfer, repair and destruction",
+    "firsthand/witness/discovery distinction without an unseen culprit",
+    "separate trust/fear/grievance, salient memory retention and no damage reapplication",
+    "borrowing, return and one overdue episode",
+    "completion-time position/death checks and fear-driven travel",
+    "complete replay equality and plausible corruption rejection",
+    "old fixture1/2 behavior and new-command rejection",
+    "HTTP worker, static module delivery, coherent projection, normal reopen and exact DTO retry with unchanged file SHA",
+    "JavaScript syntax and git diff whitespace"
+  ],
+  "notValidated": [
+    "real browser appearance/interaction: Playwright package present but expected Chromium executable absent",
+    "Windows launcher",
+    "long-history performance or real save migration",
+    "free-text or model semantics",
+    "rumor propagation, NPC combat or judicial system"
+  ],
+  "sourceSha256": {
+    "Start-NPC-Social.cmd": "e0a4931ff3a30bc04754a7e2c675289a85727665335e38bd120d30ed3fe050d6",
+    "runtime-social-contract.mjs": "f88ac21c6fdbf8dd188f9f0bf9b2895550d80623faa5830dd2d5e2b0bbff9d38",
+    "runtime/core/npc-social.mjs": "36519ab8681f378c0af0e7934227f8da3c6cb2f5cb8abcd1e6f5a45f07c1c1b7",
+    "tasks/NPC2-SOCIAL-MEMORY-TASK.md": "29ed430b9a047dbd6b86f2b660e14c0db3f77177df32cb186ddbf35b9c7f2eb3",
+    "tests/simulation/npc-social-service.test.mjs": "cb41e07f642a5df02adf95ee6887860152577a6907bfc43b5ec310f9895cb9a9",
+    "tests/simulation/npc-social.test.mjs": "90d7c2bb356af27475e10b4abe94a827e2c01d74402b2bdcba55533fcf1b3004",
+    "PROJECT_CONTEXT.md": "b0129f3cc94ec764138f2ed817ab74f4dc1c52a8149a05f0c481562881e07b6f",
+    "README.md": "33b0c0dff94b1f98150373fa2609ae1a91e0e69034148177840aaa16ecaf5a75",
+    "demo-runtime-bridge.mjs": "d4b65acb1210a9a001e74c05736138537501e1192dab7074fc03ac0ea21c63e9",
+    "demo-runtime-interactions.mjs": "084cb4fe0f5cae2e79510155825a8f8d3d2382d06c754ae3277a067f00e586e1",
+    "demo-runtime-prototype.mjs": "8f98fe09c70ef39c9828b9feeb781b123aca2ff0ae59188ade672cd772be9a89",
+    "demo-runtime.css": "ba8534d4fc598439392ef888a4425eb93452855c97aeafc027f4196026dde0b3",
+    "demo-runtime.html": "ed9e4951370423df550094d1e4dfeb74a3459bdf77c2a8b1f04c866b19f5ea6e",
+    "runtime-campaign-contract.mjs": "97991b77780dbe7f8c15081e902d9d988b330ddb32aa44bebc2facfe549cef56",
+    "runtime-campaign.mjs": "fc6cce8e984f2c4fbbd24d9e6799e8be8fd37148e64131e09e9216f85e7157a7",
+    "runtime-server.mjs": "40b46023dbab731471fc93f25dfb2fb34fbe1ba450f4362b1157e96d838abacb",
+    "runtime/core/campaign-map.mjs": "f1b187b6908e225d891ce6f137ad7e09b7eea77e9758a82dbe50d6e07752d297",
+    "runtime/core/campaign-npc-agency.mjs": "7891ac18ed27934bfcadd92bc2a9197524bb2440d68fad41c6abab89707bd496",
+    "runtime/core/encounter-runtime.mjs": "15b6aeb5202bc0fffdf739ac9f2c3aa06a77be0a742051ba679728688e2321d8",
+    "runtime/core/event-log.mjs": "4284e2d534d7f75c951a98db75afe6aacc8cabbb5fbd0bb34a6e9a095bb4f773",
+    "runtime/core/scene-campaign-runtime.mjs": "537e82d6d8136daa18efc5f617cf6a08ff1f295d2001c13e7a6c42734f99e736",
+    "runtime/core/world-state.mjs": "efe6ac9ea1512983e519bcee172c45aa5b84d7b5d6713ed15b71b7042f21f807",
+    "runtime/fixtures/campaign-village.mjs": "bead9f8f6f1e8626a27c95b3a1e79818c76f2079c9e96baaee0ec042fecc7211",
+    "runtime/service/http-contract.mjs": "15029cdf4cc6825be843b53fbe12472ef0cadd0824979947ff7520a244d6fb23",
+    "runtime/service/runtime-owner.mjs": "73ad85282d337306701ac82d6f86b110dcb6f478499a30e4e9b88a892d879029"
+  },
+  "rawEvidenceWhitespace": "core-red.tap retains the two whitespace-only lines emitted by the Node assertion renderer. All source/docs and other evidence pass git diff --check."
+}

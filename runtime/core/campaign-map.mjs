@@ -2,6 +2,7 @@
 import {fields,record,integer,denseArray,requireCondition,cloneData,canonicalJson} from './data-contract.mjs';
 import {inspectDescriptorTree} from './experience-state.mjs';
 import {NPC_MAP_VERSION,HUNTER_SITES,initialHunterIntent,validateHunterIntent} from './campaign-npc-agency.mjs';
+import {SOCIAL_MAP_VERSION,createSocialModel,validateSocialModel,socialTravelTarget,socialView} from './npc-social.mjs';
 export const CAMPAIGN_MAP_ID='village-forest-v1',MAP_WIDTH=20,MAP_HEIGHT=12,MAX_ROUTE_STEPS=48;
 export const MARCH_TYPES=Object.freeze(['MarchSet','MarchPause','MarchResume','MarchStep']);
 export function requireMarchBudget(type,remaining,world){integer(remaining);if(world?.mapModel?.order?.status==='marching'&&type!=='MarchPause')requireCondition(remaining>=2,'Last command is reserved for pause','LIMIT_EXCEEDED');if(['MarchSet','MarchResume'].includes(type))requireCondition(remaining>=3,'March requires a reserved pause command','LIMIT_EXCEEDED');if(type==='MarchStep')requireCondition(remaining>=2,'Last command is reserved for pause','LIMIT_EXCEEDED');}
@@ -29,12 +30,13 @@ export function mapRoute(from,to){
  }
  return null;
 }
-export function createCampaignMap(npcAgency=false){return {version:npcAgency?NPC_MAP_VERSION:'campaign-map-v1',mapId:CAMPAIGN_MAP_ID,position:{x:4,y:7},travelledSteps:0,
- npcs:NPC_IDS.map((actorId,i)=>({actorId,...ROUTES[i][0],routeIndex:0})),order:null,contact:null,...(npcAgency?{hunterIntent:initialHunterIntent()}:{})};}
+export function createCampaignMap(npcAgency=false,social=false){return {version:social?SOCIAL_MAP_VERSION:npcAgency?NPC_MAP_VERSION:'campaign-map-v1',mapId:CAMPAIGN_MAP_ID,position:{x:4,y:7},travelledSteps:0,
+ npcs:NPC_IDS.map((actorId,i)=>({actorId,...ROUTES[i][0],routeIndex:0})),order:null,contact:null,...(npcAgency?{hunterIntent:initialHunterIntent()}:{}),...(social?{socialModel:createSocialModel()}:{})};}
 export function validateCampaignMap(world,tick){
- const m=world.mapModel,npcAgency=m.version===NPC_MAP_VERSION;fields(m,['version','mapId','position','travelledSteps','npcs','order','contact',...(npcAgency?['hunterIntent']:[])]);
+ const m=world.mapModel,social=m.version===SOCIAL_MAP_VERSION,npcAgency=m.version===NPC_MAP_VERSION||social;fields(m,['version','mapId','position','travelledSteps','npcs','order','contact',...(npcAgency?['hunterIntent']:[]),...(social?['socialModel']:[])]);
  requireCondition((m.version==='campaign-map-v1'||npcAgency)&&m.mapId===CAMPAIGN_MAP_ID,'Unsupported campaign map','UNSUPPORTED_VERSION');
  if(npcAgency)validateHunterIntent(m.hunterIntent,tick);
+ if(social)validateSocialModel(m.socialModel,tick);
  validateMapPoint(m.position);requireCondition(mapWalkable(m.position),'Player stands on blocked terrain');integer(m.travelledSteps);integer(tick);
  const actors=world.actorModel.actors,player=actors.find(a=>a.actorId==='actor-4');
  requireCondition(player&&player.location===mapLocation(m.position),'Player map/region mismatch');
@@ -78,8 +80,8 @@ export function advanceMapTick(world,tick,append){
  const m=world.mapModel,p=world.actorModel.actors[3],wasMarching=m.order?.status==='marching';
  const before=new Set(m.npcs.filter(n=>mapDistance(m.position,n)<=1).map(n=>n.actorId));
  for(let i=0;i<3;i++){const n=m.npcs[i],a=world.actorModel.actors[i];
-  if(m.version===NPC_MAP_VERSION&&i===1){
-   if(a.alive&&tick%4===0){const route=mapRoute({x:n.x,y:n.y},HUNTER_SITES[m.hunterIntent.action]);if(route?.length>1)Object.assign(n,route[1]);}
+  if([NPC_MAP_VERSION,SOCIAL_MAP_VERSION].includes(m.version)&&i===1){
+   if(a.alive&&tick%4===0){const route=mapRoute({x:n.x,y:n.y},socialTravelTarget(world,HUNTER_SITES[m.hunterIntent.action]));if(route?.length>1)Object.assign(n,route[1]);}
   }else if(a.alive&&PERIODS[i]&&tick%PERIODS[i]===0&&m.contact?.actorId!==n.actorId){n.routeIndex=(n.routeIndex+1)%ROUTES[i].length;Object.assign(n,ROUTES[i][n.routeIndex]);}
   a.location=mapLocation(n);
  }
@@ -97,17 +99,17 @@ export function advanceMapTick(world,tick,append){
 }
 export function finishMapTick(world){const m=world.mapModel;if(!world.actorModel.actors[3].alive&&m.order?.status==='marching')m.order.status='paused';
  if(m.contact&&(!world.actorModel.actors.find(a=>a.actorId===m.contact.actorId)?.alive||
-  (m.version===NPC_MAP_VERSION&&mapDistance(m.position,m.npcs.find(n=>n.actorId===m.contact.actorId))>1)))m.contact=null;}
+  ([NPC_MAP_VERSION,SOCIAL_MAP_VERSION].includes(m.version)&&mapDistance(m.position,m.npcs.find(n=>n.actorId===m.contact.actorId))>1)))m.contact=null;}
 export function marchResult(before,after,dto,plan){return plan.outcome!=='succeeded'?{code:plan.reasonCode}:{action:dto.type,before:{...before.mapModel.position},after:{...after.mapModel.position},
  stepsMoved:after.mapModel.travelledSteps-before.mapModel.travelledSteps,status:after.mapModel.order?.status??'idle',contact:cloneData(after.mapModel.contact)};}
 export function mapView(bundle,remainingCommands){
  inspectDescriptorTree(bundle);const s=bundle.snapshot,w=s.world,m=w.mapModel,p=w.actorModel.actors[3];validateCampaignMap(w,s.tick);
  const blocked=Array.from({length:MAP_HEIGHT},(_,y)=>({x:10,y})).filter(p=>p.y!==7);
- return cloneData({apiVersion:1,mapViewVersion:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,mapId:m.mapId,width:MAP_WIDTH,height:MAP_HEIGHT,blocked,landmarks:m.version===NPC_MAP_VERSION?NPC_LANDMARKS:LANDMARKS,
+ return cloneData({apiVersion:1,mapViewVersion:m.version===SOCIAL_MAP_VERSION?2:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,mapId:m.mapId,width:MAP_WIDTH,height:MAP_HEIGHT,blocked,landmarks:[NPC_MAP_VERSION,SOCIAL_MAP_VERSION].includes(m.version)?NPC_LANDMARKS:LANDMARKS,
   self:{actorId:p.actorId,...m.position,location:p.location,alive:p.alive},order:m.order,contact:m.contact,
   actors:m.npcs.filter(n=>mapDistance(m.position,n)<=4).map(n=>{const a=w.actorModel.actors.find(a=>a.actorId===n.actorId),near=mapDistance(m.position,n)<=1;
    const observer=w.memoryModel.observer.actors.find(o=>o.actorId===a.actorId);
    return {actorId:a.actorId,name:a.name,occupation:a.occupation,location:a.location,alive:a.alive,condition:!a.alive?'dead':a.health===1000?'healthy':'wounded',x:n.x,y:n.y,canInteract:near&&a.alive,
     receivedGifts:near?observer.memories.filter(mem=>mem.observable.type==='food-gift'&&mem.observable.donorId==='actor-4'&&mem.observable.direction==='received'):[]};}),
-  movement:{maxSteps:MAX_ROUTE_STEPS,ticksPerStep:1,batchTicks:2},budget:{remainingCommands}});
+  movement:{maxSteps:MAX_ROUTE_STEPS,ticksPerStep:1,batchTicks:2},budget:{remainingCommands},...(m.version===SOCIAL_MAP_VERSION?{social:socialView(w)}:{})});
 }

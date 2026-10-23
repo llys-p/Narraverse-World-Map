@@ -1,4 +1,5 @@
 import {validateCampaignReceipt} from './runtime-campaign-contract.mjs';
+import {SOCIAL_ACTIONS} from './runtime-social-contract.mjs';
 // Display affordances for existing commands only. The runtime remains authority.
 export function interactionActions(group,writable,actorId,quantity=1){
  const p=group?.player.self,active=group?.encounter.encounter?.status==='active';
@@ -12,6 +13,12 @@ export function interactionActions(group,writable,actorId,quantity=1){
  return {rest:ready,work:!!(ready&&near&&actorId==='actor-1'&&village&&work&&p.health>=300&&p.fatigue<=700&&(work.nextWorkTick??0)<=group.map.tick),
   gift:!!(ready&&near&&actorId==='actor-2'&&group.scene.actors.find(a=>a.actorId===actorId)?.gift?.available),
   trade:!!trade,quantityValid:valid,food:product('food'),herbs:product('herbs')};
+}
+
+export const socialActionNames=Object.freeze({talk:'交流',threaten:'威胁',steal:'尝试偷取',rob:'抢夺',smash:'破坏工具',help:'帮助修理',return:'归还工具',apologize:'道歉','ask-help':'请求借工具'});
+export function socialInteractionActions(group,writable){
+ const ready=!!(writable&&group?.player.self.identity.alive&&group.encounter.encounter?.status!=='active'&&group.map.order?.status!=='marching');
+ return Object.fromEntries(SOCIAL_ACTIONS.map(action=>[action,!!(ready&&group?.map.social?.actions.find(a=>a.action===action)?.available)]));
 }
 
 export function worldTimeView(group,writable){
@@ -44,24 +51,31 @@ const actionNames={PlayerWork:'村庄工作',PlayerRest:'休整',PlayerGiftFood:
 const reasons={RULE_REJECTED:'当前条件不满足；请检查所在地点、疲劳、工作间隔或可用资产。',
  PLAYER_DEAD:'玩家已死亡，操作无法完成。',ENCOUNTER_BUSY:'战斗尚未结束，请先完成当前遭遇。',
  ENCOUNTER_UNAVAILABLE:'当前没有可操作的遭遇。',ENCOUNTER_CLOSED:'这次遭遇已经结束。',ENCOUNTER_ID_MISMATCH:'遭遇已发生变化，请查看当前战斗。',
- NOT_COLOCATED:'与对方距离太远，请先走近。',RECIPIENT_DEAD:'对方已死亡，无法收取。',NO_FOOD:'行囊里没有可赠送的粮食。',RECIPIENT_FULL:'对方暂时无法再收取粮食。'};
+ NOT_COLOCATED:'与人物或工具距离太远；互动期间对方也可能移动，请重新走近。',RECIPIENT_DEAD:'对方已死亡，无法交互。',NO_FOOD:'行囊里没有可赠送的粮食。',RECIPIENT_FULL:'对方暂时无法再收取粮食。',
+ ASSET_UNAVAILABLE:'工具当前不在原处，或已无法继续破坏。',NOT_DAMAGED:'工具完好，无需修理。',NOT_HELD:'你没有持有这件工具。'};
 
 export function describeActionReceipt(receipt,dto){
  if(!validateCampaignReceipt(receipt,dto,receipt?.fromTick))return null;
  const result=receipt.result,product={food:'粮食',herbs:'药草'}[dto.payload.product];
- const name=['PlayerBuy','PlayerSell'].includes(dto.type)?(dto.type==='PlayerBuy'?'买入':'卖出')+product:actionNames[dto.type];
+ const name=dto.type==='PlayerInteract'?socialActionNames[dto.payload.action]:['PlayerBuy','PlayerSell'].includes(dto.type)?(dto.type==='PlayerBuy'?'买入':'卖出')+product:actionNames[dto.type];
  const succeeded=receipt.outcome==='succeeded',changes=[];
  if(succeeded){
   const delta=(label,before,after)=>{if(Number.isSafeInteger(before)&&Number.isSafeInteger(after)&&before!==after)changes.push(label+' '+(after>before?'+':'')+(after-before));};
   for(const [key,label] of [['wallet','金币'],['fatigue','疲劳'],['playerHealth','生命'],['wolfHealth','森林狼生命']])delta(label,result?.before?.[key],result?.after?.[key]);
   for(const [key,label] of [['food','粮食'],['herbs','药草']])delta(label,result?.before?.inventory?.[key],result?.after?.inventory?.[key]);
   if(dto.type==='PlayerGiftFood')changes.push('粮食 -'+result.quantity,'对方已收到粮食');
+  if(dto.type==='PlayerInteract'){
+   if(result.speech)changes.push('猎人：'+result.speech);
+   if(result.asset){delta('工具耐久',result.asset.before.condition,result.asset.after.condition);
+    if(result.asset.before.holderId!==result.asset.after.holderId)changes.push(result.asset.after.holderId==='actor-4'?'工具由你持有；所有者仍为猎人。':'工具已交还猎人。');}
+  }
   if(dto.type==='MarchSet')changes.push('目的地 ('+dto.payload.x+', '+dto.payload.y+')');
   if(result?.after?.resolution)changes.push('战斗结果：'+({win:'胜利',lose:'败北',flee:'逃离',cancel:'已取消','player-died':'玩家死亡'}[result.after.resolution]??'已结束'));
  }
  const minutes=receipt.durationTicks*10,hours=Math.floor(minutes/60),remaining=minutes%60;
  const elapsed=Number.isSafeInteger(minutes)?(hours?hours+'小时':'')+(remaining?remaining+'分钟':''):receipt.durationTicks+'刻';
- return {commandId:receipt.commandId,type:dto.type,outcome:receipt.outcome,summary:name+(succeeded?' · 已完成':' · 未完成'),changes,
+ const socialEffect=dto.type==='PlayerInteract'&&succeeded?({caught:'被发现并阻止',resisted:'对方抵抗',refused:'对方拒绝',taken:'已拿走工具',lent:'对方同意借出'})[result.effect]:null;
+ return {commandId:receipt.commandId,type:dto.type,outcome:receipt.outcome,summary:name+' · '+(socialEffect??(succeeded?'已完成':'未完成')),changes,
   reason:succeeded?'':reasons[result?.reasonCode??result?.code]??'当前世界状态不允许完成这项操作。',
   time:'世界时刻 '+receipt.fromTick+' → '+receipt.tick+' · '+(receipt.durationTicks?'推进'+elapsed+'（'+receipt.durationTicks+'刻）':'未推进世界时间')};
 }

@@ -735,7 +735,7 @@ function executeIntentFor(bundle,dto,profile=null) {
   // Step 4 — candidate audit (pure).
   const fromTick = snapshot.tick;
   const fromRevision = snapshot.revision;
-  const originalPlan = profile?.auditMap?.(world,dto) ?? (profile&&dto.type==='PlayerWork'?profile.auditWork(world,fromTick):profile&&dto.type==='PlayerGiftFood'?profile.auditGift(world):auditIntent(dto,world));
+  const originalPlan = profile?.auditDirect?.(world,dto) ?? profile?.auditMap?.(world,dto) ?? (profile&&dto.type==='PlayerWork'?profile.auditWork(world,fromTick):profile&&dto.type==='PlayerGiftFood'?profile.auditGift(world):auditIntent(dto,world));
   const plan=profile?.adjustPlan?.(dto,world,originalPlan)??originalPlan;
   if(profile){
     requireCondition(snapshot.pendingCommands.length<16,'Scene pending queue budget exhausted','LIMIT_EXCEEDED');
@@ -805,7 +805,7 @@ function executeIntentFor(bundle,dto,profile=null) {
   const finalSnapshot = working.snapshot;
   requireCondition(finalSnapshot.tick === tick, 'the real progression must end at the target tick', 'INVALID_INPUT');
   const nextWorld = cloneData(finalSnapshot.world);
-  if (instantCommit){if(plan.mapCommand){if(plan.outcome==='succeeded')profile.commitMap(nextWorld,dto,plan,tick);}else applyIntent(nextWorld, dto, plan, tick);}
+  if (instantCommit&&!plan.directCommand){if(plan.mapCommand){if(plan.outcome==='succeeded')profile.commitMap(nextWorld,dto,plan,tick);}else applyIntent(nextWorld, dto, plan, tick);}
   if(profile)requireCondition(finalSnapshot.nextEventSeq<=Number.MAX_SAFE_INTEGER-(dto.type==='PlayerGiftFood'&&plan.outcome==='succeeded'?2:1),'Scene event counter budget exhausted','LIMIT_EXCEEDED');
   let giftFact=null;
   if(profile&&dto.type==='PlayerGiftFood'&&plan.outcome==='succeeded'){
@@ -815,7 +815,12 @@ function executeIntentFor(bundle,dto,profile=null) {
 
   let outcome = plan.outcome;
   let result;
-  if(plan.mapCommand){result=profile.mapResult(world,nextWorld,dto,plan);
+  if(plan.directCommand){
+    // Recheck at completion: an NPC can move or die during the real elapsed tick.
+    const completion=plan.outcome==='succeeded'?profile.auditDirect(nextWorld,dto):plan;
+    outcome=completion.outcome;
+    result=outcome==='succeeded'?profile.commitDirect(nextWorld,dto,tick,finalSnapshot.nextEventSeq):{code:completion.reasonCode};
+  }else if(plan.mapCommand){result=profile.mapResult(world,nextWorld,dto,plan);
   }else if(profile&&dto.type==='PlayerGiftFood'){
     result={donorId:ACTOR_ID,recipientId:'actor-2',product:'food',quantity:1,sourceEventSeq:giftFact?.eventSeq??null,reasonCode:plan.reasonCode};
   } else if (plan.worldCommand === true) {

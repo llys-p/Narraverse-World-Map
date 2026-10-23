@@ -1,6 +1,7 @@
-// Fixture 2 only: bounded village locomotion for actor-2, not a second action engine.
+// Fixtures 2/3: bounded village locomotion for actor-2, not a second action engine.
 import {fields,integer,requireCondition} from './data-contract.mjs';
 import {campaignSurvivalTravel} from './motivation-runtime.mjs';
+import {SOCIAL_MAP_VERSION,socialWorkReady} from './npc-social.mjs';
 
 export const NPC_MAP_VERSION='campaign-map-v2';
 export const HUNTER_SITES=Object.freeze({
@@ -23,7 +24,8 @@ export function prepareHunterTravel(world,events,tick,simulationId){
     world.mapModel.hunterIntent={...next,decidedTick:tick};
 }
 export function hunterActionAtSite(map,payload){
-  if(map?.version!==NPC_MAP_VERSION||payload.actorId!=='actor-2'||!['WorkForPay','BuyFood'].includes(payload.action))return true;
+  if(![NPC_MAP_VERSION,SOCIAL_MAP_VERSION].includes(map?.version)||payload.actorId!=='actor-2'||!['WorkForPay','BuyFood'].includes(payload.action))return true;
+  if(payload.action==='WorkForPay'&&!socialWorkReady(map))return false;
   const hunter=map.npcs[1],site=HUNTER_SITES[payload.action];
   return hunter.x===site.x&&hunter.y===site.y;
 }

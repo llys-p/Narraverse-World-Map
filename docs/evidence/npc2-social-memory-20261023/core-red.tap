@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: actual repairs build trust, borrowing and returning conserve one owned tool; refusal is not a transfer
+ok 1 - actual repairs build trust, borrowing and returning conserve one owned tool; refusal is not a transfer
+  ---
+  duration_ms: 463.62413
+  type: 'test'
+  ...
+# Subtest: seen theft is caught; robbery meets resistance or yields under an actual imbalance
+ok 2 - seen theft is caught; robbery meets resistance or yields under an actual imbalance
+  ---
+  duration_ms: 347.385188
+  type: 'test'
+  ...
+# Subtest: unseen theft is later discovered without inventing a culprit; lost tools block wages
+ok 3 - unseen theft is later discovered without inventing a culprit; lost tools block wages
+  ---
+  duration_ms: 7197.033627
+  type: 'test'
+  ...
+# Subtest: damage disables work, repair is real, and helpful acts do not erase witnessed harm
+ok 4 - damage disables work, repair is real, and helpful acts do not erase witnessed harm
+  ---
+  duration_ms: 316.48301
+  type: 'test'
+  ...
+# Subtest: threat changes travel, action completion rechecks distance, waiting away calms fear without repairing trust
+not ok 5 - threat changes travel, action completion rechecks distance, waiting away calms fear without repairing trust
+  ---
+  duration_ms: 461.947486
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/npc-social.test.mjs:65:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'succeeded'
+    - 'rejected'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'rejected'
+  actual: 'succeeded'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/npc-social.test.mjs:69:37)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: a known broken promise is recorded once, while repeated recollection never reapplies relationship damage
+ok 6 - a known broken promise is recorded once, while repeated recollection never reapplies relationship damage
+  ---
+  duration_ms: 9005.529033
+  type: 'test'
+  ...
+# Subtest: new history equals full replay; plausible relation, asset, reply, event and fixture forgeries fail audit
+not ok 7 - new history equals full replay; plausible relation, asset, reply, event and fixture forgeries fail audit
+  ---
+  duration_ms: 655.728997
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/npc-social.test.mjs:86:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot set properties of undefined (setting 'speech')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/npc-social.test.mjs:91:119
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-World-Map/tests/simulation/npc-social.test.mjs:92:42)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: strict browser consumption binds results to action and actual deltas; UI permissions use only visible affordances
+ok 8 - strict browser consumption binds results to action and actual deltas; UI permissions use only visible affordances
+  ---
+  duration_ms: 98.878161
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 6
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 18672.218353
