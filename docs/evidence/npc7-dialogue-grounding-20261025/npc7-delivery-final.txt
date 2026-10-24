@@ -1,0 +1,184 @@
+TAP version 13
+# Subtest: official short replies explicitly disable thinking, generic providers omit it, and an explicit mode is sent without changing the signed dialogue contract
+ok 1 - official short replies explicitly disable thinking, generic providers omit it, and an explicit mode is sent without changing the signed dialogue contract
+  ---
+  duration_ms: 17.520622
+  type: 'test'
+  ...
+# Subtest: invalid thinking configuration is rejected before fetch; reasoning-only, empty or truncated final content cannot become a dialogue
+ok 2 - invalid thinking configuration is rejected before fetch; reasoning-only, empty or truncated final content cannot become a dialogue
+  ---
+  duration_ms: 2.272133
+  type: 'test'
+  ...
+# Subtest: provider usage preserves only consistent cache counts, never infers missing usage or exposes raw provider fields
+ok 3 - provider usage preserves only consistent cache counts, never infers missing usage or exposes raw provider fields
+  ---
+  duration_ms: 3.248494
+  type: 'test'
+  ...
+# Subtest: loopback 401/403 failures are cached once and produce safe partial-coverage reports with later turns blocked and no upstream body or key
+ok 4 - loopback 401/403 failures are cached once and produce safe partial-coverage reports with later turns blocked and no upstream body or key
+  ---
+  duration_ms: 221.191853
+  type: 'test'
+  ...
+# Subtest: suite identities, action grammar, count and CLI live-call gates reject malformed or implicit inputs
+ok 5 - suite identities, action grammar, count and CLI live-call gates reject malformed or implicit inputs
+  ---
+  duration_ms: 3.963159
+  type: 'test'
+  ...
+# Subtest: default plan reconstructs all real scenarios without any provider call or semantic pass claim
+ok 6 - default plan reconstructs all real scenarios without any provider call or semantic pass claim
+  ---
+  duration_ms: 9221.776322
+  type: 'test'
+  ...
+# Subtest: controlled multi-turn run uses real prior speech and scripted effects, withholds rubric/labels, and leaves semantics pending even when automatic checks pass
+ok 7 - controlled multi-turn run uses real prior speech and scripted effects, withholds rubric/labels, and leaves semantics pending even when automatic checks pass
+  ---
+  duration_ms: 9628.90098
+  type: 'test'
+  ...
+# Subtest: wrong harmful proposals and missing factual citations fail automatic checks without executing the proposed harm
+ok 8 - wrong harmful proposals and missing factual citations fail automatic checks without executing the proposed harm
+  ---
+  duration_ms: 255.328477
+  type: 'test'
+  ...
+# Subtest: one invalid provider response blocks later turns of that conversation without retrying or hiding skipped coverage
+ok 9 - one invalid provider response blocks later turns of that conversation without retrying or hiding skipped coverage
+  ---
+  duration_ms: 91.275023
+  type: 'test'
+  ...
+# Subtest: configuration, authorization, budget and existing output failures happen before any request and preserve existing files
+ok 10 - configuration, authorization, budget and existing output failures happen before any request and preserve existing files
+  ---
+  duration_ms: 32.342065
+  type: 'test'
+  ...
+# Subtest: real loopback HTTP exercises the opt-in CLI path and produces escaped reports with unknown usage, no key or automatic semantic approval
+ok 11 - real loopback HTTP exercises the opt-in CLI path and produces escaped reports with unknown usage, no key or automatic semantic approval
+  ---
+  duration_ms: 95.842322
+  type: 'test'
+  ...
+# Subtest: provider diagnostic snapshots are detached, cached once, and distinguish missing or invalid usage from zero usage
+ok 12 - provider diagnostic snapshots are detached, cached once, and distinguish missing or invalid usage from zero usage
+  ---
+  duration_ms: 1.949797
+  type: 'test'
+  ...
+# Subtest: real fixture identities explain holder relations and distinguish observation, discovery and attributed speech
+ok 13 - real fixture identities explain holder relations and distinguish observation, discovery and attributed speech
+  ---
+  duration_ms: 9371.134684
+  type: 'test'
+  ...
+# Subtest: real agreement facts keep ready distinct from claimed and fix returned-late duration at twenty minutes
+ok 14 - real agreement facts keep ready distinct from claimed and fix returned-late duration at twenty minutes
+  ---
+  duration_ms: 0.360162
+  type: 'test'
+  ...
+# Subtest: breach marker is not return time, on-time return stays zero after time advances, and unknown fields remain unknown
+ok 15 - breach marker is not return time, on-time return stays zero after time advances, and unknown fields remain unknown
+  ---
+  duration_ms: 2046.028392
+  type: 'test'
+  ...
+# Subtest: context projection is idempotent, bounded and whitelisted, and ignores injected derived truth or other minds
+ok 16 - context projection is idempotent, bounded and whitelisted, and ignores injected derived truth or other minds
+  ---
+  duration_ms: 74.672859
+  type: 'test'
+  ...
+# Subtest: whole-sentence hints distinguish existing terms and immediate repair without converting quotes, denial, history or conditional speech into actions
+ok 17 - whole-sentence hints distinguish existing terms and immediate repair without converting quotes, denial, history or conditional speech into actions
+  ---
+  duration_ms: 32.709827
+  type: 'test'
+  ...
+# Subtest: Provider sends the same prepared context as the evaluation, signs varied model wording unchanged, and never substitutes a stock reply or executes a hint
+ok 18 - Provider sends the same prepared context as the evaluation, signs varied model wording unchanged, and never substitutes a stock reply or executes a hint
+  ---
+  duration_ms: 6.046998
+  type: 'test'
+  ...
+# Subtest: provider is explicitly configured, read-only, bounded to known context, caches IDs and signs the whole draft
+ok 19 - provider is explicitly configured, read-only, bounded to known context, caches IDs and signs the whole draft
+  ---
+  duration_ms: 16.355954
+  type: 'test'
+  ...
+# Subtest: invalid JSON, extra fields, unknown references, unsupported actions, incomplete and excessive output fail closed
+ok 20 - invalid JSON, extra fields, unknown references, unsupported actions, incomplete and excessive output fail closed
+  ---
+  duration_ms: 8.164757
+  type: 'test'
+  ...
+# Subtest: one in-flight request is shared, parallel IDs are rejected, and fetch/body timeouts are bounded without automatic retries
+ok 21 - one in-flight request is shared, parallel IDs are rejected, and fetch/body timeouts are bounded without automatic retries
+  ---
+  duration_ms: 43.386117
+  type: 'test'
+  ...
+# Subtest: dialogue controller discards late replies on revision/person/world/edit changes and never auto-commits a proposal
+ok 22 - dialogue controller discards late replies on revision/person/world/edit changes and never auto-commits a proposal
+  ---
+  duration_ms: 3.202303
+  type: 'test'
+  ...
+# Subtest: 75 labeled public development examples cover supported and withheld intents without false ready results
+ok 23 - 75 labeled public development examples cover supported and withheld intents without false ready results
+  ---
+  duration_ms: 8.432971
+  type: 'test'
+  ...
+# Subtest: negation, quotation, attributed speech, unsupported clauses and invalid input never become a ready action
+ok 24 - negation, quotation, attributed speech, unsupported clauses and invalid input never become a ready action
+  ---
+  duration_ms: 1.386349
+  type: 'test'
+  ...
+# Subtest: development report distinguishes always-abstaining and always-acting baselines; rejects duplicate labels
+ok 25 - development report distinguishes always-abstaining and always-acting baselines; rejects duplicate labels
+  ---
+  duration_ms: 0.693705
+  type: 'test'
+  ...
+# Subtest: drafts, clarification and selecting one intent are pure; selected payload cannot mutate later commands
+ok 26 - drafts, clarification and selecting one intent are pure; selected payload cannot mutate later commands
+  ---
+  duration_ms: 74.796516
+  type: 'test'
+  ...
+# Subtest: stale revisions, other people/worlds, unavailable tools and the shared write gate block execution
+ok 27 - stale revisions, other people/worlds, unavailable tools and the shared write gate block execution
+  ---
+  duration_ms: 37.783949
+  type: 'test'
+  ...
+# Subtest: only the validated current client receipt establishes a short referent; advance, reset, rejection and unrelated actions clear it
+ok 28 - only the validated current client receipt establishes a short referent; advance, reset, rejection and unrelated actions clear it
+  ---
+  duration_ms: 199.642549
+  type: 'test'
+  ...
+# Subtest: real worker/HTTP: model draft writes nothing, attributed dialogue recovers across a new signing secret, repair agreement fulfills once, stale and invalid output are refused
+ok 29 - real worker/HTTP: model draft writes nothing, attributed dialogue recovers across a new signing secret, repair agreement fulfills once, stale and invalid output are refused
+  ---
+  duration_ms: 4138.680614
+  type: 'test'
+  ...
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 36420.915785

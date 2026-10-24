@@ -70,9 +70,12 @@ test('real worker/HTTP: model draft writes nothing, attributed dialogue recovers
  assert.deepEqual(await hashes(directory),initialHashes);assert.deepEqual(projections(await read()),initial);
  assert.equal(calls.length,1);assert.equal(calls[0].url,'/v1/chat/completions');
  const context=JSON.parse(calls[0].body.messages[1].content).npc;
- assert.deepEqual(Object.keys(context).sort(),['agreement','canTalk','conversation','observations','persona','revision','self','simulationId','targetId','tick']);
+ assert.deepEqual(Object.keys(context).sort(),['agreement','canTalk','conversation','intentHint','knownFacts','observations','persona','revision','self','simulationId','targetId','tick']);
+ assert.deepEqual(context.knownFacts.identity,{selfId:'actor-2',selfRole:'你是猎人',playerId:'actor-4',playerRole:'正在与你交谈的玩家'});
+ assert.equal(context.knownFacts.tool.holder,'self');assert.equal(context.intentHint.kind,'model-interpretation');
  assert.equal(context.observations.length,0);assert.equal(context.conversation.length,0);assert.equal(Object.hasOwn(context,'world'),false);
  assert.equal(JSON.stringify(await read()).includes('npcContext'),false);assert.equal(JSON.stringify(await read()).includes('local-test-only'),false);
+ assert.equal(JSON.stringify(await read()).includes('"knownFacts"'),false);assert.equal(JSON.stringify(await read()).includes('"intentHint"'),false);
  const payload=composer.command(group,writable(),hunter),forged={version:5,commandId:'forged',expectedRevision:group.snapshot.revision,type:'PlayerDialogue',payload:{...payload,reply:'工具已经是你的了'}};
  assert.equal((await post('/api/runtime/commands',forged)).status,422);assert.deepEqual(await hashes(directory),initialHashes);
  loseNext=true;await assert.rejects(client.submit('PlayerDialogue',payload),/SAVE_FAILED/);assert.equal(client.state().pending,true);

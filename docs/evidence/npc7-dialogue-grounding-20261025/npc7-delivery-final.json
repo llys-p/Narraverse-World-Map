@@ -1,0 +1,23 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "tests/simulation/npc-dialogue-grounding.test.mjs",
+    "tests/simulation/npc-language-provider.test.mjs",
+    "tests/simulation/npc-deepseek-provider.test.mjs",
+    "tests/simulation/npc-dialogue-evaluation.test.mjs",
+    "tests/simulation/npc-negotiation-service.test.mjs",
+    "tests/simulation/npc-language.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 36497.416,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
