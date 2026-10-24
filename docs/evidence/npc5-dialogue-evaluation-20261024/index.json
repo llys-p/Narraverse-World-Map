@@ -1,0 +1,121 @@
+{
+  "task": "NPC5 bounded multi-turn NPC dialogue evaluation kit",
+  "date": "2026-10-24",
+  "branch": "codex/npc-dialogue-evaluation-20261024",
+  "parent": "1b4d9068d60a3e1ba0ff23d5fce5004e0d164a26",
+  "parentPullRequest": 12,
+  "environment": {
+    "platform": "Linux",
+    "node": "v24.22.1"
+  },
+  "final": {
+    "distinctTests": 13,
+    "newTests": 8,
+    "adjacentTests": 5,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "publicDevelopmentCases": 8,
+    "plannedTurns": 16,
+    "realModelCalls": 0,
+    "planModelAttempts": 0,
+    "planModelTurnsNotRun": 16,
+    "planWorldReplaysPassed": 8,
+    "semanticVerdict": "not-evaluated",
+    "actualBrowserVerified": false,
+    "windowsVerified": false
+  },
+  "runs": {
+    "final": "13/13; exit0, no timeout; 30351.071ms / 180000ms hard limit",
+    "planFinal": "8 scenarios / 16 turns prepared, 0 model attempts; exit0, no timeout; 11411.680ms / 120000ms",
+    "firstTests": "12/12; exit0, no timeout; 21840.950ms / 180000ms; repeats 12 of the final 13 tests, not additional coverage",
+    "firstPlan": "Preliminary run before opaque scenario IDs and source-metadata refinements; 16 turns, no model calls. Retained as history, not the delivery result."
+  },
+  "provenance": "Final test run covers all changed evaluation/provider source bytes. Final plan fingerprints match delivery evaluation source bytes. Subsequent edits are current-status documentation and evidence packaging only. The suite is author-written and public, not a held-out benchmark. Controlled fixture responses, including an actual loopback HTTP server exercising live CLI, do not constitute a real model evaluation. The 16 controlled turns are part of one test and are not 16 additional independent tests.",
+  "redRuns": [],
+  "limitations": [
+    "No configured real model/provider/key or paid-call authorization; no external provider request, actual language quality, cost or model-speed claim.",
+    "Automatic checks cover world conditions, allowed proposal classes, reference existence/kinds and separation of speech from gameplay. They do not prove the reply correctly understands or uses those facts. Semantic review remains pending after all automatic passes.",
+    "Plan mode does not invent model responses; cross-turn language continuity is untested there. Controlled tests exercise continuity with fixture replies only.",
+    "Only the bundled one-hunter fixture4 development suite; no arbitrary tasks, blind gold labels, E1 admission or broad generalization accuracy.",
+    "Report HTML was statically checked and injection strings escaped in tests; no actual browser visual or Windows acceptance.",
+    "Request cap is not a monetary cap. Missing/inconsistent provider usage is unknown, not zero cost. Partial reports are not crash-recovery guarantees.",
+    "No world/fixture/save-rule changes, main merge, deployment, daily-instance changes, real-save migration or E1/Laya restart. Control tree and Projects remain for mainline review."
+  ],
+  "sourceSha256": {
+    "PROJECT_CONTEXT.md": "119f8085f9460c976d0d11061b79a088e5894f7f3b2f4cc18168c1ae0437d245",
+    "benchmarks/npc-dialogue-v1/README.md": "0ba1ac3acd0b0e5da92e179119f0648e16a4d9cde316ec9cce43cc489d3ae1c8",
+    "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
+    "docs/runtime/NPC4-NEGOTIATION-PROVIDER.md": "92ce9d32f737e489cf5273f350fd502120dcb0df6911b6d40d7d1717acea79c0",
+    "tasks/NPC5-DIALOGUE-EVALUATION-TASK.md": "a2c75133cf9f24f946f27c3d4b438ca01f093058983139f5fb103b7c3144e357",
+    "runtime/service/npc-language-provider.mjs": "f08bc7aed147d0c31c9e18496a8b77866a521c176ee9b2fda6a3df1ec0580681",
+    "runtime/evaluation/npc-dialogue-eval.mjs": "de7b3b2b84c21f0476ce1f9dd0c41c37cb4db300f0bc3051c438320b4d206737",
+    "scripts/evaluate-npc-dialogue.mjs": "4dc1947c360e7962f03a4538c441b0432b81e0abce6721a146253763f42f2d9e",
+    "tests/simulation/npc-dialogue-evaluation.test.mjs": "aa321a9d05a4bc22430e5ebfb2fb8d2ce2c777eebbf44582781c186428b459f2",
+    "tests/simulation/npc-language-provider.test.mjs": "be89019ec9ccef855002b10ddb99ea0da426fba597627a32e7a190fe745fadf0",
+    "tests/simulation/npc-negotiation-service.test.mjs": "d4d2fdc71998696766c7d82ab733a2ae325d17f9b581dfccd0898039c153183a",
+    "runtime/core/npc-negotiation.mjs": "76170460fa0aaee7ad9aaa74b4e78e4bb0907917439645d5e7977dc2bedae67c",
+    "runtime/core/npc-social.mjs": "01fc0c28531785f496fe3937b664423f171b0e520897325e1eaa65286bfb63ca",
+    "runtime-negotiation-contract.mjs": "1dffab4cb7e2889d920e7b106967aca33c37586b6f2f9b2525040a77bd799e8a",
+    "runtime/fixtures/campaign-village.mjs": "ae0f8a8c457560dd6e3a530a772bbe1a664dd79ce46a6985bca627841fef73f4",
+    "scripts/run-d4e12-check.py": "436214d623822903b79f5ffb1a272ce811c9c79d6c0a979bb1f6d2a1a4ca4ab5"
+  },
+  "evidence": {
+    "npc5-final.json": {
+      "bytes": 461,
+      "sha256": "89f6bb7945358361dfdef21467aa8eafbe4d8f1b39861715acb221d477287acc"
+    },
+    "npc5-final.txt": {
+      "bytes": 4200,
+      "sha256": "7932e7513c0ec54264b3ea6327e5a1e3c7307a23aea47e0b096f863a18773c3f"
+    },
+    "npc5-plan-final.json": {
+      "bytes": 328,
+      "sha256": "3f3c966cb2feb1f03f03b3ab9d42b99c1f928309c0f386f8bbeaf2b820343582"
+    },
+    "npc5-plan-final.txt": {
+      "bytes": 335,
+      "sha256": "c8dc98207b99e84b702060a5a239b3c78a7760b485fa055c6fe8b7486c214c27"
+    },
+    "npc5-plan-first.json": {
+      "bytes": 329,
+      "sha256": "462594a688b9f323a2f866a00d8e1861d73c095b3abe07816b33d14d3b94fccd"
+    },
+    "npc5-plan-first.txt": {
+      "bytes": 335,
+      "sha256": "351f09e54845615bb86335bcd249e38ece05204211e3c24e1f3ed545d46b7a4c"
+    },
+    "npc5-tests-first.json": {
+      "bytes": 403,
+      "sha256": "0b4982f001219def7af3194226fba69f606efe27269c96c3a6099ee7ee4b3a93"
+    },
+    "npc5-tests-first.txt": {
+      "bytes": 3779,
+      "sha256": "a305531004cf307839b5c3a52ecac97a98a941732f5c3c52b5bec633648ae87b"
+    },
+    "plan-final.json": {
+      "bytes": 63871,
+      "sha256": "f4df1c7637658fcd7281b0b49c59047658674a994c5b91cfc6cabdf288ce89ab"
+    },
+    "static-checks.json": {
+      "bytes": 1017,
+      "sha256": "91b5063b009c8f4b1fc9c522b47727c9af50fd5e866b64b76a8547e6a6917dca"
+    }
+  },
+  "publicationRedaction": {
+    "reason": "Public evidence omits absolute transient checkout paths. Original local logs remain in artifacts/d4e12. No test results, assertion text, counts or timing values were changed.",
+    "files": {
+      "npc5-plan-first.txt": {
+        "originalSha256": "ef5d8d2d0c3c43a17cc0b5c55a7e4f2ddbf1e1e881285af4c48def91644493c0",
+        "originalBytes": 427,
+        "changes": "Only the absolute transient checkout prefix is replaced with <repo>; test assertions, counts and timings are unchanged."
+      },
+      "npc5-plan-final.txt": {
+        "originalSha256": "d7e0f9733b3486423e752c17d9e9d6ea15dc610f838ffefbf2dc6abacf07c659",
+        "originalBytes": 427,
+        "changes": "Only the absolute transient checkout prefix is replaced with <repo>; test assertions, counts and timings are unchanged."
+      }
+    }
+  }
+}
