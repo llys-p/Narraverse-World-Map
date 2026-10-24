@@ -41,7 +41,7 @@ node scripts/evaluate-npc-dialogue.mjs
 node scripts/evaluate-npc-dialogue.mjs --mode live --case unsupported --max-requests 1 --allow-model-calls
 ```
 
-这是待授权的运行示例，本轮未执行外部真实请求。`--allow-model-calls` 不能替代实际付费授权；请求上限也不是金额上限。完整场景、16轮和人工复核方法见[评测说明](../../benchmarks/npc-dialogue-v1/README.md)。
+最初交付时这只是待授权示例；随后用户明确确认目的地、虚构上下文及1次上限，已执行一次本场景，结果见下方续测记录。未来调用仍须实际授权；`--allow-model-calls` 不能替代授权，请求上限也不是金额上限。完整场景、16轮和人工复核方法见[评测说明](../../benchmarks/npc-dialogue-v1/README.md)。
 
 JSON报告的 `provider.thinking` 和每轮 `metrics.thinking` 表示请求设置，不是服务商确实遵守设置的证明。`metrics.httpStatus` 保留收到的状态；未收到响应为null。401/403表示接口拒绝该请求，仍使用既有 `MODEL_UNAVAILABLE`；报告不记录上游错误正文。失败消耗一次请求预算，相同ID/内容明确重试复用失败结果，不自动换模型、换密钥或重试。同场景后续轮次阻塞，覆盖不会被删除。
 
@@ -49,8 +49,14 @@ JSON报告的 `provider.thinking` 和每轮 `metrics.thinking` 表示请求设�
 
 ## 已验证的范围
 
-本片仅用测试替身和真实本机HTTP验证请求、错误诊断、原预览/签名/确认/重开链，并运行全部离线开发场景。真实模型输出、语言理解、人物一致性、成本、模型响应速度、Windows启动器和真实浏览器外观未验。没有读取真实存档或启停日常实例。
+初始交付用测试替身和真实本机HTTP验证请求、错误诊断、原预览/签名/确认/重开链，并运行全部离线开发场景。后续增加下面的单次真实接线；多轮语言理解、人物一致性、账单成本、稳定响应速度、Windows启动器和真实浏览器外观仍未验。没有读取真实存档或启停日常实例。
 
 原有中文协议继续生效：生成预览不写世界；确认交谈保存说过的话；行动建议须另行确认，再经原有规则核验；说“已修好”不算履约，未知小偷不能成为目击事实。Provider变化不授予模型写资产或改关系的能力。
 
 本片运行与源码指纹见[证据索引](../evidence/npc6-deepseek-continuation-20261024/index.json)。可在仓库根目录执行 `node scripts/check-npc6-evidence.mjs`，核对清单中的字节、SHA、日志计数及离线覆盖。本片到叠在 #13 上的草稿PR停止，候选待主线复核，不裁定整个 NPC 系统通过。
+
+## 2026-10-24 单次真实接线
+
+用户在明确官方目的地、虚构猎人上下文及1次上限后确认继续。`unsupported` 场景调用 `deepseek-flash` 成功，HTTP200；输入663、输出56 tokens，适配器墙钟6259.285ms。回复拒绝系统不支持的赠物与村庄转让，proposal=null；预览零写入、建议类别、引用及交谈不执行行动4项检查通过，世界重放通过。
+
+助手逐句检查符合此例要求，报告仍保留人工复核pending。其他场景没有真实调用；一次接线不能证明讨价还价、否定/转述、旧伤记忆、未知小偷或多轮承接通过，也不是模型速度基准。凭据仅用于这次进程环境，未创建项目`.env`或追加自动调用。公开[汇总](../evidence/npc6-deepseek-continuation-20261024/live-smoke-summary.json)不含原始回复、完整上下文或密钥，完整报告另交用户。
