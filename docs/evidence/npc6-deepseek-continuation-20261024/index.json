@@ -17,14 +17,17 @@
     "skipped": 0,
     "cancelled": 0,
     "todo": 0,
-    "realModelCalls": 1,
+    "realModelCalls": 16,
     "planScenarios": 8,
     "planTurns": 16,
     "planAttempts": 0,
     "worldReplaysPassed": 8,
     "semanticVerdict": "needs-human-review",
     "actualBrowserVerified": false,
-    "windowsVerified": false
+    "windowsVerified": false,
+    "realAutomaticPassed": 14,
+    "realAutomaticFailed": 2,
+    "assistantSemanticAssessment": "needs-correction"
   },
   "runs": {
     "tests": {
@@ -36,9 +39,9 @@
       "log": "npc6-plan.txt"
     }
   },
-  "provenance": "Tests and final plan cover the delivered Provider and CLI source bytes. Later work only added documentation, this evidence package and its standalone integrity checker. The screenshot-mentioned later patch and actual external-request history were not available at the verified remote base. No actual DeepSeek authorization failure is claimed. HTTP 401/403 are controlled loopback negative fixtures, never real-provider evaluation results. No failed scoped test run occurred in this continuation. Later status-only continuation records an automatic approval block; runtime and previously tested source bytes remain unchanged. PROJECT_CONTEXT hash tracks that status update. Subsequently user confirmation resolved the disclosure block and a single live request succeeded. Public live evidence contains aggregates and private-file hashes only. Follow-up source edits are documentation and integrity-checker coverage; the provider, CLI and world runtime remain unchanged.",
+  "provenance": "Tests and final plan cover the delivered Provider and CLI source bytes. Later work only added documentation, this evidence package and its standalone integrity checker. The screenshot-mentioned later patch and actual external-request history were not available at the verified remote base. No actual DeepSeek authorization failure is claimed. HTTP 401/403 are controlled loopback negative fixtures, never real-provider evaluation results. No failed scoped test run occurred in this continuation. Later status-only continuation records an automatic approval block; runtime and previously tested source bytes remain unchanged. PROJECT_CONTEXT hash tracks that status update. Subsequently user confirmation resolved the disclosure block and a single live request succeeded. Public live evidence contains aggregates and private-file hashes only. Follow-up source edits are documentation and integrity-checker coverage; the provider, CLI and world runtime remain unchanged. Remaining 15 live requests used unchanged runtime bytes. A local wrapper syntax error occurred before execution (0 requests), was retained, then corrected. Only summaries, documentation and evidence checker changed after evaluation.",
   "limitations": [
-    "One authorized real unsupported-request smoke check succeeded; remaining live scenarios, broad semantic quality and invoice costs are unverified. Runtime code and the 17-test offline coverage bytes are unchanged.",
+    "Full public development set executed once across two runs. Automatic14/16 is not semantic accuracy. Holder, eyewitness and timing errors require correction; no held-out benchmark, independent human approval or cost invoice verification.",
     "Request thinking setting is recorded; the tests cannot prove how a real service handles it. Thinking mode keeps the 900-token/20-second limit and may fail on truncation.",
     "Public author-written scenarios, not blind benchmark labels. All semantic judgments still require actual outputs and human review.",
     "Node simulates browser globals in the real HTTP/worker consumer; no actual browser visual or Windows launcher acceptance.",
@@ -46,17 +49,17 @@
   ],
   "sourceSha256": {
     ".env.example": "63393858627b54992693dc1ae90d3f390d6f7315ef5e16d24e827e69412cf1f0",
-    "README.md": "4aabd1f7c287247f789eb86b151fde501d35a42d70cb44c0f639423b8a95998d",
-    "PROJECT_CONTEXT.md": "7a5709e2d7428e18f06a2913e409d7be45888b6b8ae29bf08fc182fade3e3c72",
-    "benchmarks/npc-dialogue-v1/README.md": "4762fa205f6ef97e528617f322b14b36464c315754d5d39b2ea8a3d0d29b2f83",
+    "README.md": "0678fb737b8c04a3dc4833dff4ce6f2d8a2627ae99e8a5b9532d8d107a6e9db4",
+    "PROJECT_CONTEXT.md": "28767aa3d31188516772ed67eab206756b6e3846ff98abab50a6ebff6b5f6422",
+    "benchmarks/npc-dialogue-v1/README.md": "bba9bf2d091b6b87e9bfbd522e4eadba5872ad5f39d38f3dcedc5edc3ea357ed",
     "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
     "docs/runtime/NPC4-NEGOTIATION-PROVIDER.md": "6545a0a0fd199cb85952726bef6ebc287f18378b43c7011451f61830842c0bff",
-    "docs/runtime/NPC6-DEEPSEEK-CONTINUATION.md": "be4a525487a8c2ec80555ca46aa2cbdfcf6e4f1b8b397b4f1e6e6d96601a1f0a",
+    "docs/runtime/NPC6-DEEPSEEK-CONTINUATION.md": "de2b52062d99c54f89f72608dee173cc3e8d19d0636c4b41238d5a33db50e37b",
     "tasks/NPC6-DEEPSEEK-CONTINUATION-TASK.md": "e2f1c622079816aa489ab8af184d10e8cb5f900d632768c2be4e011b7d5bf887",
     "runtime/service/npc-language-provider.mjs": "998abd29d6c5806a0e305b8145e743663b0087a5b59d3e5cfb05bd04c084a6c6",
     "runtime/evaluation/npc-dialogue-eval.mjs": "de7b3b2b84c21f0476ce1f9dd0c41c37cb4db300f0bc3051c438320b4d206737",
     "scripts/evaluate-npc-dialogue.mjs": "1e5520a748b1a82ac300486da31f9a4fb580f06199fdad6dd77b3ffa2c84e760",
-    "scripts/check-npc6-evidence.mjs": "d62c5878010dd977d445bda91a664abc4f4d7839be19023bd8ae0689bb8f5b02",
+    "scripts/check-npc6-evidence.mjs": "5c21c8d15fa8597b913ff39a038adb89b6e1090deb5299b16967c6128c3eb5e3",
     "tests/simulation/npc-deepseek-provider.test.mjs": "01bd31cc81dadc57f450a56f682700717d5b1ecd7993cdacc1c6a37ad911ac98",
     "tests/simulation/npc-language-provider.test.mjs": "be89019ec9ccef855002b10ddb99ea0da426fba597627a32e7a190fe745fadf0",
     "tests/simulation/npc-dialogue-evaluation.test.mjs": "aa321a9d05a4bc22430e5ebfb2fb8d2ce2c777eebbf44582781c186428b459f2",
@@ -103,6 +106,10 @@
     "static-live-checks.json": {
       "bytes": 327,
       "sha256": "d105d41661f9ed9286089d514a56c07226632704e66a73a931d29b56e1f3e2b6"
+    },
+    "live-multiturn-summary.json": {
+      "bytes": 7738,
+      "sha256": "65a80d0b8a8a32afa662024118bd8516f52554c1ea0e5b787f5cc0cf2d35bc37"
     }
   },
   "publicationRedaction": {
@@ -112,6 +119,7 @@
       "changes": "Only the absolute transient repository path is replaced with <repo>."
     }
   },
-  "liveContinuation": "After explicit user confirmation of destination and synthetic payload: one live request succeeded, HTTP200, 663 input / 56 output tokens, 6259.285ms adapter duration. Automatic checks and world replay passed. No further model calls. Assistant case review is not independent human semantic acceptance.",
-  "liveResult": "live-smoke-summary.json"
+  "liveContinuation": "Completed remaining 7 scenarios / 15 requests after user continued. Combined 16 unique live turns: HTTP16/16, automatic14/16, replay8/8. Assistant review found factual errors hidden by automatic passes; language needs correction. Human verdict pending. Runtime unchanged; no live retries.",
+  "liveResult": "live-smoke-summary.json",
+  "liveMultiturnResult": "live-multiturn-summary.json"
 }

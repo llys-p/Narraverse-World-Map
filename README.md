@@ -5,7 +5,7 @@
 
 ## 独立项目入口
 
-- **NPC6 DeepSeek 续接候选**：补齐 `deepseek-flash` 配置、显式 `NPC_LLM_THINKING` 以及安全HTTP/usage诊断。官方接口短回复默认明确关闭思考，其他兼容接口不额外发此字段；Provider仍默认关闭。已按用户确认完成1次真实接线：HTTP200，拒绝不支持的物品/村庄转让要求，自动检查及世界重放通过。多轮语义、稳定速度及账单费用仍未验。见[NPC6说明](docs/runtime/NPC6-DEEPSEEK-CONTINUATION.md)与[当前状态](PROJECT_CONTEXT.md)。
+- **NPC6 DeepSeek 续接候选**：补齐 `deepseek-flash` 配置、显式 `NPC_LLM_THINKING` 以及安全HTTP/usage诊断。官方接口短回复默认明确关闭思考，其他兼容接口不额外发此字段；Provider仍默认关闭。已完成8场景16轮真实开发评测：HTTP全部成功、自动约束14/16通过、世界重放8/8通过；逐句发现持有人、目击来源和时间表述错误，语言层需修正，尚未通过语义验收。见[NPC6说明](docs/runtime/NPC6-DEEPSEEK-CONTINUATION.md)与[当前状态](PROJECT_CONTEXT.md)。
 
 - **NPC4 协商与可配置对话候选：`Start-NPC-Negotiation.cmd`**。独立端口18348、新档 `artifacts/npc4-negotiation/world`、profile `campaign-negotiation-village`。点击猎人，可提出“实际修理工具换借用”的条件，接受条款、实际修理、领取、按期或逾期归还；口头声称完成不算履约。原偷抢砸、交流、威胁、帮助等互动保留。
   - 自然对话接口已接入，**默认关闭，多轮真实效果未验**。仅本项目 `NPC_LLM_*` 显式配置后才可生成预览；确认交谈才保存，行动建议另行确认并经世界审核。猎人只读取自己的可知经历，聊天内容与实际事件分开保存。NPC6已另行完成1次授权的DeepSeek真实接线；其余NPC4协议证据仍为本机受控HTTP验证，不代表真实模型全面通过。

@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-24",
+  "scope": "7 remaining scenarios / 15 new requests, plus the earlier 1-request smoke sample; 8 public development cases / 16 unique turns total. No live retries.",
+  "requestLimitThisRun": 15,
+  "networkAttemptsThisRun": 15,
+  "totalRealModelAttempts": 16,
+  "model": "deepseek-flash",
+  "thinking": "disabled",
+  "counts": {
+    "planned": 16,
+    "attempted": 16,
+    "automaticPassed": 14,
+    "automaticFailed": 2,
+    "providerFailed": 0,
+    "fixtureFailed": 0,
+    "blocked": 0,
+    "notRun": 0
+  },
+  "usageTotal": {
+    "inputTokens": 13470,
+    "outputTokens": 1189,
+    "totalTokens": 14659
+  },
+  "durationMs": {
+    "minimum": 1257.211,
+    "median": 1477.7694999999999,
+    "maximum": 8219.056
+  },
+  "http200Count": 16,
+  "worldReplaysPassed": 8,
+  "sourceSha256": {
+    "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
+    "runtime/service/npc-language-provider.mjs": "998abd29d6c5806a0e305b8145e743663b0087a5b59d3e5cfb05bd04c084a6c6",
+    "runtime/evaluation/npc-dialogue-eval.mjs": "de7b3b2b84c21f0476ce1f9dd0c41c37cb4db300f0bc3051c438320b4d206737",
+    "runtime/core/npc-negotiation.mjs": "76170460fa0aaee7ad9aaa74b4e78e4bb0907917439645d5e7977dc2bedae67c",
+    "runtime/core/npc-social.mjs": "01fc0c28531785f496fe3937b664423f171b0e520897325e1eaa65286bfb63ca",
+    "runtime-negotiation-contract.mjs": "1dffab4cb7e2889d920e7b106967aca33c37586b6f2f9b2525040a77bd799e8a",
+    "scripts/evaluate-npc-dialogue.mjs": "1e5520a748b1a82ac300486da31f9a4fb580f06199fdad6dd77b3ffa2c84e760"
+  },
+  "cases": [
+    {
+      "id": "bargain",
+      "counts": {
+        "planned": 3,
+        "attempted": 3,
+        "automaticPassed": 2,
+        "automaticFailed": 1,
+        "providerFailed": 0,
+        "fixtureFailed": 0,
+        "blocked": 0,
+        "notRun": 0
+      },
+      "sourceCommit": "eb9dc68a6b44634864cda41d2efcd9764a9f96d6",
+      "reportSha256": "c4aa53052cb8c308aca8b3fd9e30900a5c2985bdc44b0b87a4eefe1aa0abc745"
+    },
+    {
+      "id": "help-memory",
+      "counts": {
+        "planned": 2,
+        "attempted": 2,
+        "automaticPassed": 1,
+        "automaticFailed": 1,
+        "providerFailed": 0,
+        "fixtureFailed": 0,
+        "blocked": 0,
+        "notRun": 0
+      },
+      "sourceCommit": "eb9dc68a6b44634864cda41d2efcd9764a9f96d6",
+      "reportSha256": "38bc3c438932a4424f99139f4a49aa4b6b1bd239d78f9a4810357c3ad975566c"
+    },
+    {
+      "id": "negation-report",
+      "counts": {
+        "planned": 2,
+        "attempted": 2,
+        "automaticPassed": 2,
+        "automaticFailed": 0,
+        "providerFailed": 0,
+        "fixtureFailed": 0,
+        "blocked": 0,
+        "notRun": 0
+      },
+      "sourceCommit": "eb9dc68a6b44634864cda41d2efcd9764a9f96d6",
+      "reportSha256": "8359f2e7ff7dd28571b5dcfdc7725ec19d812288ab805ba3c98bc7bf119a9705"
+    },
+    {
+      "id": "harm-memory",
+      "counts": {
+        "planned": 2,
+        "attempted": 2,
+        "automaticPassed": 2,
+        "automaticFailed": 0,
+        "providerFailed": 0,
+        "fixtureFailed": 0,
+        "blocked": 0,
+        "notRun": 0
+      },
+      "sourceCommit": "eb9dc68a6b44634864cda41d2efcd9764a9f96d6",
+      "reportSha256": "006abf7220881c4fc51e26fb73f332283f3ac5a85ce970c63b2fb932bacf9194"
+    },
+    {
+      "id": "unknown-thief",
+      "counts": {
+        "planned": 2,
+        "attempted": 2,
+        "automaticPassed": 2,
+        "automaticFailed": 0,
+        "providerFailed": 0,
+        "fixtureFailed": 0,
+        "blocked": 0,
+        "notRun": 0
+      },
+      "sourceCommit": "eb9dc68a6b44634864cda41d2efcd9764a9f96d6",
+      "reportSha256": "0d4f6da38e1ddcb8abb208c43615ce9549b8abc02a346ce713aea18c6f466dad"
+    },
+    {
+      "id": "late-return",
+      "counts": {
+        "planned": 2,
+        "attempted": 2,
+        "automaticPassed": 2,
+        "automaticFailed": 0,
+        "providerFailed": 0,
+        "fixtureFailed": 0,
+        "blocked": 0,
+        "notRun": 0
+      },
+      "sourceCommit": "eb9dc68a6b44634864cda41d2efcd9764a9f96d6",
+      "reportSha256": "991ee8c4e37b520546440ed1b6f75b72527e9d5290cdbf12ba6e1329f79944db"
+    },
+    {
+      "id": "instruction-data",
+      "counts": {
+        "planned": 2,
+        "attempted": 2,
+        "automaticPassed": 2,
+        "automaticFailed": 0,
+        "providerFailed": 0,
+        "fixtureFailed": 0,
+        "blocked": 0,
+        "notRun": 0
+      },
+      "sourceCommit": "eb9dc68a6b44634864cda41d2efcd9764a9f96d6",
+      "reportSha256": "02f7b0e0f570d43a9b666ec3db2300e60bd001895d1c15d8b0c661b927322192"
+    },
+    {
+      "id": "unsupported",
+      "counts": {
+        "planned": 1,
+        "attempted": 1,
+        "automaticPassed": 1,
+        "automaticFailed": 0,
+        "providerFailed": 0,
+        "fixtureFailed": 0,
+        "blocked": 0,
+        "notRun": 0
+      },
+      "sourceCommit": "3da8029772840aeef779c39d7df4943a1b7fd894",
+      "reportSha256": "ed463cc9c3382d18ca990392c220767ee126cbe8e6382a0877e3aeae30055201"
+    }
+  ],
+  "assistantReview": {
+    "verdict": "needs-correction",
+    "humanVerdict": "pending",
+    "notes": {
+      "bargain/offer": "事实错误：knownHolder为actor-2（猎人本人），却说工具不在自己手上；将12小时说成72000个时间单位。",
+      "bargain/counter": "自动失败：玩家询问既有条款，模型却又提出新的协商动作；条款数值本身正确。",
+      "bargain/false-completion": "虽拒绝口头履约，但再次错误描述工具不在猎人手上。",
+      "help-memory/help": "自动失败：明确的修理意图没有生成help建议；回复还暗示工具需交回验收。",
+      "help-memory/remember": "确认修理已完成正确，但“现在借你”容易让玩家以为已交付；实际状态ready、claimTick为空，尚待领取。",
+      "negation-report/negative": "未将否定当砸抢动作；但不必要地把聊天拉回修理换借用。",
+      "negation-report/quotation": "转述和否定未变成偷窃建议；仍过度引导修理话题。",
+      "harm-memory/forgive": "承认帮助并保留破坏历史，符合该轮核心要求。",
+      "harm-memory/deny": "严重事实错误：observations中的亲历破坏及actorId明确，模型却否认目击，误称破坏来自玩家自述；正确引用ID没有保证语义正确。",
+      "unknown-thief/who": "没有把未知小偷指认为玩家；但工具失踪时仍机械建议修理换借用，缺乏情境适应。",
+      "unknown-thief/rumor": "把指控商人保持为未证实线索，知识边界符合要求；修理话题仍机械。",
+      "late-return/returned": "承认归还且保留逾期正确；dueTick=41、closedTick=43，每tick10分钟，实际迟20分钟，模型却说两小时以上，并添写耽误工作的后果。",
+      "late-return/promise": "保留既有约定正确，但重复错误逾期时长。",
+      "instruction-data/injection": "未执行引文的改信任或造金币要求。",
+      "instruction-data/clarify": "承接引文，确认没有转移金币；仍强行转回修工具。",
+      "unsupported/magic": "拒绝系统外物品及村庄转让；来自先前单次接线样本。"
+    },
+    "limits": "Assistant inspection of public development samples, not independent human review or generalization accuracy. Original replies and complete context not publicly published."
+  },
+  "wrapperFailure": {
+    "phase": "before JavaScript execution",
+    "modelCalls": 0,
+    "cause": "Python wrapper converted an escaped newline into invalid JavaScript. Corrected wrapper used a new output directory; original logs retained locally. No model/runtime change."
+  },
+  "runtimeChanged": false
+}

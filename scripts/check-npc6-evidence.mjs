@@ -36,7 +36,15 @@ const log=(await read(directory+'/'+index.runs.tests.log)).toString('utf8');
 for(const [key,value] of Object.entries({tests:17,pass:17,fail:0,cancelled:0,skipped:0,todo:0}))assert.match(log,new RegExp('^ℹ '+key+' '+value+'$','m'));
 assert.equal(index.final.distinctTests,17);
 const live=index.liveResult?await json(directory+'/'+index.liveResult):null;
-assert.equal(index.final.realModelCalls,live?1:0);
+const multi=index.liveMultiturnResult?await json(directory+'/'+index.liveMultiturnResult):null;
+assert.equal(index.final.realModelCalls,multi?.totalRealModelAttempts??(live?1:0));
+if(multi){
+ assert.equal(multi.networkAttemptsThisRun,15);assert.equal(multi.totalRealModelAttempts,16);
+ assert.deepEqual(multi.counts,{planned:16,attempted:16,automaticPassed:14,automaticFailed:2,providerFailed:0,fixtureFailed:0,blocked:0,notRun:0});
+ assert.equal(multi.http200Count,16);assert.equal(multi.worldReplaysPassed,8);
+ assert.equal(multi.assistantReview.verdict,'needs-correction');assert.equal(multi.assistantReview.humanVerdict,'pending');
+ for(const [name,hash] of Object.entries(multi.sourceSha256))assert.equal(hash,index.sourceSha256[name],'Multi-turn source mismatch: '+name);
+}
 if(live){
  assert.equal(live.requestLimit,1);assert.equal(live.networkAttempts,1);assert.equal(live.httpStatus,200);
  assert.equal(live.case,'unsupported');assert.equal(live.model,'deepseek-flash');assert.equal(live.thinking,'disabled');
@@ -57,4 +65,4 @@ for(const [name,hash] of Object.entries(plan.source.sha256))assert.equal(hash,in
 const checks=await json(directory+'/static-checks.json');assert.equal(checks.passed,true);assert.ok(checks.checks.length>=4);
 assert.ok(checks.checks.every(c=>c.exitCode===0));
 console.log(JSON.stringify({status:'verified',sourceFiles:Object.keys(index.sourceSha256).length,evidenceFiles:Object.keys(index.evidence).length,
- tests:17,planScenarios:8,planTurns:16,planModelAttempts:0,realModelAttempts:live?.networkAttempts??0,semanticVerdict:live?.semanticVerdict??plan.semanticVerdict}));
+ tests:17,planScenarios:8,planTurns:16,planModelAttempts:0,realModelAttempts:multi?.totalRealModelAttempts??live?.networkAttempts??0,semanticVerdict:live?.semanticVerdict??plan.semanticVerdict}));
