@@ -4,6 +4,8 @@
 
 当前项目仍未配置 `NPC_LLM_BASE_URL`、`NPC_LLM_MODEL`、`NPC_LLM_API_KEY`。本轮交付评测入口与受控协议验证；真实调用需要明确的服务、模型与测试调用范围。密钥只在本项目 `.env`/进程配置，不能放进仓库或评测数据。
 
+NPC6续接已提供 [DeepSeek Flash 配置示例与显式思考设置](../../docs/runtime/NPC6-DEEPSEEK-CONTINUATION.md)，没有自动启用或创建密钥。本片仍未调用外部模型。报告新增请求的思考设置、安全HTTP状态及一致时的缓存用量；401/403受控负例不是实际DeepSeek拒绝的记录。
+
 ## 场景与检查
 
 | 场景ID | 轮数 | 要检验的行为 |

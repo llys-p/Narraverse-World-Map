@@ -13,7 +13,8 @@ PlayerInteract可用action: talk（另含topic needs/past/relationship）、thre
 
 export function npcLanguageConfig(env=process.env){
  if(env.NPC_LLM_ENABLED!=='true')return {enabled:false};
- return {enabled:true,baseURL:env.NPC_LLM_BASE_URL??'',model:env.NPC_LLM_MODEL??'',apiKey:env.NPC_LLM_API_KEY??''};
+ return {enabled:true,baseURL:env.NPC_LLM_BASE_URL??'',model:env.NPC_LLM_MODEL??'',apiKey:env.NPC_LLM_API_KEY??'',
+  ...(env.NPC_LLM_THINKING!==undefined&&env.NPC_LLM_THINKING!==''?{thinking:env.NPC_LLM_THINKING}:{})};
 }
 export function providerContext(context){
  const recent=context.observations.slice(-6),important=context.observations.slice().sort((a,b)=>b.importance-a.importance||b.eventSeq-a.eventSeq).slice(0,6);
@@ -24,7 +25,12 @@ function reportedUsage(value){
  if(!value||!['prompt_tokens','completion_tokens'].every(k=>Number.isSafeInteger(value[k])&&value[k]>=0&&value[k]<=10000000))return null;
  const total=value.prompt_tokens+value.completion_tokens;
  if(value.total_tokens!==undefined&&value.total_tokens!==total)return null;
- return {inputTokens:value.prompt_tokens,outputTokens:value.completion_tokens,totalTokens:total};
+ const result={inputTokens:value.prompt_tokens,outputTokens:value.completion_tokens,totalTokens:total};
+ if(value.prompt_cache_hit_tokens!==undefined||value.prompt_cache_miss_tokens!==undefined){
+  const hit=value.prompt_cache_hit_tokens,miss=value.prompt_cache_miss_tokens;
+  result.inputCache=[hit,miss].every(n=>Number.isSafeInteger(n)&&n>=0&&n<=10000000)&&hit+miss===value.prompt_tokens?{hitTokens:hit,missTokens:miss}:null;
+ }
+ return result;
 }
 async function boundedResponse(response,maxBytes){
  requireCondition(response.ok,'模型服务未成功返回，请稍后明确重试。','MODEL_UNAVAILABLE');
@@ -37,14 +43,18 @@ async function boundedResponse(response,maxBytes){
 export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetch,timeoutMs=20000,maxCalls=32}={}){
  requireCondition(Number.isSafeInteger(timeoutMs)&&timeoutMs>=10&&timeoutMs<=60000&&Number.isSafeInteger(maxCalls)&&maxCalls>=1&&maxCalls<=128,'Invalid provider limits');
  const enabled=config.enabled===true,secret=randomBytes(32),requests=new Map(),metrics=new Map();let active=null,closed=false;
- let endpoint,model,key;
+ let endpoint,model,key,thinking=null;
  if(enabled){
-  fields(config,['enabled','baseURL','model','apiKey']);
+  fields(config,['enabled','baseURL','model','apiKey',...(Object.hasOwn(config,'thinking')?['thinking']:[])]);
   requireCondition(typeof config.baseURL==='string'&&config.baseURL.length<=500,'Invalid provider URL');
   const url=new URL(config.baseURL),local=['localhost','127.0.0.1','[::1]'].includes(url.hostname);
   requireCondition((url.protocol==='https:'||url.protocol==='http:'&&local)&&!url.username&&!url.password&&!url.search&&!url.hash,'Provider needs HTTPS or local HTTP');
   requireCondition(dialogueText(config.model,80)&&typeof config.apiKey==='string'&&config.apiKey.length<=512&&!/[\r\n]/u.test(config.apiKey)&&
    (local||config.apiKey.trim().length>0),'Explicit model and server-side credentials required');
+  if(Object.hasOwn(config,'thinking'))requireCondition(['enabled','disabled'].includes(config.thinking),'Invalid thinking mode');
+  // The official API defaults to thinking. Short NPC replies use an explicit
+  // non-thinking request unless configured otherwise; generic providers stay unchanged.
+  thinking=config.thinking??(url.hostname==='api.deepseek.com'?'disabled':null);
   endpoint=url.href.replace(/\/$/u,'')+'/chat/completions';model=config.model;key=config.apiKey;
  }
  const seal=(simulationId,revision,payload)=>{const {seal:ignored,...content}=payload;return createHmac('sha256',secret).update(canonicalJson({simulationId,revision,payload:content})).digest('hex');};
@@ -62,16 +72,17 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
   if(existing){requireCondition(existing.fingerprint===fingerprint,'Dialogue request ID reused with different input','COMMAND_ID_CONFLICT');return cloneData(await existing.promise);}
   requireCondition(!active,'正在生成另一段对话，请稍候。','MODEL_BUSY');requireCondition(requests.size<maxCalls,'本次运行已达到模型请求上限。','MODEL_BUDGET');
   const contextForModel=providerContext(context),body={model,messages:[{role:'system',content:SYSTEM},{role:'user',content:JSON.stringify({npc:contextForModel,playerUtterance:request.text})}],
-   response_format:{type:'json_object'},stream:false,max_tokens:900};
+   response_format:{type:'json_object'},stream:false,max_tokens:900,...(thinking?{thinking:{type:thinking}}:{})};
   requireCondition(Buffer.byteLength(JSON.stringify(body))<=32768,'对话上下文超过模型入口上限。','LIMIT_EXCEEDED');
   const controller=new AbortController();active=controller;
-  const started=performance.now(),measurement={status:'running',durationMs:null,usage:null};metrics.set(request.requestId,measurement);
+  const started=performance.now(),measurement={status:'running',durationMs:null,usage:null,httpStatus:null,thinking};metrics.set(request.requestId,measurement);
   const promise=(async()=>{
    let timer;
    try{
     const response=await Promise.race([
      (async()=>{
       const raw=await fetchImpl(endpoint,{method:'POST',redirect:'error',headers:{'Content-Type':'application/json',...(key?{Authorization:'Bearer '+key}:{})},body:JSON.stringify(body),signal:controller.signal});
+      measurement.httpStatus=Number.isInteger(raw.status)&&raw.status>=100&&raw.status<=599?raw.status:null;
       return boundedResponse(raw,65536);
      })(),
      new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(fault('MODEL_TIMEOUT','模型回复超时，未提交任何交谈或行动。'));},timeoutMs);})
@@ -96,5 +107,5 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
   })();
   requests.set(request.requestId,{fingerprint,promise});return cloneData(await promise);
  }
- return Object.freeze({enabled,compose,verify,getMetrics(requestId){return cloneData(metrics.get(requestId)??null);},close(){closed=true;active?.abort();}});
+ return Object.freeze({enabled,thinking,compose,verify,getMetrics(requestId){return cloneData(metrics.get(requestId)??null);},close(){closed=true;active?.abort();}});
 }

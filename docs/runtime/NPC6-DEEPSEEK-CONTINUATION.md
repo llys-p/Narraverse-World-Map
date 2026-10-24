@@ -1,0 +1,56 @@
+# NPC6：DeepSeek 接口与中断续接
+
+2026-10-24（Asia/Shanghai），接 NPC5 草稿 PR #13。截图里的后续代码没有出现在已确认的远端基准，本片重新实现并验证以下范围。截图只证明上次工作曾中断，不能证明某次模型请求、401 或模型评测已发生。
+
+## 本项目配置
+
+仍用 `Start-NPC-Negotiation.cmd` 和 NPC4 的确认流程。将下面字段填写在**本项目** `.env`；示例默认关闭，不能直接发起调用。密钥填本项目专用值，不放到 GitHub、浏览器或聊天里。
+
+```dotenv
+NPC_LLM_ENABLED=false
+NPC_LLM_BASE_URL=https://api.deepseek.com
+NPC_LLM_MODEL=deepseek-flash
+NPC_LLM_API_KEY=
+NPC_LLM_THINKING=disabled
+```
+
+取得真实调用范围后，再配置密钥并设置 `NPC_LLM_ENABLED=true`。程序不读取旧 `DEEPSEEK_API_KEY` / `LLM_*` 或其他项目凭据。换配置需要正常关闭本项目服务再重开。
+
+2026-10-24核对 [DeepSeek 官方模型说明](https://api-docs.deepseek.com/quick_start/pricing) 与 [思考模式文档](https://api-docs.deepseek.com/guides/thinking_mode/)：当前 Flash 的调用名为 `deepseek-flash`，官方接口默认开启思考。这里面向短 NPC 回复明确发送 `thinking: {"type":"disabled"}`，仍用 JSON 对象、非流式与最多900输出tokens；没有实测费用或速度收益，不硬编码价格。
+
+| 配置/服务 | 实际请求 |
+| --- | --- |
+| 官方 `api.deepseek.com`，未填思考设置 | 明确发送 `disabled` |
+| 任意服务，填 `disabled` / `enabled` | 发送该值；兼容服务须自行支持此参数 |
+| 其他兼容服务，未填或空值 | 不发送 `thinking`，保留旧协议 |
+| 其他值，包括 `auto`、拼写错误、空格 | 创建 Provider 时拒绝，尚未调用模型 |
+
+`enabled` 不提高900tokens或20秒预算，可能因为思考占用额度而截断。只接受完整最终 `content`；仅有 `reasoning_content`、空内容或 `finish_reason:length` 均拒绝，不将推理内容写入对话、报告或下一轮。
+
+## 继续评测
+
+默认离线运行仍是零外部模型调用：
+
+```sh
+node scripts/evaluate-npc-dialogue.mjs
+```
+
+明确授权和配置后，首轮可以选既有的一个开发场景、最多一次请求：
+
+```sh
+node scripts/evaluate-npc-dialogue.mjs --mode live --case unsupported --max-requests 1 --allow-model-calls
+```
+
+这是待授权的运行示例，本轮未执行外部真实请求。`--allow-model-calls` 不能替代实际付费授权；请求上限也不是金额上限。完整场景、16轮和人工复核方法见[评测说明](../../benchmarks/npc-dialogue-v1/README.md)。
+
+JSON报告的 `provider.thinking` 和每轮 `metrics.thinking` 表示请求设置，不是服务商确实遵守设置的证明。`metrics.httpStatus` 保留收到的状态；未收到响应为null。401/403表示接口拒绝该请求，仍使用既有 `MODEL_UNAVAILABLE`；报告不记录上游错误正文。失败消耗一次请求预算，相同ID/内容明确重试复用失败结果，不自动换模型、换密钥或重试。同场景后续轮次阻塞，覆盖不会被删除。
+
+有效 usage 的输入、输出和总数继续核对；DeepSeek缓存命中/未命中计数必须都存在且相加等于输入量，才写入 `usage.inputCache`。缺失整份usage为null；出现不一致缓存字段时只有 `inputCache` 为null，仍可保留有效总量。无法由缺失数据推断零费用。
+
+## 已验证的范围
+
+本片仅用测试替身和真实本机HTTP验证请求、错误诊断、原预览/签名/确认/重开链，并运行全部离线开发场景。真实模型输出、语言理解、人物一致性、成本、模型响应速度、Windows启动器和真实浏览器外观未验。没有读取真实存档或启停日常实例。
+
+原有中文协议继续生效：生成预览不写世界；确认交谈保存说过的话；行动建议须另行确认，再经原有规则核验；说“已修好”不算履约，未知小偷不能成为目击事实。Provider变化不授予模型写资产或改关系的能力。
+
+本片运行与源码指纹见[证据索引](../evidence/npc6-deepseek-continuation-20261024/index.json)。可在仓库根目录执行 `node scripts/check-npc6-evidence.mjs`，核对清单中的字节、SHA、日志计数及离线覆盖。本片到叠在 #13 上的草稿PR停止，候选待主线复核，不裁定整个 NPC 系统通过。

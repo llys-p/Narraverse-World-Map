@@ -1,0 +1,25 @@
+✔ official short replies explicitly disable thinking, generic providers omit it, and an explicit mode is sent without changing the signed dialogue contract (19.901371ms)
+✔ invalid thinking configuration is rejected before fetch; reasoning-only, empty or truncated final content cannot become a dialogue (4.029726ms)
+✔ provider usage preserves only consistent cache counts, never infers missing usage or exposes raw provider fields (5.549729ms)
+✔ loopback 401/403 failures are cached once and produce safe partial-coverage reports with later turns blocked and no upstream body or key (507.546468ms)
+✔ suite identities, action grammar, count and CLI live-call gates reject malformed or implicit inputs (11.921941ms)
+✔ default plan reconstructs all real scenarios without any provider call or semantic pass claim (17253.811985ms)
+✔ controlled multi-turn run uses real prior speech and scripted effects, withholds rubric/labels, and leaves semantics pending even when automatic checks pass (13993.694486ms)
+✔ wrong harmful proposals and missing factual citations fail automatic checks without executing the proposed harm (429.460754ms)
+✔ one invalid provider response blocks later turns of that conversation without retrying or hiding skipped coverage (139.195746ms)
+✔ configuration, authorization, budget and existing output failures happen before any request and preserve existing files (40.727703ms)
+✔ real loopback HTTP exercises the opt-in CLI path and produces escaped reports with unknown usage, no key or automatic semantic approval (157.335852ms)
+✔ provider diagnostic snapshots are detached, cached once, and distinguish missing or invalid usage from zero usage (2.386323ms)
+✔ provider is explicitly configured, read-only, bounded to known context, caches IDs and signs the whole draft (18.020557ms)
+✔ invalid JSON, extra fields, unknown references, unsupported actions, incomplete and excessive output fail closed (13.158529ms)
+✔ one in-flight request is shared, parallel IDs are rejected, and fetch/body timeouts are bounded without automatic retries (44.078446ms)
+✔ dialogue controller discards late replies on revision/person/world/edit changes and never auto-commits a proposal (3.955374ms)
+✔ real worker/HTTP: model draft writes nothing, attributed dialogue recovers across a new signing secret, repair agreement fulfills once, stale and invalid output are refused (9810.450443ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32423.253322

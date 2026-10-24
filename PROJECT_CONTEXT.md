@@ -1,5 +1,18 @@
 # 当前状态与接手方向
 
+更新时间：2026-10-24（Asia/Shanghai）。本分支 `codex/npc6-deepseek-resume-20261024` 接 NPC5 `2b66d0451e669c0847fa9e306f1cbdc344b30ef8`（草稿 PR #13）。用户要求连接GitHub继续截图中的DeepSeek/NPC6任务；已连接 `llys-p` 并核实基准，截图中后续补丁未出现在远端，未找回原执行/外部请求日志。本片从可确认代码补齐接口与证据，不把截图当作真实调用授权或401记录。
+
+## 本分支交接：NPC6 DeepSeek 续接
+
+- **接口与离线验证通过，真实模型语义未测。** 提供本项目 `deepseek-flash` 配置示例及 `NPC_LLM_THINKING=disabled|enabled`。官方 `api.deepseek.com` 未指定时也明确发非思考请求；其他兼容服务未配置时不多发字段。Provider默认仍关闭，不读取旧项目配置；900输出tokens、20秒及原请求预算不变，没有自动换模型或重试。只消费最终content，不记录reasoning_content。
+- 每轮诊断记录安全HTTP状态和请求思考设置；401/403仍返回原安全错误，不保存上游正文。相同失败ID/内容复用结果且占原请求预算。usage总量须一致，缓存命中/未命中相加等于输入才保存细分；缺失为unknown，不推断零费用或实测节省。
+- 本轮 **17/17定向测试通过**：新增DeepSeek边界4项、既有Provider/页面组合器4项、NPC5评测8项、真实HTTP/worker协商消费者1项。0 fail/skip/cancel/todo、exit0、无超时；32583.348ms / 180000ms硬限。验证显式开关、通用接口兼容、推理与最终文本分离、缓存用量校验、受控401/403无重试及后续阻塞；原预览零写入、对话确认、行动审核和重开后同DTO恢复链回归通过。全为替身/本机HTTP，不能当作真实DeepSeek能力测试。
+- 默认完整离线计划另跑：8场景重放通过、16轮未调用、0模型尝试，13867.529ms / 120000ms，exit0、无超时。Linux / Node v24.22.1。源码/证据SHA、实际命令及安全脱敏规则见[证据索引](docs/evidence/npc6-deepseek-continuation-20261024/index.json)，`node scripts/check-npc6-evidence.mjs`可核对字节、指纹、测试计数及离线覆盖。没有失败的本轮定向测试，不补写历史RED或伪造授权中断记录。
+- 交谈与客观事件、预览与确认、建议与真实行动的既有边界不变；未改世界规则/fixture/存档格式或签名，没有合main、部署、迁移真实档、启停日常服务或重开Laya。真实模型语义、费用、速度、Windows启动和真实浏览器外观仍待验。主线唯一进度源仍为 `codex/world-runtime-control`；控制树/Projects待主线复核，不能把本候选标成整个NPC阶段验收。
+- 用户入口：[配置与续测说明](docs/runtime/NPC6-DEEPSEEK-CONTINUATION.md)。AI接手先读[NPC6合同](tasks/NPC6-DEEPSEEK-CONTINUATION-TASK.md)，重点为Provider、评测CLI和新增定向测试。本片到叠在#13上的草稿PR停止；下一步需本项目密钥和明确的首轮请求预算，建议一次接线检查后才决定是否执行16轮并人工逐条核对。当前没有配置密钥，也没有执行真实付费请求。
+
+以下为继承的历史记录，只代表各次交付当时的状态。
+
 更新时间：2026-10-24（Asia/Shanghai）。本分支 `codex/npc-dialogue-evaluation-20261024` 接 NPC4 `1b4d9068d60a3e1ba0ff23d5fce5004e0d164a26`（草稿 PR #12）。用户授权继续模型接入与验证；项目未配置服务/模型/密钥，真实调用范围未明确，因此本片完成可直接使用的评测入口。主线唯一进度源仍为 `codex/world-runtime-control`；控制树/Projects 未同步，候选待主线复核。
 
 ## 本分支交接：NPC5 连续对话评测
