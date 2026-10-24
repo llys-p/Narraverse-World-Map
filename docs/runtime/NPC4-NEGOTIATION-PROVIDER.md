@@ -49,3 +49,7 @@ NPC_LLM_API_KEY=your-local-secret
 代码入口：`runtime/core/npc-negotiation.mjs`（权威协商与知识）、`runtime-negotiation-contract.mjs`（共享格式）、`runtime/service/npc-language-provider.mjs`（可配置适配器）、`runtime-server.mjs`（签名与真实提交）、`demo-npc-dialogue.mjs`（草稿与确认）。证据及首次失败见[索引](../evidence/npc4-negotiation-provider-20261024/index.json)。
 
 下一步先选定一个模型，在明确调用预算后用真实对话检验否定、转述、撒谎、旧伤记忆、讨价还价及上下文失效，再决定是否扩大行动词汇或增加任务类型。真实模型对话体验、浏览器外观和 Windows 启动仍是明确待验项。
+
+## 后续评测入口（NPC5）
+
+[NPC5开发场景与运行说明](../../benchmarks/npc-dialogue-v1/README.md)提供8个场景、16轮连续对话。默认离线计划零模型调用；明确配置及授权后可选择单场景或整组。报告把场景/建议/引用等自动检查与人工语义复核分开，没有配置时不会显示“模型已通过”。

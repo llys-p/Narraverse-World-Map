@@ -1,0 +1,54 @@
+[
+  {
+    "command": [
+      "node",
+      "--check",
+      "runtime/service/npc-language-provider.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "runtime/evaluation/npc-dialogue-eval.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "scripts/evaluate-npc-dialogue.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "node",
+      "--check",
+      "tests/simulation/npc-dialogue-evaluation.test.mjs"
+    ],
+    "exitCode": 0
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exitCode": 0
+  },
+  {
+    "artifact": "artifacts/npc5-dialogue-eval/plan-final.html",
+    "sha256": "66a9742199637904213bea0e71e5c09f327b843855e28744b6c3193c2b77d09e",
+    "articleCount": 16,
+    "scriptOrIframeElements": 0,
+    "cspDefaultSrc": "none",
+    "actualBrowserVerified": false
+  },
+  {
+    "check": "final plan source fingerprints match the current evaluation source bytes",
+    "passed": true
+  }
+]

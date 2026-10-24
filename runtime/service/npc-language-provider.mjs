@@ -19,6 +19,13 @@ export function providerContext(context){
  const recent=context.observations.slice(-6),important=context.observations.slice().sort((a,b)=>b.importance-a.importance||b.eventSeq-a.eventSeq).slice(0,6);
  return {...cloneData(context),observations:[...new Map([...important,...recent].map(m=>[m.eventSeq,m])).values()].sort((a,b)=>a.eventSeq-b.eventSeq)};
 }
+// Diagnostics are separate from the signed draft and never part of world state.
+function reportedUsage(value){
+ if(!value||!['prompt_tokens','completion_tokens'].every(k=>Number.isSafeInteger(value[k])&&value[k]>=0&&value[k]<=10000000))return null;
+ const total=value.prompt_tokens+value.completion_tokens;
+ if(value.total_tokens!==undefined&&value.total_tokens!==total)return null;
+ return {inputTokens:value.prompt_tokens,outputTokens:value.completion_tokens,totalTokens:total};
+}
 async function boundedResponse(response,maxBytes){
  requireCondition(response.ok,'模型服务未成功返回，请稍后明确重试。','MODEL_UNAVAILABLE');
  requireCondition(response.body,'模型服务没有返回正文。','MODEL_OUTPUT_INVALID');
@@ -29,7 +36,7 @@ async function boundedResponse(response,maxBytes){
 }
 export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetch,timeoutMs=20000,maxCalls=32}={}){
  requireCondition(Number.isSafeInteger(timeoutMs)&&timeoutMs>=10&&timeoutMs<=60000&&Number.isSafeInteger(maxCalls)&&maxCalls>=1&&maxCalls<=128,'Invalid provider limits');
- const enabled=config.enabled===true,secret=randomBytes(32),requests=new Map();let active=null,closed=false;
+ const enabled=config.enabled===true,secret=randomBytes(32),requests=new Map(),metrics=new Map();let active=null,closed=false;
  let endpoint,model,key;
  if(enabled){
   fields(config,['enabled','baseURL','model','apiKey']);
@@ -58,6 +65,7 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
    response_format:{type:'json_object'},stream:false,max_tokens:900};
   requireCondition(Buffer.byteLength(JSON.stringify(body))<=32768,'对话上下文超过模型入口上限。','LIMIT_EXCEEDED');
   const controller=new AbortController();active=controller;
+  const started=performance.now(),measurement={status:'running',durationMs:null,usage:null};metrics.set(request.requestId,measurement);
   const promise=(async()=>{
    let timer;
    try{
@@ -68,6 +76,7 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
      })(),
      new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(fault('MODEL_TIMEOUT','模型回复超时，未提交任何交谈或行动。'));},timeoutMs);})
     ]);
+    measurement.usage=reportedUsage(response?.usage);
     const choice=response?.choices?.[0];requireCondition(choice?.finish_reason==='stop'&&typeof choice.message?.content==='string','模型返回不完整。','MODEL_OUTPUT_INVALID');
     const output=parseStrictJson(Buffer.from(choice.message.content),8192);
     requireCondition(validModelReply(output),'模型回复不符合约定格式。','MODEL_OUTPUT_INVALID');
@@ -77,13 +86,15 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
      memoryRefs:output.memoryRefs,proposal:output.proposal,model,seal:'0'.repeat(64)};
     requireCondition(validNegotiationPayload('PlayerDialogue',payload),'Invalid composed dialogue','MODEL_OUTPUT_INVALID');
     payload.seal=seal(context.simulationId,context.revision,payload);
+    measurement.status='succeeded';
     return {apiVersion:1,simulationId:context.simulationId,revision:context.revision,requestId:request.requestId,type:'PlayerDialogue',payload};
    }catch(error){
+    measurement.status=['MODEL_TIMEOUT','MODEL_UNAVAILABLE','MODEL_OUTPUT_INVALID'].includes(error.code)?error.code:'MODEL_OUTPUT_INVALID';
     if(['MODEL_TIMEOUT','MODEL_UNAVAILABLE','MODEL_OUTPUT_INVALID'].includes(error.code))throw error;
     throw fault('MODEL_OUTPUT_INVALID','模型请求或回复校验失败，未改变世界。');
-   }finally{clearTimeout(timer);if(active===controller)active=null;}
+   }finally{measurement.durationMs=Math.round((performance.now()-started)*1000)/1000;clearTimeout(timer);if(active===controller)active=null;}
   })();
   requests.set(request.requestId,{fingerprint,promise});return cloneData(await promise);
  }
- return Object.freeze({enabled,compose,verify,close(){closed=true;active?.abort();}});
+ return Object.freeze({enabled,compose,verify,getMetrics(requestId){return cloneData(metrics.get(requestId)??null);},close(){closed=true;active?.abort();}});
 }
