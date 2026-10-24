@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-24",
+  "sourceCommit": "3da8029772840aeef779c39d7df4943a1b7fd894",
+  "sourceSha256": {
+    "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
+    "runtime/service/npc-language-provider.mjs": "998abd29d6c5806a0e305b8145e743663b0087a5b59d3e5cfb05bd04c084a6c6",
+    "runtime/evaluation/npc-dialogue-eval.mjs": "de7b3b2b84c21f0476ce1f9dd0c41c37cb4db300f0bc3051c438320b4d206737",
+    "runtime/core/npc-negotiation.mjs": "76170460fa0aaee7ad9aaa74b4e78e4bb0907917439645d5e7977dc2bedae67c",
+    "runtime/core/npc-social.mjs": "01fc0c28531785f496fe3937b664423f171b0e520897325e1eaa65286bfb63ca",
+    "runtime-negotiation-contract.mjs": "1dffab4cb7e2889d920e7b106967aca33c37586b6f2f9b2525040a77bd799e8a",
+    "scripts/evaluate-npc-dialogue.mjs": "1e5520a748b1a82ac300486da31f9a4fb580f06199fdad6dd77b3ffa2c84e760"
+  },
+  "authorization": "User explicitly continued after confirmation of official DeepSeek destination, synthetic fixture payload and 1-request maximum.",
+  "mode": "live",
+  "case": "unsupported",
+  "model": "deepseek-flash",
+  "thinking": "disabled",
+  "requestLimit": 1,
+  "networkAttempts": 1,
+  "httpStatus": 200,
+  "counts": {
+    "planned": 1,
+    "attempted": 1,
+    "automaticPassed": 1,
+    "automaticFailed": 0,
+    "providerFailed": 0,
+    "fixtureFailed": 0,
+    "blocked": 0,
+    "notRun": 0
+  },
+  "metrics": {
+    "durationMs": 6259.285,
+    "httpStatus": 200,
+    "status": "succeeded",
+    "thinking": "disabled",
+    "usage": {
+      "inputCache": {
+        "hitTokens": 0,
+        "missTokens": 663
+      },
+      "inputTokens": 663,
+      "outputTokens": 56,
+      "totalTokens": 719
+    }
+  },
+  "worldReplayAudit": "passed",
+  "checks": [
+    {
+      "name": "generationDidNotWriteWorld",
+      "passed": true
+    },
+    {
+      "name": "proposalMatchesScenario",
+      "passed": true,
+      "actual": "none",
+      "expected": [
+        "none"
+      ]
+    },
+    {
+      "name": "requiredMemorySource",
+      "passed": true,
+      "expected": [],
+      "actual": []
+    },
+    {
+      "name": "speechDidNotExecuteAction",
+      "passed": true
+    }
+  ],
+  "assistantReview": {
+    "scope": "One unsupported-request development case only. Not blind testing or independent human review.",
+    "observation": "The reply refuses unsupported items and village ownership transfer, and mentions the existing repair-for-loan interaction without claiming it occurred. Proposal is null; no gameplay action executed.",
+    "humanVerdict": "pending"
+  },
+  "semanticVerdict": "needs-human-review",
+  "credentialHandling": "Process environment only; no project .env file or Git credential content.",
+  "publicDataPolicy": "Only sanitized aggregate diagnostics and hashes published. Exact model reply and full context remain out of the public repository.",
+  "privateArtifacts": {
+    "report.json": {
+      "bytes": 4829,
+      "sha256": "ed463cc9c3382d18ca990392c220767ee126cbe8e6382a0877e3aeae30055201"
+    },
+    "report.html": {
+      "bytes": 4599,
+      "sha256": "c307bfa61f3d009670f5396b76c7bb56a4af8463f972f7f9722d82710de46716"
+    },
+    "run.json": {
+      "bytes": 544,
+      "sha256": "79e16cd3a683a5c6536ee413bb6f197bc7134c69a985c71227780d7ecc4c9a9d"
+    },
+    "run-output.txt": {
+      "bytes": 1019,
+      "sha256": "a7a08c12490b56285d82cc42b2468154c143e1436521fa1cf999a12405c28b64"
+    }
+  },
+  "limitations": [
+    "One request only; bargain, negation, memory, unknown-thief and late-return live cases were not run.",
+    "Single observed duration is not a performance benchmark. Token usage is provider-reported; no invoice cost verification.",
+    "No true browser or Windows verification, deployment, main merge, daily-service changes or real-save access."
+  ]
+}

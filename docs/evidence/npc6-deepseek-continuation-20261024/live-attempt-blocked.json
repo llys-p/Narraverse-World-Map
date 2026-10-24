@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-24",
+  "runtimeCommit": "21c2a57e75399dc71012714e87c9674d5c112e7a",
+  "status": "blocked-by-automatic-approval-review",
+  "reason": "The approval review requires explicit authorization for the destination and disclosure of the supplied API credential plus project-derived NPC dialogue/context to the external DeepSeek service.",
+  "requestLimit": 1,
+  "model": "deepseek-flash",
+  "thinking": "disabled",
+  "maxOutputTokens": 900,
+  "plannedDestination": "https://api.deepseek.com/chat/completions",
+  "plannedCase": "unsupported",
+  "payloadSource": "Public deterministic fixture4; synthetic hunter state and test utterance. No real saves. The selected case has zero prior conversation and observation entries.",
+  "credentialHandling": "Provided credential was injected into the attempted child process environment only. It is absent from this evidence, Git files and project .env.",
+  "observedLocalReport": {
+    "completed": false,
+    "counts": {"planned": 1, "attempted": 0},
+    "cases": []
+  },
+  "confirmedProviderResponse": false,
+  "confirmedHttpStatus": null,
+  "confirmedUsage": null,
+  "realModelVerdict": "not-evaluated",
+  "modelProcessStillRunningAtInspection": false,
+  "retryOrBypassPerformed": false,
+  "nextStep": "Obtain explicit approval for the stated destination and synthetic payload before a new single-request live check."
+}

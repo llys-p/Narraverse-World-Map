@@ -1,0 +1,1 @@
+{"status":"plan-ready","mode":"plan","counts":{"planned":16,"attempted":0,"automaticPassed":0,"automaticFailed":0,"providerFailed":0,"fixtureFailed":0,"blocked":0,"notRun":16},"semanticVerdict":"not-evaluated","output":"<repo>/artifacts/npc6-dialogue-eval/plan.json","html":"<repo>/artifacts/npc6-dialogue-eval/plan.html"}

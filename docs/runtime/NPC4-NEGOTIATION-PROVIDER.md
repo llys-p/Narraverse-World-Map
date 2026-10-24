@@ -18,6 +18,8 @@
 
 在本项目 `.env` 填写独立的 `NPC_LLM_*` 配置；示例见根目录 `.env.example`。不继承旧 `LLM_*` 或其他项目凭据，不把密钥放在浏览器、仓库或聊天文本中。启动器显式加载本项目 `.env`；已有独立测试档须正常关闭后再重开才能更新进程配置。
 
+NPC6补充了[DeepSeek配置与思考开关](NPC6-DEEPSEEK-CONTINUATION.md)：官方 `api.deepseek.com` 未指定时也明确发送非思考请求；通用接口未配置时保留原请求。下方为通用兼容接口示例，不自动选择模型。真实模型效果仍待测。
+
 ```dotenv
 NPC_LLM_ENABLED=true
 NPC_LLM_BASE_URL=https://your-provider.example/v1

@@ -52,7 +52,7 @@ export async function evaluateDialogueCli(args,{env=process.env,fetchImpl=fetch,
   await fs.mkdir(path.dirname(out),{recursive:true});
   try{for(const name of [out,html])opened.push({name,handle:await fs.open(name,'wx')});}
   catch(error){for(const file of opened){await file.handle.close();await fs.unlink(file.name);}opened.length=0;throw fault(error.code==='EEXIST'?'OUTPUT_EXISTS':'REPORT_UNAVAILABLE','Output files could not be reserved');}
-  const metadata={source,provider:settings.mode==='live'?{model:config.apiKey?config.model.split(config.apiKey).join('[redacted]'):config.model,endpointSha256:createHash('sha256').update(config.baseURL).digest('hex')}:null,createdAt:new Date().toISOString()};
+  const metadata={source,provider:settings.mode==='live'?{model:config.apiKey?config.model.split(config.apiKey).join('[redacted]'):config.model,thinking:provider.thinking,endpointSha256:createHash('sha256').update(config.baseURL).digest('hex')}:null,createdAt:new Date().toISOString()};
   const save=async report=>{
    const document={...report,...metadata};
    for(const [i,bytes] of [Buffer.from(JSON.stringify(document,null,2)+'\n'),Buffer.from(renderDialogueReport(document))].entries()){
