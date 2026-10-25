@@ -1,0 +1,1 @@
+{"status":"human-review-required","mode":"live","counts":{"planned":8,"attempted":8,"automaticPassed":8,"automaticFailed":0,"providerFailed":0,"fixtureFailed":0,"blocked":0,"notRun":0},"semanticVerdict":"needs-human-review","output":"<candidate>/artifacts/npc13-life-live/live.json","html":"<candidate>/artifacts/npc13-life-live/live.html"}
