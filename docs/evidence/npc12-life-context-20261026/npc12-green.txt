@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+ok 1 - initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+  ---
+  duration_ms: 148.963561
+  type: 'test'
+  ...
+# Subtest: preparing to work is not a paid result and a newly completed action makes its older intent await review
+ok 2 - preparing to work is not a paid result and a newly completed action makes its older intent await review
+  ---
+  duration_ms: 9234.572761
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9689.362927

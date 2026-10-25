@@ -2,14 +2,10 @@
 import {fields,integer,requireCondition} from './data-contract.mjs';
 import {campaignSurvivalTravel} from './motivation-runtime.mjs';
 import {isSocialMapVersion,socialWorkReady} from './npc-social.mjs';
+import {HUNTER_SITES} from './npc-village-sites.mjs';
+export {HUNTER_SITES} from './npc-village-sites.mjs';
 
 export const NPC_MAP_VERSION='campaign-map-v2';
-export const HUNTER_SITES=Object.freeze({
-  WorkForPay:Object.freeze({x:5,y:6}),
-  BuyFood:Object.freeze({x:3,y:7}),
-  Rest:Object.freeze({x:5,y:8}),
-  NoAction:Object.freeze({x:5,y:8})
-});
 export function initialHunterIntent(){return {action:'NoAction',planId:null,decidedTick:0};}
 export function validateHunterIntent(intent,tick){
   fields(intent,['action','planId','decidedTick']);

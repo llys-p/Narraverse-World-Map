@@ -2,6 +2,7 @@ import {cloneData,fields,denseArray,requireCondition} from './data-contract.mjs'
 import {repairLoanTerms} from './npc-negotiation-terms.mjs';
 import {auditSocial,rememberSocial} from './npc-social.mjs';
 import {npcMemoryFor,NPC_MEMORY_VERSION} from './npc-memory.mjs';
+import {npcLifeContext} from './npc-life-context.mjs';
 import {isNegotiationMapVersion,NEGOTIATION_COMMANDS,validNegotiationPayload,validAgreement,validDialogueTurn,validNegotiationResult} from '../../runtime-negotiation-contract.mjs';
 
 const active=a=>a&&['accepted','ready','borrowed'].includes(a.status);
@@ -128,8 +129,8 @@ export function npcDialogueContext(bundle){
  return {simulationId:s.simulationId,revision:s.revision,tick:s.tick,targetId:'actor-2',
   persona:'村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。',
   self:{alive:b.alive,health:b.health,fatigue:b.fatigue,food:own.inventory.food,wallet:own.wallet,trust:h.trust,fear:h.fear,grievance:h.grievance,
-   knownHolder:h.knownHolder,knownCondition:h.knownCondition},
+   knownHolder:h.knownHolder,knownCondition:h.knownCondition,...(memory?{hunger:b.hunger}:{})},
   observations:cloneData(memory?.episodes??h.memories),agreement:cloneData(model(w).agreement),conversation:cloneData(memory?.speech??model(w).turns),
-  ...(memory?{memoryMode:NPC_MEMORY_VERSION,memoryCoverage:{forgottenEpisodes:memory.forgottenEpisodes,forgottenSpeech:memory.forgottenSpeech}}:{}),
+  ...(memory?{memoryMode:NPC_MEMORY_VERSION,memoryCoverage:{forgottenEpisodes:memory.forgottenEpisodes,forgottenSpeech:memory.forgottenSpeech},activity:npcLifeContext(w,s.tick)}:{}),
   canTalk:negotiationView(w).canTalk};
 }

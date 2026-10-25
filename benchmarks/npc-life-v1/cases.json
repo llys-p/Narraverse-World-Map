@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 2,
+  "fixtureVersion": "5",
+  "suiteId": "npc-life-v1",
+  "provenance": "作者自写公开开发场景，2场景8轮，包含实际工作、买粮、日结和赠粮暂停；不是盲测或模型成绩。",
+  "cases": [
+    {
+      "id": "work-and-food",
+      "title": "工作准备、实领工资、买粮与日结消费",
+      "setup": [
+        {
+          "advanceTo": 112
+        }
+      ],
+      "turns": [
+        {
+          "id": "work-preparation",
+          "text": "你来工作点做什么，工钱拿到了吗？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "只有准备和抵达工作点，钱包0，尚无实际领工资结果。"
+            ]
+          }
+        },
+        {
+          "id": "wage-received",
+          "text": "现在工钱真的领到了吗？",
+          "before": [
+            {
+              "advanceTo": 144
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "实际工作成功，钱包增加20；旧工作意图等待更新，下一计划步骤是买粮。"
+            ]
+          }
+        },
+        {
+          "id": "food-preparation",
+          "text": "站在粮摊前，就算已经买到粮了吗？",
+          "before": [
+            {
+              "advanceTo": 160
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "只有买粮意图和抵达粮摊，上一结果仍是工作，钱包20、粮0；不说已买。"
+            ]
+          }
+        },
+        {
+          "id": "food-consumed",
+          "text": "你买过粮以后，现在还剩多少口粮？",
+          "before": [
+            {
+              "advanceTo": 288
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "实际买粮+1、花10，但本轮日结已消耗，当前粮0、钱包10；不把当次增量当库存。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "gifts-pause",
+      "title": "赠粮改变准备，不冒充新工资或已购买",
+      "setup": [
+        {
+          "advanceTo": 160
+        }
+      ],
+      "turns": [
+        {
+          "id": "buy-intent",
+          "text": "你现在为什么打算去买粮？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "本人粮0、钱包20，已经领过工资，准备买粮，不声称已付款。"
+            ]
+          }
+        },
+        {
+          "id": "two-gifts",
+          "text": "我刚给了你两份粮，现在还要去买吗？",
+          "before": [
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              }
+            },
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              }
+            },
+            {
+              "advanceTo": 180
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "gift"
+            ],
+            "facts": {},
+            "humanReview": [
+              "当前粮2，已保存意图为NoAction并返回歇脚处，未再次付钱或领工资。"
+            ]
+          }
+        },
+        {
+          "id": "wait-result",
+          "text": "后来你实际又买粮了吗？",
+          "before": [
+            {
+              "advanceTo": 288
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "最近结果no-action，未再买粮；当前粮1是赠粮扣日结消费，钱包仍20。"
+            ]
+          }
+        },
+        {
+          "id": "followup",
+          "text": "那现在呢？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "承接生活话题，不伪造新行动或把blocked计划说成已经完成。"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
