@@ -22,7 +22,8 @@ test('real HTTP/worker privately delivers own life state, preserves read-only pr
   const chunks=[];for await(const c of req)chunks.push(c);
   const ctx=JSON.parse(JSON.parse(Buffer.concat(chunks)).messages[1].content).npc;seen.push(ctx);
   const injury=ctx.observations.find(m=>m.kind==='smash');
-  const output={reply:injury?'受控回复：工具受损，我先回歇脚处；后续还要看实际行动。':'受控回复：尚无已完成的工作结果。',memoryRefs:injury?[injury.eventSeq]:[],proposal:null};
+  const life=ctx.knownFacts.life;assert.ok(life);assert.equal(life.current.food,ctx.self.food);
+  const output={reply:injury?`受控回复：工具受损，我先回歇脚处；目前存粮${life.current.food}份。`:'受控回复：尚无已完成的工作结果。',memoryRefs:injury?[injury.eventSeq]:[],proposal:null};
   res.setHeader('Content-Type','application/json');res.end(JSON.stringify({choices:[{finish_reason:'stop',message:{content:JSON.stringify(output)}}]}));
  });
  await new Promise(r=>mock.listen(0,'127.0.0.1',r));
@@ -44,10 +45,13 @@ test('real HTTP/worker privately delivers own life state, preserves read-only pr
  assert.deepEqual(await read(),before);assert.deepEqual(await hashes(directory),beforeHashes);
  const committed=await command('PlayerDialogue',draft.payload),filename=path.join(directory,`service-commit-r${group.snapshot.revision}.json`),saved=await loadServiceCommit(filename);
  const memory=saved.bundle.snapshot.world.mapModel.memoryModel;assert.equal(memory.actors[1].speech.length,1);
- assert.equal(JSON.stringify(memory).includes('activity'),false);assert.deepEqual(providerContext(npcDialogueContext(saved.bundle),'现在呢？').activity,activity);
- for(const marker of ['activity','lastResult','knowledgeFingerprint','local-test-only'])assert.equal(JSON.stringify(group).includes('"'+marker+'"'),false);
+ const life=seen.at(-1).knownFacts.life;assert.equal(life.preparation.status,'redirected');assert.equal(life.current.foodNeed,'buffered');
+ assert.equal(JSON.stringify(memory).includes('activity'),false);assert.equal(JSON.stringify(memory).includes('currentMeaning'),false);
+ assert.deepEqual(providerContext(npcDialogueContext(saved.bundle),'现在呢？').activity,activity);
+ assert.deepEqual(providerContext(npcDialogueContext(saved.bundle),'现在呢？').knownFacts.life,life);
+ for(const marker of ['activity','lastResult','currentMeaning','preparation','knowledgeFingerprint','local-test-only'])assert.equal(JSON.stringify(group).includes('"'+marker+'"'),false);
  const durable=structuredClone(group),durableHashes=await hashes(directory);
- await server.close();server=await startRuntimeServer({...options,npcLanguage});group=await read();await compose();assert.deepEqual(seen.at(-1).activity,activity);assert.deepEqual(await hashes(directory),durableHashes);
+ await server.close();server=await startRuntimeServer({...options,npcLanguage});group=await read();await compose();assert.deepEqual(seen.at(-1).activity,activity);assert.deepEqual(seen.at(-1).knownFacts.life,life);assert.deepEqual(await hashes(directory),durableHashes);
  await server.close();server=await startRuntimeServer(options);group=await read();
  const retry=await post('/api/runtime/commands',committed.dto);assert.equal(retry.status,200);assert.deepEqual(await retry.json(),committed.receipt);
  for(const key of ['snapshot','map','player','scene','encounter'])assert.deepEqual(group[key],durable[key]);

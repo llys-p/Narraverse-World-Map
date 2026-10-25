@@ -1,0 +1,39 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createMemoryCampaignVillage,createNegotiationCampaignVillage,campaignSystems} from '../../runtime/fixtures/campaign-village.mjs';
+import {createAuditedBundle,deriveCampaignBundle} from '../../runtime/core/world-state.mjs';
+import {npcDialogueContext} from '../../runtime/core/npc-negotiation.mjs';
+import {providerContext} from '../../runtime/service/npc-language-provider.mjs';
+const options={rulesVersion:'d-campaign-v1',systems:campaignSystems()};
+const advance=(b,tick)=>deriveCampaignBundle(b,{version:5,commandId:'facts-to-'+tick,expectedRevision:b.snapshot.revision,type:'AdvanceTime',payload:{ticks:tick-b.snapshot.tick}}).bundle;
+const initial=()=>createAuditedBundle(createMemoryCampaignVillage(42,'npc14-facts').bundle,options);
+const read=b=>providerContext(npcDialogueContext(b),'你现在有多少粮？后来呢？');
+
+test('current life facts distinguish purchased delta from current food and unrefreshed intent',()=>{
+ const b=advance(initial(),288),before=structuredClone(b),c=read(b),f=c.knownFacts.life;
+ assert.ok(f,'Provider must receive explicit current life facts');
+ assert.deepEqual(f.current,{tick:288,food:0,wallet:10,hunger:200,foodNeed:'needed'});
+ assert.match(f.currentMeaning,/粮食0份/);assert.match(f.currentMeaning,/钱包10/);
+ assert.equal(f.lastExecution.action,'BuyFood');assert.equal(f.lastExecution.foodChange,1);
+ assert.match(f.lastExecution.meaning,/不是当前库存/);
+ assert.equal(f.preparation.status,'awaiting-review');
+ assert.equal(f.planMeaning,null);assert.deepEqual(b,before);
+ assert.deepEqual(providerContext(c,'你现在有多少粮？后来呢？'),c);
+});
+
+test('gifts pause current preparation despite old ready plan, later low stock does not invent a cause',()=>{
+ let b=advance(initial(),160);
+ for(const id of ['facts-gift-one','facts-gift-two'])b=deriveCampaignBundle(b,{version:5,commandId:id,expectedRevision:b.snapshot.revision,type:'PlayerGiftFood',payload:{recipientId:'actor-2'}}).bundle;
+ b=advance(b,180);let f=read(b).knownFacts.life;
+ assert.ok(f,'Provider must explain current pause separately from old plan');
+ assert.equal(f.current.food,2);assert.equal(f.current.foodNeed,'buffered');
+ assert.equal(f.preparation.status,'paused');assert.equal(f.preparation.action,'NoAction');
+ assert.match(f.preparation.meaning,/没有准备新的工作或购买/);
+ assert.match(f.planMeaning,/不证明当前正在执行/);
+ b=advance(b,288);f=read(b).knownFacts.life;
+ assert.equal(f.current.food,1);assert.equal(f.current.foodNeed,'needed');
+ assert.equal(f.preparation.status,'awaiting-review');
+ assert.equal(f.lastExecution.status,'no-action');assert.match(f.lastExecution.meaning,/没有行动，不是购买失败/);
+ assert.match(f.planMeaning,/原因未提供/);
+ assert.match(f.authority,/不能推断暂停的完整原因/);
+});

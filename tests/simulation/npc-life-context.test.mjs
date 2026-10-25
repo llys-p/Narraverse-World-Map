@@ -63,8 +63,10 @@ test('preparing to work is not a paid result and a newly completed action makes 
  let b=advance(initial(),112),c=read(b);
  assert.ok(c.activity,'Travel needs a separately attributed intention');assert.equal(c.activity.intent.action,'WorkForPay');
  assert.equal(c.activity.intent.phase,'at-destination');assert.equal(c.activity.lastResult,null);assert.equal(c.self.wallet,0);
+ assert.equal(c.knownFacts.life.preparation.status,'preparing');assert.equal(c.knownFacts.life.preparation.action,'WorkForPay');assert.equal(c.knownFacts.life.lastExecution,null);
  b=advance(b,144);c=read(b);
  assert.equal(c.activity.intent.phase,'awaiting-review');assert.equal(c.activity.plan.step,'BuyFood');
  assert.deepEqual(c.activity.lastResult,{action:'WorkForPay',status:'succeeded',tick:144,walletChange:20,foodChange:0});
  assert.equal(c.self.wallet,20);validateBundle(b,options);
+ assert.equal(c.knownFacts.life.current.wallet,20);assert.equal(c.knownFacts.life.lastExecution.walletChange,20);assert.equal(c.knownFacts.life.preparation.status,'awaiting-review');
 });

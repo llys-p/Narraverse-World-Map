@@ -1,0 +1,10 @@
+✔ current life facts distinguish purchased delta from current food and unrefreshed intent (21727.759635ms)
+✔ gifts pause current preparation despite old ready plan, later low stock does not invent a cause (22568.237858ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 44520.118596

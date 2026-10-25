@@ -1,0 +1,13 @@
+✔ current life facts distinguish purchased delta from current food and unrefreshed intent (31539.416582ms)
+✔ gifts pause current preparation despite old ready plan, later low stock does not invent a cause (43666.979736ms)
+✔ old model claims and player assertions cannot become life facts or overwrite current resources (27772.758902ms)
+✔ food need uses inventory threshold independently of hunger and private facts are rebuilt at the boundary (91.097403ms)
+✔ controlled provider receives explicit facts and preserves raw model wording, signing and bounds (60.838817ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 103376.13046

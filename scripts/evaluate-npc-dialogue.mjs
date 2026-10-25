@@ -28,7 +28,7 @@ export function parseEvaluationArgs(args){
 }
 async function fingerprints(suiteFile){
  const files=[suiteFile,'runtime/core/npc-negotiation-terms.mjs','runtime/fixtures/campaign-village.mjs','runtime/service/npc-language-provider.mjs','runtime/evaluation/npc-dialogue-eval.mjs',
-  'runtime/service/npc-dialogue-grounding.mjs','runtime/service/npc-recall-focus.mjs','demo-social-language.mjs','runtime/core/simulation-clock.mjs',
+  'runtime/service/npc-dialogue-grounding.mjs','runtime/service/npc-life-facts.mjs','runtime/core/survival-state.mjs','runtime/service/npc-recall-focus.mjs','demo-social-language.mjs','runtime/core/simulation-clock.mjs',
   'runtime/core/npc-negotiation.mjs','runtime/core/npc-social.mjs','runtime/core/npc-memory.mjs','runtime/core/npc-life-context.mjs','runtime/core/npc-village-sites.mjs','runtime/core/campaign-npc-agency.mjs','runtime/core/campaign-map.mjs','runtime-negotiation-contract.mjs','scripts/evaluate-npc-dialogue.mjs'];
  const hashes={};for(const f of files)hashes[f]=createHash('sha256').update(await fs.readFile(path.join(root,f))).digest('hex');
  let baseCommit=null,workingTreeDirty=null;try{baseCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim();workingTreeDirty=Boolean(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim());}catch{}

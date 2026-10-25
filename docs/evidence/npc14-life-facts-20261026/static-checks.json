@@ -1,0 +1,136 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/service/npc-dialogue-grounding.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/service/npc-language-provider.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/service/npc-life-facts.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc14-evidence.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc14-legacy.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/evaluate-npc-dialogue.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-life-context.test.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-life-evaluation.test.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-life-facts.test.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-life-service.test.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/check-npc13-evidence.mjs"
+      ],
+      "cwd": "<baseline>",
+      "exitCode": 0,
+      "output": "{\"status\":\"verified\",\"requests\":8,\"httpSucceeded\":8,\"automaticPassed\":8,\"worldReplays\":2,\"semanticVerdict\":\"needs-correction\",\"independentHumanVerdict\":\"pending\",\"runtimeChanged\":false,\"preservedEvidenceFiles\":150}",
+      "error": ""
+    }
+  ]
+}

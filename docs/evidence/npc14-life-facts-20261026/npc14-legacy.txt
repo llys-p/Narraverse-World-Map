@@ -1,0 +1,1 @@
+{"status":"verified","fixtures":5,"fullBundleCheckpoints":10,"matches":true,"externalModelCalls":0}
