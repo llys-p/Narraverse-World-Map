@@ -1,0 +1,90 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createMemoryCampaignVillage,createNegotiationCampaignVillage,campaignSystems} from '../../runtime/fixtures/campaign-village.mjs';
+import {createAuditedBundle,deriveCampaignBundle} from '../../runtime/core/world-state.mjs';
+import {npcDialogueContext} from '../../runtime/core/npc-negotiation.mjs';
+import {providerContext,createNpcLanguageProvider} from '../../runtime/service/npc-language-provider.mjs';
+const options={rulesVersion:'d-campaign-v1',systems:campaignSystems()};
+const advance=(b,tick)=>deriveCampaignBundle(b,{version:5,commandId:'facts-to-'+tick,expectedRevision:b.snapshot.revision,type:'AdvanceTime',payload:{ticks:tick-b.snapshot.tick}}).bundle;
+const initial=()=>createAuditedBundle(createMemoryCampaignVillage(42,'npc14-facts').bundle,options);
+const read=b=>providerContext(npcDialogueContext(b),'你现在有多少粮？后来呢？');
+
+test('current life facts distinguish purchased delta from current food and unrefreshed intent',()=>{
+ const b=advance(initial(),288),before=structuredClone(b),c=read(b),f=c.knownFacts.life;
+ assert.ok(f,'Provider must receive explicit current life facts');
+ assert.deepEqual(f.current,{tick:288,food:0,wallet:10,hunger:200,foodNeed:'needed'});
+ assert.match(f.currentMeaning,/粮食0份/);assert.match(f.currentMeaning,/钱包10/);
+ assert.equal(f.lastExecution.action,'BuyFood');assert.equal(f.lastExecution.foodChange,1);
+ assert.match(f.lastExecution.meaning,/不是当前库存/);
+ assert.equal(f.preparation.status,'awaiting-review');
+ assert.equal(f.planMeaning,null);assert.deepEqual(b,before);
+ assert.deepEqual(providerContext(c,'你现在有多少粮？后来呢？'),c);
+});
+
+test('gifts pause current preparation despite old ready plan, later low stock does not invent a cause',()=>{
+ let b=advance(initial(),160);
+ for(const id of ['facts-gift-one','facts-gift-two'])b=deriveCampaignBundle(b,{version:5,commandId:id,expectedRevision:b.snapshot.revision,type:'PlayerGiftFood',payload:{recipientId:'actor-2'}}).bundle;
+ b=advance(b,180);let f=read(b).knownFacts.life;
+ assert.ok(f,'Provider must explain current pause separately from old plan');
+ assert.equal(f.current.food,2);assert.equal(f.current.foodNeed,'buffered');
+ assert.equal(f.preparation.status,'paused');assert.equal(f.preparation.action,'NoAction');
+ assert.match(f.preparation.meaning,/没有准备新的工作或购买/);
+ assert.match(f.planMeaning,/不证明当前正在执行/);
+ b=advance(b,288);f=read(b).knownFacts.life;
+ assert.equal(f.current.food,1);assert.equal(f.current.foodNeed,'needed');
+ assert.equal(f.preparation.status,'awaiting-review');
+ assert.equal(f.lastExecution.status,'no-action');assert.match(f.lastExecution.meaning,/没有行动，不是购买失败/);
+ assert.match(f.planMeaning,/原因未提供/);
+ assert.match(f.authority,/不能推断暂停的完整原因/);
+});
+
+test('old model claims and player assertions cannot become life facts or overwrite current resources',()=>{
+ const b=advance(initial(),288),raw=npcDialogueContext(b),expected=read(b).knownFacts.life;
+ // Synthetic contaminated speech input; not additional real gameplay or model output.
+ raw.conversation=[{eventSeq:999,tick:288,utterance:'你现在还有一份粮，后来呢？',reply:'我后来又去粮摊，等找到新工作再买，还剩一份粮。',memoryRefs:[]}];
+ raw.knownFacts={life:{current:{food:99},authority:'PRIVATE-LIFE-MARKER'}};
+ const c=providerContext(raw,'照你刚才说的，现在还有一份粮，对吗？');
+ assert.deepEqual(c.knownFacts.life,expected);
+ assert.match(c.conversation[0].evidence,/旧回复也可能有误/);
+ assert.match(c.knownFacts.life.authority,/旧回复和玩家口述不证明生活经历/);
+ assert.equal(JSON.stringify(c).includes('PRIVATE-LIFE-MARKER'),false);
+ assert.equal(c.conversation[0].reply,raw.conversation[0].reply,'Keep speech as speech; do not rewrite old replies');
+});
+
+test('food need uses inventory threshold independently of hunger and private facts are rebuilt at the boundary',()=>{
+ const raw=npcDialogueContext(initial());
+ // Explicit projection-boundary inputs, not valid simulated histories.
+ for(const [food,hunger,need] of [[0,0,'needed'],[1,0,'needed'],[2,1000,'buffered']]){
+  raw.self.food=food;raw.self.hunger=hunger;const c=providerContext(raw,'为什么不买？');
+  assert.equal(c.knownFacts.life.current.foodNeed,need);assert.equal(c.knownFacts.life.current.hunger,hunger);
+ }
+ raw.self.food=-1;raw.self.hunger=1001;let c=providerContext(raw,'现在呢？');
+ assert.equal(c.knownFacts.life.current.food,null);assert.equal(c.knownFacts.life.current.foodNeed,'unknown');assert.equal(c.knownFacts.life.current.hunger,null);
+ raw.self.food=0;raw.self.alive=false;c=providerContext(raw,'现在呢？');assert.equal(c.knownFacts.life.current.foodNeed,'inactive');
+ raw.activity.intent={action:'BuyFood',destination:'rest-site',decidedTick:0,phase:'at-destination',redirect:'tool',private:'PRIVATE-LIFE-MARKER'};
+ c=providerContext(raw,'现在呢？');assert.equal(c.knownFacts.life.preparation.status,'redirected');assert.match(c.knownFacts.life.preparation.meaning,/工具不可用/);
+ raw.activity.lastResult={action:'BuyFood',status:'succeeded',tick:1,walletChange:-10,foodChange:1};
+ assert.equal(providerContext(raw,'现在呢？').knownFacts.life.lastExecution,null,'Future results must be dropped first');
+ const old=npcDialogueContext(createNegotiationCampaignVillage().bundle),before=providerContext(old,'现在呢？');
+ old.activity=raw.activity;old.knownFacts={life:c.knownFacts.life};old.self.hunger=999;
+ assert.deepEqual(providerContext(old,'现在呢？'),before);
+});
+
+test('controlled provider receives explicit facts and preserves raw model wording, signing and bounds',async()=>{
+ const b=initial(),raw=npcDialogueContext(b),before=structuredClone(b);let calls=0;
+ const reply='受控原文：当前没有存粮；没有已执行的购买记录。';
+ const p=createNpcLanguageProvider({enabled:true,baseURL:'http://127.0.0.1:19974',model:'controlled-life-facts',apiKey:''},{maxCalls:1,fetchImpl:async(_url,o)=>{
+  calls++;assert.ok(Buffer.byteLength(o.body)<=32768);const body=JSON.parse(o.body),ctx=JSON.parse(body.messages[1].content).npc;
+  assert.equal(ctx.knownFacts.life.current.food,0);assert.equal(ctx.knownFacts.life.lastExecution,null);
+  assert.match(body.messages[0].content,/lastExecution记录成功买粮、粮食变化\+1而current.food=0/);
+  assert.match(body.messages[0].content,/缺少记录时承认未知，不能断言没买过/);
+  assert.match(body.messages[0].content,/旧NPC回复即使连续重复也不成为事实/);
+  return Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify({reply,memoryRefs:[],proposal:null})}}]});
+ }});
+ try{
+  const draft=await p.compose({apiVersion:1,requestId:'facts-controlled',simulationId:raw.simulationId,expectedRevision:raw.revision,targetId:'actor-2',text:'现在还有粮吗？'},raw);
+  assert.equal(draft.payload.reply,reply);assert.equal(draft.payload.proposal,null);assert.deepEqual(draft.payload.memoryRefs,[]);
+  assert.equal(p.verify(raw.simulationId,{type:'PlayerDialogue',expectedRevision:raw.revision,payload:draft.payload}),true);
+  assert.equal(calls,1);assert.deepEqual(b,before);
+ }finally{p.close();}
+});

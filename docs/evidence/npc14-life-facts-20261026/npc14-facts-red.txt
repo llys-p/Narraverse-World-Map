@@ -1,0 +1,46 @@
+✖ current life facts distinguish purchased delta from current food and unrefreshed intent (19032.176773ms)
+✖ gifts pause current preparation despite old ready plan, later low stock does not invent a cause (12793.837641ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32031.829939
+
+✖ failing tests:
+
+test at tests/simulation/npc-life-facts.test.mjs:12:1
+✖ current life facts distinguish purchased delta from current food and unrefreshed intent (19032.176773ms)
+  AssertionError [ERR_ASSERTION]: Provider must receive explicit current life facts
+      at TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-life-facts.test.mjs:14:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/simulation/npc-life-facts.test.mjs:24:1
+✖ gifts pause current preparation despite old ready plan, later low stock does not invent a cause (12793.837641ms)
+  AssertionError [ERR_ASSERTION]: Provider must explain current pause separately from old plan
+      at TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-life-facts.test.mjs:28:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

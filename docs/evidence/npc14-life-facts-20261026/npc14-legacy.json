@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/check-npc14-legacy.mjs",
+    "<baseline>",
+    "artifacts/npc14/legacy.json"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 16487.487,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

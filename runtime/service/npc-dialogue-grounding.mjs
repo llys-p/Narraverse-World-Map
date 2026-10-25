@@ -5,6 +5,7 @@ import {NPC_MEMORY_VERSION,retrieveNpcEpisodes,npcMemoryUpdates} from '../core/n
 import {knownNegotiationOptions,repairLoanTerms} from '../core/npc-negotiation-terms.mjs';
 import {npcRecallFocus} from './npc-recall-focus.mjs';
 import {sanitizeNpcLifeContext} from '../core/npc-life-context.mjs';
+import {npcLifeFacts} from './npc-life-facts.mjs';
 
 const pick=(value,names)=>Object.fromEntries(names.filter(k=>value&&Object.hasOwn(value,k)).map(k=>[k,cloneData(value[k])]));
 const nat=n=>Number.isSafeInteger(n)&&n>=0;
@@ -90,6 +91,7 @@ export function groundedProviderContext(context,text){
   out.memoryMode=NPC_MEMORY_VERSION;out.memoryCoverage=pick(coverage,['forgottenEpisodes','forgottenSpeech']);
   out.recallFocus=recall.focus;
   out.memoryUpdates=npcMemoryUpdates(out.observations,out.self);
+  if(out.activity)out.knownFacts.life=npcLifeFacts(out.self,out.activity,out.tick);
  }
  return out;
 }

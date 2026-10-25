@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "parent": "41907bc93d9c0e0280b59fdaf8929fc60f6064cd",
+  "node": "v24.22.1",
+  "externalModelCalls": 0,
+  "matches": true,
+  "baseline": [
+    {
+      "fixtureVersion": "1",
+      "commands": 1,
+      "tick": 8,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "7d1ecb02352d7089f76bab523140a3f3bafde8628e661ac8fd46b92f20074989"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "c050d75b3c1d4960c9bc6f223a0dcd980429aee03b60edea52898f31e259c8f2"
+        }
+      ]
+    },
+    {
+      "fixtureVersion": "2",
+      "commands": 1,
+      "tick": 8,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "7418ccaf8184d18573f6cd78f8fec2c864e611a6a27a909d2ce3c5567247f710"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "29bfdcbe9cb9d1d39ca757a5e54e583217cccab591e15f5411450e5d7b145964"
+        }
+      ]
+    },
+    {
+      "fixtureVersion": "3",
+      "commands": 4,
+      "tick": 4,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "719877606a41bdead9592547d054e7c029700c5ed02b3707b08906a073916e7b"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "d599421c1f2e95ce6356ab0b9f6a2625d4aedc26e4e464536f5353061dac61c8"
+        }
+      ]
+    },
+    {
+      "fixtureVersion": "4",
+      "commands": 7,
+      "tick": 44,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "b9f625af19d9ce7cdb284a33d4eb292bbcc5ec46ff19e891d0a9e119b45d633c"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "ad2392917dcd5469f75dff1a212621e6a3ddd20c333b04e5c64879a84eb7bca8"
+        }
+      ]
+    },
+    {
+      "fixtureVersion": "5",
+      "commands": 7,
+      "tick": 44,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "13a71ee8bdea49bc1bca01b4064c48878711101efa2322975bd58e09448355a0"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "8886e29cec07fa6e3f67dcb5b71255ec0248aba988ec1e90355d24df6f938dba"
+        }
+      ]
+    }
+  ],
+  "candidate": [
+    {
+      "fixtureVersion": "1",
+      "commands": 1,
+      "tick": 8,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "7d1ecb02352d7089f76bab523140a3f3bafde8628e661ac8fd46b92f20074989"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "c050d75b3c1d4960c9bc6f223a0dcd980429aee03b60edea52898f31e259c8f2"
+        }
+      ]
+    },
+    {
+      "fixtureVersion": "2",
+      "commands": 1,
+      "tick": 8,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "7418ccaf8184d18573f6cd78f8fec2c864e611a6a27a909d2ce3c5567247f710"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "29bfdcbe9cb9d1d39ca757a5e54e583217cccab591e15f5411450e5d7b145964"
+        }
+      ]
+    },
+    {
+      "fixtureVersion": "3",
+      "commands": 4,
+      "tick": 4,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "719877606a41bdead9592547d054e7c029700c5ed02b3707b08906a073916e7b"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "d599421c1f2e95ce6356ab0b9f6a2625d4aedc26e4e464536f5353061dac61c8"
+        }
+      ]
+    },
+    {
+      "fixtureVersion": "4",
+      "commands": 7,
+      "tick": 44,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "b9f625af19d9ce7cdb284a33d4eb292bbcc5ec46ff19e891d0a9e119b45d633c"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "ad2392917dcd5469f75dff1a212621e6a3ddd20c333b04e5c64879a84eb7bca8"
+        }
+      ]
+    },
+    {
+      "fixtureVersion": "5",
+      "commands": 7,
+      "tick": 44,
+      "checkpoints": [
+        {
+          "phase": "initial",
+          "sha256": "13a71ee8bdea49bc1bca01b4064c48878711101efa2322975bd58e09448355a0"
+        },
+        {
+          "phase": "after-commands-and-full-replay",
+          "sha256": "8886e29cec07fa6e3f67dcb5b71255ec0248aba988ec1e90355d24df6f938dba"
+        }
+      ]
+    }
+  ]
+}

@@ -24,11 +24,14 @@ test('life plan creates real fixture5 working/purchase states without any model 
  const gifted=context(r.report,'gifts-pause',1);assert.equal(gifted.activity.intent.action,'NoAction');assert.equal(gifted.self.food,2);
  const waited=context(r.report,'gifts-pause',2);assert.equal(waited.activity.lastResult.status,'no-action');assert.equal(waited.activity.plan.status,'blocked');assert.equal(waited.self.food,1);assert.equal(waited.self.wallet,20);
  assert.ok(r.report.source.sha256['runtime/core/npc-life-context.mjs']);assert.ok(r.report.source.sha256['runtime/core/campaign-npc-agency.mjs']);
+ assert.ok(r.report.source.sha256['runtime/service/npc-life-facts.mjs']);assert.ok(r.report.source.sha256['runtime/core/survival-state.mjs']);
 });
 
 test('controlled eight-turn life dialogue consumes the restricted activity and commits only attributed speech',async()=>{
  const p=createNpcLanguageProvider({enabled:true,baseURL:'http://127.0.0.1:19974',model:'controlled-life-evaluation',apiKey:''},{maxCalls:8,fetchImpl:async(_url,o)=>{
   const ctx=JSON.parse(JSON.parse(o.body).messages[1].content).npc,ref=ctx.observations.find(m=>m.kind==='gift');assert.equal(ctx.activity.version,1);
+  assert.equal(ctx.knownFacts.life.current.food,ctx.self.food);assert.equal(ctx.knownFacts.life.current.wallet,ctx.self.wallet);
+  assert.equal(ctx.knownFacts.life.lastExecution?.foodChange??null,ctx.activity.lastResult?.foodChange??null);
   assert.equal(JSON.stringify(ctx).includes('knowledgeFingerprint'),false);
   return Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify({reply:'受控回复：已读取本人行动意图和结果，语义仍需独立复核。',memoryRefs:ref?[ref.eventSeq]:[],proposal:null})}}]});
  }});
