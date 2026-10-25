@@ -1,0 +1,77 @@
+{
+  "mode": "plan",
+  "semanticVerdict": "not-evaluated",
+  "realProviderAttempted": false,
+  "counts": {
+    "planned": 16,
+    "attempted": 0,
+    "automaticPassed": 0,
+    "automaticFailed": 0,
+    "providerFailed": 0,
+    "fixtureFailed": 0,
+    "blocked": 0,
+    "notRun": 16
+  },
+  "source": {
+    "baseCommit": "c14a07e5a6c93e59d699adcb37fdb8577110b194",
+    "workingTreeDirty": true,
+    "sha256": {
+      "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
+      "runtime/service/npc-language-provider.mjs": "544da74b4792e833edb720dffca116c0e0bc6c0028b91868bf06ee0f96b8a9bb",
+      "runtime/evaluation/npc-dialogue-eval.mjs": "62ccbb0a65cbfce49cff0b8b0582e6a65ca8c9df275140107642fca926c6e43f",
+      "runtime/service/npc-dialogue-grounding.mjs": "fb768942d5096e66962ed25f9d3a2279ec6057f92072fe94463a978b23a5838d",
+      "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+      "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+      "runtime/core/npc-negotiation.mjs": "e1a4a87c6d860d60efff833c44528cce38101c8c67c2c1792e942da0bcc5eab4",
+      "runtime/core/npc-social.mjs": "7dc296035a5f6d2e6217f03e10b015439b248e40940585cfc42bdd78c49de2de",
+      "runtime/core/npc-memory.mjs": "bc7faa9d50360ac7199c343ecc8e1cb4f23b4078dc7c0648abb7e185e1ab79ea",
+      "runtime-negotiation-contract.mjs": "528d6214a61140a78d988ff4af26c5429f1dea9ec1a9bab5e25bf21c6b58ea52",
+      "scripts/evaluate-npc-dialogue.mjs": "954537b4da2515d335ce328376083d9184a4b3b314f916cfe0e6188b65004f4e"
+    },
+    "node": "v24.22.1"
+  },
+  "rawReportSha256": "24edd0daf6a6ae1bf4ffb25a3044f621b0f3f5f09026bf049ee5cbfc4850f9ef",
+  "fixtureVersion": "4",
+  "cases": [
+    {
+      "id": "bargain",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "a09a8604450a28b9ad710a6f1b6936115e35376fe4437366147f2c5d0be58a82"
+    },
+    {
+      "id": "help-memory",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "30d58ef967e97ad72a5ffd182735fef7fa3f4d7392c5f90c8d694c6862a2b26e"
+    },
+    {
+      "id": "negation-report",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "7e14c1c984b5350af2365938a12a7b5be3590c06425dbb108fd38a6b72698747"
+    },
+    {
+      "id": "harm-memory",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "80b779f34e375a6698ba7fe07d656237090180d4288762ddcc7ea4824ab87286"
+    },
+    {
+      "id": "unknown-thief",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "626c3b2e0542f5207533ba8bed6d23f78e690a28e23a2299e8a5aea140f80b01"
+    },
+    {
+      "id": "late-return",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "a7c7afe70cb9bc72183a57b7058741310dcd1ced0afb9129aab042cc7fee9303"
+    },
+    {
+      "id": "instruction-data",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "7e14c1c984b5350af2365938a12a7b5be3590c06425dbb108fd38a6b72698747"
+    },
+    {
+      "id": "unsupported",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "7e14c1c984b5350af2365938a12a7b5be3590c06425dbb108fd38a6b72698747"
+    }
+  ]
+}

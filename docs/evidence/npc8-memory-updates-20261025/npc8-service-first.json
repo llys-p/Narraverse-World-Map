@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/simulation/npc-memory-service.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 2969.208,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

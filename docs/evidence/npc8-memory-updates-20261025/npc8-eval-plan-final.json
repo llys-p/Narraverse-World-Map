@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-npc-dialogue.mjs",
+    "--mode",
+    "plan",
+    "--out",
+    "artifacts/d4e12/npc8-eval-plan-final-report.json"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 13439.352,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

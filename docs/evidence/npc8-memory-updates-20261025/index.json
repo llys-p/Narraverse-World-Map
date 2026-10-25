@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-25",
+  "task": "NPC8 independent world-owned memory updates",
+  "branch": "codex/npc8-memory-updates-20261025",
+  "parent": "c14a07e5a6c93e59d699adcb37fdb8577110b194",
+  "parentPullRequest": 15,
+  "environment": {
+    "platform": "Linux",
+    "node": "v24.22.1"
+  },
+  "final": {
+    "distinctTests": 54,
+    "newTests": 8,
+    "adjacentTests": 46,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "legacyFixtures": 4,
+    "legacyBundleCheckpoints": 8,
+    "newExternalModelCalls": 0,
+    "semanticVerdict": "not-evaluated-for-npc8",
+    "actualBrowserVerified": false,
+    "windowsVerified": false,
+    "realSaveMigration": false
+  },
+  "runs": {
+    "firstCore": {
+      "metadata": "npc8-memory-first.json",
+      "log": "npc8-memory-first.txt"
+    },
+    "firstService": {
+      "metadata": "npc8-service-first.json",
+      "log": "npc8-service-first.txt"
+    },
+    "firstFull": {
+      "metadata": "npc8-targeted-final.json",
+      "log": "npc8-targeted-final.txt"
+    },
+    "legacyBeforeFix": {
+      "metadata": "npc8-legacy.json",
+      "log": "npc8-legacy.txt"
+    },
+    "legacyPlanBeforeFix": {
+      "metadata": "npc8-legacy-eval-plan.json",
+      "log": "npc8-legacy-eval-plan.txt"
+    },
+    "fullWindowRed": {
+      "metadata": "npc8-full-window-red.json",
+      "log": "npc8-full-window-red.txt"
+    },
+    "fullWindowGreen": {
+      "metadata": "npc8-full-window-green.json",
+      "log": "npc8-full-window-green.txt"
+    },
+    "final": {
+      "metadata": "npc8-delivery-final.json",
+      "log": "npc8-delivery-final.txt"
+    },
+    "legacy": {
+      "metadata": "npc8-legacy-final.json",
+      "log": "npc8-legacy-final.txt"
+    },
+    "legacyPlan": {
+      "metadata": "npc8-eval-plan-final.json",
+      "log": "npc8-eval-plan-final.txt"
+    }
+  },
+  "sourceSha256": {
+    "PROJECT_CONTEXT.md": "f3857e8785071fbade059e5a0c48167ad3d10acaf6034d7b459c3944c64c69c8",
+    "README.md": "dd8e3ef8565efca6086e5e3e8faa3a47915ef4a48d0dd30beafceb3e2db9d132",
+    "Start-NPC-Memory.cmd": "663afd994645a318ae12156b356e56ad5465dda0923a180cbc5b514d2e35029a",
+    "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
+    "demo-npc-dialogue.mjs": "37e6225939e422b30092860555a49247b7fe35c166ef0c7ad3b1d302ee0caa05",
+    "demo-runtime-bridge.mjs": "b04ec662e03cf36e2f151398853c862fafcf288887dd23acba94e4f27651fb45",
+    "demo-runtime-interactions.mjs": "b74f081196ffd0c3f7a07de450b52b4c2e6cd233370915af3cf0414476ac82d6",
+    "demo-social-composer.mjs": "59afa1dff60f271f235613170d25596ec5daff599c9f1e767b359678ea61803c",
+    "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+    "docs/runtime/NPC8-MEMORY-UPDATES.md": "dd266c0813ff732a2cc7a8fa49ff44e283a43d4a9f000e9b6839a2595b847d61",
+    "runtime-campaign-contract.mjs": "435f0a549bd3dbd4756ad3458ea76ede52fe5239895d6ffc173e19ec9b97e11c",
+    "runtime-negotiation-contract.mjs": "528d6214a61140a78d988ff4af26c5429f1dea9ec1a9bab5e25bf21c6b58ea52",
+    "runtime-server.mjs": "1cb3c8b7cb4c85676d91ef2f0ff22d5c6a1c3d77b8117ba20a2a715081d1c968",
+    "runtime-social-contract.mjs": "f88ac21c6fdbf8dd188f9f0bf9b2895550d80623faa5830dd2d5e2b0bbff9d38",
+    "runtime/core/actors.mjs": "408ad1c2d820a11fced5616f56f97d0d83600d3e216e1390fe2871aa262b6158",
+    "runtime/core/campaign-map.mjs": "4b214c93ee46a1d41ad44fc96e4335a1187a068370673cb7dd5c95fb698b07c2",
+    "runtime/core/campaign-npc-agency.mjs": "3a1c27ab4525a789425a241f4f290ed16c956fac669299e7b61c3c695900b239",
+    "runtime/core/cognition-signals.mjs": "62dea68a97ddd752b45de94754054ad891bdca9d04fd96f1364a615b7a938941",
+    "runtime/core/cognition-state.mjs": "df728ea114755cd7212913b4b9db4036618073b834fbf03cd6b049598c133dfb",
+    "runtime/core/cognitive-review.mjs": "be3b1d6b489b5ace02fa315a489fed83dc09a871d687463eb34b9e27aa7994cf",
+    "runtime/core/command-engine.mjs": "f488845e4799f91fd8721ab93673c550d5ed76e63fea0dba5ace1a63453b9082",
+    "runtime/core/data-contract.mjs": "1efa69bda22c2d16dda2865c3bfec58cf94d7fdf55b574df4054d0195091ed83",
+    "runtime/core/ecology.mjs": "5bb1a9817759ce0d6dec49af92ce53438f0f327f2ab11926e1cd60d8f449dbd0",
+    "runtime/core/encounter-runtime.mjs": "15b6aeb5202bc0fffdf739ac9f2c3aa06a77be0a742051ba679728688e2321d8",
+    "runtime/core/event-log.mjs": "504b15ef933aa973697978f4e1f708ce21e2cdef3c34b21f1925ab7586250dcc",
+    "runtime/core/experience-state.mjs": "784b70d2ed142e7ba97c797cd9174ecc4a3acdad9458e52477f6cb03bd76d2b0",
+    "runtime/core/hunter.mjs": "267fc46ddaea12eb1d481976b3710cd58ac05aea4919d66d8c27f82a54c4d9cc",
+    "runtime/core/market.mjs": "7df1d7c729d7d5a693574a49af7864cdca0b67c5cd30e9ba5faca833c06bfd2b",
+    "runtime/core/memory-observer.mjs": "6105840651b530c49c05fc6c3ef2eb023aee7b09534c31262604ef5727144a63",
+    "runtime/core/memory-runtime.mjs": "3a12842b02c6eef7b06a42d919aa160815615487e0e587461d8bd1a26edfd0b3",
+    "runtime/core/mind-planner.mjs": "b2807a30a3b54b84547609dc86bcc1244b82037727895d235249e5c40f0238f8",
+    "runtime/core/mind-runtime.mjs": "0bca41facec2c2a0126dce9b1ad39dfbaf60baf5c327dd7483a724e7639456c0",
+    "runtime/core/mind-state.mjs": "7e28172f9a45f5b3c16c55ff373816b956b5121f9022d75e0b5c60d9fa8eb58f",
+    "runtime/core/motivation-planner.mjs": "3a4fdb48f4e297fb6ab101f361b269e4672ee36e1e442f1dceb0f774929d6f9b",
+    "runtime/core/motivation-runtime.mjs": "de86b6da4d73722f40380ba4db58f93056b3839fbeb60133f530bfdd14c24bb5",
+    "runtime/core/motivation-state.mjs": "5700122c56b1538b706ce3e3a066a7e712a60e157213cdec3e29911f2783708d",
+    "runtime/core/npc-memory.mjs": "bc7faa9d50360ac7199c343ecc8e1cb4f23b4078dc7c0648abb7e185e1ab79ea",
+    "runtime/core/npc-negotiation.mjs": "e1a4a87c6d860d60efff833c44528cce38101c8c67c2c1792e942da0bcc5eab4",
+    "runtime/core/npc-social.mjs": "7dc296035a5f6d2e6217f03e10b015439b248e40940585cfc42bdd78c49de2de",
+    "runtime/core/personality.mjs": "fb2b684a6e4077ed3758bd30e8a43ac54aa2dde8ff2c14a028843c56a1d84972",
+    "runtime/core/player-intents.mjs": "088b6c3e1fdeeaa2e3367d3ae64cb51b8d4a9d9d8221c433e9f2f445f4bd291f",
+    "runtime/core/player-runtime.mjs": "ada4aeb6ec76e888f4ce425b7deb37f307dac224c872c8ee1028c8c35b57aa91",
+    "runtime/core/player-state.mjs": "ce7e0827038d239d3f2d771abb16e008d377c246f7c6d6b022133476e0fd3bf7",
+    "runtime/core/player-work.mjs": "9554461f792c00efe920d045eadd05e833ba21187f8a95f860a4e3ca576a872c",
+    "runtime/core/public-medicine.mjs": "527244f09283286ec34964b026618347bfee9bedb52d1c994edc9646dbe29f99",
+    "runtime/core/resource-ledger.mjs": "81883469ea5647ca5e743278fe55f130a87fd332dffbf04a1b8a0b05e6918dbb",
+    "runtime/core/rng.mjs": "8836d42ec224f1d5d45cc9012e48ab3ce42423e53db47f1201d2fcfc6aaef2c0",
+    "runtime/core/scene-campaign-runtime.mjs": "744b36a753cf8d7745326897759f59822c652c9c65912f8353b4ed7d31e3711c",
+    "runtime/core/scene-livelihood-runtime.mjs": "121dbf3d5d684e9adf053c01a66c421315f75f6119eb63a873dc85e2f13e535f",
+    "runtime/core/scene-runtime.mjs": "156cf34a52ff54fc66aca9133455986f200ee47e832383e77bc17fffc034bd70",
+    "runtime/core/scheduler.mjs": "3339371f9471c708a1db71c4721f2d936e22b1a3fad47cadda749c58b6e62d79",
+    "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+    "runtime/core/society.mjs": "6e9a64856df333938330c2ba63c63a4d3904da88e9c332bbed6aaac5a27b737d",
+    "runtime/core/survival-planner.mjs": "180423eceee89165fc4b911091cae4ff593512a6d2cfe4af2d273bdad251f54f",
+    "runtime/core/survival-signals.mjs": "a2912a5b0a4ed3e205a77489f79ad5c98bdff69cac46e1eb60fd314e0e00c2b3",
+    "runtime/core/survival-state.mjs": "06c5373679f5146ae67435f4458af8aa9401fafc19b9394c126198b5d0edcd7a",
+    "runtime/core/work-experience-adapter.mjs": "4acb999f4146fad85b2bfa5ae6303a9b8b6ac7743b2243ce5d120de26eba460b",
+    "runtime/core/work-experience.mjs": "99f1df33a5cef74a660172bdac3280261fbfc4a1538d4b512e459c7b6fda10a2",
+    "runtime/core/world-state.mjs": "546703cd7b41aaca02d013dc7f6429a5ad39c63e1f15ba37223697bffd94c0d4",
+    "runtime/evaluation/npc-dialogue-eval.mjs": "62ccbb0a65cbfce49cff0b8b0582e6a65ca8c9df275140107642fca926c6e43f",
+    "runtime/fixtures/campaign-village.mjs": "f30907bf5d28974a6668dcce8da262601de40eaeb44dff513967c2bd22aa9b1f",
+    "runtime/fixtures/cognition-village.mjs": "6337d6481c1deac12faa8184d2c4383d405661b303e7de8903ce98be553559db",
+    "runtime/fixtures/encounter-survival-village.mjs": "e672b563f7d27aaad96f5db62039e106ba732520b64fd231bfcf1e3173f85287",
+    "runtime/fixtures/experience-village.mjs": "54e3d78b4acfff97a2d7bb367a22611abad9f4edd6f4ac49509e6a030ccb2437",
+    "runtime/fixtures/memory-village.mjs": "21b50785bdf959679c85988b8573c91eb0b31597ab640032e89234d7db5201f8",
+    "runtime/fixtures/mind-village.mjs": "adaace75451462fc298c4ecabb82601e1654f8ebb9b3b683df74ec70747d97b6",
+    "runtime/fixtures/motivation-village.mjs": "8cd22e38530632ccd1c272fd5a57bdd423f7f695fba9832c4be8beb6c1ad5fac",
+    "runtime/fixtures/personality-village.mjs": "17420ae32394553912a2e8be4e24aa21a73802daecdc5234775ca8444303282a",
+    "runtime/fixtures/player-play-village.mjs": "ccae797e2a117460e53a7b744581be6a4f7133ef8351667c5b1407c963a9593d",
+    "runtime/fixtures/player-village.mjs": "461d7aede976db01931a62494b98e26d877f9b419f4c17a27b78cb63c776cbdb",
+    "runtime/fixtures/scene-livelihood-village.mjs": "587cc9a342d70b0c1a72d645ad68e2c748160644e2365c490380e676ce001b17",
+    "runtime/fixtures/scene-survival-village.mjs": "226525234d45c6eeafa5e875223f1a322208c80f7010546c66a602094bf76523",
+    "runtime/fixtures/survival-village.mjs": "c0aad63872528567bdd80f00fb4935127925bfd7e1ed5826a2394e88b9d5b30e",
+    "runtime/knowledge/encounter-knowledge.mjs": "8d3b988f450d90539748b093ae84e42c1d6ea5476a23d1fee127a74ea2c61d2e",
+    "runtime/knowledge/mind-knowledge.mjs": "217fd2ea539bcdf77d303afe8f1e3279b952b58ff7d85ec9886c71d629a6c204",
+    "runtime/knowledge/player-knowledge.mjs": "195870c5d47ade410295495f02fdd4632e33579a66281e9651bcb1f170abefe5",
+    "runtime/knowledge/scene-knowledge.mjs": "e9f92a068c5efc0e60934980905f69afc08c1a0d3124f59a3edb51126dc3bdd5",
+    "runtime/persistence/bounded-json-file.mjs": "268bd7b3c3004f8190aeec14b7bdba7c24b59033e5a617b6be7843089e311bea",
+    "runtime/persistence/checkpoint-store.mjs": "e63fc61acafe62dc57102ade35f2a39ec2e6a7a2d00437a47a60eb1fb6956743",
+    "runtime/service/http-contract.mjs": "dc63a6e2bb5e2dffcc993e0ee5ae1b985ee8d56bdcb2e21927bb2b1adc82d40d",
+    "runtime/service/march-runner.mjs": "e71e3609d97eae2e7e42a5ff1047a47fcaee43459bbb1d4f74f78fd39587a19a",
+    "runtime/service/npc-dialogue-grounding.mjs": "fb768942d5096e66962ed25f9d3a2279ec6057f92072fe94463a978b23a5838d",
+    "runtime/service/npc-language-provider.mjs": "544da74b4792e833edb720dffca116c0e0bc6c0028b91868bf06ee0f96b8a9bb",
+    "runtime/service/runtime-owner-thread.mjs": "303a60864f2824c96036d70d27d876a158a13e13aa9b85b706232ec4a8b9bd30",
+    "runtime/service/runtime-owner.mjs": "70deae5a2b991cb46a3151024ecd8d466607eec54e517f7204fa848c54f406c4",
+    "runtime/service/service-commit.mjs": "8689d20929f5a11afcb851459e5d61ea653a78c28419f8fb37eb2ad420276494",
+    "runtime/service/strict-json.mjs": "f239dfc71aba939203c666c60292829b1b897b676426a9cd33edbde595c3ad40",
+    "runtime/service/world-activity.mjs": "28be2fe93598b86646889e681a3fd5c90bea95f67bc56cfb26d26f1f4abedb82",
+    "scripts/check-npc8-evidence.mjs": "8ac97e6b9cae3fbd3983653644c6fdbcf68a040b9546afd881a884b74d66ebe8",
+    "scripts/check-npc8-legacy.mjs": "bdd516ca4fa944eeba1980dce18523153534460ad182736431e374458280d10e",
+    "scripts/evaluate-npc-dialogue.mjs": "954537b4da2515d335ce328376083d9184a4b3b314f916cfe0e6188b65004f4e",
+    "scripts/run-d4e12-check.py": "436214d623822903b79f5ffb1a272ce811c9c79d6c0a979bb1f6d2a1a4ca4ab5",
+    "tasks/NPC8-MEMORY-UPDATES-TASK.md": "02c22271d57ec23ac34b46954df7bc1e3b02e2557718e6105ef549f585e3480b",
+    "tests/simulation/campaign-map.test.mjs": "c6ed468f34a688e2122fe8e14d97b11856db90392c635eae6977725b3b457fc0",
+    "tests/simulation/campaign-npc-agency.test.mjs": "1d1ba6780599a6f240b44ef6165973f98287fbe68fea44567a3fb0e406174420",
+    "tests/simulation/npc-deepseek-provider.test.mjs": "01bd31cc81dadc57f450a56f682700717d5b1ecd7993cdacc1c6a37ad911ac98",
+    "tests/simulation/npc-dialogue-evaluation.test.mjs": "aa321a9d05a4bc22430e5ebfb2fb8d2ce2c777eebbf44582781c186428b459f2",
+    "tests/simulation/npc-dialogue-grounding.test.mjs": "d55913673814a4adf8dd99f3dd54c94d55d79a70448460439e6dee32c84c4530",
+    "tests/simulation/npc-language-provider.test.mjs": "be89019ec9ccef855002b10ddb99ea0da426fba597627a32e7a190fe745fadf0",
+    "tests/simulation/npc-memory-service.test.mjs": "ffe89887eaa69351731a32ef0d7a4043f4cda029e6153747515c1854e8041ffb",
+    "tests/simulation/npc-memory.test.mjs": "cdb0a060e611b0c936d804eb0c98d88963f8e7c6b96acf0163bdabba91005eef",
+    "tests/simulation/npc-negotiation-service.test.mjs": "d3cc0a93da8f7249fb9ba36a211898f4cfec83d8e93776028f935cd83610bd9c",
+    "tests/simulation/npc-negotiation.test.mjs": "71ab1c5fa14d42a394851d97665aee0da1a2159eab0378322c9b7c137c5f6b3e",
+    "tests/simulation/npc-social.test.mjs": "90d7c2bb356af27475e10b4abe94a827e2c01d74402b2bdcba55533fcf1b3004"
+  },
+  "preservedEvidence": {
+    "docs/evidence/npc6-deepseek-continuation-20261024/index.json": "8f62074ca3b3f47d9a40af01a573ec0bad2319223f07a681e8e65bad8f48170e",
+    "docs/evidence/npc6-deepseek-continuation-20261024/live-attempt-blocked.json": "c6e8181f603f25024a07111cccefab478dfc9cd41158e1c85c4a83b1cc210487",
+    "docs/evidence/npc6-deepseek-continuation-20261024/live-multiturn-summary.json": "65a80d0b8a8a32afa662024118bd8516f52554c1ea0e5b787f5cc0cf2d35bc37",
+    "docs/evidence/npc6-deepseek-continuation-20261024/live-smoke-summary.json": "5b9b41914adfcfdef43205a3f941f21f106e05215e618bb0f74b49767c14278c",
+    "docs/evidence/npc6-deepseek-continuation-20261024/npc6-plan.json": "9810f275a30044095cebb0b7ad01e632ed502d3a5b3a6f74c005a387069612d5",
+    "docs/evidence/npc6-deepseek-continuation-20261024/npc6-plan.txt": "b081c5c672bcfd879de2d85bdb66d6738d7df030ab09a9ccda0d5d24bed7298c",
+    "docs/evidence/npc6-deepseek-continuation-20261024/npc6-targeted.json": "b7df5d337b1e1f57bf3385e12dca34a67fc65609742ef6418daf1ba591bb3318",
+    "docs/evidence/npc6-deepseek-continuation-20261024/npc6-targeted.txt": "797fa97b4a1353bb48a68ff719385ea3b952ab022e2c9541da9e53aeec5a4ab6",
+    "docs/evidence/npc6-deepseek-continuation-20261024/plan-final.json": "003f1458996ddf84ca1b722e5fea03817db32efcb709a2f0e3e9d305981ff639",
+    "docs/evidence/npc6-deepseek-continuation-20261024/static-checks.json": "c766bb02f4b6c49e96675ad11cf6e77f4dcfa947b675e6a2c8562a4100fa3424",
+    "docs/evidence/npc6-deepseek-continuation-20261024/static-live-checks.json": "d105d41661f9ed9286089d514a56c07226632704e66a73a931d29b56e1f3e2b6",
+    "docs/evidence/npc7-dialogue-grounding-20261025/index.json": "df6dd33be33d5d7cac162509a273f5884b4383e7b749283dd386fc8ea7e6415d",
+    "docs/evidence/npc7-dialogue-grounding-20261025/npc7-delivery-final.json": "e6f03f31147164049fd97968e9e7d2d70a43e0ba9c228c06e34af058e0f23a74",
+    "docs/evidence/npc7-dialogue-grounding-20261025/npc7-delivery-final.txt": "8587d705ea1372ed937b34833bfcabbf87f7762dd041461b68f3a53f45ed047e",
+    "docs/evidence/npc7-dialogue-grounding-20261025/npc7-final.json": "31dc51ad1338a8c14ecc5945bea1099982b093f9ce9ee0ceabfd4718f0199336",
+    "docs/evidence/npc7-dialogue-grounding-20261025/npc7-final.txt": "89759f58e0bbe30eb83af54317db9779c08c4d14625e2afdc334aa581a2fb194",
+    "docs/evidence/npc7-dialogue-grounding-20261025/npc7-grounding-first.json": "0be08acecece79a3ad1937d7e0f20758dc28c94a19115c23e5f8dc97fdab66ba",
+    "docs/evidence/npc7-dialogue-grounding-20261025/npc7-grounding-first.txt": "07da461cfb0998f189fa003d76c88a572578c1c27ba33c8e471dc2e8d5e8681f",
+    "docs/evidence/npc7-dialogue-grounding-20261025/npc7-plan-final.json": "d43e786c022c42cb57641aa58258fe9b1b1cb6f479b753e49951076ae5cc949d",
+    "docs/evidence/npc7-dialogue-grounding-20261025/npc7-plan-final.txt": "ab54a06b4960327fe14d57794f458f2190d33c80bf3c2a39dfe0c03f336f356e",
+    "docs/evidence/npc7-dialogue-grounding-20261025/plan-final.json": "0a5e65c664bf88f5259c49eb0cc360a57c3c0c5f806fde1bbb3c89f29b468e1c",
+    "docs/evidence/npc7-dialogue-grounding-20261025/static-checks.json": "bd9a1ee7380c0d812f86986149d345885a4443835a679fda17a0140b7b670f16",
+    "docs/evidence/npc7-retest-20261025/index.json": "7d33bacb0f5678a33e616b83e4553bcd8151067ac042ee049b3653c8e26d2ec1",
+    "docs/evidence/npc7-retest-20261025/live-summary.json": "0fecdccbbe352d5da7d24ee2020ed6e8310580d5aaa4760ee85b914015ce0769",
+    "docs/evidence/npc7-retest-20261025/npc7-retest-live.json": "d842b143c2ddf4793b49a4d2b477185cd13975fccae34a6c47aac151ec0e76b5",
+    "docs/evidence/npc7-retest-20261025/npc7-retest-live.txt": "4a7c41767d4f3e369bd0fa9678b4cef2d04ffc960bc13c6a1456c015d6f705a8",
+    "docs/evidence/npc7-retest-20261025/npc7-retest-plan.json": "184afc9a08fe488abf0f0d9764cf4858cb635e3b4629bea76072223850e5122a",
+    "docs/evidence/npc7-retest-20261025/npc7-retest-plan.txt": "be416d3873676f85521d2e5ffe13dd95004e3ee9ed6c5c8a82ab56d10ce368b9",
+    "docs/evidence/npc7-retest-20261025/plan-summary.json": "bcec8e6af1f69122cbd5c93294648297b914684a62581b90bb70a2782d5c57e8",
+    "docs/evidence/npc7-retest-20261025/run.mjs.txt": "ccec0ecc0bf1e224d11e126e659a2933c5e233031437f451225d32cd488e9caa",
+    "docs/evidence/npc7-retest-20261025/suite.json": "2e3f055a515e7474944c90e93fe1e59f0e8f62359d235c20bd6ee827eadf99fc"
+  },
+  "evidence": {
+    "legacy-comparison.json": {
+      "bytes": 3464,
+      "sha256": "fccc6c660e8f1208f79dc251a199db9fc57b09e75ea049f29735a456b05a6c99"
+    },
+    "legacy-plan-summary.json": {
+      "bytes": 3159,
+      "sha256": "f4e79efff7996d7e7dd0ec1cabd89145f7062fb00fb71d3356c59df84b0a3593"
+    },
+    "npc8-delivery-final.json": {
+      "bytes": 832,
+      "sha256": "17f79a9c2a282a9d0a08831b9209ea3e8663af30ea4935365d7d8c5e04b51046"
+    },
+    "npc8-delivery-final.txt": {
+      "bytes": 15906,
+      "sha256": "e33c43ea52d17c9c6830751e19c5d33489e63ea835fa8a3bf024b915149b144a"
+    },
+    "npc8-eval-plan-final.json": {
+      "bytes": 359,
+      "sha256": "948fc128ec00dc7c043ff31d7850d703f179874d2cf05a98b0ab18b5827b4878"
+    },
+    "npc8-eval-plan-final.txt": {
+      "bytes": 425,
+      "sha256": "e2621a142f0e12bbd85b313e23c03a87959960dc82aa1ce6190e3c58861106f9"
+    },
+    "npc8-full-window-green.json": {
+      "bytes": 355,
+      "sha256": "1f2c1ae29828a84dc5f9d4347d1eeff0ed4fc9e89438a36053152cfd442b7626"
+    },
+    "npc8-full-window-green.txt": {
+      "bytes": 416,
+      "sha256": "932dff624d375c39575da99678df93d419f59787ee07d8878f5dab89f4a5ece1"
+    },
+    "npc8-full-window-red.json": {
+      "bytes": 356,
+      "sha256": "fee7d83287ca1054e9aa679f6003be71337619dc3032001d54059a04b1946339"
+    },
+    "npc8-full-window-red.txt": {
+      "bytes": 1095,
+      "sha256": "b5d7a21aab32f3aae39b8596d20331290885be9d709f9c253591c1d7ce28de90"
+    },
+    "npc8-legacy-eval-plan.json": {
+      "bytes": 359,
+      "sha256": "f5bd6d44d1bc26159e532e926460c392b3d9cac75096ef8f2af5e199ba501459"
+    },
+    "npc8-legacy-eval-plan.txt": {
+      "bytes": 427,
+      "sha256": "cde19db58831ebe45717eba936b8c568ce57224bc4b55b163f08ca4b3c439d29"
+    },
+    "npc8-legacy-final.json": {
+      "bytes": 343,
+      "sha256": "484ff4e402e04cb378f105ce1120b53e2583cb45aeae4e71a4b1b6e1b93f49c7"
+    },
+    "npc8-legacy-final.txt": {
+      "bytes": 99,
+      "sha256": "ee0cef12575ed2a70b1541f11ab2cf75cdc818189b18904f94644098c8be9bb3"
+    },
+    "npc8-legacy.json": {
+      "bytes": 335,
+      "sha256": "29bcc21677fc87b8e9bc92d2983e928640678de7fdcf85d75f4773e30684bbd0"
+    },
+    "npc8-legacy.txt": {
+      "bytes": 99,
+      "sha256": "ee0cef12575ed2a70b1541f11ab2cf75cdc818189b18904f94644098c8be9bb3"
+    },
+    "npc8-memory-first.json": {
+      "bytes": 281,
+      "sha256": "657d402d53d07423ed7932f8f7ea7493fcc00d6f08ede493208214bab653af21"
+    },
+    "npc8-memory-first.txt": {
+      "bytes": 836,
+      "sha256": "e645927014fe9f849983ef907479fe3720c9f5498c3e4ef1cde1c9a913c45082"
+    },
+    "npc8-service-first.json": {
+      "bytes": 288,
+      "sha256": "d604c257026d3c4ca00cd2105fb1162164e0ae814ee68048b6786a652cd66ab0"
+    },
+    "npc8-service-first.txt": {
+      "bytes": 290,
+      "sha256": "cd9adba0cf73fe4d1909b06d85e798fb44a4184b1b4f1a339ecee754bde8ce2d"
+    },
+    "npc8-targeted-final.json": {
+      "bytes": 832,
+      "sha256": "0cf2a0b192c3d8e4b1c7f71a2d9d3ae6cd3f8818356df3122d28ed95deabf122"
+    },
+    "npc8-targeted-final.txt": {
+      "bytes": 15606,
+      "sha256": "584ddec39670462d6445d3476332b8b396a48d388cca3c7d3a26c2bcdf827519"
+    },
+    "static-checks.json": {
+      "bytes": 858,
+      "sha256": "e33d1b2782d8e61c2a537e786dec585d7c61e3e376c6842399371ebfa8950c9d"
+    }
+  }
+}

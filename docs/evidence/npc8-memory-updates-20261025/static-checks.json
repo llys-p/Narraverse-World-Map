@@ -1,0 +1,25 @@
+{
+  "node": "v24.22.1",
+  "nodeSyntaxPassed": [
+    "runtime-negotiation-contract.mjs",
+    "runtime/core/campaign-map.mjs",
+    "runtime/core/event-log.mjs",
+    "runtime/core/npc-memory.mjs",
+    "runtime/core/npc-negotiation.mjs",
+    "runtime/core/npc-social.mjs",
+    "runtime/core/scene-campaign-runtime.mjs",
+    "runtime/core/world-state.mjs",
+    "runtime/fixtures/campaign-village.mjs",
+    "runtime/service/http-contract.mjs",
+    "runtime/service/npc-dialogue-grounding.mjs",
+    "runtime/service/npc-language-provider.mjs",
+    "runtime/service/runtime-owner.mjs",
+    "scripts/check-npc8-evidence.mjs",
+    "scripts/check-npc8-legacy.mjs",
+    "scripts/evaluate-npc-dialogue.mjs",
+    "tests/simulation/npc-memory-service.test.mjs",
+    "tests/simulation/npc-memory.test.mjs"
+  ],
+  "diffWhitespacePassed": true,
+  "credentialScanMatches": 0
+}
