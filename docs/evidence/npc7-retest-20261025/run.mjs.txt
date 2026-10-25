@@ -1,0 +1,48 @@
+import fs from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import {createNpcLanguageProvider,npcLanguageConfig} from '../../runtime/service/npc-language-provider.mjs';
+import {runDialogueEvaluation,renderDialogueReport,validateDialogueSuite} from '../../runtime/evaluation/npc-dialogue-eval.mjs';
+
+const dir=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(dir,'../..');
+const mode=process.argv[2];
+if(!['plan','live'].includes(mode)||process.argv.length!==3)throw Error('Use plan or live explicitly');
+const suite=JSON.parse(await fs.readFile(path.join(dir,'suite.json'),'utf8'));
+if(validateDialogueSuite(suite)!==16||suite.cases.length!==8)throw Error('Unexpected suite budget');
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const files=['runtime/service/npc-language-provider.mjs','runtime/service/npc-dialogue-grounding.mjs','runtime/evaluation/npc-dialogue-eval.mjs','runtime/core/npc-negotiation.mjs','runtime/core/npc-social.mjs','runtime/core/simulation-clock.mjs','runtime-negotiation-contract.mjs','demo-social-language.mjs','benchmarks/npc-dialogue-v1/cases.json','artifacts/npc7-retest-20261025/suite.json','artifacts/npc7-retest-20261025/run.mjs'];
+const sha256={};for(const file of files)sha256[file]=hash(await fs.readFile(path.join(root,file)));
+const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim();
+const metadata={createdAt:new Date().toISOString(),source:{baseCommit:git('rev-parse','HEAD'),workingTreeDirty:Boolean(git('status','--porcelain')),node:process.version,sha256},provider:mode==='live'?{model:'deepseek-flash',thinking:'disabled',endpointSha256:hash('https://api.deepseek.com')}:null};
+if(metadata.source.baseCommit!=='8064e2bb2ba7198aebea8ab511884fd343b26460'||metadata.source.workingTreeDirty)throw Error('Run only against clean verified NPC7 commit');
+const handles=[];let outbound=0,provider,latest;
+try{
+ for(const ext of ['json','html'])handles.push(await fs.open(path.join(dir,mode+'.'+ext),'wx'));
+ const save=async report=>{
+  latest={...report,...metadata,actualOutboundRequests:outbound};
+  const bytes=[JSON.stringify(latest,null,2)+'\n',renderDialogueReport(latest)];
+  for(let i=0;i<handles.length;i++){const b=Buffer.from(bytes[i]);let at=0;while(at<b.length){const w=await handles[i].write(b,at,b.length-at,at);if(w.bytesWritten<=0)throw Error('Report write failed');at+=w.bytesWritten;}await handles[i].truncate(b.length);await handles[i].sync();}
+ };
+ if(mode==='live'){
+  const config=npcLanguageConfig(process.env);
+  if(!config.enabled||config.baseURL!=='https://api.deepseek.com'||config.model!=='deepseek-flash'||config.thinking!=='disabled'||!config.apiKey)throw Error('Explicit official Flash configuration required');
+  provider=createNpcLanguageProvider(config,{maxCalls:16,fetchImpl:async(url,options)=>{
+   if(url!=='https://api.deepseek.com/chat/completions'||outbound>=16)throw Error('Outbound budget/endpoint guard');
+   outbound++;return fetch(url,options);
+  }});
+ }
+ await save({schemaVersion:1,suiteId:suite.suiteId,mode,completed:false,semanticVerdict:'not-evaluated',notice:'准备中，尚无语言质量结论。',requestLimit:mode==='live'?16:0,cases:[],counts:{planned:16,attempted:0}});
+ const report=await runDialogueEvaluation({suite,mode,provider,maxRequests:mode==='live'?16:0,onProgress:async value=>{
+  await save(value);
+  const last=value.cases.at(-1)?.turns.at(-1);
+  if(last?.status==='provider-failed'&&(last.metrics?.httpStatus==null||[401,402,403].includes(last.metrics.httpStatus)))throw Error('Stop after unavailable transport/auth/balance; no automatic retry');
+ }});
+ await save(report);
+ const failed=report.counts.automaticFailed+report.counts.providerFailed+report.counts.fixtureFailed+report.counts.blocked+report.cases.filter(c=>c.worldReplayAudit!=='passed').length;
+ console.log(JSON.stringify({status:failed?'checks-failed':mode==='live'?'assistant-review-needed':'plan-ready',mode,counts:report.counts,outboundRequests:outbound,semanticVerdict:report.semanticVerdict}));
+ process.exitCode=failed?1:0;
+}catch{
+ console.log(JSON.stringify({status:'stopped',mode,outboundRequests:outbound,counts:latest?.counts??null,completed:latest?.completed??false}));process.exitCode=2;
+}finally{provider?.close();for(const handle of handles)await handle.close();}

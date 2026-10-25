@@ -1,0 +1,86 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/service/npc-dialogue-grounding.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/service/npc-language-provider.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/evaluation/npc-dialogue-eval.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/evaluate-npc-dialogue.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc7-evidence.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-dialogue-grounding.test.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-negotiation-service.test.mjs"
+      ],
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "check": "Final plan critical source fingerprints match current evaluated bytes",
+      "passed": true
+    },
+    {
+      "check": "Evaluation HTML remains offline with no script/iframe element",
+      "passed": true
+    }
+  ],
+  "actualBrowserVerified": false
+}

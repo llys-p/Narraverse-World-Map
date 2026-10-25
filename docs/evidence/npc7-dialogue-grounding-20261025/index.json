@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "task": "NPC7 grounded known facts and bounded dialogue intent hints",
+  "date": "2026-10-25",
+  "branch": "codex/npc7-dialogue-grounding-20261025",
+  "parent": "356541b27c4a0ef56218c941cecc88244803c7cc",
+  "parentPullRequest": 14,
+  "environment": {
+    "platform": "Linux",
+    "node": "v24.22.1"
+  },
+  "final": {
+    "distinctTests": 29,
+    "newTests": 6,
+    "adjacentTests": 23,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "planScenarios": 8,
+    "planTurns": 16,
+    "planModelAttempts": 0,
+    "newExternalModelCalls": 0,
+    "semanticVerdict": "not-evaluated-after-repair",
+    "actualBrowserVerified": false,
+    "windowsVerified": false
+  },
+  "runs": {
+    "firstNew": {
+      "metadata": "npc7-grounding-first.json",
+      "log": "npc7-grounding-first.txt",
+      "result": "6/6; 12042.588ms / 180000ms; no timeout"
+    },
+    "firstFull": {
+      "metadata": "npc7-final.json",
+      "log": "npc7-final.txt",
+      "result": "28/29; 33797.740ms / 180000ms; no timeout"
+    },
+    "final": {
+      "metadata": "npc7-delivery-final.json",
+      "log": "npc7-delivery-final.txt",
+      "result": "29/29; 36497.416ms / 180000ms; no timeout"
+    },
+    "plan": {
+      "metadata": "npc7-plan-final.json",
+      "log": "npc7-plan-final.txt",
+      "result": "8 replays passed / 16 unrun model turns; 10243.728ms / 120000ms; no timeout"
+    }
+  },
+  "redCause": "Existing real HTTP consumer asserted the old exact context field list. Updated it to explicitly include knownFacts/intentHint and verify neither appears in player-facing projections. Runtime code was unchanged after this failure; earlier invalid-output, signatures, durable retry and action checks remain intact.",
+  "provenance": "Final tests and final plan use identical current runtime/CLI source bytes. Only the consumer test whitelist was updated between the first full and final full test runs. Subsequent changes are evidence checker and documentation. Six new tests include real-fixture plan contexts, lifecycle commands, counterfactual time advance, new input phrasings and controlled model replies; they are not six new real model evaluations. Screenshot-only NPC7 edits were not accessible; implementation starts from verified PR #14.",
+  "historicalLiveSummarySha256": "65a80d0b8a8a32afa662024118bd8516f52554c1ea0e5b787f5cc0cf2d35bc37",
+  "limits": [
+    "No new paid/external model call, no post-repair semantic pass or model-speed/cost claim. The original 16 real calls remain 14 automatic passes / 2 failures, with semantic corrections needed.",
+    "Known facts are derived only from NPC knowledge. The layer does not correct unobserved theft from world truth, execute actions or overwrite dialogue.",
+    "Complete-sentence intent hints cover a narrow subset; unmatched language still goes to the model. The model may still ignore or misuse these facts.",
+    "Adding explicit context can consume more of the unchanged 32KiB budget. Real token impact was not measured.",
+    "Controlled HTTP/worker/save/reopen are exercised; browser globals are simulated, no actual browser/Windows/long-history acceptance.",
+    "No world-rule/fixture/save/signature change, merge, deploy, daily-service change, real-save migration or E1/Laya restart. Control tree and Projects remain for mainline review."
+  ],
+  "sourceSha256": {
+    "README.md": "49b6240678a2b61c4ffa78b4eecda71e280b37c33ca92ef708ddf015e277a227",
+    "PROJECT_CONTEXT.md": "7a4ac6db80e37adc472e2bf1c76a330aa90cbb7bde82a97f3f8b21910cf100ac",
+    "benchmarks/npc-dialogue-v1/README.md": "f864067f369e956ca686dd658e4dcc50d2df59e393b9130cb753904348b6eeb1",
+    "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
+    "docs/runtime/NPC7-DIALOGUE-GROUNDING.md": "2b2f9cedb05636be943f3a9a6b5875e993bbbb139844c9857b0f65cb8cee3855",
+    "tasks/NPC7-DIALOGUE-GROUNDING-TASK.md": "9ec01f43e15951225f66f7a67fcd4e3a4e575dadeea0b2d4b47804841028b07b",
+    "runtime/service/npc-dialogue-grounding.mjs": "af8ca59d1fb036280a74b6d9dc73e6cb4c72cc4109e581d1acabe1ec31e6b7b0",
+    "runtime/service/npc-language-provider.mjs": "f8f2387c03e70f82e6b18d681e2b8bd0d1aef56d1700c5696a11a7c36c5411b9",
+    "runtime/evaluation/npc-dialogue-eval.mjs": "62ccbb0a65cbfce49cff0b8b0582e6a65ca8c9df275140107642fca926c6e43f",
+    "scripts/evaluate-npc-dialogue.mjs": "bc114765b0bf9ec34e0a41d8fdaf6e9fc51a5992aa80b118532e45d986e994b4",
+    "scripts/check-npc7-evidence.mjs": "90c9f733c75ec5072797a9da14cfaea5c4df9016f71d78f4283669eaa036b33b",
+    "tests/simulation/npc-dialogue-grounding.test.mjs": "d55913673814a4adf8dd99f3dd54c94d55d79a70448460439e6dee32c84c4530",
+    "tests/simulation/npc-negotiation-service.test.mjs": "d3cc0a93da8f7249fb9ba36a211898f4cfec83d8e93776028f935cd83610bd9c",
+    "tests/simulation/npc-language-provider.test.mjs": "be89019ec9ccef855002b10ddb99ea0da426fba597627a32e7a190fe745fadf0",
+    "tests/simulation/npc-deepseek-provider.test.mjs": "01bd31cc81dadc57f450a56f682700717d5b1ecd7993cdacc1c6a37ad911ac98",
+    "tests/simulation/npc-dialogue-evaluation.test.mjs": "aa321a9d05a4bc22430e5ebfb2fb8d2ce2c777eebbf44582781c186428b459f2",
+    "tests/simulation/npc-language.test.mjs": "1ad901e1f39e046e883680bb04a0a1ce64226686fb83d4d0c58fc61630412b3b",
+    "runtime/core/npc-negotiation.mjs": "76170460fa0aaee7ad9aaa74b4e78e4bb0907917439645d5e7977dc2bedae67c",
+    "runtime/core/npc-social.mjs": "01fc0c28531785f496fe3937b664423f171b0e520897325e1eaa65286bfb63ca",
+    "runtime-negotiation-contract.mjs": "1dffab4cb7e2889d920e7b106967aca33c37586b6f2f9b2525040a77bd799e8a",
+    "runtime-social-contract.mjs": "f88ac21c6fdbf8dd188f9f0bf9b2895550d80623faa5830dd2d5e2b0bbff9d38",
+    "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+    "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+    "scripts/run-d4e12-check.py": "436214d623822903b79f5ffb1a272ce811c9c79d6c0a979bb1f6d2a1a4ca4ab5"
+  },
+  "evidence": {
+    "npc7-delivery-final.json": {
+      "bytes": 618,
+      "sha256": "e6f03f31147164049fd97968e9e7d2d70a43e0ba9c228c06e34af058e0f23a74"
+    },
+    "npc7-delivery-final.txt": {
+      "bytes": 9165,
+      "sha256": "8587d705ea1372ed937b34833bfcabbf87f7762dd041461b68f3a53f45ed047e"
+    },
+    "npc7-final.json": {
+      "bytes": 617,
+      "sha256": "31dc51ad1338a8c14ecc5945bea1099982b093f9ce9ee0ceabfd4718f0199336"
+    },
+    "npc7-final.txt": {
+      "bytes": 10426,
+      "sha256": "89759f58e0bbe30eb83af54317db9779c08c4d14625e2afdc334aa581a2fb194"
+    },
+    "npc7-grounding-first.json": {
+      "bytes": 348,
+      "sha256": "0be08acecece79a3ad1937d7e0f20758dc28c94a19115c23e5f8dc97fdab66ba"
+    },
+    "npc7-grounding-first.txt": {
+      "bytes": 2014,
+      "sha256": "07da461cfb0998f189fa003d76c88a572578c1c27ba33c8e471dc2e8d5e8681f"
+    },
+    "npc7-plan-final.json": {
+      "bytes": 325,
+      "sha256": "d43e786c022c42cb57641aa58258fe9b1b1cb6f479b753e49951076ae5cc949d"
+    },
+    "npc7-plan-final.txt": {
+      "bytes": 327,
+      "sha256": "ab54a06b4960327fe14d57794f458f2190d33c80bf3c2a39dfe0c03f336f356e"
+    },
+    "plan-final.json": {
+      "bytes": 93512,
+      "sha256": "0a5e65c664bf88f5259c49eb0cc360a57c3c0c5f806fde1bbb3c89f29b468e1c"
+    },
+    "static-checks.json": {
+      "bytes": 1628,
+      "sha256": "bd9a1ee7380c0d812f86986149d345885a4443835a679fda17a0140b7b670f16"
+    }
+  },
+  "publicationRedaction": {
+    "npc7-final.txt": {
+      "originalSha256": "6384104d8e06942c7446c7457be092ce805685cd3fb135a92ea6923e5a3bb24e",
+      "originalBytes": 10508,
+      "changes": "Absolute transient checkout prefix replaced with <repo> only. Assertion text, counts, timing and whitespace retained."
+    },
+    "npc7-plan-final.txt": {
+      "originalSha256": "b57db741b5be34ab1139039f6ce39ab5066ed8ca1d17a36e70e9f6a85b01598d",
+      "originalBytes": 409,
+      "changes": "Absolute transient checkout prefix replaced with <repo> only. Assertion text, counts, timing and whitespace retained."
+    }
+  }
+}

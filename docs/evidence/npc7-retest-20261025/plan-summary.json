@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "baseCommit": "8064e2bb2ba7198aebea8ab511884fd343b26460",
+    "workingTreeDirty": false,
+    "node": "v24.22.1",
+    "sha256": {
+      "runtime/service/npc-language-provider.mjs": "f8f2387c03e70f82e6b18d681e2b8bd0d1aef56d1700c5696a11a7c36c5411b9",
+      "runtime/service/npc-dialogue-grounding.mjs": "af8ca59d1fb036280a74b6d9dc73e6cb4c72cc4109e581d1acabe1ec31e6b7b0",
+      "runtime/evaluation/npc-dialogue-eval.mjs": "62ccbb0a65cbfce49cff0b8b0582e6a65ca8c9df275140107642fca926c6e43f",
+      "runtime/core/npc-negotiation.mjs": "76170460fa0aaee7ad9aaa74b4e78e4bb0907917439645d5e7977dc2bedae67c",
+      "runtime/core/npc-social.mjs": "01fc0c28531785f496fe3937b664423f171b0e520897325e1eaa65286bfb63ca",
+      "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+      "runtime-negotiation-contract.mjs": "1dffab4cb7e2889d920e7b106967aca33c37586b6f2f9b2525040a77bd799e8a",
+      "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+      "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
+      "artifacts/npc7-retest-20261025/suite.json": "2e3f055a515e7474944c90e93fe1e59f0e8f62359d235c20bd6ee827eadf99fc",
+      "artifacts/npc7-retest-20261025/run.mjs": "ccec0ecc0bf1e224d11e126e659a2933c5e233031437f451225d32cd488e9caa"
+    }
+  },
+  "suiteId": "npc7-dialogue-paraphrase-20261025",
+  "suiteSha256": "b2c108aaa96cdf590c10a4ac44cb7b1e100f7b79bfc252e2e3062617aa38ecb7",
+  "mode": "plan",
+  "completed": true,
+  "actualOutboundRequests": 0,
+  "counts": {
+    "planned": 16,
+    "attempted": 0,
+    "automaticPassed": 0,
+    "automaticFailed": 0,
+    "providerFailed": 0,
+    "fixtureFailed": 0,
+    "blocked": 0,
+    "notRun": 16
+  },
+  "replays": [
+    {
+      "id": "bargain",
+      "audit": "passed"
+    },
+    {
+      "id": "help-memory",
+      "audit": "passed"
+    },
+    {
+      "id": "negation-report",
+      "audit": "passed"
+    },
+    {
+      "id": "harm-memory",
+      "audit": "passed"
+    },
+    {
+      "id": "unknown-thief",
+      "audit": "passed"
+    },
+    {
+      "id": "late-return",
+      "audit": "passed"
+    },
+    {
+      "id": "instruction-data",
+      "audit": "passed"
+    },
+    {
+      "id": "unsupported",
+      "audit": "passed"
+    }
+  ],
+  "rawReport": {
+    "sha256": "a001b373a9ac8a1f878e8fd880af4c5bcf086694918a22a6bcdc50dda0eab5a9",
+    "bytes": 94016
+  }
+}

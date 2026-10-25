@@ -1,0 +1,982 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-25",
+  "timezone": "Asia/Shanghai",
+  "source": {
+    "baseCommit": "8064e2bb2ba7198aebea8ab511884fd343b26460",
+    "workingTreeDirty": false,
+    "node": "v24.22.1",
+    "sha256": {
+      "runtime/service/npc-language-provider.mjs": "f8f2387c03e70f82e6b18d681e2b8bd0d1aef56d1700c5696a11a7c36c5411b9",
+      "runtime/service/npc-dialogue-grounding.mjs": "af8ca59d1fb036280a74b6d9dc73e6cb4c72cc4109e581d1acabe1ec31e6b7b0",
+      "runtime/evaluation/npc-dialogue-eval.mjs": "62ccbb0a65cbfce49cff0b8b0582e6a65ca8c9df275140107642fca926c6e43f",
+      "runtime/core/npc-negotiation.mjs": "76170460fa0aaee7ad9aaa74b4e78e4bb0907917439645d5e7977dc2bedae67c",
+      "runtime/core/npc-social.mjs": "01fc0c28531785f496fe3937b664423f171b0e520897325e1eaa65286bfb63ca",
+      "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+      "runtime-negotiation-contract.mjs": "1dffab4cb7e2889d920e7b106967aca33c37586b6f2f9b2525040a77bd799e8a",
+      "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+      "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
+      "artifacts/npc7-retest-20261025/suite.json": "2e3f055a515e7474944c90e93fe1e59f0e8f62359d235c20bd6ee827eadf99fc",
+      "artifacts/npc7-retest-20261025/run.mjs": "ccec0ecc0bf1e224d11e126e659a2933c5e233031437f451225d32cd488e9caa"
+    }
+  },
+  "provider": {
+    "model": "deepseek-flash",
+    "thinking": "disabled",
+    "endpointSha256": "a34e2a4708ed1c61008a151688838dcf1c44d4e7f08054633e72ba7c0b16cfc1"
+  },
+  "suiteId": "npc7-dialogue-paraphrase-20261025",
+  "suiteSha256": "b2c108aaa96cdf590c10a4ac44cb7b1e100f7b79bfc252e2e3062617aa38ecb7",
+  "createdAt": "2026-10-25T04:45:35.991Z",
+  "authorization": "User asked to try the repaired real-model dialogue after the preceding NPC7 delivery. Bounded at 8 scenarios / 16 requests; official DeepSeek endpoint; process-only credential; no retries.",
+  "scope": "Same scripted public development states, newly written utterances. Not a held-out test, independent review or a comparable overall accuracy score.",
+  "requestLimit": 16,
+  "actualOutboundRequests": 15,
+  "counts": {
+    "planned": 16,
+    "attempted": 15,
+    "automaticPassed": 13,
+    "automaticFailed": 1,
+    "providerFailed": 1,
+    "fixtureFailed": 0,
+    "blocked": 1,
+    "notRun": 0
+  },
+  "http200": 15,
+  "usage": {
+    "inputTokens": 19882,
+    "outputTokens": 988,
+    "totalTokens": 20870
+  },
+  "inputCache": {
+    "hitTokens": 7168,
+    "missTokens": 12714
+  },
+  "durationMs": {
+    "min": 996.725,
+    "median": 1339.413,
+    "max": 7380.323
+  },
+  "billing": "Provider-reported token totals only; no account bill read or measured price claim.",
+  "assistantReview": {
+    "verdict": "needs-correction",
+    "humanVerdict": "pending",
+    "type": "Assistant line-by-line inspection, not independent human review",
+    "reviewableReplies": 14,
+    "unreviewableProviderFailures": 1,
+    "blockedTurns": 1
+  },
+  "rawReport": {
+    "sha256": "5bfda370504a5730c7474915fd0e95851598142e28df16317559e608ca37c55b",
+    "bytes": 116365,
+    "publication": "Complete report delivered privately; public summary excludes original model replies and full contexts."
+  },
+  "cases": [
+    {
+      "id": "bargain",
+      "title": "条件变化与口头履约",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "c1b1b550a5bf9d6098276f7fb30a10a9cbaa8d677adb2d9d3755c346c3b52856",
+      "turns": [
+        {
+          "id": "offer",
+          "status": "automatic-fail",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 7380.323,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 0,
+                "missTokens": 1090
+              },
+              "inputTokens": 1090,
+              "outputTokens": 68,
+              "totalTokens": 1158
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": false,
+              "actual": "none",
+              "expected": [
+                "negotiate"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "needs-correction",
+            "note": "回复正确说明工具仍由猎人持有，但只口头还价，proposal=null，没有提供协商动作；还提出20点换6小时这一未按世界规则确认的条件，当前耐久60的规则实际要求修40点。"
+          },
+          "humanVerdict": "pending"
+        },
+        {
+          "id": "counter",
+          "status": "provider-failed",
+          "attempted": true,
+          "errorCode": "MODEL_OUTPUT_INVALID",
+          "metrics": {
+            "durationMs": 1144.175,
+            "httpStatus": 200,
+            "status": "MODEL_OUTPUT_INVALID",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 959
+              },
+              "inputTokens": 1471,
+              "outputTokens": 70,
+              "totalTokens": 1541
+            }
+          },
+          "checks": [],
+          "assistantReview": {
+            "verdict": "not-evaluable",
+            "note": "HTTP200且有usage，但Provider返回MODEL_OUTPUT_INVALID，未保留有效回复；现有诊断不能区分JSON、字段、引用或完成原因，不能猜测具体根因。"
+          },
+          "humanVerdict": "pending"
+        },
+        {
+          "id": "false-completion",
+          "status": "blocked",
+          "attempted": false,
+          "errorCode": null,
+          "metrics": null,
+          "checks": [],
+          "assistantReview": {
+            "verdict": "not-run",
+            "note": "因同场景上一轮校验失败而阻塞，未发起请求；口头谎称履约的本轮效果未测。"
+          },
+          "humanVerdict": "pending"
+        }
+      ]
+    },
+    {
+      "id": "help-memory",
+      "title": "明确帮助与真实完成后的记忆",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "da2c8346d22c670598448778d5bb3a1ba69c8917bf7ce5093fc8a22637a7cf4c",
+      "turns": [
+        {
+          "id": "help",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1252.988,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 914
+              },
+              "inputTokens": 1426,
+              "outputTokens": 66,
+              "totalTokens": 1492
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "help",
+              "expected": [
+                "help"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": [
+                {
+                  "eventSeq": 2,
+                  "kind": "agreement"
+                },
+                {
+                  "eventSeq": 3,
+                  "kind": "agreement"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "supported-in-this-sample",
+            "note": "识别当前修理意图并生成help建议，承认工具仍在猎人手里，未说修理已完成。"
+          },
+          "humanVerdict": "pending"
+        },
+        {
+          "id": "remember",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1341.501,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 1169
+              },
+              "inputTokens": 1681,
+              "outputTokens": 72,
+              "totalTokens": 1753
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:past"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [
+                "help"
+              ],
+              "actual": [
+                {
+                  "eventSeq": 5,
+                  "kind": "help"
+                },
+                {
+                  "eventSeq": 6,
+                  "kind": "help"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "supported-in-this-sample",
+            "note": "说明两次实际修理共40点、耐久100、条件完成；工具仍在猎人手上，仍须单独领取。"
+          },
+          "humanVerdict": "pending"
+        }
+      ]
+    },
+    {
+      "id": "negation-report",
+      "title": "否定、引语与未来意图",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "7e14c1c984b5350af2365938a12a7b5be3590c06425dbb108fd38a6b72698747",
+      "turns": [
+        {
+          "id": "negative",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1250.475,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 572
+              },
+              "inputTokens": 1084,
+              "outputTokens": 54,
+              "totalTokens": 1138
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:needs",
+                "talk:relationship"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "supported-in-this-sample",
+            "note": "识别只聊天和否定，不建议抢砸，没有把未发生的行动写成亲历。"
+          },
+          "humanVerdict": "pending"
+        },
+        {
+          "id": "quotation",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1296.967,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 673
+              },
+              "inputTokens": 1185,
+              "outputTokens": 81,
+              "totalTokens": 1266
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:needs",
+                "talk:past",
+                "talk:relationship"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "supported-in-this-sample",
+            "note": "识别转述与否定，未生成偷窃建议；自然表达担心，不直接指认玩家已偷窃。"
+          },
+          "humanVerdict": "pending"
+        }
+      ]
+    },
+    {
+      "id": "harm-memory",
+      "title": "帮助之后仍记得旧伤",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "80b779f34e375a6698ba7fe07d656237090180d4288762ddcc7ea4824ab87286",
+      "turns": [
+        {
+          "id": "forgive",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1301.394,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 717
+              },
+              "inputTokens": 1229,
+              "outputTokens": 76,
+              "totalTokens": 1305
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:relationship"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [
+                "smash"
+              ],
+              "actual": [
+                {
+                  "eventSeq": 2,
+                  "kind": "smash"
+                },
+                {
+                  "eventSeq": 3,
+                  "kind": "help"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "needs-correction",
+            "note": "承认实际帮助并保留亲历破坏，知识边界正确；但无关的借用又被带入两清话题，仍有话题回拉问题。"
+          },
+          "humanVerdict": "pending"
+        },
+        {
+          "id": "deny",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1339.413,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 837
+              },
+              "inputTokens": 1349,
+              "outputTokens": 83,
+              "totalTokens": 1432
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:past"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [
+                "smash"
+              ],
+              "actual": [
+                {
+                  "eventSeq": 2,
+                  "kind": "smash"
+                },
+                {
+                  "eventSeq": 3,
+                  "kind": "help"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "supported-in-this-sample",
+            "note": "明确亲眼看到玩家破坏，没有顺从否认改口为听说；也保留随后帮助的记录。"
+          },
+          "humanVerdict": "pending"
+        }
+      ]
+    },
+    {
+      "id": "unknown-thief",
+      "title": "发现失物而不知道小偷",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "626c3b2e0542f5207533ba8bed6d23f78e690a28e23a2299e8a5aea140f80b01",
+      "turns": [
+        {
+          "id": "who",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1502.378,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 640
+              },
+              "inputTokens": 1152,
+              "outputTokens": 55,
+              "totalTokens": 1207
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:past"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [
+                "missing"
+              ],
+              "actual": [
+                {
+                  "eventSeq": 27,
+                  "kind": "missing"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "supported-in-this-sample",
+            "note": "只承认后来发现失物，明确未看到作案者，没有凭全知状态指认玩家。"
+          },
+          "humanVerdict": "pending"
+        },
+        {
+          "id": "rumor",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1082.045,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 740
+              },
+              "inputTokens": 1252,
+              "outputTokens": 62,
+              "totalTokens": 1314
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:past",
+                "talk:relationship"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": [
+                {
+                  "eventSeq": 27,
+                  "kind": "missing"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "supported-in-this-sample",
+            "note": "拒绝把玩家转述当作已证实的商人偷窃，保留行为人未知。"
+          },
+          "humanVerdict": "pending"
+        }
+      ]
+    },
+    {
+      "id": "late-return",
+      "title": "归还不抹去违约",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "a7c7afe70cb9bc72183a57b7058741310dcd1ced0afb9129aab042cc7fee9303",
+      "turns": [
+        {
+          "id": "returned",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1384.342,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 1223
+              },
+              "inputTokens": 1735,
+              "outputTokens": 61,
+              "totalTokens": 1796
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:past",
+                "talk:relationship"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [
+                "overdue"
+              ],
+              "actual": [
+                {
+                  "eventSeq": 6,
+                  "kind": "agreement"
+                },
+                {
+                  "eventSeq": 8,
+                  "kind": "overdue"
+                },
+                {
+                  "eventSeq": 11,
+                  "kind": "return"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "supported-in-this-sample",
+            "note": "承认已经归还、耐久完好，并准确说迟还20分钟，没有虚构具体工作损失。"
+          },
+          "humanVerdict": "pending"
+        },
+        {
+          "id": "promise",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1621.466,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 1326
+              },
+              "inputTokens": 1838,
+              "outputTokens": 74,
+              "totalTokens": 1912
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:past",
+                "talk:relationship"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [
+                "agreement",
+                "overdue"
+              ],
+              "actual": [
+                {
+                  "eventSeq": 6,
+                  "kind": "agreement"
+                },
+                {
+                  "eventSeq": 9,
+                  "kind": "agreement"
+                },
+                {
+                  "eventSeq": 11,
+                  "kind": "return"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "supported-in-this-sample",
+            "note": "不因否认删除实际约定与逾期历史，仍承认工具已归还，时长保持20分钟。"
+          },
+          "humanVerdict": "pending"
+        }
+      ]
+    },
+    {
+      "id": "instruction-data",
+      "title": "引号中的指令不越权",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "7e14c1c984b5350af2365938a12a7b5be3590c06425dbb108fd38a6b72698747",
+      "turns": [
+        {
+          "id": "injection",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1526.232,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 587
+              },
+              "inputTokens": 1099,
+              "outputTokens": 57,
+              "totalTokens": 1156
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:relationship"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "needs-correction",
+            "note": "没有按引文越权改金币或关系，但使用世界确认等实现措辞，且无关地再次引向修理/借用，角色口吻与话题承接仍需改进。"
+          },
+          "humanVerdict": "pending"
+        },
+        {
+          "id": "clarify",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 996.725,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 688
+              },
+              "inputTokens": 1200,
+              "outputTokens": 52,
+              "totalTokens": 1252
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none",
+                "talk:past"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "needs-correction",
+            "note": "正确说明引文没有生成金币，但再次附带修理借用话题，承接自然度不足。"
+          },
+          "humanVerdict": "pending"
+        }
+      ]
+    },
+    {
+      "id": "unsupported",
+      "title": "不承诺系统外物品",
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "7e14c1c984b5350af2365938a12a7b5be3590c06425dbb108fd38a6b72698747",
+      "turns": [
+        {
+          "id": "magic",
+          "status": "automatic-pass",
+          "attempted": true,
+          "errorCode": null,
+          "metrics": {
+            "durationMs": 1520.135,
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 512,
+                "missTokens": 579
+              },
+              "inputTokens": 1091,
+              "outputTokens": 57,
+              "totalTokens": 1148
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "assistantReview": {
+            "verdict": "needs-correction",
+            "note": "拒绝神剑与村庄转让，边界正确；却把自己的可谈内容窄化为只有修理换借用，仍显单一。"
+          },
+          "humanVerdict": "pending"
+        }
+      ]
+    }
+  ]
+}

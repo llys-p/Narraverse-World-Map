@@ -1,0 +1,1 @@
+{"status":"checks-failed","mode":"live","counts":{"planned":16,"attempted":15,"automaticPassed":13,"automaticFailed":1,"providerFailed":1,"fixtureFailed":0,"blocked":1,"notRun":0},"outboundRequests":15,"semanticVerdict":"needs-human-review"}
