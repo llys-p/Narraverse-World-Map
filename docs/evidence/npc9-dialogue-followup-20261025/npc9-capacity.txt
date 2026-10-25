@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: synthetic full history still sends recent repair and forgetting counts, while evicted detail cannot be cited
+ok 1 - synthetic full history still sends recent repair and forgetting counts, while evicted detail cannot be cited
+  ---
+  duration_ms: 90.657673
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 217.544134

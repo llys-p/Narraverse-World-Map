@@ -85,7 +85,7 @@ test('whole-sentence hints distinguish existing terms and immediate repair witho
   const hint=dialogueIntentHint(text,ready);assert.equal(hint.kind,'repair-now',text);assert.equal(hint.proposalHint.payload.action,'help');
  }
  for(const text of ['我不会帮你修理工具','“我现在要帮你修理这个工具”','他说我现在要帮你修理这个工具','我已经修好了工具','如果你借给我，我就帮你修工具','我现在要帮你修理这个工具，然后抢走它','我现在要帮你修理这个工具吗？','我现在要帮你修理商人的工具'])assert.notEqual(dialogueIntentHint(text,ready).kind,'repair-now',text);
- assert.equal(dialogueIntentHint('我帮你修20点耐久，工具借我一天行吗？',ready).kind,'model-interpretation');
+ assert.equal(dialogueIntentHint('我帮你修20点耐久，工具借我一天行吗？',ready).kind,'negotiate-repair-loan');
  for(const self of [{...ready.self,knownHolder:'unknown'},{...ready.self,knownCondition:100}]){
   const hint=dialogueIntentHint('我现在要帮你修理这个工具。',{...ready,self});assert.equal(hint.kind,'repair-now');assert.equal(hint.proposalHint,null);
  }

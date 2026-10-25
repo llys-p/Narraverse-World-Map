@@ -1,0 +1,1010 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "npc-memory-dialogue-development-v1",
+  "fixtureVersion": "5",
+  "mode": "plan",
+  "completed": true,
+  "realProviderAttempted": false,
+  "semanticVerdict": "not-evaluated",
+  "counts": {
+    "planned": 17,
+    "attempted": 0,
+    "automaticPassed": 0,
+    "automaticFailed": 0,
+    "providerFailed": 0,
+    "fixtureFailed": 0,
+    "blocked": 0,
+    "notRun": 17
+  },
+  "source": {
+    "baseCommit": "a63e4cbda0b9ed2ae6c108265c8fea4671546a39",
+    "workingTreeDirty": true,
+    "sha256": {
+      "benchmarks/npc-memory-dialogue-v1/cases.json": "9fc870460d36f3e2fb0de178ba0d80bab9c7ff64acd5f668152a49b0b5ce96a4",
+      "runtime/core/npc-negotiation-terms.mjs": "5f80bc3e4d9a4941bb4fb1f09020d29f0bda2a2733e6f382cae5e368ef52d50f",
+      "runtime/fixtures/campaign-village.mjs": "f30907bf5d28974a6668dcce8da262601de40eaeb44dff513967c2bd22aa9b1f",
+      "runtime/service/npc-language-provider.mjs": "2ef3e4cc498fe2e4f384d20676a6a760baaa1db85e868131f0c3c9d47fef6298",
+      "runtime/evaluation/npc-dialogue-eval.mjs": "8158e07db4909745b26e50b8a1d2c775ec186bdd60a2592f49f31b2494b9888d",
+      "runtime/service/npc-dialogue-grounding.mjs": "a29408fe13960a548fa0f63b273f8e4c441a5bfaadb5b4d23ccf23b6b34322bd",
+      "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+      "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+      "runtime/core/npc-negotiation.mjs": "4361bb47c53f155543ee60063160bd13611520d0c37e23143f628009b00837e3",
+      "runtime/core/npc-social.mjs": "7dc296035a5f6d2e6217f03e10b015439b248e40940585cfc42bdd78c49de2de",
+      "runtime/core/npc-memory.mjs": "bc7faa9d50360ac7199c343ecc8e1cb4f23b4078dc7c0648abb7e185e1ab79ea",
+      "runtime-negotiation-contract.mjs": "528d6214a61140a78d988ff4af26c5429f1dea9ec1a9bab5e25bf21c6b58ea52",
+      "scripts/evaluate-npc-dialogue.mjs": "6aed51c4ea21cf8bef7de6dbbaa5138786eb33d742fe741ce8cc1b8af6aa6053"
+    },
+    "node": "v24.22.1"
+  },
+  "cases": [
+    {
+      "id": "repair-bargain",
+      "fixtureVersion": "5",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "offer",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 60
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "available",
+            "options": [
+              {
+                "repairAmount": 40,
+                "loanTicks": 36
+              },
+              {
+                "repairAmount": 40,
+                "loanTicks": 72
+              }
+            ],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "negotiate-repair-loan",
+            "recommendation": "suggest-supported-terms",
+            "proposalHint": {
+              "type": "PlayerNegotiate",
+              "payload": {
+                "targetId": "actor-2",
+                "terms": {
+                  "repairAmount": 40,
+                  "loanTicks": 72
+                }
+              }
+            },
+            "note": "玩家明确谈修理换借用；若可谈，给当前候选条款的协商预览，口头还价不能替代建议，也不能承诺候选之外的条件。仍需确认及世界审核。"
+          }
+        },
+        {
+          "id": "counter",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 60
+            },
+            "agreement": {
+              "sourceEventSeq": 2,
+              "status": "offered",
+              "meaning": "仅提出条款，尚未接受或借出",
+              "wasClaimed": false,
+              "wasReturned": false,
+              "readyForSeparateClaim": false,
+              "repairRequired": 40,
+              "repairRecorded": 0,
+              "targetCondition": 100,
+              "loanMinutes": 720,
+              "overdueMinutes": null,
+              "overdueBasis": "不适用",
+              "expiresInMinutes": 1440
+            },
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "available",
+            "options": [
+              {
+                "repairAmount": 40,
+                "loanTicks": 36
+              },
+              {
+                "repairAmount": 40,
+                "loanTicks": 72
+              }
+            ],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "existing-terms-question",
+            "recommendation": "explain-existing-terms",
+            "proposalHint": null,
+            "note": "询问已经记录的条件，不是重新提议、接受或领取；先回答现有条款，不重复生成协商动作。"
+          }
+        },
+        {
+          "id": "false-completion",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 60
+            },
+            "agreement": {
+              "sourceEventSeq": 3,
+              "status": "accepted",
+              "meaning": "已接受条款，尚未达到可领取状态",
+              "wasClaimed": false,
+              "wasReturned": false,
+              "readyForSeparateClaim": false,
+              "repairRequired": 40,
+              "repairRecorded": 0,
+              "targetCondition": 100,
+              "loanMinutes": 720,
+              "overdueMinutes": null,
+              "overdueBasis": "不适用",
+              "expiresInMinutes": 1440
+            },
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "active-agreement",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "repair-progress",
+      "fixtureVersion": "5",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "help",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 60
+            },
+            "agreement": {
+              "sourceEventSeq": 3,
+              "status": "accepted",
+              "meaning": "已接受条款，尚未达到可领取状态",
+              "wasClaimed": false,
+              "wasReturned": false,
+              "readyForSeparateClaim": false,
+              "repairRequired": 40,
+              "repairRecorded": 0,
+              "targetCondition": 100,
+              "loanMinutes": 720,
+              "overdueMinutes": null,
+              "overdueBasis": "不适用",
+              "expiresInMinutes": 1440
+            },
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "active-agreement",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "repair-now",
+            "recommendation": "suggest-help",
+            "proposalHint": {
+              "type": "PlayerInteract",
+              "payload": {
+                "targetId": "actor-2",
+                "action": "help"
+              }
+            },
+            "note": "玩家明确提出现在修理，可给help建议，仍需玩家确认并通过世界规则；不是已经修好。"
+          }
+        },
+        {
+          "id": "remember",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 100
+            },
+            "agreement": {
+              "sourceEventSeq": 5,
+              "status": "ready",
+              "meaning": "修理条件已完成，仍须玩家领取，尚未借出",
+              "wasClaimed": false,
+              "wasReturned": false,
+              "readyForSeparateClaim": true,
+              "repairRequired": 40,
+              "repairRecorded": 40,
+              "targetCondition": 100,
+              "loanMinutes": 720,
+              "overdueMinutes": null,
+              "overdueBasis": "不适用",
+              "expiresInMinutes": 1420
+            },
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "active-agreement",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "repair-denial",
+      "fixtureVersion": "5",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "forgive",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 100
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [
+            {
+              "topic": "damage",
+              "status": "repaired",
+              "causeRefs": [
+                2
+              ],
+              "followUpRefs": [
+                6
+              ],
+              "meaning": "当前修理状态不删除曾经受损的经历；帮助不等于自动原谅。"
+            }
+          ],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "repair-not-needed",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        },
+        {
+          "id": "deny",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 100
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [
+            {
+              "topic": "damage",
+              "status": "repaired",
+              "causeRefs": [
+                2
+              ],
+              "followUpRefs": [
+                6
+              ],
+              "meaning": "当前修理状态不删除曾经受损的经历；帮助不等于自动原谅。"
+            }
+          ],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "repair-not-needed",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "repeated-apology",
+      "fixtureVersion": "5",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "forgive",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 40
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [
+            {
+              "topic": "damage",
+              "status": "damage-remains",
+              "causeRefs": [
+                2
+              ],
+              "followUpRefs": [
+                3
+              ],
+              "meaning": "当前修理状态不删除曾经受损的经历；帮助不等于自动原谅。"
+            },
+            {
+              "topic": "apology",
+              "status": "heard-apology",
+              "causeRefs": [
+                4
+              ],
+              "followUpRefs": [],
+              "meaning": "只记录收到道歉，不推断已赔偿、已修好或已原谅。"
+            }
+          ],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "relationship-refusal",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        },
+        {
+          "id": "deny",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 40
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [
+            {
+              "topic": "damage",
+              "status": "damage-remains",
+              "causeRefs": [
+                2
+              ],
+              "followUpRefs": [
+                3
+              ],
+              "meaning": "当前修理状态不删除曾经受损的经历；帮助不等于自动原谅。"
+            },
+            {
+              "topic": "apology",
+              "status": "repeated-or-refused",
+              "causeRefs": [
+                5
+              ],
+              "followUpRefs": [],
+              "meaning": "只记录收到道歉，不推断已赔偿、已修好或已原谅。"
+            }
+          ],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "relationship-refusal",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "loss-return",
+      "fixtureVersion": "5",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "who",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "unknown",
+              "meaning": "不知道当前持有人，不推断拿走工具的人",
+              "condition": 60
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [
+            {
+              "topic": "loss",
+              "status": "not-confirmed-recovered",
+              "causeRefs": [
+                27
+              ],
+              "followUpRefs": [],
+              "meaning": "后来的归还只能证明归还行为，不能证明归还者就是之前的小偷。"
+            }
+          ],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "tool-not-known-held",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        },
+        {
+          "id": "rumor",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 60
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [
+            {
+              "topic": "loss",
+              "status": "recovered",
+              "causeRefs": [
+                27
+              ],
+              "followUpRefs": [
+                30
+              ],
+              "meaning": "后来的归还只能证明归还行为，不能证明归还者就是之前的小偷。"
+            }
+          ],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "available",
+            "options": [
+              {
+                "repairAmount": 40,
+                "loanTicks": 36
+              },
+              {
+                "repairAmount": 40,
+                "loanTicks": 72
+              }
+            ],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fixed-lateness",
+      "fixtureVersion": "5",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "returned",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 100
+            },
+            "agreement": {
+              "sourceEventSeq": 11,
+              "status": "returned-late",
+              "meaning": "已经归还，但发生过逾期",
+              "wasClaimed": true,
+              "wasReturned": true,
+              "readyForSeparateClaim": false,
+              "repairRequired": 40,
+              "repairRecorded": 40,
+              "targetCondition": 100,
+              "loanMinutes": 360,
+              "overdueMinutes": 40,
+              "overdueBasis": "实际归还时间减截止时间，归还后不再增长",
+              "expiresInMinutes": null
+            },
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [
+            {
+              "topic": "overdue",
+              "status": "returned-after-breach",
+              "causeRefs": [
+                8
+              ],
+              "followUpRefs": [
+                11
+              ],
+              "meaning": "已归还和曾经逾期可以同时成立；归还不删除逾期。"
+            }
+          ],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "repair-not-needed",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        },
+        {
+          "id": "promise",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 100
+            },
+            "agreement": {
+              "sourceEventSeq": 11,
+              "status": "returned-late",
+              "meaning": "已经归还，但发生过逾期",
+              "wasClaimed": true,
+              "wasReturned": true,
+              "readyForSeparateClaim": false,
+              "repairRequired": 40,
+              "repairRecorded": 40,
+              "targetCondition": 100,
+              "loanMinutes": 360,
+              "overdueMinutes": 40,
+              "overdueBasis": "实际归还时间减截止时间，归还后不再增长",
+              "expiresInMinutes": null
+            },
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [
+            {
+              "topic": "overdue",
+              "status": "returned-after-breach",
+              "causeRefs": [
+                8
+              ],
+              "followUpRefs": [
+                11
+              ],
+              "meaning": "已归还和曾经逾期可以同时成立；归还不删除逾期。"
+            }
+          ],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "unavailable",
+            "reason": "repair-not-needed",
+            "options": [],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "no-action",
+      "fixtureVersion": "5",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "negative",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 60
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "available",
+            "options": [
+              {
+                "repairAmount": 40,
+                "loanTicks": 36
+              },
+              {
+                "repairAmount": 40,
+                "loanTicks": 72
+              }
+            ],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        },
+        {
+          "id": "quotation",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 60
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "available",
+            "options": [
+              {
+                "repairAmount": 40,
+                "loanTicks": 36
+              },
+              {
+                "repairAmount": 40,
+                "loanTicks": 72
+              }
+            ],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "false-story",
+      "fixtureVersion": "5",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "injection",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 60
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "available",
+            "options": [
+              {
+                "repairAmount": 40,
+                "loanTicks": 36
+              },
+              {
+                "repairAmount": 40,
+                "loanTicks": 72
+              }
+            ],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        },
+        {
+          "id": "clarify",
+          "knownFacts": {
+            "version": 1,
+            "identity": {
+              "selfId": "actor-2",
+              "selfRole": "你是猎人",
+              "playerId": "actor-4",
+              "playerRole": "正在与你交谈的玩家"
+            },
+            "tickMinutes": 10,
+            "tool": {
+              "holder": "self",
+              "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+              "condition": 60
+            },
+            "agreement": null,
+            "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。"
+          },
+          "memoryMode": "npc-memory-v1",
+          "memoryUpdates": [],
+          "memoryCoverage": {
+            "forgottenEpisodes": 0,
+            "forgottenSpeech": 0
+          },
+          "negotiationOptions": {
+            "status": "available",
+            "options": [
+              {
+                "repairAmount": 40,
+                "loanTicks": 36
+              },
+              {
+                "repairAmount": 40,
+                "loanTicks": 72
+              }
+            ],
+            "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+          },
+          "intentHint": {
+            "kind": "model-interpretation",
+            "recommendation": "answer-current-topic",
+            "proposalHint": null,
+            "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+          }
+        }
+      ]
+    }
+  ]
+}

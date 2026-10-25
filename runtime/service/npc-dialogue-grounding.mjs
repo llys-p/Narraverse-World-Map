@@ -2,6 +2,7 @@ import {cloneData,requireCondition} from '../core/data-contract.mjs';
 import {TICK_MINUTES} from '../core/simulation-clock.mjs';
 import {interpretSocialText} from '../../demo-social-language.mjs';
 import {NPC_MEMORY_VERSION,retrieveNpcEpisodes,npcMemoryUpdates} from '../core/npc-memory.mjs';
+import {knownNegotiationOptions,repairLoanTerms} from '../core/npc-negotiation-terms.mjs';
 
 const pick=(value,names)=>Object.fromEntries(names.filter(k=>value&&Object.hasOwn(value,k)).map(k=>[k,cloneData(value[k])]));
 const nat=n=>Number.isSafeInteger(n)&&n>=0;
@@ -35,6 +36,13 @@ export function dialogueIntentHint(text,context){
  const repeatQuestion=/^(?:请)?(?:再说|重复)(?:一下|一遍)?(?:刚才|之前|这份)?(?:的)?(?:条款|约定|修理条件)$/u;
  if(existing&&(termsQuestion.test(plain)||repeatQuestion.test(plain)))return {kind:'existing-terms-question',recommendation:'explain-existing-terms',proposalHint:null,
   note:'询问已经记录的条件，不是重新提议、接受或领取；先回答现有条款，不重复生成协商动作。'};
+ const exchange=/^我(?:可以|愿意|来)?(?:帮你|替你)?(?:修好|修理|修)(?:(?:20|40)点(?:耐久)?|(?:这个|你的)?工具(?:包)?)[,，](?:你把)?(?:工具(?:包)?)?(?:借我|借给我)(一天|半天|六小时|十二小时|24小时|12小时|6小时)(?:行吗|可以吗|好吗|如何|怎么样)?$/u.exec(plain);
+ if(exchange){
+  const available=knownNegotiationOptions(context.self,existing),duration={一天:144,半天:72,六小时:36,十二小时:72,'24小时':144,'12小时':72,'6小时':36}[exchange[1]];
+  return {kind:'negotiate-repair-loan',recommendation:available.status==='available'?'suggest-supported-terms':'explain-negotiation-limit',
+   proposalHint:available.status==='available'?{type:'PlayerNegotiate',payload:{targetId:'actor-2',terms:repairLoanTerms(context.self.knownCondition,context.self.trust,duration)}}:null,
+   note:'玩家明确谈修理换借用；若可谈，给当前候选条款的协商预览，口头还价不能替代建议，也不能承诺候选之外的条件。仍需确认及世界审核。'};
+ }
  const parsed=interpretSocialText(text);
  const explicitRepair=/^(?:那)?(?:我)?(?:现在|这就|马上)?(?:要|来)?(?:帮你|替你)(?:修理|修好|修)(?:一下)?(?:这个|你的|猎人的)?工具(?:包)?$/u;
  if(parsed.status==='ready'&&parsed.candidates[0]?.action==='help'||explicitRepair.test(plain)){
@@ -68,6 +76,7 @@ export function groundedProviderContext(context,text){
   agreement:agreementFacts(out.agreement,out.tick),
   authority:'这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。'};
  out.intentHint=dialogueIntentHint(text,out);
+ out.negotiationOptions={...knownNegotiationOptions(out.self,out.agreement),authority:'仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。'};
  if(memoryMode){
   const coverage=context.memoryCoverage;
   requireCondition(coverage&&nat(coverage.forgottenEpisodes)&&nat(coverage.forgottenSpeech),'Invalid memory coverage');

@@ -30,7 +30,7 @@ test('real worker/HTTP: model draft writes nothing, attributed dialogue recovers
   const chunks=[];for await(const chunk of req)chunks.push(chunk);const body=JSON.parse(Buffer.concat(chunks));calls.push({url:req.url,body});
   assert.equal(req.headers.authorization,'Bearer local-test-only');
   if(delay){delay=false;arrived();await new Promise(r=>release=r);}
-  const output={reply:'你愿意实际修好工具的话，可以谈谈借用期限。',memoryRefs:invalid?[999]:[],proposal:{type:'PlayerNegotiate',payload:{targetId:hunter,terms:{repairAmount:20,loanTicks:144}}}};
+  const output={reply:'你愿意实际修好工具的话，可以谈谈借用期限。',memoryRefs:invalid?[999]:[],proposal:JSON.parse(body.messages[1].content).npc.negotiationOptions.status==='available'?{type:'PlayerNegotiate',payload:{targetId:hunter,terms:{repairAmount:40,loanTicks:72}}}:null};
   res.setHeader('Content-Type','application/json');res.end(JSON.stringify({choices:[{finish_reason:'stop',message:{content:JSON.stringify(output)}}]}));
  });
  await new Promise(r=>mock.listen(0,'127.0.0.1',r));
@@ -70,12 +70,12 @@ test('real worker/HTTP: model draft writes nothing, attributed dialogue recovers
  assert.deepEqual(await hashes(directory),initialHashes);assert.deepEqual(projections(await read()),initial);
  assert.equal(calls.length,1);assert.equal(calls[0].url,'/v1/chat/completions');
  const context=JSON.parse(calls[0].body.messages[1].content).npc;
- assert.deepEqual(Object.keys(context).sort(),['agreement','canTalk','conversation','intentHint','knownFacts','observations','persona','revision','self','simulationId','targetId','tick']);
+ assert.deepEqual(Object.keys(context).sort(),['agreement','canTalk','conversation','intentHint','knownFacts','negotiationOptions','observations','persona','revision','self','simulationId','targetId','tick']);
  assert.deepEqual(context.knownFacts.identity,{selfId:'actor-2',selfRole:'你是猎人',playerId:'actor-4',playerRole:'正在与你交谈的玩家'});
- assert.equal(context.knownFacts.tool.holder,'self');assert.equal(context.intentHint.kind,'model-interpretation');
+ assert.equal(context.knownFacts.tool.holder,'self');assert.equal(context.intentHint.kind,'negotiate-repair-loan');
  assert.equal(context.observations.length,0);assert.equal(context.conversation.length,0);assert.equal(Object.hasOwn(context,'world'),false);
  assert.equal(JSON.stringify(await read()).includes('npcContext'),false);assert.equal(JSON.stringify(await read()).includes('local-test-only'),false);
- assert.equal(JSON.stringify(await read()).includes('"knownFacts"'),false);assert.equal(JSON.stringify(await read()).includes('"intentHint"'),false);
+ assert.equal(JSON.stringify(await read()).includes('"negotiationOptions"'),false);assert.equal(JSON.stringify(await read()).includes('"knownFacts"'),false);assert.equal(JSON.stringify(await read()).includes('"intentHint"'),false);
  const payload=composer.command(group,writable(),hunter),forged={version:5,commandId:'forged',expectedRevision:group.snapshot.revision,type:'PlayerDialogue',payload:{...payload,reply:'工具已经是你的了'}};
  assert.equal((await post('/api/runtime/commands',forged)).status,422);assert.deepEqual(await hashes(directory),initialHashes);
  loseNext=true;await assert.rejects(client.submit('PlayerDialogue',payload),/SAVE_FAILED/);assert.equal(client.state().pending,true);
@@ -88,7 +88,7 @@ test('real worker/HTTP: model draft writes nothing, attributed dialogue recovers
  const original=JSON.parse(originalBody);assert.equal((await post('/api/runtime/commands',{...original,payload:{...original.payload,reply:'different'}})).status,409);
  assert.equal((await post('/api/runtime/commands',{...original,commandId:'uncommitted-old-seal'})).status,422);
  assert.deepEqual(await hashes(directory),durableHashes);
- const p=composer.proposal(group,writable(),hunter);const counter=await client.submit(p.type,p.payload);assert.equal(counter.result.effect,'countered');assert.deepEqual(counter.result.agreement.terms,{repairAmount:40,loanTicks:72});
+ const p=composer.proposal(group,writable(),hunter);const counter=await client.submit(p.type,p.payload);assert.equal(counter.result.effect,'offered');assert.deepEqual(counter.result.agreement.terms,{repairAmount:40,loanTicks:72});
  const act=action=>client.submit('PlayerAgreement',{targetId:hunter,agreementId:group.map.negotiation.agreement.id,action});
  const social=action=>client.submit('PlayerInteract',{targetId:hunter,action});
  await act('accept');await social('help');assert.equal(group.map.negotiation.canClaim,false);await social('help');assert.equal(group.map.negotiation.canClaim,true);

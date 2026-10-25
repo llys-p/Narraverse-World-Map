@@ -1,0 +1,31 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=2",
+    "tests/simulation/npc-memory.test.mjs",
+    "tests/simulation/npc-memory-service.test.mjs",
+    "tests/simulation/npc-social.test.mjs",
+    "tests/simulation/npc-negotiation.test.mjs",
+    "tests/simulation/npc-dialogue-grounding.test.mjs",
+    "tests/simulation/npc-language-provider.test.mjs",
+    "tests/simulation/npc-deepseek-provider.test.mjs",
+    "tests/simulation/npc-dialogue-evaluation.test.mjs",
+    "tests/simulation/npc-negotiation-service.test.mjs",
+    "tests/simulation/campaign-npc-agency.test.mjs",
+    "tests/simulation/campaign-map.test.mjs",
+    "tests/simulation/npc-dialogue-diagnostics.test.mjs",
+    "tests/simulation/npc-dialogue-options.test.mjs",
+    "tests/simulation/npc-memory-dialogue-evaluation.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 95807.111,
+  "cpuMs": null,
+  "hardLimitMs": 360000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

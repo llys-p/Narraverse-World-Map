@@ -1,0 +1,49 @@
+TAP version 13
+# Subtest: invalid outputs retain distinct safe categories, no raw content, and no automatic retries
+not ok 1 - invalid outputs retain distinct safe categories, no raw content, and no automatic retries
+  ---
+  duration_ms: 10.205809
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-dialogue-diagnostics.test.mjs:10:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'reason')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-dialogue-diagnostics.test.mjs:30:85)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: unknown finish values and transport errors never become diagnostic text; successful outputs have no failure
+not ok 2 - unknown finish values and transport errors never become diagnostic text; successful outputs have no failure
+  ---
+  duration_ms: 2.645047
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-dialogue-diagnostics.test.mjs:37:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + null
+    - 'network-error'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'network-error'
+  actual: ~
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-dialogue-diagnostics.test.mjs:42:47)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 101.153666

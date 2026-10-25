@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/check-npc9-legacy.mjs",
+    "<baseline>",
+    "<candidate>/artifacts/npc9/legacy.json"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 10576.563,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

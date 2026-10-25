@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-npc-dialogue.mjs",
+    "--suite",
+    "memory-v1",
+    "--out",
+    "artifacts/npc9/memory-plan-final.json"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 11130.494,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
