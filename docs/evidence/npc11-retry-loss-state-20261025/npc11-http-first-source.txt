@@ -1,0 +1,67 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import http from 'node:http';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {startRuntimeServer} from '../../runtime-server.mjs';
+import {loadServiceCommit} from '../../runtime/service/service-commit.mjs';
+import {coherent} from '../../demo-runtime-bridge.mjs';
+import {createNpcDialogue} from '../../demo-npc-dialogue.mjs';
+
+async function hashes(directory){
+ const names=(await fs.readdir(directory)).filter(n=>/^service-commit-r\d+\.json$/.test(n)).sort();
+ return Object.fromEntries(await Promise.all(names.map(async n=>[n,createHash('sha256').update(await fs.readFile(path.join(directory,n))).digest('hex')])));
+}
+
+test('real HTTP/worker: retry invalid output, recover a lost response once, and persist recovered-loss context after legitimate lending',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'narraverse-npc11-')),seen=[],requests=[];let server,drop=false,id=0;
+ const mock=http.createServer(async(req,res)=>{
+  const chunks=[];for await(const c of req)chunks.push(c);
+  const ctx=JSON.parse(JSON.parse(Buffer.concat(chunks)).messages[1].content).npc;seen.push(ctx);
+  const loss=ctx.memoryUpdates.find(m=>m.topic==='loss');
+  const content=seen.length===1?'invalid JSON':JSON.stringify({reply:'受控回复：那次失物已经归还，现在是另一次正常借用。',memoryRefs:loss.followUpRefs,proposal:null});
+  res.setHeader('Content-Type','application/json');res.end(JSON.stringify({choices:[{finish_reason:'stop',message:{content}}]}));
+ });
+ await new Promise(r=>mock.listen(0,'127.0.0.1',r));
+ t.after(async()=>{if(server)await server.close();await new Promise(r=>mock.close(r));await fs.rm(directory,{recursive:true,force:true});});
+ const options={directory,port:0,writable:true,continuousMarch:true};
+ const npcLanguage={enabled:true,baseURL:`http://127.0.0.1:${mock.address().port}/v1`,model:'controlled-npc11-http',apiKey:'local-test-only'};
+ server=await startRuntimeServer({...options,profile:'campaign-memory-village',seed:42,npcLanguage});
+ const composer=createNpcDialogue({newId:()=>`npc11-http-${++id}`,fetchImpl:async(route,o)=>{
+  requests.push(o.body);const response=await fetch(server.url+route,o);
+  if(drop){drop=false;await response.arrayBuffer();throw Error('simulated response lost after server completed');}return response;
+ }});
+ const post=(route,body)=>fetch(server.url+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ const read=async()=>{const response=await fetch(server.url+'/api/runtime/demo-state');assert.equal(response.status,200);const g=await response.json();assert.equal(coherent(g),true);return g;};
+ let group=await read(),serial=0;composer.observe(group,'actor-2');
+ const command=async(type,payload)=>{
+  const dto={version:5,commandId:'npc11-action-'+(++serial),expectedRevision:group.snapshot.revision,type,payload};
+  const response=await post('/api/runtime/commands',dto);assert.equal(response.status,200);const receipt=await response.json();assert.equal(receipt.outcome,'succeeded');group=await read();composer.observe(group,'actor-2');return {dto,receipt};
+ };
+ const social=action=>command('PlayerInteract',{targetId:'actor-2',action});
+ await command('AdvanceTime',{ticks:112});await command('MarchSet',{x:5,y:8});
+ while(group.map.order.status!=='arrived')await command(group.map.order.status==='paused'?'MarchResume':'MarchStep',{});
+ await social('steal');await command('AdvanceTime',{ticks:156-group.snapshot.tick});await social('return');await social('help');
+ assert.equal((await social('ask-help')).receipt.result.effect,'lent');
+ const before=structuredClone(group),beforeHashes=await hashes(directory);
+ composer.edit('你丢过的工具后来归还了吗？',group,'actor-2');
+ await composer.generate(group,true,'actor-2');assert.equal(composer.view(group,true,'actor-2').status,'error');assert.equal(seen.length,1);
+ drop=true;await composer.generate(group,true,'actor-2');assert.equal(seen.length,2);assert.notEqual(requests[0],requests[1]);
+ assert.equal(composer.view(group,true,'actor-2').generateLabel,'重取本次结果');
+ await composer.generate(group,true,'actor-2');assert.equal(seen.length,2);assert.equal(requests[1],requests[2]);assert.equal(composer.view(group,true,'actor-2').canCommit,true);
+ await composer.generate(group,true,'actor-2');assert.equal(seen.length,3);assert.notEqual(requests[2],requests[3]);
+ assert.deepEqual(await read(),before);assert.deepEqual(await hashes(directory),beforeHashes);
+ for(const ctx of seen){assert.equal(ctx.knownFacts.tool.holder,'player');assert.equal(ctx.memoryUpdates.find(m=>m.topic==='loss').status,'recovered');assert.equal(ctx.observations.find(m=>m.kind==='missing').actorId,null);assert.equal(ctx.observations.some(m=>m.kind==='steal'),false);}
+ const confirmed=await command('PlayerDialogue',composer.command(group,true,'actor-2'));composer.confirmed(confirmed.receipt,confirmed.dto,group);
+ assert.equal(composer.view(group,true,'actor-2').canAct,false);
+ const filename=path.join(directory,`service-commit-r${group.snapshot.revision}.json`),saved=await loadServiceCommit(filename),memory=saved.bundle.snapshot.world.mapModel.memoryModel;
+ assert.equal(memory.actors[1].speech.length,1);assert.equal(memory.actors[1].episodes.some(m=>m.kind==='steal'),false);
+ for(const marker of ['memoryUpdates','knownFacts','recallFocus','local-test-only'])assert.equal(JSON.stringify(group).includes(marker),false);
+ const durable=structuredClone(group),durableHashes=await hashes(directory);
+ await server.close();server=await startRuntimeServer(options);group=await read();
+ const retry=await post('/api/runtime/commands',confirmed.dto);assert.equal(retry.status,200);assert.deepEqual(await retry.json(),confirmed.receipt);
+ for(const key of ['snapshot','map','player','scene','encounter'])assert.deepEqual(group[key],durable[key]);
+ assert.deepEqual(await hashes(directory),durableHashes);assert.deepEqual((await loadServiceCommit(filename)).bundle.snapshot.world.mapModel.memoryModel,memory);assert.equal(seen.length,3);
+});

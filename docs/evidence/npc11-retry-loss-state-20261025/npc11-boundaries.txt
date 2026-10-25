@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: a new explicit generation after invalid output or success uses a fresh ID without editing the utterance
+ok 1 - a new explicit generation after invalid output or success uses a fresh ID without editing the utterance
+  ---
+  duration_ms: 15.969272
+  type: 'test'
+  ...
+# Subtest: lost successful response is recovered with identical bytes, then an explicit new generation can call again
+ok 2 - lost successful response is recovered with identical bytes, then an explicit new generation can call again
+  ---
+  duration_ms: 1.958451
+  type: 'test'
+  ...
+# Subtest: only known terminal errors retire an ID; busy, budget, unreadable or untrusted responses keep it
+ok 3 - only known terminal errors retire an ID; busy, budget, unreadable or untrusted responses keep it
+  ---
+  duration_ms: 2.630636
+  type: 'test'
+  ...
+# Subtest: an actually recovered loss stays recovered when the tool is subsequently legitimately lent
+ok 4 - an actually recovered loss stays recovered when the tool is subsequently legitimately lent
+  ---
+  duration_ms: 7824.89636
+  type: 'test'
+  ...
+# Subtest: synthetic source boundaries: a newer loss stays unresolved and missing return detail is not inferred from current possession
+ok 5 - synthetic source boundaries: a newer loss stays unresolved and missing return detail is not inferred from current possession
+  ---
+  duration_ms: 0.267395
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7973.13102

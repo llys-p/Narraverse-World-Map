@@ -1,0 +1,28 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createMemoryCampaignVillage,campaignSystems} from '../../runtime/fixtures/campaign-village.mjs';
+import {createAuditedBundle,deriveCampaignBundle,validateBundle} from '../../runtime/core/world-state.mjs';
+import {npcDialogueContext} from '../../runtime/core/npc-negotiation.mjs';
+import {providerContext} from '../../runtime/service/npc-language-provider.mjs';
+
+test('an actually recovered loss stays recovered when the tool is subsequently legitimately lent',()=>{
+ const options={rulesVersion:'d-campaign-v1',systems:campaignSystems()};
+ let b=createAuditedBundle(createMemoryCampaignVillage(42,'npc11-loss').bundle,options),n=0;
+ const act=(type,payload)=>{const r=deriveCampaignBundle(b,{version:5,commandId:'loss-'+(++n),expectedRevision:b.snapshot.revision,type,payload});assert.equal(r.receipt.outcome,'succeeded');b=r.bundle;return r.receipt;};
+ const social=action=>act('PlayerInteract',{targetId:'actor-2',action});
+ const read=()=>providerContext(npcDialogueContext(b),'你丢过的工具后来归还了吗？');
+ act('AdvanceTime',{ticks:112});act('MarchSet',{x:5,y:8});
+ while(b.snapshot.world.mapModel.order.status!=='arrived')act(b.snapshot.world.mapModel.order.status==='paused'?'MarchResume':'MarchStep',{});
+ social('steal');act('AdvanceTime',{ticks:156-b.snapshot.tick});social('return');
+ const recovered=read().memoryUpdates.find(m=>m.topic==='loss');assert.equal(recovered.status,'recovered');
+ const history=structuredClone(b.snapshot.world.mapModel.memoryModel.actors[1].episodes);
+ social('help');assert.equal(social('ask-help').result.effect,'lent');
+ const c=read();assert.equal(c.knownFacts.tool.holder,'player');
+ assert.equal(c.memoryUpdates.find(m=>m.topic==='loss').status,'recovered');
+ assert.deepEqual(c.memoryUpdates.find(m=>m.topic==='loss').causeRefs,recovered.causeRefs);
+ assert.deepEqual(c.memoryUpdates.find(m=>m.topic==='loss').followUpRefs,recovered.followUpRefs);
+ assert.equal(c.observations.find(m=>m.kind==='missing').actorId,null);
+ assert.equal(c.observations.some(m=>m.kind==='steal'),false);
+ for(const old of history)assert.deepEqual(b.snapshot.world.mapModel.memoryModel.actors[1].episodes.find(m=>m.eventSeq===old.eventSeq),old);
+ validateBundle(b,options);
+});

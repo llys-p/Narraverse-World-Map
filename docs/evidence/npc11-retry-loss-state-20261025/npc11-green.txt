@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: a new explicit generation after invalid output or success uses a fresh ID without editing the utterance
+ok 1 - a new explicit generation after invalid output or success uses a fresh ID without editing the utterance
+  ---
+  duration_ms: 16.415945
+  type: 'test'
+  ...
+# Subtest: an actually recovered loss stays recovered when the tool is subsequently legitimately lent
+ok 2 - an actually recovered loss stays recovered when the tool is subsequently legitimately lent
+  ---
+  duration_ms: 6892.862786
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7035.91576

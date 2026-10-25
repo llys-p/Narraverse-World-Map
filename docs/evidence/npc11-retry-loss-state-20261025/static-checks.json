@@ -1,0 +1,84 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "demo-npc-dialogue.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "demo-runtime-prototype.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/core/npc-memory.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc11-evidence.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc11-legacy.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-dialogue-retry.test.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-loss-history.test.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-retry-loss-service.test.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "credential-pattern-scan",
+        "changed-and-new-evidence-files"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

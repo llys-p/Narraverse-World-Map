@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: real HTTP/worker: retry invalid output, recover a lost response once, and persist recovered-loss context after legitimate lending
+ok 1 - real HTTP/worker: retry invalid output, recover a lost response once, and persist recovered-loss context after legitimate lending
+  ---
+  duration_ms: 118509.020844
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 118672.248946

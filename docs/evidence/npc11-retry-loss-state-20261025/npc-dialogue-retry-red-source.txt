@@ -1,0 +1,25 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createNpcDialogue} from '../../demo-npc-dialogue.mjs';
+import {createNpcLanguageProvider} from '../../runtime/service/npc-language-provider.mjs';
+
+const context={simulationId:'npc11-retry',revision:1,tick:0,targetId:'actor-2',canTalk:true,persona:'猎人',self:{knownHolder:'actor-2',knownCondition:60,trust:50,fear:0,grievance:0},agreement:null,conversation:[],observations:[]};
+const group=()=>({snapshot:{simulationId:context.simulationId,revision:1,tick:0},capabilities:{npcLanguage:{enabled:true}},map:{negotiation:{canTalk:true,canPropose:true}}});
+const output={reply:'受控回复。',memoryRefs:[],proposal:null};
+const response=value=>Response.json({choices:[{finish_reason:'stop',message:{content:typeof value==='string'?value:JSON.stringify(value)}}]});
+
+test('a new explicit generation after invalid output or success uses a fresh ID without editing the utterance',async()=>{
+ let calls=0,ids=0;const requests=[];
+ const provider=createNpcLanguageProvider({enabled:true,baseURL:'http://127.0.0.1:19988',model:'controlled-retry',apiKey:''},{fetchImpl:async()=>{calls++;return response(calls===1?'invalid JSON':output);}});
+ const c=createNpcDialogue({newId:()=>`retry-${++ids}`,fetchImpl:async(_url,o)=>{
+  const req=JSON.parse(o.body);requests.push(req);
+  try{return Response.json(await provider.compose(req,context));}catch(e){return Response.json({error:{code:e.code}},{status:502});}
+ }}),g=group();
+ try{
+  c.edit('最近怎么样？',g,'actor-2');await c.generate(g,true,'actor-2');assert.equal(c.view(g,true,'actor-2').status,'error');assert.equal(calls,1);
+  await c.generate(g,true,'actor-2');assert.equal(calls,2);assert.equal(c.view(g,true,'actor-2').status,'preview');
+  await c.generate(g,true,'actor-2');assert.equal(calls,3);
+  assert.equal(new Set(requests.map(r=>r.requestId)).size,3);assert.ok(requests.every(r=>r.text==='最近怎么样？'));
+  assert.equal(provider.verify(g.snapshot.simulationId,{type:'PlayerDialogue',expectedRevision:1,payload:c.command(g,true,'actor-2')}),true);
+ }finally{provider.close();}
+});
