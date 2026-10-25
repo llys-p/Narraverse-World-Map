@@ -1,4 +1,5 @@
 import {cloneData,fields,denseArray,requireCondition} from './data-contract.mjs';
+import {repairLoanTerms} from './npc-negotiation-terms.mjs';
 import {auditSocial,rememberSocial} from './npc-social.mjs';
 import {npcMemoryFor,NPC_MEMORY_VERSION} from './npc-memory.mjs';
 import {isNegotiationMapVersion,NEGOTIATION_COMMANDS,validNegotiationPayload,validAgreement,validDialogueTurn,validNegotiationResult} from '../../runtime-negotiation-contract.mjs';
@@ -52,9 +53,8 @@ export function commitNegotiation(world,dto,tick,eventSeq){
    // A refused counterproposal must not leave an earlier offer silently usable.
    if(m.agreement?.status==='offered')Object.assign(m.agreement,{status:'cancelled',closedTick:tick,eventSeq});
   }else{
-   const repairAmount=Math.min(100-asset(world).condition,asset(world).condition<=60?40:20);
    // Tool damage/repair changes in multiples of 20 in this bounded world.
-   const terms={repairAmount,loanTicks:Math.min(p.terms.loanTicks,h.trust>=65?144:72)};
+   const terms=repairLoanTerms(asset(world).condition,h.trust,p.terms.loanTicks),repairAmount=terms.repairAmount;
    effect=terms.repairAmount===p.terms.repairAmount&&terms.loanTicks===p.terms.loanTicks?'offered':'countered';
    m.agreement={id:dto.commandId,terms,targetCondition:asset(world).condition+repairAmount,status:'offered',offeredTick:tick,expiresTick:tick+144,
     acceptedTick:null,repairProgress:0,claimTick:null,dueTick:null,closedTick:null,eventSeq};

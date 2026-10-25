@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {createNegotiationCampaignVillage,campaignSystems} from '../fixtures/campaign-village.mjs';
+import {createNegotiationCampaignVillage,createMemoryCampaignVillage,campaignSystems} from '../fixtures/campaign-village.mjs';
 import {createAuditedBundle,deriveCampaignBundle,validateBundle} from '../core/world-state.mjs';
 import {canonicalJson,cloneData,fields,requireCondition} from '../core/data-contract.mjs';
 import {npcDialogueContext} from '../core/npc-negotiation.mjs';
@@ -20,7 +20,7 @@ function validStep(s){
  else{fields(s,['type','payload']);requireCondition(s.type==='PlayerInteract'?validSocialPayload(s.payload):s.type==='PlayerNegotiate'&&validNegotiationPayload(s.type,s.payload),'Unsupported scripted action');}
 }
 export function validateDialogueSuite(suite){
- fields(suite,['schemaVersion','suiteId','provenance','cases']);requireCondition(suite.schemaVersion===1&&dialogueText(suite.suiteId,80)&&dialogueText(suite.provenance,300),'Invalid suite');list(suite.cases,16);requireCondition(suite.cases.length>0,'Empty suite');
+ fields(suite,['schemaVersion','suiteId','provenance','cases',...(suite.schemaVersion===2?['fixtureVersion']:[])]);requireCondition((suite.schemaVersion===1||suite.schemaVersion===2&&suite.fixtureVersion==='5')&&dialogueText(suite.suiteId,80)&&dialogueText(suite.provenance,300),'Invalid suite');list(suite.cases,16);requireCondition(suite.cases.length>0,'Empty suite');
  const ids=new Set();let count=0;
  for(const c of suite.cases){
   fields(c,['id','title','setup','turns']);requireCondition(typeof c.id==='string'&&/^[a-z][a-z0-9-]{0,30}$/.test(c.id)&&!ids.has(c.id)&&dialogueText(c.title,100),'Invalid case identity');ids.add(c.id);
@@ -70,14 +70,15 @@ export async function runDialogueEvaluation({suite,selection,mode='plan',provide
  const selected=selectDialogueCases(suite,selection),planned=selected.reduce((n,c)=>n+c.turns.length,0);
  requireCondition(modes.includes(mode),'Invalid evaluation mode');
  if(mode!=='plan')requireCondition(provider?.enabled===true&&Number.isSafeInteger(maxRequests)&&maxRequests>=planned&&maxRequests<=32,'Explicit enabled provider and sufficient request budget required');
- const report={schemaVersion:1,suiteId:suite.suiteId,suiteSha256:digest(suite),mode,realProviderAttempted:false,semanticVerdict:'not-evaluated',
+ const fixtureVersion=suite.fixtureVersion??'4',factory=fixtureVersion==='5'?createMemoryCampaignVillage:createNegotiationCampaignVillage;
+ const report={schemaVersion:1,fixtureVersion,suiteId:suite.suiteId,suiteSha256:digest(suite),mode,realProviderAttempted:false,semanticVerdict:'not-evaluated',
   notice:mode==='plan'?'离线计划；未调用模型，未检查模型语言质量。':mode==='controlled-test'?'受控协议测试；回复由测试夹具提供，不代表真实模型能力。':'真实模型输出；自动检查不能替代人工语义复核。',
   plannedRequests:planned,requestLimit:mode==='plan'?0:maxRequests,completed:false,cases:[]};
  let attempted=0;
  for(const c of selected){
   const opaqueId=digest(c.id).slice(0,12);
-  let bundle=createAuditedBundle(createNegotiationCampaignVillage(42,'npc5-world-'+opaqueId).bundle,options),serial=0,blocked=false;
-  const entry={id:c.id,title:c.title,setup:cloneData(c.setup),turns:[]};report.cases.push(entry);
+  let bundle=createAuditedBundle(factory(42,'npc5-world-'+opaqueId).bundle,options),serial=0,blocked=false;
+  const entry={id:c.id,title:c.title,fixtureVersion:bundle.snapshot.fixtureVersion,setup:cloneData(c.setup),turns:[]};report.cases.push(entry);
   const action=(type,payload,trail)=>{
    const dto={version:5,commandId:'eval-'+opaqueId+'-'+(++serial),expectedRevision:bundle.snapshot.revision,type,payload};
    const result=deriveCampaignBundle(bundle,dto);requireCondition(result.receipt.outcome==='succeeded','Scripted scenario action was rejected');bundle=result.bundle;
@@ -110,7 +111,9 @@ export async function runDialogueEvaluation({suite,selection,mode='plan',provide
      row.checks.push({name:'generationDidNotWriteWorld',passed:digest(bundle)===original});
      row.response={reply:draft.payload.reply,memoryRefs:cloneData(draft.payload.memoryRefs),proposal:cloneData(draft.payload.proposal)};
      row.checks.push(...assessDialogueProposal(draft.payload,row.context,t.expect));
+     const episodesBefore=digest(bundle.snapshot.world.mapModel.memoryModel?.actors.map(a=>({episodes:a.episodes,forgottenEpisodes:a.forgottenEpisodes}))??null);
      const receipt=action('PlayerDialogue',draft.payload);
+     if(fixtureVersion==='5')row.checks.push({name:'speechDidNotCreateEpisodes',passed:digest(bundle.snapshot.world.mapModel.memoryModel.actors.map(a=>({episodes:a.episodes,forgottenEpisodes:a.forgottenEpisodes})))===episodesBefore});
      row.committedSpeech={eventSeq:receipt.result.sourceEventSeq,revision:bundle.snapshot.revision,tick:bundle.snapshot.tick};
      row.checks.push({name:'speechDidNotExecuteAction',passed:digest(facts(bundle))===before});
      row.status=row.checks.every(x=>x.passed)?'automatic-pass':'automatic-fail';
@@ -130,5 +133,5 @@ const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>'
 export function renderDialogueReport(report){
  const json=v=>'<pre>'+escape(JSON.stringify(v,null,2))+'</pre>';
  const status={'not-run':'未调用模型','blocked':'被前序失败阻塞','fixture-failed':'场景前置条件失败','provider-failed':'调用或输出无效','automatic-pass':'自动检查通过 · 语义待复核','automatic-fail':'自动检查未通过'};
- return `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>NPC 对话评测记录</title><style>body{font:16px/1.65 system-ui,sans-serif;color:#e9edf3;background:#131923;max-width:1000px;margin:auto;padding:32px}h1,h2{line-height:1.25}section,article{border:1px solid #3b485c;border-radius:8px;padding:20px;margin:20px 0}article{background:#1b2534}blockquote{border-left:3px solid #85aaf4;padding:8px 16px;white-space:pre-wrap}pre{overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:13px}summary{cursor:pointer;color:#a8c8ff}.notice{padding:16px;border-left:4px solid #e1b862;background:#302a1d}.muted{color:#b0bdce}li{margin:8px 0}</style><h1>单猎人连续对话评测</h1><p class="notice">${escape(report.notice)}<br>人工语义结论：${escape(report.semanticVerdict)}；报告完成：${report.completed?'是':'否'}。</p><p class="muted">场景集：${escape(report.suiteId)} · 模式：${escape(report.mode)} · 请求上限：${report.requestLimit}。缺失 usage 不按零消耗计算；本报告不估算费用。</p>${json(report.counts)}${report.cases.map(c=>`<section><h2>${escape(c.title)}</h2><p>世界重放审计：${escape(c.worldReplayAudit??'待运行')}</p><details><summary>测试脚本实际选择的前置动作</summary>${json(c.setupReceipts)}</details>${c.turns.map(t=>`<article><h3>${escape(t.id)} · ${escape(status[t.status]??t.status)}</h3><p>玩家</p><blockquote>${escape(t.text)}</blockquote><p>猎人${report.mode==='controlled-test'?'（受控测试回复）':''}</p><blockquote>${escape(t.response?.reply??'尚无模型回复')}</blockquote><p>建议尚未自动执行：${escape(t.response?JSON.stringify(t.response.proposal):'未运行')}</p><details><summary>确定性检查、记忆来源与耗时</summary>${json({preconditions:t.preconditions,checks:t.checks,memoryRefs:t.response?.memoryRefs,metrics:t.metrics,errorCode:t.errorCode})}</details><details><summary>该轮准备的猎人视角与脚本动作</summary>${json({context:t.context,scriptedReceipts:t.scriptedReceipts})}</details><p><strong>待人工核对</strong></p><ul>${t.humanReview.questions.map(q=>'<li>'+escape(q)+'</li>').join('')}</ul></article>`).join('')}</section>`).join('')}<p class="muted">公开开发场景，不是盲测或独立金标。建议/引用格式检查通过，不等于角色理解、措辞与事实判断通过。</p></html>`;
+ return `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>NPC 对话评测记录</title><style>body{font:16px/1.65 system-ui,sans-serif;color:#e9edf3;background:#131923;max-width:1000px;margin:auto;padding:32px}h1,h2{line-height:1.25}section,article{border:1px solid #3b485c;border-radius:8px;padding:20px;margin:20px 0}article{background:#1b2534}blockquote{border-left:3px solid #85aaf4;padding:8px 16px;white-space:pre-wrap}pre{overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:13px}summary{cursor:pointer;color:#a8c8ff}.notice{padding:16px;border-left:4px solid #e1b862;background:#302a1d}.muted{color:#b0bdce}li{margin:8px 0}</style><h1>单猎人连续对话评测</h1><p class="notice">${escape(report.notice)}<br>人工语义结论：${escape(report.semanticVerdict)}；报告完成：${report.completed?'是':'否'}。</p><p class="muted">场景集：${escape(report.suiteId)} · 世界fixture：${escape(report.fixtureVersion??'4')} · 模式：${escape(report.mode)} · 请求上限：${report.requestLimit}。缺失 usage 不按零消耗计算；本报告不估算费用。</p>${json(report.counts)}${report.cases.map(c=>`<section><h2>${escape(c.title)}</h2><p>世界重放审计：${escape(c.worldReplayAudit??'待运行')}</p><details><summary>测试脚本实际选择的前置动作</summary>${json(c.setupReceipts)}</details>${c.turns.map(t=>`<article><h3>${escape(t.id)} · ${escape(status[t.status]??t.status)}</h3><p>玩家</p><blockquote>${escape(t.text)}</blockquote><p>猎人${report.mode==='controlled-test'?'（受控测试回复）':''}</p><blockquote>${escape(t.response?.reply??'尚无模型回复')}</blockquote><p>建议尚未自动执行：${escape(t.response?JSON.stringify(t.response.proposal):'未运行')}</p><details><summary>确定性检查、记忆来源与耗时</summary>${json({preconditions:t.preconditions,checks:t.checks,memoryRefs:t.response?.memoryRefs,metrics:t.metrics,errorCode:t.errorCode})}</details><details><summary>该轮准备的猎人视角与脚本动作</summary>${json({context:t.context,scriptedReceipts:t.scriptedReceipts})}</details><p><strong>待人工核对</strong></p><ul>${t.humanReview.questions.map(q=>'<li>'+escape(q)+'</li>').join('')}</ul></article>`).join('')}</section>`).join('')}<p class="muted">公开开发场景，不是盲测或独立金标。建议/引用格式检查通过，不等于角色理解、措辞与事实判断通过。</p></html>`;
 }

@@ -1,0 +1,1 @@
+{"status":"plan-ready","mode":"plan","counts":{"planned":17,"attempted":0,"automaticPassed":0,"automaticFailed":0,"providerFailed":0,"fixtureFailed":0,"blocked":0,"notRun":17},"semanticVerdict":"not-evaluated","output":"<candidate>/artifacts/npc9/memory-plan.json","html":"<candidate>/artifacts/npc9/memory-plan.html"}

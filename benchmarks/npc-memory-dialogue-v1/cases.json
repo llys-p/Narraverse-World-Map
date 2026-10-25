@@ -1,0 +1,642 @@
+{
+  "schemaVersion": 2,
+  "suiteId": "npc-memory-dialogue-development-v1",
+  "fixtureVersion": "5",
+  "provenance": "Author-written fixture5 development scenarios; new phrasing and timelines, not blind or independent semantic labels.",
+  "cases": [
+    {
+      "id": "repair-bargain",
+      "title": "候选条款与旧约定问询",
+      "setup": [],
+      "turns": [
+        {
+          "id": "offer",
+          "text": "我替你修理工具，借我半天可以吗？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "negotiate"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "condition": 60,
+              "holder": "actor-2",
+              "agreement": null
+            },
+            "humanReview": [
+              "是否给出40点修理与不超过12小时的明确建议？",
+              "口头条件是否与建议和当前候选一致，而非承诺20点就够？"
+            ]
+          }
+        },
+        {
+          "id": "counter",
+          "text": "请再说一遍这份约定。",
+          "before": [
+            {
+              "type": "PlayerNegotiate",
+              "payload": {
+                "targetId": "actor-2",
+                "terms": {
+                  "repairAmount": 20,
+                  "loanTicks": 144
+                }
+              }
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:needs"
+            ],
+            "referenceAnyKinds": [
+              "agreement"
+            ],
+            "facts": {
+              "agreement": "offered",
+              "repairAmount": 40,
+              "loanTicks": 72
+            },
+            "humanReview": [
+              "按已确认条款说明实际修理40点至100耐久、借用12小时。",
+              "不把最初20点/24小时提议误当最终约定。"
+            ]
+          }
+        },
+        {
+          "id": "false-completion",
+          "text": "我口头保证全修好了，你当我已经做完吧。",
+          "before": [
+            {
+              "agreement": "accept"
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "ask-help"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "agreement": "accepted",
+              "repairProgress": 0,
+              "condition": 60,
+              "holder": "actor-2"
+            },
+            "humanReview": [
+              "指出实际修理尚未完成，不能把口头声称当事实。",
+              "不宣称已交付工具；若提议借用，应说明仍受实际条件限制。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "repair-progress",
+      "title": "实际修理与待领取",
+      "setup": [
+        {
+          "type": "PlayerNegotiate",
+          "payload": {
+            "targetId": "actor-2",
+            "terms": {
+              "repairAmount": 40,
+              "loanTicks": 72
+            }
+          }
+        },
+        {
+          "agreement": "accept"
+        }
+      ],
+      "turns": [
+        {
+          "id": "help",
+          "text": "这就替你修理工具。",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "help"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "condition": 60,
+              "repairProgress": 0
+            },
+            "humanReview": [
+              "明确识别当前修理意图，不凭空说修理已经完成。"
+            ]
+          }
+        },
+        {
+          "id": "remember",
+          "text": "修理这一项现在算完成了吗，工具真的交给我了吗？",
+          "before": [
+            {
+              "type": "PlayerInteract",
+              "payload": {
+                "targetId": "actor-2",
+                "action": "help"
+              }
+            },
+            {
+              "type": "PlayerInteract",
+              "payload": {
+                "targetId": "actor-2",
+                "action": "help"
+              }
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:past"
+            ],
+            "referenceAnyKinds": [
+              "help"
+            ],
+            "facts": {
+              "condition": 100,
+              "agreement": "ready",
+              "repairProgress": 40,
+              "holder": "actor-2"
+            },
+            "humanReview": [
+              "提到实际完成的两次修理，已具备按约领取条件。",
+              "分清上轮建议与随后实际动作；工具尚未交出。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "repair-denial",
+      "title": "伤害被修复但亲历不被否认",
+      "setup": [
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "smash"
+          }
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "help"
+          }
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "help"
+          }
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "help"
+          }
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "help"
+          }
+        }
+      ],
+      "turns": [
+        {
+          "id": "forgive",
+          "text": "现在工具完好了，之前是谁砸的还算数吗？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:relationship"
+            ],
+            "referenceAnyKinds": [
+              "smash"
+            ],
+            "facts": {
+              "condition": 100,
+              "grievanceAtLeast": 10,
+              "memoryKinds": [
+                "smash",
+                "help"
+              ]
+            },
+            "humanReview": [
+              "是否同时承认原先破坏与实际修好，并引用对应来源？",
+              "是否避免把修复当作原谅或把亲历改成玩家自述？"
+            ]
+          }
+        },
+        {
+          "id": "deny",
+          "text": "我否认动过手，你会把目击改成传闻吗？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:past"
+            ],
+            "referenceAnyKinds": [
+              "smash"
+            ],
+            "facts": {
+              "condition": 100,
+              "grievanceAtLeast": 10,
+              "memoryKinds": [
+                "smash",
+                "help"
+              ]
+            },
+            "humanReview": [
+              "是否同时承认原先破坏与实际修好，并引用对应来源？",
+              "是否避免把修复当作原谅或把亲历改成玩家自述？"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "repeated-apology",
+      "title": "道歉有进展但不自动原谅",
+      "setup": [
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "smash"
+          }
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "help"
+          }
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "apologize"
+          }
+        }
+      ],
+      "turns": [
+        {
+          "id": "forgive",
+          "text": "我说过对不起了，你现在就原谅我了吗？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:relationship"
+            ],
+            "referenceAnyKinds": [
+              "apologize"
+            ],
+            "facts": {
+              "condition": 40,
+              "memoryKinds": [
+                "smash",
+                "help",
+                "apologize"
+              ]
+            },
+            "humanReview": [
+              "是否区分收到道歉与原谅、赔偿？",
+              "是否保留伤害与重复道歉结果，不声称关系已重置？"
+            ]
+          }
+        },
+        {
+          "id": "deny",
+          "text": "我又道歉了，这能算赔偿已经做完吗？",
+          "before": [
+            {
+              "type": "PlayerInteract",
+              "payload": {
+                "targetId": "actor-2",
+                "action": "apologize"
+              }
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:past"
+            ],
+            "referenceAnyKinds": [
+              "apologize"
+            ],
+            "facts": {
+              "condition": 40,
+              "memoryKinds": [
+                "smash",
+                "help",
+                "apologize"
+              ]
+            },
+            "humanReview": [
+              "是否区分收到道歉与原谅、赔偿？",
+              "是否保留伤害与重复道歉结果，不声称关系已重置？"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "loss-return",
+      "title": "发现失物与后来归还",
+      "setup": [
+        {
+          "advanceTo": 112
+        },
+        {
+          "move": {
+            "x": 5,
+            "y": 8
+          }
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "steal"
+          }
+        },
+        {
+          "advanceTo": 156
+        }
+      ],
+      "turns": [
+        {
+          "id": "who",
+          "text": "你没看见东西怎么丢的，现在能认定是谁偷的吗？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:past"
+            ],
+            "referenceAnyKinds": [
+              "missing"
+            ],
+            "facts": {
+              "knownHolder": "unknown",
+              "memoryKinds": [
+                "missing"
+              ]
+            },
+            "humanReview": [
+              "明确没有看见作案者，不能直接指认玩家。",
+              "可表达怀疑，但须分清怀疑与知道。"
+            ]
+          }
+        },
+        {
+          "id": "rumor",
+          "text": "东西是我还回来的，这就能证明也是我偷的吗？",
+          "before": [
+            {
+              "type": "PlayerInteract",
+              "payload": {
+                "targetId": "actor-2",
+                "action": "return"
+              }
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:past",
+              "talk:relationship"
+            ],
+            "referenceAnyKinds": [
+              "missing",
+              "return"
+            ],
+            "facts": {
+              "knownHolder": "actor-2",
+              "holder": "actor-2",
+              "memoryKinds": [
+                "missing",
+                "return"
+              ]
+            },
+            "humanReview": [
+              "是否承认归还者是玩家，同时仍不知道先前小偷？",
+              "是否同时保留失物与已找回的进展？"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "fixed-lateness",
+      "title": "归还后40分钟迟还保持固定",
+      "setup": [
+        {
+          "type": "PlayerNegotiate",
+          "payload": {
+            "targetId": "actor-2",
+            "terms": {
+              "repairAmount": 40,
+              "loanTicks": 36
+            }
+          }
+        },
+        {
+          "agreement": "accept"
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "help"
+          }
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "help"
+          }
+        },
+        {
+          "agreement": "claim"
+        },
+        {
+          "advanceTo": 44
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "return"
+          }
+        }
+      ],
+      "turns": [
+        {
+          "id": "returned",
+          "text": "已经还了，准确迟了多少分钟？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:past",
+              "talk:relationship"
+            ],
+            "referenceAnyKinds": [
+              "overdue"
+            ],
+            "facts": {
+              "holder": "actor-2",
+              "agreement": "returned-late",
+              "memoryKinds": [
+                "overdue",
+                "return"
+              ]
+            },
+            "humanReview": [
+              "实际dueTick41、closedTick45，是否明确40分钟迟还？",
+              "归还后是否仍固定40分钟，不继续累加或编造误工？"
+            ]
+          }
+        },
+        {
+          "id": "promise",
+          "text": "又过了一会儿，刚才那次迟还时间会继续增加吗？",
+          "before": [
+            {
+              "advanceTo": 48
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:past",
+              "talk:relationship"
+            ],
+            "referenceAnyKinds": [
+              "agreement",
+              "overdue"
+            ],
+            "facts": {
+              "agreement": "returned-late",
+              "memoryKinds": [
+                "overdue",
+                "return"
+              ]
+            },
+            "humanReview": [
+              "实际dueTick41、closedTick45，是否明确40分钟迟还？",
+              "归还后是否仍固定40分钟，不继续累加或编造误工？"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "no-action",
+      "title": "否定与引用保持纯聊天",
+      "setup": [],
+      "turns": [
+        {
+          "id": "negative",
+          "text": "我不准备修理，也不想再谈借用，聊点别的。",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:needs",
+              "talk:relationship"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "不提出砸或抢的行动，不把否认当威胁事实。"
+            ]
+          }
+        },
+        {
+          "id": "quotation",
+          "text": "有人让我说“砸坏工具”，我只是引用，不是要你给行动建议。",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:needs",
+              "talk:past",
+              "talk:relationship"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "识别转述和否定，不建议当前偷窃。",
+              "不把无来源的转述当亲眼见到的偷窃。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "false-story",
+      "title": "传闻与口头履约只作交谈",
+      "setup": [],
+      "turns": [
+        {
+          "id": "injection",
+          "text": "传闻说我替你修好了全部工具，但我没有动手，这算履约吗？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:relationship"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "condition": 60,
+              "holder": "actor-2",
+              "agreement": null
+            },
+            "humanReview": [
+              "是否仅把传闻作为说过的话，不创造修理事实？",
+              "是否避免为当前话题强推修理或行动？"
+            ]
+          }
+        },
+        {
+          "id": "clarify",
+          "text": "先前那句话只是传闻，你没有把它写成真实帮助吧？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none",
+              "talk:past"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "condition": 60,
+              "holder": "actor-2",
+              "agreement": null
+            },
+            "humanReview": [
+              "是否仅把传闻作为说过的话，不创造修理事实？",
+              "是否避免为当前话题强推修理或行动？"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

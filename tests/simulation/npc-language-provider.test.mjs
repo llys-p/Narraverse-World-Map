@@ -4,7 +4,7 @@ import {createNpcLanguageProvider,npcLanguageConfig,providerContext} from '../..
 import {createNpcDialogue} from '../../demo-npc-dialogue.mjs';
 
 const config={enabled:true,baseURL:'http://127.0.0.1:19999/v1',model:'offline-controlled',apiKey:'test-secret-not-real'};
-const context={simulationId:'test-world',revision:6,tick:5,targetId:'actor-2',canTalk:true,persona:'猎人',self:{knownHolder:'actor-2',knownCondition:60},agreement:null,conversation:[],
+const context={simulationId:'test-world',revision:6,tick:5,targetId:'actor-2',canTalk:true,persona:'猎人',self:{knownHolder:'actor-2',knownCondition:60,trust:50,fear:0,grievance:0},agreement:null,conversation:[],
  observations:Array.from({length:24},(_,i)=>({eventSeq:i+1,importance:i===1?3:1,text:'亲历 '+i}))};
 const request=(id='same-id')=>({apiVersion:1,requestId:id,simulationId:context.simulationId,expectedRevision:context.revision,targetId:'actor-2',text:'我替你修好工具，借我半天可以吗'});
 const proposal={type:'PlayerNegotiate',payload:{targetId:'actor-2',terms:{repairAmount:40,loanTicks:72}}};
