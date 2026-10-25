@@ -5,6 +5,8 @@
 
 ## 独立项目入口
 
+- **NPC10 短追问记忆承接候选**：fixture5在“那后来呢”等有限追问中沿最近已确认的玩家话题检索，转题即停止；不把口头声称变成事实或恢复遗忘来源。71项定向检查通过，新增2场景8轮评测；外部模型本轮0调用。见[NPC10说明](docs/runtime/NPC10-FOLLOWUP-RECALL.md)。
+
 - **NPC9 对话后续修复候选**：新增安全输出失败分类；协商建议使用当前可知条件下的世界条款计算，缺失或不一致建议不签出；新增真正使用fixture5的 `--suite memory-v1`，8场景17轮。离线/受控验证完成后交草稿，真实模型本轮0调用。见[NPC9说明](docs/runtime/NPC9-DIALOGUE-FOLLOWUP.md)。
 
 - **NPC8 独立记忆更新候选：`Start-NPC-Memory.cmd`**。新入口18350 / `campaign-memory-village`；实际经历和交谈分别保存，修理、归还、道歉形成带来源的后续进展，不删除过去伤害或把传闻变成目击。2.0仅作参考，未复制或导入其记忆。54项相关检查通过，旧fixture1至4完整数据对照一致；外部模型本轮0调用，真实语义仍待验。见[NPC8说明](docs/runtime/NPC8-MEMORY-UPDATES.md)与[当前状态](PROJECT_CONTEXT.md)。

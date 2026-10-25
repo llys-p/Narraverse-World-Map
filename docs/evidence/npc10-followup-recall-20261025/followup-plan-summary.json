@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "5",
+  "suiteId": "npc-followup-v1",
+  "mode": "plan",
+  "completed": true,
+  "semanticVerdict": "not-evaluated",
+  "realProviderAttempted": false,
+  "counts": {
+    "planned": 8,
+    "attempted": 0,
+    "automaticPassed": 0,
+    "automaticFailed": 0,
+    "providerFailed": 0,
+    "fixtureFailed": 0,
+    "blocked": 0,
+    "notRun": 8
+  },
+  "source": {
+    "baseCommit": "0150106f29a01573a82a0e0ff31472e1e005a975",
+    "workingTreeDirty": true,
+    "sha256": {
+      "benchmarks/npc-followup-v1/cases.json": "635ba4ec97bddadea5c3620fe4a5fa355f19f357ff49019da1877ed6984f67c1",
+      "runtime/core/npc-negotiation-terms.mjs": "5f80bc3e4d9a4941bb4fb1f09020d29f0bda2a2733e6f382cae5e368ef52d50f",
+      "runtime/fixtures/campaign-village.mjs": "f30907bf5d28974a6668dcce8da262601de40eaeb44dff513967c2bd22aa9b1f",
+      "runtime/service/npc-language-provider.mjs": "ce1459bcb25267fd02557300df0e46c4711a7a1a693990a70f8a979ad57dbb6f",
+      "runtime/evaluation/npc-dialogue-eval.mjs": "8158e07db4909745b26e50b8a1d2c775ec186bdd60a2592f49f31b2494b9888d",
+      "runtime/service/npc-dialogue-grounding.mjs": "47559801ac06e692768b7265778c1ad868239518cd9c525bcb903d935ded001f",
+      "runtime/service/npc-recall-focus.mjs": "b6b9be89889d49897eff1779b3e22dae1b202d4bb04c9bdae3c2383f78362889",
+      "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+      "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+      "runtime/core/npc-negotiation.mjs": "4361bb47c53f155543ee60063160bd13611520d0c37e23143f628009b00837e3",
+      "runtime/core/npc-social.mjs": "7dc296035a5f6d2e6217f03e10b015439b248e40940585cfc42bdd78c49de2de",
+      "runtime/core/npc-memory.mjs": "5d9551d4a022661716f97a280dc71b5f3636c5f34d63dd4a34b8d8c33640f6b5",
+      "runtime-negotiation-contract.mjs": "528d6214a61140a78d988ff4af26c5429f1dea9ec1a9bab5e25bf21c6b58ea52",
+      "scripts/evaluate-npc-dialogue.mjs": "595cc4b884870c31343a8cbd5d6db0918d4b504ca8758fcd8f538d17aa0e34f8"
+    },
+    "node": "v24.22.1"
+  },
+  "fullReportSha256": "b067b64ebc1df35e34ecb4aad64c44585551ca7382134adca8a2e894e95437b2",
+  "cases": [
+    {
+      "id": "repair-followup",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "repair-topic",
+          "recallFocus": {
+            "source": "current-utterance",
+            "topics": [
+              "repair"
+            ],
+            "anchorEventSeq": null
+          },
+          "conversationCount": 0,
+          "selectedEvents": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": "later",
+          "recallFocus": {
+            "source": "none",
+            "topics": [],
+            "anchorEventSeq": null
+          },
+          "conversationCount": 0,
+          "selectedEvents": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": "now",
+          "recallFocus": {
+            "source": "none",
+            "topics": [],
+            "anchorEventSeq": null
+          },
+          "conversationCount": 0,
+          "selectedEvents": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": "food-switch",
+          "recallFocus": {
+            "source": "current-utterance",
+            "topics": [
+              "food"
+            ],
+            "anchorEventSeq": null
+          },
+          "conversationCount": 0,
+          "selectedEvents": [
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "false-topic",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "claim",
+          "recallFocus": {
+            "source": "current-utterance",
+            "topics": [
+              "food"
+            ],
+            "anchorEventSeq": null
+          },
+          "conversationCount": 0,
+          "selectedEvents": []
+        },
+        {
+          "id": "followup",
+          "recallFocus": {
+            "source": "none",
+            "topics": [],
+            "anchorEventSeq": null
+          },
+          "conversationCount": 0,
+          "selectedEvents": []
+        },
+        {
+          "id": "weather",
+          "recallFocus": {
+            "source": "none",
+            "topics": [],
+            "anchorEventSeq": null
+          },
+          "conversationCount": 0,
+          "selectedEvents": []
+        },
+        {
+          "id": "no-anchor",
+          "recallFocus": {
+            "source": "none",
+            "topics": [],
+            "anchorEventSeq": null
+          },
+          "conversationCount": 0,
+          "selectedEvents": []
+        }
+      ]
+    }
+  ]
+}

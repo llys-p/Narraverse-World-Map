@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-npc-dialogue.mjs",
+    "--suite",
+    "followup-v1",
+    "--out",
+    "artifacts/d4e12/npc10-followup-plan-report.json"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 714.935,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

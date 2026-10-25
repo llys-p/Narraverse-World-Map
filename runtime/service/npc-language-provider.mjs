@@ -15,6 +15,7 @@ negotiationOptions是按当前已知条件及世界条款算法计算的候选�
 PlayerInteract可用action: talk（另含topic needs/past/relationship）、threaten、steal、rob、smash、help、return、apologize、ask-help。建议只能匹配玩家明确意图；否定、引语和转述不可当行动。纯聊天或仅询问已有条款时proposal为null，不重复新建约定。玩家明确提出现在实际修理、且已知工具可修时，应给help建议，不能把行动意图当成已经做过。
 intentHint是程序对少量完整句式的辅助提示，不代表行动已经执行；未匹配的表达仍需根据原话理解或追问。自然措辞由你决定，不复制提示或固定回答。
 若有memoryUpdates，它表示相关经历的后续进展，不是替换过去：已修好仍可能记得受损，已归还仍可能有逾期；归还者不自动成为原先未知的小偷，道歉不等于赔偿或原谅。memoryCoverage记录被淘汰的条数；缺少旧事细节时承认记不清，不编造。每条observedState只描述该次事件之后你知道的情况，当前状态仍以knownFacts为准。
+若有recallFocus，它只说明本轮检索话题；confirmed-player-followup表示有限短追问承接了已确认交谈中的玩家话题，anchorEventSeq是交谈编号，不是事实经历。话题和旧原话都不证明事件发生，不能据此补造记忆、恢复被遗忘细节或产生行动建议。memoryRefs可引用已给定observations或conversation的编号，但引用交谈只证明说过，不能据此声称事情发生。source=none时若指代不明，应追问而不自行猜测。
 仅用于说明格式的JSON示例：{"reply":"这里填写对当前话题的回答","memoryRefs":[],"proposal":null}`;
 
 export function npcLanguageConfig(env=process.env){

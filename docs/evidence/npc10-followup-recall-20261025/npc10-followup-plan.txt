@@ -1,0 +1,1 @@
+{"status":"plan-ready","mode":"plan","counts":{"planned":8,"attempted":0,"automaticPassed":0,"automaticFailed":0,"providerFailed":0,"fixtureFailed":0,"blocked":0,"notRun":8},"semanticVerdict":"not-evaluated","output":"<candidate>/artifacts/d4e12/npc10-followup-plan-report.json","html":"<candidate>/artifacts/d4e12/npc10-followup-plan-report.html"}

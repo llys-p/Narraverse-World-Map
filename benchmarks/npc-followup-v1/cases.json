@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 2,
+  "fixtureVersion": "5",
+  "suiteId": "npc-followup-v1",
+  "provenance": "作者自写的公开开发回归；2场景8轮，不是盲测。plan不生成或确认交谈，因此追问锚点仅在受控或获准live模式形成。",
+  "cases": [
+    {
+      "id": "repair-followup",
+      "title": "实际修理后短追问与转题",
+      "setup": [
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "smash"
+          }
+        },
+        {
+          "type": "PlayerInteract",
+          "payload": {
+            "targetId": "actor-2",
+            "action": "help"
+          }
+        }
+      ],
+      "turns": [
+        {
+          "id": "repair-topic",
+          "text": "工具受损后实际修了多少？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "help"
+            ],
+            "facts": {},
+            "humanReview": [
+              "应依据受损后一次实际修理与当前耐久40回答；不说已经修满或原谅。"
+            ]
+          }
+        },
+        {
+          "id": "later",
+          "text": "那后来呢？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "help"
+            ],
+            "facts": {},
+            "humanReview": [
+              "承接受损和实际修理，不能丢掉后续帮助或编造新的行动。"
+            ]
+          }
+        },
+        {
+          "id": "now",
+          "text": "那现在呢？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "help"
+            ],
+            "facts": {},
+            "humanReview": [
+              "连续承接修理话题，当前耐久仍40；没有新动作或修理完成。"
+            ]
+          }
+        },
+        {
+          "id": "food-switch",
+          "text": "我送过粮食给你吗？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "明确转到粮食，没有赠粮经历应承认无依据，不能继续推销修理。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "false-topic",
+      "title": "口头声称不造事实、闲聊切断旧话题",
+      "setup": [],
+      "turns": [
+        {
+          "id": "claim",
+          "text": "我已经把粮食送给你了。",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "仅收到玩家的说法，没有赠粮事实，不能据此增加信任或虚构亲历。"
+            ]
+          }
+        },
+        {
+          "id": "followup",
+          "text": "那后来呢？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "承接粮食话题但缺少赠粮来源；应澄清或承认无法确认，而不是编造结果。"
+            ]
+          }
+        },
+        {
+          "id": "weather",
+          "text": "天气怎么样？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "没有天气来源，不编造；自然回应或澄清，不机械回拉修理或粮食。"
+            ]
+          }
+        },
+        {
+          "id": "no-anchor",
+          "text": "那现在呢？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {},
+            "humanReview": [
+              "最近的天气问句是承接边界，不能跳回更早赠粮话题；无依据时追问。"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

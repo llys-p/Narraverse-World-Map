@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: follow-up plan has eight uncalled turns and does not fabricate confirmed speech anchors
+ok 1 - follow-up plan has eight uncalled turns and does not fabricate confirmed speech anchors
+  ---
+  duration_ms: 360.422467
+  type: 'test'
+  ...
+# Subtest: controlled evaluation forms anchors only by committing dialogue and keeps facts separate from topics
+ok 2 - controlled evaluation forms anchors only by committing dialogue and keeps facts separate from topics
+  ---
+  duration_ms: 451.164793
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 945.005018
