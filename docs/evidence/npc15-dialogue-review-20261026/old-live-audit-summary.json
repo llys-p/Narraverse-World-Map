@@ -1,0 +1,148 @@
+{
+  "sourceReportSha256": "a93cd00fcc1e6f33040f565d8518fb1624358a3115e318818350c729712a739b",
+  "auditedReportSha256": "1d9ac06bf345a05179544e3649ad0263665944547fd4ea6ce5a851a5ce7e7fda",
+  "auditedHtmlSha256": "1c92a5d812e24341dfa315e695fe4c44851d4daaa44040d892b715dd3742fe05",
+  "algorithmSourceSha256": "9353792b80c2ff5384b66ba473f7914f1041986ce364d723f30a6a233cd4b34c",
+  "originalReportUnchanged": true,
+  "originalRepliesPreserved": true,
+  "originalHumanReviewPreserved": true,
+  "originalAutomaticPassed": 8,
+  "originalSemanticVerdict": "needs-human-review",
+  "assistantSemanticVerdict": "needs-correction",
+  "independentHumanVerdict": "pending",
+  "externalModelCalls": 0,
+  "factAuditSummary": {
+    "scope": "explicit-current-food-wallet",
+    "turnsWithReplies": 8,
+    "contradictionTurns": 1,
+    "checkedNoContradictionTurns": 2,
+    "unassessedTurns": 5,
+    "notEvaluatedTurns": 0
+  },
+  "notice": "Offline reassessment of historical fixed replies; no model calls or language fix claim. Only explicit current food/wallet statements; 5 unassessed turns and prior explanation issues remain for review.",
+  "turns": [
+    {
+      "caseId": "work-and-food",
+      "turnId": "work-preparation",
+      "audit": {
+        "version": 1,
+        "scope": "explicit-current-food-wallet",
+        "status": "checked-no-contradiction",
+        "checkedClaims": 1,
+        "unknownClaims": 0
+      },
+      "claims": [
+        {
+          "field": "food",
+          "stated": 0,
+          "actual": 0,
+          "verdict": "consistent",
+          "start": 25,
+          "end": 30
+        }
+      ]
+    },
+    {
+      "caseId": "work-and-food",
+      "turnId": "wage-received",
+      "audit": {
+        "version": 1,
+        "scope": "explicit-current-food-wallet",
+        "status": "unassessed",
+        "checkedClaims": 0,
+        "unknownClaims": 0
+      },
+      "claims": []
+    },
+    {
+      "caseId": "work-and-food",
+      "turnId": "food-preparation",
+      "audit": {
+        "version": 1,
+        "scope": "explicit-current-food-wallet",
+        "status": "unassessed",
+        "checkedClaims": 0,
+        "unknownClaims": 0
+      },
+      "claims": []
+    },
+    {
+      "caseId": "work-and-food",
+      "turnId": "food-consumed",
+      "audit": {
+        "version": 1,
+        "scope": "explicit-current-food-wallet",
+        "status": "contradiction-detected",
+        "checkedClaims": 1,
+        "unknownClaims": 0
+      },
+      "claims": [
+        {
+          "field": "food",
+          "stated": 1,
+          "actual": 0,
+          "verdict": "contradiction",
+          "start": 12,
+          "end": 20
+        }
+      ]
+    },
+    {
+      "caseId": "gifts-pause",
+      "turnId": "buy-intent",
+      "audit": {
+        "version": 1,
+        "scope": "explicit-current-food-wallet",
+        "status": "unassessed",
+        "checkedClaims": 0,
+        "unknownClaims": 0
+      },
+      "claims": []
+    },
+    {
+      "caseId": "gifts-pause",
+      "turnId": "two-gifts",
+      "audit": {
+        "version": 1,
+        "scope": "explicit-current-food-wallet",
+        "status": "unassessed",
+        "checkedClaims": 0,
+        "unknownClaims": 0
+      },
+      "claims": []
+    },
+    {
+      "caseId": "gifts-pause",
+      "turnId": "wait-result",
+      "audit": {
+        "version": 1,
+        "scope": "explicit-current-food-wallet",
+        "status": "checked-no-contradiction",
+        "checkedClaims": 1,
+        "unknownClaims": 0
+      },
+      "claims": [
+        {
+          "field": "wallet",
+          "stated": 20,
+          "actual": 20,
+          "verdict": "consistent",
+          "start": 45,
+          "end": 52
+        }
+      ]
+    },
+    {
+      "caseId": "gifts-pause",
+      "turnId": "followup",
+      "audit": {
+        "version": 1,
+        "scope": "explicit-current-food-wallet",
+        "status": "unassessed",
+        "checkedClaims": 0,
+        "unknownClaims": 0
+      },
+      "claims": []
+    }
+  ]
+}

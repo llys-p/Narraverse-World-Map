@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "scripts/review-npc-dialogue.mjs",
+    "--report",
+    "<source-npc13>/artifacts/npc13-life-live/live.json",
+    "--out",
+    "artifacts/npc15/npc13-audited.json"
+  ],
+  "pid": 5,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 200.973,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

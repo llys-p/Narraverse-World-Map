@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: template binds original report and turns; assistant conclusions never replace pending human review
+ok 1 - template binds original report and turns; assistant conclusions never replace pending human review
+  ---
+  duration_ms: 8.594253
+  type: 'test'
+  ...
+# Subtest: wrong source, tampered turn binding, duplicate/missing rows and verdicts on unrun turns are refused
+ok 2 - wrong source, tampered turn binding, duplicate/missing rows and verdicts on unrun turns are refused
+  ---
+  duration_ms: 4.738477
+  type: 'test'
+  ...
+# Subtest: self-declared human labels and limited coverage never become independent or full automatic approval
+ok 3 - self-declared human labels and limited coverage never become independent or full automatic approval
+  ---
+  duration_ms: 2.238332
+  type: 'test'
+  ...
+# Subtest: offline CLI template, audit and review round trip keeps source bytes and escapes report text
+ok 4 - offline CLI template, audit and review round trip keeps source bytes and escapes report text
+  ---
+  duration_ms: 41.685941
+  type: 'test'
+  ...
+# Subtest: existing JSON, HTML or template survives output collisions; invalid arguments and review files do not create outputs
+ok 5 - existing JSON, HTML or template survives output collisions; invalid arguments and review files do not create outputs
+  ---
+  duration_ms: 13.861551
+  type: 'test'
+  ...
+# Subtest: explicit current resource contradictions are separate from historical purchases and unassessed wording
+ok 6 - explicit current resource contradictions are separate from historical purchases and unassessed wording
+  ---
+  duration_ms: 10.508381
+  type: 'test'
+  ...
+# Subtest: questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+ok 7 - questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+  ---
+  duration_ms: 1.047096
+  type: 'test'
+  ...
+# Subtest: bounded numeric grammar handles exact Chinese counts, marks missing context and skips ambiguous quantities
+ok 8 - bounded numeric grammar handles exact Chinese counts, marks missing context and skips ambiguous quantities
+  ---
+  duration_ms: 0.969782
+  type: 'test'
+  ...
+# Subtest: audits ignore injected derived facts, retain detached values and keep unassessed distinct from checked
+ok 9 - audits ignore injected derived facts, retain detached values and keep unassessed distinct from checked
+  ---
+  duration_ms: 2.949402
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 314.085874

@@ -1,0 +1,1 @@
+{"status":"review-needs-correction","factAuditSummary":{"scope":"explicit-current-food-wallet","turnsWithReplies":8,"contradictionTurns":1,"checkedNoContradictionTurns":2,"unassessedTurns":5,"notEvaluatedTurns":0},"reviewImport":null,"output":"<candidate>/artifacts/npc15/npc13-audited.json","html":"<candidate>/artifacts/npc15/npc13-audited.html","externalModelCalls":0}

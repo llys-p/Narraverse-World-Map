@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: template binds original report and turns; assistant conclusions never replace pending human review
+ok 1 - template binds original report and turns; assistant conclusions never replace pending human review
+  ---
+  duration_ms: 8.25264
+  type: 'test'
+  ...
+# Subtest: wrong source, tampered turn binding, duplicate/missing rows and verdicts on unrun turns are refused
+ok 2 - wrong source, tampered turn binding, duplicate/missing rows and verdicts on unrun turns are refused
+  ---
+  duration_ms: 3.927209
+  type: 'test'
+  ...
+# Subtest: self-declared human labels and limited coverage never become independent or full automatic approval
+ok 3 - self-declared human labels and limited coverage never become independent or full automatic approval
+  ---
+  duration_ms: 2.147774
+  type: 'test'
+  ...
+# Subtest: offline CLI template, audit and review round trip keeps source bytes and escapes report text
+ok 4 - offline CLI template, audit and review round trip keeps source bytes and escapes report text
+  ---
+  duration_ms: 32.426533
+  type: 'test'
+  ...
+# Subtest: existing JSON, HTML or template survives output collisions; invalid arguments and review files do not create outputs
+ok 5 - existing JSON, HTML or template survives output collisions; invalid arguments and review files do not create outputs
+  ---
+  duration_ms: 14.225015
+  type: 'test'
+  ...
+# Subtest: incomplete reports, invalid response contracts and oversized or duplicate-key inputs are refused offline
+ok 6 - incomplete reports, invalid response contracts and oversized or duplicate-key inputs are refused offline
+  ---
+  duration_ms: 8.78203
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 249.750047
