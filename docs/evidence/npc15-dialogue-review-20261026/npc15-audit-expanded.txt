@@ -1,0 +1,34 @@
+TAP version 13
+# Subtest: explicit current resource contradictions are separate from historical purchases and unassessed wording
+ok 1 - explicit current resource contradictions are separate from historical purchases and unassessed wording
+  ---
+  duration_ms: 5.774892
+  type: 'test'
+  ...
+# Subtest: questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+ok 2 - questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+  ---
+  duration_ms: 0.463228
+  type: 'test'
+  ...
+# Subtest: bounded numeric grammar handles exact Chinese counts, marks missing context and skips ambiguous quantities
+ok 3 - bounded numeric grammar handles exact Chinese counts, marks missing context and skips ambiguous quantities
+  ---
+  duration_ms: 0.559184
+  type: 'test'
+  ...
+# Subtest: audits ignore injected derived facts, retain detached values and keep unassessed distinct from checked
+ok 4 - audits ignore injected derived facts, retain detached values and keep unassessed distinct from checked
+  ---
+  duration_ms: 0.875246
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 132.9601

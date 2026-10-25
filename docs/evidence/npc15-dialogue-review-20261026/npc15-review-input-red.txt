@@ -1,0 +1,54 @@
+TAP version 13
+# Subtest: imported reports require a bounded numeric request limit before review output can be written
+not ok 1 - imported reports require a bounded numeric request limit before review output can be written
+  ---
+  duration_ms: 4.573436
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-review-report-input.test.mjs:10:1'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-review-report-input.test.mjs:13:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.start (node:internal/test_runner/test:1262:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: the reusable renderer escapes request-limit display even for a malformed caller object
+not ok 2 - the reusable renderer escapes request-limit display even for a malformed caller object
+  ---
+  duration_ms: 1.556706
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-review-report-input.test.mjs:17:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    true !== false
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-review-report-input.test.mjs:20:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 390.917656

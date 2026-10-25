@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: explicit current resource contradictions are separate from historical purchases and unassessed wording
+ok 1 - explicit current resource contradictions are separate from historical purchases and unassessed wording
+  ---
+  duration_ms: 6.188045
+  type: 'test'
+  ...
+# Subtest: questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+ok 2 - questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+  ---
+  duration_ms: 0.517509
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 141.009373

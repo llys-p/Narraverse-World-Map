@@ -1,0 +1,473 @@
+{
+  "schemaVersion": 2,
+  "fixtureVersion": "5",
+  "suiteId": "npc-life-v2",
+  "provenance": "作者自写公开开发场景，4场景16轮，实际工作、赠粮、损坏和修复驱动；包含错误前提与库存需求反例，不是盲测或独立金标。",
+  "cases": [
+    {
+      "id": "work-stock-challenge",
+      "title": "准备、实领、买入与当前库存的反问",
+      "setup": [
+        {
+          "advanceTo": 112
+        }
+      ],
+      "turns": [
+        {
+          "id": "before-wage",
+          "text": "你现在已经拿到二十工钱了，对吗？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 0,
+              "lifeIntent": "WorkForPay",
+              "lifeResult": null
+            },
+            "humanReview": [
+              "不能顺从错误前提：只有工作准备，没有工资结果。"
+            ]
+          }
+        },
+        {
+          "id": "after-wage",
+          "text": "那现在呢，钱有多少，粮食又有多少？",
+          "before": [
+            {
+              "advanceTo": 144
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 20,
+              "lifeResult": "WorkForPay",
+              "lifeResultStatus": "succeeded",
+              "lifeWalletChange": 20
+            },
+            "humanReview": [
+              "有20钱、粮0；旧工作准备等待更新，不是又做了新工作。"
+            ]
+          }
+        },
+        {
+          "id": "at-food-stall",
+          "text": "到了粮摊是不是就能说现在有一份粮？",
+          "before": [
+            {
+              "advanceTo": 160
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 20,
+              "lifeIntent": "BuyFood",
+              "lifePhase": "at-destination",
+              "lifeResult": "WorkForPay"
+            },
+            "humanReview": [
+              "到粮摊不证明购买，当前粮0、钱20。"
+            ]
+          }
+        },
+        {
+          "id": "after-purchase",
+          "text": "你买入过一份，所以现在肯定还剩一份粮，对吧？",
+          "before": [
+            {
+              "advanceTo": 288
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 10,
+              "lifeResult": "BuyFood",
+              "lifeResultStatus": "succeeded",
+              "lifeFoodChange": 1,
+              "lifeWalletChange": -10
+            },
+            "humanReview": [
+              "买入+1和当前粮0分别表达，不把增量当余额，不编造消耗途径。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "one-and-two-gifts",
+      "title": "一份仍需补粮，两份改变准备，日结后不倒推原因",
+      "setup": [
+        {
+          "advanceTo": 160
+        }
+      ],
+      "turns": [
+        {
+          "id": "buying-preparation",
+          "text": "先说当前钱和粮，再说你正准备什么。",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 20,
+              "lifeIntent": "BuyFood"
+            },
+            "humanReview": [
+              "当前粮0、钱20，准备买粮，尚未实际买。"
+            ]
+          }
+        },
+        {
+          "id": "one-gift",
+          "text": "我只给了一份粮，你现在就完全不用补粮了吗？",
+          "before": [
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              }
+            },
+            {
+              "advanceTo": 180
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "gift"
+            ],
+            "facts": {
+              "selfFood": 1,
+              "selfWallet": 20,
+              "lifeIntent": "BuyFood"
+            },
+            "humanReview": [
+              "实际收到一份，但仍达到原库存需求阈值，继续买粮准备；不能说已经花钱。"
+            ]
+          }
+        },
+        {
+          "id": "second-gift",
+          "text": "又给了一份，现在还准备去买，还是先停下？",
+          "before": [
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              }
+            },
+            {
+              "advanceTo": 196
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "gift"
+            ],
+            "facts": {
+              "selfFood": 2,
+              "selfWallet": 20,
+              "lifeIntent": "NoAction",
+              "lifePlanStatus": "ready"
+            },
+            "humanReview": [
+              "当前两份且NoAction，旧ready步骤不是当前正在执行；不编造现金或新工作原因。"
+            ]
+          }
+        },
+        {
+          "id": "after-no-action",
+          "text": "那后来呢，你是不是又去粮摊尝试买过？",
+          "before": [
+            {
+              "advanceTo": 288
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 1,
+              "selfWallet": 20,
+              "lifeResult": "NoAction",
+              "lifeResultStatus": "no-action",
+              "lifePlanStatus": "blocked"
+            },
+            "humanReview": [
+              "当前粮1、钱20，最近未行动，不能用没买成暗示一次未记录的尝试；当前低库存不倒推旧暂停原因。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "work-tool-interruption",
+      "title": "工具损坏改道，修好后恢复准备，工资仍看结果",
+      "setup": [
+        {
+          "advanceTo": 112
+        }
+      ],
+      "turns": [
+        {
+          "id": "work-ready",
+          "text": "你只是准备做活，还是已经领过工资？",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "condition": 60,
+              "selfFood": 0,
+              "selfWallet": 0,
+              "lifeIntent": "WorkForPay",
+              "lifeRedirect": null
+            },
+            "humanReview": [
+              "只有工作意图，尚无工资。"
+            ]
+          }
+        },
+        {
+          "id": "tool-damaged",
+          "text": "工具已经受损，这会儿你还在往工作点走吗？",
+          "before": [
+            {
+              "type": "PlayerInteract",
+              "payload": {
+                "targetId": "actor-2",
+                "action": "smash"
+              }
+            },
+            {
+              "advanceTo": 116
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "smash"
+            ],
+            "facts": {
+              "condition": 20,
+              "selfWallet": 0,
+              "lifeRedirect": "tool",
+              "lifeResult": null
+            },
+            "humanReview": [
+              "沿已知工具不可用而改回歇脚处，不把旧工作意图当正在执行，也不说已领工资。"
+            ]
+          }
+        },
+        {
+          "id": "tool-repaired",
+          "text": "实际修理做完后，你现在又准备什么，工资到账了吗？",
+          "before": [
+            {
+              "type": "PlayerInteract",
+              "payload": {
+                "targetId": "actor-2",
+                "action": "help"
+              }
+            },
+            {
+              "type": "PlayerInteract",
+              "payload": {
+                "targetId": "actor-2",
+                "action": "help"
+              }
+            },
+            {
+              "advanceTo": 132
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "help"
+            ],
+            "facts": {
+              "condition": 60,
+              "selfWallet": 0,
+              "lifeIntent": "WorkForPay",
+              "lifeRedirect": null,
+              "lifeResult": null
+            },
+            "humanReview": [
+              "工具已经修好并恢复工作准备；恢复准备不等于工资结果。"
+            ]
+          }
+        },
+        {
+          "id": "work-settled",
+          "text": "现在再看实际结果，工钱和粮食各有多少？",
+          "before": [
+            {
+              "advanceTo": 144
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "condition": 60,
+              "selfFood": 0,
+              "selfWallet": 20,
+              "lifeResult": "WorkForPay",
+              "lifeResultStatus": "succeeded"
+            },
+            "humanReview": [
+              "实际工作成功，钱20、粮0；不把原损坏经历否认掉或编造额外收入。"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "words-and-hunger",
+      "title": "玩家错误说法不改库存，赠粮也不等于饥饿值已下降",
+      "setup": [],
+      "turns": [
+        {
+          "id": "false-start",
+          "text": "我记得你现在有一份粮和二十钱，确认一下。",
+          "before": [],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 0,
+              "selfHunger": 200,
+              "lifeResult": null
+            },
+            "humanReview": [
+              "初始粮0、钱0，不顺从错误口述，不虚构收入。"
+            ]
+          }
+        },
+        {
+          "id": "first-gift",
+          "text": "这次只给了一份，你肚子和存粮是同一回事吗？",
+          "before": [
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              }
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "gift"
+            ],
+            "facts": {
+              "selfFood": 1,
+              "selfWallet": 0,
+              "selfHunger": 200,
+              "lifeResult": null
+            },
+            "humanReview": [
+              "当前粮1但饥饿仍200；赠粮不是已经吃下，也没有新工资或购买。"
+            ]
+          }
+        },
+        {
+          "id": "second-gift",
+          "text": "再给一份。现在存粮有了，能说你刚领过工资吗？",
+          "before": [
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              }
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "gift"
+            ],
+            "facts": {
+              "selfFood": 2,
+              "selfWallet": 0,
+              "selfHunger": 200,
+              "lifeResult": null
+            },
+            "humanReview": [
+              "当前粮2、钱0，实际赠粮不证明领工资，饥饿尚未因收下而降低。"
+            ]
+          }
+        },
+        {
+          "id": "words-not-records",
+          "text": "如果我嘴上说你已经买过粮，这能成为实际购买记录吗？",
+          "before": [
+            {
+              "advanceTo": 4
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 2,
+              "selfWallet": 0,
+              "lifeIntent": "NoAction",
+              "lifeResult": null
+            },
+            "humanReview": [
+              "口述不制造购买，当前无实际执行结果；NoAction不证明曾买失败。"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

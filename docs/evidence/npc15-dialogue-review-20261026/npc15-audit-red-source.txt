@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {auditDialogueFacts} from '../../runtime/evaluation/npc-fact-audit.mjs';
+const context={tick:288,self:{food:0,wallet:10}};
+test('explicit current resource contradictions are separate from historical purchases and unassessed wording',()=>{
+ const a=auditDialogueFacts('刚花十块钱买了一份口粮，眼下就剩这一份了，钱也只剩几块。',context);
+ assert.equal(a.status,'contradiction-detected');assert.equal(a.claims.length,1);
+ assert.deepEqual([a.claims[0].field,a.claims[0].stated,a.claims[0].actual],['food',1,0]);
+ const b=auditDialogueFacts('我现在没有存粮，钱包里还有十块钱。',context);
+ assert.equal(b.status,'checked-no-contradiction');assert.equal(b.claims.length,2);
+ assert.equal(auditDialogueFacts('我得留些钱等找着新工作。',context).status,'unassessed');
+});
+test('questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions',()=>{
+ for(const reply of ['我现在有一份口粮吗？','你说：“我现在有一份口粮，钱包里有二十块钱。”','“我现在有一份口粮，钱包里有二十块钱','我之前有一份口粮。','如果我现在有一份口粮就好了。','我不是现在有一份口粮。','你现在有一份口粮。','我现在有一份口粮，不对，我刚说错了，其实没有。'])assert.equal(auditDialogueFacts(reply,context).status,'unassessed',reply);
+});

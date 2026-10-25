@@ -1,0 +1,148 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/evaluation/npc-dialogue-eval.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/evaluation/npc-dialogue-review.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/evaluation/npc-fact-audit.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc15-evidence.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc15-legacy.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/evaluate-npc-dialogue.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/review-npc-dialogue.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-dialogue-review.test.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-fact-audit.test.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-life-v2-evaluation.test.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "tests/simulation/npc-review-report-input.test.mjs"
+      ],
+      "cwd": "<candidate>",
+      "exitCode": 0,
+      "output": "",
+      "error": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/check-npc14-evidence.mjs"
+      ],
+      "cwd": "<baseline>",
+      "exitCode": 0,
+      "output": "{\"status\":\"verified\",\"sourceFiles\":154,\"evidenceFiles\":17,\"preservedEvidenceFiles\":728,\"tests\":90,\"newTests\":5,\"legacyCheckpoints\":10,\"externalModelCalls\":0,\"semanticVerdict\":\"not-evaluated-for-npc14\",\"npc13SemanticVerdict\":\"needs-correction\"}",
+      "error": ""
+    }
+  ],
+  "productionDiff": []
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/simulation/npc-fact-audit.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 265.539,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

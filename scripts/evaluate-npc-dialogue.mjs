@@ -8,7 +8,7 @@ import {selectDialogueCases,runDialogueEvaluation,renderDialogueReport} from '..
 import {requireCondition,fault} from '../runtime/core/data-contract.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
-const usage='Usage: node scripts/evaluate-npc-dialogue.mjs [--suite dialogue-v1|memory-v1|followup-v1|life-v1] [--mode plan|live] [--case all|case-id] [--out report.json]\nLive additionally requires --allow-model-calls --max-requests N and this project NPC_LLM_* configuration.\nDefault is plan: zero model/network calls; no semantic quality score.';
+const usage='Usage: node scripts/evaluate-npc-dialogue.mjs [--suite dialogue-v1|memory-v1|followup-v1|life-v1|life-v2] [--mode plan|live] [--case all|case-id] [--out report.json]\nLive additionally requires --allow-model-calls --max-requests N and this project NPC_LLM_* configuration.\nDefault is plan: zero model/network calls; no semantic quality score.';
 export function parseEvaluationArgs(args){
  const result={mode:'plan',suite:'dialogue-v1',selection:undefined,maxRequests:0,allowModelCalls:false,out:null},seen=new Set();
  for(let i=0;i<args.length;i++){
@@ -16,7 +16,7 @@ export function parseEvaluationArgs(args){
   if(flag==='--help'){requireCondition(args.length===1,'Help must be used alone');return {help:true};}
   if(flag==='--allow-model-calls'){result.allowModelCalls=true;continue;}
   requireCondition(['--suite','--mode','--case','--max-requests','--out'].includes(flag),'Unknown evaluation flag');const value=args[++i];requireCondition(typeof value==='string'&&value.length>0&&!value.startsWith('--'),'Missing flag value');
-  if(flag==='--suite'){requireCondition(['dialogue-v1','memory-v1','followup-v1','life-v1'].includes(value),'Invalid evaluation suite');result.suite=value;}
+  if(flag==='--suite'){requireCondition(['dialogue-v1','memory-v1','followup-v1','life-v1','life-v2'].includes(value),'Invalid evaluation suite');result.suite=value;}
   if(flag==='--mode'){requireCondition(['plan','live'].includes(value),'Invalid evaluation mode');result.mode=value;}
   if(flag==='--case')result.selection=value==='all'?undefined:[value];
   if(flag==='--max-requests'){requireCondition(/^[1-9][0-9]?$/.test(value)&&Number(value)<=32,'Request limit must be 1..32');result.maxRequests=Number(value);}
@@ -28,7 +28,7 @@ export function parseEvaluationArgs(args){
 }
 async function fingerprints(suiteFile){
  const files=[suiteFile,'runtime/core/npc-negotiation-terms.mjs','runtime/fixtures/campaign-village.mjs','runtime/service/npc-language-provider.mjs','runtime/evaluation/npc-dialogue-eval.mjs',
-  'runtime/service/npc-dialogue-grounding.mjs','runtime/service/npc-life-facts.mjs','runtime/core/survival-state.mjs','runtime/service/npc-recall-focus.mjs','demo-social-language.mjs','runtime/core/simulation-clock.mjs',
+  'runtime/service/npc-dialogue-grounding.mjs','runtime/service/npc-life-facts.mjs','runtime/evaluation/npc-fact-audit.mjs','runtime/core/survival-state.mjs','runtime/service/npc-recall-focus.mjs','demo-social-language.mjs','runtime/core/simulation-clock.mjs',
   'runtime/core/npc-negotiation.mjs','runtime/core/npc-social.mjs','runtime/core/npc-memory.mjs','runtime/core/npc-life-context.mjs','runtime/core/npc-village-sites.mjs','runtime/core/campaign-npc-agency.mjs','runtime/core/campaign-map.mjs','runtime-negotiation-contract.mjs','scripts/evaluate-npc-dialogue.mjs'];
  const hashes={};for(const f of files)hashes[f]=createHash('sha256').update(await fs.readFile(path.join(root,f))).digest('hex');
  let baseCommit=null,workingTreeDirty=null;try{baseCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim();workingTreeDirty=Boolean(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim());}catch{}
@@ -36,7 +36,7 @@ async function fingerprints(suiteFile){
 }
 export async function evaluateDialogueCli(args,{env=process.env,fetchImpl=fetch,log=console.log}={}){
  const settings=parseEvaluationArgs(args);if(settings.help){log(usage);return {exitCode:0};}
- const suiteFile={ 'dialogue-v1':'benchmarks/npc-dialogue-v1/cases.json', 'memory-v1':'benchmarks/npc-memory-dialogue-v1/cases.json', 'followup-v1':'benchmarks/npc-followup-v1/cases.json', 'life-v1':'benchmarks/npc-life-v1/cases.json' }[settings.suite];
+ const suiteFile={ 'dialogue-v1':'benchmarks/npc-dialogue-v1/cases.json', 'memory-v1':'benchmarks/npc-memory-dialogue-v1/cases.json', 'followup-v1':'benchmarks/npc-followup-v1/cases.json', 'life-v1':'benchmarks/npc-life-v1/cases.json', 'life-v2':'benchmarks/npc-life-v2/cases.json' }[settings.suite];
  const suite=JSON.parse(await fs.readFile(path.join(root,suiteFile),'utf8'));
  const cases=selectDialogueCases(suite,settings.selection),planned=cases.reduce((n,c)=>n+c.turns.length,0);
  let config={enabled:false},provider;
@@ -66,8 +66,9 @@ export async function evaluateDialogueCli(args,{env=process.env,fetchImpl=fetch,
   await save({schemaVersion:1,fixtureVersion:suite.fixtureVersion??'4',suiteId:suite.suiteId,mode:settings.mode,notice:'测试准备中；没有语义质量结论。',completed:false,semanticVerdict:'not-evaluated',requestLimit:settings.maxRequests,cases:[],counts:{planned,attempted:0}});
   const report=await runDialogueEvaluation({suite,selection:settings.selection,mode:settings.mode,provider,maxRequests:settings.maxRequests,onProgress:save});
   await save(report);
-  const failed=report.counts.automaticFailed+report.counts.providerFailed+report.counts.fixtureFailed+report.counts.blocked+report.cases.filter(c=>c.worldReplayAudit!=='passed').length;
-  log(JSON.stringify({status:failed?'checks-failed':settings.mode==='plan'?'plan-ready':'human-review-required',mode:settings.mode,counts:report.counts,semanticVerdict:report.semanticVerdict,output:out,html}));
+  const contradictions=report.factAuditSummary.contradictionTurns;
+  const failed=report.counts.automaticFailed+report.counts.providerFailed+report.counts.fixtureFailed+report.counts.blocked+report.cases.filter(c=>c.worldReplayAudit!=='passed').length+contradictions;
+  log(JSON.stringify({status:contradictions?'fact-contradiction-detected':failed?'checks-failed':settings.mode==='plan'?'plan-ready':'human-review-required',mode:settings.mode,counts:report.counts,factAuditSummary:report.factAuditSummary,semanticVerdict:report.semanticVerdict,output:out,html}));
   return {exitCode:failed?1:0,report:{...report,...metadata},out,html};
  }finally{provider?.close();for(const file of opened)await file.handle.close();}
 }
