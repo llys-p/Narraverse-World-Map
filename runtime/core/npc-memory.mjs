@@ -85,6 +85,9 @@ const TOPICS=[
  ['food',/粮|吃|饿|赠|送过|口粮/u,['gift']],
  ['apology',/道歉|对不起|赔礼/u,['apologize','smash','rob','threaten','steal','help','return']]
 ];
+export function npcRecallTopics(text=''){
+ return TOPICS.filter(([,pattern])=>pattern.test(text)).map(([topic])=>topic);
+}
 export function retrieveNpcEpisodes(episodes,text='',limit=12){
  integer(limit,1);requireCondition(limit<=12,'Recall limit exceeded');
  const relevant=new Set(TOPICS.filter(([,pattern])=>pattern.test(text)).flatMap(([, ,kinds])=>kinds));

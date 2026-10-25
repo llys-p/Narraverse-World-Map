@@ -3,6 +3,7 @@ import {TICK_MINUTES} from '../core/simulation-clock.mjs';
 import {interpretSocialText} from '../../demo-social-language.mjs';
 import {NPC_MEMORY_VERSION,retrieveNpcEpisodes,npcMemoryUpdates} from '../core/npc-memory.mjs';
 import {knownNegotiationOptions,repairLoanTerms} from '../core/npc-negotiation-terms.mjs';
+import {npcRecallFocus} from './npc-recall-focus.mjs';
 
 const pick=(value,names)=>Object.fromEntries(names.filter(k=>value&&Object.hasOwn(value,k)).map(k=>[k,cloneData(value[k])]));
 const nat=n=>Number.isSafeInteger(n)&&n>=0;
@@ -62,8 +63,9 @@ export function groundedProviderContext(context,text){
  const out=pick(context,['simulationId','revision','tick','targetId','persona','canTalk']);
  out.targetId='actor-2';out.self=pick(context.self,selfFields);
  const memoryMode=context.memoryMode===NPC_MEMORY_VERSION;
+ const recall=memoryMode?npcRecallFocus(text,context.conversation):null;
  const recent=context.observations.slice(-6),important=context.observations.slice().sort((a,b)=>(b.importance??0)-(a.importance??0)||b.eventSeq-a.eventSeq).slice(0,6);
- const selected=memoryMode?retrieveNpcEpisodes(context.observations,text):[...new Map([...important,...recent].map(m=>[m.eventSeq,m])).values()].sort((a,b)=>a.eventSeq-b.eventSeq);
+ const selected=memoryMode?retrieveNpcEpisodes(context.observations,recall.query):[...new Map([...important,...recent].map(m=>[m.eventSeq,m])).values()].sort((a,b)=>a.eventSeq-b.eventSeq);
  out.observations=selected.map(m=>({
   ...pick(m,memoryFields),...(memoryMode&&m.observedState?{observedState:pick(m.observedState,['holder','condition','effect'])}:{}),evidence:{basis:m.channel??'unknown',meaning:basis[m.channel]??'来源不详，不能声称目击',
    actor:m.actorId==='actor-4'?'玩家':m.actorId===null?'未识别的行为人':'身份不详',minutesAgo:minutes(context.tick,m.tick)}}));
@@ -81,6 +83,7 @@ export function groundedProviderContext(context,text){
   const coverage=context.memoryCoverage;
   requireCondition(coverage&&nat(coverage.forgottenEpisodes)&&nat(coverage.forgottenSpeech),'Invalid memory coverage');
   out.memoryMode=NPC_MEMORY_VERSION;out.memoryCoverage=pick(coverage,['forgottenEpisodes','forgottenSpeech']);
+  out.recallFocus=recall.focus;
   out.memoryUpdates=npcMemoryUpdates(out.observations,out.self);
  }
  return out;

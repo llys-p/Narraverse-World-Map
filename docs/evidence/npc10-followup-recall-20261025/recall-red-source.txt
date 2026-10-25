@@ -1,0 +1,26 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {providerContext,createNpcLanguageProvider} from '../../runtime/service/npc-language-provider.mjs';
+
+// Synthetic private context with an old, retained gift crowded out by harms.
+function context(){
+ return {simulationId:'followup-synthetic',revision:1,tick:30,targetId:'actor-2',persona:'猎人',canTalk:true,
+  self:{knownHolder:'actor-2',knownCondition:60,trust:50,fear:0,grievance:0},agreement:null,
+  memoryMode:'npc-memory-v1',memoryCoverage:{forgottenEpisodes:0,forgottenSpeech:0},
+  observations:Array.from({length:20},(_,i)=>({eventSeq:i+1,tick:i,kind:i===0?'gift':'smash',actorId:'actor-4',channel:'self',importance:i===0?1:3,text:'合成的已提交观察',observedState:{holder:'actor-2',condition:60,effect:null}})),
+  conversation:[{eventSeq:21,tick:21,utterance:'我送过的口粮，你还记得吗？',reply:'受控旧回复',memoryRefs:[1]}]};
+}
+const speech=(seq,utterance,reply='受控旧回复')=>({eventSeq:seq,tick:seq,utterance,reply,memoryRefs:[]});
+
+test('a short follow-up recalls the retained food episode despite crowded higher-importance harm',()=>{
+ const c=context(),before=structuredClone(c),p=providerContext(c,'那后来呢？');
+ assert.ok(p.observations.some(m=>m.eventSeq===1),'Retained gift must survive a follow-up without food keywords');
+ assert.deepEqual(p.recallFocus,{source:'confirmed-player-followup',topics:['food'],anchorEventSeq:21});
+ assert.equal(p.observations.length,12);assert.deepEqual(c,before);assert.deepEqual(providerContext(p,'那后来呢？'),p);
+});
+
+test('consecutive supported follow-ups stay on the latest explicit player topic',()=>{
+ const c=context();c.conversation.push(speech(22,'那后来呢？'),speech(23,'那现在呢？'));
+ const p=providerContext(c,'还有呢？');assert.ok(p.observations.some(m=>m.eventSeq===1));
+ assert.equal(p.recallFocus.anchorEventSeq,21);
+});

@@ -1,0 +1,56 @@
+TAP version 13
+# Subtest: a short follow-up recalls the retained food episode despite crowded higher-importance harm
+not ok 1 - a short follow-up recalls the retained food episode despite crowded higher-importance harm
+  ---
+  duration_ms: 11.24191
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-followup-recall.test.mjs:15:1'
+  failureType: 'testCodeFailure'
+  error: 'Retained gift must survive a follow-up without food keywords'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-followup-recall.test.mjs:17:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.start (node:internal/test_runner/test:1262:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: consecutive supported follow-ups stay on the latest explicit player topic
+not ok 2 - consecutive supported follow-ups stay on the latest explicit player topic
+  ---
+  duration_ms: 8.319534
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-followup-recall.test.mjs:22:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(p.observations.some(m=>m.eventSeq===1))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-followup-recall.test.mjs:24:43)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 141.80135

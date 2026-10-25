@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/check-npc10-legacy.mjs",
+    "<baseline>",
+    "<candidate>/artifacts/d4e12/npc10-legacy-comparison.json"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 11527.306,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
