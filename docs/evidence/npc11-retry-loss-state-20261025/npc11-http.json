@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/simulation/npc-retry-loss-service.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 5005.015,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

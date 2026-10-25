@@ -25,6 +25,7 @@ export function createNpcDialogue({fetchImpl=(...args)=>fetch(...args),newId=()=
   const validDraft=same(draft,group,id),p=same(offered,group,id)?offered.proposal:null;
   const permitted=p&&(p.type==='PlayerNegotiate'?group.map.negotiation.canPropose:socialInteractionActions(group,writable)[p.payload.action]);
   return {text,status,message:!enabled?'自然对话未启用，可继续使用下方的协商和互动。':text&&!dialogueText(text)?'请用240字以内的一段话，暂不支持换行或隐藏字符。':message||'先生成预览，再确认交谈；行动建议需另外确认。',
+   generateLabel:status==='error'&&request?'重取本次结果':['preview','error'].includes(status)?'重新生成预览':'生成对话预览',
    canGenerate:enabled&&talk&&dialogueText(text)&&status!=='generating',canCommit:talk&&validDraft,
    reply:validDraft?draft.payload.reply:'',proposal:p,proposalLabel:proposalLabel(p),canAct:!!(talk&&permitted)};
  }
@@ -36,11 +37,17 @@ export function createNpcDialogue({fetchImpl=(...args)=>fetch(...args),newId=()=
   try{
    const response=await fetchImpl('/api/runtime/demo-npc-compose',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:abort.signal});
    const value=await response.json();if(ticket!==epoch)return;
-   if(!response.ok)throw Error(errors[value?.error?.code]??'生成未完成，没有保存交谈；可明确重试。');
+   if(!response.ok){
+    const code=value?.error?.code;
+    // A known terminal result is cached by the provider. A new explicit click
+    // may start another attempt; an uncertain transport result must retain ID.
+    if(['MODEL_OUTPUT_INVALID','MODEL_TIMEOUT','MODEL_UNAVAILABLE'].includes(code))request=null;
+    throw Error((errors[code]??'生成结果尚未确认，没有保存交谈。')+(request?'可重取本次结果。':'再次生成会发起新请求。'));
+   }
    if(!value||Object.keys(value).sort().join(',')!=='apiVersion,payload,requestId,revision,simulationId,type'||value.apiVersion!==1||value.type!=='PlayerDialogue'||
     value.simulationId!==body.simulationId||value.revision!==body.expectedRevision||value.requestId!==body.requestId||
     !validNegotiationPayload(value.type,value.payload)||value.payload.utterance!==body.text)throw Error('对话预览校验失败，没有保存。');
-   draft=value;status='preview';message='以下是尚未保存的对话预览。确认交谈后，才会成为双方说过的话。';
+   request=null;draft=value;status='preview';message='以下是尚未保存的对话预览。确认交谈后，才会成为双方说过的话。再次生成会发起新请求。';
   }catch(error){if(ticket===epoch){status='error';message=error.message;}}
   finally{if(ticket===epoch)controller=null;}
  }

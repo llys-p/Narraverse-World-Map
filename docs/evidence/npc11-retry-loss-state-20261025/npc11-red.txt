@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: a new explicit generation after invalid output or success uses a fresh ID without editing the utterance
+not ok 1 - a new explicit generation after invalid output or success uses a fresh ID without editing the utterance
+  ---
+  duration_ms: 17.50589
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-dialogue-retry.test.mjs:11:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    1 !== 2
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-dialogue-retry.test.mjs:20:45)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: an actually recovered loss stays recovered when the tool is subsequently legitimately lent
+not ok 2 - an actually recovered loss stays recovered when the tool is subsequently legitimately lent
+  ---
+  duration_ms: 7091.344255
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-loss-history.test.mjs:8:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'not-confirmed-recovered'
+    - 'recovered'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'recovered'
+  actual: 'not-confirmed-recovered'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-loss-history.test.mjs:21:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.start (node:internal/test_runner/test:1262:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7259.733219

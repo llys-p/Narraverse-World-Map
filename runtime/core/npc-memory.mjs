@@ -113,8 +113,8 @@ export function npcMemoryUpdates(episodes,self){
   updates.push({topic:'damage',status:self.knownHolder==='unknown'?'condition-uncertain':self.knownCondition===100?'repaired':'damage-remains',
    causeRefs:[damage.eventSeq],followUpRefs:follow?[follow.eventSeq]:[],meaning:'当前修理状态不删除曾经受损的经历；帮助不等于自动原谅。'});}
  const missing=latest(['missing']),returned=latest(['return']);
- if(missing)updates.push({topic:'loss',status:self.knownHolder==='actor-2'&&returned&&returned.eventSeq>missing.eventSeq?'recovered':'not-confirmed-recovered',
-  causeRefs:[missing.eventSeq],followUpRefs:returned&&returned.eventSeq>missing.eventSeq?[returned.eventSeq]:[],meaning:'后来的归还只能证明归还行为，不能证明归还者就是之前的小偷。'});
+ if(missing)updates.push({topic:'loss',status:returned&&returned.eventSeq>missing.eventSeq?'recovered':'not-confirmed-recovered',
+  causeRefs:[missing.eventSeq],followUpRefs:returned&&returned.eventSeq>missing.eventSeq?[returned.eventSeq]:[],meaning:'归还来源说明这次失物是否已找回；之后正常借出不撤销那次归还，当前持有人另见knownFacts。归还者不自动成为之前的小偷。'});
  const overdue=latest(['overdue']);
  if(overdue)updates.push({topic:'overdue',status:returned&&returned.eventSeq>overdue.eventSeq?'returned-after-breach':'not-confirmed-returned',
   causeRefs:[overdue.eventSeq],followUpRefs:returned&&returned.eventSeq>overdue.eventSeq?[returned.eventSeq]:[],meaning:'已归还和曾经逾期可以同时成立；归还不删除逾期。'});

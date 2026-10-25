@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/simulation/npc-dialogue-retry.test.mjs",
+    "tests/simulation/npc-loss-history.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 7370.955,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

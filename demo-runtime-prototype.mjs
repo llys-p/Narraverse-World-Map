@@ -1551,7 +1551,7 @@ function paintNpcNegotiation(){
  const write=canWrite()&&!playbackBusy,state=npcDialogue.view(group,write,selectedActorId),pending=client.state().busy||client.state().pending;
  if($('npcDialogueText').value!==state.text)$('npcDialogueText').value=state.text;
  $('npcDialogueText').disabled=pending;$('npcDialogueStatus').textContent=state.message;
- $('npcDialogueGenerate').disabled=!state.canGenerate;$('npcDialogueCommit').disabled=!state.canCommit;
+ $('npcDialogueGenerate').disabled=!state.canGenerate;$('npcDialogueGenerate').textContent=state.generateLabel;$('npcDialogueCommit').disabled=!state.canCommit;
  $('npcDialoguePreview').hidden=!state.reply;$('npcDialoguePreview').textContent=state.reply;
  $('npcDialogueAct').hidden=!state.proposal;$('npcDialogueAct').disabled=!state.canAct;$('npcDialogueAct').textContent='确认建议：'+state.proposalLabel;
  $('npcDialogueHistory').textContent=n.lastTurn?'上次已保存的交谈：你说“'+n.lastTurn.utterance+'”；猎人回应“'+n.lastTurn.reply+'”。':'';
