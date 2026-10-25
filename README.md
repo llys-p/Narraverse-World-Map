@@ -5,6 +5,8 @@
 
 ## 独立项目入口
 
+- **NPC8 独立记忆更新候选：`Start-NPC-Memory.cmd`**。新入口18350 / `campaign-memory-village`；实际经历和交谈分别保存，修理、归还、道歉形成带来源的后续进展，不删除过去伤害或把传闻变成目击。2.0仅作参考，未复制或导入其记忆。54项相关检查通过，旧fixture1至4完整数据对照一致；外部模型本轮0调用，真实语义仍待验。见[NPC8说明](docs/runtime/NPC8-MEMORY-UPDATES.md)与[当前状态](PROJECT_CONTEXT.md)。
+
 - **NPC7 对话事实修复候选**：明确猎人/玩家身份、经历来源、程序换算的分钟数，以及修好待领取与已经借出的区别；为询问已有条款和现在修理提供有界意图提示。自然回复仍由模型生成，29项离线/受控检查通过。随后真实复测计划16轮、实际15次：13轮自动通过、1轮建议不符、1轮回复校验失败、1轮被阻塞；身份/记忆/20分钟逾期表达改善，协商与话题承接仍需修正。见[NPC7说明](docs/runtime/NPC7-DIALOGUE-GROUNDING.md)与[当前状态](PROJECT_CONTEXT.md)。
 
 - **NPC6 DeepSeek 续接候选**：补齐 `deepseek-flash` 配置、显式 `NPC_LLM_THINKING` 以及安全HTTP/usage诊断。官方接口短回复默认明确关闭思考，其他兼容接口不额外发此字段；Provider仍默认关闭。已完成8场景16轮真实开发评测：HTTP全部成功、自动约束14/16通过、世界重放8/8通过；逐句发现持有人、目击来源和时间表述错误，语言层需修正，尚未通过语义验收。见[NPC6说明](docs/runtime/NPC6-DEEPSEEK-CONTINUATION.md)与[当前状态](PROJECT_CONTEXT.md)。

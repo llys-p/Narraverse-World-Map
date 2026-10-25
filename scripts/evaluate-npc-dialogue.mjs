@@ -28,7 +28,7 @@ export function parseEvaluationArgs(args){
 async function fingerprints(){
  const files=['benchmarks/npc-dialogue-v1/cases.json','runtime/service/npc-language-provider.mjs','runtime/evaluation/npc-dialogue-eval.mjs',
   'runtime/service/npc-dialogue-grounding.mjs','demo-social-language.mjs','runtime/core/simulation-clock.mjs',
-  'runtime/core/npc-negotiation.mjs','runtime/core/npc-social.mjs','runtime-negotiation-contract.mjs','scripts/evaluate-npc-dialogue.mjs'];
+  'runtime/core/npc-negotiation.mjs','runtime/core/npc-social.mjs','runtime/core/npc-memory.mjs','runtime-negotiation-contract.mjs','scripts/evaluate-npc-dialogue.mjs'];
  const hashes={};for(const f of files)hashes[f]=createHash('sha256').update(await fs.readFile(path.join(root,f))).digest('hex');
  let baseCommit=null,workingTreeDirty=null;try{baseCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim();workingTreeDirty=Boolean(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim());}catch{}
  return {baseCommit,workingTreeDirty,sha256:hashes,node:process.version};

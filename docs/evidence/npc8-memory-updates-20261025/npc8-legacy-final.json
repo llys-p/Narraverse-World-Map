@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/check-npc8-legacy.mjs",
+    "../Narraverse-NPC7",
+    "artifacts/d4e12/npc8-legacy-final-comparison.json"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 10022.487,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

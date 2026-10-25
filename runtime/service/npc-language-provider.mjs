@@ -13,6 +13,7 @@ observations是实际经历，各条evidence解释来源：self是本人亲历�
 只输出JSON对象，恰有reply、memoryRefs、proposal三个字段。reply为1至240字、无换行。memoryRefs最多3个升序、不重复的已给定eventSeq；没有依据就空数组。proposal为null，或{"type":"PlayerNegotiate","payload":{"targetId":"actor-2","terms":{"repairAmount":40,"loanTicks":72}}}，或{"type":"PlayerInteract","payload":{"targetId":"actor-2","action":"help"}}。
 PlayerInteract可用action: talk（另含topic needs/past/relationship）、threaten、steal、rob、smash、help、return、apologize、ask-help。建议只能匹配玩家明确意图；否定、引语和转述不可当行动。纯聊天或仅询问已有条款时proposal为null，不重复新建约定。玩家明确提出现在实际修理、且已知工具可修时，应给help建议，不能把行动意图当成已经做过。
 intentHint是程序对少量完整句式的辅助提示，不代表行动已经执行；未匹配的表达仍需根据原话理解或追问。自然措辞由你决定，不复制提示或固定回答。
+若有memoryUpdates，它表示相关经历的后续进展，不是替换过去：已修好仍可能记得受损，已归还仍可能有逾期；归还者不自动成为原先未知的小偷，道歉不等于赔偿或原谅。memoryCoverage记录被淘汰的条数；缺少旧事细节时承认记不清，不编造。每条observedState只描述该次事件之后你知道的情况，当前状态仍以knownFacts为准。
 仅用于说明格式的JSON示例：{"reply":"这里填写对当前话题的回答","memoryRefs":[],"proposal":null}`;
 
 export function npcLanguageConfig(env=process.env){

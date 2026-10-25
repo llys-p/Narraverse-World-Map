@@ -1,9 +1,10 @@
 import {fields,integer,denseArray,requireCondition,cloneData} from './data-contract.mjs';
+import {npcMemoryFor,retrieveNpcEpisodes} from './npc-memory.mjs';
 import {SOCIAL_ACTIONS,validSocialPayload,validSocialResult} from '../../runtime-social-contract.mjs';
-import {NEGOTIATION_MAP_VERSION} from '../../runtime-negotiation-contract.mjs';
+import {isNegotiationMapVersion} from '../../runtime-negotiation-contract.mjs';
 
 export const SOCIAL_MAP_VERSION='campaign-map-v3';
-export const isSocialMapVersion=version=>[SOCIAL_MAP_VERSION,NEGOTIATION_MAP_VERSION].includes(version);
+export const isSocialMapVersion=version=>version===SOCIAL_MAP_VERSION||isNegotiationMapVersion(version);
 export const SOCIAL_COMMAND='PlayerInteract';
 const IDS=['actor-1','actor-2','actor-3'],STASH={x:5,y:8};
 const VILLAGE_SPOTS=Array.from({length:9},(_,i)=>({x:3+i%3,y:6+Math.floor(i/3)}));
@@ -44,13 +45,16 @@ export function validateSocialModel(s,tick,agreements=false){
  if(s.lastReply!==null){fields(s.lastReply,['text','refs','tick']);requireCondition(typeof s.lastReply.text==='string'&&s.lastReply.text.length<=300,'Invalid reply');integer(s.lastReply.tick);requireCondition(s.lastReply.tick<=tick,'Future reply');denseArray(s.lastReply.refs,3);let prev=0;for(const ref of s.lastReply.refs){integer(ref,1);requireCondition(ref>prev,'Unordered reply refs');prev=ref;}}
 }
 
-export function rememberSocial(a,seq,tick,kind,actorId,channel,text,importance=1){
+export function rememberSocial(a,seq,tick,kind,actorId,channel,text,importance=1,preserveRecent=0){
  requireCondition(!a.memories.some(m=>m.eventSeq===seq),'Duplicate social observation');
  a.memories.push({eventSeq:seq,tick,kind,actorId,channel,importance,text});
  // Evict the oldest least significant episode; accumulated relationships are not reapplied.
- if(a.memories.length>32){const least=Math.min(...a.memories.map(m=>m.importance));a.memories.splice(a.memories.findIndex(m=>m.importance===least),1);}
+ if(a.memories.length>32){const candidates=preserveRecent?a.memories.slice(0,-preserveRecent):a.memories;
+  const least=Math.min(...candidates.map(m=>m.importance));a.memories.splice(a.memories.findIndex(m=>m.importance===least),1);}
 }
-const remember=rememberSocial;
+// In v5, keep recent observations until the post-commit archive has consumed them.
+// The older fixtures retain their original eviction rule byte for byte.
+const remember=(world,actor,...args)=>rememberSocial(actor,...args,npcMemoryFor(world)?8:0);
 function harmful(a,seq,kind){
  const changes={threaten:[15,25,15],steal:[25,10,30],rob:[35,35,40],smash:[25,20,30]};
  const [trust,fear,grievance]=changes[kind];a.trust=bounded(a.trust-trust);a.fear=bounded(a.fear+fear);a.grievance=bounded(a.grievance+grievance);a.lastHarmSeq=seq;
@@ -75,7 +79,7 @@ export function auditSocial(world,dto){
  else if(action==='return'&&s.asset.holderId!=='actor-4')reasonCode='NOT_HELD';
  else if(['help','rob','ask-help'].includes(action)&&s.asset.holderId!=='actor-2')reasonCode='ASSET_UNAVAILABLE';
  else if(action==='help'&&s.asset.condition===100)reasonCode='NOT_DAMAGED';
- if(!reasonCode&&world.mapModel.version===NEGOTIATION_MAP_VERSION&&action==='ask-help'&&
+ if(!reasonCode&&isNegotiationMapVersion(world.mapModel.version)&&action==='ask-help'&&
   ['accepted','ready','borrowed'].includes(world.mapModel.negotiationModel.agreement?.status))reasonCode='RULE_REJECTED';
  return {outcome:reasonCode?'rejected':'succeeded',reasonCode,durationTicks:reasonCode?0:1,worldCommand:true,directTicks:true,directCommand:true};
 }
@@ -85,7 +89,8 @@ function recall(a,topic){
  return memories.sort((x,y)=>(a.grievance>=20?y.importance-x.importance:0)||y.eventSeq-x.eventSeq)[0]??null;
 }
 function talk(world,topic){
- const a=hunter(world),own=world.societyModel.agents[1].state,actor=body(world,'actor-2');
+ const original=hunter(world),archive=npcMemoryFor(world);
+ const a=archive?{...original,memories:retrieveNpcEpisodes(archive.episodes,topic==='relationship'?'信任伤害道歉':topic==='past'?'往事':'近况')}:original,own=world.societyModel.agents[1].state,actor=body(world,'actor-2');
  if(topic==='past'){
   const memory=recall(a,topic);return memory?{speech:'我记得：'+memory.text,refs:[memory.eventSeq]}:{speech:'我们还没有太多共同经历。',refs:[]};
  }
@@ -139,7 +144,7 @@ export function commitSocial(world,dto,tick,eventSeq){
   if(harm)harmful(observer,eventSeq,action);
   else if(!direct)useful(observer,3);
   const message=observer.actorId==='actor-2'?descriptions[action]:`我目击玩家${({threaten:'威胁猎人',steal:effect==='caught'?'试图拿取猎人的工具，被发现阻止':'拿走猎人的工具',rob:effect==='taken'?'抢走猎人的工具':'试图抢工具，被猎人拒绝',smash:'砸坏猎人的工具',help:'修理猎人的工具',return:'归还猎人的工具'})[action]}。`;
-  remember(observer,eventSeq,tick,action,'actor-4',direct||observer.actorId==='actor-2'?'self':'witness',message,importance);
+  remember(world,observer,eventSeq,tick,action,'actor-4',direct||observer.actorId==='actor-2'?'self':'witness',message,importance);
   if(changedAsset){observer.knownHolder=s.asset.holderId;observer.knownCondition=s.asset.condition;}
  }
  if(witnesses.includes('actor-2')||!['steal','smash'].includes(action))s.lastReply={text:speech,refs,tick};
@@ -149,7 +154,7 @@ export function commitSocial(world,dto,tick,eventSeq){
 
 export function observeSocialGift(world,fact){
  if(!isSocialMapVersion(world.mapModel.version))return;
- const a=hunter(world);useful(a,5);remember(a,fact.eventSeq,fact.tick,'gift','actor-4','self','玩家给了我一份粮食。',2);
+ const a=hunter(world);useful(a,5);remember(world,a,fact.eventSeq,fact.tick,'gift','actor-4','self','玩家给了我一份粮食。',2);
 }
 export function observeSocialTick(world,tick,append){
  if(!isSocialMapVersion(world.mapModel.version)||!body(world,'actor-2').alive)return;
@@ -163,7 +168,7 @@ export function observeSocialTick(world,tick,append){
   else if(s.asset.holderId==='actor-2'&&s.asset.condition<a.knownCondition){kind='damage';text='我发现工具损坏了，没有看见是谁做的。';a.knownCondition=s.asset.condition;}
  }
  if(kind){const payload={actorId:'actor-2',kind,text};const seq=append({type:'NpcPerceptionRecorded',sourceSystem:'campaign',commandId:null,entityIds:['actor-2'],causationEventSeqs:[],payload});
-  remember(a,seq,tick,kind,kind==='overdue'?'actor-4':null,'discovery',text,2);if(kind==='overdue')a.lastHarmSeq=seq;}
+  remember(world,a,seq,tick,kind,kind==='overdue'?'actor-4':null,'discovery',text,2);if(kind==='overdue')a.lastHarmSeq=seq;}
 }
 export function socialTravelTarget(world,ordinary){
  if(!isSocialMapVersion(world.mapModel.version))return ordinary;

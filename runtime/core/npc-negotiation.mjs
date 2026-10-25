@@ -1,12 +1,13 @@
 import {cloneData,fields,denseArray,requireCondition} from './data-contract.mjs';
 import {auditSocial,rememberSocial} from './npc-social.mjs';
-import {NEGOTIATION_MAP_VERSION,NEGOTIATION_COMMANDS,validNegotiationPayload,validAgreement,validDialogueTurn,validNegotiationResult} from '../../runtime-negotiation-contract.mjs';
+import {npcMemoryFor,NPC_MEMORY_VERSION} from './npc-memory.mjs';
+import {isNegotiationMapVersion,NEGOTIATION_COMMANDS,validNegotiationPayload,validAgreement,validDialogueTurn,validNegotiationResult} from '../../runtime-negotiation-contract.mjs';
 
 const active=a=>a&&['accepted','ready','borrowed'].includes(a.status);
 const model=w=>w.mapModel.negotiationModel,hunter=w=>w.mapModel.socialModel.actors[1],asset=w=>w.mapModel.socialModel.asset;
 const assetState=w=>({holderId:asset(w).holderId,condition:asset(w).condition});
 const alive=(w,id)=>w.actorModel.actors.find(a=>a.actorId===id).alive;
-const remember=(w,seq,tick,text,actorId='actor-4')=>{if(alive(w,'actor-2'))rememberSocial(hunter(w),seq,tick,'agreement',actorId,'self',text,2);};
+const remember=(w,seq,tick,text,actorId='actor-4')=>{if(alive(w,'actor-2'))rememberSocial(hunter(w),seq,tick,'agreement',actorId,'self',text,2,npcMemoryFor(w)?8:0);};
 export const createNegotiationModel=()=>({version:'npc-negotiation-v1',agreement:null,turns:[]});
 export function validateNegotiationModel(m,tick){
  fields(m,['version','agreement','turns']);requireCondition(m.version==='npc-negotiation-v1','Unsupported negotiation model');
@@ -18,11 +19,12 @@ export function preflightNegotiation(dto){requireCondition(validNegotiationPaylo
 
 export function auditNegotiation(world,dto){
  if(!NEGOTIATION_COMMANDS.includes(dto.type))return null;
- requireCondition(world.mapModel.version===NEGOTIATION_MAP_VERSION,'Negotiation requires a new negotiation world','COMMAND_UNSUPPORTED');
+ requireCondition(isNegotiationMapVersion(world.mapModel.version),'Negotiation requires a new negotiation world','COMMAND_UNSUPPORTED');
  const p=dto.payload,a=model(world).agreement,base=auditSocial(world,{type:'PlayerInteract',payload:{targetId:'actor-2',action:'talk',topic:'needs'}});
  let reason=base.reasonCode;
  if(!reason&&dto.type==='PlayerDialogue'){
-  const known=new Set([...hunter(world).memories.map(m=>m.eventSeq),...model(world).turns.map(m=>m.eventSeq)]);
+  const memory=npcMemoryFor(world);
+  const known=new Set([...(memory?.episodes??hunter(world).memories).map(m=>m.eventSeq),...(memory?.speech??model(world).turns).map(m=>m.eventSeq)]);
   if(!p.memoryRefs.every(ref=>known.has(ref)))reason='RULE_REJECTED';
  }else if(!reason){
   const pos=world.mapModel.position;if(Math.max(Math.abs(pos.x-5),Math.abs(pos.y-8))>1)reason='NOT_COLOCATED';
@@ -76,7 +78,7 @@ export function commitNegotiation(world,dto,tick,eventSeq){
 // Runs after the original social action, so existing repair/return/harm effects
 // and relationship changes are applied once. No second reward or penalty here.
 export function observeAgreementAction(world,dto,result,tick,seq){
- if(world.mapModel.version!==NEGOTIATION_MAP_VERSION)return result;
+ if(!isNegotiationMapVersion(world.mapModel.version))return result;
  const a=model(world).agreement;if(!a)return result;let note='';
  if(['accepted','ready'].includes(a.status)){
   if(dto.payload.action==='help'){
@@ -94,7 +96,7 @@ export function observeAgreementAction(world,dto,result,tick,seq){
  return result;
 }
 export function observeAgreementTick(world,tick,append){
- if(world.mapModel.version!==NEGOTIATION_MAP_VERSION)return;
+ if(!isNegotiationMapVersion(world.mapModel.version))return;
  const a=model(world).agreement;if(!a||!['offered','accepted','ready','borrowed'].includes(a.status))return;
  let status=null,text='',actorId='actor-4';
  if(!alive(world,'actor-2')||!alive(world,'actor-4')){status='invalidated';text='约定一方已死亡，约定停止。';}
@@ -121,12 +123,13 @@ export function negotiationView(world){
 }
 // Private server-to-provider context. Never merge into the player's map/scene.
 export function npcDialogueContext(bundle){
- const s=bundle.snapshot,w=s.world;if(w.mapModel.version!==NEGOTIATION_MAP_VERSION)return null;
- const h=hunter(w),own=w.societyModel.agents[1].state,b=w.actorModel.actors.find(a=>a.actorId==='actor-2');
+ const s=bundle.snapshot,w=s.world;if(!isNegotiationMapVersion(w.mapModel.version))return null;
+ const h=hunter(w),own=w.societyModel.agents[1].state,b=w.actorModel.actors.find(a=>a.actorId==='actor-2'),memory=npcMemoryFor(w);
  return {simulationId:s.simulationId,revision:s.revision,tick:s.tick,targetId:'actor-2',
   persona:'村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。',
   self:{alive:b.alive,health:b.health,fatigue:b.fatigue,food:own.inventory.food,wallet:own.wallet,trust:h.trust,fear:h.fear,grievance:h.grievance,
    knownHolder:h.knownHolder,knownCondition:h.knownCondition},
-  observations:cloneData(h.memories),agreement:cloneData(model(w).agreement),conversation:cloneData(model(w).turns),
+  observations:cloneData(memory?.episodes??h.memories),agreement:cloneData(model(w).agreement),conversation:cloneData(memory?.speech??model(w).turns),
+  ...(memory?{memoryMode:NPC_MEMORY_VERSION,memoryCoverage:{forgottenEpisodes:memory.forgottenEpisodes,forgottenSpeech:memory.forgottenSpeech}}:{}),
   canTalk:negotiationView(w).canTalk};
 }

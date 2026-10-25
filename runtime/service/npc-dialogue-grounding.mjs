@@ -1,6 +1,7 @@
 import {cloneData,requireCondition} from '../core/data-contract.mjs';
 import {TICK_MINUTES} from '../core/simulation-clock.mjs';
 import {interpretSocialText} from '../../demo-social-language.mjs';
+import {NPC_MEMORY_VERSION,retrieveNpcEpisodes,npcMemoryUpdates} from '../core/npc-memory.mjs';
 
 const pick=(value,names)=>Object.fromEntries(names.filter(k=>value&&Object.hasOwn(value,k)).map(k=>[k,cloneData(value[k])]));
 const nat=n=>Number.isSafeInteger(n)&&n>=0;
@@ -52,9 +53,11 @@ export function groundedProviderContext(context,text){
  requireCondition(context.targetId===undefined||context.targetId==='actor-2','Unexpected NPC context target');
  const out=pick(context,['simulationId','revision','tick','targetId','persona','canTalk']);
  out.targetId='actor-2';out.self=pick(context.self,selfFields);
+ const memoryMode=context.memoryMode===NPC_MEMORY_VERSION;
  const recent=context.observations.slice(-6),important=context.observations.slice().sort((a,b)=>(b.importance??0)-(a.importance??0)||b.eventSeq-a.eventSeq).slice(0,6);
- out.observations=[...new Map([...important,...recent].map(m=>[m.eventSeq,m])).values()].sort((a,b)=>a.eventSeq-b.eventSeq).map(m=>({
-  ...pick(m,memoryFields),evidence:{basis:m.channel??'unknown',meaning:basis[m.channel]??'来源不详，不能声称目击',
+ const selected=memoryMode?retrieveNpcEpisodes(context.observations,text):[...new Map([...important,...recent].map(m=>[m.eventSeq,m])).values()].sort((a,b)=>a.eventSeq-b.eventSeq);
+ out.observations=selected.map(m=>({
+  ...pick(m,memoryFields),...(memoryMode&&m.observedState?{observedState:pick(m.observedState,['holder','condition','effect'])}:{}),evidence:{basis:m.channel??'unknown',meaning:basis[m.channel]??'来源不详，不能声称目击',
    actor:m.actorId==='actor-4'?'玩家':m.actorId===null?'未识别的行为人':'身份不详',minutesAgo:minutes(context.tick,m.tick)}}));
  out.agreement=context.agreement?{...pick(context.agreement,agreementFields),terms:pick(context.agreement.terms,['repairAmount','loanTicks'])}:null;
  out.conversation=context.conversation.slice(-8).map(t=>({...pick(t,['eventSeq','tick','utterance','reply','memoryRefs']),evidence:'仅为双方说过的话，不证明声称的事情发生；旧回复也可能有误'}));
@@ -65,5 +68,11 @@ export function groundedProviderContext(context,text){
   agreement:agreementFacts(out.agreement,out.tick),
   authority:'这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。'};
  out.intentHint=dialogueIntentHint(text,out);
+ if(memoryMode){
+  const coverage=context.memoryCoverage;
+  requireCondition(coverage&&nat(coverage.forgottenEpisodes)&&nat(coverage.forgottenSpeech),'Invalid memory coverage');
+  out.memoryMode=NPC_MEMORY_VERSION;out.memoryCoverage=pick(coverage,['forgottenEpisodes','forgottenSpeech']);
+  out.memoryUpdates=npcMemoryUpdates(out.observations,out.self);
+ }
  return out;
 }

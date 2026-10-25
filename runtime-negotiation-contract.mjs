@@ -1,6 +1,8 @@
 import {validSocialPayload} from './runtime-social-contract.mjs';
 
 export const NEGOTIATION_MAP_VERSION='campaign-map-v4';
+export const MEMORY_MAP_VERSION='campaign-map-v5';
+export const isNegotiationMapVersion=version=>[NEGOTIATION_MAP_VERSION,MEMORY_MAP_VERSION].includes(version);
 export const NEGOTIATION_COMMANDS=Object.freeze(['PlayerNegotiate','PlayerAgreement','PlayerDialogue']);
 export const AGREEMENT_STATUSES=Object.freeze(['offered','accepted','ready','borrowed','fulfilled','breached','returned-late','expired','cancelled','invalidated']);
 const exact=(v,keys)=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k));

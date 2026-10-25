@@ -1,0 +1,9 @@
+✔ fixture5 real HTTP/worker: private memory reaches the provider, preview is read-only, durable dialogue and actions survive reopen and same-DTO retry once (2697.634761ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2866.951697

@@ -1,0 +1,14 @@
+✔ confirmed damage, actual repair and repeated apology update understanding without rewriting the injury (699.082014ms)
+✔ unseen theft remains unknown after discovery and later return identifies a returner, not a thief (7510.960692ms)
+✔ late return records a follow-up while the breach and fixed twenty-minute duration remain (2277.600745ms)
+✔ preview and confirmed false speech never manufacture observations; accepted speech stays private and survives the eight-turn working window (252.98598ms)
+✔ bounded memory protects topic follow-ups, exposes forgetting, and does not invent an evicted source (20.818316ms)
+✔ full replay rejects forged memory, ownership, outcomes and fixture splicing (368.088431ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11305.956047
