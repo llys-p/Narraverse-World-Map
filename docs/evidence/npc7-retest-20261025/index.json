@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-25",
+  "sourceCommit": "8064e2bb2ba7198aebea8ab511884fd343b26460",
+  "branch": "codex/npc7-dialogue-grounding-20261025",
+  "pullRequest": 15,
+  "sourceSha256": {
+    "runtime/service/npc-language-provider.mjs": "f8f2387c03e70f82e6b18d681e2b8bd0d1aef56d1700c5696a11a7c36c5411b9",
+    "runtime/service/npc-dialogue-grounding.mjs": "af8ca59d1fb036280a74b6d9dc73e6cb4c72cc4109e581d1acabe1ec31e6b7b0",
+    "runtime/evaluation/npc-dialogue-eval.mjs": "62ccbb0a65cbfce49cff0b8b0582e6a65ca8c9df275140107642fca926c6e43f",
+    "runtime/core/npc-negotiation.mjs": "76170460fa0aaee7ad9aaa74b4e78e4bb0907917439645d5e7977dc2bedae67c",
+    "runtime/core/npc-social.mjs": "01fc0c28531785f496fe3937b664423f171b0e520897325e1eaa65286bfb63ca",
+    "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+    "runtime-negotiation-contract.mjs": "1dffab4cb7e2889d920e7b106967aca33c37586b6f2f9b2525040a77bd799e8a",
+    "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+    "benchmarks/npc-dialogue-v1/cases.json": "83ca701a1803a40cd9070213e6a272da5e9396cd7291ba2de2a0b73e25aca654",
+    "artifacts/npc7-retest-20261025/suite.json": "2e3f055a515e7474944c90e93fe1e59f0e8f62359d235c20bd6ee827eadf99fc",
+    "artifacts/npc7-retest-20261025/run.mjs": "ccec0ecc0bf1e224d11e126e659a2933c5e233031437f451225d32cd488e9caa"
+  },
+  "archivedSources": {
+    "artifacts/npc7-retest-20261025/suite.json": "suite.json",
+    "artifacts/npc7-retest-20261025/run.mjs": "run.mjs.txt"
+  },
+  "final": {
+    "plannedTurns": 16,
+    "actualOutboundRequests": 15,
+    "automaticPassed": 13,
+    "automaticFailed": 1,
+    "providerFailed": 1,
+    "blocked": 1,
+    "worldReplaysPassed": 8,
+    "assistantVerdict": "needs-correction",
+    "humanVerdict": "pending"
+  },
+  "privateDelivery": {
+    "filename": "NPC7-real-dialogue-retest-20261025.html",
+    "sha256": "066cb207b86b588a85143665024b8e97d8c457e54afb014daa2480479d6012da",
+    "rawReportSha256": "5bfda370504a5730c7474915fd0e95851598142e28df16317559e608ca37c55b"
+  },
+  "preservedEvidence": {
+    "docs/evidence/npc6-deepseek-continuation-20261024/index.json": "8f62074ca3b3f47d9a40af01a573ec0bad2319223f07a681e8e65bad8f48170e",
+    "docs/evidence/npc7-dialogue-grounding-20261025/index.json": "df6dd33be33d5d7cac162509a273f5884b4383e7b749283dd386fc8ea7e6415d"
+  },
+  "evidence": {
+    "live-summary.json": {
+      "bytes": 29744,
+      "sha256": "0fecdccbbe352d5da7d24ee2020ed6e8310580d5aaa4760ee85b914015ce0769"
+    },
+    "npc7-retest-live.json": {
+      "bytes": 281,
+      "sha256": "d842b143c2ddf4793b49a4d2b477185cd13975fccae34a6c47aac151ec0e76b5"
+    },
+    "npc7-retest-live.txt": {
+      "bytes": 242,
+      "sha256": "4a7c41767d4f3e369bd0fa9678b4cef2d04ffc960bc13c6a1456c015d6f705a8"
+    },
+    "npc7-retest-plan.json": {
+      "bytes": 280,
+      "sha256": "184afc9a08fe488abf0f0d9764cf4858cb635e3b4629bea76072223850e5122a"
+    },
+    "npc7-retest-plan.txt": {
+      "bytes": 232,
+      "sha256": "be416d3873676f85521d2e5ffe13dd95004e3ee9ed6c5c8a82ab56d10ce368b9"
+    },
+    "plan-summary.json": {
+      "bytes": 2487,
+      "sha256": "bcec8e6af1f69122cbd5c93294648297b914684a62581b90bb70a2782d5c57e8"
+    },
+    "run.mjs.txt": {
+      "bytes": 4482,
+      "sha256": "ccec0ecc0bf1e224d11e126e659a2933c5e233031437f451225d32cd488e9caa"
+    },
+    "suite.json": {
+      "bytes": 14709,
+      "sha256": "2e3f055a515e7474944c90e93fe1e59f0e8f62359d235c20bd6ee827eadf99fc"
+    }
+  },
+  "deliverySourceSha256": {
+    "scripts/check-npc7-retest.mjs": "26642d0ea89983e28c78c120059ebe8bef526d557b944351d30d9e43b0e0092c"
+  }
+}

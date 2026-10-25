@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "artifacts/npc7-retest-20261025/run.mjs",
+    "live"
+  ],
+  "pid": 7,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 35143.229,
+  "cpuMs": null,
+  "hardLimitMs": 420000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
