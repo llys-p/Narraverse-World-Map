@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc13-evidence.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "credential-pattern-scan",
+        "changed-and-public-evidence"
+      ],
+      "exitCode": 0
+    }
+  ]
+}

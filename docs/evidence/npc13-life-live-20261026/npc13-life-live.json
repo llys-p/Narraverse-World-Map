@@ -1,0 +1,26 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-npc-dialogue.mjs",
+    "--suite",
+    "life-v1",
+    "--mode",
+    "live",
+    "--case",
+    "all",
+    "--allow-model-calls",
+    "--max-requests",
+    "8",
+    "--out",
+    "artifacts/npc13-life-live/live.json"
+  ],
+  "pid": 6,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 61788.502,
+  "cpuMs": null,
+  "hardLimitMs": 360000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

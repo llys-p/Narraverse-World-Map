@@ -1,0 +1,752 @@
+{
+  "schemaVersion": 1,
+  "basisCommit": "9d8baecc2d253420e3d86546acb15b3ef5e99252",
+  "workingTreeDirty": false,
+  "fixtureVersion": "5",
+  "suiteId": "npc-life-v1",
+  "provider": {
+    "model": "deepseek-flash",
+    "thinking": "disabled",
+    "endpointSha256": "a34e2a4708ed1c61008a151688838dcf1c44d4e7f08054633e72ba7c0b16cfc1"
+  },
+  "counts": {
+    "planned": 8,
+    "attempted": 8,
+    "automaticPassed": 8,
+    "automaticFailed": 0,
+    "providerFailed": 0,
+    "fixtureFailed": 0,
+    "blocked": 0,
+    "notRun": 0
+  },
+  "httpSucceeded": 8,
+  "usage": {
+    "inputTokens": 16080,
+    "outputTokens": 529,
+    "totalTokens": 16609
+  },
+  "inputCache": {
+    "hitTokens": 7424,
+    "missTokens": 8656
+  },
+  "adapterLatencyMs": {
+    "median": 1309.818,
+    "min": 1054.706,
+    "max": 7992.097
+  },
+  "semanticVerdict": "needs-correction",
+  "independentHumanVerdict": "pending",
+  "assistantAssessment": {
+    "schemaVersion": 1,
+    "basis": "助手逐条对照实际上下文；不是独立人工金标，不是盲测准确率。原humanReview保持pending。",
+    "verdict": "needs-correction",
+    "explicitFactErrors": 1,
+    "explanationIssues": 3,
+    "turns": [
+      {
+        "case": "work-and-food",
+        "turn": "work-preparation",
+        "assessment": "主要事实符合",
+        "notes": "尚未领工资、钱和粮均为0，正确区分工作准备与结果；末尾追问较多。"
+      },
+      {
+        "case": "work-and-food",
+        "turn": "wage-received",
+        "assessment": "主要事实符合",
+        "notes": "正确说已领20，粮仍为0，并打算买粮；“块”是口语化单位，未沿用金币称呼。"
+      },
+      {
+        "case": "work-and-food",
+        "turn": "food-preparation",
+        "assessment": "主要事实符合",
+        "notes": "正确说抵达粮摊不算买到粮，当前仍未买。开头泛指“你”，本人/玩家指代略显生硬。引用的是保留交谈，不是新的事实经历。"
+      },
+      {
+        "case": "work-and-food",
+        "turn": "food-consumed",
+        "assessment": "明确事实错误",
+        "notes": "self.food=0、self.wallet=10；实际买入+1已在日结消耗，回复却说还剩一份，钱只剩几块。不能把当次增量当当前库存。"
+      },
+      {
+        "case": "gifts-pause",
+        "turn": "buy-intent",
+        "assessment": "主要事实符合，措辞有扩展",
+        "notes": "已领20、粮0、准备买粮的主要事实正确；自行补充“掂量买多少/不敢花光”，不是已记录的明确停购原因。"
+      },
+      {
+        "case": "gifts-pause",
+        "turn": "two-gifts",
+        "assessment": "需修正解释",
+        "notes": "正确承认两份赠粮，但当前NoAction并已到歇脚处，未清楚回答已暂停买粮，改说要看肚子缓没缓；应区分饥饿读数和库存准备。"
+      },
+      {
+        "case": "gifts-pause",
+        "turn": "wait-result",
+        "assessment": "需修正解释及无依据经历",
+        "notes": "实际NoAction、计划blocked、当前粮1和钱20，没有再次购物或后来去粮摊的记录；回复加了“后来到粮摊边看了看”，并把是否买粮系于新工作，依据不足。"
+      },
+      {
+        "case": "gifts-pause",
+        "turn": "followup",
+        "assessment": "需修正承接",
+        "notes": "延续上一轮未经确认的资金/新工作理由；“没买成”容易被理解为尝试失败，而实际是没有购物动作，应纠正旧回复而非继续沿用。"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "work-and-food",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "work-preparation",
+          "status": "automatic-pass",
+          "metrics": {
+            "contentBytes": 218,
+            "durationMs": 7992.097,
+            "failure": null,
+            "finishReason": "stop",
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 256,
+                "missTokens": 1508
+              },
+              "inputTokens": 1764,
+              "outputTokens": 60,
+              "totalTokens": 1824
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotCreateEpisodes",
+              "passed": true
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "facts": {
+            "food": 0,
+            "wallet": 0,
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "WorkForPay",
+                "destination": "work-site",
+                "decidedTick": 104,
+                "phase": "at-destination",
+                "redirect": null
+              },
+              "plan": null,
+              "lastResult": null
+            }
+          }
+        },
+        {
+          "id": "wage-received",
+          "status": "automatic-pass",
+          "metrics": {
+            "contentBytes": 167,
+            "durationMs": 1080.265,
+            "failure": null,
+            "finishReason": "stop",
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 1024,
+                "missTokens": 873
+              },
+              "inputTokens": 1897,
+              "outputTokens": 46,
+              "totalTokens": 1943
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotCreateEpisodes",
+              "passed": true
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "facts": {
+            "food": 0,
+            "wallet": 20,
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "WorkForPay",
+                "destination": "work-site",
+                "decidedTick": 104,
+                "phase": "awaiting-review",
+                "redirect": null
+              },
+              "plan": {
+                "kind": "secure-food",
+                "step": "BuyFood",
+                "status": "ready"
+              },
+              "lastResult": {
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "tick": 144,
+                "walletChange": 20,
+                "foodChange": 0
+              }
+            }
+          }
+        },
+        {
+          "id": "food-preparation",
+          "status": "automatic-pass",
+          "metrics": {
+            "contentBytes": 279,
+            "durationMs": 1301.092,
+            "failure": null,
+            "finishReason": "stop",
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 1024,
+                "missTokens": 963
+              },
+              "inputTokens": 1987,
+              "outputTokens": 73,
+              "totalTokens": 2060
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotCreateEpisodes",
+              "passed": true
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "facts": {
+            "food": 0,
+            "wallet": 20,
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "BuyFood",
+                "destination": "food-stall",
+                "decidedTick": 148,
+                "phase": "at-destination",
+                "redirect": null
+              },
+              "plan": {
+                "kind": "secure-food",
+                "step": "BuyFood",
+                "status": "ready"
+              },
+              "lastResult": {
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "tick": 144,
+                "walletChange": 20,
+                "foodChange": 0
+              }
+            }
+          }
+        },
+        {
+          "id": "food-consumed",
+          "status": "automatic-pass",
+          "metrics": {
+            "contentBytes": 242,
+            "durationMs": 1054.706,
+            "failure": null,
+            "finishReason": "stop",
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 1024,
+                "missTokens": 1063
+              },
+              "inputTokens": 2087,
+              "outputTokens": 65,
+              "totalTokens": 2152
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotCreateEpisodes",
+              "passed": true
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "facts": {
+            "food": 0,
+            "wallet": 10,
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "BuyFood",
+                "destination": "food-stall",
+                "decidedTick": 148,
+                "phase": "awaiting-review",
+                "redirect": null
+              },
+              "plan": null,
+              "lastResult": {
+                "action": "BuyFood",
+                "status": "succeeded",
+                "tick": 288,
+                "walletChange": -10,
+                "foodChange": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "gifts-pause",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "buy-intent",
+          "status": "automatic-pass",
+          "metrics": {
+            "contentBytes": 245,
+            "durationMs": 1309.37,
+            "failure": null,
+            "finishReason": "stop",
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 1024,
+                "missTokens": 781
+              },
+              "inputTokens": 1805,
+              "outputTokens": 63,
+              "totalTokens": 1868
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": []
+            },
+            {
+              "name": "speechDidNotCreateEpisodes",
+              "passed": true
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "facts": {
+            "food": 0,
+            "wallet": 20,
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "BuyFood",
+                "destination": "food-stall",
+                "decidedTick": 148,
+                "phase": "at-destination",
+                "redirect": null
+              },
+              "plan": {
+                "kind": "secure-food",
+                "step": "BuyFood",
+                "status": "ready"
+              },
+              "lastResult": {
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "tick": 144,
+                "walletChange": 20,
+                "foodChange": 0
+              }
+            }
+          }
+        },
+        {
+          "id": "two-gifts",
+          "status": "automatic-pass",
+          "metrics": {
+            "contentBytes": 250,
+            "durationMs": 1310.266,
+            "failure": null,
+            "finishReason": "stop",
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 1024,
+                "missTokens": 1052
+              },
+              "inputTokens": 2076,
+              "outputTokens": 62,
+              "totalTokens": 2138
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [
+                "gift"
+              ],
+              "actual": [
+                {
+                  "eventSeq": 25,
+                  "kind": "gift"
+                },
+                {
+                  "eventSeq": 27,
+                  "kind": "gift"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotCreateEpisodes",
+              "passed": true
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "facts": {
+            "food": 2,
+            "wallet": 20,
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "NoAction",
+                "destination": "rest-site",
+                "decidedTick": 164,
+                "phase": "at-destination",
+                "redirect": null
+              },
+              "plan": {
+                "kind": "secure-food",
+                "step": "BuyFood",
+                "status": "ready"
+              },
+              "lastResult": {
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "tick": 144,
+                "walletChange": 20,
+                "foodChange": 0
+              }
+            }
+          }
+        },
+        {
+          "id": "wait-result",
+          "status": "automatic-pass",
+          "metrics": {
+            "contentBytes": 307,
+            "durationMs": 1517.497,
+            "failure": null,
+            "finishReason": "stop",
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 1024,
+                "missTokens": 1152
+              },
+              "inputTokens": 2176,
+              "outputTokens": 79,
+              "totalTokens": 2255
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": [
+                {
+                  "eventSeq": 25,
+                  "kind": "gift"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotCreateEpisodes",
+              "passed": true
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "facts": {
+            "food": 1,
+            "wallet": 20,
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "NoAction",
+                "destination": "rest-site",
+                "decidedTick": 164,
+                "phase": "awaiting-review",
+                "redirect": null
+              },
+              "plan": {
+                "kind": "secure-food",
+                "step": "BuyFood",
+                "status": "blocked"
+              },
+              "lastResult": {
+                "action": "NoAction",
+                "status": "no-action",
+                "tick": 288,
+                "walletChange": 0,
+                "foodChange": 0
+              }
+            }
+          }
+        },
+        {
+          "id": "followup",
+          "status": "automatic-pass",
+          "metrics": {
+            "contentBytes": 304,
+            "durationMs": 1360.565,
+            "failure": null,
+            "finishReason": "stop",
+            "httpStatus": 200,
+            "status": "succeeded",
+            "thinking": "disabled",
+            "usage": {
+              "inputCache": {
+                "hitTokens": 1024,
+                "missTokens": 1264
+              },
+              "inputTokens": 2288,
+              "outputTokens": 81,
+              "totalTokens": 2369
+            }
+          },
+          "checks": [
+            {
+              "name": "generationDidNotWriteWorld",
+              "passed": true
+            },
+            {
+              "name": "proposalMatchesScenario",
+              "passed": true,
+              "actual": "none",
+              "expected": [
+                "none"
+              ]
+            },
+            {
+              "name": "requiredMemorySource",
+              "passed": true,
+              "expected": [],
+              "actual": [
+                {
+                  "eventSeq": 25,
+                  "kind": "gift"
+                }
+              ]
+            },
+            {
+              "name": "speechDidNotCreateEpisodes",
+              "passed": true
+            },
+            {
+              "name": "speechDidNotExecuteAction",
+              "passed": true
+            }
+          ],
+          "facts": {
+            "food": 1,
+            "wallet": 20,
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "NoAction",
+                "destination": "rest-site",
+                "decidedTick": 164,
+                "phase": "awaiting-review",
+                "redirect": null
+              },
+              "plan": {
+                "kind": "secure-food",
+                "step": "BuyFood",
+                "status": "blocked"
+              },
+              "lastResult": {
+                "action": "NoAction",
+                "status": "no-action",
+                "tick": 288,
+                "walletChange": 0,
+                "foodChange": 0
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "source": {
+    "baseCommit": "9d8baecc2d253420e3d86546acb15b3ef5e99252",
+    "workingTreeDirty": false,
+    "sha256": {
+      "benchmarks/npc-life-v1/cases.json": "05233a8cf74f524a57ed8adcaffd687c3805f1e082fefa34a48dbf55443a8bbf",
+      "runtime/core/npc-negotiation-terms.mjs": "5f80bc3e4d9a4941bb4fb1f09020d29f0bda2a2733e6f382cae5e368ef52d50f",
+      "runtime/fixtures/campaign-village.mjs": "f30907bf5d28974a6668dcce8da262601de40eaeb44dff513967c2bd22aa9b1f",
+      "runtime/service/npc-language-provider.mjs": "e35fee1904864d26538d44d09c638e6498d84b2df20d336dc4eb973980d3a920",
+      "runtime/evaluation/npc-dialogue-eval.mjs": "ec9d2fb422ed2f387a81428f9119d3e43aac443afba5988928c540361be7a320",
+      "runtime/service/npc-dialogue-grounding.mjs": "bf424aeba37e8df0ff2858518b103072ded60aeee3e1d7ca857f9d2e7d89e356",
+      "runtime/service/npc-recall-focus.mjs": "b6b9be89889d49897eff1779b3e22dae1b202d4bb04c9bdae3c2383f78362889",
+      "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+      "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+      "runtime/core/npc-negotiation.mjs": "03e3ab05e1e28ab8278aa818ff45252aa4c060f188eb2f89af5240f4f7bb2d8e",
+      "runtime/core/npc-social.mjs": "7dc296035a5f6d2e6217f03e10b015439b248e40940585cfc42bdd78c49de2de",
+      "runtime/core/npc-memory.mjs": "d2aca016dde6bada9c6220f6c3eceab34c1e4e50c7830c07ada085d5960ed878",
+      "runtime/core/npc-life-context.mjs": "e788610cd71ac8fd81a34cc0394d0aaf2d8a3437c2f1a8b3307a1005788987b7",
+      "runtime/core/npc-village-sites.mjs": "3af4d2ff4d7b7a15e7d136f5a5e1356f3857df73de4f7d1e2ced40371a3ef28f",
+      "runtime/core/campaign-npc-agency.mjs": "2d7386dfa5f5ee72498bf2c03b574eaa6e62d26e603635bb6005b52288113941",
+      "runtime/core/campaign-map.mjs": "5edb2d20e37d21f3e978c10e2240834f4818aa06592ef5fd956bea6cddd0fe9a",
+      "runtime-negotiation-contract.mjs": "528d6214a61140a78d988ff4af26c5429f1dea9ec1a9bab5e25bf21c6b58ea52",
+      "scripts/evaluate-npc-dialogue.mjs": "9c0900cc29561a7b67ed9fad65720311de7b340fe9fc993dd515fb5b9a0cda39"
+    },
+    "node": "v24.22.1"
+  },
+  "privateReportSha256": "a93cd00fcc1e6f33040f565d8518fb1624358a3115e318818350c729712a739b",
+  "privateHtmlSha256": "a723d3700756eafa0d36b6f008fb0af388eaa265d3addd4e1d19ab4931f25333"
+}
