@@ -1,7 +1,8 @@
 // One bounded campaign map. Positions, orders and NPC travel are replayed world facts.
 import {fields,record,integer,denseArray,requireCondition,cloneData,canonicalJson} from './data-contract.mjs';
 import {inspectDescriptorTree} from './experience-state.mjs';
-import {NPC_MAP_VERSION,HUNTER_SITES,initialHunterIntent,validateHunterIntent} from './campaign-npc-agency.mjs';
+import {NPC_MAP_VERSION,initialHunterIntent,validateHunterIntent} from './campaign-npc-agency.mjs';
+import {HUNTER_SITES} from './npc-village-sites.mjs';
 import {SOCIAL_MAP_VERSION,isSocialMapVersion,createSocialModel,validateSocialModel,socialTravelTarget,socialView} from './npc-social.mjs';
 import {NEGOTIATION_MAP_VERSION,isNegotiationMapVersion} from '../../runtime-negotiation-contract.mjs';
 import {createNegotiationModel,validateNegotiationModel,negotiationView} from './npc-negotiation.mjs';

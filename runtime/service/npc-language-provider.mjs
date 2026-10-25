@@ -16,6 +16,7 @@ PlayerInteract可用action: talk（另含topic needs/past/relationship）、thre
 intentHint是程序对少量完整句式的辅助提示，不代表行动已经执行；未匹配的表达仍需根据原话理解或追问。自然措辞由你决定，不复制提示或固定回答。
 若有memoryUpdates，它表示相关经历的后续进展，不是替换过去：已修好仍可能记得受损，已归还仍可能有逾期；归还者不自动成为原先未知的小偷，道歉不等于赔偿或原谅。memoryCoverage记录被淘汰的条数；缺少旧事细节时承认记不清，不编造。每条observedState只描述该次事件之后你知道的情况，当前状态仍以knownFacts为准。
 若有recallFocus，它只说明本轮检索话题；confirmed-player-followup表示有限短追问承接了已确认交谈中的玩家话题，anchorEventSeq是交谈编号，不是事实经历。话题和旧原话都不证明事件发生，不能据此补造记忆、恢复被遗忘细节或产生行动建议。memoryRefs可引用已给定observations或conversation的编号，但引用交谈只证明说过，不能据此声称事情发生。source=none时若指代不明，应追问而不自行猜测。
+若有activity，它来自你本人已保存的行动状态。intent是最近记录的行进意图：travelling表示前往，at-destination只表示已到目的地，awaiting-review表示旧意图等待更新，stopped表示已停止。redirect=safety表示避开附近玩家，tool表示已知工具不可用而返回歇脚处；这些改道优先于原意图。plan是已保存的后续步骤，ready不保证已经执行，blocked不提供通用确切原因。lastResult才是本人最近一次实际执行结果；succeeded/rejected/no-action分别为成功/拒绝/没有行动，walletChange和foodChange是当次变化，不是当前余额。当前粮食、钱包、饥饿仍用self；曾买到粮不代表现在还有粮，日结可能已消耗。准备工作或到达工作点不等于已领工资，到粮摊不等于已付款买到粮。缺少记录时不猜测后续结果、他人余额或未来机会。回答当前生活话题，不强行拉回修理；activity不新增动作权限或memoryRefs来源，原话和行动仍须原有确认。
 仅用于说明格式的JSON示例：{"reply":"这里填写对当前话题的回答","memoryRefs":[],"proposal":null}`;
 
 export function npcLanguageConfig(env=process.env){

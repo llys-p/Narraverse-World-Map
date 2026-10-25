@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/simulation/npc-life-evaluation.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 433.29,
+  "cpuMs": null,
+  "hardLimitMs": 240000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

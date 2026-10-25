@@ -4,6 +4,7 @@ import {interpretSocialText} from '../../demo-social-language.mjs';
 import {NPC_MEMORY_VERSION,retrieveNpcEpisodes,npcMemoryUpdates} from '../core/npc-memory.mjs';
 import {knownNegotiationOptions,repairLoanTerms} from '../core/npc-negotiation-terms.mjs';
 import {npcRecallFocus} from './npc-recall-focus.mjs';
+import {sanitizeNpcLifeContext} from '../core/npc-life-context.mjs';
 
 const pick=(value,names)=>Object.fromEntries(names.filter(k=>value&&Object.hasOwn(value,k)).map(k=>[k,cloneData(value[k])]));
 const nat=n=>Number.isSafeInteger(n)&&n>=0;
@@ -63,6 +64,10 @@ export function groundedProviderContext(context,text){
  const out=pick(context,['simulationId','revision','tick','targetId','persona','canTalk']);
  out.targetId='actor-2';out.self=pick(context.self,selfFields);
  const memoryMode=context.memoryMode===NPC_MEMORY_VERSION;
+ if(memoryMode){
+  if(nat(context.self?.hunger)&&context.self.hunger<=1000)out.self.hunger=context.self.hunger;
+  if(Object.hasOwn(context,'activity'))out.activity=sanitizeNpcLifeContext(context.activity,context.tick);
+ }
  const recall=memoryMode?npcRecallFocus(text,context.conversation):null;
  const recent=context.observations.slice(-6),important=context.observations.slice().sort((a,b)=>(b.importance??0)-(a.importance??0)||b.eventSeq-a.eventSeq).slice(0,6);
  const selected=memoryMode?retrieveNpcEpisodes(context.observations,recall.query):[...new Map([...important,...recent].map(m=>[m.eventSeq,m])).values()].sort((a,b)=>a.eventSeq-b.eventSeq);

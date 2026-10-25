@@ -1,0 +1,27 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createMemoryCampaignVillage,campaignSystems} from '../../runtime/fixtures/campaign-village.mjs';
+import {createAuditedBundle,deriveCampaignBundle,validateBundle} from '../../runtime/core/world-state.mjs';
+import {npcDialogueContext} from '../../runtime/core/npc-negotiation.mjs';
+import {providerContext} from '../../runtime/service/npc-language-provider.mjs';
+const options={rulesVersion:'d-campaign-v1',systems:campaignSystems()};
+const initial=()=>createAuditedBundle(createMemoryCampaignVillage(42,'npc12-life').bundle,options);
+const advance=(b,tick)=>deriveCampaignBundle(b,{version:5,commandId:'life-to-'+tick,expectedRevision:b.snapshot.revision,type:'AdvanceTime',payload:{ticks:tick-b.snapshot.tick}}).bundle;
+const read=b=>providerContext(npcDialogueContext(b),'你现在准备去哪，最近做了什么？');
+
+test('initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome',()=>{
+ const b=initial(),before=structuredClone(b),c=read(b);
+ assert.ok(c.activity,'Dialogue must receive its own life context');assert.equal(c.activity.intent.action,'NoAction');
+ assert.equal(c.activity.plan,null);assert.equal(c.activity.lastResult,null);assert.equal(c.self.hunger,200);
+ assert.deepEqual(b,before);assert.deepEqual(providerContext(c,'你现在准备去哪，最近做了什么？'),c);
+});
+
+test('preparing to work is not a paid result and a newly completed action makes its older intent await review',()=>{
+ let b=advance(initial(),112),c=read(b);
+ assert.ok(c.activity,'Travel needs a separately attributed intention');assert.equal(c.activity.intent.action,'WorkForPay');
+ assert.equal(c.activity.intent.phase,'at-destination');assert.equal(c.activity.lastResult,null);assert.equal(c.self.wallet,0);
+ b=advance(b,144);c=read(b);
+ assert.equal(c.activity.intent.phase,'awaiting-review');assert.equal(c.activity.plan.step,'BuyFood');
+ assert.deepEqual(c.activity.lastResult,{action:'WorkForPay',status:'succeeded',tick:144,walletChange:20,foodChange:0});
+ assert.equal(c.self.wallet,20);validateBundle(b,options);
+});

@@ -1,0 +1,73 @@
+TAP version 13
+# Subtest: initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+ok 1 - initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+  ---
+  duration_ms: 102.007812
+  type: 'test'
+  ...
+# Subtest: buying intent differs from purchased food, and gifts pause travel without manufacturing another wage
+ok 2 - buying intent differs from purchased food, and gifts pause travel without manufacturing another wage
+  ---
+  duration_ms: 18084.330574
+  type: 'test'
+  ...
+# Subtest: own failed result and movement overrides use known facts without hidden balances or tool ownership
+ok 3 - own failed result and movement overrides use known facts without hidden balances or tool ownership
+  ---
+  duration_ms: 11142.073951
+  type: 'test'
+  ...
+# Subtest: private projection strips internal inputs, rejects future or unpaired results and preserves old fixture context
+not ok 4 - private projection strips internal inputs, rejects future or unpaired results and preserves old fixture context
+  ---
+  duration_ms: 6898.155287
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-life-context.test.mjs:47:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + {
+    +   action: 'WorkForPay',
+    +   foodChange: 0,
+    +   status: 'succeeded',
+    +   tick: 144,
+    +   walletChange: 20
+    + }
+    - null
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: ~
+  actual:
+    action: 'WorkForPay'
+    status: 'succeeded'
+    tick: 144
+    walletChange: 20
+    foodChange: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-life-context.test.mjs:55:45)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: preparing to work is not a paid result and a newly completed action makes its older intent await review
+ok 5 - preparing to work is not a paid result and a newly completed action makes its older intent await review
+  ---
+  duration_ms: 7099.496041
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 4
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 43582.111461

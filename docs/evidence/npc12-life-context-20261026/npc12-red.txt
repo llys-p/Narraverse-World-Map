@@ -1,0 +1,50 @@
+TAP version 13
+# Subtest: initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+not ok 1 - initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+  ---
+  duration_ms: 122.292159
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-life-context.test.mjs:12:1'
+  failureType: 'testCodeFailure'
+  error: 'Dialogue must receive its own life context'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-life-context.test.mjs:14:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.start (node:internal/test_runner/test:1262:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: preparing to work is not a paid result and a newly completed action makes its older intent await review
+not ok 2 - preparing to work is not a paid result and a newly completed action makes its older intent await review
+  ---
+  duration_ms: 5628.407063
+  type: 'test'
+  location: '<candidate>/tests/simulation/npc-life-context.test.mjs:19:1'
+  failureType: 'testCodeFailure'
+  error: 'Travel needs a separately attributed intention'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file://<candidate>/tests/simulation/npc-life-context.test.mjs:21:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5985.335953

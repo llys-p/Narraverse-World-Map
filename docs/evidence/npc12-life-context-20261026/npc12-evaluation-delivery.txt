@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: life plan creates real fixture5 working/purchase states without any model calls and fingerprints the new projection
+ok 1 - life plan creates real fixture5 working/purchase states without any model calls and fingerprints the new projection
+  ---
+  duration_ms: 31855.422275
+  type: 'test'
+  ...
+# Subtest: controlled eight-turn life dialogue consumes the restricted activity and commits only attributed speech
+ok 2 - controlled eight-turn life dialogue consumes the restricted activity and commits only attributed speech
+  ---
+  duration_ms: 34960.795644
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 67057.628973
