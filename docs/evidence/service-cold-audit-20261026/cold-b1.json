@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-cold-audit.mjs",
+    ".",
+    "artifacts/cold/fixture.json",
+    "artifacts/cold/b1.json"
+  ],
+  "pid": 114,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 58127.689,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

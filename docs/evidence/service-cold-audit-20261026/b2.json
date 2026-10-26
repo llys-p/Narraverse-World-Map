@@ -1,0 +1,20 @@
+{
+  "node": "v24.22.1",
+  "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Cold",
+  "tick": 1008,
+  "commands": 1,
+  "serviceSourceSha256": "b0bbb60423aece77a75169bb286d2b3b153690e5ca862fae10a1664749d4a2d6",
+  "inputBytes": 342183,
+  "inputSha256": "3566132d196ef0471c133f705922194dde93b526355522a37c06c8d04a0173ae",
+  "certifiedEnvelopeSha256": "d1603d5fab946020cbcb661033f50e61f5087a611b49f453ed845aff392fed68",
+  "measurement": "local-instrumented-audit-copy",
+  "phases": {
+    "envelopeMs": 0.529719,
+    "anchorMs": 59.41090399999999,
+    "finalFullAuditMs": 28808.197250999998,
+    "projectionsMs": 24.35109300000113,
+    "journalMs": 27881.626320999996,
+    "totalMs": 56774.11528799999
+  },
+  "externalModelCalls": 0
+}

@@ -1,0 +1,12 @@
+✔ cold replay equals the parent oracle for anchored history, rejected and zero-tick commands, then remains safely advanceable (10056.592169ms)
+✔ independent full audit and journal checks both reject plausible changes, sparse inputs, duplicate IDs and accessors without invoking them (19040.961965ms)
+✔ fixture5 keeps the original complete audit path and cannot acquire the new command budget (119.160772ms)
+✔ playable social memory, dialogue, real marching and combat survive the same complete cold audit as the parent (5906.866486ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 35293.374338

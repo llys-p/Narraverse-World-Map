@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "file": "runtime/service/service-commit.mjs",
+      "exitCode": 0,
+      "sha256": "b0bbb60423aece77a75169bb286d2b3b153690e5ca862fae10a1664749d4a2d6"
+    },
+    {
+      "file": "scripts/check-cold-audit-evidence.mjs",
+      "exitCode": 0,
+      "sha256": "0b5eaa9bcd3d62a860343ab3fe88cd0ac094f9ed37e595f6798b9018bc4075d0"
+    },
+    {
+      "file": "scripts/measure-cold-audit.mjs",
+      "exitCode": 0,
+      "sha256": "ef47530ee6c931b4807d14395779e3ced91b585413bb6a897f283ed0ebfa309d"
+    },
+    {
+      "file": "tests/simulation/long-session-latency.test.mjs",
+      "exitCode": 0,
+      "sha256": "275188fddf6df1f6faf2baa7595a51fbba31509800662fd0c72a9d41b69a4e30"
+    },
+    {
+      "file": "tests/simulation/service-cold-audit.test.mjs",
+      "exitCode": 0,
+      "sha256": "f79930dd861199baa8272bda3466b9121dc4ba6f8e139d2cf2605913b440138a"
+    }
+  ],
+  "productionDiff": [
+    "runtime/service/service-commit.mjs"
+  ],
+  "worldBusinessDiff": []
+}
