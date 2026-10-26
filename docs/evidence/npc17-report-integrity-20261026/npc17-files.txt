@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: the 28-turn long-suite report can enter offline review without permitting conclusions on unrun turns
+ok 1 - the 28-turn long-suite report can enter offline review without permitting conclusions on unrun turns
+  ---
+  duration_ms: 8.790933
+  type: 'test'
+  ...
+# Subtest: long reports still reject ninth turns and more than 32 total rows
+ok 2 - long reports still reject ninth turns and more than 32 total rows
+  ---
+  duration_ms: 1.604292
+  type: 'test'
+  ...
+# Subtest: plan completion is backed by reread JSON, HTML and a separate final byte receipt
+ok 3 - plan completion is backed by reread JSON, HTML and a separate final byte receipt
+  ---
+  duration_ms: 135.454803
+  type: 'test'
+  ...
+# Subtest: existing completion evidence prevents starting a new report and is never overwritten
+ok 4 - existing completion evidence prevents starting a new report and is never overwritten
+  ---
+  duration_ms: 15.486486
+  type: 'test'
+  ...
+# Subtest: progress has no completion proof; successful final pair is reread and later drift or missing halves are detected
+ok 5 - progress has no completion proof; successful final pair is reread and later drift or missing halves are detected
+  ---
+  duration_ms: 34.516064
+  type: 'test'
+  ...
+# Subtest: readback mismatch, zero-byte writes and save failures never create a usable completion marker
+ok 6 - readback mismatch, zero-byte writes and save failures never create a usable completion marker
+  ---
+  duration_ms: 11.561128
+  type: 'test'
+  ...
+# Subtest: partial writes are completed, shrinking progress truncates correctly, and incomplete final reports cannot be sealed
+ok 7 - partial writes are completed, shrinking progress truncates correctly, and incomplete final reports cannot be sealed
+  ---
+  duration_ms: 18.893436
+  type: 'test'
+  ...
+# Subtest: all three reservation collisions preserve old files and remove only files created by this attempt
+ok 8 - all three reservation collisions preserve old files and remove only files created by this attempt
+  ---
+  duration_ms: 9.145766
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 301.888448

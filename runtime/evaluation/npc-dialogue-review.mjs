@@ -15,7 +15,7 @@ export function validateReviewReport(report){
  assert(!Object.hasOwn(report,'reviewImport'),'Use the original report for another review');
  const cases=new Set();let count=0;
  for(const c of report.cases){
-  assert(id(c.id)&&!cases.has(c.id)&&dialogueText(c.title,100)&&Array.isArray(c.turns)&&c.turns.length>0&&c.turns.length<=4,'Invalid report case');cases.add(c.id);
+  assert(id(c.id)&&!cases.has(c.id)&&dialogueText(c.title,100)&&Array.isArray(c.turns)&&c.turns.length>0&&c.turns.length<=8,'Invalid report case');cases.add(c.id);
   const turns=new Set();
   for(const t of c.turns){
    assert(id(t.id)&&!turns.has(t.id)&&dialogueText(t.text)&&Array.isArray(t.checks)&&Array.isArray(t.preconditions),'Invalid report turn');turns.add(t.id);count++;

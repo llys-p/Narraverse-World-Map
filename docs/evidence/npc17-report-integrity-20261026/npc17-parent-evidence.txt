@@ -1,0 +1,1 @@
+{"status":"verified","sourceFiles":177,"testedSourceFiles":360,"preservedEvidenceFiles":789,"evidenceFiles":34,"distinctTests":113,"newTests":8,"lifeV3Cases":4,"lifeV3Turns":28,"legacyCheckpoints":10,"externalModelCalls":0,"semanticVerdict":"not-evaluated-for-npc16"}

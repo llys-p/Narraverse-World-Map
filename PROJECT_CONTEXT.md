@@ -1,5 +1,20 @@
 # 当前状态与接手方向
 
+更新时间：2026-10-26（Asia/Shanghai）。用户要求继续，从NPC16 `5f2b0c9f5fdaca3c1c8fdc39616a910d80821af9` / 草稿#24 新建 `codex/npc17-report-integrity-20261026`。
+
+## 本分支交接：NPC17 长场景评审与报告完成核验
+
+- 修复实际断点：life-v3每场景8轮被离线评审旧4轮限制拒绝。现允许8轮、总32，未运行仍只能pending。新报告completionProtocol=1，JSON/HTML写毕关闭并逐字节复读后才写出本地SHA/字节数完成回执；成功日志晚于回执复验。回执只证明检查时文件一致，不是签名、独立世界或语言验收。
+- 新共用writer/verifier与离线 `scripts/verify-npc-dialogue-report.mjs --report path.json`。部分写入循环、缩短截断、零写/异常、最终复读不符、缺半份或后续漂移均有检查；三个输出路径wx独占，碰撞只清理本次创建的文件。中间报告/失败文件保留，空回执不代表完成，重跑用新路径。
+- 离线评审对新报告强制核验文件及消费的原JSON SHA；旧来源标记legacy-no-completion，模板只输出JSON，派生报告另生成完成回执。原文/轮次绑定、语义结论和humanReview保持，助手或自报人工不冒充独立验收。
+- 最终41项相关检查通过：34/34，26,691.770ms；life-v1/v2/v3另7/7，156,907.556ms；新增10项，0 fail/skip/cancel/todo、exit0、无超时，367份代码/配置/测试字节运行后保持一致。初始4条RED原样保留，后续接线与故障注入检查通过。
+- 实际最终完整消费链93,202.784ms：零调用life-v3 plan28前置/4重放、源报告核验、28行pending模板、导入派生报告及两份回执通过；源JSON SHA不变。进程结束后再次独立核验JSON/HTML/回执。语义not-evaluated，原humanReview pending，独立人工not-verified。
+- NPC16那次中间文件再次读取仍是相同SHA、14轮、completed=false。根因未定位，本片补完成检测与消费门禁，不声称修复该根因。父树NPC16检查器复验通过，全部历史证据保留。
+- 生产核心/服务/fixture/Provider/页面源码均未改，未重复未变动的整套113项或10处世界对照；验证集中改动的工具链。[任务合同](tasks/NPC17-REPORT-INTEGRITY-TASK.md) / [功能与两类交接](docs/runtime/NPC17-REPORT-INTEGRITY.md) / [证据](docs/evidence/npc17-report-integrity-20261026/index.json)，运行 `node scripts/check-npc17-evidence.mjs`。
+- 本片外部模型0次。真实语言效果仍待新明确预算复测。停于叠#24的独立草稿，不合main、部署、迁移真实档、启停日常实例或导入2.0记忆；当前连接无Projects能力，控制树/Projects待同步复核。
+
+以下为NPC16及更早历史，仅代表对应提交和运行。
+
 更新时间：2026-10-26（Asia/Shanghai）。用户已同意连续推进计划，从NPC15 `e7bfd1c8c56c943a2ee97cef1288eedd41c29304` / 草稿#23 新建 `codex/npc16-life-continuity-20261026`。
 
 ## 本分支交接：NPC16 决策理由、跨日连续性与预览恢复

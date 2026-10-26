@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/simulation/npc-long-report-review.test.mjs",
+    "tests/simulation/npc-report-completion-cli.test.mjs",
+    "tests/simulation/npc-dialogue-review.test.mjs"
+  ],
+  "pid": 8,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 366.218,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

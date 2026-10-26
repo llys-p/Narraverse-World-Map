@@ -1,0 +1,100 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/evaluation/npc-report-files.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "runtime/evaluation/npc-dialogue-review.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/evaluate-npc-dialogue.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/review-npc-dialogue.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/verify-npc-dialogue-report.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "HEAD",
+        "--",
+        "runtime/core",
+        "runtime/service",
+        "runtime/fixtures",
+        "demo-npc-dialogue.mjs",
+        "demo-runtime-prototype.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc17-evidence.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/check-npc17-report-flow.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "scripts/verify-npc-dialogue-report.mjs"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "credential-pattern-scan",
+        "changed-files"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "worldProductionDiff": []
+}
