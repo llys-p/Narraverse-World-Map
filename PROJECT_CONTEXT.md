@@ -1,4 +1,12 @@
-# 当前交付：长档性能门槛与未采纳方案（2026-10-27）
+# 当前交付：固定配置证明测量（2026-10-27）
+
+父提交 PR30 `b8f7b268cde63c0a0d12032f278b442933405839`；本轮分支 `codex/config-proof-measurement-20261027`，任务 `tasks/CONFIG-PROOF-MEASUREMENT-TASK.md`，交接 `docs/runtime/CONFIG-PROOF-MEASUREMENT.md`。生产源码未改。
+
+- 固定 seed=42 的 campaign 世界重复验证：原始对象 6 次约97.9ms，结构化复制约89.4ms，已审计不可变对象约0.15ms；后者来自既有私有完整审计证明，不是本轮新增捷径。
+- 新增 `scripts/measure-config-validation.mjs` 与3项边界测试：重复验证、配置变更拒绝、访问器/伪造信任字段拒绝均通过。模型0调用。
+- 短操作、长推进和冷恢复门槛没有新增“提速”结论。下一步仅评估私有深冻结配置证明；原始/复制输入仍保留完整验证和拒绝顺序，并分别复跑三类门槛。
+
+以下为 PR30 及更早历史。
 
 父提交PR29 `9dd2c3aa5be2c5f5dcaf1e04a20ecfc1e73a3b70`；树 `/workspace/scratch/e56afaffb4e3/Narraverse-Batch`，分支 `codex/campaign-owned-batch-20261026`。合同 `tasks/CAMPAIGN-OWNED-BATCH-TASK.md`；用户/AI交接 `docs/runtime/CAMPAIGN-OWNED-BATCH.md`。最终生产源码与父版完全相同，本轮交付测量工具、边界测试与证据，不能说游戏已经提速。
 

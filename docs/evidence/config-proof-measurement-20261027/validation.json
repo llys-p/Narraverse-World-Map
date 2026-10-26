@@ -1,0 +1,23 @@
+{
+  "node": "v24.22.1",
+  "seed": 42,
+  "rounds": 6,
+  "bundleSha256": "02726944939fd0064f03f6513d6a90eee468623b4feec5db80f81e7f81d5eca4",
+  "raw": {
+    "label": "raw-bundle-repeated-validation",
+    "rounds": 6,
+    "elapsedMs": 97.88048999999998
+  },
+  "audited": {
+    "label": "audited-bundle-repeated-validation",
+    "rounds": 6,
+    "elapsedMs": 0.14947499999999536
+  },
+  "detached": {
+    "label": "detached-copy-repeated-validation",
+    "rounds": 6,
+    "elapsedMs": 89.409062
+  },
+  "semanticScope": "Measurement only. No cache or production shortcut is enabled by this script.",
+  "externalModelCalls": 0
+}
