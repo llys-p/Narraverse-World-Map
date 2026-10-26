@@ -1,0 +1,48 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import http from 'node:http';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {startRuntimeServer} from '../../runtime-server.mjs';
+import {createNpcDialogue} from '../../demo-npc-dialogue.mjs';
+import {loadServiceCommit} from '../../runtime/service/service-commit.mjs';
+import {npcDialogueContext} from '../../runtime/core/npc-negotiation.mjs';
+import {providerContext} from '../../runtime/service/npc-language-provider.mjs';
+const hashes=async dir=>Object.fromEntries(await Promise.all((await fs.readdir(dir)).filter(n=>/^service-commit-r\d+\.json$/.test(n)).sort().map(async n=>[n,createHash('sha256').update(await fs.readFile(path.join(dir,n))).digest('hex')])));
+
+test('HTTP/worker recovers a lost preview once, persists only confirmed speech and restores historical decision facts',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'npc16-flow-'));let server,calls=0;const seen=[];
+ const mock=http.createServer(async(req,res)=>{
+  const chunks=[];for await(const b of req)chunks.push(b);calls++;
+  const input=JSON.parse(Buffer.concat(chunks)),ctx=JSON.parse(input.messages[1].content).npc;seen.push(ctx);
+  assert.equal(ctx.knownFacts.life.decisionBasis.reasonCode,'FOOD_INCOME');assert.equal(ctx.knownFacts.life.current.wallet,20);
+  res.setHeader('Content-Type','application/json');res.end(JSON.stringify({choices:[{finish_reason:'stop',message:{content:JSON.stringify({reply:'受控回复：刚才工作获得二十钱，当前没有存粮。',memoryRefs:[],proposal:null})}}]}));
+ });
+ await new Promise(r=>mock.listen(0,'127.0.0.1',r));
+ t.after(async()=>{if(server)await server.close();await new Promise(r=>mock.close(r));await fs.rm(directory,{recursive:true,force:true});});
+ const options={directory,port:0,writable:true,continuousMarch:true};
+ server=await startRuntimeServer({...options,profile:'campaign-memory-village',seed:42,npcLanguage:{enabled:true,baseURL:`http://127.0.0.1:${mock.address().port}`,model:'controlled-continuity',apiKey:'local-test-only'}});
+ const read=async()=>{const r=await fetch(server.url+'/api/runtime/demo-state');assert.equal(r.status,200);return r.json();};
+ const post=(route,body)=>fetch(server.url+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ let g=await read();let r=await post('/api/runtime/commands',{version:5,commandId:'continuity-time',expectedRevision:g.snapshot.revision,type:'AdvanceTime',payload:{ticks:144}});assert.equal(r.status,200);assert.equal((await r.json()).outcome,'succeeded');g=await read();
+ const before=structuredClone(g),beforeHashes=await hashes(directory),bodies=[];let drop=true;
+ const c=createNpcDialogue({newId:()=> 'continuity-lost-preview',fetchImpl:async(route,o)=>{
+  bodies.push(o.body);const response=await fetch(server.url+route,o);
+  if(drop){drop=false;await response.arrayBuffer();throw Error('controlled lost preview response');}return response;
+ }});
+ c.edit('现在有多少工钱和粮？',g,'actor-2');await c.generate(g,true,'actor-2');assert.equal(c.view(g,true,'actor-2').generateLabel,'重取本次结果');assert.equal(calls,1);
+ await c.generate(g,true,'actor-2');assert.equal(bodies[0],bodies[1]);assert.equal(calls,1);assert.equal(c.view(g,true,'actor-2').canCommit,true);
+ assert.deepEqual(await read(),before);assert.deepEqual(await hashes(directory),beforeHashes);
+ const dto={version:5,commandId:'continuity-speech',expectedRevision:g.snapshot.revision,type:'PlayerDialogue',payload:c.command(g,true,'actor-2')};
+ r=await post('/api/runtime/commands',dto);assert.equal(r.status,200);const receipt=await r.json();assert.equal(receipt.outcome,'succeeded');g=await read();c.confirmed(receipt,dto,g);
+ assert.equal(c.view(g,true,'actor-2').status,'committed');assert.equal(c.view(g,true,'actor-2').canAct,false);
+ const saved=await loadServiceCommit(path.join(directory,`service-commit-r${g.snapshot.revision}.json`));
+ assert.equal(saved.bundle.snapshot.world.mapModel.memoryModel.actors[1].speech.length,1);
+ assert.deepEqual(providerContext(npcDialogueContext(saved.bundle),'现在呢？').knownFacts.life.decisionBasis,seen[0].knownFacts.life.decisionBasis);
+ for(const marker of ['decisionBasis','reasonCode','knowledgeFingerprint','local-test-only'])assert.equal(JSON.stringify(g).includes('"'+marker+'"'),false);
+ assert.equal(JSON.stringify(saved.bundle).includes('decisionBasis'),false);
+ const durable=await hashes(directory);await server.close();server=await startRuntimeServer(options);g=await read();assert.equal(g.capabilities.npcLanguage.enabled,false);
+ r=await post('/api/runtime/commands',dto);assert.equal(r.status,200);assert.deepEqual(await r.json(),receipt);assert.deepEqual(await hashes(directory),durable);assert.equal(calls,1);
+});

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "import subprocess,json,pathlib; subprocess.run([\"node\",\"scripts/evaluate-npc-dialogue.mjs\",\"--suite\",\"life-v3\",\"--out\",\"artifacts/npc16/life-v3-verified.json\"],check=True); p=pathlib.Path(\"artifacts/npc16/life-v3-verified.json\"); r=json.loads(p.read_text()); assert r[\"completed\"] and r[\"counts\"][\"notRun\"]==28 and r[\"counts\"][\"fixtureFailed\"]==0; assert all(c[\"worldReplayAudit\"]==\"passed\" for c in r[\"cases\"]); print(json.dumps({\"readback\":\"verified\",\"completed\":r[\"completed\"],\"turns\":r[\"counts\"][\"notRun\"]}))"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 95894.79,
+  "cpuMs": null,
+  "hardLimitMs": 360000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
