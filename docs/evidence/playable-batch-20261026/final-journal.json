@@ -1,0 +1,27 @@
+{
+  "node": "v24.22.1",
+  "fixtureVersion": "6",
+  "tick": 432,
+  "commands": 6,
+  "oracleSourceSha256": "4c750923454de0b924085db17a34451e729902afbc852d42553f1ed663dec924",
+  "envelopeSha256": "6c9fd5e4fa52832068990fe8a26e2915ed64e7e86af00c3b04eb6835eaf7f284",
+  "samples": [
+    {
+      "name": "A",
+      "ms": 54567.435602000005
+    },
+    {
+      "name": "B",
+      "ms": 29635.977830000003
+    },
+    {
+      "name": "B",
+      "ms": 29658.742178
+    },
+    {
+      "name": "A",
+      "ms": 53853.56616399999
+    }
+  ],
+  "externalModelCalls": 0
+}

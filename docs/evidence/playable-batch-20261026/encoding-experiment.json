@@ -1,0 +1,21 @@
+{
+  "status": "equivalent-on-development-inputs",
+  "rounds": [
+    {
+      "variant": "A",
+      "wallMs": 66.62695699999998
+    },
+    {
+      "variant": "B",
+      "wallMs": 100.844435
+    },
+    {
+      "variant": "B",
+      "wallMs": 86.97684500000003
+    },
+    {
+      "variant": "A",
+      "wallMs": 58.96568100000002
+    }
+  ]
+}

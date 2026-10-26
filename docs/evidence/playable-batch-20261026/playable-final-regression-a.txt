@@ -1,0 +1,92 @@
+✔ campaign canonical ticks match the legacy registered-system oracle for six ticks (362.767201ms)
+✔ one synthetic day-boundary primitive preserves settlement facts and RNG (519.201273ms)
+✔ session mode rejects a structurally valid but non-canonical custom transition (80.101227ms)
+✔ campaign tick rejects accessor, wrong-profile, and invalid-data inputs (46.754197ms)
+✔ reused campaign templates produce equivalent worlds with fully independent mutable data (40.090169ms)
+✔ warm cache never accepts changed invalid configuration and restored content remains valid (50.939895ms)
+✔ configuration accessors are rejected without execution before and after warming the cache (2.91449ms)
+✔ v6, v7, and a valid v8 variation match the frozen memory-runtime oracle (74.268465ms)
+✔ detached campaign configuration must still carry the selected v8 version (5.598042ms)
+✔ fixed successors equal the unchanged complete oracle, including rejected and zero-tick commands (1528.136595ms)
+✔ copies, arbitrary candidates, unknown profiles and getters cannot acquire a successor proof (101.600627ms)
+✔ owner serializes revision races, deduplicates retries, and detaches caller data (254.583701ms)
+✔ failed link publication preserves projections and files, then retries at the same revision (224.266261ms)
+✔ reopen preserves short history and JSON commit copies receive full independent audit (1643.028829ms)
+✔ uncertain publication exposes no success or continuation until full reopen resolves it (512.885992ms)
+✔ campaign live writer requires the latest audited durable head and releases its realpath claim on close (441.572151ms)
+✔ independent owners cannot exchange projections or forged candidate authority (317.194232ms)
+✔ real synthetic history crosses day/RNG boundary with identical whole successor (11276.118773ms)
+✔ map contact, pause/resume and both JRPG rounds equal full replay (5727.515163ms)
+✔ bounded route uses the bridge and authority derives region (1.562082ms)
+✔ pause and replan retain actual position and cumulative fatigue (2.367676ms)
+✔ newly met NPC pauses a real order; no duplicate encounter while adjacent (0.62422ms)
+✔ hunter moves for a known opportunity, earns once, carries the same plan to food and really eats (24242.095759ms)
+✔ one gift keeps the food need, two gifts pause buying and preserve earned wages and the owned plan (6303.867708ms)
+✔ a late opportunity cannot pay remotely; an actual unpaid job remains a failed experience (11572.823363ms)
+✔ empty food supply does not create a trip or ration, death stops movement, and preparation reads no hidden balances (5858.262565ms)
+✔ legacy route remains frozen; version splices and plausible but unearned hunter positions fail replay (1016.158658ms)
+✔ HTTP worker saves a hunter mid-trip, reopens the same person, and continues while the player is away without duplicate pay (36515.991805ms)
+✔ campaign input and reserved pause budget reject without reading getters or changing old DTO gates (2.324831ms)
+✔ campaign cross-day attack separates real settlement from strike/counter and keeps local knowledge (14932.230728ms)
+✔ death before completion emits settlement/defeat, never a fictitious strike or further movement (15893.078929ms)
+✔ campaign owner rollback, pause/replan/NPC gift, restart equality, tamper rejection and no lock residue (3534.475069ms)
+✔ campaign HTTP DTO/profile/route authority remains isolated from old profile (8033.980729ms)
+✔ identical campaign structures return detached validation results and cannot poison the cache (66.106536ms)
+✔ mutated actor, numeric config, map, tick, and forged trust data are revalidated (102.264803ms)
+✔ descriptor inspection rejects accessors before and after a successful cached proof (21.745783ms)
+✔ proof keys use detached data even when a Proxy supplies different property values (29.11221ms)
+✔ a warmed structural proof cannot certify a forged historical fact (106.546062ms)
+✔ D4P5 key reuse preserves escaped/integer keys past cache capacity and length bound (6.814754ms)
+✔ D4P5 cached key spellings never reuse values or skip late getter/cycle validation (1.139125ms)
+✔ worker preserves committed views, exact retries, full restore and tamper refusal (1261.077661ms)
+✔ audited scene bundle is deeply immutable while public intent results stay detached and mutable (450.092331ms)
+✔ scene audit certificates bind exact rules and systems and refuse accessor inputs without reading them (320.610643ms)
+✔ D2A wire parser rejects duplicate and escaped duplicate keys, bad UTF8, deep or oversized JSON before DTO use (3.094338ms)
+✖ D2A full envelope audits receipts and actual replay rather than accepting rewritten metadata or final state (4247.120255ms)
+✔ D2A service files publish exclusively and reject corruption; publication failure never replaces a completed file (3752.475682ms)
+✔ D2A owner commits real C5 world, serializes conflicts and persists original retry receipt across restart (6843.335324ms)
+✔ D2A link failure leaves live world and receipts untouched, then same ID may succeed; latest corrupt never falls back (3535.2374ms)
+✔ D2A queue preflight includes the active commit, readers see previous revision and close drains before releasing ownership (717.617107ms)
+✔ D2A budgets and format boundary reject before replay or publication; no implicit D1 conversion (409.614721ms)
+✔ D2A interrupted cleanup keeps bounded service temporaries but loads only audited published commits; temporary-only genesis fails (848.235906ms)
+ℹ tests 51
+ℹ suites 0
+ℹ pass 50
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 185225.316535
+
+✖ failing tests:
+
+test at tests/simulation/service-commit.test.mjs:26:1
+✖ D2A full envelope audits receipts and actual replay rather than accepting rewritten metadata or final state (4247.120255ms)
+  AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  Error: Sparse array or extra array properties
+      at TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/service-commit.test.mjs:31:56)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: Sparse array or extra array properties
+        at fault (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/data-contract.mjs:8:24)
+        at requireCondition (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/data-contract.mjs:11:25)
+        at denseArray (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/data-contract.mjs:39:3)
+        at cloneData (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/data-contract.mjs:61:5)
+        at cloneData (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/data-contract.mjs:66:21)
+        at validateServiceCommit (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/service/service-commit.mjs:75:22)
+        at file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/service-commit.test.mjs:31:67
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/service-commit.test.mjs:31:56),
+    operator: 'throws',
+    diff: 'simple'
+  }

@@ -1,0 +1,37 @@
+TAP version 13
+# Subtest: own retained life results reach the private provider without becoming current inventory or public facts
+ok 1 - own retained life results reach the private provider without becoming current inventory or public facts
+  ---
+  duration_ms: 20196.501665
+  type: 'test'
+  ...
+# Subtest: playable sessions accept 129 real entries while old sessions retain the 128 command limit
+not ok 2 - playable sessions accept 129 real entries while old sessions retain the 128 command limit
+  ---
+  duration_ms: 1547.132826
+  type: 'test'
+  location: '/workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/playable-memory-budget.test.mjs:10:1'
+  failureType: 'testCodeFailure'
+  error: 'encounterModel.inputHistory must not exceed 128 entries'
+  code: 'INVALID_INPUT'
+  stack: |-
+    fault (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/data-contract.mjs:8:24)
+    requireCondition (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/data-contract.mjs:11:25)
+    validateEncounterWorldStateFor (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/encounter-runtime.mjs:1140:26)
+    validateSceneEncounterWorldState (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/encounter-runtime.mjs:1490:83)
+    validateCampaignWorldState (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/scene-campaign-runtime.mjs:89:15)
+    checkBudgets (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/world-state.mjs:128:35)
+    validateBundle (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/world-state.mjs:149:3)
+    TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/playable-memory-budget.test.mjs:15:204)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 1
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21899.404204

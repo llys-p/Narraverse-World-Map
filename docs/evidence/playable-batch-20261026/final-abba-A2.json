@@ -1,0 +1,31 @@
+{
+  "node": "v24.22.1",
+  "root": "/workspace/scratch/e56afaffb4e3/Narraverse-NPC17",
+  "rounds": [
+    {
+      "openMs": 89.510241,
+      "simulateMs": 3181.862303,
+      "auditMs": 3127.091307,
+      "tenMapReadsMs": 13.932952000000114,
+      "bundleSha256": "003d965a511016023924707846b849c72f63f1f89823a557b07e932e8912f713",
+      "tick": 144
+    },
+    {
+      "openMs": 41.66915400000016,
+      "simulateMs": 2945.198388999999,
+      "auditMs": 2821.5035400000015,
+      "tenMapReadsMs": 13.229150999999547,
+      "bundleSha256": "003d965a511016023924707846b849c72f63f1f89823a557b07e932e8912f713",
+      "tick": 144
+    },
+    {
+      "openMs": 64.78580599999987,
+      "simulateMs": 3001.286775999999,
+      "auditMs": 2872.991103000002,
+      "tenMapReadsMs": 11.895504999996774,
+      "bundleSha256": "003d965a511016023924707846b849c72f63f1f89823a557b07e932e8912f713",
+      "tick": 144
+    }
+  ],
+  "externalModelCalls": 0
+}

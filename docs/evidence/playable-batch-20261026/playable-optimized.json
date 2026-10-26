@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-playable-core.mjs",
+    "/workspace/scratch/e56afaffb4e3/Narraverse-Playable",
+    "artifacts/playable-batch/optimized.json"
+  ],
+  "pid": 15,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 19422.585,
+  "cpuMs": null,
+  "hardLimitMs": 240000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

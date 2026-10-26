@@ -1,0 +1,210 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "file": "demo-playable-goals.mjs",
+      "exitCode": 0,
+      "sha256": "e9fcc49f40f20f417f580c5e7a78ded30e578b4fe6dddaa93b74ead9d2396a54"
+    },
+    {
+      "file": "demo-runtime-bridge.mjs",
+      "exitCode": 0,
+      "sha256": "8a9f3de1110338f2e1fcf143ea72b33644876635c0e05de18c0a4af01104feb6"
+    },
+    {
+      "file": "demo-runtime-interactions.mjs",
+      "exitCode": 0,
+      "sha256": "569cb5daed0f4cc6fb13a1a689a1ab41c92ed4c670c73fc1ce6e93a9dfae12ea"
+    },
+    {
+      "file": "demo-runtime-prototype.mjs",
+      "exitCode": 0,
+      "sha256": "d494771506fd6681cfcc0a1da92040dd5f04622d7e141bcc52131ef1fb4fbaae"
+    },
+    {
+      "file": "runtime-campaign-contract.mjs",
+      "exitCode": 0,
+      "sha256": "b61cdac51559dbb70597127de5413881ba2c354f6d754b1c4d183e6c45d60ccb"
+    },
+    {
+      "file": "runtime-playable-contract.mjs",
+      "exitCode": 0,
+      "sha256": "ed7e876f3dd4796bb9bab72c1740d1e729e32500af1408cfbf94d10b135fcef3"
+    },
+    {
+      "file": "runtime-server.mjs",
+      "exitCode": 0,
+      "sha256": "dd4047ff7df2347b8be950c9e5c3ece12657bb890cf1fde8fcc84c60cc3908cd"
+    },
+    {
+      "file": "runtime/core/campaign-limits.mjs",
+      "exitCode": 0,
+      "sha256": "c850c4d3e5578c37b7d97c4291ab51ac5c2c107a5bdcec635ca6d7bc0e490b86"
+    },
+    {
+      "file": "runtime/core/campaign-map.mjs",
+      "exitCode": 0,
+      "sha256": "5a635b5aff39cb8e9e590ac442122f14e776fca687d3479b94cf86409ea39592"
+    },
+    {
+      "file": "runtime/core/campaign-npc-agency.mjs",
+      "exitCode": 0,
+      "sha256": "be74d384f287b221d12897c16db84fa8ffb44d1a00087d682c9b3ca5aee69016"
+    },
+    {
+      "file": "runtime/core/campaign-play.mjs",
+      "exitCode": 0,
+      "sha256": "ad71c48efe003c76c61327d2909eaabb85c841f0feca64c78b79277a7dca9122"
+    },
+    {
+      "file": "runtime/core/command-engine.mjs",
+      "exitCode": 0,
+      "sha256": "5af86ab209818c577ab06f2e2810fec29b7ec38025a9d4e9ba83ecbec59d1bd4"
+    },
+    {
+      "file": "runtime/core/encounter-runtime.mjs",
+      "exitCode": 0,
+      "sha256": "06ab154a777739531b87cb692ebffd58b6a69f09c8c6a6532666a5cfb1a033e7"
+    },
+    {
+      "file": "runtime/core/motivation-runtime.mjs",
+      "exitCode": 0,
+      "sha256": "7fc31d864242d976be4b7ca0ea9dadd1b796238b57448206f9de6f687a40002e"
+    },
+    {
+      "file": "runtime/core/npc-negotiation.mjs",
+      "exitCode": 0,
+      "sha256": "1ba5027b90dd96b290d582c918e3c13f34c2c12718eda48f7939f132318d88da"
+    },
+    {
+      "file": "runtime/core/scene-campaign-runtime.mjs",
+      "exitCode": 0,
+      "sha256": "467ceebbf9b23d01028de6f181bf9340544074ae33c38357048b31e0e2016f70"
+    },
+    {
+      "file": "runtime/core/world-state.mjs",
+      "exitCode": 0,
+      "sha256": "a04a443253a3aee59b379867ff07bb9a4a5fe6945d7e2d92d90abd0421bad63b"
+    },
+    {
+      "file": "runtime/evaluation/npc-dialogue-eval.mjs",
+      "exitCode": 0,
+      "sha256": "2591bc65babb4431d25d90946a1af296f458ae68d1f1fb8a73d3b8e7c4284806"
+    },
+    {
+      "file": "runtime/fixtures/campaign-village.mjs",
+      "exitCode": 0,
+      "sha256": "e2d242af3846a22c8846d2c76e05f07b08ec6a38b23e3c50c7332f9f8e2e2583"
+    },
+    {
+      "file": "runtime/service/http-contract.mjs",
+      "exitCode": 0,
+      "sha256": "8421267edd4422a56b106e3ec7c94caa6f7bb5ecea6e05134032614f65498b3f"
+    },
+    {
+      "file": "runtime/service/npc-dialogue-grounding.mjs",
+      "exitCode": 0,
+      "sha256": "2f2ed5c09075171d65e87fcddd9bed9fb1806109936357942b3103a045786fe0"
+    },
+    {
+      "file": "runtime/service/npc-language-provider.mjs",
+      "exitCode": 0,
+      "sha256": "c5bf84d50c9d03eb93b91b308377784d3ef667edcd238c53354aa9e9bb5c7ed0"
+    },
+    {
+      "file": "runtime/service/npc-life-facts.mjs",
+      "exitCode": 0,
+      "sha256": "0309ba301126b72aa9bd3c070abc341bcf8fd99002cb742b5941f80c310b6e2a"
+    },
+    {
+      "file": "runtime/service/runtime-owner-thread.mjs",
+      "exitCode": 0,
+      "sha256": "0253bed8a86d6b02b1f3a69dec12ed5aaa948858c9bb0b0ffbc62cee84639d68"
+    },
+    {
+      "file": "runtime/service/runtime-owner.mjs",
+      "exitCode": 0,
+      "sha256": "7d65e3b3ca7fa09edb21f2ec896c0eae90b2e147127ac8cbb408c418a24030c0"
+    },
+    {
+      "file": "runtime/service/service-commit.mjs",
+      "exitCode": 0,
+      "sha256": "c8c442fd4d24ec0833b3511a2d85f01784645074ef799311e2b2e0076ef53d71"
+    },
+    {
+      "file": "scripts/check-playable-evidence.mjs",
+      "exitCode": 0,
+      "sha256": "dfcd6150d2fb245fe9e3b8325dfa745ab64b3a10e6dac7abdff26c7ac04fba27"
+    },
+    {
+      "file": "scripts/check-playable-legacy.mjs",
+      "exitCode": 0,
+      "sha256": "ba315c1d64413f847084876813b6f0695546e37f49297fea5a79c769300e4b15"
+    },
+    {
+      "file": "scripts/check-playable-seven-days.mjs",
+      "exitCode": 0,
+      "sha256": "dbe583813744a14cf2893767eebdb83fcdbdbc474042ca29611e969e75c03f0f"
+    },
+    {
+      "file": "scripts/evaluate-npc-dialogue.mjs",
+      "exitCode": 0,
+      "sha256": "ef0cf36a0718936eec9084d7994eef34b9990e14c447c1085e2f557344167d53"
+    },
+    {
+      "file": "scripts/measure-playable-core.mjs",
+      "exitCode": 0,
+      "sha256": "e80ecffdd6fb1f6f19c64bfbc750a2affd342fd7a298772ec8c35e66d18bff5c"
+    },
+    {
+      "file": "scripts/measure-playable-journal.mjs",
+      "exitCode": 0,
+      "sha256": "8f7cb4aa1f50aae18d290aa5dec0b8a9e5ed9cb97cad2d618b97babf704aa59b"
+    },
+    {
+      "file": "tests/simulation/playable-boundaries.test.mjs",
+      "exitCode": 0,
+      "sha256": "d3cc0374dfaf89c2a0b3b9adba40d8335c9485b93f4c0ea3dacc610de1ec5850"
+    },
+    {
+      "file": "tests/simulation/playable-campaign.test.mjs",
+      "exitCode": 0,
+      "sha256": "69bceecc6ac96abb9b1b36167f1f1023d199ff3af77b24b7852a893a2698dc82"
+    },
+    {
+      "file": "tests/simulation/playable-dialogue.test.mjs",
+      "exitCode": 0,
+      "sha256": "ece6af33d5c4614a391c693c1cedca8adfc2993a2172df45ab0897905b70a68a"
+    },
+    {
+      "file": "tests/simulation/playable-long-service.test.mjs",
+      "exitCode": 0,
+      "sha256": "5977c636c6201bcbe1719c66a27058c3adbd4418bd9acdc51bf3640d19f19f4f"
+    },
+    {
+      "file": "tests/simulation/playable-memory-budget.test.mjs",
+      "exitCode": 0,
+      "sha256": "0e709ed5699801a9468d62b6968830f2a85df2878c9c9b142b6b9bd47b2f6355"
+    },
+    {
+      "file": "tests/simulation/playable-performance-boundaries.test.mjs",
+      "exitCode": 0,
+      "sha256": "2ba64388399c0aabecd0c816237006e2e9ffc39f6a4408a73fd7a59d79865656"
+    },
+    {
+      "file": "tests/simulation/playable-service.test.mjs",
+      "exitCode": 0,
+      "sha256": "f54f8b7e373aa811bf5b2dce819446682e9326f28defe6c34ea607cabd3275ff"
+    },
+    {
+      "file": "tests/simulation/service-commit.test.mjs",
+      "exitCode": 0,
+      "sha256": "c00717a011bb13915016b6e02a32ed56ece9f5a00bd44173650c11274ecddb1e"
+    }
+  ],
+  "htmlIdsUnique": true,
+  "questIdsPresent": true,
+  "launcherSaveVariableChecks": true,
+  "windowsExecution": "not-run",
+  "wallMs": 2481.81329199997
+}

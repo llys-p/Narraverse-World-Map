@@ -1,0 +1,38 @@
+✖ pre-existing repair counts, later damage revokes readiness, and a failed claim cannot unlock the next quest (1006.303729ms)
+✔ deadline and death fail active quests, while important and changed own facts wake the preparation cache (30.825507ms)
+✔ more than 129 durable files remain writable and reopen, and altered journal or terminal state is rejected (20411.13019ms)
+✔ four real quest states complete a village/forest chapter, survive replay, and cannot be rewarded twice (5288.087252ms)
+✔ oral claims do not complete tasks, abandonment resets progress, and the same request is idempotent (1501.906176ms)
+✔ seven days have recurring opportunities and recorded own life results, with resources and replay intact (88191.720644ms)
+✔ offscreen preparation uses fewer evaluations and reactivates on important changes (3442.775229ms)
+✔ a new offer does not erase the source of an already earned purchase step (38116.501689ms)
+✔ own retained life results reach the private provider without becoming current inventory or public facts (21403.854905ms)
+✔ playable sessions accept 129 real entries while old sessions retain the 128 command limit (1736.072739ms)
+✔ one campaign candidate remains detached, rejects non-data before invoking accessors, and preserves full audit (135.334037ms)
+✔ worker/HTTP quest progress is durable, read-only views stay coherent, and a retried command cannot duplicate a reward (7115.717942ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 189074.944815
+
+✖ failing tests:
+
+test at tests/simulation/playable-boundaries.test.mjs:6:1
+✖ pre-existing repair counts, later damage revokes readiness, and a failed claim cannot unlock the next quest (1006.303729ms)
+  Error: Invalid social interaction payload
+      at fault (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/data-contract.mjs:8:24)
+      at requireCondition (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/data-contract.mjs:11:25)
+      at preflightSocialPayload (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/npc-social.mjs:63:49)
+      at preflightCampaignIntent (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/scene-campaign-runtime.mjs:27:65)
+      at computeCampaignIntent (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/scene-campaign-runtime.mjs:102:38)
+      at act (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/playable-boundaries.test.mjs:8:40)
+      at TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/playable-boundaries.test.mjs:12:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17) {
+    code: 'INVALID_INPUT'
+  }

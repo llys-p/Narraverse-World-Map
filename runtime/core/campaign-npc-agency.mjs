@@ -1,4 +1,5 @@
 // Fixtures 2/3/4: bounded village locomotion for actor-2, not a second action engine.
+import {playAgencyDue} from './campaign-play.mjs';
 import {fields,integer,requireCondition} from './data-contract.mjs';
 import {campaignSurvivalTravel} from './motivation-runtime.mjs';
 import {isSocialMapVersion,socialWorkReady} from './npc-social.mjs';
@@ -14,7 +15,7 @@ export function validateHunterIntent(intent,tick){
   integer(intent.decidedTick);requireCondition(intent.decidedTick<=tick,'Hunter intent is in the future');
 }
 export function prepareHunterTravel(world,events,tick,simulationId){
-  if(tick%4!==0)return;
+  if(!playAgencyDue(world,tick))return;
   const next=campaignSurvivalTravel(world,events,tick,simulationId),previous=world.mapModel.hunterIntent;
   if(next.action!==previous.action||next.planId!==previous.planId)
     world.mapModel.hunterIntent={...next,decidedTick:tick};

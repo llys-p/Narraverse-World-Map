@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-playable-core.mjs",
+    "/workspace/scratch/e56afaffb4e3/Narraverse-NPC17",
+    "artifacts/playable-batch/baseline.json"
+  ],
+  "pid": 7,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 18231.504,
+  "cpuMs": null,
+  "hardLimitMs": 240000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

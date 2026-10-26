@@ -1,0 +1,49 @@
+TAP version 13
+# Subtest: four real quest states complete a village/forest chapter, survive replay, and cannot be rewarded twice
+ok 1 - four real quest states complete a village/forest chapter, survive replay, and cannot be rewarded twice
+  ---
+  duration_ms: 3627.735043
+  type: 'test'
+  ...
+# Subtest: oral claims do not complete tasks, abandonment resets progress, and the same request is idempotent
+ok 2 - oral claims do not complete tasks, abandonment resets progress, and the same request is idempotent
+  ---
+  duration_ms: 1680.187928
+  type: 'test'
+  ...
+# Subtest: seven days have recurring opportunities and recorded own life results, with resources and replay intact
+not ok 3 - seven days have recurring opportunities and recorded own life results, with resources and replay intact
+  ---
+  duration_ms: 19829.624532
+  type: 'test'
+  location: '/workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/playable-campaign.test.mjs:31:1'
+  failureType: 'testCodeFailure'
+  error: 'Tick 676 was not committed'
+  code: 'INVALID_INPUT'
+  stack: |-
+    runTick (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/command-engine.mjs:287:19)
+    performCampaignTick (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/command-engine.mjs:56:10)
+    performSceneTick (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/encounter-runtime.mjs:134:47)
+    executeIntentFor (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/encounter-runtime.mjs:802:56)
+    Object.executeIntent (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/encounter-runtime.mjs:1496:31)
+    computeCampaignIntent (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/runtime/core/scene-campaign-runtime.mjs:103:47)
+    Object.submit (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/playable-campaign.test.mjs:9:286)
+    TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-Playable/tests/simulation/playable-campaign.test.mjs:32:46)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+  ...
+# Subtest: offscreen preparation uses fewer evaluations and reactivates on important changes
+ok 4 - offscreen preparation uses fewer evaluations and reactivates on important changes
+  ---
+  duration_ms: 3634.379572
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 3
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 28935.392392

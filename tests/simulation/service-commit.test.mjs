@@ -28,7 +28,7 @@ test('D2A full envelope audits receipts and actual replay rather than accepting 
   for(const alter of [e=>e.commands[0].receipt.tick++,e=>e.commands[0].dto.payload.ticks++,e=>e.bundle.snapshot.world.resources.food++,e=>e.commands.push(structuredClone(e.commands[0]))]){
     const bad=structuredClone(e);alter(bad);assert.throws(()=>validateServiceCommit(bad));}
   const sparse=genesis();sparse.commands=Array(1);assert.throws(()=>validateServiceCommit(sparse));
-  const huge=genesis();huge.commands=Array(129);assert.throws(()=>validateServiceCommit(huge),e=>e.code==='LIMIT_EXCEEDED');
+  const huge=genesis();huge.commands=Array.from({length:129},()=>({}));assert.throws(()=>validateServiceCommit(huge),e=>e.code==='LIMIT_EXCEEDED');
 });
 test('D2A service files publish exclusively and reject corruption; publication failure never replaces a completed file',async t=>{
   const directory=await temporary(t),e=committed(),file=await saveServiceCommit(e,directory),bytes=await fs.readFile(file);

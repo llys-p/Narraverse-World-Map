@@ -1,3 +1,4 @@
+import {serviceCommandLimit,PLAYABLE_COMMAND_LIMIT} from '../core/campaign-limits.mjs';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -6,7 +7,7 @@ import { createPlayerVillage } from '../fixtures/player-village.mjs';
 import { createPlayerPlayVillage } from '../fixtures/player-play-village.mjs';
 import { createEncounterVillage } from '../fixtures/encounter-survival-village.mjs';
 import {createLivelihoodVillage} from '../fixtures/scene-livelihood-village.mjs';
-import {createCampaignVillage,createNpcCampaignVillage,createSocialCampaignVillage,createNegotiationCampaignVillage,createMemoryCampaignVillage} from '../fixtures/campaign-village.mjs';
+import {createCampaignVillage,createNpcCampaignVillage,createSocialCampaignVillage,createNegotiationCampaignVillage,createMemoryCampaignVillage,createPlayableCampaignVillage} from '../fixtures/campaign-village.mjs';
 import {npcDialogueContext} from '../core/npc-negotiation.mjs';
 import {requireMarchBudget} from '../core/campaign-map.mjs';
 import { createSceneVillage } from '../fixtures/scene-survival-village.mjs';
@@ -23,7 +24,7 @@ import { projectWorldActivity } from './world-activity.mjs';
 import { saveServiceCommit,loadRuntimeServiceCommit,transitionAuditedServiceCommand,createAuditedServiceCommit,advanceAuditedServiceCommit,createCampaignLiveWriter,MAX_SERVICE_FILES,MAX_SERVICE_COMMANDS,MAX_PENDING_REQUESTS } from './service-commit.mjs';
 const LOCK='.runtime-owner.lock';
 const MAX_ENCOUNTER_SERVICE_FILES=MAX_SERVICE_FILES+1;
-const serviceFileLimit=format=>[8,9,10,11].includes(format)?MAX_ENCOUNTER_SERVICE_FILES:MAX_SERVICE_FILES;
+const serviceFileLimit=(format,bundle)=>format===11?serviceCommandLimit(bundle)+1:[8,9,10].includes(format)?MAX_ENCOUNTER_SERVICE_FILES:MAX_SERVICE_FILES;
 async function loadExplicitCheckpoint(file,io){
   requireCondition(!/\.tmp$/i.test(file),'Temporary file is not a checkpoint','INVALID_CHECKPOINT');
   try{
@@ -52,9 +53,9 @@ async function inspectDirectory(directory,io){
     if(temporary){
       requireCondition(entry.isFile(),'Runtime temporary is not a regular file');
       temporaryKinds.add(temporary[1]);
-      requireCondition(++temporaries<=MAX_SERVICE_FILES,'Runtime temporary file budget exceeded','LIMIT_EXCEEDED');continue;
+      requireCondition(++temporaries<=PLAYABLE_COMMAND_LIMIT,'Runtime temporary file budget exceeded','LIMIT_EXCEEDED');continue;
     }
-    requireCondition(++count<=MAX_ENCOUNTER_SERVICE_FILES,'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
+    requireCondition(++count<=PLAYABLE_COMMAND_LIMIT+1,'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
     const match=/^(checkpoint|service-commit)-r(0|[1-9][0-9]*)\.json$/.exec(entry.name);
     requireCondition(match && entry.isFile(),'Runtime directory contains foreign files');
     const revision=Number(match[2]);integer(revision);states.push({kind:match[1],file:path.join(directory,entry.name),revision});
@@ -68,8 +69,9 @@ async function inspectDirectory(directory,io){
     let envelope;
     try{envelope=parseStrictJson(await readStateFile(ordered[0].file,io),MAX_STATE_FILE_BYTES);}
     catch{throw fault('LIMIT_EXCEEDED','Runtime directory exceeds file budget');}
-    requireCondition([8,9,10,11].includes(envelope?.serviceFormatVersion),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
+    requireCondition([8,9,10,11].includes(envelope?.serviceFormatVersion)&&ordered.length<=serviceFileLimit(envelope.serviceFormatVersion,envelope.bundle),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
   }
+  if(temporaries>MAX_SERVICE_FILES){const envelope=parseStrictJson(await readStateFile(ordered[0].file,io),MAX_STATE_FILE_BYTES);requireCondition(temporaries<=serviceCommandLimit(envelope.bundle),'Runtime temporary file budget exceeded','LIMIT_EXCEEDED');}
   return ordered;
 }
 // IO injection is a library test boundary; HTTP/CLI cannot supply handlers or bypass validation.
@@ -83,7 +85,7 @@ export async function createRuntimeOwner(options,io=fs){
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
   const inspectActivity=options.inspectActivity??false;requireCondition(typeof inspectActivity==='boolean','Invalid activity inspector mode');
-  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village','encounter-survival-village','scene-survival-village','scene-livelihood-village','campaign-village','campaign-npc-village','campaign-social-village','campaign-negotiation-village','campaign-memory-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
+  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village','encounter-survival-village','scene-survival-village','scene-livelihood-village','campaign-village','campaign-npc-village','campaign-social-village','campaign-negotiation-village','campaign-memory-village','campaign-playable-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
   requireCondition(options.profile===undefined || options.checkpoint===undefined,'Profile and checkpoint are mutually exclusive');
   if(options.seed!==undefined){integer(options.seed);requireCondition(options.seed<=0xffffffff,'Invalid runtime seed');}
   if(options.checkpoint!==undefined)requireCondition(typeof options.checkpoint==='string' && options.checkpoint.length>0 && options.seed===undefined,'Checkpoint cannot reset seed');
@@ -106,7 +108,7 @@ export async function createRuntimeOwner(options,io=fs){
         bundle=await loadCheckpoint(states[0].file,{rulesVersion:PERSONALITY_RULES,systems:memorySystems()},io);
       }
       const confirmedFormat=runtimeProfile(bundle).serviceFormatVersion;
-      requireCondition(states.length<=serviceFileLimit(confirmedFormat),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
+      requireCondition(states.length<=serviceFileLimit(confirmedFormat,bundle),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
       requireCondition(bundle.snapshot.revision===states[0].revision,'State filename/revision mismatch',state?'INVALID_SERVICE_COMMIT':'INVALID_CHECKPOINT');
       requireCondition(options.seed===undefined || options.seed===bundle.snapshot.rng.seed,'Cannot reset existing runtime seed');
     }else{
@@ -119,6 +121,7 @@ export async function createRuntimeOwner(options,io=fs){
         options.profile==='campaign-npc-village'?createNpcCampaignVillage:
         options.profile==='campaign-social-village'?createSocialCampaignVillage:
         options.profile==='campaign-negotiation-village'?createNegotiationCampaignVillage:
+        options.profile==='campaign-playable-village'?createPlayableCampaignVillage:
         options.profile==='campaign-memory-village'?createMemoryCampaignVillage:
         options.profile==='scene-livelihood-village'?createLivelihoodVillage:
         options.profile==='scene-survival-village'?createSceneVillage:
@@ -139,7 +142,7 @@ export async function createRuntimeOwner(options,io=fs){
     let session=createSimulationSession(bundle,systems),projection=projectPublicSnapshot(bundle),playerProjection=playerAvailable?projectPlayerSnapshot(bundle):null,
       mindProjection=mindAvailable?projectMindInspector(bundle):null,encounterProjection=encounterAvailable?projectEncounterSnapshot(bundle):null,
       sceneProjection=sceneAvailable?projectSceneSnapshot(bundle):null,
-      mapProjection=mapAvailable?projectMapSnapshot(bundle,MAX_SERVICE_COMMANDS-bundle.snapshot.world.encounterModel.inputHistory.length):null,
+      mapProjection=mapAvailable?projectMapSnapshot(bundle,serviceCommandLimit(bundle)-bundle.snapshot.world.encounterModel.inputHistory.length):null,
       activityProjection=inspectActivity&&sceneAvailable?projectWorldActivity(bundle):null;
     if(!states.length){
       if(state)await saveServiceCommit(state,directory,io);
@@ -179,15 +182,15 @@ export async function createRuntimeOwner(options,io=fs){
           const prior=old??anchored;
           if(prior){requireCondition(canonicalJson(prior.dto)===canonicalJson(dto),'Command ID has different input','COMMAND_ID_CONFLICT');return cloneData(prior.receipt);}
           if(dto.expectedRevision!==projection.revision)throw Object.assign(fault('REVISION_CONFLICT','World revision has changed'),{currentRevision:projection.revision});
-          requireCondition(state.commands.length<MAX_SERVICE_COMMANDS,'Command history exceeds budget','LIMIT_EXCEEDED');
-          if(sceneAvailable)requireCondition(state.bundle.snapshot.world.encounterModel.inputHistory.length<MAX_SERVICE_COMMANDS,'Scene command history exceeds budget','LIMIT_EXCEEDED');
+          requireCondition(state.commands.length<serviceCommandLimit(state.bundle),'Command history exceeds budget','LIMIT_EXCEEDED');
+          if(sceneAvailable)requireCondition(state.bundle.snapshot.world.encounterModel.inputHistory.length<serviceCommandLimit(state.bundle),'Scene command history exceeds budget','LIMIT_EXCEEDED');
           if(mapAvailable){
-            const remaining=MAX_SERVICE_COMMANDS-state.bundle.snapshot.world.encounterModel.inputHistory.length;
+            const remaining=serviceCommandLimit(state.bundle)-state.bundle.snapshot.world.encounterModel.inputHistory.length;
             requireMarchBudget(dto.type,remaining,state.bundle.snapshot.world);
           }
           requireCondition(await ownsLock(lockPath,token,io),'Runtime ownership changed','OWNER_BUSY');
           const inventory=await inspectDirectory(directory,io);
-          requireCondition(inventory.length<serviceFileLimit(serviceFormatVersion),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
+          requireCondition(inventory.length<serviceFileLimit(serviceFormatVersion,state.bundle),'Runtime directory exceeds file budget','LIMIT_EXCEEDED');
           requireCondition(inventory.length>0 && inventory[0].kind==='service-commit' && inventory[0].revision===projection.revision,'Runtime state files changed','INVALID_SERVICE_COMMIT');
           if(liveWriter){
             const committed=await liveWriter.submit(dto);
@@ -201,7 +204,7 @@ export async function createRuntimeOwner(options,io=fs){
             nextMindProjection=mindAvailable?projectMindInspector(nextBundle):null,
             nextEncounterProjection=encounterAvailable?projectEncounterSnapshot(nextBundle):null,
             nextSceneProjection=sceneAvailable?projectSceneSnapshot(nextBundle):null,
-            nextMapProjection=mapAvailable?projectMapSnapshot(nextBundle,MAX_SERVICE_COMMANDS-nextBundle.snapshot.world.encounterModel.inputHistory.length):null,
+            nextMapProjection=mapAvailable?projectMapSnapshot(nextBundle,serviceCommandLimit(nextBundle)-nextBundle.snapshot.world.encounterModel.inputHistory.length):null,
             nextActivityProjection=inspectActivity&&sceneAvailable?projectWorldActivity(nextBundle):null;
           const next=certifiedNext??{serviceFormatVersion,anchor:state.anchor,commands:[...state.commands,{dto,receipt}],bundle:nextBundle};
           await saveServiceCommit(next,directory,io);

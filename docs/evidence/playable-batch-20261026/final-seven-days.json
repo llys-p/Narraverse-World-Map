@@ -1,0 +1,348 @@
+{
+  "status": "passed",
+  "externalModelCalls": 0,
+  "seeds": [
+    {
+      "seed": 7,
+      "tick": 1008,
+      "wallMs": 58114.46789,
+      "sha256": "0d6a9715f03eeda326e915faca3b8d46e24bed4eddb335f174854fb0425e3fd2",
+      "fullReplay": "passed",
+      "days": [
+        {
+          "day": 1,
+          "food": 0,
+          "wallet": 20,
+          "health": 1000,
+          "result": {
+            "action": "WorkForPay",
+            "foodChange": 0,
+            "reasonCode": "FOOD_INCOME",
+            "status": "succeeded",
+            "tick": 144,
+            "walletChange": 20
+          },
+          "publicFood": 570
+        },
+        {
+          "day": 2,
+          "food": 0,
+          "wallet": 10,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 288,
+            "walletChange": -10
+          },
+          "publicFood": 583
+        },
+        {
+          "day": 3,
+          "food": 0,
+          "wallet": 0,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 432,
+            "walletChange": -10
+          },
+          "publicFood": 596
+        },
+        {
+          "day": 4,
+          "food": 0,
+          "wallet": 20,
+          "health": 1000,
+          "result": {
+            "action": "WorkForPay",
+            "foodChange": 0,
+            "reasonCode": "FOOD_INCOME",
+            "status": "succeeded",
+            "tick": 576,
+            "walletChange": 20
+          },
+          "publicFood": 610
+        },
+        {
+          "day": 5,
+          "food": 0,
+          "wallet": 10,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 720,
+            "walletChange": -10
+          },
+          "publicFood": 623
+        },
+        {
+          "day": 6,
+          "food": 0,
+          "wallet": 0,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 864,
+            "walletChange": -10
+          },
+          "publicFood": 636
+        },
+        {
+          "day": 7,
+          "food": 0,
+          "wallet": 20,
+          "health": 1000,
+          "result": {
+            "action": "WorkForPay",
+            "foodChange": 0,
+            "reasonCode": "FOOD_INCOME",
+            "status": "succeeded",
+            "tick": 1008,
+            "walletChange": 20
+          },
+          "publicFood": 650
+        }
+      ]
+    },
+    {
+      "seed": 42,
+      "tick": 1008,
+      "wallMs": 57198.338572,
+      "sha256": "f646bc803c86ced4f621aba6d4ea36618a232623db12f4470f9850db63be458b",
+      "fullReplay": "passed",
+      "days": [
+        {
+          "day": 1,
+          "food": 0,
+          "wallet": 20,
+          "health": 1000,
+          "result": {
+            "action": "WorkForPay",
+            "foodChange": 0,
+            "reasonCode": "FOOD_INCOME",
+            "status": "succeeded",
+            "tick": 144,
+            "walletChange": 20
+          },
+          "publicFood": 570
+        },
+        {
+          "day": 2,
+          "food": 0,
+          "wallet": 10,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 288,
+            "walletChange": -10
+          },
+          "publicFood": 583
+        },
+        {
+          "day": 3,
+          "food": 0,
+          "wallet": 0,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 432,
+            "walletChange": -10
+          },
+          "publicFood": 596
+        },
+        {
+          "day": 4,
+          "food": 0,
+          "wallet": 20,
+          "health": 1000,
+          "result": {
+            "action": "WorkForPay",
+            "foodChange": 0,
+            "reasonCode": "FOOD_INCOME",
+            "status": "succeeded",
+            "tick": 576,
+            "walletChange": 20
+          },
+          "publicFood": 610
+        },
+        {
+          "day": 5,
+          "food": 0,
+          "wallet": 10,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 720,
+            "walletChange": -10
+          },
+          "publicFood": 623
+        },
+        {
+          "day": 6,
+          "food": 0,
+          "wallet": 0,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 864,
+            "walletChange": -10
+          },
+          "publicFood": 636
+        },
+        {
+          "day": 7,
+          "food": 0,
+          "wallet": 20,
+          "health": 1000,
+          "result": {
+            "action": "WorkForPay",
+            "foodChange": 0,
+            "reasonCode": "FOOD_INCOME",
+            "status": "succeeded",
+            "tick": 1008,
+            "walletChange": 20
+          },
+          "publicFood": 650
+        }
+      ]
+    },
+    {
+      "seed": 99,
+      "tick": 1008,
+      "wallMs": 59439.25309900001,
+      "sha256": "af769beee7c5e47906d5261325d7fb17dfc2ccd658a35b32cbbf646732083c4f",
+      "fullReplay": "passed",
+      "days": [
+        {
+          "day": 1,
+          "food": 0,
+          "wallet": 20,
+          "health": 1000,
+          "result": {
+            "action": "WorkForPay",
+            "foodChange": 0,
+            "reasonCode": "FOOD_INCOME",
+            "status": "succeeded",
+            "tick": 144,
+            "walletChange": 20
+          },
+          "publicFood": 570
+        },
+        {
+          "day": 2,
+          "food": 0,
+          "wallet": 10,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 288,
+            "walletChange": -10
+          },
+          "publicFood": 583
+        },
+        {
+          "day": 3,
+          "food": 0,
+          "wallet": 0,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 432,
+            "walletChange": -10
+          },
+          "publicFood": 596
+        },
+        {
+          "day": 4,
+          "food": 0,
+          "wallet": 20,
+          "health": 1000,
+          "result": {
+            "action": "WorkForPay",
+            "foodChange": 0,
+            "reasonCode": "FOOD_INCOME",
+            "status": "succeeded",
+            "tick": 576,
+            "walletChange": 20
+          },
+          "publicFood": 610
+        },
+        {
+          "day": 5,
+          "food": 0,
+          "wallet": 10,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 720,
+            "walletChange": -10
+          },
+          "publicFood": 623
+        },
+        {
+          "day": 6,
+          "food": 0,
+          "wallet": 0,
+          "health": 1000,
+          "result": {
+            "action": "BuyFood",
+            "foodChange": 1,
+            "reasonCode": "BUY_FOOD",
+            "status": "succeeded",
+            "tick": 864,
+            "walletChange": -10
+          },
+          "publicFood": 636
+        },
+        {
+          "day": 7,
+          "food": 0,
+          "wallet": 20,
+          "health": 1000,
+          "result": {
+            "action": "WorkForPay",
+            "foodChange": 0,
+            "reasonCode": "FOOD_INCOME",
+            "status": "succeeded",
+            "tick": 1008,
+            "walletChange": 20
+          },
+          "publicFood": 650
+        }
+      ]
+    }
+  ]
+}

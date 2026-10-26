@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "scripts/check-playable-seven-days.mjs",
+    "artifacts/playable-batch/seven-days.json"
+  ],
+  "pid": 7,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 183261.674,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

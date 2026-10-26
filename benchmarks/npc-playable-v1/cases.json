@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 4,
+  "fixtureVersion": "6",
+  "suiteId": "npc-playable-v1",
+  "provenance": "自写开发场景，新可玩fixture6一场景8轮；真实时间、工作/购买/赠粮驱动，非盲测或独立金标。",
+  "cases": [
+    {
+      "id": "playable-life",
+      "title": "多日生活记忆、赠粮与复工",
+      "setup": [],
+      "turns": [
+        {
+          "id": "before-wage",
+          "text": "你已经拿到工钱了，对吗？",
+          "before": [
+            {
+              "advanceTo": 112
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 0,
+              "lifeResult": null,
+              "lifeResultStatus": null,
+              "lifeDecisionReason": null
+            },
+            "humanReview": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "paid",
+          "text": "现在钱粮各有多少？刚才做了什么？",
+          "before": [
+            {
+              "advanceTo": 144
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 20,
+              "lifeResult": "WorkForPay",
+              "lifeResultStatus": "succeeded",
+              "lifeDecisionReason": "FOOD_INCOME"
+            },
+            "humanReview": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "at-stall",
+          "text": "到了粮摊就算已经买到了吗？",
+          "before": [
+            {
+              "advanceTo": 160
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 20,
+              "lifeResult": "WorkForPay",
+              "lifeResultStatus": "succeeded",
+              "lifeDecisionReason": "FOOD_INCOME"
+            },
+            "humanReview": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "after-buy",
+          "text": "你买过一份，所以现在还剩一份，对吗？",
+          "before": [
+            {
+              "advanceTo": 288
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 10,
+              "lifeResult": "BuyFood",
+              "lifeResultStatus": "succeeded",
+              "lifeDecisionReason": "BUY_FOOD"
+            },
+            "humanReview": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "gifts",
+          "text": "我又给了你两份粮，现在还准备买粮吗？",
+          "before": [
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              }
+            },
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              }
+            },
+            {
+              "advanceTo": 320
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [
+              "gift"
+            ],
+            "facts": {
+              "selfFood": 2,
+              "selfWallet": 10,
+              "lifeResult": "BuyFood",
+              "lifeResultStatus": "succeeded",
+              "lifeDecisionReason": "BUY_FOOD"
+            },
+            "humanReview": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "wait",
+          "text": "那后来呢？你是不是又去买过了？",
+          "before": [
+            {
+              "advanceTo": 432
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 1,
+              "selfWallet": 10,
+              "lifeResult": "NoAction",
+              "lifeResultStatus": "no-action",
+              "lifeDecisionReason": "WAIT"
+            },
+            "humanReview": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "later-buy",
+          "text": "再后来，粮和钱分别剩多少？",
+          "before": [
+            {
+              "advanceTo": 576
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 1,
+              "selfWallet": 0,
+              "lifeResult": "BuyFood",
+              "lifeResultStatus": "succeeded",
+              "lifeDecisionReason": "BUY_FOOD"
+            },
+            "humanReview": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "work-again",
+          "text": "现在呢？你记得前几次挣钱和买粮的事情吗？",
+          "before": [
+            {
+              "advanceTo": 720
+            }
+          ],
+          "expect": {
+            "proposalKeys": [
+              "none"
+            ],
+            "referenceAnyKinds": [],
+            "facts": {
+              "selfFood": 0,
+              "selfWallet": 20,
+              "lifeResult": "WorkForPay",
+              "lifeResultStatus": "succeeded",
+              "lifeDecisionReason": "FOOD_INCOME"
+            },
+            "humanReview": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -131,6 +131,6 @@ export function npcDialogueContext(bundle){
   self:{alive:b.alive,health:b.health,fatigue:b.fatigue,food:own.inventory.food,wallet:own.wallet,trust:h.trust,fear:h.fear,grievance:h.grievance,
    knownHolder:h.knownHolder,knownCondition:h.knownCondition,...(memory?{hunger:b.hunger}:{})},
   observations:cloneData(memory?.episodes??h.memories),agreement:cloneData(model(w).agreement),conversation:cloneData(memory?.speech??model(w).turns),
-  ...(memory?{memoryMode:NPC_MEMORY_VERSION,memoryCoverage:{forgottenEpisodes:memory.forgottenEpisodes,forgottenSpeech:memory.forgottenSpeech},activity:npcLifeContext(w,s.tick)}:{}),
+  ...(memory?{memoryMode:NPC_MEMORY_VERSION,memoryCoverage:{forgottenEpisodes:memory.forgottenEpisodes,forgottenSpeech:memory.forgottenSpeech},activity:npcLifeContext(w,s.tick),...(w.mapModel.playModel?{lifeHistoryVersion:'play-life-v1',lifeHistory:cloneData(w.mapModel.playModel.lifeHistory)}:{})}:{}),
   canTalk:negotiationView(w).canTalk};
 }

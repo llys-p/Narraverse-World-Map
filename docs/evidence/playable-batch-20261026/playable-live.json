@@ -1,0 +1,26 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-npc-dialogue.mjs",
+    "--suite",
+    "playable-v1",
+    "--mode",
+    "live",
+    "--case",
+    "playable-life",
+    "--allow-model-calls",
+    "--max-requests",
+    "8",
+    "--out",
+    "artifacts/playable-batch/live.json"
+  ],
+  "pid": 4,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 32445.208,
+  "cpuMs": null,
+  "hardLimitMs": 300000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

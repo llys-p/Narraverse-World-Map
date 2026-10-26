@@ -1,0 +1,13 @@
+✔ pre-existing repair counts, later damage revokes readiness, and a failed claim cannot unlock the next quest (2020.260482ms)
+✔ deadline and death fail active quests, while important and changed own facts wake the preparation cache (39.975814ms)
+✔ more than 129 durable files remain writable and reopen, and altered journal or terminal state is rejected (21738.705417ms)
+✔ playable schema keeps the eight turn and seven day bounds without widening old fixtures (2.906578ms)
+✔ controlled eight turn conversation consumes retained own history and never manufactures world experience (43591.6995ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 67689.379929

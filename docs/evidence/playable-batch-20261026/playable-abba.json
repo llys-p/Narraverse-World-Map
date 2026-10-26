@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "import subprocess; roots=[(\"A1\",\"/workspace/scratch/e56afaffb4e3/Narraverse-NPC17\"),(\"B1\",\"/workspace/scratch/e56afaffb4e3/Narraverse-Playable\"),(\"B2\",\"/workspace/scratch/e56afaffb4e3/Narraverse-Playable\"),(\"A2\",\"/workspace/scratch/e56afaffb4e3/Narraverse-NPC17\")]; [subprocess.run([\"node\",\"scripts/measure-playable-core.mjs\",r,\"artifacts/playable-batch/abba-\"+name+\".json\"],check=True) for name,r in roots]"
+  ],
+  "pid": 23,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 81602.348,
+  "cpuMs": null,
+  "hardLimitMs": 360000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
