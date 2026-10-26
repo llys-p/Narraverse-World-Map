@@ -1,0 +1,28 @@
+{
+  "command": [
+    "env",
+    "COLD_PARENT_ROOT=../Narraverse-Short",
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/campaign-owned-batch.test.mjs",
+    "tests/simulation/session.test.mjs",
+    "tests/simulation/encounter-session.test.mjs",
+    "tests/simulation/session-certified-reuse.test.mjs",
+    "tests/simulation/campaign-live-derivation.test.mjs",
+    "tests/simulation/campaign-live-world-boundaries.test.mjs",
+    "tests/simulation/playable-campaign.test.mjs",
+    "tests/simulation/playable-memory-budget.test.mjs",
+    "tests/simulation/playable-boundaries.test.mjs",
+    "tests/simulation/service-cold-audit.test.mjs"
+  ],
+  "pid": 6,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 250335.842,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

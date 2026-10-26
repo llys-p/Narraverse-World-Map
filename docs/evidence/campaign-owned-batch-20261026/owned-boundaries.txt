@@ -1,0 +1,19 @@
+✔ synchronous detached batches equal separate fixed ticks for all six fixtures and the daily boundary (13440.829665ms)
+✔ batch boundaries inspect old events, detach nested data, reject invalid counts, and expose no custom-system bypass (172.135364ms)
+✔ campaign canonical ticks match the legacy registered-system oracle for six ticks (426.385052ms)
+✔ one synthetic day-boundary primitive preserves settlement facts and RNG (575.277188ms)
+✔ session mode rejects a structurally valid but non-canonical custom transition (111.753555ms)
+✔ campaign tick rejects accessor, wrong-profile, and invalid-data inputs (67.940231ms)
+✔ identical campaign structures return detached validation results and cannot poison the cache (77.962584ms)
+✔ mutated actor, numeric config, map, tick, and forged trust data are revalidated (129.118591ms)
+✔ descriptor inspection rejects accessors before and after a successful cached proof (21.793847ms)
+✔ proof keys use detached data even when a Proxy supplies different property values (25.890947ms)
+✔ a warmed structural proof cannot certify a forged historical fact (128.757925ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15657.643043
