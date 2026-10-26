@@ -1,0 +1,12 @@
+✔ owned batches equal the frozen parent for multiple seeds and return fully detached results (5242.063838ms)
+✔ a failure after the daily settlement discards all private progress in both parent and candidate batches (10650.612128ms)
+✔ structural canonical bytes preserve all fixture proofs, null prototypes, negative zero, and cache result isolation (464.733822ms)
+✔ native parse consumes validated bytes without toJSON callbacks and rejects hostile descriptors and forged keys (59.23897ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16654.436156

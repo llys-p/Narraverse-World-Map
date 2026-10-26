@@ -1,0 +1,97 @@
+{
+  "profileOnly": true,
+  "sampledMs": 57977.278,
+  "selfTop": [
+    {
+      "fn": "requireCondition",
+      "file": "data-contract.mjs",
+      "ms": 16260.249
+    },
+    {
+      "fn": "encodeCanonical",
+      "file": "data-contract.mjs",
+      "ms": 14612.83
+    },
+    {
+      "fn": "visit",
+      "file": "experience-state.mjs",
+      "ms": 7638.32
+    },
+    {
+      "fn": "cloneData",
+      "file": "data-contract.mjs",
+      "ms": 6958.686
+    },
+    {
+      "fn": "record",
+      "file": "data-contract.mjs",
+      "ms": 3808.484
+    },
+    {
+      "fn": "(garbage collector)",
+      "file": "",
+      "ms": 1374.318
+    },
+    {
+      "fn": "denseArray",
+      "file": "data-contract.mjs",
+      "ms": 1111.431
+    },
+    {
+      "fn": "own",
+      "file": "data-contract.mjs",
+      "ms": 899.075
+    },
+    {
+      "fn": "validateCampaignWorldState",
+      "file": "scene-campaign-runtime.mjs",
+      "ms": 621.376
+    },
+    {
+      "fn": "fields",
+      "file": "data-contract.mjs",
+      "ms": 399.74
+    },
+    {
+      "fn": "validateSocietyWorld",
+      "file": "society.mjs",
+      "ms": 262.63
+    },
+    {
+      "fn": "",
+      "file": "data-contract.mjs",
+      "ms": 242.334
+    }
+  ],
+  "inclusiveSelected": [
+    {
+      "fn": "cloneData",
+      "file": "data-contract.mjs",
+      "ms": 12075.033
+    },
+    {
+      "fn": "inspectDescriptorTree",
+      "file": "experience-state.mjs",
+      "ms": 16721.418
+    },
+    {
+      "fn": "validateCampaignWorldState",
+      "file": "scene-campaign-runtime.mjs",
+      "ms": 26494.855
+    },
+    {
+      "fn": "validateSnapshotStructure",
+      "file": "world-state.mjs",
+      "ms": 30184.525
+    },
+    {
+      "fn": "runTick",
+      "file": "command-engine.mjs",
+      "ms": 56116.971
+    }
+  ],
+  "rawSha256": "046f04dce40e0e4f5f43eb7cea13e95d93382161de3c2a229b426ebc31de5fc5",
+  "rawBytes": 5256897,
+  "compression": "gzip then base64",
+  "sourcePhase": "Parent production before either edit; profile is diagnostic and excluded from ABBA timing."
+}

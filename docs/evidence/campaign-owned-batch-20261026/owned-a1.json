@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-recovery-core.mjs",
+    "../Narraverse-Short",
+    "artifacts/owned-batch/a1.json"
+  ],
+  "pid": 6,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 90359.269,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

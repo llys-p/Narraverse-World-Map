@@ -1,0 +1,15 @@
+{
+  "node": "v24.22.1",
+  "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Short",
+  "seed": 42,
+  "tick": 1008,
+  "commands": 1,
+  "openMs": 124.000888,
+  "simulateMs": 47100.079024,
+  "auditMs": 42726.145654,
+  "tenMapReadsMs": 82.87687399999413,
+  "bundleSha256": "c6b6d450bce6995d6f84c7f85550d70e3141981db264bb02d4f418d83f4174e5",
+  "bytes": 296544,
+  "fullReplay": "passed",
+  "externalModelCalls": 0
+}

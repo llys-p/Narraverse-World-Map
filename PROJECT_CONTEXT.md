@@ -1,3 +1,16 @@
+# 当前交付：长档性能门槛与未采纳方案（2026-10-27）
+
+父提交PR29 `9dd2c3aa5be2c5f5dcaf1e04a20ecfc1e73a3b70`；树 `/workspace/scratch/e56afaffb4e3/Narraverse-Batch`，分支 `codex/campaign-owned-batch-20261026`。合同 `tasks/CAMPAIGN-OWNED-BATCH-TASK.md`；用户/AI交接 `docs/runtime/CAMPAIGN-OWNED-BATCH.md`。最终生产源码与父版完全相同，本轮交付测量工具、边界测试与证据，不能说游戏已经提速。
+
+- 先尝试独占批次复用中间对象与复用规范字节做结构检查。组合七日ABBA：模拟均值43.63→55.49秒，审计43.79→44.77秒；虽然49项回归、11项边界及HTTP通过，性能不满足门槛。
+- 两日CPU拆分支持进一步检查规范字节方案；随后独立七日带CPU的ABBA：模拟52.96→64.44秒（+21.7%）、审计60.21→44.18秒（-26.6%）。候选模拟两次41.76/87.13秒，波动大，不能从单组或短场景推导稳定提速；两个生产修改均已撤回。
+- 组合候选实际HTTP七日提交115.68→82.98秒、重开102.22→96.79秒，但等1小时870→903ms。与核心结果混合，只记录本机单组；双方六个存档文件与五项投影SHA相同，保存/恢复/重试通过。
+- 最终保留4项新增边界回归（最终父版源码复跑），1项扩展HTTP测量测试在完整父版通过。初期60项及组合HTTP仅标探索阶段。新增CPU计时脚本，原CPU profile压缩保存；证据核验 `node scripts/check-owned-batch-evidence.mjs`。父版证据检查器通过，历史证据不改。
+- 模型0调用。视觉/FPS、Windows、真实语言无新增验收；不合main、部署、迁移真实档、启停日常实例或导入2.0。Projects无操作能力，待同步。两棵拆分实验树 `Narraverse-Batch-Codec` / `Narraverse-Batch-Loop` 保留，不是交付代码。
+- 下一重点：测量结构验证中固定配置的反复重建/校验，并评估有界的配置级复用；按短操作、长推进、冷恢复分别设门槛，纳入CPU与冷/热阶段，不能因审计变快而忽略首次模拟变慢。不要再次直接采用本轮未达门槛的对象复用或JSON解析方案。
+
+以下为PR29及更早历史。
+
 # 当前候选：长档短操作（2026-10-26）
 
 父提交PR28 `c417dfb322cff2880e81f746c0fded608b24f567`；树 `/workspace/scratch/e56afaffb4e3/Narraverse-Short`，分支 `codex/service-short-commands-20261026`。合同 `tasks/SERVICE-SHORT-COMMANDS-TASK.md`，说明 `docs/runtime/SERVICE-SHORT-COMMANDS.md`。

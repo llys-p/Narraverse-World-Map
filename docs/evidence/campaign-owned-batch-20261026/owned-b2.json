@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-recovery-core.mjs",
+    ".",
+    "artifacts/owned-batch/b2.json"
+  ],
+  "pid": 32,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 99140.075,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

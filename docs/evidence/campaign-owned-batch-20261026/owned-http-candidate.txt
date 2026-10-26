@@ -1,0 +1,10 @@
+{"measurement":"long-session-short-commands","runtimeRoot":"/workspace/scratch/e56afaffb4e3/Narraverse-Batch","node":"v24.22.1","tick":1015,"samples":[{"label":"prepare-seven-days","type":"AdvanceTime","durationTicks":1008,"commitAndSaveMs":82975.315473,"confirmedReadMs":7.15631000000576},{"label":"accept-quest","type":"PlayerQuest","durationTicks":0,"commitAndSaveMs":182.04910499999824,"confirmedReadMs":6.0462530000077095},{"label":"abandon-quest","type":"PlayerQuest","durationTicks":0,"commitAndSaveMs":166.60597699999926,"confirmedReadMs":6.347473000001628},{"label":"wait-one-tick","type":"AdvanceTime","durationTicks":1,"commitAndSaveMs":285.6665400000056,"confirmedReadMs":4.140421000003698},{"label":"wait-one-hour","type":"AdvanceTime","durationTicks":6,"commitAndSaveMs":903.1834190000081,"confirmedReadMs":4.157437000001664}],"reopenMs":96785.42299600001,"retryMs":4.93625400000019,"realModelCalls":0,"finalFiles":{"service-commit-r0.json":"c6bb18158ea5bc752092a9585e8f6f800d7b7f7a282ba41ed7754f8f8e326268","service-commit-r1008.json":"b71102e31dc8afc766b1240252b5939fd560f7199b9887f51dcec05d8d1a8f85","service-commit-r1009.json":"3cc774a10b8d2b2284cf428cdf59bf95da44c3f3077b4e623f585fb62c49470b","service-commit-r1010.json":"dbbb02e2e1708bce775bf39a34b04765ab570b591754bb01071fc2b155a8135c","service-commit-r1011.json":"d047c9bcfd13504002f36b5113d7c9e46cc3939369119817b19950e66c313b59","service-commit-r1017.json":"5026059794cbc98443d04ddc3688977848bac04448fec052a1b04ccc89171095"},"finalProjectionSha256":"7d0207a0b69623bd973547f69af10b444b1adeaba1ae7c4f5f27ab0553b6f648","scope":"HTTP commit/save and confirmed cached read; not visual feedback or FPS"}
+✔ owned batch worker HTTP preserves seven-day files, projections, recovery and retries (181879.446713ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 182138.149003

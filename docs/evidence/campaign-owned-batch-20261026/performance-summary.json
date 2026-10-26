@@ -1,0 +1,295 @@
+{
+  "decision": "reject both production optimizations; runtime is byte-identical to PR29",
+  "completionDate": "2026-10-27",
+  "timezone": "Asia/Shanghai",
+  "combinedSevenDays": {
+    "simulateMs": {
+      "parentMeanMs": 43630.545493,
+      "candidateMeanMs": 55485.326295,
+      "candidateChangePercent": 27.170828757806742,
+      "parentSamplesMs": [
+        47100.079024,
+        40161.011962000004
+      ],
+      "candidateSamplesMs": [
+        55162.015304,
+        55808.637286
+      ]
+    },
+    "auditMs": {
+      "parentMeanMs": 43793.239360499996,
+      "candidateMeanMs": 44772.987643500004,
+      "candidateChangePercent": 2.2372135455311914,
+      "parentSamplesMs": [
+        42726.145654,
+        44860.333067
+      ],
+      "candidateSamplesMs": [
+        46668.63992,
+        42877.33536700001
+      ]
+    }
+  },
+  "codecSevenDays": {
+    "simulateMs": {
+      "parentMeanMs": 52962.965005000005,
+      "candidateMeanMs": 64444.486337500006,
+      "candidateChangePercent": 21.678396085672457,
+      "parentSamplesMs": [
+        54411.476016,
+        51514.453994
+      ],
+      "candidateSamplesMs": [
+        87128.157231,
+        41760.81544400001
+      ]
+    },
+    "auditMs": {
+      "parentMeanMs": 60205.150033,
+      "candidateMeanMs": 44178.90404950001,
+      "candidateChangePercent": -26.619393813844148,
+      "parentSamplesMs": [
+        58133.444709,
+        62276.855357
+      ],
+      "candidateSamplesMs": [
+        45713.34080400001,
+        42644.467295
+      ]
+    },
+    "cpu": {
+      "simulateMs": {
+        "parentMeanMs": 54127.7405,
+        "candidateMeanMs": 65703.621,
+        "candidateChangePercent": 21.386225238794143
+      },
+      "auditMs": {
+        "parentMeanMs": 61015.706999999995,
+        "candidateMeanMs": 44689.878,
+        "candidateChangePercent": -26.756764450832303
+      }
+    }
+  },
+  "twoDayCpuExploration": {
+    "cpu-a1": {
+      "cpu": {
+        "openMs": 185.217,
+        "simulateMs": 15719.206,
+        "auditMs": 16196.111
+      },
+      "maxRssKiB": 227712,
+      "node": "v24.22.1",
+      "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Short",
+      "seed": 42,
+      "tick": 288,
+      "commands": 1,
+      "openMs": 141.10422100000002,
+      "simulateMs": 15183.764137,
+      "auditMs": 16180.427966999998,
+      "tenMapReadsMs": 29.466621999999916,
+      "bundleSha256": "ab40c793d594c742c6662272e194b0c3e75918bfab1635c7295968ce1e7c95bf",
+      "bytes": 109985,
+      "fullReplay": "passed",
+      "externalModelCalls": 0
+    },
+    "cpu-codec": {
+      "cpu": {
+        "openMs": 191.255,
+        "simulateMs": 9681.562,
+        "auditMs": 10019.79
+      },
+      "maxRssKiB": 239428,
+      "node": "v24.22.1",
+      "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Batch-Codec",
+      "seed": 42,
+      "tick": 288,
+      "commands": 1,
+      "openMs": 115.19686299999995,
+      "simulateMs": 9234.005847999999,
+      "auditMs": 9746.927592,
+      "tenMapReadsMs": 27.36140399999931,
+      "bundleSha256": "ab40c793d594c742c6662272e194b0c3e75918bfab1635c7295968ce1e7c95bf",
+      "bytes": 109985,
+      "fullReplay": "passed",
+      "externalModelCalls": 0
+    },
+    "cpu-loop": {
+      "cpu": {
+        "openMs": 158.755,
+        "simulateMs": 13038.179,
+        "auditMs": 10729.253
+      },
+      "maxRssKiB": 225332,
+      "node": "v24.22.1",
+      "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Batch-Loop",
+      "seed": 42,
+      "tick": 288,
+      "commands": 1,
+      "openMs": 109.450841,
+      "simulateMs": 12655.270454,
+      "auditMs": 10533.661519000001,
+      "tenMapReadsMs": 30.01579099999799,
+      "bundleSha256": "ab40c793d594c742c6662272e194b0c3e75918bfab1635c7295968ce1e7c95bf",
+      "bytes": 109985,
+      "fullReplay": "passed",
+      "externalModelCalls": 0
+    },
+    "cpu-a2": {
+      "cpu": {
+        "openMs": 714.419,
+        "simulateMs": 15234.43,
+        "auditMs": 14657.411
+      },
+      "maxRssKiB": 226088,
+      "node": "v24.22.1",
+      "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Short",
+      "seed": 42,
+      "tick": 288,
+      "commands": 1,
+      "openMs": 520.149492,
+      "simulateMs": 14490.410899999999,
+      "auditMs": 14404.429339,
+      "tenMapReadsMs": 43.971712999999,
+      "bundleSha256": "ab40c793d594c742c6662272e194b0c3e75918bfab1635c7295968ce1e7c95bf",
+      "bytes": 109985,
+      "fullReplay": "passed",
+      "externalModelCalls": 0
+    },
+    "cpu-combined": {
+      "cpu": {
+        "openMs": 193.72,
+        "simulateMs": 16350.741,
+        "auditMs": 9826.43
+      },
+      "maxRssKiB": 228972,
+      "node": "v24.22.1",
+      "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Batch",
+      "seed": 42,
+      "tick": 288,
+      "commands": 1,
+      "openMs": 143.98085100000003,
+      "simulateMs": 16105.884586999999,
+      "auditMs": 9618.6532,
+      "tenMapReadsMs": 29.473061000000598,
+      "bundleSha256": "ab40c793d594c742c6662272e194b0c3e75918bfab1635c7295968ce1e7c95bf",
+      "bytes": 109985,
+      "fullReplay": "passed",
+      "externalModelCalls": 0
+    }
+  },
+  "http": {
+    "parent": {
+      "measurement": "long-session-short-commands",
+      "runtimeRoot": "/workspace/scratch/e56afaffb4e3/Narraverse-Short",
+      "node": "v24.22.1",
+      "tick": 1015,
+      "samples": [
+        {
+          "label": "prepare-seven-days",
+          "type": "AdvanceTime",
+          "durationTicks": 1008,
+          "commitAndSaveMs": 115682.890184,
+          "confirmedReadMs": 3.98145900000236
+        },
+        {
+          "label": "accept-quest",
+          "type": "PlayerQuest",
+          "durationTicks": 0,
+          "commitAndSaveMs": 213.49137899999914,
+          "confirmedReadMs": 4.675691999989795
+        },
+        {
+          "label": "abandon-quest",
+          "type": "PlayerQuest",
+          "durationTicks": 0,
+          "commitAndSaveMs": 216.27013299999817,
+          "confirmedReadMs": 17.893147999988287
+        },
+        {
+          "label": "wait-one-tick",
+          "type": "AdvanceTime",
+          "durationTicks": 1,
+          "commitAndSaveMs": 330.48795999999857,
+          "confirmedReadMs": 3.231506000010995
+        },
+        {
+          "label": "wait-one-hour",
+          "type": "AdvanceTime",
+          "durationTicks": 6,
+          "commitAndSaveMs": 870.3748619999969,
+          "confirmedReadMs": 2.465150000003632
+        }
+      ],
+      "reopenMs": 102224.722399,
+      "retryMs": 6.272148999996716,
+      "realModelCalls": 0,
+      "finalFiles": {
+        "service-commit-r0.json": "c6bb18158ea5bc752092a9585e8f6f800d7b7f7a282ba41ed7754f8f8e326268",
+        "service-commit-r1008.json": "b71102e31dc8afc766b1240252b5939fd560f7199b9887f51dcec05d8d1a8f85",
+        "service-commit-r1009.json": "3cc774a10b8d2b2284cf428cdf59bf95da44c3f3077b4e623f585fb62c49470b",
+        "service-commit-r1010.json": "dbbb02e2e1708bce775bf39a34b04765ab570b591754bb01071fc2b155a8135c",
+        "service-commit-r1011.json": "d047c9bcfd13504002f36b5113d7c9e46cc3939369119817b19950e66c313b59",
+        "service-commit-r1017.json": "5026059794cbc98443d04ddc3688977848bac04448fec052a1b04ccc89171095"
+      },
+      "finalProjectionSha256": "7d0207a0b69623bd973547f69af10b444b1adeaba1ae7c4f5f27ab0553b6f648",
+      "scope": "HTTP commit/save and confirmed cached read; not visual feedback or FPS"
+    },
+    "candidate": {
+      "measurement": "long-session-short-commands",
+      "runtimeRoot": "/workspace/scratch/e56afaffb4e3/Narraverse-Batch",
+      "node": "v24.22.1",
+      "tick": 1015,
+      "samples": [
+        {
+          "label": "prepare-seven-days",
+          "type": "AdvanceTime",
+          "durationTicks": 1008,
+          "commitAndSaveMs": 82975.315473,
+          "confirmedReadMs": 7.15631000000576
+        },
+        {
+          "label": "accept-quest",
+          "type": "PlayerQuest",
+          "durationTicks": 0,
+          "commitAndSaveMs": 182.04910499999824,
+          "confirmedReadMs": 6.0462530000077095
+        },
+        {
+          "label": "abandon-quest",
+          "type": "PlayerQuest",
+          "durationTicks": 0,
+          "commitAndSaveMs": 166.60597699999926,
+          "confirmedReadMs": 6.347473000001628
+        },
+        {
+          "label": "wait-one-tick",
+          "type": "AdvanceTime",
+          "durationTicks": 1,
+          "commitAndSaveMs": 285.6665400000056,
+          "confirmedReadMs": 4.140421000003698
+        },
+        {
+          "label": "wait-one-hour",
+          "type": "AdvanceTime",
+          "durationTicks": 6,
+          "commitAndSaveMs": 903.1834190000081,
+          "confirmedReadMs": 4.157437000001664
+        }
+      ],
+      "reopenMs": 96785.42299600001,
+      "retryMs": 4.93625400000019,
+      "realModelCalls": 0,
+      "finalFiles": {
+        "service-commit-r0.json": "c6bb18158ea5bc752092a9585e8f6f800d7b7f7a282ba41ed7754f8f8e326268",
+        "service-commit-r1008.json": "b71102e31dc8afc766b1240252b5939fd560f7199b9887f51dcec05d8d1a8f85",
+        "service-commit-r1009.json": "3cc774a10b8d2b2284cf428cdf59bf95da44c3f3077b4e623f585fb62c49470b",
+        "service-commit-r1010.json": "dbbb02e2e1708bce775bf39a34b04765ab570b591754bb01071fc2b155a8135c",
+        "service-commit-r1011.json": "d047c9bcfd13504002f36b5113d7c9e46cc3939369119817b19950e66c313b59",
+        "service-commit-r1017.json": "5026059794cbc98443d04ddc3688977848bac04448fec052a1b04ccc89171095"
+      },
+      "finalProjectionSha256": "7d0207a0b69623bd973547f69af10b444b1adeaba1ae7c4f5f27ab0553b6f648",
+      "scope": "HTTP commit/save and confirmed cached read; not visual feedback or FPS"
+    }
+  },
+  "scope": "Fixed synthetic local samples. Mixed results and high variance; no sustained player latency/FPS claim. Exploratory variants are retained only as evidence; no production changes shipped."
+}

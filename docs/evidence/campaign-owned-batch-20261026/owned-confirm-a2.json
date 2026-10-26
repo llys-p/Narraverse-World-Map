@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-owned-core.mjs",
+    "../Narraverse-Short",
+    "artifacts/owned-batch/confirm-a2.json"
+  ],
+  "pid": 46,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 114309.443,
+  "cpuMs": null,
+  "hardLimitMs": 240000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
