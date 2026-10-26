@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {npcLanguageConfig,createNpcLanguageProvider} from '../runtime/service/npc-language-provider.mjs';
 import {selectDialogueCases,runDialogueEvaluation,renderDialogueReport} from '../runtime/evaluation/npc-dialogue-eval.mjs';
+import {createDialogueReportWriter} from '../runtime/evaluation/npc-report-files.mjs';
 import {requireCondition,fault} from '../runtime/core/data-contract.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
@@ -29,7 +30,7 @@ export function parseEvaluationArgs(args){
 async function fingerprints(suiteFile){
  const files=[suiteFile,'runtime/core/npc-negotiation-terms.mjs','runtime/fixtures/campaign-village.mjs','runtime/service/npc-language-provider.mjs','runtime/evaluation/npc-dialogue-eval.mjs',
   'runtime/service/npc-dialogue-grounding.mjs','runtime/service/npc-life-facts.mjs','runtime/evaluation/npc-fact-audit.mjs','runtime/core/survival-state.mjs','runtime/service/npc-recall-focus.mjs','demo-social-language.mjs','runtime/core/simulation-clock.mjs',
-  'runtime/core/npc-negotiation.mjs','runtime/core/npc-social.mjs','runtime/core/npc-memory.mjs','runtime/core/npc-life-context.mjs','runtime/core/npc-village-sites.mjs','runtime/core/campaign-npc-agency.mjs','runtime/core/campaign-map.mjs','runtime-negotiation-contract.mjs','scripts/evaluate-npc-dialogue.mjs'];
+  'runtime/evaluation/npc-report-files.mjs','runtime/core/npc-negotiation.mjs','runtime/core/npc-social.mjs','runtime/core/npc-memory.mjs','runtime/core/npc-life-context.mjs','runtime/core/npc-village-sites.mjs','runtime/core/campaign-npc-agency.mjs','runtime/core/campaign-map.mjs','runtime-negotiation-contract.mjs','scripts/evaluate-npc-dialogue.mjs'];
  const hashes={};for(const f of files)hashes[f]=createHash('sha256').update(await fs.readFile(path.join(root,f))).digest('hex');
  let baseCommit=null,workingTreeDirty=null;try{baseCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim();workingTreeDirty=Boolean(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim());}catch{}
  return {baseCommit,workingTreeDirty,sha256:hashes,node:process.version};
@@ -50,27 +51,23 @@ export async function evaluateDialogueCli(args,{env=process.env,fetchImpl=fetch,
  }
  const source=await fingerprints(suiteFile),out=path.resolve(root,settings.out??'artifacts/npc5-dialogue-eval/'+new Date().toISOString().replace(/[:.]/g,'-')+'-'+process.pid+'.json');
  requireCondition(out.endsWith('.json')&&!/service-commit-r\d+\.json$/.test(out),'Output must be a new evaluation JSON report');const html=out.slice(0,-5)+'.html';
- const opened=[];
+ let writer;
  try{
-  await fs.mkdir(path.dirname(out),{recursive:true});
-  try{for(const name of [out,html])opened.push({name,handle:await fs.open(name,'wx')});}
-  catch(error){for(const file of opened){await file.handle.close();await fs.unlink(file.name);}opened.length=0;throw fault(error.code==='EEXIST'?'OUTPUT_EXISTS':'REPORT_UNAVAILABLE','Output files could not be reserved');}
-  const metadata={source,provider:settings.mode==='live'?{model:config.apiKey?config.model.split(config.apiKey).join('[redacted]'):config.model,thinking:provider.thinking,endpointSha256:createHash('sha256').update(config.baseURL).digest('hex')}:null,createdAt:new Date().toISOString()};
+  writer=await createDialogueReportWriter(out);
+  const metadata={completionProtocol:1,source,provider:settings.mode==='live'?{model:config.apiKey?config.model.split(config.apiKey).join('[redacted]'):config.model,thinking:provider.thinking,endpointSha256:createHash('sha256').update(config.baseURL).digest('hex')}:null,createdAt:new Date().toISOString()};
   const save=async report=>{
    const document={...report,...metadata};
-   for(const [i,bytes] of [Buffer.from(JSON.stringify(document,null,2)+'\n'),Buffer.from(renderDialogueReport(document))].entries()){
-    let offset=0;while(offset<bytes.length){const written=await opened[i].handle.write(bytes,offset,bytes.length-offset,offset);requireCondition(written.bytesWritten>0,'Cannot write report','REPORT_UNAVAILABLE');offset+=written.bytesWritten;}
-    await opened[i].handle.truncate(bytes.length);await opened[i].handle.sync();
-   }
+   await writer.save(JSON.stringify(document,null,2)+'\n',renderDialogueReport(document));
   };
   await save({schemaVersion:1,fixtureVersion:suite.fixtureVersion??'4',suiteId:suite.suiteId,mode:settings.mode,notice:'测试准备中；没有语义质量结论。',completed:false,semanticVerdict:'not-evaluated',requestLimit:settings.maxRequests,cases:[],counts:{planned,attempted:0}});
   const report=await runDialogueEvaluation({suite,selection:settings.selection,mode:settings.mode,provider,maxRequests:settings.maxRequests,onProgress:save});
   await save(report);
+  const fileIntegrity=await writer.finish();
   const contradictions=report.factAuditSummary.contradictionTurns;
   const failed=report.counts.automaticFailed+report.counts.providerFailed+report.counts.fixtureFailed+report.counts.blocked+report.cases.filter(c=>c.worldReplayAudit!=='passed').length+contradictions;
-  log(JSON.stringify({status:contradictions?'fact-contradiction-detected':failed?'checks-failed':settings.mode==='plan'?'plan-ready':'human-review-required',mode:settings.mode,counts:report.counts,factAuditSummary:report.factAuditSummary,semanticVerdict:report.semanticVerdict,output:out,html}));
-  return {exitCode:failed?1:0,report:{...report,...metadata},out,html};
- }finally{provider?.close();for(const file of opened)await file.handle.close();}
+  log(JSON.stringify({status:contradictions?'fact-contradiction-detected':failed?'checks-failed':settings.mode==='plan'?'plan-ready':'human-review-required',mode:settings.mode,counts:report.counts,factAuditSummary:report.factAuditSummary,semanticVerdict:report.semanticVerdict,fileIntegrity,output:out,html}));
+  return {exitCode:failed?1:0,report:{...report,...metadata},fileIntegrity,out,html};
+ }finally{provider?.close();await writer?.close();}
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  try{

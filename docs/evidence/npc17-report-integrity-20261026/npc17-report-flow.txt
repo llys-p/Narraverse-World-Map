@@ -1,0 +1,1 @@
+{"status":"verified","externalModelCalls":0,"turns":28,"worldReplays":4,"templateRows":28,"fileIntegrity":"files-verified","semanticVerdict":"not-evaluated"}

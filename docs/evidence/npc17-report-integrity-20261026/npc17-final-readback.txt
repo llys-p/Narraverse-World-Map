@@ -1,0 +1,2 @@
+{"file":"life-v3.json","status":"files-verified","json":{"bytes":240142,"sha256":"83d75288c7ecc8e1147a7c2d2d7e32a718f4b91348ff23fb01ac13b95ca8b423"},"html":{"bytes":259212,"sha256":"fa545d86ecbf0d0ee0a640bf2a0802376018484d83d891db89c56474cd90b306"},"scope":"local-file-bytes-only"}
+{"file":"reviewed.json","status":"files-verified","json":{"bytes":244470,"sha256":"1772fb03180ebc2e90c3a6a910c284033389ec72cde931dcbad7cb52c7bb2328"},"html":{"bytes":264962,"sha256":"1bf4980c479c8b53ba6b398acf61ce00516b1080fdeef594d124883f89b682f0"},"scope":"local-file-bytes-only"}

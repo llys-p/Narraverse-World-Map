@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--input-type=module",
+    "-e",
+    "import {verifyDialogueReportFiles} from \"./runtime/evaluation/npc-report-files.mjs\"; for (const f of [\"life-v3.json\",\"reviewed.json\"]) { const r=await verifyDialogueReportFiles(\"artifacts/npc17/final-flow/\"+f); console.log(JSON.stringify({file:f,...r})); }"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 114.904,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

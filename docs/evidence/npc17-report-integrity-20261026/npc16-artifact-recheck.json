@@ -1,0 +1,21 @@
+{
+  "externalModelCalls": 0,
+  "records": [
+    {
+      "name": "life-v3-plan-final",
+      "sha256": "df0e9a538c4947b3493bd6c26a03ab4f09aef8c9781504ff5fe6238f37711afc",
+      "completed": false,
+      "notRun": 14,
+      "planned": 28,
+      "rootCause": "not-established"
+    },
+    {
+      "name": "life-v3-verified",
+      "sha256": "66e3e487953a9fb1150eade1268b2f4e8ac8592d282702765b2b7194a5f5f1f9",
+      "completed": true,
+      "notRun": 28,
+      "planned": 28,
+      "rootCause": "not-established"
+    }
+  ]
+}

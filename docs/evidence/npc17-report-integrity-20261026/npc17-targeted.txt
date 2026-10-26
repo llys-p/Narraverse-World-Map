@@ -1,0 +1,214 @@
+TAP version 13
+# Subtest: suite identities, action grammar, count and CLI live-call gates reject malformed or implicit inputs
+ok 1 - suite identities, action grammar, count and CLI live-call gates reject malformed or implicit inputs
+  ---
+  duration_ms: 6.321918
+  type: 'test'
+  ...
+# Subtest: default plan reconstructs all real scenarios without any provider call or semantic pass claim
+ok 2 - default plan reconstructs all real scenarios without any provider call or semantic pass claim
+  ---
+  duration_ms: 10663.21124
+  type: 'test'
+  ...
+# Subtest: controlled multi-turn run uses real prior speech and scripted effects, withholds rubric/labels, and leaves semantics pending even when automatic checks pass
+ok 3 - controlled multi-turn run uses real prior speech and scripted effects, withholds rubric/labels, and leaves semantics pending even when automatic checks pass
+  ---
+  duration_ms: 12435.862855
+  type: 'test'
+  ...
+# Subtest: wrong harmful proposals and missing factual citations fail automatic checks without executing the proposed harm
+ok 4 - wrong harmful proposals and missing factual citations fail automatic checks without executing the proposed harm
+  ---
+  duration_ms: 296.886875
+  type: 'test'
+  ...
+# Subtest: one invalid provider response blocks later turns of that conversation without retrying or hiding skipped coverage
+ok 5 - one invalid provider response blocks later turns of that conversation without retrying or hiding skipped coverage
+  ---
+  duration_ms: 92.015088
+  type: 'test'
+  ...
+# Subtest: configuration, authorization, budget and existing output failures happen before any request and preserve existing files
+ok 6 - configuration, authorization, budget and existing output failures happen before any request and preserve existing files
+  ---
+  duration_ms: 37.308001
+  type: 'test'
+  ...
+# Subtest: real loopback HTTP exercises the opt-in CLI path and produces escaped reports with unknown usage, no key or automatic semantic approval
+ok 7 - real loopback HTTP exercises the opt-in CLI path and produces escaped reports with unknown usage, no key or automatic semantic approval
+  ---
+  duration_ms: 136.621713
+  type: 'test'
+  ...
+# Subtest: provider diagnostic snapshots are detached, cached once, and distinguish missing or invalid usage from zero usage
+ok 8 - provider diagnostic snapshots are detached, cached once, and distinguish missing or invalid usage from zero usage
+  ---
+  duration_ms: 2.081101
+  type: 'test'
+  ...
+# Subtest: template binds original report and turns; assistant conclusions never replace pending human review
+ok 9 - template binds original report and turns; assistant conclusions never replace pending human review
+  ---
+  duration_ms: 7.321728
+  type: 'test'
+  ...
+# Subtest: wrong source, tampered turn binding, duplicate/missing rows and verdicts on unrun turns are refused
+ok 10 - wrong source, tampered turn binding, duplicate/missing rows and verdicts on unrun turns are refused
+  ---
+  duration_ms: 5.032069
+  type: 'test'
+  ...
+# Subtest: self-declared human labels and limited coverage never become independent or full automatic approval
+ok 11 - self-declared human labels and limited coverage never become independent or full automatic approval
+  ---
+  duration_ms: 1.488183
+  type: 'test'
+  ...
+# Subtest: offline CLI template, audit and review round trip keeps source bytes and escapes report text
+ok 12 - offline CLI template, audit and review round trip keeps source bytes and escapes report text
+  ---
+  duration_ms: 29.498289
+  type: 'test'
+  ...
+# Subtest: existing JSON, HTML or template survives output collisions; invalid arguments and review files do not create outputs
+ok 13 - existing JSON, HTML or template survives output collisions; invalid arguments and review files do not create outputs
+  ---
+  duration_ms: 10.284052
+  type: 'test'
+  ...
+# Subtest: incomplete reports, invalid response contracts and oversized or duplicate-key inputs are refused offline
+ok 14 - incomplete reports, invalid response contracts and oversized or duplicate-key inputs are refused offline
+  ---
+  duration_ms: 14.878534
+  type: 'test'
+  ...
+# Subtest: explicit current resource contradictions are separate from historical purchases and unassessed wording
+ok 15 - explicit current resource contradictions are separate from historical purchases and unassessed wording
+  ---
+  duration_ms: 4.955526
+  type: 'test'
+  ...
+# Subtest: questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+ok 16 - questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+  ---
+  duration_ms: 0.350599
+  type: 'test'
+  ...
+# Subtest: bounded numeric grammar handles exact Chinese counts, marks missing context and skips ambiguous quantities
+ok 17 - bounded numeric grammar handles exact Chinese counts, marks missing context and skips ambiguous quantities
+  ---
+  duration_ms: 0.59431
+  type: 'test'
+  ...
+# Subtest: audits ignore injected derived facts, retain detached values and keep unassessed distinct from checked
+ok 18 - audits ignore injected derived facts, retain detached values and keep unassessed distinct from checked
+  ---
+  duration_ms: 0.409787
+  type: 'test'
+  ...
+# Subtest: follow-up plan has eight uncalled turns and does not fabricate confirmed speech anchors
+ok 19 - follow-up plan has eight uncalled turns and does not fabricate confirmed speech anchors
+  ---
+  duration_ms: 461.056333
+  type: 'test'
+  ...
+# Subtest: controlled evaluation forms anchors only by committing dialogue and keeps facts separate from topics
+ok 20 - controlled evaluation forms anchors only by committing dialogue and keeps facts separate from topics
+  ---
+  duration_ms: 629.473228
+  type: 'test'
+  ...
+# Subtest: the 28-turn long-suite report can enter offline review without permitting conclusions on unrun turns
+ok 21 - the 28-turn long-suite report can enter offline review without permitting conclusions on unrun turns
+  ---
+  duration_ms: 14.686891
+  type: 'test'
+  ...
+# Subtest: long reports still reject ninth turns and more than 32 total rows
+ok 22 - long reports still reject ninth turns and more than 32 total rows
+  ---
+  duration_ms: 1.876509
+  type: 'test'
+  ...
+# Subtest: memory CLI explicitly creates fixture5, preserves zero-call planning and rejects unsupported suite versions
+ok 23 - memory CLI explicitly creates fixture5, preserves zero-call planning and rejects unsupported suite versions
+  ---
+  duration_ms: 11555.055732
+  type: 'test'
+  ...
+# Subtest: fixture5 controlled dialogue consumes actual personal updates, retains prior speech, and never writes factual episodes from words
+ok 24 - fixture5 controlled dialogue consumes actual personal updates, retains prior speech, and never writes factual episodes from words
+  ---
+  duration_ms: 13177.781671
+  type: 'test'
+  ...
+# Subtest: plan completion is backed by reread JSON, HTML and a separate final byte receipt
+ok 25 - plan completion is backed by reread JSON, HTML and a separate final byte receipt
+  ---
+  duration_ms: 171.850786
+  type: 'test'
+  ...
+# Subtest: existing completion evidence prevents starting a new report and is never overwritten
+ok 26 - existing completion evidence prevents starting a new report and is never overwritten
+  ---
+  duration_ms: 18.689015
+  type: 'test'
+  ...
+# Subtest: offline review checks new source pairs, seals derived reports, and identifies legacy input without promoting human verdicts
+ok 27 - offline review checks new source pairs, seals derived reports, and identifies legacy input without promoting human verdicts
+  ---
+  duration_ms: 97.177295
+  type: 'test'
+  ...
+# Subtest: standalone verification is offline, rejects malformed arguments and detects drift after a successful check
+ok 28 - standalone verification is offline, rejects malformed arguments and detects drift after a successful check
+  ---
+  duration_ms: 72.284056
+  type: 'test'
+  ...
+# Subtest: progress has no completion proof; successful final pair is reread and later drift or missing halves are detected
+ok 29 - progress has no completion proof; successful final pair is reread and later drift or missing halves are detected
+  ---
+  duration_ms: 29.805019
+  type: 'test'
+  ...
+# Subtest: readback mismatch, zero-byte writes and save failures never create a usable completion marker
+ok 30 - readback mismatch, zero-byte writes and save failures never create a usable completion marker
+  ---
+  duration_ms: 10.192027
+  type: 'test'
+  ...
+# Subtest: partial writes are completed, shrinking progress truncates correctly, and incomplete final reports cannot be sealed
+ok 31 - partial writes are completed, shrinking progress truncates correctly, and incomplete final reports cannot be sealed
+  ---
+  duration_ms: 18.797906
+  type: 'test'
+  ...
+# Subtest: all three reservation collisions preserve old files and remove only files created by this attempt
+ok 32 - all three reservation collisions preserve old files and remove only files created by this attempt
+  ---
+  duration_ms: 5.948886
+  type: 'test'
+  ...
+# Subtest: imported reports require a bounded numeric request limit before review output can be written
+ok 33 - imported reports require a bounded numeric request limit before review output can be written
+  ---
+  duration_ms: 1.625375
+  type: 'test'
+  ...
+# Subtest: the reusable renderer escapes request-limit display even for a malformed caller object
+ok 34 - the reusable renderer escapes request-limit display even for a malformed caller object
+  ---
+  duration_ms: 0.665024
+  type: 'test'
+  ...
+1..34
+# tests 34
+# suites 0
+# pass 34
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 26619.664281
