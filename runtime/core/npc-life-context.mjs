@@ -1,4 +1,5 @@
 // Read only the hunter's recorded state. Never run a planner or read future inputs.
+import {SURVIVAL_REASON_CODES} from './survival-state.mjs';
 import {HUNTER_SITES} from './npc-village-sites.mjs';
 import {socialTravelTarget} from './npc-social.mjs';
 
@@ -24,7 +25,10 @@ export function sanitizeNpcLifeContext(value,tick){
   Number.isSafeInteger(r.walletChange)&&Number.isSafeInteger(r.foodChange)&&
   (r.status==='succeeded'||r.walletChange===0&&r.foodChange===0)?
   {action:r.action,status:r.status,tick:r.tick,walletChange:r.walletChange,foodChange:r.foodChange}:null;
- return {version:1,intent,plan,lastResult};
+ const b=value.decisionBasis;
+ const decisionBasis=lastResult&&b&&b.action===lastResult.action&&b.tick===lastResult.tick&&SURVIVAL_REASON_CODES.includes(b.reasonCode)?
+  {action:b.action,tick:b.tick,reasonCode:b.reasonCode}:null;
+ return {version:1,intent,plan,lastResult,...(decisionBasis?{decisionBasis}:{})};
 }
 
 export function npcLifeContext(world,tick){
@@ -42,5 +46,6 @@ export function npcLifeContext(world,tick){
  const phase=!self.alive?'stopped':!redirect&&lastResult&&lastResult.tick>=i.decidedTick?'awaiting-review':
   distance(position,target)===0?'at-destination':'travelling';
  return sanitizeNpcLifeContext({version:1,intent:{action:i.action,destination,decidedTick:i.decidedTick,phase,redirect},
-  plan:p?{kind:p.kind,step:p.steps[p.stepIndex],status:p.status}:null,lastResult},tick);
+  plan:p?{kind:p.kind,step:p.steps[p.stepIndex],status:p.status}:null,lastResult,
+  decisionBasis:lastResult?{action:d.choice,tick:d.tick,reasonCode:d.reasonCode}:null},tick);
 }

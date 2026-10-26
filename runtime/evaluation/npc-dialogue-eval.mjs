@@ -6,20 +6,21 @@ import {npcDialogueContext} from '../core/npc-negotiation.mjs';
 import {providerContext} from '../service/npc-language-provider.mjs';
 import {dialogueText,validNegotiationPayload} from '../../runtime-negotiation-contract.mjs';
 import {validSocialPayload,SOCIAL_ACTIONS} from '../../runtime-social-contract.mjs';
+import {SURVIVAL_REASON_CODES} from '../core/survival-state.mjs';
 import {auditDialogueFacts,summarizeFactAudits} from './npc-fact-audit.mjs';
 
 const options={rulesVersion:'d-campaign-v1',systems:campaignSystems()},modes=['plan','live','controlled-test'];
 const keys=['none','negotiate',...SOCIAL_ACTIONS.filter(x=>x!=='talk'),'talk:needs','talk:past','talk:relationship'];
 const memoryKinds=['talk','threaten','steal','rob','smash','help','return','apologize','ask-help','gift','missing','damage','overdue','agreement'];
 const lifeEnums={lifeIntent:['WorkForPay','BuyFood','Rest','NoAction',null],lifePhase:['travelling','at-destination','awaiting-review','stopped',null],
- lifeResult:['WorkForPay','BuyFood','Rest','NoAction','BuyMedicine','UseMedicine',null],lifeResultStatus:['succeeded','rejected','no-action',null],lifePlanStatus:['ready','blocked',null],lifeRedirect:['safety','tool',null]};
+ lifeResult:['WorkForPay','BuyFood','Rest','NoAction','BuyMedicine','UseMedicine',null],lifeResultStatus:['succeeded','rejected','no-action',null],lifePlanStatus:['ready','blocked',null],lifeRedirect:['safety','tool',null],lifeDecisionReason:[...SURVIVAL_REASON_CODES,null]};
 const lifeNumbers=['selfFood','selfWallet','selfHunger','lifeFoodChange','lifeWalletChange'];
 const digest=value=>createHash('sha256').update(canonicalJson(value)).digest('hex');
 const list=(a,max)=>requireCondition(Array.isArray(a)&&a.length<=max,'Invalid bounded list');
-function validStep(s,allowGift=false){
+function validStep(s,allowGift=false,maxTick=288){
  requireCondition(s&&typeof s==='object'&&!Array.isArray(s),'Invalid scenario step');
  if(Object.hasOwn(s,'agreement')){fields(s,['agreement']);requireCondition(['accept','claim','decline'].includes(s.agreement),'Invalid agreement step');}
- else if(Object.hasOwn(s,'advanceTo')){fields(s,['advanceTo']);requireCondition(Number.isSafeInteger(s.advanceTo)&&s.advanceTo>=0&&s.advanceTo<=288,'Invalid scenario tick');}
+ else if(Object.hasOwn(s,'advanceTo')){fields(s,['advanceTo']);requireCondition(Number.isSafeInteger(s.advanceTo)&&s.advanceTo>=0&&s.advanceTo<=maxTick,'Invalid scenario tick');}
  else if(Object.hasOwn(s,'move')){fields(s,['move']);fields(s.move,['x','y']);requireCondition(Number.isInteger(s.move.x)&&s.move.x>=0&&s.move.x<20&&Number.isInteger(s.move.y)&&s.move.y>=0&&s.move.y<12,'Invalid scenario destination');}
  else{fields(s,['type','payload']);
   if(s.type==='PlayerGiftFood'){requireCondition(allowGift,'Gift needs a fixture5 suite');fields(s.payload,['recipientId']);requireCondition(s.payload.recipientId==='actor-2','Unsupported gift recipient');}
@@ -27,14 +28,14 @@ function validStep(s,allowGift=false){
  }
 }
 export function validateDialogueSuite(suite){
- fields(suite,['schemaVersion','suiteId','provenance','cases',...(suite.schemaVersion===2?['fixtureVersion']:[])]);requireCondition((suite.schemaVersion===1||suite.schemaVersion===2&&suite.fixtureVersion==='5')&&dialogueText(suite.suiteId,80)&&dialogueText(suite.provenance,300),'Invalid suite');list(suite.cases,16);requireCondition(suite.cases.length>0,'Empty suite');
+ fields(suite,['schemaVersion','suiteId','provenance','cases',...([2,3].includes(suite.schemaVersion)?['fixtureVersion']:[])]);requireCondition((suite.schemaVersion===1||[2,3].includes(suite.schemaVersion)&&suite.fixtureVersion==='5')&&dialogueText(suite.suiteId,80)&&dialogueText(suite.provenance,300),'Invalid suite');list(suite.cases,16);requireCondition(suite.cases.length>0,'Empty suite');
  const ids=new Set();let count=0;
  for(const c of suite.cases){
   fields(c,['id','title','setup','turns']);requireCondition(typeof c.id==='string'&&/^[a-z][a-z0-9-]{0,30}$/.test(c.id)&&!ids.has(c.id)&&dialogueText(c.title,100),'Invalid case identity');ids.add(c.id);
-  list(c.setup,16);c.setup.forEach(s=>validStep(s,suite.fixtureVersion==='5'));list(c.turns,4);requireCondition(c.turns.length>0,'Empty case');const turns=new Set();
+  list(c.setup,16);c.setup.forEach(s=>validStep(s,suite.fixtureVersion==='5',suite.schemaVersion===3?576:288));list(c.turns,suite.schemaVersion===3?8:4);requireCondition(c.turns.length>0,'Empty case');const turns=new Set();
   for(const t of c.turns){
    fields(t,['id','text','before','expect']);requireCondition(typeof t.id==='string'&&/^[a-z][a-z0-9-]{0,30}$/.test(t.id)&&!turns.has(t.id)&&dialogueText(t.text),'Invalid dialogue turn');turns.add(t.id);count++;
-   list(t.before,8);t.before.forEach(s=>validStep(s,suite.fixtureVersion==='5'));const e=t.expect;fields(e,['proposalKeys','referenceAnyKinds','facts','humanReview']);
+   list(t.before,8);t.before.forEach(s=>validStep(s,suite.fixtureVersion==='5',suite.schemaVersion===3?576:288));const e=t.expect;fields(e,['proposalKeys','referenceAnyKinds','facts','humanReview']);
    list(e.proposalKeys,8);requireCondition(e.proposalKeys.length>0&&e.proposalKeys.every(k=>keys.includes(k)),'Invalid expected proposal');
    list(e.referenceAnyKinds,8);requireCondition(e.referenceAnyKinds.every(k=>memoryKinds.includes(k)),'Invalid expected memory kind');
    list(e.humanReview,4);requireCondition(e.humanReview.length>0&&e.humanReview.every(x=>dialogueText(x,300)),'Missing human review rubric');
@@ -66,7 +67,7 @@ function checkPreconditions(bundle,expected){
   loanTicks:a?.terms.loanTicks??null,repairProgress:a?.repairProgress??null,knownHolder:h.knownHolder,grievanceAtLeast:h.grievance,memoryKinds:h.memories.map(m=>m.kind),
   selfFood:own.self.food,selfWallet:own.self.wallet,selfHunger:own.self.hunger??null,lifeIntent:life?.intent?.action??null,lifePhase:life?.intent?.phase??null,
   lifeResult:life?.lastResult?.action??null,lifeResultStatus:life?.lastResult?.status??null,lifePlanStatus:life?.plan?.status??null,lifeRedirect:life?.intent?.redirect??null,
-  lifeFoodChange:life?.lastResult?.foodChange??null,lifeWalletChange:life?.lastResult?.walletChange??null};
+  lifeDecisionReason:life?.decisionBasis?.reasonCode??null,lifeFoodChange:life?.lastResult?.foodChange??null,lifeWalletChange:life?.lastResult?.walletChange??null};
  return Object.entries(expected).map(([name,value])=>({name,expected:value,actual:actual[name],passed:name==='memoryKinds'?value.every(x=>actual[name].includes(x)):name==='grievanceAtLeast'?actual[name]>=value:actual[name]===value}));
 }
 export function assessDialogueProposal(payload,context,expect){

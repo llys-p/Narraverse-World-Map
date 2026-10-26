@@ -1,0 +1,32 @@
+TAP version 13
+# Subtest: HTTP/worker recovers a lost preview once, persists only confirmed speech and restores historical decision facts
+not ok 1 - HTTP/worker recovers a lost preview once, persists only confirmed speech and restores historical decision facts
+  ---
+  duration_ms: 20973.288128
+  type: 'test'
+  location: '/workspace/scratch/e56afaffb4e3/Narraverse-NPC16/tests/simulation/npc-life-continuity-service.test.mjs:15:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-NPC16/tests/simulation/npc-life-continuity-service.test.mjs:44:101)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21154.111522

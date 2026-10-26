@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/simulation/npc-life-reason.test.mjs",
+    "tests/simulation/npc-life-context.test.mjs",
+    "tests/simulation/npc-life-facts.test.mjs"
+  ],
+  "pid": 6,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 43105.905,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

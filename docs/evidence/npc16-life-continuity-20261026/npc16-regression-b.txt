@@ -1,0 +1,298 @@
+TAP version 13
+# Subtest: preview from an enabled session cannot be committed after the server reports language disabled
+ok 1 - preview from an enabled session cannot be committed after the server reports language disabled
+  ---
+  duration_ms: 5.125646
+  type: 'test'
+  ...
+# Subtest: late response after a world change or closing the card cannot revive a preview
+ok 2 - late response after a world change or closing the card cannot revive a preview
+  ---
+  duration_ms: 1.326357
+  type: 'test'
+  ...
+# Subtest: a new explicit generation after invalid output or success uses a fresh ID without editing the utterance
+ok 3 - a new explicit generation after invalid output or success uses a fresh ID without editing the utterance
+  ---
+  duration_ms: 17.196556
+  type: 'test'
+  ...
+# Subtest: lost successful response is recovered with identical bytes, then an explicit new generation can call again
+ok 4 - lost successful response is recovered with identical bytes, then an explicit new generation can call again
+  ---
+  duration_ms: 5.026497
+  type: 'test'
+  ...
+# Subtest: only known terminal errors retire an ID; busy, budget, unreadable or untrusted responses keep it
+ok 5 - only known terminal errors retire an ID; busy, budget, unreadable or untrusted responses keep it
+  ---
+  duration_ms: 2.982981
+  type: 'test'
+  ...
+# Subtest: template binds original report and turns; assistant conclusions never replace pending human review
+ok 6 - template binds original report and turns; assistant conclusions never replace pending human review
+  ---
+  duration_ms: 7.149542
+  type: 'test'
+  ...
+# Subtest: wrong source, tampered turn binding, duplicate/missing rows and verdicts on unrun turns are refused
+ok 7 - wrong source, tampered turn binding, duplicate/missing rows and verdicts on unrun turns are refused
+  ---
+  duration_ms: 4.289538
+  type: 'test'
+  ...
+# Subtest: self-declared human labels and limited coverage never become independent or full automatic approval
+ok 8 - self-declared human labels and limited coverage never become independent or full automatic approval
+  ---
+  duration_ms: 1.937877
+  type: 'test'
+  ...
+# Subtest: offline CLI template, audit and review round trip keeps source bytes and escapes report text
+ok 9 - offline CLI template, audit and review round trip keeps source bytes and escapes report text
+  ---
+  duration_ms: 25.642421
+  type: 'test'
+  ...
+# Subtest: existing JSON, HTML or template survives output collisions; invalid arguments and review files do not create outputs
+ok 10 - existing JSON, HTML or template survives output collisions; invalid arguments and review files do not create outputs
+  ---
+  duration_ms: 13.256846
+  type: 'test'
+  ...
+# Subtest: incomplete reports, invalid response contracts and oversized or duplicate-key inputs are refused offline
+ok 11 - incomplete reports, invalid response contracts and oversized or duplicate-key inputs are refused offline
+  ---
+  duration_ms: 34.450429
+  type: 'test'
+  ...
+# Subtest: explicit current resource contradictions are separate from historical purchases and unassessed wording
+ok 12 - explicit current resource contradictions are separate from historical purchases and unassessed wording
+  ---
+  duration_ms: 4.290469
+  type: 'test'
+  ...
+# Subtest: questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+ok 13 - questions, quotations, past, hypotheses, denial, other people and corrections do not become current assertions
+  ---
+  duration_ms: 0.399321
+  type: 'test'
+  ...
+# Subtest: bounded numeric grammar handles exact Chinese counts, marks missing context and skips ambiguous quantities
+ok 14 - bounded numeric grammar handles exact Chinese counts, marks missing context and skips ambiguous quantities
+  ---
+  duration_ms: 0.452641
+  type: 'test'
+  ...
+# Subtest: audits ignore injected derived facts, retain detached values and keep unassessed distinct from checked
+ok 15 - audits ignore injected derived facts, retain detached values and keep unassessed distinct from checked
+  ---
+  duration_ms: 0.439872
+  type: 'test'
+  ...
+# Subtest: follow-up plan has eight uncalled turns and does not fabricate confirmed speech anchors
+ok 16 - follow-up plan has eight uncalled turns and does not fabricate confirmed speech anchors
+  ---
+  duration_ms: 503.211397
+  type: 'test'
+  ...
+# Subtest: controlled evaluation forms anchors only by committing dialogue and keeps facts separate from topics
+ok 17 - controlled evaluation forms anchors only by committing dialogue and keeps facts separate from topics
+  ---
+  duration_ms: 683.61102
+  type: 'test'
+  ...
+# Subtest: a short follow-up recalls the retained food episode despite crowded higher-importance harm
+ok 18 - a short follow-up recalls the retained food episode despite crowded higher-importance harm
+  ---
+  duration_ms: 13.487268
+  type: 'test'
+  ...
+# Subtest: consecutive supported follow-ups stay on the latest explicit player topic
+ok 19 - consecutive supported follow-ups stay on the latest explicit player topic
+  ---
+  duration_ms: 0.507964
+  type: 'test'
+  ...
+# Subtest: explicit topic switches and unsupported turns stop inheritance, even when the old NPC reply suggests food
+ok 20 - explicit topic switches and unsupported turns stop inheritance, even when the old NPC reply suggests food
+  ---
+  duration_ms: 5.247409
+  type: 'test'
+  ...
+# Subtest: unconfirmed or out-of-window anchors cannot supply a follow-up topic; legacy contexts keep their shape
+ok 21 - unconfirmed or out-of-window anchors cannot supply a follow-up topic; legacy contexts keep their shape
+  ---
+  duration_ms: 0.516457
+  type: 'test'
+  ...
+# Subtest: only player topics guide retrieval; a false claim or forgotten source never becomes an observation
+ok 22 - only player topics guide retrieval; a false claim or forgotten source never becomes an observation
+  ---
+  duration_ms: 7.551808
+  type: 'test'
+  ...
+# Subtest: real HTTP/worker follow-up uses confirmed private speech after reopen, ignores previews, and retries once
+ok 23 - real HTTP/worker follow-up uses confirmed private speech after reopen, ignores previews, and retries once
+  ---
+  duration_ms: 2813.31247
+  type: 'test'
+  ...
+# Subtest: initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+ok 24 - initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+  ---
+  duration_ms: 137.444095
+  type: 'test'
+  ...
+# Subtest: buying intent differs from purchased food, and gifts pause travel without manufacturing another wage
+ok 25 - buying intent differs from purchased food, and gifts pause travel without manufacturing another wage
+  ---
+  duration_ms: 19428.717953
+  type: 'test'
+  ...
+# Subtest: own failed result and movement overrides use known facts without hidden balances or tool ownership
+ok 26 - own failed result and movement overrides use known facts without hidden balances or tool ownership
+  ---
+  duration_ms: 10762.806397
+  type: 'test'
+  ...
+# Subtest: private projection strips internal inputs, rejects future or unpaired results and preserves old fixture context
+ok 27 - private projection strips internal inputs, rejects future or unpaired results and preserves old fixture context
+  ---
+  duration_ms: 5943.051473
+  type: 'test'
+  ...
+# Subtest: preparing to work is not a paid result and a newly completed action makes its older intent await review
+ok 28 - preparing to work is not a paid result and a newly completed action makes its older intent await review
+  ---
+  duration_ms: 5827.26588
+  type: 'test'
+  ...
+# Subtest: HTTP/worker recovers a lost preview once, persists only confirmed speech and restores historical decision facts
+ok 29 - HTTP/worker recovers a lost preview once, persists only confirmed speech and restores historical decision facts
+  ---
+  duration_ms: 35804.442466
+  type: 'test'
+  ...
+# Subtest: life plan creates real fixture5 working/purchase states without any model calls and fingerprints the new projection
+ok 30 - life plan creates real fixture5 working/purchase states without any model calls and fingerprints the new projection
+  ---
+  duration_ms: 27587.970742
+  type: 'test'
+  ...
+# Subtest: controlled eight-turn life dialogue consumes the restricted activity and commits only attributed speech
+ok 31 - controlled eight-turn life dialogue consumes the restricted activity and commits only attributed speech
+  ---
+  duration_ms: 27164.782947
+  type: 'test'
+  ...
+# Subtest: current life facts distinguish purchased delta from current food and unrefreshed intent
+ok 32 - current life facts distinguish purchased delta from current food and unrefreshed intent
+  ---
+  duration_ms: 13541.141657
+  type: 'test'
+  ...
+# Subtest: gifts pause current preparation despite old ready plan, later low stock does not invent a cause
+ok 33 - gifts pause current preparation despite old ready plan, later low stock does not invent a cause
+  ---
+  duration_ms: 12919.761424
+  type: 'test'
+  ...
+# Subtest: old model claims and player assertions cannot become life facts or overwrite current resources
+ok 34 - old model claims and player assertions cannot become life facts or overwrite current resources
+  ---
+  duration_ms: 12617.868799
+  type: 'test'
+  ...
+# Subtest: food need uses inventory threshold independently of hunger and private facts are rebuilt at the boundary
+ok 35 - food need uses inventory threshold independently of hunger and private facts are rebuilt at the boundary
+  ---
+  duration_ms: 63.832842
+  type: 'test'
+  ...
+# Subtest: controlled provider receives explicit facts and preserves raw model wording, signing and bounds
+ok 36 - controlled provider receives explicit facts and preserves raw model wording, signing and bounds
+  ---
+  duration_ms: 45.319396
+  type: 'test'
+  ...
+# Subtest: paired own decision reason remains historical when current preparation has moved on
+ok 37 - paired own decision reason remains historical when current preparation has moved on
+  ---
+  duration_ms: 6820.552629
+  type: 'test'
+  ...
+# Subtest: missing, unpaired, future or injected reasons are dropped instead of inventing an explanation
+ok 38 - missing, unpaired, future or injected reasons are dropped instead of inventing an explanation
+  ---
+  duration_ms: 5908.459516
+  type: 'test'
+  ...
+# Subtest: a recorded need reason cannot override current resources or a current tool redirect
+ok 39 - a recorded need reason cannot override current resources or a current tool redirect
+  ---
+  duration_ms: 6163.698034
+  type: 'test'
+  ...
+# Subtest: real HTTP/worker privately delivers own life state, preserves read-only previews and restores it after dialogue/reopen
+ok 40 - real HTTP/worker privately delivers own life state, preserves read-only previews and restores it after dialogue/reopen
+  ---
+  duration_ms: 3345.511895
+  type: 'test'
+  ...
+# Subtest: life-v2 plan verifies sixteen real action states, rejects invalid own facts and makes zero model calls
+ok 41 - life-v2 plan verifies sixteen real action states, rejects invalid own facts and makes zero model calls
+  ---
+  duration_ms: 33268.125371
+  type: 'test'
+  ...
+# Subtest: controlled sixteen-turn coverage separates one explicit contradiction from valid protocols and later world replays
+ok 42 - controlled sixteen-turn coverage separates one explicit contradiction from valid protocols and later world replays
+  ---
+  duration_ms: 33289.942432
+  type: 'test'
+  ...
+# Subtest: loopback CLI returns a separate fact-contradiction status, keeps original reply and never retries or executes suggestions
+ok 43 - loopback CLI returns a separate fact-contradiction status, keeps original reply and never retries or executes suggestions
+  ---
+  duration_ms: 429.565983
+  type: 'test'
+  ...
+# Subtest: an actually recovered loss stays recovered when the tool is subsequently legitimately lent
+ok 44 - an actually recovered loss stays recovered when the tool is subsequently legitimately lent
+  ---
+  duration_ms: 7353.893038
+  type: 'test'
+  ...
+# Subtest: synthetic source boundaries: a newer loss stays unresolved and missing return detail is not inferred from current possession
+ok 45 - synthetic source boundaries: a newer loss stays unresolved and missing return detail is not inferred from current possession
+  ---
+  duration_ms: 0.287265
+  type: 'test'
+  ...
+# Subtest: real HTTP/worker: retry invalid output, recover a lost response once, and persist recovered-loss context after legitimate lending
+ok 46 - real HTTP/worker: retry invalid output, recover a lost response once, and persist recovered-loss context after legitimate lending
+  ---
+  duration_ms: 117548.091198
+  type: 'test'
+  ...
+# Subtest: imported reports require a bounded numeric request limit before review output can be written
+ok 47 - imported reports require a bounded numeric request limit before review output can be written
+  ---
+  duration_ms: 1.552482
+  type: 'test'
+  ...
+# Subtest: the reusable renderer escapes request-limit display even for a malformed caller object
+ok 48 - the reusable renderer escapes request-limit display even for a malformed caller object
+  ---
+  duration_ms: 0.725665
+  type: 'test'
+  ...
+1..48
+# tests 48
+# suites 0
+# pass 48
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 227484.922972

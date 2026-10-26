@@ -26,7 +26,7 @@ export function createNpcDialogue({fetchImpl=(...args)=>fetch(...args),newId=()=
   const permitted=p&&(p.type==='PlayerNegotiate'?group.map.negotiation.canPropose:socialInteractionActions(group,writable)[p.payload.action]);
   return {text,status,message:!enabled?'自然对话未启用，可继续使用下方的协商和互动。':text&&!dialogueText(text)?'请用240字以内的一段话，暂不支持换行或隐藏字符。':message||'先生成预览，再确认交谈；行动建议需另外确认。',
    generateLabel:status==='error'&&request?'重取本次结果':['preview','error'].includes(status)?'重新生成预览':'生成对话预览',
-   canGenerate:enabled&&talk&&dialogueText(text)&&status!=='generating',canCommit:talk&&validDraft,
+   canGenerate:enabled&&talk&&dialogueText(text)&&status!=='generating',canCommit:enabled&&talk&&validDraft,
    reply:validDraft?draft.payload.reply:'',proposal:p,proposalLabel:proposalLabel(p),canAct:!!(talk&&permitted)};
  }
  async function generate(group,writable,id){

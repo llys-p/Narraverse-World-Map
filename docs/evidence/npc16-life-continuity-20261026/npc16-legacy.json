@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/check-npc16-legacy.mjs",
+    "/workspace/scratch/e56afaffb4e3/Narraverse-NPC15",
+    "artifacts/npc16/legacy.json"
+  ],
+  "pid": 6,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 11082.747,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "/workspace/scratch/e56afaffb4e3/Narraverse-NPC15/scripts/check-npc15-evidence.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 264.413,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

@@ -1,0 +1,29 @@
+✖ preview from an enabled session cannot be committed after the server reports language disabled (5.734343ms)
+✔ late response after a world change or closing the card cannot revive a preview (1.412216ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.455992
+
+✖ failing tests:
+
+test at tests/simulation/npc-dialogue-availability.test.mjs:7:1
+✖ preview from an enabled session cannot be committed after the server reports language disabled (5.734343ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-NPC16/tests/simulation/npc-dialogue-availability.test.mjs:10:67)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

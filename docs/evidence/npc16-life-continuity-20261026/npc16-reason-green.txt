@@ -1,0 +1,33 @@
+✔ initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome (92.949023ms)
+✔ buying intent differs from purchased food, and gifts pause travel without manufacturing another wage (16731.164409ms)
+✔ own failed result and movement overrides use known facts without hidden balances or tool ownership (11004.164113ms)
+✔ private projection strips internal inputs, rejects future or unpaired results and preserves old fixture context (5819.003256ms)
+✔ preparing to work is not a paid result and a newly completed action makes its older intent await review (5841.469927ms)
+✔ current life facts distinguish purchased delta from current food and unrefreshed intent (15355.607901ms)
+✔ gifts pause current preparation despite old ready plan, later low stock does not invent a cause (14395.246086ms)
+✔ old model claims and player assertions cannot become life facts or overwrite current resources (13014.781241ms)
+✔ food need uses inventory threshold independently of hunger and private facts are rebuilt at the boundary (62.408067ms)
+✔ controlled provider receives explicit facts and preserves raw model wording, signing and bounds (41.520867ms)
+✔ paired own decision reason remains historical when current preparation has moved on (8538.334318ms)
+✖ missing, unpaired, future or injected reasons are dropped instead of inventing an explanation (6707.635025ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43029.606162
+
+✖ failing tests:
+
+test at tests/simulation/npc-life-reason.test.mjs:20:1
+✖ missing, unpaired, future or injected reasons are dropped instead of inventing an explanation (6707.635025ms)
+  TypeError [Error]: Cannot assign to read only property 'decisionId' of object '#<Object>'
+      at TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-NPC16/tests/simulation/npc-life-reason.test.mjs:29:95)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
