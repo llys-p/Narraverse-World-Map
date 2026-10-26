@@ -1,0 +1,20 @@
+{
+  "node": "v24.22.1",
+  "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Recovery",
+  "tick": 1008,
+  "commands": 1,
+  "serviceSourceSha256": "c8c442fd4d24ec0833b3511a2d85f01784645074ef799311e2b2e0076ef53d71",
+  "inputBytes": 342183,
+  "inputSha256": "3566132d196ef0471c133f705922194dde93b526355522a37c06c8d04a0173ae",
+  "certifiedEnvelopeSha256": "d1603d5fab946020cbcb661033f50e61f5087a611b49f453ed845aff392fed68",
+  "measurement": "local-instrumented-audit-copy",
+  "phases": {
+    "envelopeMs": 0.3879480000000086,
+    "anchorMs": 67.241489,
+    "finalFullAuditMs": 27559.635939,
+    "projectionsMs": 19.086997999998857,
+    "journalMs": 56763.315894,
+    "totalMs": 84409.668268
+  },
+  "externalModelCalls": 0
+}

@@ -1,0 +1,143 @@
+{
+  "order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2"
+  ],
+  "statistic": "median of two observations per arm",
+  "inputSha256": "3566132d196ef0471c133f705922194dde93b526355522a37c06c8d04a0173ae",
+  "certifiedEnvelopeSha256": "d1603d5fab946020cbcb661033f50e61f5087a611b49f453ed845aff392fed68",
+  "measurements": {
+    "envelopeMs": {
+      "A": 0.43763299999999816,
+      "B": 0.4856890000000007,
+      "reductionPercent": -10.980890380753449
+    },
+    "anchorMs": {
+      "A": 70.4317865,
+      "B": 58.958248499999996,
+      "reductionPercent": 16.2902839330932
+    },
+    "finalFullAuditMs": {
+      "A": 29622.321057499998,
+      "B": 28973.7793915,
+      "reductionPercent": 2.1893681617355734
+    },
+    "projectionsMs": {
+      "A": 21.483697499999835,
+      "B": 21.448380000001634,
+      "reductionPercent": 0.1643920931124658
+    },
+    "journalMs": {
+      "A": 60385.681222499996,
+      "B": 28309.317628999997,
+      "reductionPercent": 53.11915497866106
+    },
+    "totalMs": {
+      "A": 90100.35539699999,
+      "B": 57363.989338,
+      "reductionPercent": 36.333226339404646
+    }
+  },
+  "parentHTTP": {
+    "measurement": "long-session-short-commands",
+    "runtimeRoot": "/workspace/scratch/e56afaffb4e3/Narraverse-Recovery",
+    "node": "v24.22.1",
+    "tick": 1015,
+    "samples": [
+      {
+        "label": "prepare-seven-days",
+        "type": "AdvanceTime",
+        "durationTicks": 1008,
+        "commitAndSaveMs": 56113.101829,
+        "confirmedReadMs": 6.102541000000201
+      },
+      {
+        "label": "accept-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 251.81545699999697,
+        "confirmedReadMs": 2.777171999994607
+      },
+      {
+        "label": "abandon-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 210.44068900000275,
+        "confirmedReadMs": 2.482568999999785
+      },
+      {
+        "label": "wait-one-tick",
+        "type": "AdvanceTime",
+        "durationTicks": 1,
+        "commitAndSaveMs": 292.39595199999894,
+        "confirmedReadMs": 2.1807259999986854
+      },
+      {
+        "label": "wait-one-hour",
+        "type": "AdvanceTime",
+        "durationTicks": 6,
+        "commitAndSaveMs": 701.2414410000056,
+        "confirmedReadMs": 1.6999399999986053
+      }
+    ],
+    "reopenMs": 91971.29056499999,
+    "retryMs": 4.535906999983126,
+    "realModelCalls": 0,
+    "scope": "HTTP commit/save and confirmed cached read; not visual feedback or FPS"
+  },
+  "candidateHTTP": {
+    "measurement": "long-session-short-commands",
+    "runtimeRoot": "/workspace/scratch/e56afaffb4e3/Narraverse-Cold",
+    "node": "v24.22.1",
+    "tick": 1015,
+    "samples": [
+      {
+        "label": "prepare-seven-days",
+        "type": "AdvanceTime",
+        "durationTicks": 1008,
+        "commitAndSaveMs": 56846.791344,
+        "confirmedReadMs": 2.791600999997172
+      },
+      {
+        "label": "accept-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 185.87622199999896,
+        "confirmedReadMs": 1.6599390000046697
+      },
+      {
+        "label": "abandon-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 163.48806700000569,
+        "confirmedReadMs": 1.4688379999934114
+      },
+      {
+        "label": "wait-one-tick",
+        "type": "AdvanceTime",
+        "durationTicks": 1,
+        "commitAndSaveMs": 236.22921700000006,
+        "confirmedReadMs": 1.479243999994651
+      },
+      {
+        "label": "wait-one-hour",
+        "type": "AdvanceTime",
+        "durationTicks": 6,
+        "commitAndSaveMs": 610.5295379999952,
+        "confirmedReadMs": 1.351726000000781
+      }
+    ],
+    "reopenMs": 56523.094566,
+    "retryMs": 3.7357389999961015,
+    "realModelCalls": 0,
+    "scope": "HTTP commit/save and confirmed cached read; not visual feedback or FPS"
+  },
+  "httpOrder": [
+    "A",
+    "B"
+  ],
+  "httpSamplesPerArm": 1,
+  "scope": "local instrumented audit ABBA; uninstrumented HTTP one pair; no FPS or percentile claim"
+}

@@ -1,0 +1,1 @@
+{"status":"prepared","seed":42,"tick":1008,"commands":1,"externalModelCalls":0}

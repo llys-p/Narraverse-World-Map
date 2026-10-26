@@ -1,0 +1,7 @@
+{
+  "file": "tests/simulation/service-cold-audit.test.mjs",
+  "prefixBytes": 4257,
+  "beforeSha256": "de9b36a0f93ffd643a853e01457e239d4e37bca371ff4a334ad588576cd9091e",
+  "afterSha256": "f79930dd861199baa8272bda3466b9121dc4ba6f8e139d2cf2605913b440138a",
+  "reason": "added integrated social/dialogue/march/combat recovery case; original three cases unchanged; reran all four"
+}

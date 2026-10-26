@@ -1,0 +1,34 @@
+✔ fixed successors equal the unchanged complete oracle, including rejected and zero-tick commands (1963.593431ms)
+✔ copies, arbitrary candidates, unknown profiles and getters cannot acquire a successor proof (120.020628ms)
+✔ owner serializes revision races, deduplicates retries, and detaches caller data (278.573543ms)
+✔ failed link publication preserves projections and files, then retries at the same revision (277.585865ms)
+✔ reopen preserves short history and JSON commit copies receive full independent audit (1879.726292ms)
+✔ uncertain publication exposes no success or continuation until full reopen resolves it (545.369775ms)
+✔ campaign live writer requires the latest audited durable head and releases its realpath claim on close (423.259568ms)
+✔ independent owners cannot exchange projections or forged candidate authority (344.535502ms)
+✔ real synthetic history crosses day/RNG boundary with identical whole successor (11044.667965ms)
+✔ map contact, pause/resume and both JRPG rounds equal full replay (6018.855944ms)
+✔ HTTP/worker recovers a lost preview once, persists only confirmed speech and restores historical decision facts (31357.857998ms)
+✔ pre-existing repair counts, later damage revokes readiness, and a failed claim cannot unlock the next quest (2015.787467ms)
+✔ deadline and death fail active quests, while important and changed own facts wake the preparation cache (37.888792ms)
+✔ more than 129 durable files remain writable and reopen, and altered journal or terminal state is rejected (13875.336207ms)
+✔ worker/HTTP quest progress is durable, read-only views stay coherent, and a retried command cannot duplicate a reward (5545.443692ms)
+✔ cold replay equals the parent oracle for anchored history, rejected and zero-tick commands, then remains safely advanceable (10240.268689ms)
+✔ independent full audit and journal checks both reject plausible changes, sparse inputs, duplicate IDs and accessors without invoking them (20293.762183ms)
+✔ fixture5 keeps the original complete audit path and cannot acquire the new command budget (121.149726ms)
+✔ D2A wire parser rejects duplicate and escaped duplicate keys, bad UTF8, deep or oversized JSON before DTO use (3.839161ms)
+✔ D2A full envelope audits receipts and actual replay rather than accepting rewritten metadata or final state (4214.57741ms)
+✔ D2A service files publish exclusively and reject corruption; publication failure never replaces a completed file (3911.188271ms)
+✔ D2A owner commits real C5 world, serializes conflicts and persists original retry receipt across restart (7568.15837ms)
+✔ D2A link failure leaves live world and receipts untouched, then same ID may succeed; latest corrupt never falls back (3667.876288ms)
+✔ D2A queue preflight includes the active commit, readers see previous revision and close drains before releasing ownership (798.491649ms)
+✔ D2A budgets and format boundary reject before replay or publication; no implicit D1 conversion (559.373617ms)
+✔ D2A interrupted cleanup keeps bounded service temporaries but loads only audited published commits; temporary-only genesis fails (927.835399ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 129266.435082

@@ -10,7 +10,7 @@ import { executePlayerIntent } from '../core/player-intents.mjs';
 import { executeEncounterIntent } from '../core/encounter-runtime.mjs';
 import {LIVELIHOOD_RULES,executeAuditedLivelihoodIntent} from '../core/scene-livelihood-runtime.mjs';
 import { SCENE_RULES,executeAuditedSceneIntent } from '../core/scene-runtime.mjs';
-import { CAMPAIGN_RULES,executeAuditedCampaignIntent } from '../core/scene-campaign-runtime.mjs';
+import { CAMPAIGN_RULES,executeAuditedCampaignIntent,computeCampaignIntent } from '../core/scene-campaign-runtime.mjs';
 import { createAuditedBundle,deriveCampaignBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
 import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
@@ -93,9 +93,10 @@ function auditServiceCommit(envelope){
       [3,4,5].includes(dto.version)?['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result']:
       ['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','tick','type','outcome','result']);
     requireCondition(!seen.has(dto.commandId) && dto.expectedRevision===revision,'Invalid service command sequence');seen.add(dto.commandId);
-    // 新旅程从完整审计的锚点逐笔复核既有确定性传递；末态仍独立完整审计。
-    // 避免每笔日记再重放整个旧世界，证书只在本次进程中沿不可变对象传递。
-    const next=serviceCommandLimit(anchor)===512?deriveCampaignBundle(replay,dto):transitionAuditedServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;
+    // 冷恢复已独立完整审计末态；日记从已审计锚点逐笔运行规范规则并核对回执。
+    // 中间候选仅在本次同步审计中存在，不授予证书；末态必须与独立审计数据完全相同。
+    // 运行中单写者仍使用双重后继核验，旧fixture也保持原路径。
+    const next=serviceCommandLimit(anchor)===512?computeCampaignIntent(replay,dto):transitionAuditedServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;
     requireCondition(isDeepStrictEqual(entry.receipt,next.receipt),'Service receipt does not match replay');
   }
   requireCondition(isDeepStrictEqual(replay,envelope.bundle),'Service world does not match command replay');
