@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "artifacts/playable-batch/browser-smoke.mjs"
+  ],
+  "pid": 7,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 64.287,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

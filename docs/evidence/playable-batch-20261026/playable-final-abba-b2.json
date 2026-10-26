@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-playable-core.mjs",
+    ".",
+    "artifacts/playable-batch/final-abba-B2.json"
+  ],
+  "pid": 441,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 18449.843,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

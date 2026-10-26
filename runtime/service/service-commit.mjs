@@ -1,3 +1,4 @@
+import {serviceCommandLimit} from '../core/campaign-limits.mjs';
 import * as defaultIo from 'node:fs/promises';
 import path from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
@@ -79,7 +80,7 @@ function auditServiceCommit(envelope){
   const profile=runtimeProfile(envelope.anchor),finalProfile=runtimeProfile(envelope.bundle);
   requireCondition(envelope.serviceFormatVersion===profile.serviceFormatVersion && envelope.serviceFormatVersion===finalProfile.serviceFormatVersion,
     'Service format/profile mismatch','UNSUPPORTED_VERSION');
-  denseArray(envelope.commands,MAX_SERVICE_COMMANDS);
+  denseArray(envelope.commands,serviceCommandLimit(envelope.bundle));
   const anchor=[9,10,11].includes(envelope.serviceFormatVersion)?createAuditedBundle(envelope.anchor,{rulesVersion:profile.rulesVersion,systems:profile.systems}):envelope.anchor;
   const final=[9,10,11].includes(envelope.serviceFormatVersion)?createAuditedBundle(envelope.bundle,{rulesVersion:finalProfile.rulesVersion,systems:finalProfile.systems}):envelope.bundle;
   projectPublicSnapshot(anchor);projectPublicSnapshot(final);
@@ -92,7 +93,9 @@ function auditServiceCommit(envelope){
       [3,4,5].includes(dto.version)?['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','fromTick','tick','durationTicks','type','outcome','result']:
       ['apiVersion','receiptVersion','commandId','status','fromRevision','toRevision','tick','type','outcome','result']);
     requireCondition(!seen.has(dto.commandId) && dto.expectedRevision===revision,'Invalid service command sequence');seen.add(dto.commandId);
-    const next=transitionAuditedServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;
+    // 新旅程从完整审计的锚点逐笔复核既有确定性传递；末态仍独立完整审计。
+    // 避免每笔日记再重放整个旧世界，证书只在本次进程中沿不可变对象传递。
+    const next=serviceCommandLimit(anchor)===512?deriveCampaignBundle(replay,dto):transitionAuditedServiceCommand(replay,dto);replay=next.bundle;revision=replay.snapshot.revision;
     requireCondition(isDeepStrictEqual(entry.receipt,next.receipt),'Service receipt does not match replay');
   }
   requireCondition(isDeepStrictEqual(replay,envelope.bundle),'Service world does not match command replay');
@@ -113,7 +116,7 @@ export function createAuditedServiceCommit(envelope){
 export function advanceAuditedServiceCommit(previous,raw){
   previous=createAuditedServiceCommit(previous);
   const dto=validateSceneCommandDto(raw,5);
-  requireCondition(previous.commands.length<MAX_SERVICE_COMMANDS,'Command history exceeds budget','LIMIT_EXCEEDED');
+  requireCondition(previous.commands.length<serviceCommandLimit(previous.bundle),'Command history exceeds budget','LIMIT_EXCEEDED');
   requireCondition(dto.expectedRevision===previous.bundle.snapshot.revision,'Service prefix revision mismatch','REVISION_CONFLICT');
   requireCondition(!previous.commands.some(entry=>entry.dto.commandId===dto.commandId),'Duplicate service command','COMMAND_ID_CONFLICT');
   // This is the SAME complete deterministic transition used by full replay. Its
@@ -141,7 +144,7 @@ export async function createCampaignLiveWriter(initial,directory,lockToken,io=de
   const checkHead=async current=>{
     await owns();
     const revisions=(await io.readdir(directory)).filter(n=>/^service-commit-r\d+\.json$/.test(n)).map(n=>Number(n.match(/r(\d+)/)[1]));
-    requireCondition(revisions.length>0&&revisions.length<=MAX_SERVICE_FILES+1&&Math.max(...revisions)===current.bundle.snapshot.revision,
+    requireCondition(revisions.length>0&&revisions.length<=serviceCommandLimit(current.bundle)+1&&Math.max(...revisions)===current.bundle.snapshot.revision,
       'Live head is not the current durable revision','INVALID_SERVICE_COMMIT');
     const persisted=parseStrictJson(await readStateFile(path.join(directory,`service-commit-r${current.bundle.snapshot.revision}.json`),io),MAX_STATE_FILE_BYTES);
     requireCondition(isDeepStrictEqual(persisted,current),'Live head does not match durable state','INVALID_SERVICE_COMMIT');
@@ -154,7 +157,7 @@ export async function createCampaignLiveWriter(initial,directory,lockToken,io=de
     const operation=tail.then(async()=>{
       const parent=head;
       requireCondition(dto.expectedRevision===parent.bundle.snapshot.revision,'Live head revision mismatch','REVISION_CONFLICT');
-      requireCondition(parent.commands.length<MAX_SERVICE_COMMANDS,'Command history exceeds budget','LIMIT_EXCEEDED');
+      requireCondition(parent.commands.length<serviceCommandLimit(parent.bundle),'Command history exceeds budget','LIMIT_EXCEEDED');
       requireCondition(!parent.commands.some(e=>e.dto.commandId===dto.commandId),'Duplicate service command','COMMAND_ID_CONFLICT');
       await checkHead(parent);
       const {bundle,receipt}=deriveCampaignBundle(parent.bundle,dto);
@@ -165,7 +168,7 @@ export async function createCampaignLiveWriter(initial,directory,lockToken,io=de
       const prepared={state:next,receipt,session:createSimulationSession(bundle,systems),
         projection:projectPublicSnapshot(bundle),playerProjection:projectPlayerSnapshot(bundle),
         encounterProjection:projectEncounterSnapshot(bundle),sceneProjection:projectSceneSnapshot(bundle),
-        mapProjection:projectMapSnapshot(bundle,MAX_SERVICE_COMMANDS-bundle.snapshot.world.encounterModel.inputHistory.length),
+        mapProjection:projectMapSnapshot(bundle,serviceCommandLimit(bundle)-bundle.snapshot.world.encounterModel.inputHistory.length),
         activityProjection:inspectActivity?projectWorldActivity(bundle):null};
       requireCondition(head===parent,'Live head changed','REVISION_CONFLICT');await checkHead(parent);
       // Direct private publication, never a public skip-validation parameter.

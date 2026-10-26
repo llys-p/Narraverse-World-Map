@@ -183,8 +183,8 @@ function validateWorldFor(world,sealed,profile){
       for(const plan of [entry.activePlan,entry.suspendedPlan])if(plan!==null&&plan.kind===SURVIVAL_FOOD_PLAN_KIND){
         requireCondition(actor.alive,'Dead survival actor retains a plan');
         // The two-step shape must still point at the request that opened it.
-        if(plan.steps.length===2)requireCondition(entry.lastDuty!==null&&entry.lastDuty.requestId===plan.requestId&&
-          m.config.requests.some(r=>r.requestId===plan.requestId),'Survival food plan cites an unknown request');
+        if(plan.steps.length===2)requireCondition(m.config.requests.some(r=>r.requestId===plan.requestId&&r.listenerId===entry.actorId)&&
+          (plan.stepIndex===1||entry.lastDuty!==null&&entry.lastDuty.requestId===plan.requestId),'Survival food plan cites an unknown request');
       }
     }
     if(entry.lastReviewedDutyId!==null){const index=m.config.requests.findIndex(r=>r.requestId===entry.lastReviewedDutyId),r=m.config.requests[index];
@@ -354,6 +354,7 @@ function requestsTick(world,tick,append,context){
     if(delivered){const entry=entryOf(world,r.listenerId),ctx=context.get(r.listenerId);ctx.requestSeqs.push(seq);
       entry.lastDuty={requestId:r.requestId,sourceEventSeq:seq,observedTick:tick,expiresTick:r.expiresTick,urgencyPermille:r.urgencyPermille,status:'pending',fulfilledTick:null};
       if(entry.activePlan?.kind==='aid-village'&&entry.activePlan.requestId!==r.requestId)cancel(entry,'activePlan','REQUEST_SUPERSEDED',ctx.transitions);
+      for(const slot of ['activePlan','suspendedPlan']){const p=entry[slot];if(p?.kind===SURVIVAL_FOOD_PLAN_KIND&&p.steps[p.stepIndex]==='WorkForPay'&&p.requestId!==r.requestId)cancel(entry,slot,'REQUEST_SUPERSEDED',ctx.transitions);}
       // M4A: the offer is published explicitly for actor-2 in the new profile. Its wage is the
       // configured wage of this world, so it is visible information, not a planner shortcut.
       if(r.listenerId===SURVIVAL_ACTOR_ID&&world.cognitionModel?.version===SURVIVAL_COGNITION_STATE_VERSION)

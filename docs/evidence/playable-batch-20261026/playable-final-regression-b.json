@@ -1,0 +1,32 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/npc-social.test.mjs",
+    "tests/simulation/npc-negotiation.test.mjs",
+    "tests/simulation/npc-memory.test.mjs",
+    "tests/simulation/npc-loss-history.test.mjs",
+    "tests/simulation/npc-language-provider.test.mjs",
+    "tests/simulation/npc-deepseek-provider.test.mjs",
+    "tests/simulation/npc-dialogue-grounding.test.mjs",
+    "tests/simulation/npc-life-context.test.mjs",
+    "tests/simulation/npc-life-facts.test.mjs",
+    "tests/simulation/npc-life-reason.test.mjs",
+    "tests/simulation/npc-life-evaluation.test.mjs",
+    "tests/simulation/npc-life-v3-evaluation.test.mjs",
+    "tests/simulation/npc-report-files.test.mjs",
+    "tests/simulation/npc-long-report-review.test.mjs",
+    "tests/simulation/survival-runtime.test.mjs",
+    "tests/simulation/survival-knowledge-plan-review.test.mjs"
+  ],
+  "pid": 170,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 376891.349,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

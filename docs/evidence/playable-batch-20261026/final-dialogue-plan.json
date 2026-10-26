@@ -1,0 +1,2146 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "6",
+  "suiteId": "npc-playable-v1",
+  "suiteSha256": "794e9d7b5070cb51ad69bf192002b4b01213037ed23c00d92f6dd53f22d887e4",
+  "mode": "plan",
+  "realProviderAttempted": false,
+  "semanticVerdict": "not-evaluated",
+  "notice": "离线计划；未调用模型，未检查模型语言质量。",
+  "plannedRequests": 8,
+  "requestLimit": 0,
+  "completed": true,
+  "cases": [
+    {
+      "id": "playable-life",
+      "title": "多日生活记忆、赠粮与复工",
+      "fixtureVersion": "6",
+      "setup": [],
+      "turns": [
+        {
+          "id": "before-wage",
+          "text": "你已经拿到工钱了，对吗？",
+          "status": "not-run",
+          "attempted": false,
+          "scriptedBefore": [
+            {
+              "advanceTo": 112
+            }
+          ],
+          "scriptedReceipts": [
+            {
+              "type": "AdvanceTime",
+              "payload": {
+                "ticks": 112
+              },
+              "tick": 112,
+              "revision": 112,
+              "result": null
+            }
+          ],
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": null,
+              "actual": null,
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": null,
+              "actual": null,
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": null,
+              "actual": null,
+              "passed": true
+            }
+          ],
+          "context": {
+            "simulationId": "npc5-world-0124d693c695",
+            "revision": 112,
+            "tick": 112,
+            "targetId": "actor-2",
+            "persona": "村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。",
+            "canTalk": true,
+            "self": {
+              "alive": true,
+              "health": 1000,
+              "fatigue": 0,
+              "food": 0,
+              "wallet": 0,
+              "trust": 50,
+              "fear": 0,
+              "grievance": 0,
+              "knownHolder": "actor-2",
+              "knownCondition": 60,
+              "hunger": 200
+            },
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "WorkForPay",
+                "destination": "work-site",
+                "decidedTick": 112,
+                "phase": "travelling",
+                "redirect": null
+              },
+              "plan": null,
+              "lastResult": null
+            },
+            "lifeHistoryVersion": "play-life-v1",
+            "lifeHistory": [],
+            "observations": [],
+            "agreement": null,
+            "conversation": [],
+            "knownFacts": {
+              "version": 1,
+              "identity": {
+                "selfId": "actor-2",
+                "selfRole": "你是猎人",
+                "playerId": "actor-4",
+                "playerRole": "正在与你交谈的玩家"
+              },
+              "tickMinutes": 10,
+              "tool": {
+                "holder": "self",
+                "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+                "condition": 60
+              },
+              "agreement": null,
+              "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。",
+              "life": {
+                "current": {
+                  "tick": 112,
+                  "food": 0,
+                  "wallet": 0,
+                  "hunger": 200,
+                  "foodNeed": "needed"
+                },
+                "currentMeaning": "当前粮食0份；当前钱包0；当前饥饿200；当前存粮已达到补粮需求阈值，但不证明马上会购买",
+                "preparation": {
+                  "status": "preparing",
+                  "action": "WorkForPay",
+                  "meaning": "当前准备工作领薪，正在前往目的地；准备和抵达都不是实际完成。"
+                },
+                "lastExecution": null,
+                "planMeaning": null,
+                "decisionBasis": null,
+                "authority": "当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。",
+                "recentHistory": []
+              }
+            },
+            "intentHint": {
+              "kind": "model-interpretation",
+              "recommendation": "answer-current-topic",
+              "proposalHint": null,
+              "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+            },
+            "negotiationOptions": {
+              "status": "available",
+              "options": [
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 36
+                },
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 72
+                }
+              ],
+              "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+            },
+            "memoryMode": "npc-memory-v1",
+            "memoryCoverage": {
+              "forgottenEpisodes": 0,
+              "forgottenSpeech": 0
+            },
+            "recallFocus": {
+              "source": "none",
+              "topics": [],
+              "anchorEventSeq": null
+            },
+            "memoryUpdates": []
+          },
+          "response": null,
+          "metrics": null,
+          "factAudit": null,
+          "checks": [],
+          "humanReview": {
+            "verdict": "pending",
+            "questions": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "paid",
+          "text": "现在钱粮各有多少？刚才做了什么？",
+          "status": "not-run",
+          "attempted": false,
+          "scriptedBefore": [
+            {
+              "advanceTo": 144
+            }
+          ],
+          "scriptedReceipts": [
+            {
+              "type": "AdvanceTime",
+              "payload": {
+                "ticks": 32
+              },
+              "tick": 144,
+              "revision": 144,
+              "result": null
+            }
+          ],
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 20,
+              "actual": 20,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "WorkForPay",
+              "actual": "WorkForPay",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "FOOD_INCOME",
+              "actual": "FOOD_INCOME",
+              "passed": true
+            }
+          ],
+          "context": {
+            "simulationId": "npc5-world-0124d693c695",
+            "revision": 144,
+            "tick": 144,
+            "targetId": "actor-2",
+            "persona": "村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。",
+            "canTalk": true,
+            "self": {
+              "alive": true,
+              "health": 1000,
+              "fatigue": 150,
+              "food": 0,
+              "wallet": 20,
+              "trust": 50,
+              "fear": 0,
+              "grievance": 0,
+              "knownHolder": "actor-2",
+              "knownCondition": 60,
+              "hunger": 300
+            },
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "WorkForPay",
+                "destination": "work-site",
+                "decidedTick": 112,
+                "phase": "awaiting-review",
+                "redirect": null
+              },
+              "plan": {
+                "kind": "secure-food",
+                "step": "BuyFood",
+                "status": "ready"
+              },
+              "lastResult": {
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "tick": 144,
+                "walletChange": 20,
+                "foodChange": 0
+              },
+              "decisionBasis": {
+                "action": "WorkForPay",
+                "tick": 144,
+                "reasonCode": "FOOD_INCOME"
+              }
+            },
+            "lifeHistoryVersion": "play-life-v1",
+            "lifeHistory": [
+              {
+                "tick": 144,
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "walletChange": 20,
+                "foodChange": 0,
+                "reasonCode": "FOOD_INCOME"
+              }
+            ],
+            "observations": [],
+            "agreement": null,
+            "conversation": [],
+            "knownFacts": {
+              "version": 1,
+              "identity": {
+                "selfId": "actor-2",
+                "selfRole": "你是猎人",
+                "playerId": "actor-4",
+                "playerRole": "正在与你交谈的玩家"
+              },
+              "tickMinutes": 10,
+              "tool": {
+                "holder": "self",
+                "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+                "condition": 60
+              },
+              "agreement": null,
+              "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。",
+              "life": {
+                "current": {
+                  "tick": 144,
+                  "food": 0,
+                  "wallet": 20,
+                  "hunger": 300,
+                  "foodNeed": "needed"
+                },
+                "currentMeaning": "当前粮食0份；当前钱包20；当前饥饿300；当前存粮已达到补粮需求阈值，但不证明马上会购买",
+                "preparation": {
+                  "status": "awaiting-review",
+                  "action": "WorkForPay",
+                  "meaning": "旧行进意图等待更新，不能说仍在照此准备或已经再次执行。"
+                },
+                "lastExecution": {
+                  "action": "WorkForPay",
+                  "status": "succeeded",
+                  "tick": 144,
+                  "walletChange": 20,
+                  "foodChange": 0,
+                  "meaning": "最近工作领薪成功；钱包变化20、粮食变化0仅是当次增减，不是当前库存或余额；现在剩多少只用current。"
+                },
+                "planMeaning": "保存的买粮后续步骤为待办；不证明当前正在执行，也不证明失败或已经完成。",
+                "decisionBasis": {
+                  "action": "WorkForPay",
+                  "tick": 144,
+                  "reasonCode": "FOOD_INCOME",
+                  "meaning": "该次选择工作，是为了获得买粮所需收入。",
+                  "relationToPreparation": "same-record",
+                  "authority": "只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。"
+                },
+                "authority": "当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。",
+                "recentHistory": [
+                  {
+                    "tick": 144,
+                    "action": "WorkForPay",
+                    "status": "succeeded",
+                    "walletChange": 20,
+                    "foodChange": 0,
+                    "reasonCode": "FOOD_INCOME"
+                  }
+                ]
+              }
+            },
+            "intentHint": {
+              "kind": "model-interpretation",
+              "recommendation": "answer-current-topic",
+              "proposalHint": null,
+              "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+            },
+            "negotiationOptions": {
+              "status": "available",
+              "options": [
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 36
+                },
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 72
+                }
+              ],
+              "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+            },
+            "memoryMode": "npc-memory-v1",
+            "memoryCoverage": {
+              "forgottenEpisodes": 0,
+              "forgottenSpeech": 0
+            },
+            "recallFocus": {
+              "source": "current-utterance",
+              "topics": [
+                "food"
+              ],
+              "anchorEventSeq": null
+            },
+            "memoryUpdates": []
+          },
+          "response": null,
+          "metrics": null,
+          "factAudit": null,
+          "checks": [],
+          "humanReview": {
+            "verdict": "pending",
+            "questions": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "at-stall",
+          "text": "到了粮摊就算已经买到了吗？",
+          "status": "not-run",
+          "attempted": false,
+          "scriptedBefore": [
+            {
+              "advanceTo": 160
+            }
+          ],
+          "scriptedReceipts": [
+            {
+              "type": "AdvanceTime",
+              "payload": {
+                "ticks": 16
+              },
+              "tick": 160,
+              "revision": 160,
+              "result": null
+            }
+          ],
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 20,
+              "actual": 20,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "WorkForPay",
+              "actual": "WorkForPay",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "FOOD_INCOME",
+              "actual": "FOOD_INCOME",
+              "passed": true
+            }
+          ],
+          "context": {
+            "simulationId": "npc5-world-0124d693c695",
+            "revision": 160,
+            "tick": 160,
+            "targetId": "actor-2",
+            "persona": "村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。",
+            "canTalk": true,
+            "self": {
+              "alive": true,
+              "health": 1000,
+              "fatigue": 150,
+              "food": 0,
+              "wallet": 20,
+              "trust": 50,
+              "fear": 0,
+              "grievance": 0,
+              "knownHolder": "actor-2",
+              "knownCondition": 60,
+              "hunger": 300
+            },
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "BuyFood",
+                "destination": "food-stall",
+                "decidedTick": 148,
+                "phase": "at-destination",
+                "redirect": null
+              },
+              "plan": {
+                "kind": "secure-food",
+                "step": "BuyFood",
+                "status": "ready"
+              },
+              "lastResult": {
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "tick": 144,
+                "walletChange": 20,
+                "foodChange": 0
+              },
+              "decisionBasis": {
+                "action": "WorkForPay",
+                "tick": 144,
+                "reasonCode": "FOOD_INCOME"
+              }
+            },
+            "lifeHistoryVersion": "play-life-v1",
+            "lifeHistory": [
+              {
+                "tick": 144,
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "walletChange": 20,
+                "foodChange": 0,
+                "reasonCode": "FOOD_INCOME"
+              }
+            ],
+            "observations": [],
+            "agreement": null,
+            "conversation": [],
+            "knownFacts": {
+              "version": 1,
+              "identity": {
+                "selfId": "actor-2",
+                "selfRole": "你是猎人",
+                "playerId": "actor-4",
+                "playerRole": "正在与你交谈的玩家"
+              },
+              "tickMinutes": 10,
+              "tool": {
+                "holder": "self",
+                "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+                "condition": 60
+              },
+              "agreement": null,
+              "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。",
+              "life": {
+                "current": {
+                  "tick": 160,
+                  "food": 0,
+                  "wallet": 20,
+                  "hunger": 300,
+                  "foodNeed": "needed"
+                },
+                "currentMeaning": "当前粮食0份；当前钱包20；当前饥饿300；当前存粮已达到补粮需求阈值，但不证明马上会购买",
+                "preparation": {
+                  "status": "preparing",
+                  "action": "BuyFood",
+                  "meaning": "当前准备买粮，已抵达目的地；准备和抵达都不是实际完成。"
+                },
+                "lastExecution": {
+                  "action": "WorkForPay",
+                  "status": "succeeded",
+                  "tick": 144,
+                  "walletChange": 20,
+                  "foodChange": 0,
+                  "meaning": "最近工作领薪成功；钱包变化20、粮食变化0仅是当次增减，不是当前库存或余额；现在剩多少只用current。"
+                },
+                "planMeaning": "保存的买粮后续步骤为待办；不证明当前正在执行，也不证明失败或已经完成。",
+                "decisionBasis": {
+                  "action": "WorkForPay",
+                  "tick": 144,
+                  "reasonCode": "FOOD_INCOME",
+                  "meaning": "该次选择工作，是为了获得买粮所需收入。",
+                  "relationToPreparation": "historical",
+                  "authority": "只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。"
+                },
+                "authority": "当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。",
+                "recentHistory": [
+                  {
+                    "tick": 144,
+                    "action": "WorkForPay",
+                    "status": "succeeded",
+                    "walletChange": 20,
+                    "foodChange": 0,
+                    "reasonCode": "FOOD_INCOME"
+                  }
+                ]
+              }
+            },
+            "intentHint": {
+              "kind": "model-interpretation",
+              "recommendation": "answer-current-topic",
+              "proposalHint": null,
+              "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+            },
+            "negotiationOptions": {
+              "status": "available",
+              "options": [
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 36
+                },
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 72
+                }
+              ],
+              "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+            },
+            "memoryMode": "npc-memory-v1",
+            "memoryCoverage": {
+              "forgottenEpisodes": 0,
+              "forgottenSpeech": 0
+            },
+            "recallFocus": {
+              "source": "current-utterance",
+              "topics": [
+                "food"
+              ],
+              "anchorEventSeq": null
+            },
+            "memoryUpdates": []
+          },
+          "response": null,
+          "metrics": null,
+          "factAudit": null,
+          "checks": [],
+          "humanReview": {
+            "verdict": "pending",
+            "questions": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "after-buy",
+          "text": "你买过一份，所以现在还剩一份，对吗？",
+          "status": "not-run",
+          "attempted": false,
+          "scriptedBefore": [
+            {
+              "advanceTo": 288
+            }
+          ],
+          "scriptedReceipts": [
+            {
+              "type": "AdvanceTime",
+              "payload": {
+                "ticks": 128
+              },
+              "tick": 288,
+              "revision": 288,
+              "result": null
+            }
+          ],
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 10,
+              "actual": 10,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "BuyFood",
+              "actual": "BuyFood",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "BUY_FOOD",
+              "actual": "BUY_FOOD",
+              "passed": true
+            }
+          ],
+          "context": {
+            "simulationId": "npc5-world-0124d693c695",
+            "revision": 288,
+            "tick": 288,
+            "targetId": "actor-2",
+            "persona": "村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。",
+            "canTalk": true,
+            "self": {
+              "alive": true,
+              "health": 1000,
+              "fatigue": 150,
+              "food": 0,
+              "wallet": 10,
+              "trust": 50,
+              "fear": 0,
+              "grievance": 0,
+              "knownHolder": "actor-2",
+              "knownCondition": 60,
+              "hunger": 200
+            },
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "BuyFood",
+                "destination": "food-stall",
+                "decidedTick": 148,
+                "phase": "awaiting-review",
+                "redirect": null
+              },
+              "plan": null,
+              "lastResult": {
+                "action": "BuyFood",
+                "status": "succeeded",
+                "tick": 288,
+                "walletChange": -10,
+                "foodChange": 1
+              },
+              "decisionBasis": {
+                "action": "BuyFood",
+                "tick": 288,
+                "reasonCode": "BUY_FOOD"
+              }
+            },
+            "lifeHistoryVersion": "play-life-v1",
+            "lifeHistory": [
+              {
+                "tick": 144,
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "walletChange": 20,
+                "foodChange": 0,
+                "reasonCode": "FOOD_INCOME"
+              },
+              {
+                "tick": 288,
+                "action": "BuyFood",
+                "status": "succeeded",
+                "walletChange": -10,
+                "foodChange": 1,
+                "reasonCode": "BUY_FOOD"
+              }
+            ],
+            "observations": [],
+            "agreement": null,
+            "conversation": [],
+            "knownFacts": {
+              "version": 1,
+              "identity": {
+                "selfId": "actor-2",
+                "selfRole": "你是猎人",
+                "playerId": "actor-4",
+                "playerRole": "正在与你交谈的玩家"
+              },
+              "tickMinutes": 10,
+              "tool": {
+                "holder": "self",
+                "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+                "condition": 60
+              },
+              "agreement": null,
+              "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。",
+              "life": {
+                "current": {
+                  "tick": 288,
+                  "food": 0,
+                  "wallet": 10,
+                  "hunger": 200,
+                  "foodNeed": "needed"
+                },
+                "currentMeaning": "当前粮食0份；当前钱包10；当前饥饿200；当前存粮已达到补粮需求阈值，但不证明马上会购买",
+                "preparation": {
+                  "status": "awaiting-review",
+                  "action": "BuyFood",
+                  "meaning": "旧行进意图等待更新，不能说仍在照此准备或已经再次执行。"
+                },
+                "lastExecution": {
+                  "action": "BuyFood",
+                  "status": "succeeded",
+                  "tick": 288,
+                  "walletChange": -10,
+                  "foodChange": 1,
+                  "meaning": "最近买粮成功；钱包变化-10、粮食变化1仅是当次增减，不是当前库存或余额；现在剩多少只用current。"
+                },
+                "planMeaning": null,
+                "decisionBasis": {
+                  "action": "BuyFood",
+                  "tick": 288,
+                  "reasonCode": "BUY_FOOD",
+                  "meaning": "该次选择买粮，以补充存粮。",
+                  "relationToPreparation": "same-record",
+                  "authority": "只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。"
+                },
+                "authority": "当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。",
+                "recentHistory": [
+                  {
+                    "tick": 144,
+                    "action": "WorkForPay",
+                    "status": "succeeded",
+                    "walletChange": 20,
+                    "foodChange": 0,
+                    "reasonCode": "FOOD_INCOME"
+                  },
+                  {
+                    "tick": 288,
+                    "action": "BuyFood",
+                    "status": "succeeded",
+                    "walletChange": -10,
+                    "foodChange": 1,
+                    "reasonCode": "BUY_FOOD"
+                  }
+                ]
+              }
+            },
+            "intentHint": {
+              "kind": "model-interpretation",
+              "recommendation": "answer-current-topic",
+              "proposalHint": null,
+              "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+            },
+            "negotiationOptions": {
+              "status": "available",
+              "options": [
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 36
+                },
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 72
+                }
+              ],
+              "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+            },
+            "memoryMode": "npc-memory-v1",
+            "memoryCoverage": {
+              "forgottenEpisodes": 0,
+              "forgottenSpeech": 0
+            },
+            "recallFocus": {
+              "source": "none",
+              "topics": [],
+              "anchorEventSeq": null
+            },
+            "memoryUpdates": []
+          },
+          "response": null,
+          "metrics": null,
+          "factAudit": null,
+          "checks": [],
+          "humanReview": {
+            "verdict": "pending",
+            "questions": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "gifts",
+          "text": "我又给了你两份粮，现在还准备买粮吗？",
+          "status": "not-run",
+          "attempted": false,
+          "scriptedBefore": [
+            {
+              "payload": {
+                "recipientId": "actor-2"
+              },
+              "type": "PlayerGiftFood"
+            },
+            {
+              "payload": {
+                "recipientId": "actor-2"
+              },
+              "type": "PlayerGiftFood"
+            },
+            {
+              "advanceTo": 320
+            }
+          ],
+          "scriptedReceipts": [
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              },
+              "tick": 288,
+              "revision": 289,
+              "result": {
+                "donorId": "actor-4",
+                "product": "food",
+                "quantity": 1,
+                "reasonCode": null,
+                "recipientId": "actor-2",
+                "sourceEventSeq": 44
+              }
+            },
+            {
+              "type": "PlayerGiftFood",
+              "payload": {
+                "recipientId": "actor-2"
+              },
+              "tick": 288,
+              "revision": 290,
+              "result": {
+                "donorId": "actor-4",
+                "product": "food",
+                "quantity": 1,
+                "reasonCode": null,
+                "recipientId": "actor-2",
+                "sourceEventSeq": 46
+              }
+            },
+            {
+              "type": "AdvanceTime",
+              "payload": {
+                "ticks": 32
+              },
+              "tick": 320,
+              "revision": 322,
+              "result": null
+            }
+          ],
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 2,
+              "actual": 2,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 10,
+              "actual": 10,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "BuyFood",
+              "actual": "BuyFood",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "BUY_FOOD",
+              "actual": "BUY_FOOD",
+              "passed": true
+            }
+          ],
+          "context": {
+            "simulationId": "npc5-world-0124d693c695",
+            "revision": 322,
+            "tick": 320,
+            "targetId": "actor-2",
+            "persona": "村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。",
+            "canTalk": true,
+            "self": {
+              "alive": true,
+              "health": 1000,
+              "fatigue": 150,
+              "food": 2,
+              "wallet": 10,
+              "trust": 60,
+              "fear": 0,
+              "grievance": 0,
+              "knownHolder": "actor-2",
+              "knownCondition": 60,
+              "hunger": 200
+            },
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "NoAction",
+                "destination": "rest-site",
+                "decidedTick": 292,
+                "phase": "at-destination",
+                "redirect": null
+              },
+              "plan": null,
+              "lastResult": {
+                "action": "BuyFood",
+                "status": "succeeded",
+                "tick": 288,
+                "walletChange": -10,
+                "foodChange": 1
+              },
+              "decisionBasis": {
+                "action": "BuyFood",
+                "tick": 288,
+                "reasonCode": "BUY_FOOD"
+              }
+            },
+            "lifeHistoryVersion": "play-life-v1",
+            "lifeHistory": [
+              {
+                "tick": 144,
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "walletChange": 20,
+                "foodChange": 0,
+                "reasonCode": "FOOD_INCOME"
+              },
+              {
+                "tick": 288,
+                "action": "BuyFood",
+                "status": "succeeded",
+                "walletChange": -10,
+                "foodChange": 1,
+                "reasonCode": "BUY_FOOD"
+              }
+            ],
+            "observations": [
+              {
+                "eventSeq": 44,
+                "tick": 288,
+                "kind": "gift",
+                "actorId": "actor-4",
+                "channel": "self",
+                "importance": 2,
+                "text": "玩家给了我一份粮食。",
+                "observedState": {
+                  "holder": "actor-2",
+                  "condition": 60,
+                  "effect": null
+                },
+                "evidence": {
+                  "basis": "self",
+                  "meaning": "本人直接经历的事件，不是玩家单方面声称",
+                  "actor": "玩家",
+                  "minutesAgo": 320
+                }
+              },
+              {
+                "eventSeq": 46,
+                "tick": 288,
+                "kind": "gift",
+                "actorId": "actor-4",
+                "channel": "self",
+                "importance": 2,
+                "text": "玩家给了我一份粮食。",
+                "observedState": {
+                  "holder": "actor-2",
+                  "condition": 60,
+                  "effect": null
+                },
+                "evidence": {
+                  "basis": "self",
+                  "meaning": "本人直接经历的事件，不是玩家单方面声称",
+                  "actor": "玩家",
+                  "minutesAgo": 320
+                }
+              }
+            ],
+            "agreement": null,
+            "conversation": [],
+            "knownFacts": {
+              "version": 1,
+              "identity": {
+                "selfId": "actor-2",
+                "selfRole": "你是猎人",
+                "playerId": "actor-4",
+                "playerRole": "正在与你交谈的玩家"
+              },
+              "tickMinutes": 10,
+              "tool": {
+                "holder": "self",
+                "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+                "condition": 60
+              },
+              "agreement": null,
+              "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。",
+              "life": {
+                "current": {
+                  "tick": 320,
+                  "food": 2,
+                  "wallet": 10,
+                  "hunger": 200,
+                  "foodNeed": "buffered"
+                },
+                "currentMeaning": "当前粮食2份；当前钱包10；当前饥饿200；当前存粮高于补粮需求阈值，暂有余粮",
+                "preparation": {
+                  "status": "paused",
+                  "action": "NoAction",
+                  "meaning": "当前没有准备新的工作或购买；前往或抵达歇脚处也不证明做过新的购买。"
+                },
+                "lastExecution": {
+                  "action": "BuyFood",
+                  "status": "succeeded",
+                  "tick": 288,
+                  "walletChange": -10,
+                  "foodChange": 1,
+                  "meaning": "最近买粮成功；钱包变化-10、粮食变化1仅是当次增减，不是当前库存或余额；现在剩多少只用current。"
+                },
+                "planMeaning": null,
+                "decisionBasis": {
+                  "action": "BuyFood",
+                  "tick": 288,
+                  "reasonCode": "BUY_FOOD",
+                  "meaning": "该次选择买粮，以补充存粮。",
+                  "relationToPreparation": "historical",
+                  "authority": "只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。"
+                },
+                "authority": "当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。",
+                "recentHistory": [
+                  {
+                    "tick": 144,
+                    "action": "WorkForPay",
+                    "status": "succeeded",
+                    "walletChange": 20,
+                    "foodChange": 0,
+                    "reasonCode": "FOOD_INCOME"
+                  },
+                  {
+                    "tick": 288,
+                    "action": "BuyFood",
+                    "status": "succeeded",
+                    "walletChange": -10,
+                    "foodChange": 1,
+                    "reasonCode": "BUY_FOOD"
+                  }
+                ]
+              }
+            },
+            "intentHint": {
+              "kind": "model-interpretation",
+              "recommendation": "answer-current-topic",
+              "proposalHint": null,
+              "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+            },
+            "negotiationOptions": {
+              "status": "available",
+              "options": [
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 36
+                },
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 72
+                }
+              ],
+              "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+            },
+            "memoryMode": "npc-memory-v1",
+            "memoryCoverage": {
+              "forgottenEpisodes": 0,
+              "forgottenSpeech": 0
+            },
+            "recallFocus": {
+              "source": "current-utterance",
+              "topics": [
+                "food"
+              ],
+              "anchorEventSeq": null
+            },
+            "memoryUpdates": []
+          },
+          "response": null,
+          "metrics": null,
+          "factAudit": null,
+          "checks": [],
+          "humanReview": {
+            "verdict": "pending",
+            "questions": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "wait",
+          "text": "那后来呢？你是不是又去买过了？",
+          "status": "not-run",
+          "attempted": false,
+          "scriptedBefore": [
+            {
+              "advanceTo": 432
+            }
+          ],
+          "scriptedReceipts": [
+            {
+              "type": "AdvanceTime",
+              "payload": {
+                "ticks": 112
+              },
+              "tick": 432,
+              "revision": 434,
+              "result": null
+            }
+          ],
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 1,
+              "actual": 1,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 10,
+              "actual": 10,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "NoAction",
+              "actual": "NoAction",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "no-action",
+              "actual": "no-action",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "WAIT",
+              "actual": "WAIT",
+              "passed": true
+            }
+          ],
+          "context": {
+            "simulationId": "npc5-world-0124d693c695",
+            "revision": 434,
+            "tick": 432,
+            "targetId": "actor-2",
+            "persona": "村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。",
+            "canTalk": true,
+            "self": {
+              "alive": true,
+              "health": 1000,
+              "fatigue": 150,
+              "food": 1,
+              "wallet": 10,
+              "trust": 60,
+              "fear": 0,
+              "grievance": 0,
+              "knownHolder": "actor-2",
+              "knownCondition": 60,
+              "hunger": 100
+            },
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "NoAction",
+                "destination": "rest-site",
+                "decidedTick": 292,
+                "phase": "awaiting-review",
+                "redirect": null
+              },
+              "plan": null,
+              "lastResult": {
+                "action": "NoAction",
+                "status": "no-action",
+                "tick": 432,
+                "walletChange": 0,
+                "foodChange": 0
+              },
+              "decisionBasis": {
+                "action": "NoAction",
+                "tick": 432,
+                "reasonCode": "WAIT"
+              }
+            },
+            "lifeHistoryVersion": "play-life-v1",
+            "lifeHistory": [
+              {
+                "tick": 144,
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "walletChange": 20,
+                "foodChange": 0,
+                "reasonCode": "FOOD_INCOME"
+              },
+              {
+                "tick": 288,
+                "action": "BuyFood",
+                "status": "succeeded",
+                "walletChange": -10,
+                "foodChange": 1,
+                "reasonCode": "BUY_FOOD"
+              },
+              {
+                "tick": 432,
+                "action": "NoAction",
+                "status": "no-action",
+                "walletChange": 0,
+                "foodChange": 0,
+                "reasonCode": "WAIT"
+              }
+            ],
+            "observations": [
+              {
+                "eventSeq": 44,
+                "tick": 288,
+                "kind": "gift",
+                "actorId": "actor-4",
+                "channel": "self",
+                "importance": 2,
+                "text": "玩家给了我一份粮食。",
+                "observedState": {
+                  "holder": "actor-2",
+                  "condition": 60,
+                  "effect": null
+                },
+                "evidence": {
+                  "basis": "self",
+                  "meaning": "本人直接经历的事件，不是玩家单方面声称",
+                  "actor": "玩家",
+                  "minutesAgo": 1440
+                }
+              },
+              {
+                "eventSeq": 46,
+                "tick": 288,
+                "kind": "gift",
+                "actorId": "actor-4",
+                "channel": "self",
+                "importance": 2,
+                "text": "玩家给了我一份粮食。",
+                "observedState": {
+                  "holder": "actor-2",
+                  "condition": 60,
+                  "effect": null
+                },
+                "evidence": {
+                  "basis": "self",
+                  "meaning": "本人直接经历的事件，不是玩家单方面声称",
+                  "actor": "玩家",
+                  "minutesAgo": 1440
+                }
+              }
+            ],
+            "agreement": null,
+            "conversation": [],
+            "knownFacts": {
+              "version": 1,
+              "identity": {
+                "selfId": "actor-2",
+                "selfRole": "你是猎人",
+                "playerId": "actor-4",
+                "playerRole": "正在与你交谈的玩家"
+              },
+              "tickMinutes": 10,
+              "tool": {
+                "holder": "self",
+                "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+                "condition": 60
+              },
+              "agreement": null,
+              "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。",
+              "life": {
+                "current": {
+                  "tick": 432,
+                  "food": 1,
+                  "wallet": 10,
+                  "hunger": 100,
+                  "foodNeed": "needed"
+                },
+                "currentMeaning": "当前粮食1份；当前钱包10；当前饥饿100；当前存粮已达到补粮需求阈值，但不证明马上会购买",
+                "preparation": {
+                  "status": "awaiting-review",
+                  "action": "NoAction",
+                  "meaning": "旧行进意图等待更新，不能说仍在照此准备或已经再次执行。"
+                },
+                "lastExecution": {
+                  "action": "NoAction",
+                  "status": "no-action",
+                  "tick": 432,
+                  "walletChange": 0,
+                  "foodChange": 0,
+                  "meaning": "最近结算没有行动，不是购买失败，也不是又去粮摊尝试。"
+                },
+                "planMeaning": null,
+                "decisionBasis": {
+                  "action": "NoAction",
+                  "tick": 432,
+                  "reasonCode": "WAIT",
+                  "meaning": "该次决策记录为等待，没有更具体的停购原因。",
+                  "relationToPreparation": "same-record",
+                  "authority": "只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。"
+                },
+                "authority": "当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。",
+                "recentHistory": [
+                  {
+                    "tick": 144,
+                    "action": "WorkForPay",
+                    "status": "succeeded",
+                    "walletChange": 20,
+                    "foodChange": 0,
+                    "reasonCode": "FOOD_INCOME"
+                  },
+                  {
+                    "tick": 288,
+                    "action": "BuyFood",
+                    "status": "succeeded",
+                    "walletChange": -10,
+                    "foodChange": 1,
+                    "reasonCode": "BUY_FOOD"
+                  },
+                  {
+                    "tick": 432,
+                    "action": "NoAction",
+                    "status": "no-action",
+                    "walletChange": 0,
+                    "foodChange": 0,
+                    "reasonCode": "WAIT"
+                  }
+                ]
+              }
+            },
+            "intentHint": {
+              "kind": "model-interpretation",
+              "recommendation": "answer-current-topic",
+              "proposalHint": null,
+              "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+            },
+            "negotiationOptions": {
+              "status": "available",
+              "options": [
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 36
+                },
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 72
+                }
+              ],
+              "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+            },
+            "memoryMode": "npc-memory-v1",
+            "memoryCoverage": {
+              "forgottenEpisodes": 0,
+              "forgottenSpeech": 0
+            },
+            "recallFocus": {
+              "source": "none",
+              "topics": [],
+              "anchorEventSeq": null
+            },
+            "memoryUpdates": []
+          },
+          "response": null,
+          "metrics": null,
+          "factAudit": null,
+          "checks": [],
+          "humanReview": {
+            "verdict": "pending",
+            "questions": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "later-buy",
+          "text": "再后来，粮和钱分别剩多少？",
+          "status": "not-run",
+          "attempted": false,
+          "scriptedBefore": [
+            {
+              "advanceTo": 576
+            }
+          ],
+          "scriptedReceipts": [
+            {
+              "type": "AdvanceTime",
+              "payload": {
+                "ticks": 144
+              },
+              "tick": 576,
+              "revision": 578,
+              "result": null
+            }
+          ],
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 1,
+              "actual": 1,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "BuyFood",
+              "actual": "BuyFood",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "BUY_FOOD",
+              "actual": "BUY_FOOD",
+              "passed": true
+            }
+          ],
+          "context": {
+            "simulationId": "npc5-world-0124d693c695",
+            "revision": 578,
+            "tick": 576,
+            "targetId": "actor-2",
+            "persona": "村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。",
+            "canTalk": true,
+            "self": {
+              "alive": true,
+              "health": 1000,
+              "fatigue": 150,
+              "food": 1,
+              "wallet": 0,
+              "trust": 60,
+              "fear": 0,
+              "grievance": 0,
+              "knownHolder": "actor-2",
+              "knownCondition": 60,
+              "hunger": 0
+            },
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "BuyFood",
+                "destination": "food-stall",
+                "decidedTick": 436,
+                "phase": "awaiting-review",
+                "redirect": null
+              },
+              "plan": null,
+              "lastResult": {
+                "action": "BuyFood",
+                "status": "succeeded",
+                "tick": 576,
+                "walletChange": -10,
+                "foodChange": 1
+              },
+              "decisionBasis": {
+                "action": "BuyFood",
+                "tick": 576,
+                "reasonCode": "BUY_FOOD"
+              }
+            },
+            "lifeHistoryVersion": "play-life-v1",
+            "lifeHistory": [
+              {
+                "tick": 144,
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "walletChange": 20,
+                "foodChange": 0,
+                "reasonCode": "FOOD_INCOME"
+              },
+              {
+                "tick": 288,
+                "action": "BuyFood",
+                "status": "succeeded",
+                "walletChange": -10,
+                "foodChange": 1,
+                "reasonCode": "BUY_FOOD"
+              },
+              {
+                "tick": 432,
+                "action": "NoAction",
+                "status": "no-action",
+                "walletChange": 0,
+                "foodChange": 0,
+                "reasonCode": "WAIT"
+              },
+              {
+                "tick": 576,
+                "action": "BuyFood",
+                "status": "succeeded",
+                "walletChange": -10,
+                "foodChange": 1,
+                "reasonCode": "BUY_FOOD"
+              }
+            ],
+            "observations": [
+              {
+                "eventSeq": 44,
+                "tick": 288,
+                "kind": "gift",
+                "actorId": "actor-4",
+                "channel": "self",
+                "importance": 2,
+                "text": "玩家给了我一份粮食。",
+                "observedState": {
+                  "holder": "actor-2",
+                  "condition": 60,
+                  "effect": null
+                },
+                "evidence": {
+                  "basis": "self",
+                  "meaning": "本人直接经历的事件，不是玩家单方面声称",
+                  "actor": "玩家",
+                  "minutesAgo": 2880
+                }
+              },
+              {
+                "eventSeq": 46,
+                "tick": 288,
+                "kind": "gift",
+                "actorId": "actor-4",
+                "channel": "self",
+                "importance": 2,
+                "text": "玩家给了我一份粮食。",
+                "observedState": {
+                  "holder": "actor-2",
+                  "condition": 60,
+                  "effect": null
+                },
+                "evidence": {
+                  "basis": "self",
+                  "meaning": "本人直接经历的事件，不是玩家单方面声称",
+                  "actor": "玩家",
+                  "minutesAgo": 2880
+                }
+              }
+            ],
+            "agreement": null,
+            "conversation": [],
+            "knownFacts": {
+              "version": 1,
+              "identity": {
+                "selfId": "actor-2",
+                "selfRole": "你是猎人",
+                "playerId": "actor-4",
+                "playerRole": "正在与你交谈的玩家"
+              },
+              "tickMinutes": 10,
+              "tool": {
+                "holder": "self",
+                "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+                "condition": 60
+              },
+              "agreement": null,
+              "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。",
+              "life": {
+                "current": {
+                  "tick": 576,
+                  "food": 1,
+                  "wallet": 0,
+                  "hunger": 0,
+                  "foodNeed": "needed"
+                },
+                "currentMeaning": "当前粮食1份；当前钱包0；当前饥饿0；当前存粮已达到补粮需求阈值，但不证明马上会购买",
+                "preparation": {
+                  "status": "awaiting-review",
+                  "action": "BuyFood",
+                  "meaning": "旧行进意图等待更新，不能说仍在照此准备或已经再次执行。"
+                },
+                "lastExecution": {
+                  "action": "BuyFood",
+                  "status": "succeeded",
+                  "tick": 576,
+                  "walletChange": -10,
+                  "foodChange": 1,
+                  "meaning": "最近买粮成功；钱包变化-10、粮食变化1仅是当次增减，不是当前库存或余额；现在剩多少只用current。"
+                },
+                "planMeaning": null,
+                "decisionBasis": {
+                  "action": "BuyFood",
+                  "tick": 576,
+                  "reasonCode": "BUY_FOOD",
+                  "meaning": "该次选择买粮，以补充存粮。",
+                  "relationToPreparation": "same-record",
+                  "authority": "只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。"
+                },
+                "authority": "当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。",
+                "recentHistory": [
+                  {
+                    "tick": 144,
+                    "action": "WorkForPay",
+                    "status": "succeeded",
+                    "walletChange": 20,
+                    "foodChange": 0,
+                    "reasonCode": "FOOD_INCOME"
+                  },
+                  {
+                    "tick": 288,
+                    "action": "BuyFood",
+                    "status": "succeeded",
+                    "walletChange": -10,
+                    "foodChange": 1,
+                    "reasonCode": "BUY_FOOD"
+                  },
+                  {
+                    "tick": 432,
+                    "action": "NoAction",
+                    "status": "no-action",
+                    "walletChange": 0,
+                    "foodChange": 0,
+                    "reasonCode": "WAIT"
+                  },
+                  {
+                    "tick": 576,
+                    "action": "BuyFood",
+                    "status": "succeeded",
+                    "walletChange": -10,
+                    "foodChange": 1,
+                    "reasonCode": "BUY_FOOD"
+                  }
+                ]
+              }
+            },
+            "intentHint": {
+              "kind": "model-interpretation",
+              "recommendation": "answer-current-topic",
+              "proposalHint": null,
+              "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+            },
+            "negotiationOptions": {
+              "status": "available",
+              "options": [
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 36
+                },
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 72
+                }
+              ],
+              "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+            },
+            "memoryMode": "npc-memory-v1",
+            "memoryCoverage": {
+              "forgottenEpisodes": 0,
+              "forgottenSpeech": 0
+            },
+            "recallFocus": {
+              "source": "current-utterance",
+              "topics": [
+                "food"
+              ],
+              "anchorEventSeq": null
+            },
+            "memoryUpdates": []
+          },
+          "response": null,
+          "metrics": null,
+          "factAudit": null,
+          "checks": [],
+          "humanReview": {
+            "verdict": "pending",
+            "questions": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        },
+        {
+          "id": "work-again",
+          "text": "现在呢？你记得前几次挣钱和买粮的事情吗？",
+          "status": "not-run",
+          "attempted": false,
+          "scriptedBefore": [
+            {
+              "advanceTo": 720
+            }
+          ],
+          "scriptedReceipts": [
+            {
+              "type": "AdvanceTime",
+              "payload": {
+                "ticks": 144
+              },
+              "tick": 720,
+              "revision": 722,
+              "result": null
+            }
+          ],
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 20,
+              "actual": 20,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "WorkForPay",
+              "actual": "WorkForPay",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "FOOD_INCOME",
+              "actual": "FOOD_INCOME",
+              "passed": true
+            }
+          ],
+          "context": {
+            "simulationId": "npc5-world-0124d693c695",
+            "revision": 722,
+            "tick": 720,
+            "targetId": "actor-2",
+            "persona": "村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。",
+            "canTalk": true,
+            "self": {
+              "alive": true,
+              "health": 1000,
+              "fatigue": 300,
+              "food": 0,
+              "wallet": 20,
+              "trust": 60,
+              "fear": 0,
+              "grievance": 0,
+              "knownHolder": "actor-2",
+              "knownCondition": 60,
+              "hunger": 0
+            },
+            "activity": {
+              "version": 1,
+              "intent": {
+                "action": "WorkForPay",
+                "destination": "work-site",
+                "decidedTick": 580,
+                "phase": "awaiting-review",
+                "redirect": null
+              },
+              "plan": {
+                "kind": "secure-food",
+                "step": "BuyFood",
+                "status": "ready"
+              },
+              "lastResult": {
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "tick": 720,
+                "walletChange": 20,
+                "foodChange": 0
+              },
+              "decisionBasis": {
+                "action": "WorkForPay",
+                "tick": 720,
+                "reasonCode": "FOOD_INCOME"
+              }
+            },
+            "lifeHistoryVersion": "play-life-v1",
+            "lifeHistory": [
+              {
+                "tick": 144,
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "walletChange": 20,
+                "foodChange": 0,
+                "reasonCode": "FOOD_INCOME"
+              },
+              {
+                "tick": 288,
+                "action": "BuyFood",
+                "status": "succeeded",
+                "walletChange": -10,
+                "foodChange": 1,
+                "reasonCode": "BUY_FOOD"
+              },
+              {
+                "tick": 432,
+                "action": "NoAction",
+                "status": "no-action",
+                "walletChange": 0,
+                "foodChange": 0,
+                "reasonCode": "WAIT"
+              },
+              {
+                "tick": 576,
+                "action": "BuyFood",
+                "status": "succeeded",
+                "walletChange": -10,
+                "foodChange": 1,
+                "reasonCode": "BUY_FOOD"
+              },
+              {
+                "tick": 720,
+                "action": "WorkForPay",
+                "status": "succeeded",
+                "walletChange": 20,
+                "foodChange": 0,
+                "reasonCode": "FOOD_INCOME"
+              }
+            ],
+            "observations": [
+              {
+                "eventSeq": 44,
+                "tick": 288,
+                "kind": "gift",
+                "actorId": "actor-4",
+                "channel": "self",
+                "importance": 2,
+                "text": "玩家给了我一份粮食。",
+                "observedState": {
+                  "holder": "actor-2",
+                  "condition": 60,
+                  "effect": null
+                },
+                "evidence": {
+                  "basis": "self",
+                  "meaning": "本人直接经历的事件，不是玩家单方面声称",
+                  "actor": "玩家",
+                  "minutesAgo": 4320
+                }
+              },
+              {
+                "eventSeq": 46,
+                "tick": 288,
+                "kind": "gift",
+                "actorId": "actor-4",
+                "channel": "self",
+                "importance": 2,
+                "text": "玩家给了我一份粮食。",
+                "observedState": {
+                  "holder": "actor-2",
+                  "condition": 60,
+                  "effect": null
+                },
+                "evidence": {
+                  "basis": "self",
+                  "meaning": "本人直接经历的事件，不是玩家单方面声称",
+                  "actor": "玩家",
+                  "minutesAgo": 4320
+                }
+              }
+            ],
+            "agreement": null,
+            "conversation": [],
+            "knownFacts": {
+              "version": 1,
+              "identity": {
+                "selfId": "actor-2",
+                "selfRole": "你是猎人",
+                "playerId": "actor-4",
+                "playerRole": "正在与你交谈的玩家"
+              },
+              "tickMinutes": 10,
+              "tool": {
+                "holder": "self",
+                "meaning": "按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置",
+                "condition": 60
+              },
+              "agreement": null,
+              "authority": "这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。",
+              "life": {
+                "current": {
+                  "tick": 720,
+                  "food": 0,
+                  "wallet": 20,
+                  "hunger": 0,
+                  "foodNeed": "needed"
+                },
+                "currentMeaning": "当前粮食0份；当前钱包20；当前饥饿0；当前存粮已达到补粮需求阈值，但不证明马上会购买",
+                "preparation": {
+                  "status": "awaiting-review",
+                  "action": "WorkForPay",
+                  "meaning": "旧行进意图等待更新，不能说仍在照此准备或已经再次执行。"
+                },
+                "lastExecution": {
+                  "action": "WorkForPay",
+                  "status": "succeeded",
+                  "tick": 720,
+                  "walletChange": 20,
+                  "foodChange": 0,
+                  "meaning": "最近工作领薪成功；钱包变化20、粮食变化0仅是当次增减，不是当前库存或余额；现在剩多少只用current。"
+                },
+                "planMeaning": "保存的买粮后续步骤为待办；不证明当前正在执行，也不证明失败或已经完成。",
+                "decisionBasis": {
+                  "action": "WorkForPay",
+                  "tick": 720,
+                  "reasonCode": "FOOD_INCOME",
+                  "meaning": "该次选择工作，是为了获得买粮所需收入。",
+                  "relationToPreparation": "same-record",
+                  "authority": "只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。"
+                },
+                "authority": "当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。",
+                "recentHistory": [
+                  {
+                    "tick": 144,
+                    "action": "WorkForPay",
+                    "status": "succeeded",
+                    "walletChange": 20,
+                    "foodChange": 0,
+                    "reasonCode": "FOOD_INCOME"
+                  },
+                  {
+                    "tick": 288,
+                    "action": "BuyFood",
+                    "status": "succeeded",
+                    "walletChange": -10,
+                    "foodChange": 1,
+                    "reasonCode": "BUY_FOOD"
+                  },
+                  {
+                    "tick": 432,
+                    "action": "NoAction",
+                    "status": "no-action",
+                    "walletChange": 0,
+                    "foodChange": 0,
+                    "reasonCode": "WAIT"
+                  },
+                  {
+                    "tick": 576,
+                    "action": "BuyFood",
+                    "status": "succeeded",
+                    "walletChange": -10,
+                    "foodChange": 1,
+                    "reasonCode": "BUY_FOOD"
+                  },
+                  {
+                    "tick": 720,
+                    "action": "WorkForPay",
+                    "status": "succeeded",
+                    "walletChange": 20,
+                    "foodChange": 0,
+                    "reasonCode": "FOOD_INCOME"
+                  }
+                ]
+              }
+            },
+            "intentHint": {
+              "kind": "model-interpretation",
+              "recommendation": "answer-current-topic",
+              "proposalHint": null,
+              "note": "本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。"
+            },
+            "negotiationOptions": {
+              "status": "available",
+              "options": [
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 36
+                },
+                {
+                  "repairAmount": 40,
+                  "loanTicks": 72
+                }
+              ],
+              "authority": "仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。"
+            },
+            "memoryMode": "npc-memory-v1",
+            "memoryCoverage": {
+              "forgottenEpisodes": 0,
+              "forgottenSpeech": 0
+            },
+            "recallFocus": {
+              "source": "current-utterance",
+              "topics": [
+                "food"
+              ],
+              "anchorEventSeq": null
+            },
+            "memoryUpdates": []
+          },
+          "response": null,
+          "metrics": null,
+          "factAudit": null,
+          "checks": [],
+          "humanReview": {
+            "verdict": "pending",
+            "questions": [
+              "核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。"
+            ]
+          }
+        }
+      ],
+      "setupReceipts": [],
+      "worldReplayAudit": "passed",
+      "finalFactsSha256": "b1ae23baebf115113dd402f94a76e1898c238b518e15373cddefb61a7ff4ca2c"
+    }
+  ],
+  "counts": {
+    "planned": 8,
+    "attempted": 0,
+    "automaticPassed": 0,
+    "automaticFailed": 0,
+    "providerFailed": 0,
+    "fixtureFailed": 0,
+    "blocked": 0,
+    "notRun": 8
+  },
+  "factAuditSummary": {
+    "scope": "explicit-current-food-wallet",
+    "turnsWithReplies": 0,
+    "contradictionTurns": 0,
+    "checkedNoContradictionTurns": 0,
+    "unassessedTurns": 0,
+    "notEvaluatedTurns": 8
+  },
+  "completionProtocol": 1,
+  "source": {
+    "baseCommit": "22cc088451899033e67e33a89ca42fb9d8fb86aa",
+    "workingTreeDirty": true,
+    "sha256": {
+      "benchmarks/npc-playable-v1/cases.json": "d42fb8a6e605d69575e2a0a8df02a13c78e423b59d33bb0bbdf3a07145cc2a8e",
+      "runtime/core/npc-negotiation-terms.mjs": "5f80bc3e4d9a4941bb4fb1f09020d29f0bda2a2733e6f382cae5e368ef52d50f",
+      "runtime/fixtures/campaign-village.mjs": "e2d242af3846a22c8846d2c76e05f07b08ec6a38b23e3c50c7332f9f8e2e2583",
+      "runtime/service/npc-language-provider.mjs": "c5bf84d50c9d03eb93b91b308377784d3ef667edcd238c53354aa9e9bb5c7ed0",
+      "runtime/evaluation/npc-dialogue-eval.mjs": "2591bc65babb4431d25d90946a1af296f458ae68d1f1fb8a73d3b8e7c4284806",
+      "runtime/service/npc-dialogue-grounding.mjs": "2f2ed5c09075171d65e87fcddd9bed9fb1806109936357942b3103a045786fe0",
+      "runtime/service/npc-life-facts.mjs": "0309ba301126b72aa9bd3c070abc341bcf8fd99002cb742b5941f80c310b6e2a",
+      "runtime/evaluation/npc-fact-audit.mjs": "9353792b80c2ff5384b66ba473f7914f1041986ce364d723f30a6a233cd4b34c",
+      "runtime/core/survival-state.mjs": "06c5373679f5146ae67435f4458af8aa9401fafc19b9394c126198b5d0edcd7a",
+      "runtime/service/npc-recall-focus.mjs": "b6b9be89889d49897eff1779b3e22dae1b202d4bb04c9bdae3c2383f78362889",
+      "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+      "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+      "runtime/core/campaign-play.mjs": "ad71c48efe003c76c61327d2909eaabb85c841f0feca64c78b79277a7dca9122",
+      "runtime/core/campaign-limits.mjs": "c850c4d3e5578c37b7d97c4291ab51ac5c2c107a5bdcec635ca6d7bc0e490b86",
+      "runtime-playable-contract.mjs": "ed7e876f3dd4796bb9bab72c1740d1e729e32500af1408cfbf94d10b135fcef3",
+      "runtime/evaluation/npc-report-files.mjs": "4750b4be811166a675facaabfed552b79cbb3c1f0d042773c76f55a3c4c788bd",
+      "runtime/core/npc-negotiation.mjs": "1ba5027b90dd96b290d582c918e3c13f34c2c12718eda48f7939f132318d88da",
+      "runtime/core/npc-social.mjs": "7dc296035a5f6d2e6217f03e10b015439b248e40940585cfc42bdd78c49de2de",
+      "runtime/core/npc-memory.mjs": "d2aca016dde6bada9c6220f6c3eceab34c1e4e50c7830c07ada085d5960ed878",
+      "runtime/core/npc-life-context.mjs": "14b95f058cfcf88e3893d237e3087dc118876addf2c7fb1c0ba0747cf0f5dde0",
+      "runtime/core/npc-village-sites.mjs": "3af4d2ff4d7b7a15e7d136f5a5e1356f3857df73de4f7d1e2ced40371a3ef28f",
+      "runtime/core/campaign-npc-agency.mjs": "be74d384f287b221d12897c16db84fa8ffb44d1a00087d682c9b3ca5aee69016",
+      "runtime/core/campaign-map.mjs": "5a635b5aff39cb8e9e590ac442122f14e776fca687d3479b94cf86409ea39592",
+      "runtime-negotiation-contract.mjs": "528d6214a61140a78d988ff4af26c5429f1dea9ec1a9bab5e25bf21c6b58ea52",
+      "scripts/evaluate-npc-dialogue.mjs": "ef0cf36a0718936eec9084d7994eef34b9990e14c447c1085e2f557344167d53"
+    },
+    "node": "v24.22.1"
+  },
+  "provider": null,
+  "createdAt": "2026-10-26T09:04:14.186Z"
+}

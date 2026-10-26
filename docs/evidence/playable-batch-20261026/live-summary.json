@@ -1,0 +1,156 @@
+{
+  "requestLimit": 8,
+  "attempted": 5,
+  "counts": {
+    "planned": 8,
+    "attempted": 5,
+    "automaticPassed": 4,
+    "automaticFailed": 0,
+    "providerFailed": 1,
+    "fixtureFailed": 0,
+    "blocked": 3,
+    "notRun": 0
+  },
+  "independentHumanVerdict": "pending",
+  "semanticVerdict": "needs-correction-and-review",
+  "rawReportSha256": "861d2ea2ac2ea0857a7d3a49dbd758f5bfd04eaa6eccca7b0ac0409d1a2267e7",
+  "turns": [
+    {
+      "id": "before-wage",
+      "status": "automatic-pass",
+      "errorCode": null,
+      "metrics": {
+        "contentBytes": 230,
+        "durationMs": 10277.342,
+        "failure": null,
+        "finishReason": "stop",
+        "httpStatus": 200,
+        "status": "succeeded",
+        "thinking": "disabled",
+        "usage": {
+          "inputCache": {
+            "hitTokens": 1024,
+            "missTokens": 1366
+          },
+          "inputTokens": 2390,
+          "outputTokens": 53,
+          "totalTokens": 2443
+        }
+      }
+    },
+    {
+      "id": "paid",
+      "status": "automatic-pass",
+      "errorCode": null,
+      "metrics": {
+        "contentBytes": 247,
+        "durationMs": 1531.781,
+        "failure": null,
+        "finishReason": "stop",
+        "httpStatus": 200,
+        "status": "succeeded",
+        "thinking": "disabled",
+        "usage": {
+          "inputCache": {
+            "hitTokens": 1408,
+            "missTokens": 1374
+          },
+          "inputTokens": 2782,
+          "outputTokens": 66,
+          "totalTokens": 2848
+        }
+      }
+    },
+    {
+      "id": "at-stall",
+      "status": "automatic-pass",
+      "errorCode": null,
+      "metrics": {
+        "contentBytes": 251,
+        "durationMs": 1392.659,
+        "failure": null,
+        "finishReason": "stop",
+        "httpStatus": 200,
+        "status": "succeeded",
+        "thinking": "disabled",
+        "usage": {
+          "inputCache": {
+            "hitTokens": 1408,
+            "missTokens": 1474
+          },
+          "inputTokens": 2882,
+          "outputTokens": 66,
+          "totalTokens": 2948
+        }
+      }
+    },
+    {
+      "id": "after-buy",
+      "status": "automatic-pass",
+      "errorCode": null,
+      "metrics": {
+        "contentBytes": 305,
+        "durationMs": 1590.758,
+        "failure": null,
+        "finishReason": "stop",
+        "httpStatus": 200,
+        "status": "succeeded",
+        "thinking": "disabled",
+        "usage": {
+          "inputCache": {
+            "hitTokens": 1408,
+            "missTokens": 1615
+          },
+          "inputTokens": 3023,
+          "outputTokens": 74,
+          "totalTokens": 3097
+        }
+      }
+    },
+    {
+      "id": "gifts",
+      "status": "provider-failed",
+      "errorCode": "MODEL_OUTPUT_INVALID",
+      "metrics": {
+        "contentBytes": 333,
+        "durationMs": 1588.763,
+        "failure": {
+          "reason": "memory-refs-field",
+          "stage": "schema"
+        },
+        "finishReason": "stop",
+        "httpStatus": 200,
+        "status": "MODEL_OUTPUT_INVALID",
+        "thinking": "disabled",
+        "usage": {
+          "inputCache": {
+            "hitTokens": 1408,
+            "missTokens": 1904
+          },
+          "inputTokens": 3312,
+          "outputTokens": 87,
+          "totalTokens": 3399
+        }
+      }
+    },
+    {
+      "id": "wait",
+      "status": "blocked",
+      "errorCode": null,
+      "metrics": null
+    },
+    {
+      "id": "later-buy",
+      "status": "blocked",
+      "errorCode": null,
+      "metrics": null
+    },
+    {
+      "id": "work-again",
+      "status": "blocked",
+      "errorCode": null,
+      "metrics": null
+    }
+  ],
+  "assistantReview": "Four protocol passes; fifth memory-refs-field failure. Replies repeatedly redirect to repair; raw hunger claims and topical continuity need review. No retries; remaining three blocked; usage is provider-reported, billing unverified."
+}

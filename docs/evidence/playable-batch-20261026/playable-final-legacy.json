@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/check-playable-legacy.mjs",
+    "../Narraverse-NPC17",
+    "artifacts/playable-batch/final-legacy.json"
+  ],
+  "pid": 467,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 10774.617,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

@@ -1,0 +1,10 @@
+{"measurement":"cached-HTTP-read-during-worker","initialOpenMs":306.012212,"submitAndSaveMs":57065.048677,"reopenMs":86822.29280999998,"samples":30,"maxMs":6.78186199999999,"medianMs":2.0780389999999898}
+✔ seven-day worker simulation keeps HTTP reads responsive and restores all quest, life and budget state (144247.123774ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 144393.085074

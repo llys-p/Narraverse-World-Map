@@ -1,0 +1,21 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/playable-campaign.test.mjs",
+    "tests/simulation/playable-boundaries.test.mjs",
+    "tests/simulation/playable-memory-budget.test.mjs",
+    "tests/simulation/playable-service.test.mjs",
+    "tests/simulation/playable-performance-boundaries.test.mjs"
+  ],
+  "pid": 14,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 189154.495,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

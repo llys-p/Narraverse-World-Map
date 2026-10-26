@@ -1,0 +1,31 @@
+{
+  "node": "v24.22.1",
+  "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Playable",
+  "rounds": [
+    {
+      "openMs": 82.35399499999998,
+      "simulateMs": 3252.3145680000002,
+      "auditMs": 3109.452032,
+      "tenMapReadsMs": 13.712853999999425,
+      "bundleSha256": "003d965a511016023924707846b849c72f63f1f89823a557b07e932e8912f713",
+      "tick": 144
+    },
+    {
+      "openMs": 45.506021999999575,
+      "simulateMs": 3133.960742000001,
+      "auditMs": 3036.9530529999993,
+      "tenMapReadsMs": 12.551805999999488,
+      "bundleSha256": "003d965a511016023924707846b849c72f63f1f89823a557b07e932e8912f713",
+      "tick": 144
+    },
+    {
+      "openMs": 38.940592000000834,
+      "simulateMs": 3026.329989,
+      "auditMs": 2831.523193000001,
+      "tenMapReadsMs": 11.456845000000612,
+      "bundleSha256": "003d965a511016023924707846b849c72f63f1f89823a557b07e932e8912f713",
+      "tick": 144
+    }
+  ],
+  "externalModelCalls": 0
+}

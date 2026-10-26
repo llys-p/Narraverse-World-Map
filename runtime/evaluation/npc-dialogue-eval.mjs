@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {createNegotiationCampaignVillage,createMemoryCampaignVillage,campaignSystems} from '../fixtures/campaign-village.mjs';
+import {createNegotiationCampaignVillage,createMemoryCampaignVillage,createPlayableCampaignVillage,campaignSystems} from '../fixtures/campaign-village.mjs';
 import {createAuditedBundle,deriveCampaignBundle,validateBundle} from '../core/world-state.mjs';
 import {canonicalJson,cloneData,fields,requireCondition} from '../core/data-contract.mjs';
 import {npcDialogueContext} from '../core/npc-negotiation.mjs';
@@ -28,21 +28,21 @@ function validStep(s,allowGift=false,maxTick=288){
  }
 }
 export function validateDialogueSuite(suite){
- fields(suite,['schemaVersion','suiteId','provenance','cases',...([2,3].includes(suite.schemaVersion)?['fixtureVersion']:[])]);requireCondition((suite.schemaVersion===1||[2,3].includes(suite.schemaVersion)&&suite.fixtureVersion==='5')&&dialogueText(suite.suiteId,80)&&dialogueText(suite.provenance,300),'Invalid suite');list(suite.cases,16);requireCondition(suite.cases.length>0,'Empty suite');
+ fields(suite,['schemaVersion','suiteId','provenance','cases',...([2,3,4].includes(suite.schemaVersion)?['fixtureVersion']:[])]);requireCondition((suite.schemaVersion===1||([2,3].includes(suite.schemaVersion)&&suite.fixtureVersion==='5'||suite.schemaVersion===4&&suite.fixtureVersion==='6'))&&dialogueText(suite.suiteId,80)&&dialogueText(suite.provenance,300),'Invalid suite');list(suite.cases,16);requireCondition(suite.cases.length>0,'Empty suite');
  const ids=new Set();let count=0;
  for(const c of suite.cases){
   fields(c,['id','title','setup','turns']);requireCondition(typeof c.id==='string'&&/^[a-z][a-z0-9-]{0,30}$/.test(c.id)&&!ids.has(c.id)&&dialogueText(c.title,100),'Invalid case identity');ids.add(c.id);
-  list(c.setup,16);c.setup.forEach(s=>validStep(s,suite.fixtureVersion==='5',suite.schemaVersion===3?576:288));list(c.turns,suite.schemaVersion===3?8:4);requireCondition(c.turns.length>0,'Empty case');const turns=new Set();
+  list(c.setup,16);c.setup.forEach(s=>validStep(s,['5','6'].includes(suite.fixtureVersion),suite.schemaVersion===4?1008:suite.schemaVersion===3?576:288));list(c.turns,[3,4].includes(suite.schemaVersion)?8:4);requireCondition(c.turns.length>0,'Empty case');const turns=new Set();
   for(const t of c.turns){
    fields(t,['id','text','before','expect']);requireCondition(typeof t.id==='string'&&/^[a-z][a-z0-9-]{0,30}$/.test(t.id)&&!turns.has(t.id)&&dialogueText(t.text),'Invalid dialogue turn');turns.add(t.id);count++;
-   list(t.before,8);t.before.forEach(s=>validStep(s,suite.fixtureVersion==='5',suite.schemaVersion===3?576:288));const e=t.expect;fields(e,['proposalKeys','referenceAnyKinds','facts','humanReview']);
+   list(t.before,8);t.before.forEach(s=>validStep(s,['5','6'].includes(suite.fixtureVersion),suite.schemaVersion===4?1008:suite.schemaVersion===3?576:288));const e=t.expect;fields(e,['proposalKeys','referenceAnyKinds','facts','humanReview']);
    list(e.proposalKeys,8);requireCondition(e.proposalKeys.length>0&&e.proposalKeys.every(k=>keys.includes(k)),'Invalid expected proposal');
    list(e.referenceAnyKinds,8);requireCondition(e.referenceAnyKinds.every(k=>memoryKinds.includes(k)),'Invalid expected memory kind');
    list(e.humanReview,4);requireCondition(e.humanReview.length>0&&e.humanReview.every(x=>dialogueText(x,300)),'Missing human review rubric');
    requireCondition(e.facts&&typeof e.facts==='object'&&!Array.isArray(e.facts)&&Object.keys(e.facts).every(k=>['condition','holder','agreement','repairAmount','loanTicks','repairProgress','knownHolder','grievanceAtLeast','memoryKinds',...Object.keys(lifeEnums),...lifeNumbers].includes(k)),'Invalid fixture assertion');
    for(const [k,v] of Object.entries(e.facts)){
-    if(Object.hasOwn(lifeEnums,k))requireCondition(suite.fixtureVersion==='5'&&lifeEnums[k].includes(v),'Invalid life assertion');
-    else if(lifeNumbers.includes(k))requireCondition(suite.fixtureVersion==='5'&&Number.isSafeInteger(v)&&v>=(k.startsWith('life')?-1000:0)&&v<=(k==='selfWallet'?1000000000:1000),'Invalid life numeric assertion');
+    if(Object.hasOwn(lifeEnums,k))requireCondition(['5','6'].includes(suite.fixtureVersion)&&lifeEnums[k].includes(v),'Invalid life assertion');
+    else if(lifeNumbers.includes(k))requireCondition(['5','6'].includes(suite.fixtureVersion)&&Number.isSafeInteger(v)&&v>=(k.startsWith('life')?-1000:0)&&v<=(k==='selfWallet'?1000000000:1000),'Invalid life numeric assertion');
     else if(k==='memoryKinds')requireCondition(Array.isArray(v)&&v.every(x=>memoryKinds.includes(x)),'Invalid memory assertion');
     else if(['holder','knownHolder','agreement'].includes(k))requireCondition(v===null||dialogueText(v,40),'Invalid state assertion');
     else requireCondition(Number.isSafeInteger(v)&&v>=0,'Invalid numeric assertion');
@@ -84,7 +84,7 @@ export async function runDialogueEvaluation({suite,selection,mode='plan',provide
  const selected=selectDialogueCases(suite,selection),planned=selected.reduce((n,c)=>n+c.turns.length,0);
  requireCondition(modes.includes(mode),'Invalid evaluation mode');
  if(mode!=='plan')requireCondition(provider?.enabled===true&&Number.isSafeInteger(maxRequests)&&maxRequests>=planned&&maxRequests<=32,'Explicit enabled provider and sufficient request budget required');
- const fixtureVersion=suite.fixtureVersion??'4',factory=fixtureVersion==='5'?createMemoryCampaignVillage:createNegotiationCampaignVillage;
+ const fixtureVersion=suite.fixtureVersion??'4',factory=fixtureVersion==='6'?createPlayableCampaignVillage:fixtureVersion==='5'?createMemoryCampaignVillage:createNegotiationCampaignVillage;
  const report={schemaVersion:1,fixtureVersion,suiteId:suite.suiteId,suiteSha256:digest(suite),mode,realProviderAttempted:false,semanticVerdict:'not-evaluated',
   notice:mode==='plan'?'离线计划；未调用模型，未检查模型语言质量。':mode==='controlled-test'?'受控协议测试；回复由测试夹具提供，不代表真实模型能力。':'真实模型输出；自动检查不能替代人工语义复核。',
   plannedRequests:planned,requestLimit:mode==='plan'?0:maxRequests,completed:false,cases:[]};
@@ -128,7 +128,7 @@ export async function runDialogueEvaluation({suite,selection,mode='plan',provide
      row.checks.push(...assessDialogueProposal(draft.payload,row.context,t.expect));
      const episodesBefore=digest(bundle.snapshot.world.mapModel.memoryModel?.actors.map(a=>({episodes:a.episodes,forgottenEpisodes:a.forgottenEpisodes}))??null);
      const receipt=action('PlayerDialogue',draft.payload);
-     if(fixtureVersion==='5')row.checks.push({name:'speechDidNotCreateEpisodes',passed:digest(bundle.snapshot.world.mapModel.memoryModel.actors.map(a=>({episodes:a.episodes,forgottenEpisodes:a.forgottenEpisodes})))===episodesBefore});
+     if(['5','6'].includes(fixtureVersion))row.checks.push({name:'speechDidNotCreateEpisodes',passed:digest(bundle.snapshot.world.mapModel.memoryModel.actors.map(a=>({episodes:a.episodes,forgottenEpisodes:a.forgottenEpisodes})))===episodesBefore});
      row.committedSpeech={eventSeq:receipt.result.sourceEventSeq,revision:bundle.snapshot.revision,tick:bundle.snapshot.tick};
      row.checks.push({name:'speechDidNotExecuteAction',passed:digest(facts(bundle))===before});
      row.status=row.checks.every(x=>x.passed)?'automatic-pass':'automatic-fail';

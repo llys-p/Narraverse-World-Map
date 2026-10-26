@@ -2,7 +2,9 @@
 import {createDemoClient} from './demo-runtime-bridge.mjs';
 import {interactionActions,personNavigation,worldTimeView,describeActionReceipt,recordConfirmedAction,socialInteractionActions,socialActionNames} from './demo-runtime-interactions.mjs';
 import {createSocialTextComposer} from './demo-social-composer.mjs';
+import {createPlayableGoals} from './demo-playable-goals.mjs';
 import {createNpcDialogue} from './demo-npc-dialogue.mjs';
+const playableGoals=createPlayableGoals({submit:(type,payload)=>handle(()=>client.submit(type,payload)),approach:n=>handle(()=>client.submit('MarchSet',{x:n.x,y:n.y}))});
 const npcDialogue=createNpcDialogue();
 const socialTextComposer=createSocialTextComposer();
 const $=id=>document.getElementById(id),K=window.SandboxDrawingKit;
@@ -1547,6 +1549,7 @@ function paintSocialText(){
  for(const button of $('socialTextChoices').children){button.disabled=pending;button.setAttribute('aria-pressed',String(button.textContent===state.selected));}
 }
 function paintNpcNegotiation(){
+ playableGoals.paint(group,canWrite()&&!playbackBusy);
  const n=group?.map.negotiation;$('npcNegotiation').hidden=!n;if(!n)return;
  const write=canWrite()&&!playbackBusy,state=npcDialogue.view(group,write,selectedActorId),pending=client.state().busy||client.state().pending;
  if($('npcDialogueText').value!==state.text)$('npcDialogueText').value=state.text;
@@ -1584,6 +1587,7 @@ function openTrade(){
  $('tradePanel').hidden=false;paintTrade();$('tradeQuantity').focus();
 }
 function paintReadings(){
+ playableGoals.paint(group,canWrite()&&!playbackBusy);
  if(!group)return;const p=group.player.self,m=group.map,e=group.encounter.encounter,s=client.state(),write=canWrite()&&!playbackBusy;document.body.dataset.worldConnected=String(s.connected);
  const timing=worldTimeView(group,write);
  $('worldClockText').textContent=timing.clockText+' · '+place(m.self.location)+' · 时刻 '+m.tick;$('revisionText').textContent='修订 '+m.revision;

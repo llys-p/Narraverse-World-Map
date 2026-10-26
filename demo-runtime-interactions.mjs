@@ -45,7 +45,7 @@ export function personNavigation(group,writable,actorId){
   group.encounter.encounter?.status!=='active'&&group.map.budget.remainingCommands>=3),target:{x:actor.x,y:actor.y}};
 }
 
-const actionNames={PlayerNegotiate:'提出修理换借用',PlayerAgreement:'处理约定',PlayerDialogue:'与猎人交谈',PlayerWork:'村庄工作',PlayerRest:'休整',PlayerGiftFood:'赠送粮食',AdvanceTime:'等待',
+const actionNames={PlayerQuest:'任务进度',PlayerNegotiate:'提出修理换借用',PlayerAgreement:'处理约定',PlayerDialogue:'与猎人交谈',PlayerWork:'村庄工作',PlayerRest:'休整',PlayerGiftFood:'赠送粮食',AdvanceTime:'等待',
  MarchSet:'下达行军目的地',MarchPause:'暂停行军',MarchResume:'继续行军',MarchStep:'行军',
  EncounterBegin:'开始遭遇',EncounterAction:'战斗回合',EncounterCancel:'取消遭遇'};
 const reasons={RULE_REJECTED:'当前条件不满足；请检查所在地点、疲劳、工作间隔或可用资产。',
@@ -69,6 +69,7 @@ export function describeActionReceipt(receipt,dto){
    if(result.asset){delta('工具耐久',result.asset.before.condition,result.asset.after.condition);
     if(result.asset.before.holderId!==result.asset.after.holderId)changes.push(result.asset.after.holderId==='actor-4'?'工具由你持有；所有者仍为猎人。':'工具已交还猎人。');}
   }
+  if(dto.type==='PlayerQuest')changes.push(({accept:'已接取任务',claim:'已领取任务进展与解锁',abandon:'已放弃任务，可重新接取'})[dto.payload.action]);
   if(dto.type==='MarchSet')changes.push('目的地 ('+dto.payload.x+', '+dto.payload.y+')');
   if(result?.after?.resolution)changes.push('战斗结果：'+({win:'胜利',lose:'败北',flee:'逃离',cancel:'已取消','player-died':'玩家死亡'}[result.after.resolution]??'已结束'));
  }

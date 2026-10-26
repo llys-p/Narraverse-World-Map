@@ -1,3 +1,4 @@
+import {campaignInputLimit} from './campaign-limits.mjs';
 /**
  * D3-5A — Encounter Runtime (runtime/core/encounter-runtime.mjs)
  *
@@ -727,10 +728,10 @@ function executeIntentFor(bundle,dto,profile=null) {
     'expectedRevision does not match the current revision', 'REVISION_CONFLICT');
 
   // Step 3 — the input journal budget.
-  requireCondition(model.inputHistory.length < MAX_INPUT_HISTORY,
-    `the input history budget of ${MAX_INPUT_HISTORY} entries is exhausted`, 'LIMIT_EXCEEDED');
+  requireCondition(model.inputHistory.length < campaignInputLimit(world),
+    `the input history budget of ${campaignInputLimit(world)} entries is exhausted`, 'LIMIT_EXCEEDED');
 
-  profile?.requireBudget?.(dto.type,MAX_INPUT_HISTORY-model.inputHistory.length,world);
+  profile?.requireBudget?.(dto.type,campaignInputLimit(world)-model.inputHistory.length,world);
 
   // Step 4 — candidate audit (pure).
   const fromTick = snapshot.tick;
@@ -981,8 +982,8 @@ function validateEncounterWorldStateFor(world, snapshotContext = {}, modelVersio
     }
     if (!Array.isArray(model.inputHistory)) {
       errors.push('encounterModel.inputHistory must be an array');
-    } else if (model.inputHistory.length > MAX_INPUT_HISTORY) {
-      errors.push(`encounterModel.inputHistory must not exceed ${MAX_INPUT_HISTORY} entries`);
+    } else if (model.inputHistory.length > campaignInputLimit(world)) {
+      errors.push(`encounterModel.inputHistory must not exceed ${campaignInputLimit(world)} entries`);
     } else {
       const seen = new Set();
       for (let index = 0; index < model.inputHistory.length; index += 1) {
@@ -1497,7 +1498,7 @@ export function createSceneEncounterRuntimeHooks(baseHooks,scenePolicy){
   describeActions:bundle=>describeActionsFor(bundle,profile()),
   createWorld:(memory,mind,motivation,experience,cognition,id)=>{const world=hooksCreateWorld(memory,mind,motivation,experience,cognition,id,baseHooks,'encounter-runtime-v2');return scenePolicy.extendWorld?.(world)??world;},
   beforeSystems:(snapshot,events,tick,append,commit)=>{scenePolicy.beforeTick?.(snapshot.world,tick,append,events,snapshot.simulationId);return hooksBeforeSystems(snapshot,events,tick,append,commit,baseHooks);},
-  afterSystems:(snapshot,events,tick,append,context)=>{const result=hooksAfterSystems(snapshot,events,tick,append,context,baseHooks);scenePolicy.afterTick?.(snapshot.world);return result;},
+  afterSystems:(snapshot,events,tick,append,context)=>{const result=hooksAfterSystems(snapshot,events,tick,append,context,baseHooks);scenePolicy.afterTick?.(snapshot.world,tick);return result;},
   applyAction:(input,payload,sample=null)=>hooksApplyAction(input,payload,sample,baseHooks),
   settleDay:(world,sample)=>hooksSettleDay(world,sample,baseHooks),
   validateHistory:(snapshot,events)=>hooksValidateHistory(snapshot,events,profile())

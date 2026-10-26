@@ -1,6 +1,6 @@
 // Provider-only explanation of already restricted own state. No world, planner,
 // conversation text, historical inference or executable proposal is accepted.
-import {SURVIVAL_FOOD_NEED_INVENTORY} from '../core/survival-state.mjs';
+import {SURVIVAL_FOOD_NEED_INVENTORY,SURVIVAL_REASON_CODES} from '../core/survival-state.mjs';
 const nat=n=>Number.isSafeInteger(n)&&n>=0;
 const bounded=n=>nat(n)&&n<=1000?n:null;
 const reasonMeaning={
@@ -50,4 +50,15 @@ export function npcLifeFacts(self,activity,tick){
  const planMeaning=p?`保存的${actionName[p.step]}后续步骤${p.status==='blocked'?'已阻塞，原因未提供':'为待办'}；不证明当前正在执行，也不证明失败或已经完成。`:null;
  return {current,currentMeaning,preparation,lastExecution,planMeaning,decisionBasis,
   authority:'当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。'};
+}
+
+export function sanitizeLifeHistory(value,tick){
+ if(!Array.isArray(value)||value.length>16)return [];
+ let previous=0;const out=[];
+ for(const r of value){
+  if(!r||!nat(r.tick)||r.tick===0||r.tick%144||r.tick>tick||r.tick<=previous||!Object.hasOwn(actionName,r.action)||!['succeeded','rejected','no-action'].includes(r.status)||!Number.isSafeInteger(r.walletChange)||!Number.isSafeInteger(r.foodChange)||!SURVIVAL_REASON_CODES.includes(r.reasonCode))return [];
+  if((r.action==='NoAction')!==(r.status==='no-action')||r.status!=='succeeded'&&(r.walletChange!==0||r.foodChange!==0))return [];
+  previous=r.tick;out.push({tick:r.tick,action:r.action,status:r.status,walletChange:r.walletChange,foodChange:r.foodChange,reasonCode:r.reasonCode});
+ }
+ return out.slice(-8);
 }

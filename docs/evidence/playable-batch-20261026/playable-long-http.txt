@@ -1,0 +1,17 @@
+TAP version 13
+# {"measurement":"cached-HTTP-read-during-worker","samples":30,"maxMs":6.876134999999977,"medianMs":2.101839000000041}
+# Subtest: seven-day worker simulation keeps HTTP reads responsive and restores all quest, life and budget state
+ok 1 - seven-day worker simulation keeps HTTP reads responsive and restores all quest, life and budget state
+  ---
+  duration_ms: 149896.925555
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 150056.005658

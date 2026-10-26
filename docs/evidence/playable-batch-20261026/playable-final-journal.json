@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-playable-journal.mjs",
+    "artifacts/playable-batch/service-commit-before-journal.mjs",
+    "artifacts/playable-batch/final-journal.json"
+  ],
+  "pid": 402,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 179141.224,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

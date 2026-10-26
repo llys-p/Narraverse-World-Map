@@ -50,10 +50,10 @@ const campaignExecution = Symbol('registered campaign execution');
 // cannot add an independent check; full history/fact/receipt audit remains with
 // validateBundle. The public custom-system path keeps its canonical comparison.
 export function performCampaignTick(bundle) {
-  const input = cloneBundle(bundle);
-  record(input.snapshot);
-  requireCondition(input.snapshot.rulesVersion === CAMPAIGN_RULES, 'Campaign tick requires campaign rules', 'UNSUPPORTED_VERSION');
-  return runTick(input, canonicalSystems(CAMPAIGN_RULES), 'session', campaignExecution);
+  // runTick validates the descriptor tree and detaches the candidate itself.
+  // A second clone of the entire historic event log adds no independent audit.
+  // Check the campaign rules on that detached snapshot, not on a mutable caller view.
+  return runTick(bundle, canonicalSystems(CAMPAIGN_RULES), 'session', campaignExecution);
 }
 
 export function performTick(bundle, systems, mode) {
@@ -71,6 +71,7 @@ function runTick(bundle, systems, mode, execution = undefined) {
       { snapshot: cloneData(bundle.snapshot), eventLog: bundle.eventLog.slice() };
     const s = candidate.snapshot;
     const rulesVersion = s.rulesVersion;
+    if(execution===campaignExecution)requireCondition(rulesVersion===CAMPAIGN_RULES,'Campaign tick requires campaign rules','UNSUPPORTED_VERSION');
     const clock = restoreClock({ tick: s.tick, tickMinutes: s.tickMinutes });
     clock.advanceTicks(1); failedTick = clock.tick;
     requireCondition(s.revision < Number.MAX_SAFE_INTEGER, 'Revision overflow', 'LIMIT_EXCEEDED');

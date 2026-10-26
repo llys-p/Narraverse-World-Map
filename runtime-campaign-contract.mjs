@@ -1,4 +1,5 @@
 // Strict DTO5 receipt consumption. Presentation never derives a combat outcome.
+import {PLAY_QUEST_COMMAND,validQuestPayload,validQuestResult} from './runtime-playable-contract.mjs';
 import {SOCIAL_REASONS,validSocialPayload,validSocialResult} from './runtime-social-contract.mjs';
 import {NEGOTIATION_COMMANDS,validNegotiationPayload,validNegotiationResult} from './runtime-negotiation-contract.mjs';
 const safeInteger=n=>Number.isSafeInteger(n)&&n>=0;
@@ -75,6 +76,7 @@ export function validateCampaignReceipt(r,dto,fromTick){
    ![r.fromRevision,r.toRevision,r.fromTick,r.tick,r.durationTicks].every(safeInteger)||r.fromTick>r.fromRevision||r.tick!==r.fromTick+r.durationTicks||r.toRevision!==r.fromRevision+Math.max(1,r.durationTicks)||!['succeeded','rejected'].includes(r.outcome))return false;
  const duration=dto.type==='MarchStep'?null:dto.type==='AdvanceTime'?dto.payload.ticks:dto.type==='PlayerWork'?36:['PlayerRest','EncounterAction'].includes(dto.type)?6:['PlayerBuy','PlayerSell','PlayerInteract','PlayerNegotiate','PlayerAgreement'].includes(dto.type)?1:0;
  if(duration!==null&&!(r.durationTicks===duration||r.outcome==='rejected'&&r.durationTicks===0))return false;
+ if(r.type===PLAY_QUEST_COMMAND)return validQuestPayload(dto.payload)&&(r.outcome==='succeeded'?validQuestResult(r.result,dto.payload):exact(r.result,['code'])&&['RULE_REJECTED','PLAYER_DEAD','ENCOUNTER_BUSY'].includes(r.result.code));
  if(r.type==='PlayerInteract')return validSocialPayload(dto.payload)&&(r.outcome==='succeeded'?validSocialResult(r.result,dto.payload):exact(r.result,['code'])&&SOCIAL_REASONS.includes(r.result.code));
  if(NEGOTIATION_COMMANDS.includes(r.type))return validNegotiationPayload(dto.type,dto.payload)&&(r.outcome==='succeeded'?validNegotiationResult(r.result,dto,r.tick):exact(r.result,['code'])&&SOCIAL_REASONS.includes(r.result.code));
  if(r.type.startsWith('March')){

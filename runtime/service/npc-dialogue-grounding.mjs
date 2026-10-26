@@ -5,7 +5,7 @@ import {NPC_MEMORY_VERSION,retrieveNpcEpisodes,npcMemoryUpdates} from '../core/n
 import {knownNegotiationOptions,repairLoanTerms} from '../core/npc-negotiation-terms.mjs';
 import {npcRecallFocus} from './npc-recall-focus.mjs';
 import {sanitizeNpcLifeContext} from '../core/npc-life-context.mjs';
-import {npcLifeFacts} from './npc-life-facts.mjs';
+import {npcLifeFacts,sanitizeLifeHistory} from './npc-life-facts.mjs';
 
 const pick=(value,names)=>Object.fromEntries(names.filter(k=>value&&Object.hasOwn(value,k)).map(k=>[k,cloneData(value[k])]));
 const nat=n=>Number.isSafeInteger(n)&&n>=0;
@@ -68,6 +68,7 @@ export function groundedProviderContext(context,text){
  if(memoryMode){
   if(nat(context.self?.hunger)&&context.self.hunger<=1000)out.self.hunger=context.self.hunger;
   if(Object.hasOwn(context,'activity'))out.activity=sanitizeNpcLifeContext(context.activity,context.tick);
+  if(context.lifeHistoryVersion==='play-life-v1'){out.lifeHistoryVersion='play-life-v1';out.lifeHistory=sanitizeLifeHistory(context.lifeHistory,context.tick);}
  }
  const recall=memoryMode?npcRecallFocus(text,context.conversation):null;
  const recent=context.observations.slice(-6),important=context.observations.slice().sort((a,b)=>(b.importance??0)-(a.importance??0)||b.eventSeq-a.eventSeq).slice(0,6);
@@ -91,7 +92,7 @@ export function groundedProviderContext(context,text){
   out.memoryMode=NPC_MEMORY_VERSION;out.memoryCoverage=pick(coverage,['forgottenEpisodes','forgottenSpeech']);
   out.recallFocus=recall.focus;
   out.memoryUpdates=npcMemoryUpdates(out.observations,out.self);
-  if(out.activity)out.knownFacts.life=npcLifeFacts(out.self,out.activity,out.tick);
+  if(out.activity){out.knownFacts.life=npcLifeFacts(out.self,out.activity,out.tick);if(out.lifeHistoryVersion)out.knownFacts.life.recentHistory=out.lifeHistory;}
  }
  return out;
 }

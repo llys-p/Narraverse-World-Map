@@ -1,0 +1,1952 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>NPC 对话评测记录</title><style>body{font:16px/1.65 system-ui,sans-serif;color:#e9edf3;background:#131923;max-width:1000px;margin:auto;padding:32px}h1,h2{line-height:1.25}section,article{border:1px solid #3b485c;border-radius:8px;padding:20px;margin:20px 0}article{background:#1b2534}blockquote{border-left:3px solid #85aaf4;padding:8px 16px;white-space:pre-wrap}pre{overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:13px}summary{cursor:pointer;color:#a8c8ff}.notice{padding:16px;border-left:4px solid #e1b862;background:#302a1d}.muted{color:#b0bdce}.warning{color:#ffc0b6}li{margin:8px 0}</style><h1>单猎人连续对话评测</h1><p class="notice">离线计划；未调用模型，未检查模型语言质量。<br>原语义结论：not-evaluated；报告完成：是。<br>有限事实核查只识别部分当前存粮/钱包表述；未发现矛盾不代表事实正确，不检查所有原因或经历，不能替代人工复核。</p><p class="muted">场景集：npc-playable-v1 · 世界fixture：6 · 模式：plan · 请求上限：0。缺失 usage 不按零消耗计算；本报告不估算费用。</p><pre>{
+  &quot;planned&quot;: 8,
+  &quot;attempted&quot;: 0,
+  &quot;automaticPassed&quot;: 0,
+  &quot;automaticFailed&quot;: 0,
+  &quot;providerFailed&quot;: 0,
+  &quot;fixtureFailed&quot;: 0,
+  &quot;blocked&quot;: 0,
+  &quot;notRun&quot;: 8
+}</pre><h2>有限事实核查覆盖</h2><pre>{
+  &quot;scope&quot;: &quot;explicit-current-food-wallet&quot;,
+  &quot;turnsWithReplies&quot;: 0,
+  &quot;contradictionTurns&quot;: 0,
+  &quot;checkedNoContradictionTurns&quot;: 0,
+  &quot;unassessedTurns&quot;: 0,
+  &quot;notEvaluatedTurns&quot;: 8
+}</pre><section><h2>多日生活记忆、赠粮与复工</h2><p>世界重放审计：passed</p><details><summary>测试脚本实际选择的前置动作</summary><pre>[]</pre></details><article><h3>before-wage · 未调用模型</h3><p>玩家</p><blockquote>你已经拿到工钱了，对吗？</blockquote><p>猎人</p><blockquote>尚无模型回复</blockquote><p>建议尚未自动执行：未运行</p><p class="muted">有限事实核查：尚未核查</p><details><summary>当前存粮/钱包断言与实际数值</summary><pre>null</pre></details><details><summary>确定性检查、记忆来源与耗时</summary><pre>{
+  &quot;preconditions&quot;: [
+    {
+      &quot;name&quot;: &quot;selfFood&quot;,
+      &quot;expected&quot;: 0,
+      &quot;actual&quot;: 0,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;selfWallet&quot;,
+      &quot;expected&quot;: 0,
+      &quot;actual&quot;: 0,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResult&quot;,
+      &quot;expected&quot;: null,
+      &quot;actual&quot;: null,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResultStatus&quot;,
+      &quot;expected&quot;: null,
+      &quot;actual&quot;: null,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeDecisionReason&quot;,
+      &quot;expected&quot;: null,
+      &quot;actual&quot;: null,
+      &quot;passed&quot;: true
+    }
+  ],
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details><details><summary>该轮准备的猎人视角与脚本动作</summary><pre>{
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;npc5-world-0124d693c695&quot;,
+    &quot;revision&quot;: 112,
+    &quot;tick&quot;: 112,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 0,
+      &quot;food&quot;: 0,
+      &quot;wallet&quot;: 0,
+      &quot;trust&quot;: 50,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 0,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 60,
+      &quot;hunger&quot;: 200
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;destination&quot;: &quot;work-site&quot;,
+        &quot;decidedTick&quot;: 112,
+        &quot;phase&quot;: &quot;travelling&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: null,
+      &quot;lastResult&quot;: null
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [],
+    &quot;observations&quot;: [],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 60
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 112,
+          &quot;food&quot;: 0,
+          &quot;wallet&quot;: 0,
+          &quot;hunger&quot;: 200,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食0份；当前钱包0；当前饥饿200；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;preparing&quot;,
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;meaning&quot;: &quot;当前准备工作领薪，正在前往目的地；准备和抵达都不是实际完成。&quot;
+        },
+        &quot;lastExecution&quot;: null,
+        &quot;planMeaning&quot;: null,
+        &quot;decisionBasis&quot;: null,
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: []
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;none&quot;,
+      &quot;topics&quot;: [],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: []
+  },
+  &quot;scriptedReceipts&quot;: [
+    {
+      &quot;type&quot;: &quot;AdvanceTime&quot;,
+      &quot;payload&quot;: {
+        &quot;ticks&quot;: 112
+      },
+      &quot;tick&quot;: 112,
+      &quot;revision&quot;: 112,
+      &quot;result&quot;: null
+    }
+  ]
+}</pre></details><p><strong>原人工复核记录</strong></p><pre>{
+  &quot;verdict&quot;: &quot;pending&quot;
+}</pre><ul><li>核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。</li></ul></article><article><h3>paid · 未调用模型</h3><p>玩家</p><blockquote>现在钱粮各有多少？刚才做了什么？</blockquote><p>猎人</p><blockquote>尚无模型回复</blockquote><p>建议尚未自动执行：未运行</p><p class="muted">有限事实核查：尚未核查</p><details><summary>当前存粮/钱包断言与实际数值</summary><pre>null</pre></details><details><summary>确定性检查、记忆来源与耗时</summary><pre>{
+  &quot;preconditions&quot;: [
+    {
+      &quot;name&quot;: &quot;selfFood&quot;,
+      &quot;expected&quot;: 0,
+      &quot;actual&quot;: 0,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;selfWallet&quot;,
+      &quot;expected&quot;: 20,
+      &quot;actual&quot;: 20,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResult&quot;,
+      &quot;expected&quot;: &quot;WorkForPay&quot;,
+      &quot;actual&quot;: &quot;WorkForPay&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResultStatus&quot;,
+      &quot;expected&quot;: &quot;succeeded&quot;,
+      &quot;actual&quot;: &quot;succeeded&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeDecisionReason&quot;,
+      &quot;expected&quot;: &quot;FOOD_INCOME&quot;,
+      &quot;actual&quot;: &quot;FOOD_INCOME&quot;,
+      &quot;passed&quot;: true
+    }
+  ],
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details><details><summary>该轮准备的猎人视角与脚本动作</summary><pre>{
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;npc5-world-0124d693c695&quot;,
+    &quot;revision&quot;: 144,
+    &quot;tick&quot;: 144,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 150,
+      &quot;food&quot;: 0,
+      &quot;wallet&quot;: 20,
+      &quot;trust&quot;: 50,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 0,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 60,
+      &quot;hunger&quot;: 300
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;destination&quot;: &quot;work-site&quot;,
+        &quot;decidedTick&quot;: 112,
+        &quot;phase&quot;: &quot;awaiting-review&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: {
+        &quot;kind&quot;: &quot;secure-food&quot;,
+        &quot;step&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;ready&quot;
+      },
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;tick&quot;: 144,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;tick&quot;: 144,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    ],
+    &quot;observations&quot;: [],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 60
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 144,
+          &quot;food&quot;: 0,
+          &quot;wallet&quot;: 20,
+          &quot;hunger&quot;: 300,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食0份；当前钱包20；当前饥饿300；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;awaiting-review&quot;,
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;meaning&quot;: &quot;旧行进意图等待更新，不能说仍在照此准备或已经再次执行。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;status&quot;: &quot;succeeded&quot;,
+          &quot;tick&quot;: 144,
+          &quot;walletChange&quot;: 20,
+          &quot;foodChange&quot;: 0,
+          &quot;meaning&quot;: &quot;最近工作领薪成功；钱包变化20、粮食变化0仅是当次增减，不是当前库存或余额；现在剩多少只用current。&quot;
+        },
+        &quot;planMeaning&quot;: &quot;保存的买粮后续步骤为待办；不证明当前正在执行，也不证明失败或已经完成。&quot;,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;tick&quot;: 144,
+          &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;,
+          &quot;meaning&quot;: &quot;该次选择工作，是为了获得买粮所需收入。&quot;,
+          &quot;relationToPreparation&quot;: &quot;same-record&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: 20,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;current-utterance&quot;,
+      &quot;topics&quot;: [
+        &quot;food&quot;
+      ],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: []
+  },
+  &quot;scriptedReceipts&quot;: [
+    {
+      &quot;type&quot;: &quot;AdvanceTime&quot;,
+      &quot;payload&quot;: {
+        &quot;ticks&quot;: 32
+      },
+      &quot;tick&quot;: 144,
+      &quot;revision&quot;: 144,
+      &quot;result&quot;: null
+    }
+  ]
+}</pre></details><p><strong>原人工复核记录</strong></p><pre>{
+  &quot;verdict&quot;: &quot;pending&quot;
+}</pre><ul><li>核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。</li></ul></article><article><h3>at-stall · 未调用模型</h3><p>玩家</p><blockquote>到了粮摊就算已经买到了吗？</blockquote><p>猎人</p><blockquote>尚无模型回复</blockquote><p>建议尚未自动执行：未运行</p><p class="muted">有限事实核查：尚未核查</p><details><summary>当前存粮/钱包断言与实际数值</summary><pre>null</pre></details><details><summary>确定性检查、记忆来源与耗时</summary><pre>{
+  &quot;preconditions&quot;: [
+    {
+      &quot;name&quot;: &quot;selfFood&quot;,
+      &quot;expected&quot;: 0,
+      &quot;actual&quot;: 0,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;selfWallet&quot;,
+      &quot;expected&quot;: 20,
+      &quot;actual&quot;: 20,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResult&quot;,
+      &quot;expected&quot;: &quot;WorkForPay&quot;,
+      &quot;actual&quot;: &quot;WorkForPay&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResultStatus&quot;,
+      &quot;expected&quot;: &quot;succeeded&quot;,
+      &quot;actual&quot;: &quot;succeeded&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeDecisionReason&quot;,
+      &quot;expected&quot;: &quot;FOOD_INCOME&quot;,
+      &quot;actual&quot;: &quot;FOOD_INCOME&quot;,
+      &quot;passed&quot;: true
+    }
+  ],
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details><details><summary>该轮准备的猎人视角与脚本动作</summary><pre>{
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;npc5-world-0124d693c695&quot;,
+    &quot;revision&quot;: 160,
+    &quot;tick&quot;: 160,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 150,
+      &quot;food&quot;: 0,
+      &quot;wallet&quot;: 20,
+      &quot;trust&quot;: 50,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 0,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 60,
+      &quot;hunger&quot;: 300
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;destination&quot;: &quot;food-stall&quot;,
+        &quot;decidedTick&quot;: 148,
+        &quot;phase&quot;: &quot;at-destination&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: {
+        &quot;kind&quot;: &quot;secure-food&quot;,
+        &quot;step&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;ready&quot;
+      },
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;tick&quot;: 144,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;tick&quot;: 144,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    ],
+    &quot;observations&quot;: [],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 60
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 160,
+          &quot;food&quot;: 0,
+          &quot;wallet&quot;: 20,
+          &quot;hunger&quot;: 300,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食0份；当前钱包20；当前饥饿300；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;preparing&quot;,
+          &quot;action&quot;: &quot;BuyFood&quot;,
+          &quot;meaning&quot;: &quot;当前准备买粮，已抵达目的地；准备和抵达都不是实际完成。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;status&quot;: &quot;succeeded&quot;,
+          &quot;tick&quot;: 144,
+          &quot;walletChange&quot;: 20,
+          &quot;foodChange&quot;: 0,
+          &quot;meaning&quot;: &quot;最近工作领薪成功；钱包变化20、粮食变化0仅是当次增减，不是当前库存或余额；现在剩多少只用current。&quot;
+        },
+        &quot;planMeaning&quot;: &quot;保存的买粮后续步骤为待办；不证明当前正在执行，也不证明失败或已经完成。&quot;,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;tick&quot;: 144,
+          &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;,
+          &quot;meaning&quot;: &quot;该次选择工作，是为了获得买粮所需收入。&quot;,
+          &quot;relationToPreparation&quot;: &quot;historical&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: 20,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;current-utterance&quot;,
+      &quot;topics&quot;: [
+        &quot;food&quot;
+      ],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: []
+  },
+  &quot;scriptedReceipts&quot;: [
+    {
+      &quot;type&quot;: &quot;AdvanceTime&quot;,
+      &quot;payload&quot;: {
+        &quot;ticks&quot;: 16
+      },
+      &quot;tick&quot;: 160,
+      &quot;revision&quot;: 160,
+      &quot;result&quot;: null
+    }
+  ]
+}</pre></details><p><strong>原人工复核记录</strong></p><pre>{
+  &quot;verdict&quot;: &quot;pending&quot;
+}</pre><ul><li>核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。</li></ul></article><article><h3>after-buy · 未调用模型</h3><p>玩家</p><blockquote>你买过一份，所以现在还剩一份，对吗？</blockquote><p>猎人</p><blockquote>尚无模型回复</blockquote><p>建议尚未自动执行：未运行</p><p class="muted">有限事实核查：尚未核查</p><details><summary>当前存粮/钱包断言与实际数值</summary><pre>null</pre></details><details><summary>确定性检查、记忆来源与耗时</summary><pre>{
+  &quot;preconditions&quot;: [
+    {
+      &quot;name&quot;: &quot;selfFood&quot;,
+      &quot;expected&quot;: 0,
+      &quot;actual&quot;: 0,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;selfWallet&quot;,
+      &quot;expected&quot;: 10,
+      &quot;actual&quot;: 10,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResult&quot;,
+      &quot;expected&quot;: &quot;BuyFood&quot;,
+      &quot;actual&quot;: &quot;BuyFood&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResultStatus&quot;,
+      &quot;expected&quot;: &quot;succeeded&quot;,
+      &quot;actual&quot;: &quot;succeeded&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeDecisionReason&quot;,
+      &quot;expected&quot;: &quot;BUY_FOOD&quot;,
+      &quot;actual&quot;: &quot;BUY_FOOD&quot;,
+      &quot;passed&quot;: true
+    }
+  ],
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details><details><summary>该轮准备的猎人视角与脚本动作</summary><pre>{
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;npc5-world-0124d693c695&quot;,
+    &quot;revision&quot;: 288,
+    &quot;tick&quot;: 288,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 150,
+      &quot;food&quot;: 0,
+      &quot;wallet&quot;: 10,
+      &quot;trust&quot;: 50,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 0,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 60,
+      &quot;hunger&quot;: 200
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;destination&quot;: &quot;food-stall&quot;,
+        &quot;decidedTick&quot;: 148,
+        &quot;phase&quot;: &quot;awaiting-review&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: null,
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;tick&quot;: 288,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;tick&quot;: 288,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      },
+      {
+        &quot;tick&quot;: 288,
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      }
+    ],
+    &quot;observations&quot;: [],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 60
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 288,
+          &quot;food&quot;: 0,
+          &quot;wallet&quot;: 10,
+          &quot;hunger&quot;: 200,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食0份；当前钱包10；当前饥饿200；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;awaiting-review&quot;,
+          &quot;action&quot;: &quot;BuyFood&quot;,
+          &quot;meaning&quot;: &quot;旧行进意图等待更新，不能说仍在照此准备或已经再次执行。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;BuyFood&quot;,
+          &quot;status&quot;: &quot;succeeded&quot;,
+          &quot;tick&quot;: 288,
+          &quot;walletChange&quot;: -10,
+          &quot;foodChange&quot;: 1,
+          &quot;meaning&quot;: &quot;最近买粮成功；钱包变化-10、粮食变化1仅是当次增减，不是当前库存或余额；现在剩多少只用current。&quot;
+        },
+        &quot;planMeaning&quot;: null,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;BuyFood&quot;,
+          &quot;tick&quot;: 288,
+          &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;,
+          &quot;meaning&quot;: &quot;该次选择买粮，以补充存粮。&quot;,
+          &quot;relationToPreparation&quot;: &quot;same-record&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: 20,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          },
+          {
+            &quot;tick&quot;: 288,
+            &quot;action&quot;: &quot;BuyFood&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: -10,
+            &quot;foodChange&quot;: 1,
+            &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;none&quot;,
+      &quot;topics&quot;: [],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: []
+  },
+  &quot;scriptedReceipts&quot;: [
+    {
+      &quot;type&quot;: &quot;AdvanceTime&quot;,
+      &quot;payload&quot;: {
+        &quot;ticks&quot;: 128
+      },
+      &quot;tick&quot;: 288,
+      &quot;revision&quot;: 288,
+      &quot;result&quot;: null
+    }
+  ]
+}</pre></details><p><strong>原人工复核记录</strong></p><pre>{
+  &quot;verdict&quot;: &quot;pending&quot;
+}</pre><ul><li>核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。</li></ul></article><article><h3>gifts · 未调用模型</h3><p>玩家</p><blockquote>我又给了你两份粮，现在还准备买粮吗？</blockquote><p>猎人</p><blockquote>尚无模型回复</blockquote><p>建议尚未自动执行：未运行</p><p class="muted">有限事实核查：尚未核查</p><details><summary>当前存粮/钱包断言与实际数值</summary><pre>null</pre></details><details><summary>确定性检查、记忆来源与耗时</summary><pre>{
+  &quot;preconditions&quot;: [
+    {
+      &quot;name&quot;: &quot;selfFood&quot;,
+      &quot;expected&quot;: 2,
+      &quot;actual&quot;: 2,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;selfWallet&quot;,
+      &quot;expected&quot;: 10,
+      &quot;actual&quot;: 10,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResult&quot;,
+      &quot;expected&quot;: &quot;BuyFood&quot;,
+      &quot;actual&quot;: &quot;BuyFood&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResultStatus&quot;,
+      &quot;expected&quot;: &quot;succeeded&quot;,
+      &quot;actual&quot;: &quot;succeeded&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeDecisionReason&quot;,
+      &quot;expected&quot;: &quot;BUY_FOOD&quot;,
+      &quot;actual&quot;: &quot;BUY_FOOD&quot;,
+      &quot;passed&quot;: true
+    }
+  ],
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details><details><summary>该轮准备的猎人视角与脚本动作</summary><pre>{
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;npc5-world-0124d693c695&quot;,
+    &quot;revision&quot;: 322,
+    &quot;tick&quot;: 320,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 150,
+      &quot;food&quot;: 2,
+      &quot;wallet&quot;: 10,
+      &quot;trust&quot;: 60,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 0,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 60,
+      &quot;hunger&quot;: 200
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;NoAction&quot;,
+        &quot;destination&quot;: &quot;rest-site&quot;,
+        &quot;decidedTick&quot;: 292,
+        &quot;phase&quot;: &quot;at-destination&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: null,
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;tick&quot;: 288,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;tick&quot;: 288,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      },
+      {
+        &quot;tick&quot;: 288,
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      }
+    ],
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 44,
+        &quot;tick&quot;: 288,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 60,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 320
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 46,
+        &quot;tick&quot;: 288,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 60,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 320
+        }
+      }
+    ],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 60
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 320,
+          &quot;food&quot;: 2,
+          &quot;wallet&quot;: 10,
+          &quot;hunger&quot;: 200,
+          &quot;foodNeed&quot;: &quot;buffered&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食2份；当前钱包10；当前饥饿200；当前存粮高于补粮需求阈值，暂有余粮&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;paused&quot;,
+          &quot;action&quot;: &quot;NoAction&quot;,
+          &quot;meaning&quot;: &quot;当前没有准备新的工作或购买；前往或抵达歇脚处也不证明做过新的购买。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;BuyFood&quot;,
+          &quot;status&quot;: &quot;succeeded&quot;,
+          &quot;tick&quot;: 288,
+          &quot;walletChange&quot;: -10,
+          &quot;foodChange&quot;: 1,
+          &quot;meaning&quot;: &quot;最近买粮成功；钱包变化-10、粮食变化1仅是当次增减，不是当前库存或余额；现在剩多少只用current。&quot;
+        },
+        &quot;planMeaning&quot;: null,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;BuyFood&quot;,
+          &quot;tick&quot;: 288,
+          &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;,
+          &quot;meaning&quot;: &quot;该次选择买粮，以补充存粮。&quot;,
+          &quot;relationToPreparation&quot;: &quot;historical&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: 20,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          },
+          {
+            &quot;tick&quot;: 288,
+            &quot;action&quot;: &quot;BuyFood&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: -10,
+            &quot;foodChange&quot;: 1,
+            &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;current-utterance&quot;,
+      &quot;topics&quot;: [
+        &quot;food&quot;
+      ],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: []
+  },
+  &quot;scriptedReceipts&quot;: [
+    {
+      &quot;type&quot;: &quot;PlayerGiftFood&quot;,
+      &quot;payload&quot;: {
+        &quot;recipientId&quot;: &quot;actor-2&quot;
+      },
+      &quot;tick&quot;: 288,
+      &quot;revision&quot;: 289,
+      &quot;result&quot;: {
+        &quot;donorId&quot;: &quot;actor-4&quot;,
+        &quot;product&quot;: &quot;food&quot;,
+        &quot;quantity&quot;: 1,
+        &quot;reasonCode&quot;: null,
+        &quot;recipientId&quot;: &quot;actor-2&quot;,
+        &quot;sourceEventSeq&quot;: 44
+      }
+    },
+    {
+      &quot;type&quot;: &quot;PlayerGiftFood&quot;,
+      &quot;payload&quot;: {
+        &quot;recipientId&quot;: &quot;actor-2&quot;
+      },
+      &quot;tick&quot;: 288,
+      &quot;revision&quot;: 290,
+      &quot;result&quot;: {
+        &quot;donorId&quot;: &quot;actor-4&quot;,
+        &quot;product&quot;: &quot;food&quot;,
+        &quot;quantity&quot;: 1,
+        &quot;reasonCode&quot;: null,
+        &quot;recipientId&quot;: &quot;actor-2&quot;,
+        &quot;sourceEventSeq&quot;: 46
+      }
+    },
+    {
+      &quot;type&quot;: &quot;AdvanceTime&quot;,
+      &quot;payload&quot;: {
+        &quot;ticks&quot;: 32
+      },
+      &quot;tick&quot;: 320,
+      &quot;revision&quot;: 322,
+      &quot;result&quot;: null
+    }
+  ]
+}</pre></details><p><strong>原人工复核记录</strong></p><pre>{
+  &quot;verdict&quot;: &quot;pending&quot;
+}</pre><ul><li>核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。</li></ul></article><article><h3>wait · 未调用模型</h3><p>玩家</p><blockquote>那后来呢？你是不是又去买过了？</blockquote><p>猎人</p><blockquote>尚无模型回复</blockquote><p>建议尚未自动执行：未运行</p><p class="muted">有限事实核查：尚未核查</p><details><summary>当前存粮/钱包断言与实际数值</summary><pre>null</pre></details><details><summary>确定性检查、记忆来源与耗时</summary><pre>{
+  &quot;preconditions&quot;: [
+    {
+      &quot;name&quot;: &quot;selfFood&quot;,
+      &quot;expected&quot;: 1,
+      &quot;actual&quot;: 1,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;selfWallet&quot;,
+      &quot;expected&quot;: 10,
+      &quot;actual&quot;: 10,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResult&quot;,
+      &quot;expected&quot;: &quot;NoAction&quot;,
+      &quot;actual&quot;: &quot;NoAction&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResultStatus&quot;,
+      &quot;expected&quot;: &quot;no-action&quot;,
+      &quot;actual&quot;: &quot;no-action&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeDecisionReason&quot;,
+      &quot;expected&quot;: &quot;WAIT&quot;,
+      &quot;actual&quot;: &quot;WAIT&quot;,
+      &quot;passed&quot;: true
+    }
+  ],
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details><details><summary>该轮准备的猎人视角与脚本动作</summary><pre>{
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;npc5-world-0124d693c695&quot;,
+    &quot;revision&quot;: 434,
+    &quot;tick&quot;: 432,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 150,
+      &quot;food&quot;: 1,
+      &quot;wallet&quot;: 10,
+      &quot;trust&quot;: 60,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 0,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 60,
+      &quot;hunger&quot;: 100
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;NoAction&quot;,
+        &quot;destination&quot;: &quot;rest-site&quot;,
+        &quot;decidedTick&quot;: 292,
+        &quot;phase&quot;: &quot;awaiting-review&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: null,
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;NoAction&quot;,
+        &quot;status&quot;: &quot;no-action&quot;,
+        &quot;tick&quot;: 432,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;NoAction&quot;,
+        &quot;tick&quot;: 432,
+        &quot;reasonCode&quot;: &quot;WAIT&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      },
+      {
+        &quot;tick&quot;: 288,
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      },
+      {
+        &quot;tick&quot;: 432,
+        &quot;action&quot;: &quot;NoAction&quot;,
+        &quot;status&quot;: &quot;no-action&quot;,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;WAIT&quot;
+      }
+    ],
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 44,
+        &quot;tick&quot;: 288,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 60,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1440
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 46,
+        &quot;tick&quot;: 288,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 60,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1440
+        }
+      }
+    ],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 60
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 432,
+          &quot;food&quot;: 1,
+          &quot;wallet&quot;: 10,
+          &quot;hunger&quot;: 100,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食1份；当前钱包10；当前饥饿100；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;awaiting-review&quot;,
+          &quot;action&quot;: &quot;NoAction&quot;,
+          &quot;meaning&quot;: &quot;旧行进意图等待更新，不能说仍在照此准备或已经再次执行。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;NoAction&quot;,
+          &quot;status&quot;: &quot;no-action&quot;,
+          &quot;tick&quot;: 432,
+          &quot;walletChange&quot;: 0,
+          &quot;foodChange&quot;: 0,
+          &quot;meaning&quot;: &quot;最近结算没有行动，不是购买失败，也不是又去粮摊尝试。&quot;
+        },
+        &quot;planMeaning&quot;: null,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;NoAction&quot;,
+          &quot;tick&quot;: 432,
+          &quot;reasonCode&quot;: &quot;WAIT&quot;,
+          &quot;meaning&quot;: &quot;该次决策记录为等待，没有更具体的停购原因。&quot;,
+          &quot;relationToPreparation&quot;: &quot;same-record&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: 20,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          },
+          {
+            &quot;tick&quot;: 288,
+            &quot;action&quot;: &quot;BuyFood&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: -10,
+            &quot;foodChange&quot;: 1,
+            &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+          },
+          {
+            &quot;tick&quot;: 432,
+            &quot;action&quot;: &quot;NoAction&quot;,
+            &quot;status&quot;: &quot;no-action&quot;,
+            &quot;walletChange&quot;: 0,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;WAIT&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;none&quot;,
+      &quot;topics&quot;: [],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: []
+  },
+  &quot;scriptedReceipts&quot;: [
+    {
+      &quot;type&quot;: &quot;AdvanceTime&quot;,
+      &quot;payload&quot;: {
+        &quot;ticks&quot;: 112
+      },
+      &quot;tick&quot;: 432,
+      &quot;revision&quot;: 434,
+      &quot;result&quot;: null
+    }
+  ]
+}</pre></details><p><strong>原人工复核记录</strong></p><pre>{
+  &quot;verdict&quot;: &quot;pending&quot;
+}</pre><ul><li>核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。</li></ul></article><article><h3>later-buy · 未调用模型</h3><p>玩家</p><blockquote>再后来，粮和钱分别剩多少？</blockquote><p>猎人</p><blockquote>尚无模型回复</blockquote><p>建议尚未自动执行：未运行</p><p class="muted">有限事实核查：尚未核查</p><details><summary>当前存粮/钱包断言与实际数值</summary><pre>null</pre></details><details><summary>确定性检查、记忆来源与耗时</summary><pre>{
+  &quot;preconditions&quot;: [
+    {
+      &quot;name&quot;: &quot;selfFood&quot;,
+      &quot;expected&quot;: 1,
+      &quot;actual&quot;: 1,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;selfWallet&quot;,
+      &quot;expected&quot;: 0,
+      &quot;actual&quot;: 0,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResult&quot;,
+      &quot;expected&quot;: &quot;BuyFood&quot;,
+      &quot;actual&quot;: &quot;BuyFood&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResultStatus&quot;,
+      &quot;expected&quot;: &quot;succeeded&quot;,
+      &quot;actual&quot;: &quot;succeeded&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeDecisionReason&quot;,
+      &quot;expected&quot;: &quot;BUY_FOOD&quot;,
+      &quot;actual&quot;: &quot;BUY_FOOD&quot;,
+      &quot;passed&quot;: true
+    }
+  ],
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details><details><summary>该轮准备的猎人视角与脚本动作</summary><pre>{
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;npc5-world-0124d693c695&quot;,
+    &quot;revision&quot;: 578,
+    &quot;tick&quot;: 576,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 150,
+      &quot;food&quot;: 1,
+      &quot;wallet&quot;: 0,
+      &quot;trust&quot;: 60,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 0,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 60,
+      &quot;hunger&quot;: 0
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;destination&quot;: &quot;food-stall&quot;,
+        &quot;decidedTick&quot;: 436,
+        &quot;phase&quot;: &quot;awaiting-review&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: null,
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;tick&quot;: 576,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;tick&quot;: 576,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      },
+      {
+        &quot;tick&quot;: 288,
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      },
+      {
+        &quot;tick&quot;: 432,
+        &quot;action&quot;: &quot;NoAction&quot;,
+        &quot;status&quot;: &quot;no-action&quot;,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;WAIT&quot;
+      },
+      {
+        &quot;tick&quot;: 576,
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      }
+    ],
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 44,
+        &quot;tick&quot;: 288,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 60,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 2880
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 46,
+        &quot;tick&quot;: 288,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 60,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 2880
+        }
+      }
+    ],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 60
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 576,
+          &quot;food&quot;: 1,
+          &quot;wallet&quot;: 0,
+          &quot;hunger&quot;: 0,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食1份；当前钱包0；当前饥饿0；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;awaiting-review&quot;,
+          &quot;action&quot;: &quot;BuyFood&quot;,
+          &quot;meaning&quot;: &quot;旧行进意图等待更新，不能说仍在照此准备或已经再次执行。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;BuyFood&quot;,
+          &quot;status&quot;: &quot;succeeded&quot;,
+          &quot;tick&quot;: 576,
+          &quot;walletChange&quot;: -10,
+          &quot;foodChange&quot;: 1,
+          &quot;meaning&quot;: &quot;最近买粮成功；钱包变化-10、粮食变化1仅是当次增减，不是当前库存或余额；现在剩多少只用current。&quot;
+        },
+        &quot;planMeaning&quot;: null,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;BuyFood&quot;,
+          &quot;tick&quot;: 576,
+          &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;,
+          &quot;meaning&quot;: &quot;该次选择买粮，以补充存粮。&quot;,
+          &quot;relationToPreparation&quot;: &quot;same-record&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: 20,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          },
+          {
+            &quot;tick&quot;: 288,
+            &quot;action&quot;: &quot;BuyFood&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: -10,
+            &quot;foodChange&quot;: 1,
+            &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+          },
+          {
+            &quot;tick&quot;: 432,
+            &quot;action&quot;: &quot;NoAction&quot;,
+            &quot;status&quot;: &quot;no-action&quot;,
+            &quot;walletChange&quot;: 0,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;WAIT&quot;
+          },
+          {
+            &quot;tick&quot;: 576,
+            &quot;action&quot;: &quot;BuyFood&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: -10,
+            &quot;foodChange&quot;: 1,
+            &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;current-utterance&quot;,
+      &quot;topics&quot;: [
+        &quot;food&quot;
+      ],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: []
+  },
+  &quot;scriptedReceipts&quot;: [
+    {
+      &quot;type&quot;: &quot;AdvanceTime&quot;,
+      &quot;payload&quot;: {
+        &quot;ticks&quot;: 144
+      },
+      &quot;tick&quot;: 576,
+      &quot;revision&quot;: 578,
+      &quot;result&quot;: null
+    }
+  ]
+}</pre></details><p><strong>原人工复核记录</strong></p><pre>{
+  &quot;verdict&quot;: &quot;pending&quot;
+}</pre><ul><li>核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。</li></ul></article><article><h3>work-again · 未调用模型</h3><p>玩家</p><blockquote>现在呢？你记得前几次挣钱和买粮的事情吗？</blockquote><p>猎人</p><blockquote>尚无模型回复</blockquote><p>建议尚未自动执行：未运行</p><p class="muted">有限事实核查：尚未核查</p><details><summary>当前存粮/钱包断言与实际数值</summary><pre>null</pre></details><details><summary>确定性检查、记忆来源与耗时</summary><pre>{
+  &quot;preconditions&quot;: [
+    {
+      &quot;name&quot;: &quot;selfFood&quot;,
+      &quot;expected&quot;: 0,
+      &quot;actual&quot;: 0,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;selfWallet&quot;,
+      &quot;expected&quot;: 20,
+      &quot;actual&quot;: 20,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResult&quot;,
+      &quot;expected&quot;: &quot;WorkForPay&quot;,
+      &quot;actual&quot;: &quot;WorkForPay&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeResultStatus&quot;,
+      &quot;expected&quot;: &quot;succeeded&quot;,
+      &quot;actual&quot;: &quot;succeeded&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;lifeDecisionReason&quot;,
+      &quot;expected&quot;: &quot;FOOD_INCOME&quot;,
+      &quot;actual&quot;: &quot;FOOD_INCOME&quot;,
+      &quot;passed&quot;: true
+    }
+  ],
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details><details><summary>该轮准备的猎人视角与脚本动作</summary><pre>{
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;npc5-world-0124d693c695&quot;,
+    &quot;revision&quot;: 722,
+    &quot;tick&quot;: 720,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 300,
+      &quot;food&quot;: 0,
+      &quot;wallet&quot;: 20,
+      &quot;trust&quot;: 60,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 0,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 60,
+      &quot;hunger&quot;: 0
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;destination&quot;: &quot;work-site&quot;,
+        &quot;decidedTick&quot;: 580,
+        &quot;phase&quot;: &quot;awaiting-review&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: {
+        &quot;kind&quot;: &quot;secure-food&quot;,
+        &quot;step&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;ready&quot;
+      },
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;tick&quot;: 720,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;tick&quot;: 720,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      },
+      {
+        &quot;tick&quot;: 288,
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      },
+      {
+        &quot;tick&quot;: 432,
+        &quot;action&quot;: &quot;NoAction&quot;,
+        &quot;status&quot;: &quot;no-action&quot;,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;WAIT&quot;
+      },
+      {
+        &quot;tick&quot;: 576,
+        &quot;action&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: -10,
+        &quot;foodChange&quot;: 1,
+        &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+      },
+      {
+        &quot;tick&quot;: 720,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    ],
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 44,
+        &quot;tick&quot;: 288,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 60,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 4320
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 46,
+        &quot;tick&quot;: 288,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 60,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 4320
+        }
+      }
+    ],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 60
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 720,
+          &quot;food&quot;: 0,
+          &quot;wallet&quot;: 20,
+          &quot;hunger&quot;: 0,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食0份；当前钱包20；当前饥饿0；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;awaiting-review&quot;,
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;meaning&quot;: &quot;旧行进意图等待更新，不能说仍在照此准备或已经再次执行。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;status&quot;: &quot;succeeded&quot;,
+          &quot;tick&quot;: 720,
+          &quot;walletChange&quot;: 20,
+          &quot;foodChange&quot;: 0,
+          &quot;meaning&quot;: &quot;最近工作领薪成功；钱包变化20、粮食变化0仅是当次增减，不是当前库存或余额；现在剩多少只用current。&quot;
+        },
+        &quot;planMeaning&quot;: &quot;保存的买粮后续步骤为待办；不证明当前正在执行，也不证明失败或已经完成。&quot;,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;tick&quot;: 720,
+          &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;,
+          &quot;meaning&quot;: &quot;该次选择工作，是为了获得买粮所需收入。&quot;,
+          &quot;relationToPreparation&quot;: &quot;same-record&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: 20,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          },
+          {
+            &quot;tick&quot;: 288,
+            &quot;action&quot;: &quot;BuyFood&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: -10,
+            &quot;foodChange&quot;: 1,
+            &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+          },
+          {
+            &quot;tick&quot;: 432,
+            &quot;action&quot;: &quot;NoAction&quot;,
+            &quot;status&quot;: &quot;no-action&quot;,
+            &quot;walletChange&quot;: 0,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;WAIT&quot;
+          },
+          {
+            &quot;tick&quot;: 576,
+            &quot;action&quot;: &quot;BuyFood&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: -10,
+            &quot;foodChange&quot;: 1,
+            &quot;reasonCode&quot;: &quot;BUY_FOOD&quot;
+          },
+          {
+            &quot;tick&quot;: 720,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: 20,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 40,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;current-utterance&quot;,
+      &quot;topics&quot;: [
+        &quot;food&quot;
+      ],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: []
+  },
+  &quot;scriptedReceipts&quot;: [
+    {
+      &quot;type&quot;: &quot;AdvanceTime&quot;,
+      &quot;payload&quot;: {
+        &quot;ticks&quot;: 144
+      },
+      &quot;tick&quot;: 720,
+      &quot;revision&quot;: 722,
+      &quot;result&quot;: null
+    }
+  ]
+}</pre></details><p><strong>原人工复核记录</strong></p><pre>{
+  &quot;verdict&quot;: &quot;pending&quot;
+}</pre><ul><li>核对当前资源与实际生活历史。过去增量不当余量；未知暂停原因不编造，旧说法错误应纠正。</li></ul></article></section><p class="muted">公开开发场景，不是盲测或独立金标。建议/引用格式检查通过，不等于角色理解、措辞与事实判断通过。</p></html>

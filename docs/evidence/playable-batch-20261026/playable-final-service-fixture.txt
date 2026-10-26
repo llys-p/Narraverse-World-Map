@@ -1,0 +1,16 @@
+✔ D2A wire parser rejects duplicate and escaped duplicate keys, bad UTF8, deep or oversized JSON before DTO use (3.167891ms)
+✔ D2A full envelope audits receipts and actual replay rather than accepting rewritten metadata or final state (4336.165417ms)
+✔ D2A service files publish exclusively and reject corruption; publication failure never replaces a completed file (3940.455806ms)
+✔ D2A owner commits real C5 world, serializes conflicts and persists original retry receipt across restart (7650.044179ms)
+✔ D2A link failure leaves live world and receipts untouched, then same ID may succeed; latest corrupt never falls back (3523.17861ms)
+✔ D2A queue preflight includes the active commit, readers see previous revision and close drains before releasing ownership (698.342371ms)
+✔ D2A budgets and format boundary reject before replay or publication; no implicit D1 conversion (505.195738ms)
+✔ D2A interrupted cleanup keeps bounded service temporaries but loads only audited published commits; temporary-only genesis fails (786.121876ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21583.449507
