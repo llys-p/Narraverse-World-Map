@@ -1,4 +1,4 @@
-import { cloneBundle, validateBundle, validateSnapshotStructure } from './world-state.mjs';
+import { cloneBundle, validateBundle, validateSnapshotStructure,createAuditedBundle } from './world-state.mjs';
 import { restoreRng } from './rng.mjs';
 import { restoreClock, MAX_ADVANCE_TICKS } from './simulation-clock.mjs';
 import { advanceScheduler } from './scheduler.mjs';
@@ -367,10 +367,14 @@ export function createSimulationSession(bundle, systems) {
   normalizeSystems(systems);
   fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
   const registered = Object.freeze({ ...systems });
-  validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
+  const canonical=bundle.snapshot.rulesVersion===CAMPAIGN_RULES?canonicalSystems(CAMPAIGN_RULES):null;
+  const campaign=canonical!==null&&Object.keys(registered).length===Object.keys(canonical).length&&
+    Object.keys(canonical).every(key=>Object.hasOwn(registered,key)&&registered[key]===canonical[key]);
+  if(!campaign)validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems: registered });
   requireCondition(['a-smoke-v1', RESOURCE_RULES, ECOLOGY_RULES, MARKET_RULES,ACTOR_RULES,HUNTER_RULES,SOCIETY_RULES,...MEMORY_RULE_VERSIONS,MIND_RULES,MOTIVATION_RULES,EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(bundle.snapshot.rulesVersion),
     'Session rules are not registered', 'UNSUPPORTED_VERSION');
-  let current = freezeData(cloneBundle(bundle)), busy = false;
+  // 私有不可变证明可复用；原始输入仍由同一完整审计创建隔离副本。
+  let current = campaign?createAuditedBundle(bundle,{rulesVersion:CAMPAIGN_RULES,systems:registered}):freezeData(cloneBundle(bundle)), busy = false;
   const stats = { idleTicks: 0, activityTicks: 0 };
   return Object.freeze({
     advanceTicks(amount) {

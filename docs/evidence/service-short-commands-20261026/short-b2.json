@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-short-writer.mjs",
+    ".",
+    "../Narraverse-Cold/artifacts/cold/fixture.json",
+    "artifacts/short/b2.json"
+  ],
+  "pid": 185,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 61030.428,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

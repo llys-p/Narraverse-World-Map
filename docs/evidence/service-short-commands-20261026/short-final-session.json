@@ -1,0 +1,20 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/session-certified-reuse.test.mjs",
+    "tests/simulation/session.test.mjs",
+    "tests/simulation/encounter-session.test.mjs",
+    "tests/simulation/scene-audit-immutability.test.mjs"
+  ],
+  "pid": 7,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 34807.247,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

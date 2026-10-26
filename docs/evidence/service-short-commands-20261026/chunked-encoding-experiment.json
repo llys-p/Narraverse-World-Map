@@ -1,0 +1,26 @@
+{
+  "samples": [
+    {
+      "name": "A",
+      "tenMs": 500.39750300000003,
+      "bytes": 342183
+    },
+    {
+      "name": "B",
+      "tenMs": 343.53491900000006,
+      "bytes": 342183
+    },
+    {
+      "name": "B",
+      "tenMs": 283.89780700000006,
+      "bytes": 342183
+    },
+    {
+      "name": "A",
+      "tenMs": 465.62843,
+      "bytes": 342183
+    }
+  ],
+  "inputBytes": 342183,
+  "externalModelCalls": 0
+}

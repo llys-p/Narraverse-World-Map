@@ -1,0 +1,16 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createSimulationSession} from '../../runtime/core/command-engine.mjs';import {createAuditedBundle} from '../../runtime/core/world-state.mjs';import {createPlayableCampaignVillage} from '../../runtime/fixtures/campaign-village.mjs';import {parentSession} from '../helpers/short-parent-oracle.mjs';const parentFixture=createPlayableCampaignVillage;
+test('certified campaign sessions retain detached public results and equal the parent across real ticks and stats',()=>{
+ const {bundle,systems}=createPlayableCampaignVillage(42,'session-reuse'),old=parentFixture(42,'session-reuse'),audited=createAuditedBundle(bundle,{rulesVersion:'d-campaign-v1',systems}),s=createSimulationSession(audited,systems),p=parentSession(old.bundle,old.systems);assert.deepEqual(s.getBundle(),p.getBundle());
+ bundle.snapshot.world.playerModel.wallet=999;const copy=s.getBundle();copy.snapshot.world.playerModel.wallet=555;assert.notEqual(s.getBundle().snapshot.world.playerModel.wallet,555);assert.notEqual(s.getBundle().snapshot.world.playerModel.wallet,999);
+ s.advanceTicks(3);p.advanceTicks(3);assert.deepEqual(s.getBundle(),p.getBundle());s.advanceTicks(142);p.advanceTicks(142);assert.deepEqual(s.getBundle(),p.getBundle());assert.deepEqual(s.getStats(),p.getStats());assert.equal(audited.snapshot.tick,0);assert.equal(s.getBundle().snapshot.tick,145);
+});
+test('mutable or fake-frozen inputs are audited, getters stay unread, and custom systems still cannot bypass the canonical transition',()=>{
+ const {bundle,systems}=createPlayableCampaignVillage(),fake=Object.freeze(structuredClone(bundle));fake.snapshot.world.playerModel.wallet++;assert.throws(()=>createSimulationSession(fake,systems));
+ let calls=0;const bad=structuredClone(bundle);Object.defineProperty(bad.snapshot.world,'trap',{enumerable:true,get(){calls++;return 1;}});assert.throws(()=>createSimulationSession(bad,systems));assert.equal(calls,0);
+ const custom={...systems,survival(ctx){ctx.snapshot.world.mapModel.position.x=5;}},session=createSimulationSession(bundle,custom),before=session.getBundle();assert.throws(()=>session.advanceTicks(1));assert.deepEqual(session.getBundle(),before);assert.deepEqual(session.getStats(),{idleTicks:0,activityTicks:0});
+});
+test('inherited handlers cannot impersonate the canonical registry or invoke a getter while selecting session reuse',()=>{
+ const {bundle,systems}=createPlayableCampaignVillage(),custom={society:systems.society,survival:systems.survival,encounter:systems.encounter,other(){}};let calls=0;const prior=Object.getOwnPropertyDescriptor(Object.prototype,'scene');
+ try{Object.defineProperty(Object.prototype,'scene',{configurable:true,get(){calls++;return systems.scene;}});const session=createSimulationSession(bundle,custom);assert.deepEqual(session.getBundle(),bundle);assert.equal(calls,0);}
+ finally{if(prior)Object.defineProperty(Object.prototype,'scene',prior);else delete Object.prototype.scene;}
+});

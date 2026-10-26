@@ -1,0 +1,1 @@
+{"status":"verified","sourceFiles":9,"testedSourceFiles":426,"preservedEvidenceFiles":970,"evidenceFiles":27,"distinctTests":28,"newTests":5,"coldAuditComparisons":4,"longHTTPArms":2,"externalModelCalls":0,"visualFeedback":"not-measured"}

@@ -1,0 +1,280 @@
+{
+  "order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2"
+  ],
+  "phaseScope": "ABBA before own-handler and projection guard additions; final variants checked separately",
+  "measurements": {
+    "quest": {
+      "firstHeadMs": {
+        "A": 12.360483000000386,
+        "B": 1.071995499998593
+      },
+      "deriveMs": {
+        "A": 80.1137490000001,
+        "B": 80.59813799999756
+      },
+      "prepareMs": {
+        "A": 35.40493300000162,
+        "B": 23.600077500002953
+      },
+      "secondHeadMs": {
+        "A": 13.6281020000024,
+        "B": 2.728454000000056
+      },
+      "publishMs": {
+        "A": 48.13000000000102,
+        "B": 27.35900550000224
+      },
+      "totalMs": {
+        "A": 189.61064400000032,
+        "B": 139.6202555000018
+      }
+    },
+    "all": {
+      "firstHeadMs": {
+        "A": 11.548785499999212,
+        "B": 0.9945284999994328
+      },
+      "deriveMs": {
+        "A": 130.78058450000026,
+        "B": 122.71093950000068
+      },
+      "prepareMs": {
+        "A": 33.67688949999865,
+        "B": 24.19717749999836
+      },
+      "secondHeadMs": {
+        "A": 10.918356499998481,
+        "B": 1.890885500000877
+      },
+      "publishMs": {
+        "A": 47.095305499999085,
+        "B": 27.358012000004237
+      },
+      "totalMs": {
+        "A": 254.19206250000207,
+        "B": 182.77126399999543
+      }
+    },
+    "time-advances": {
+      "firstHeadMs": {
+        "A": 11.21319399999993,
+        "B": 0.9582369999989169
+      },
+      "deriveMs": {
+        "A": 330.81126250000307,
+        "B": 329.7450979999958
+      },
+      "prepareMs": {
+        "A": 33.20150300000387,
+        "B": 24.975986999997986
+      },
+      "secondHeadMs": {
+        "A": 10.731419999996433,
+        "B": 1.4095805000033579
+      },
+      "publishMs": {
+        "A": 45.845508500002325,
+        "B": 26.963135500001954
+      },
+      "totalMs": {
+        "A": 428.90429349999977,
+        "B": 383.9754150000008
+      }
+    }
+  },
+  "parentHTTP": {
+    "measurement": "long-session-short-commands",
+    "runtimeRoot": "/workspace/scratch/e56afaffb4e3/Narraverse-Cold",
+    "node": "v24.22.1",
+    "tick": 1015,
+    "samples": [
+      {
+        "label": "prepare-seven-days",
+        "type": "AdvanceTime",
+        "durationTicks": 1008,
+        "commitAndSaveMs": 56437.654805,
+        "confirmedReadMs": 3.984987000003457
+      },
+      {
+        "label": "accept-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 220.43100799999957,
+        "confirmedReadMs": 2.33308300000499
+      },
+      {
+        "label": "abandon-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 201.94628499999817,
+        "confirmedReadMs": 2.14104899999802
+      },
+      {
+        "label": "wait-one-tick",
+        "type": "AdvanceTime",
+        "durationTicks": 1,
+        "commitAndSaveMs": 327.42714400000114,
+        "confirmedReadMs": 2.4381180000054883
+      },
+      {
+        "label": "wait-one-hour",
+        "type": "AdvanceTime",
+        "durationTicks": 6,
+        "commitAndSaveMs": 705.8920270000017,
+        "confirmedReadMs": 1.6357809999972233
+      }
+    ],
+    "reopenMs": 53867.527171999995,
+    "retryMs": 3.228440999999293,
+    "realModelCalls": 0,
+    "scope": "HTTP commit/save and confirmed cached read; not visual feedback or FPS"
+  },
+  "earlierHTTP": {
+    "measurement": "long-session-short-commands",
+    "runtimeRoot": "/workspace/scratch/e56afaffb4e3/Narraverse-Short",
+    "node": "v24.22.1",
+    "tick": 1015,
+    "samples": [
+      {
+        "label": "prepare-seven-days",
+        "type": "AdvanceTime",
+        "durationTicks": 1008,
+        "commitAndSaveMs": 57750.667771,
+        "confirmedReadMs": 3.3166390000042156
+      },
+      {
+        "label": "accept-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 157.046024999996,
+        "confirmedReadMs": 3.374163000000408
+      },
+      {
+        "label": "abandon-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 138.1092159999971,
+        "confirmedReadMs": 1.6126920000024256
+      },
+      {
+        "label": "wait-one-tick",
+        "type": "AdvanceTime",
+        "durationTicks": 1,
+        "commitAndSaveMs": 240.93079800000123,
+        "confirmedReadMs": 1.7335610000009183
+      },
+      {
+        "label": "wait-one-hour",
+        "type": "AdvanceTime",
+        "durationTicks": 6,
+        "commitAndSaveMs": 619.8994900000034,
+        "confirmedReadMs": 1.3387760000041453
+      }
+    ],
+    "reopenMs": 55318.797225,
+    "retryMs": 3.913099000012153,
+    "realModelCalls": 0,
+    "scope": "HTTP commit/save and confirmed cached read; not visual feedback or FPS"
+  },
+  "ownGuardHTTP": {
+    "measurement": "long-session-short-commands",
+    "runtimeRoot": "/workspace/scratch/e56afaffb4e3/Narraverse-Short",
+    "node": "v24.22.1",
+    "tick": 1015,
+    "samples": [
+      {
+        "label": "prepare-seven-days",
+        "type": "AdvanceTime",
+        "durationTicks": 1008,
+        "commitAndSaveMs": 58280.727140999996,
+        "confirmedReadMs": 3.1876260000062757
+      },
+      {
+        "label": "accept-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 148.84233500000119,
+        "confirmedReadMs": 1.9888089999949443
+      },
+      {
+        "label": "abandon-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 168.4107079999958,
+        "confirmedReadMs": 2.3070410000000265
+      },
+      {
+        "label": "wait-one-tick",
+        "type": "AdvanceTime",
+        "durationTicks": 1,
+        "commitAndSaveMs": 211.87086099999578,
+        "confirmedReadMs": 1.8189469999997527
+      },
+      {
+        "label": "wait-one-hour",
+        "type": "AdvanceTime",
+        "durationTicks": 6,
+        "commitAndSaveMs": 522.3069160000014,
+        "confirmedReadMs": 1.8969929999948363
+      }
+    ],
+    "reopenMs": 54971.147173000005,
+    "retryMs": 3.9396189999970375,
+    "realModelCalls": 0,
+    "scope": "HTTP commit/save and confirmed cached read; not visual feedback or FPS"
+  },
+  "finalHTTP": {
+    "measurement": "long-session-short-commands",
+    "runtimeRoot": "/workspace/scratch/e56afaffb4e3/Narraverse-Short",
+    "node": "v24.22.1",
+    "tick": 1015,
+    "samples": [
+      {
+        "label": "prepare-seven-days",
+        "type": "AdvanceTime",
+        "durationTicks": 1008,
+        "commitAndSaveMs": 57862.414843,
+        "confirmedReadMs": 2.986818999997922
+      },
+      {
+        "label": "accept-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 152.81501099999878,
+        "confirmedReadMs": 2.259570000001986
+      },
+      {
+        "label": "abandon-quest",
+        "type": "PlayerQuest",
+        "durationTicks": 0,
+        "commitAndSaveMs": 136.15960500000074,
+        "confirmedReadMs": 1.942719999999099
+      },
+      {
+        "label": "wait-one-tick",
+        "type": "AdvanceTime",
+        "durationTicks": 1,
+        "commitAndSaveMs": 223.00945199999842,
+        "confirmedReadMs": 1.5728319999980158
+      },
+      {
+        "label": "wait-one-hour",
+        "type": "AdvanceTime",
+        "durationTicks": 6,
+        "commitAndSaveMs": 589.9268060000031,
+        "confirmedReadMs": 2.401971000006597
+      }
+    ],
+    "reopenMs": 60959.346935999994,
+    "retryMs": 3.6952240000100574,
+    "realModelCalls": 0,
+    "scope": "HTTP commit/save and confirmed cached read; not visual feedback or FPS"
+  },
+  "httpSamplesPerArm": 1,
+  "finalWriterConfirmation": "final2-writer.json",
+  "scope": "fixed host, world and command order; no FPS, visual response or percentile claim"
+}

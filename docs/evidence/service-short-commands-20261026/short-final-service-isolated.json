@@ -1,0 +1,18 @@
+{
+  "command": [
+    "env",
+    "CAMPAIGN_TEST_ROOT=artifacts/short/campaign-recheck-final",
+    "node",
+    "--test",
+    "tests/simulation/campaign-service.test.mjs"
+  ],
+  "pid": 7,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 12647.475,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

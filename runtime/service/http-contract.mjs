@@ -1,5 +1,5 @@
 import { fields,record,integer,requireCondition,cloneData,canonicalJson } from '../core/data-contract.mjs';
-import { validateBundle } from '../core/world-state.mjs';
+import { validateBundle,inspectAuditedBundleData } from '../core/world-state.mjs';
 import { inspectDescriptorTree } from '../core/experience-state.mjs';
 import { PERSONALITY_RULES } from '../core/memory-runtime.mjs';
 import { memorySystems } from '../fixtures/memory-village.mjs';
@@ -316,7 +316,7 @@ export function projectPublicSnapshot(bundle){
     actors:actors.map(a=>({actorId:a.actorId,name:a.name,occupation:a.occupation,location:a.location,alive:a.alive}))});
 }
 export function projectEncounterSnapshot(bundle){
-  inspectDescriptorTree(bundle);
+  inspectAuditedBundleData(bundle);
   const profile=runtimeProfile(bundle);
   requireCondition([ENCOUNTER_SERVICE_FORMAT,SCENE_SERVICE_FORMAT,10,11].includes(profile.serviceFormatVersion),'Encounter projection requires the encounter profile','UNSUPPORTED_VERSION');
   validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});
@@ -330,7 +330,7 @@ export function projectEncounterSnapshot(bundle){
       battleDeaths:w.ecologyModel.ledger.wolves.battleDeaths},actions:profile.serviceFormatVersion===11?describeCampaignEncounterActions(bundle):profile.serviceFormatVersion===10?describeLivelihoodEncounterActions(bundle):profile.serviceFormatVersion===SCENE_SERVICE_FORMAT?describeSceneEncounterActions(bundle):describeEncounterActions(bundle)});
 }
 export function projectSceneSnapshot(bundle){
-  inspectDescriptorTree(bundle);
+  inspectAuditedBundleData(bundle);
   const profile=runtimeProfile(bundle);
   requireCondition([SCENE_SERVICE_FORMAT,10,11].includes(profile.serviceFormatVersion),'Scene projection requires the scene profile','UNSUPPORTED_VERSION');
   validateBundle(bundle,{rulesVersion:profile.rulesVersion,systems:profile.systems});

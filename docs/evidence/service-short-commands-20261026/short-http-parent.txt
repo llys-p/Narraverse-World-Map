@@ -1,0 +1,10 @@
+{"measurement":"long-session-short-commands","runtimeRoot":"/workspace/scratch/e56afaffb4e3/Narraverse-Cold","node":"v24.22.1","tick":1015,"samples":[{"label":"prepare-seven-days","type":"AdvanceTime","durationTicks":1008,"commitAndSaveMs":56437.654805,"confirmedReadMs":3.984987000003457},{"label":"accept-quest","type":"PlayerQuest","durationTicks":0,"commitAndSaveMs":220.43100799999957,"confirmedReadMs":2.33308300000499},{"label":"abandon-quest","type":"PlayerQuest","durationTicks":0,"commitAndSaveMs":201.94628499999817,"confirmedReadMs":2.14104899999802},{"label":"wait-one-tick","type":"AdvanceTime","durationTicks":1,"commitAndSaveMs":327.42714400000114,"confirmedReadMs":2.4381180000054883},{"label":"wait-one-hour","type":"AdvanceTime","durationTicks":6,"commitAndSaveMs":705.8920270000017,"confirmedReadMs":1.6357809999972233}],"reopenMs":53867.527171999995,"retryMs":3.228440999999293,"realModelCalls":0,"scope":"HTTP commit/save and confirmed cached read; not visual feedback or FPS"}
+✔ seven-day live world accepts short commands, persists exact receipts, and reopens the same state without replaying retries (112136.446633ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 112287.892862

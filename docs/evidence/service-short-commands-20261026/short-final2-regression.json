@@ -1,0 +1,31 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/bounded-state-fingerprint.test.mjs",
+    "tests/simulation/session-certified-reuse.test.mjs",
+    "tests/simulation/live-head-fingerprint.test.mjs",
+    "tests/simulation/certified-projection-data.test.mjs",
+    "tests/simulation/checkpoint-store.test.mjs",
+    "tests/simulation/service-commit.test.mjs",
+    "tests/simulation/session.test.mjs",
+    "tests/simulation/encounter-session.test.mjs",
+    "tests/simulation/scene-audit-immutability.test.mjs",
+    "tests/simulation/campaign-live-owner.test.mjs",
+    "tests/simulation/campaign-live-world-boundaries.test.mjs",
+    "tests/simulation/campaign-live-derivation.test.mjs",
+    "tests/simulation/campaign-service.test.mjs",
+    "tests/simulation/playable-boundaries.test.mjs",
+    "tests/simulation/playable-service.test.mjs"
+  ],
+  "pid": 18,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 162848.931,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

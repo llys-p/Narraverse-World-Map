@@ -1,0 +1,15 @@
+✔ bounded chunk encoding preserves parent bytes for Unicode, integer and special keys, and stops over budget before a later accessor (222.653399ms)
+✔ successful publication reports only exact byte identity, keeps the string-returning API, and failure never returns a fingerprint or replaces a target (14.032244ms)
+✔ certified read projections equal the parent, stay detached, and do not treat copied or proxy-wrapped worlds as privately audited data (262.504251ms)
+✔ raw getters are rejected before profile selection exactly as before, including fake trust fields and unknown metadata (28.844836ms)
+✔ certified campaign sessions retain detached public results and equal the parent across real ticks and stats (20465.323704ms)
+✔ mutable or fake-frozen inputs are audited, getters stay unread, and custom systems still cannot bypass the canonical transition (148.57651ms)
+✔ inherited handlers cannot impersonate the canonical registry or invoke a getter while selecting session reuse (69.124603ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21700.002488

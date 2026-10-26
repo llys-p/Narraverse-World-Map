@@ -1,0 +1,11 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {createHash} from 'node:crypto';import {encodeStateFile,publishStateFile,publishStateFileWithFingerprint,MAX_STATE_FILE_BYTES} from '../../runtime/persistence/bounded-json-file.mjs';import {parentEncode} from '../helpers/short-parent-oracle.mjs';
+test('bounded chunk encoding preserves parent bytes for Unicode, integer and special keys, and stops over budget before a later accessor',()=>{
+ const keys=['2','10','__proto__','constructor','"quoted"','slash\\','\n','粮🌲','\ud800'];const value={nested:Array.from({length:20},(_,i)=>Object.fromEntries(keys.map(k=>[k,{n:i,text:'汉字🙂\u0000\n"\\'.repeat(150)}]))),empty:{},array:[null,true,false,-0,1.25]};assert.deepEqual(encodeStateFile(value),parentEncode(value));
+ for(const v of [null,{},[],Object.fromEntries([['__proto__',1],['2','a'],['10','b']]),{large:'粮'.repeat(40000)}])assert.deepEqual(encodeStateFile(v),parentEncode(v));
+ let reads=0;const huge={a:Array(350).fill('汉'.repeat(65536)),get z(){reads++;return 'should-not-read';}};assert.ok(Buffer.byteLength(huge.a[0])*huge.a.length>MAX_STATE_FILE_BYTES);assert.throws(()=>encodeStateFile(huge),{code:'LIMIT_EXCEEDED'});assert.equal(reads,0);
+});
+test('successful publication reports only exact byte identity, keeps the string-returning API, and failure never returns a fingerprint or replaces a target',async t=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'byte-fingerprint-'));t.after(()=>fs.rm(dir,{recursive:true,force:true}));const one=path.join(dir,'one.json'),two=path.join(dir,'two.json'),value={b:'粮🌲',a:[1,2]};assert.equal(await publishStateFile(value,one),one);
+ const fingerprint=await publishStateFileWithFingerprint(value,two),bytes=await fs.readFile(two);assert.equal(fingerprint.path,two);assert.equal(fingerprint.bytes,bytes.length);assert.equal(fingerprint.sha256,createHash('sha256').update(bytes).digest('hex'));assert.deepEqual(bytes,await fs.readFile(one));
+ const io={...fs,async link(){throw Object.assign(Error('injected'),{code:'EIO'});}};await assert.rejects(publishStateFileWithFingerprint({changed:true},one,io),{code:'SAVE_FAILED'});assert.deepEqual(await fs.readFile(one),bytes);assert.deepEqual((await fs.readdir(dir)).sort(),['one.json','two.json']);
+});

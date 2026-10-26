@@ -1,0 +1,37 @@
+✔ contract smoke: the frozen export surface is exactly three names (1.541646ms)
+✔ the returned method object is frozen and carries exactly three synchronous methods (442.458395ms)
+✔ create: the snapshot carries exactly six fields over a real tick-12 forest world (351.307947ms)
+✔ create rejects: a foreign rules version is UNSUPPORTED_VERSION and pending commands are INVALID_INPUT (307.708425ms)
+✔ create rejects: a getter and a cycle in the bundle are stopped before any read (115.929743ms)
+✔ create: the systems registry is only inspected, never called, and accessors are refused (1313.066387ms)
+✔ happy path: Begin then Cancel move one wolf and never advance the world tick (368.511996ms)
+✔ the encounter id is chosen by the session, never by the client (366.033679ms)
+✔ idempotent replay: the same id with the same canonical request replays the original receipt (356.684611ms)
+✔ the same id with a different canonical request is COMMAND_ID_CONFLICT, ahead of the revision gate (330.944759ms)
+✔ a new id with the wrong revision is REVISION_CONFLICT and consumes neither id nor budget (332.358535ms)
+✔ input preflight: accessors, extra fields, symbols and cycles are refused with zero getter calls (543.137917ms)
+✔ request budget: the canonical UTF-8 byte ceiling is 4096 (330.326275ms)
+✔ domain rejection: village, lawful death and zero wolves are RULE_REJECTED and the frame does not move (553.439637ms)
+✔ encounter lifecycle: busy, closed, unavailable and mismatched ids use the domain codes (658.254455ms)
+✔ the 100 accepted command budget: the 101st new id is refused and the first stays idempotent (985.623855ms)
+✔ map-safe command ids: __proto__ and constructor never collide (313.695252ms)
+✔ deep copies: the source bundle, snapshots, journal, requests and receipts never share a reference (304.730883ms)
+✔ post-commit fault: no injection point exists, so the rollback evidence is frame byte-equality (297.638557ms)
+✔ audited scene bundle is deeply immutable while public intent results stay detached and mutable (432.894503ms)
+✔ scene audit certificates bind exact rules and systems and refuse accessor inputs without reading them (300.690213ms)
+✔ certified campaign sessions retain detached public results and equal the parent across real ticks and stats (19813.115803ms)
+✔ mutable or fake-frozen inputs are audited, getters stay unread, and custom systems still cannot bypass the canonical transition (134.090092ms)
+✔ inherited handlers cannot impersonate the canonical registry or invoke a getter while selecting session reuse (59.719209ms)
+✔ B4 session matches strict reference for all registered rules, partial days and split advances (3768.818181ms)
+✔ B4 session processes non-day and same-tick inputs in inputSeq order, preserving rollback and RNG (1153.52534ms)
+✔ B4 only session-owned immutable states are trusted; bad imports and hostile systems are rejected (74.183618ms)
+✔ B4 retained contexts cannot modify committed state, append facts, or reenter a session (39.774368ms)
+✔ B4 zero advance and advance/clock budgets reject without losing already committed progress (3.11142ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34703.525523

@@ -34,6 +34,10 @@ const SNAPSHOT_FIELDS = ['schemaVersion', 'rulesVersion', 'simulationId', 'fixtu
 // Only private, deeply frozen clones that completed the full scene audit are certified.
 // Mutable inputs and parsed checkpoints never acquire a certificate by object identity.
 const auditedSceneBundles = new WeakMap();
+// 只复用私有、已完整审计且深冻结的数据树事实；不代替规则/系统验证或授予证书。
+export function inspectAuditedBundleData(bundle){
+  if(!auditedSceneBundles.has(bundle))inspectDescriptorTree(bundle);
+}
 const sameSystems = (cached, systems) => {
   const keys = Object.keys(systems);
   return keys.length === Object.keys(cached).length && keys.every(key => Object.hasOwn(cached, key) && cached[key] === systems[key]);

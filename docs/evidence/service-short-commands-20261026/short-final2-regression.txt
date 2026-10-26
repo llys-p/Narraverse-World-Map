@@ -1,0 +1,105 @@
+✔ bounded chunk encoding preserves parent bytes for Unicode, integer and special keys, and stops over budget before a later accessor (226.110343ms)
+✔ successful publication reports only exact byte identity, keeps the string-returning API, and failure never returns a fingerprint or replaces a target (14.7724ms)
+✔ fixed successors equal the unchanged complete oracle, including rejected and zero-tick commands (1943.374475ms)
+✔ copies, arbitrary candidates, unknown profiles and getters cannot acquire a successor proof (113.784255ms)
+✔ owner serializes revision races, deduplicates retries, and detaches caller data (285.656152ms)
+✔ failed link publication preserves projections and files, then retries at the same revision (257.997954ms)
+✔ reopen preserves short history and JSON commit copies receive full independent audit (1900.738596ms)
+✔ uncertain publication exposes no success or continuation until full reopen resolves it (520.346711ms)
+✔ campaign live writer requires the latest audited durable head and releases its realpath claim on close (434.649563ms)
+✔ independent owners cannot exchange projections or forged candidate authority (345.251798ms)
+✔ real synthetic history crosses day/RNG boundary with identical whole successor (12224.478326ms)
+✔ map contact, pause/resume and both JRPG rounds equal full replay (6442.489461ms)
+✖ campaign owner rollback, pause/replan/NPC gift, restart equality, tamper rejection and no lock residue (5.832183ms)
+✖ campaign HTTP DTO/profile/route authority remains isolated from old profile (21.402538ms)
+✔ certified read projections equal the parent, stay detached, and do not treat copied or proxy-wrapped worlds as privately audited data (301.198714ms)
+✔ raw getters are rejected before profile selection exactly as before, including fake trust fields and unknown metadata (35.149699ms)
+✔ A3 real disk save restores RNG, pending inputs, queues, receipts and complete audit (288.977379ms)
+✔ A3 100 days continuous equals 40 days saved/loaded then 60 days (63639.37021ms)
+✔ A3 existing target cannot be overwritten, including concurrent saves (11.08176ms)
+✔ A3 write/sync/close/publish faults never overwrite old checkpoints or publish partial data (12.906576ms)
+✔ A3 invalid/truncated/unknown versions/oversized/missing files fail explicitly (63.386246ms)
+✔ contract smoke: the frozen export surface is exactly three names (1.887088ms)
+✔ the returned method object is frozen and carries exactly three synchronous methods (398.539162ms)
+✔ create: the snapshot carries exactly six fields over a real tick-12 forest world (329.526615ms)
+✔ create rejects: a foreign rules version is UNSUPPORTED_VERSION and pending commands are INVALID_INPUT (290.61356ms)
+✔ create rejects: a getter and a cycle in the bundle are stopped before any read (105.604879ms)
+✔ create: the systems registry is only inspected, never called, and accessors are refused (1116.307656ms)
+✔ happy path: Begin then Cancel move one wolf and never advance the world tick (348.831476ms)
+✔ the encounter id is chosen by the session, never by the client (342.757122ms)
+✔ idempotent replay: the same id with the same canonical request replays the original receipt (391.035998ms)
+✔ the same id with a different canonical request is COMMAND_ID_CONFLICT, ahead of the revision gate (339.948983ms)
+✔ a new id with the wrong revision is REVISION_CONFLICT and consumes neither id nor budget (334.717924ms)
+✔ input preflight: accessors, extra fields, symbols and cycles are refused with zero getter calls (619.780667ms)
+✔ request budget: the canonical UTF-8 byte ceiling is 4096 (318.863506ms)
+✔ domain rejection: village, lawful death and zero wolves are RULE_REJECTED and the frame does not move (512.502045ms)
+✔ encounter lifecycle: busy, closed, unavailable and mismatched ids use the domain codes (610.863182ms)
+✔ the 100 accepted command budget: the 101st new id is refused and the first stays idempotent (948.502173ms)
+✔ map-safe command ids: __proto__ and constructor never collide (300.092111ms)
+✔ deep copies: the source bundle, snapshots, journal, requests and receipts never share a reference (287.786826ms)
+✔ post-commit fault: no injection point exists, so the rollback evidence is frame byte-equality (276.865259ms)
+✔ full byte checks reject same-size, restored-mtime edits between the first and second head checks, then permit an unchanged retry (434.386003ms)
+✔ equivalent JSON formatting still follows full semantic comparison instead of being refused as a changed world (414.89528ms)
+✔ uncertain publication exposes no new head or reusable fingerprint and only a full reopen resolves the durable outcome (263.575039ms)
+✔ pre-existing repair counts, later damage revokes readiness, and a failed claim cannot unlock the next quest (1985.74728ms)
+✔ deadline and death fail active quests, while important and changed own facts wake the preparation cache (30.396084ms)
+✔ more than 129 durable files remain writable and reopen, and altered journal or terminal state is rejected (10698.995813ms)
+✔ worker/HTTP quest progress is durable, read-only views stay coherent, and a retried command cannot duplicate a reward (5503.121908ms)
+✔ audited scene bundle is deeply immutable while public intent results stay detached and mutable (391.437944ms)
+✔ scene audit certificates bind exact rules and systems and refuse accessor inputs without reading them (280.397449ms)
+✔ D2A wire parser rejects duplicate and escaped duplicate keys, bad UTF8, deep or oversized JSON before DTO use (2.532536ms)
+✔ D2A full envelope audits receipts and actual replay rather than accepting rewritten metadata or final state (3965.276111ms)
+✔ D2A service files publish exclusively and reject corruption; publication failure never replaces a completed file (3521.024596ms)
+✔ D2A owner commits real C5 world, serializes conflicts and persists original retry receipt across restart (6760.269368ms)
+✔ D2A link failure leaves live world and receipts untouched, then same ID may succeed; latest corrupt never falls back (3212.049731ms)
+✔ D2A queue preflight includes the active commit, readers see previous revision and close drains before releasing ownership (668.494881ms)
+✔ D2A budgets and format boundary reject before replay or publication; no implicit D1 conversion (399.002542ms)
+✔ D2A interrupted cleanup keeps bounded service temporaries but loads only audited published commits; temporary-only genesis fails (813.19781ms)
+✔ certified campaign sessions retain detached public results and equal the parent across real ticks and stats (19512.818783ms)
+✔ mutable or fake-frozen inputs are audited, getters stay unread, and custom systems still cannot bypass the canonical transition (139.099797ms)
+✔ inherited handlers cannot impersonate the canonical registry or invoke a getter while selecting session reuse (64.444331ms)
+✔ B4 session matches strict reference for all registered rules, partial days and split advances (3342.431429ms)
+✔ B4 session processes non-day and same-tick inputs in inputSeq order, preserving rollback and RNG (1120.039656ms)
+✔ B4 only session-owned immutable states are trusted; bad imports and hostile systems are rejected (84.294604ms)
+✔ B4 retained contexts cannot modify committed state, append facts, or reenter a session (52.147282ms)
+✔ B4 zero advance and advance/clock budgets reject without losing already committed progress (2.274673ms)
+ℹ tests 65
+ℹ suites 0
+ℹ pass 63
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 162750.786748
+
+✖ failing tests:
+
+test at tests/simulation/campaign-service.test.mjs:12:1
+✖ campaign owner rollback, pause/replan/NPC gift, restart equality, tamper rejection and no lock residue (5.832183ms)
+  AssertionError [ERR_ASSERTION]: fresh isolated directory required
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-Short/tests/simulation/campaign-service.test.mjs:15:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/simulation/campaign-service.test.mjs:46:1
+✖ campaign HTTP DTO/profile/route authority remains isolated from old profile (21.402538ms)
+  Error: Cannot reset existing runtime profile
+      at fault (file:///workspace/scratch/e56afaffb4e3/Narraverse-Short/runtime/core/data-contract.mjs:8:24)
+      at requireCondition (file:///workspace/scratch/e56afaffb4e3/Narraverse-Short/runtime/core/data-contract.mjs:11:25)
+      at createRuntimeOwner (file:///workspace/scratch/e56afaffb4e3/Narraverse-Short/runtime/service/runtime-owner.mjs:104:7)
+      at async startRuntimeServer (file:///workspace/scratch/e56afaffb4e3/Narraverse-Short/runtime-server.mjs:59:11)
+      at async TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-Short/tests/simulation/campaign-service.test.mjs:48:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'INVALID_INPUT'
+  }
