@@ -1,0 +1,9 @@
+{
+  "beforeCoreSha256": "aac21f111e21d40f51569c9a5ff34891f8f5c75454704f5271d337f69fc4ad45",
+  "finalCoreSha256": "7bd1612a03b3b65f4dc63cf67022e420c197c3a7aa84878cc0f78f6dfcf9f7f9",
+  "testPrefixBytes": 2418,
+  "addedInspectionHelper": "// 只复用私有、已完整审计且深冻结的数据树事实；不代替规则/系统验证或授予证书。\nexport function inspectAuditedBundleData(bundle){\n  if(!auditedSceneBundles.has(bundle))inspectDescriptorTree(bundle);\n}\n",
+  "guardBeforeFinalHTTP": true,
+  "projectionBeforeFinalHTTP": true,
+  "finalHTTPLogBirthtimeMs": 1793025374999.4993
+}

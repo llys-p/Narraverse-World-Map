@@ -1,0 +1,30 @@
+{
+  "parent": "c417dfb322cff2880e81f746c0fded608b24f567",
+  "scope": "Test import portability only; production byte hashes unchanged; earlier run logs retain original test imports.",
+  "files": [
+    {
+      "path": "tests/simulation/session-certified-reuse.test.mjs",
+      "beforeSnapshot": "session-certified-reuse.test.before-portability.source.txt",
+      "beforeSha256": "ea5c86e688b79fe0e1d13fa7c941d735f95ceddfc79708c5de58036a3b59998c",
+      "afterSha256": "7356da5a5e65d3d633d2a05ee225fcf66790e97e63b8cf12294816c6985763ea",
+      "oldImport": "import {createSimulationSession as parentSession} from '../../../Narraverse-Cold/runtime/core/command-engine.mjs';import {createPlayableCampaignVillage as parentFixture} from '../../../Narraverse-Cold/runtime/fixtures/campaign-village.mjs';",
+      "newImport": "import {parentSession} from '../helpers/short-parent-oracle.mjs';const parentFixture=createPlayableCampaignVillage;"
+    },
+    {
+      "path": "tests/simulation/bounded-state-fingerprint.test.mjs",
+      "beforeSnapshot": "bounded-state-fingerprint.test.before-portability.source.txt",
+      "beforeSha256": "1dd32eaf1d3b544ce0cb97f050b11ce7aedb34fb7c246bc3cc4c2fee47405adb",
+      "afterSha256": "ef1676c345382d1a667c980c65f8d5f0be33a79482fbc574ec543ec4c335177c",
+      "oldImport": "import {encodeStateFile as parentEncode} from '../../../Narraverse-Cold/runtime/persistence/bounded-json-file.mjs';",
+      "newImport": "import {parentEncode} from '../helpers/short-parent-oracle.mjs';"
+    },
+    {
+      "path": "tests/simulation/certified-projection-data.test.mjs",
+      "beforeSnapshot": "certified-projection-data.test.before-portability.source.txt",
+      "beforeSha256": "b1313544562ad49fb207717e0731e8dd864118d927390fa05c734050db7daa0e",
+      "afterSha256": "90bc945d6d5fa5c01b2898ae586c5ec466d4977c98ee564a80ab9eecfda0807a",
+      "oldImport": "import {projectEncounterSnapshot as oldEncounter,projectSceneSnapshot as oldScene} from '../../../Narraverse-Cold/runtime/service/http-contract.mjs';",
+      "newImport": "import {oldEncounter,oldScene} from '../helpers/short-parent-oracle.mjs';"
+    }
+  ]
+}

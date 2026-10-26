@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "../Narraverse-Cold/scripts/check-cold-audit-evidence.mjs"
+  ],
+  "pid": 255,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 314.643,
+  "cpuMs": null,
+  "hardLimitMs": 60000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

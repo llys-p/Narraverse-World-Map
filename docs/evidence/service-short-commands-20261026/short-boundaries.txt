@@ -1,0 +1,15 @@
+✔ bounded chunk encoding preserves parent bytes for Unicode, integer and special keys, and stops over budget before a later accessor (271.948328ms)
+✔ successful publication reports only exact byte identity, keeps the string-returning API, and failure never returns a fingerprint or replaces a target (23.490842ms)
+✔ full byte checks reject same-size, restored-mtime edits between the first and second head checks, then permit an unchanged retry (728.268548ms)
+✔ equivalent JSON formatting still follows full semantic comparison instead of being refused as a changed world (567.662342ms)
+✔ uncertain publication exposes no new head or reusable fingerprint and only a full reopen resolves the durable outcome (344.097192ms)
+✔ certified campaign sessions retain detached public results and equal the parent across real ticks and stats (749.465505ms)
+✔ mutable or fake-frozen inputs are audited, getters stay unread, and custom systems still cannot bypass the canonical transition (127.298824ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3368.986283

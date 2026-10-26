@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "productionDiff": [
+    "runtime/core/command-engine.mjs",
+    "runtime/core/world-state.mjs",
+    "runtime/persistence/bounded-json-file.mjs",
+    "runtime/service/http-contract.mjs",
+    "runtime/service/service-commit.mjs"
+  ],
+  "fixturesProviderPageDiff": [],
+  "syntaxFiles": [
+    "runtime/core/command-engine.mjs",
+    "runtime/core/world-state.mjs",
+    "runtime/persistence/bounded-json-file.mjs",
+    "runtime/service/http-contract.mjs",
+    "runtime/service/service-commit.mjs",
+    "scripts/check-short-evidence.mjs",
+    "scripts/measure-short-writer.mjs",
+    "tests/helpers/short-parent-oracle.mjs",
+    "tests/simulation/bounded-state-fingerprint.test.mjs",
+    "tests/simulation/certified-projection-data.test.mjs",
+    "tests/simulation/live-head-fingerprint.test.mjs",
+    "tests/simulation/session-certified-reuse.test.mjs"
+  ],
+  "scope": "All production changes are the five listed modules; no fixture, provider, page, tick methods, or rule changes."
+}

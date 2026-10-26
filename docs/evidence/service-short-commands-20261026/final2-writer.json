@@ -1,0 +1,269 @@
+{
+  "node": "v24.22.1",
+  "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Short",
+  "inputSha256": "3566132d196ef0471c133f705922194dde93b526355522a37c06c8d04a0173ae",
+  "serviceSourceSha256": "bd3f2b05eee9f24ffaf5160de032f75800a42b6310a812f41865caf7011ee084",
+  "initialTick": 1008,
+  "finalTick": 1022,
+  "commands": 8,
+  "samples": [
+    {
+      "round": 0,
+      "label": "accept",
+      "elapsedMs": 121.09891800000332,
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "short-1",
+        "durationTicks": 0,
+        "fromRevision": 1008,
+        "fromTick": 1008,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "action": "accept",
+          "questId": "livelihood",
+          "rank": 0,
+          "status": "active"
+        },
+        "status": "committed",
+        "tick": 1008,
+        "toRevision": 1009,
+        "type": "PlayerQuest"
+      }
+    },
+    {
+      "round": 0,
+      "label": "abandon",
+      "elapsedMs": 111.15353799999866,
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "short-2",
+        "durationTicks": 0,
+        "fromRevision": 1009,
+        "fromTick": 1008,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "action": "abandon",
+          "questId": "livelihood",
+          "rank": 0,
+          "status": "abandoned"
+        },
+        "status": "committed",
+        "tick": 1008,
+        "toRevision": 1010,
+        "type": "PlayerQuest"
+      }
+    },
+    {
+      "round": 0,
+      "label": "wait-one",
+      "elapsedMs": 187.50484800000413,
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "short-3",
+        "durationTicks": 1,
+        "fromRevision": 1010,
+        "fromTick": 1008,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": null,
+        "status": "committed",
+        "tick": 1009,
+        "toRevision": 1011,
+        "type": "AdvanceTime"
+      }
+    },
+    {
+      "round": 0,
+      "label": "wait-hour",
+      "elapsedMs": 509.6353109999982,
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "short-4",
+        "durationTicks": 6,
+        "fromRevision": 1011,
+        "fromTick": 1009,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": null,
+        "status": "committed",
+        "tick": 1015,
+        "toRevision": 1017,
+        "type": "AdvanceTime"
+      }
+    },
+    {
+      "round": 1,
+      "label": "accept",
+      "elapsedMs": 117.76641000000382,
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "short-5",
+        "durationTicks": 0,
+        "fromRevision": 1017,
+        "fromTick": 1015,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "action": "accept",
+          "questId": "livelihood",
+          "rank": 0,
+          "status": "active"
+        },
+        "status": "committed",
+        "tick": 1015,
+        "toRevision": 1018,
+        "type": "PlayerQuest"
+      }
+    },
+    {
+      "round": 1,
+      "label": "abandon",
+      "elapsedMs": 113.47211599999719,
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "short-6",
+        "durationTicks": 0,
+        "fromRevision": 1018,
+        "fromTick": 1015,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": {
+          "action": "abandon",
+          "questId": "livelihood",
+          "rank": 0,
+          "status": "abandoned"
+        },
+        "status": "committed",
+        "tick": 1015,
+        "toRevision": 1019,
+        "type": "PlayerQuest"
+      }
+    },
+    {
+      "round": 1,
+      "label": "wait-one",
+      "elapsedMs": 248.25609699999768,
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "short-7",
+        "durationTicks": 1,
+        "fromRevision": 1019,
+        "fromTick": 1015,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": null,
+        "status": "committed",
+        "tick": 1016,
+        "toRevision": 1020,
+        "type": "AdvanceTime"
+      }
+    },
+    {
+      "round": 1,
+      "label": "wait-hour",
+      "elapsedMs": 539.6711949999954,
+      "receipt": {
+        "apiVersion": 1,
+        "commandId": "short-8",
+        "durationTicks": 6,
+        "fromRevision": 1020,
+        "fromTick": 1016,
+        "outcome": "succeeded",
+        "receiptVersion": 5,
+        "result": null,
+        "status": "committed",
+        "tick": 1022,
+        "toRevision": 1026,
+        "type": "AdvanceTime"
+      }
+    }
+  ],
+  "phases": [
+    {
+      "commandId": "short-1",
+      "type": "PlayerQuest",
+      "firstHeadMs": 1.2038360000005923,
+      "deriveMs": 78.19298200000048,
+      "prepareMs": 14.824506999997539,
+      "secondHeadMs": 2.3716070000009495,
+      "publishMs": 23.836914999999863,
+      "totalMs": 120.43237000000227
+    },
+    {
+      "commandId": "short-2",
+      "type": "PlayerQuest",
+      "firstHeadMs": 0.8078380000006291,
+      "deriveMs": 71.74135299999762,
+      "prepareMs": 13.371413000000757,
+      "secondHeadMs": 1.1571460000050138,
+      "publishMs": 23.897743999994418,
+      "totalMs": 110.97658500000398
+    },
+    {
+      "commandId": "short-3",
+      "type": "AdvanceTime",
+      "firstHeadMs": 0.7572929999951157,
+      "deriveMs": 146.46161500000017,
+      "prepareMs": 15.28432900000189,
+      "secondHeadMs": 1.2309759999989183,
+      "publishMs": 23.639419999999518,
+      "totalMs": 187.37494499999593
+    },
+    {
+      "commandId": "short-4",
+      "type": "AdvanceTime",
+      "firstHeadMs": 0.8895990000019083,
+      "deriveMs": 467.3272880000004,
+      "prepareMs": 14.401078999995661,
+      "secondHeadMs": 1.2137900000016089,
+      "publishMs": 25.689345999999205,
+      "totalMs": 509.5221940000047
+    },
+    {
+      "commandId": "short-5",
+      "type": "PlayerQuest",
+      "firstHeadMs": 0.8650029999989783,
+      "deriveMs": 73.67608299999847,
+      "prepareMs": 16.420764000002237,
+      "secondHeadMs": 1.1169970000046305,
+      "publishMs": 25.58178699999553,
+      "totalMs": 117.6621460000024
+    },
+    {
+      "commandId": "short-6",
+      "type": "PlayerQuest",
+      "firstHeadMs": 0.9084670000011101,
+      "deriveMs": 74.45204399999784,
+      "prepareMs": 13.883961999999883,
+      "secondHeadMs": 1.0573280000025989,
+      "publishMs": 23.063967000001867,
+      "totalMs": 113.36676000000443
+    },
+    {
+      "commandId": "short-7",
+      "type": "AdvanceTime",
+      "firstHeadMs": 0.7017510000005132,
+      "deriveMs": 162.1864129999958,
+      "prepareMs": 15.058206000001519,
+      "secondHeadMs": 2.214372000002186,
+      "publishMs": 68.00906799999939,
+      "totalMs": 248.1709919999994
+    },
+    {
+      "commandId": "short-8",
+      "type": "AdvanceTime",
+      "firstHeadMs": 0.6558819999991101,
+      "deriveMs": 496.2053900000028,
+      "prepareMs": 14.528079999996407,
+      "secondHeadMs": 0.9027280000009341,
+      "publishMs": 27.2865479999964,
+      "totalMs": 539.5795690000014
+    }
+  ],
+  "finalStateSha256": "390afecde3241b9d64b5e46a078b7a9c998e67c0ec8aa5aeaeef0971b00c4794",
+  "finalFileSha256": "390afecde3241b9d64b5e46a078b7a9c998e67c0ec8aa5aeaeef0971b00c4794",
+  "externalModelCalls": 0,
+  "scope": "local measurement copy; real writer and atomic file publication; excludes worker/HTTP/visual feedback"
+}

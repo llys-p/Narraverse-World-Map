@@ -1,6 +1,7 @@
 import {serviceCommandLimit} from '../core/campaign-limits.mjs';
 import * as defaultIo from 'node:fs/promises';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import { fields,denseArray,requireCondition,cloneData,fault } from '../core/data-contract.mjs';
 import { createSimulationSession } from '../core/command-engine.mjs';
@@ -13,7 +14,7 @@ import { SCENE_RULES,executeAuditedSceneIntent } from '../core/scene-runtime.mjs
 import { CAMPAIGN_RULES,executeAuditedCampaignIntent,computeCampaignIntent } from '../core/scene-campaign-runtime.mjs';
 import { createAuditedBundle,deriveCampaignBundle } from '../core/world-state.mjs';
 import { parseStrictJson } from './strict-json.mjs';
-import { MAX_STATE_FILE_BYTES,publishStateFile,readStateFile } from '../persistence/bounded-json-file.mjs';
+import { MAX_STATE_FILE_BYTES,publishStateFile,publishStateFileWithFingerprint,readStateFile } from '../persistence/bounded-json-file.mjs';
 export const MAX_SERVICE_COMMANDS=128,MAX_SERVICE_FILES=128,MAX_PENDING_REQUESTS=16;
 // Certificates never cross the JSON boundary. Only private immutable envelopes
 // constructed here can reuse an already audited prefix.
@@ -142,13 +143,16 @@ export async function createCampaignLiveWriter(initial,directory,lockToken,io=de
   try{
   const lock=path.join(directory,'.runtime-owner.lock');
   const owns=async()=>requireCondition(await io.readFile(lock,'utf8')===lockToken,'Runtime ownership changed','OWNER_BUSY');
+  let headFingerprint=null;
   const checkHead=async current=>{
     await owns();
     const revisions=(await io.readdir(directory)).filter(n=>/^service-commit-r\d+\.json$/.test(n)).map(n=>Number(n.match(/r(\d+)/)[1]));
     requireCondition(revisions.length>0&&revisions.length<=serviceCommandLimit(current.bundle)+1&&Math.max(...revisions)===current.bundle.snapshot.revision,
       'Live head is not the current durable revision','INVALID_SERVICE_COMMIT');
-    const persisted=parseStrictJson(await readStateFile(path.join(directory,`service-commit-r${current.bundle.snapshot.revision}.json`),io),MAX_STATE_FILE_BYTES);
-    requireCondition(isDeepStrictEqual(persisted,current),'Live head does not match durable state','INVALID_SERVICE_COMMIT');
+    const bytes=await readStateFile(path.join(directory,`service-commit-r${current.bundle.snapshot.revision}.json`),io),fingerprint=createHash('sha256').update(bytes).digest('hex');
+    // 每次仍完整读文件。指纹只来自本拥有者已核验/成功发布的字节，变化则完整解析比对。
+    if(fingerprint!==headFingerprint){const persisted=parseStrictJson(bytes,MAX_STATE_FILE_BYTES);
+      requireCondition(isDeepStrictEqual(persisted,current),'Live head does not match durable state','INVALID_SERVICE_COMMIT');headFingerprint=fingerprint;}
   };
   await checkHead(initial);
   let head=initial,tail=Promise.resolve(),closed=false,closePromise;
@@ -174,8 +178,8 @@ export async function createCampaignLiveWriter(initial,directory,lockToken,io=de
       requireCondition(head===parent,'Live head changed','REVISION_CONFLICT');await checkHead(parent);
       // Direct private publication, never a public skip-validation parameter.
       // A failed/uncertain publication leaves no advanceable service certificate.
-      await publishStateFile(next,path.join(directory,`service-commit-r${bundle.snapshot.revision}.json`),io);
-      head=next;auditedServiceCommits.add(next);return prepared;
+      const publication=await publishStateFileWithFingerprint(next,path.join(directory,`service-commit-r${bundle.snapshot.revision}.json`),io);
+      head=next;headFingerprint=publication.sha256;auditedServiceCommits.add(next);return prepared;
     });
     tail=operation.catch(()=>{});return operation;
   },close(){if(!closePromise){closed=true;closePromise=tail.then(()=>{activeCampaignWriters.delete(identity);});}return closePromise;}});
