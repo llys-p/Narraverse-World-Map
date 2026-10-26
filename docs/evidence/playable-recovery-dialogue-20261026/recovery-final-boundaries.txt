@@ -1,0 +1,12 @@
+✔ synchronous detached batches equal separate fixed ticks for all six fixtures and the daily boundary (10647.495165ms)
+✔ batch boundaries inspect old events, detach nested data, reject invalid counts, and expose no custom-system bypass (183.374991ms)
+✔ reference menu is rebuilt only from transmitted episodes and speech, is idempotent, and prompts keep the current topic (16.472007ms)
+✔ malformed references stay rejected without sorting or retries and diagnostics retain only bounded shape categories (8.969277ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11109.492125

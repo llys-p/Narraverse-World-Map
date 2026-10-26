@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-recovery-core.mjs",
+    "../Narraverse-Playable",
+    "artifacts/recovery/abba-A1.json"
+  ],
+  "pid": 315,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 63031.477,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

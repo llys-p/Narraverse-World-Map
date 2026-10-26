@@ -1,0 +1,26 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/npc-dialogue-diagnostics.test.mjs",
+    "tests/simulation/npc-language-provider.test.mjs",
+    "tests/simulation/npc-deepseek-provider.test.mjs",
+    "tests/simulation/npc-dialogue-grounding.test.mjs",
+    "tests/simulation/npc-dialogue-diagnostic-http.test.mjs",
+    "tests/simulation/npc-life-facts.test.mjs",
+    "tests/simulation/npc-life-reason.test.mjs",
+    "tests/simulation/npc-life-v3-evaluation.test.mjs",
+    "tests/simulation/playable-dialogue.test.mjs",
+    "tests/simulation/npc-life-continuity-service.test.mjs"
+  ],
+  "pid": 168,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 234749.467,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

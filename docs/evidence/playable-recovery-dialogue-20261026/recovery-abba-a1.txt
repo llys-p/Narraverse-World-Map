@@ -1,0 +1,1 @@
+{"node":"v24.22.1","root":"/workspace/scratch/e56afaffb4e3/Narraverse-Playable","seed":42,"tick":1008,"commands":1,"openMs":85.61416200000001,"simulateMs":32775.115865,"auditMs":29950.044246000005,"tenMapReadsMs":59.539616999994905,"bundleSha256":"c6b6d450bce6995d6f84c7f85550d70e3141981db264bb02d4f418d83f4174e5","bytes":296544,"fullReplay":"passed","externalModelCalls":0}

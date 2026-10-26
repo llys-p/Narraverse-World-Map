@@ -5,6 +5,8 @@
 
 ## 独立项目入口
 
+- **连续推进与对话引用候选**：固定七日样本ABBA对照中模拟约快13.8%、完整审计约快11.1%，保留完整世界校验；这不是整体流畅达标。模型新增本轮可引用编号目录、有限格式诊断及当前生活话题约束，本片零付费调用，真实语言待复测。见[后续说明](docs/runtime/PLAYABLE-RECOVERY-DIALOGUE.md)。
+
 - **可玩初章候选：`Start-Playable.cmd`**，独立端口18352 / `campaign-playable-village` 新档。村庄生计→帮助猎人→森林往返，另有可选猎狼挑战；任务由真实行动推进，支持放弃重接、一次领取和保存恢复。猎人有多日工作/买粮及本人生活记录，远处减少准备计算。`Start-Playable-New.cmd` 另建新旅程并保留原档。当前仍有较慢结算，Windows/画面帧率与真实游玩时长待验，见[整批说明](docs/runtime/PLAYABLE-BATCH.md)。
 
 - **NPC17 报告完成核验候选**：修复28轮长场景评审被旧4轮限制拒绝的问题；新评测及派生报告绑定JSON/HTML完成回执，支持离线核验，保留旧报告兼容与人工pending。本片外部模型0调用。见[NPC17说明](docs/runtime/NPC17-REPORT-INTEGRITY.md)。

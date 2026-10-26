@@ -1,0 +1,40 @@
+✔ synchronous detached batches equal separate fixed ticks for all six fixtures and the daily boundary (12019.699758ms)
+✖ batch boundaries inspect old events, detach nested data, reject invalid counts, and expose no custom-system bypass (89.253058ms)
+✔ reference menu is rebuilt only from transmitted episodes and speech, is idempotent, and prompts keep the current topic (13.984712ms)
+✔ malformed references stay rejected without sorting or retries and diagnostics retain only bounded shape categories (8.183551ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12371.533536
+
+✖ failing tests:
+
+test at tests/simulation/campaign-batch-ticks.test.mjs:11:1
+✖ batch boundaries inspect old events, detach nested data, reject invalid counts, and expose no custom-system bypass (89.253058ms)
+  Error: Tick 3 was not committed
+      at runTick (file:///workspace/scratch/e56afaffb4e3/Narraverse-Recovery/runtime/core/command-engine.mjs:300:19)
+      at performCampaignTicks (file:///workspace/scratch/e56afaffb4e3/Narraverse-Recovery/runtime/core/command-engine.mjs:67:35)
+      ... 4 lines matching cause stack trace ...
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'INVALID_INPUT',
+    failedTick: 3,
+    [cause]: Error: Invalid Scene quote schedule
+        at fault (file:///workspace/scratch/e56afaffb4e3/Narraverse-Recovery/runtime/core/data-contract.mjs:8:24)
+        at requireCondition (file:///workspace/scratch/e56afaffb4e3/Narraverse-Recovery/runtime/core/data-contract.mjs:11:25)
+        at validateSnapshotStructure (file:///workspace/scratch/e56afaffb4e3/Narraverse-Recovery/runtime/core/world-state.mjs:253:7)
+        at runTick (file:///workspace/scratch/e56afaffb4e3/Narraverse-Recovery/runtime/core/command-engine.mjs:290:7)
+        at performCampaignTicks (file:///workspace/scratch/e56afaffb4e3/Narraverse-Recovery/runtime/core/command-engine.mjs:67:35)
+        at TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-Recovery/tests/simulation/campaign-batch-ticks.test.mjs:17:19)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1402:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+        at Test.postRun (node:internal/test_runner/test:1542:19) {
+      code: 'INVALID_INPUT'
+    }
+  }

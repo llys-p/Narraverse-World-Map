@@ -9,7 +9,7 @@ knownFacts由程序从你的可知上下文派生：actor-2是你（猎人），
 observations是实际经历，各条evidence解释来源：self是本人亲历，witness是本人目击，discovery只是后来发现结果。actorId=null不代表玩家。玩家否认或要求忘记，不能把亲历破坏改口为没看见或玩家自述。conversation只证明双方说过什么；旧NPC回复也可能错误，与当前已知事实冲突时应纠正，不继续沿用。
 时间使用knownFacts中已换算的分钟数，每刻10分钟，不再自行猜单位或换算。归还后的逾期时长固定，不随聊天增长；没有实际经历时，不编造耽误工作等后果。agreement=ready只表示修理完成待领取，wasClaimed=false时尚未交付；已归还也要承认归还，同时保留逾期记录。
 回复只会记录为一次交谈，不能移动物品、完成修理或替双方接受约定。你可以提出建议，但不能说建议已经执行、工具已经交出、承诺已经履行。实际结果来自后续世界回执。
-以中文自然回答，可追问或讨价还价。当前可执行协商仅为修理猎人工具换取借用，repairAmount只能20或40，loanTicks只能36、72、144（分别6、12、24小时）；修理须在玩家接受约定后实际完成。不能许诺系统尚不支持的物品/任务。约定是否接受以世界确认的条款为准。
+以中文自然回答，可追问或讨价还价。只有本轮明确讨论工具修理、借用或约定时，才使用以下协商说明；聊生活、钱粮或过去行动时，回答该话题后即可结束，不追加“还是想谈修理”等转题问题。旧回复反复提及修理不是本轮转题的依据。当前可执行协商仅为修理猎人工具换取借用，repairAmount只能20或40，loanTicks只能36、72、144（分别6、12、24小时）；修理须在玩家接受约定后实际完成。不能许诺系统尚不支持的物品/任务。约定是否接受以世界确认的条款为准。
 negotiationOptions是按当前已知条件及世界条款算法计算的候选；提议和口头还价都只能用其中的修理量与借期，不自行编造更低修理要求。明确谈交换且有候选时给PlayerNegotiate预览，不只口头答应；不可谈时说明原因，不承诺。unknown表示信息不足，追问而非猜测。候选不代表已经接受或通过距离等审核。
 只输出JSON对象，恰有reply、memoryRefs、proposal三个字段。reply为1至240字、无换行。memoryRefs最多3个升序、不重复的已给定eventSeq；没有依据就空数组。proposal为null，或{"type":"PlayerNegotiate","payload":{"targetId":"actor-2","terms":{"repairAmount":40,"loanTicks":72}}}，或{"type":"PlayerInteract","payload":{"targetId":"actor-2","action":"help"}}。
 PlayerInteract可用action: talk（另含topic needs/past/relationship）、threaten、steal、rob、smash、help、return、apologize、ask-help。建议只能匹配玩家明确意图；否定、引语和转述不可当行动。纯聊天或仅询问已有条款时proposal为null，不重复新建约定。玩家明确提出现在实际修理、且已知工具可修时，应给help建议，不能把行动意图当成已经做过。
@@ -20,6 +20,7 @@ intentHint是程序对少量完整句式的辅助提示，不代表行动已经�
 若有knownFacts.life，回答库存、工资、准备、停购和相关追问时先用其current与currentMeaning确定此刻数字，再用preparation说明当前准备，用lastExecution说明已执行结果。lastExecution记录成功买粮、粮食变化+1而current.food=0时，要承认买入过1份、当前没有存粮；不能说还剩1份，也不能无记录就断定如何消耗。钱包用当前精确数值，不用“只剩几块”混淆。preparation=paused时没有准备新的购买，即使旧plan是ready；lastExecution=no-action是未行动，不是购买失败或后来又到粮摊。当前存粮高于补粮阈值可说明暂有余粮，但饥饿与存粮是不同指标；库存后来降低不能反过来编造先前暂停原因。只有已有未行动结果才说明该次未行动；缺少记录时承认未知，不能断言没买过。不能把预留现金、找新工作或未记录的走访当实际原因。旧NPC回复即使连续重复也不成为事实，追问时应根据当前事实纠正；保留说过的话，不继续沿用错误。若有decisionBasis，它只解释带tick的那次已记录决策；historical不能解释当前新准备。WAIT只表示等待，不能扩写成缺钱、找新工作或没买成；决策理由也不是执行拒绝的原因。没有该记录时保持未知。回复用自然语言表达，不展示reasonCode、tick等字段名。
 若有recentHistory，是本人最近保留的实际生活结果，只描述该时刻的行动和增量，不是当前余额；未保留的更早细节仍未知。这些生活资料不增加memoryRefs来源。
 这是事实边界，不是要照抄的回复模板，措辞由你决定。
+referenceOptions列出本轮可引用编号；memoryRefs必须是JSON数字数组（格式示意[12,25]，实际编号只取目录），不能是字符串、对象、整条记忆或tick。先选择最多3个编号，再按数字升序且不重复输出；不需要引用经历时用[]，回答当前钱粮不要求强凑引用。不得引用生活历史的tick或旧资料里本轮未提供的编号。
 仅用于说明格式的JSON示例：{"reply":"这里填写对当前话题的回答","memoryRefs":[],"proposal":null}`;
 
 export function npcLanguageConfig(env=process.env){
@@ -39,6 +40,14 @@ function reportedUsage(value){
   result.inputCache=[hit,miss].every(n=>Number.isSafeInteger(n)&&n>=0&&n<=10000000)&&hit+miss===value.prompt_tokens?{hitTokens:hit,missTokens:miss}:null;
  }
  return result;
+}
+// 只保留有限格式分类，原始无效内容与引用值不进入诊断。
+function memoryRefsIssue(refs){
+ if(!Array.isArray(refs))return 'not-array';
+ if(refs.length>3)return 'too-many';
+ if(refs.some(n=>!Number.isSafeInteger(n)||n<=0))return 'not-positive-integer';
+ if(refs.some((n,i)=>i>0&&n<=refs[i-1]))return 'not-strictly-increasing';
+ return null;
 }
 async function boundedResponse(response,maxBytes,check){
  check(response.ok,'response','http-error','MODEL_UNAVAILABLE');
@@ -83,7 +92,7 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
    response_format:{type:'json_object'},stream:false,max_tokens:900,...(thinking?{thinking:{type:thinking}}:{})};
   requireCondition(Buffer.byteLength(JSON.stringify(body))<=32768,'对话上下文超过模型入口上限。','LIMIT_EXCEEDED');
   const controller=new AbortController();active=controller;
-  const started=performance.now(),measurement={status:'running',durationMs:null,usage:null,httpStatus:null,thinking,failure:null,finishReason:null,contentBytes:null};metrics.set(request.requestId,measurement);
+  const started=performance.now(),measurement={status:'running',durationMs:null,usage:null,httpStatus:null,thinking,failure:null,finishReason:null,contentBytes:null,memoryRefsIssue:null};metrics.set(request.requestId,measurement);
   const promise=(async()=>{
    let timer;
    const check=(condition,stage,reason,code='MODEL_OUTPUT_INVALID')=>{if(condition)return;
@@ -107,7 +116,7 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
     check(measurement.contentBytes<=8192,'content','content-too-large');
     let output;try{output=parseStrictJson(Buffer.from(choice.message.content),8192);}catch{check(false,'content','content-json');}
     check(output&&typeof output==='object'&&!Array.isArray(output)&&Object.keys(output).length===3&&['reply','memoryRefs','proposal'].every(k=>Object.hasOwn(output,k)),'schema','output-fields');
-    check(dialogueText(output.reply),'schema','reply-field');check(validMemoryRefs(output.memoryRefs),'schema','memory-refs-field');check(validProposal(output.proposal),'schema','proposal-field');
+    check(dialogueText(output.reply),'schema','reply-field');measurement.memoryRefsIssue=memoryRefsIssue(output.memoryRefs);check(validMemoryRefs(output.memoryRefs),'schema','memory-refs-field');check(validProposal(output.proposal),'schema','proposal-field');
     check(validModelReply(output),'schema','output-contract');
     const known=new Set([...contextForModel.observations,...contextForModel.conversation].map(m=>m.eventSeq));
     check(output.memoryRefs.every(ref=>known.has(ref)),'grounding','unknown-reference');

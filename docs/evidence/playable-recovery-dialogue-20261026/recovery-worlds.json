@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/check-recovery-worlds.mjs",
+    "../Narraverse-Playable",
+    "artifacts/recovery/worlds.json"
+  ],
+  "pid": 297,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 55921.948,
+  "cpuMs": null,
+  "hardLimitMs": 300000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

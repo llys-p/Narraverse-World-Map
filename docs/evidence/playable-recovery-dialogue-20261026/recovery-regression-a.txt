@@ -1,0 +1,45 @@
+✔ synchronous detached batches equal separate fixed ticks for all six fixtures and the daily boundary (10271.713306ms)
+✔ batch boundaries inspect old events, detach nested data, reject invalid counts, and expose no custom-system bypass (140.801499ms)
+✔ campaign canonical ticks match the legacy registered-system oracle for six ticks (312.496123ms)
+✔ one synthetic day-boundary primitive preserves settlement facts and RNG (483.580278ms)
+✔ session mode rejects a structurally valid but non-canonical custom transition (83.482961ms)
+✔ campaign tick rejects accessor, wrong-profile, and invalid-data inputs (47.876589ms)
+✔ fixed successors equal the unchanged complete oracle, including rejected and zero-tick commands (1482.934127ms)
+✔ copies, arbitrary candidates, unknown profiles and getters cannot acquire a successor proof (98.528084ms)
+✔ owner serializes revision races, deduplicates retries, and detaches caller data (231.778873ms)
+✔ failed link publication preserves projections and files, then retries at the same revision (239.382838ms)
+✔ reopen preserves short history and JSON commit copies receive full independent audit (1591.417551ms)
+✔ uncertain publication exposes no success or continuation until full reopen resolves it (560.09673ms)
+✔ campaign live writer requires the latest audited durable head and releases its realpath claim on close (483.094855ms)
+✔ independent owners cannot exchange projections or forged candidate authority (376.765396ms)
+✔ real synthetic history crosses day/RNG boundary with identical whole successor (11038.02421ms)
+✔ map contact, pause/resume and both JRPG rounds equal full replay (5713.195053ms)
+✔ HTTP worker saves a hunter mid-trip, reopens the same person, and continues while the player is away without duplicate pay (36511.995117ms)
+✔ campaign input and reserved pause budget reject without reading getters or changing old DTO gates (2.719634ms)
+✔ campaign cross-day attack separates real settlement from strike/counter and keeps local knowledge (15753.316681ms)
+✔ death before completion emits settlement/defeat, never a fictitious strike or further movement (14647.916173ms)
+✔ campaign owner rollback, pause/replan/NPC gift, restart equality, tamper rejection and no lock residue (4341.729114ms)
+✔ campaign HTTP DTO/profile/route authority remains isolated from old profile (8969.981284ms)
+✔ identical campaign structures return detached validation results and cannot poison the cache (84.867719ms)
+✔ mutated actor, numeric config, map, tick, and forged trust data are revalidated (105.324983ms)
+✔ descriptor inspection rejects accessors before and after a successful cached proof (31.399802ms)
+✔ proof keys use detached data even when a Proxy supplies different property values (40.685843ms)
+✔ a warmed structural proof cannot certify a forged historical fact (156.209704ms)
+✔ worker preserves committed views, exact retries, full restore and tamper refusal (1385.663329ms)
+✔ reference menu is rebuilt only from transmitted episodes and speech, is idempotent, and prompts keep the current topic (19.86398ms)
+✔ malformed references stay rejected without sorting or retries and diagnostics retain only bounded shape categories (10.443043ms)
+✔ pre-existing repair counts, later damage revokes readiness, and a failed claim cannot unlock the next quest (2355.759865ms)
+✔ deadline and death fail active quests, while important and changed own facts wake the preparation cache (29.337372ms)
+✔ more than 129 durable files remain writable and reopen, and altered journal or terminal state is rejected (23259.263233ms)
+✔ one campaign candidate remains detached, rejects non-data before invoking accessors, and preserves full audit (182.366757ms)
+✔ worker/HTTP quest progress is durable, read-only views stay coherent, and a retried command cannot duplicate a reward (7816.477864ms)
+✔ audited scene bundle is deeply immutable while public intent results stay detached and mutable (400.689669ms)
+✔ scene audit certificates bind exact rules and systems and refuse accessor inputs without reading them (258.923935ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 151627.963027

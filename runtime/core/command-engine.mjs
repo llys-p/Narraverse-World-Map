@@ -45,6 +45,7 @@ export function advanceOneTick(bundle, systems) {
 }
 
 const campaignExecution = Symbol('registered campaign execution');
+const campaignBatchExecution = Symbol('detached synchronous campaign batch');
 // Only fixed campaign handlers run here, over detached JSON data. No caller
 // supplies callbacks or a validation flag. Running those same handlers again
 // cannot add an independent check; full history/fact/receipt audit remains with
@@ -56,6 +57,17 @@ export function performCampaignTick(bundle) {
   return runTick(bundle, canonicalSystems(CAMPAIGN_RULES), 'session', campaignExecution);
 }
 
+// 入口完整预检并深复制；中间结果只存在于此同步循环，不能被调用者修改。
+// 固定系统每刻仍执行结构、事件计数、保护字段与账本检查。无调用者信任开关。
+export function performCampaignTicks(bundle,count){
+  integer(count);requireCondition(count<=MAX_ADVANCE_TICKS,'Tick batch exceeds budget','LIMIT_EXCEEDED');
+  let working=cloneBundle(bundle);
+  requireCondition(working.snapshot.rulesVersion===CAMPAIGN_RULES,'Campaign ticks require campaign rules','UNSUPPORTED_VERSION');
+  const systems=canonicalSystems(CAMPAIGN_RULES);
+  for(let i=0;i<count;i++)working=runTick(working,systems,'session',campaignBatchExecution);
+  return working;
+}
+
 export function performTick(bundle, systems, mode) {
   return runTick(bundle, systems, mode);
 }
@@ -64,14 +76,14 @@ function runTick(bundle, systems, mode, execution = undefined) {
   let failedTick;
   let active = true;
   try {
-    preflightExperienceData(bundle, true);
+    if(execution!==campaignBatchExecution)preflightExperienceData(bundle, true);
     fields(bundle, ['snapshot', 'eventLog']); record(bundle.snapshot);
     if (mode === 'full') validateBundle(bundle, { rulesVersion: bundle.snapshot.rulesVersion, systems });
     const candidate = mode === 'full' ? cloneBundle(bundle) :
       { snapshot: cloneData(bundle.snapshot), eventLog: bundle.eventLog.slice() };
     const s = candidate.snapshot;
     const rulesVersion = s.rulesVersion;
-    if(execution===campaignExecution)requireCondition(rulesVersion===CAMPAIGN_RULES,'Campaign tick requires campaign rules','UNSUPPORTED_VERSION');
+    if(execution===campaignExecution||execution===campaignBatchExecution)requireCondition(rulesVersion===CAMPAIGN_RULES,'Campaign tick requires campaign rules','UNSUPPORTED_VERSION');
     const clock = restoreClock({ tick: s.tick, tickMinutes: s.tickMinutes });
     clock.advanceTicks(1); failedTick = clock.tick;
     requireCondition(s.revision < Number.MAX_SAFE_INTEGER, 'Revision overflow', 'LIMIT_EXCEEDED');
@@ -228,7 +240,10 @@ function runTick(bundle, systems, mode, execution = undefined) {
         ...([EXPERIENCE_RULES,COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(rulesVersion)?{experienceConfig:world.experienceModel.config}:{}),
         ...([COGNITION_RULES,SURVIVAL_RULES,ENCOUNTER_RULES,SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(rulesVersion)?{cognitionConfig:world.cognitionModel.config}:{}) });
     };
-    const beforeSystems = envelope(), previousEntityId = s.nextEntityId;
+    // 固定规则在没有到期系统时不会调用任何系统回调，两次相邻全量编码恒等。
+    // 有回调时保留完整保护字段比较；公开自定义系统路径也保持原检查。
+    const checkEnvelope=plan.dueTasks.length>0||(execution!==campaignExecution&&execution!==campaignBatchExecution);
+    const beforeSystems = checkEnvelope?envelope():null, previousEntityId = s.nextEntityId;
     for (const due of plan.dueTasks) {
       const context = { snapshot: s, rng,
         ...(rulesVersion === ECOLOGY_RULES ? { populationCauses: Object.freeze(ecologyCauses(candidate.eventLog)) } : {}),
@@ -243,7 +258,7 @@ function runTick(bundle, systems, mode, execution = undefined) {
         throw fault('INVALID_INPUT', 'Asynchronous systems are not supported');
       }
     }
-    requireCondition(envelope() === beforeSystems, 'System changed protected snapshot fields');
+    if(checkEnvelope)requireCondition(envelope() === beforeSystems, 'System changed protected snapshot fields');
     if([PLAYER_RULES,PLAY_RULES,MIND_RULES].includes(rulesVersion) && plan.dueTasks.length){
       const daily=candidate.eventLog.findLast(e=>e.type==='SocietyDaySettled' && e.tick===failedTick);
       requireCondition(daily,'Missing player daily source');append(playerDayFact(s.world,daily.payload));
@@ -276,7 +291,7 @@ function runTick(bundle, systems, mode, execution = undefined) {
     }
     if (mode === 'session') {
       validateSnapshotStructure(s, { rulesVersion, systems }, candidate.eventLog.length);
-      if (execution !== campaignExecution) {
+      if (execution !== campaignExecution && execution !== campaignBatchExecution) {
         const expected = performTick(bundle, canonicalSystems(rulesVersion), 'proof');
         requireCondition(canonicalJson(s) === canonicalJson(expected.snapshot) &&
           canonicalJson(candidate.eventLog.slice(bundle.eventLog.length)) === canonicalJson(expected.eventLog.slice(bundle.eventLog.length)),

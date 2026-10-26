@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "../Narraverse-Playable/tests/simulation/playable-long-service.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 153968.443,
+  "cpuMs": null,
+  "hardLimitMs": 300000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

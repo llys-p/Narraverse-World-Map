@@ -1,0 +1,341 @@
+{
+  "completed": true,
+  "counts": {
+    "planned": 8,
+    "attempted": 0,
+    "automaticPassed": 0,
+    "automaticFailed": 0,
+    "providerFailed": 0,
+    "fixtureFailed": 0,
+    "blocked": 0,
+    "notRun": 8
+  },
+  "source": {
+    "baseCommit": "edd8624623bb985555920d36226e0b0b499c59f1",
+    "workingTreeDirty": true,
+    "sha256": {
+      "benchmarks/npc-playable-v1/cases.json": "d42fb8a6e605d69575e2a0a8df02a13c78e423b59d33bb0bbdf3a07145cc2a8e",
+      "runtime/core/npc-negotiation-terms.mjs": "5f80bc3e4d9a4941bb4fb1f09020d29f0bda2a2733e6f382cae5e368ef52d50f",
+      "runtime/fixtures/campaign-village.mjs": "e2d242af3846a22c8846d2c76e05f07b08ec6a38b23e3c50c7332f9f8e2e2583",
+      "runtime/service/npc-language-provider.mjs": "696918c312665a0d738ad266482efcd606cdb74a34c0bce031ec594ae12aea9a",
+      "runtime/evaluation/npc-dialogue-eval.mjs": "2591bc65babb4431d25d90946a1af296f458ae68d1f1fb8a73d3b8e7c4284806",
+      "runtime/service/npc-dialogue-grounding.mjs": "25d2e005aab0ebadd3827216c3a60221fe616adc4ee2cf01f628561bbb90be34",
+      "runtime/service/npc-life-facts.mjs": "0309ba301126b72aa9bd3c070abc341bcf8fd99002cb742b5941f80c310b6e2a",
+      "runtime/evaluation/npc-fact-audit.mjs": "9353792b80c2ff5384b66ba473f7914f1041986ce364d723f30a6a233cd4b34c",
+      "runtime/core/survival-state.mjs": "06c5373679f5146ae67435f4458af8aa9401fafc19b9394c126198b5d0edcd7a",
+      "runtime/service/npc-recall-focus.mjs": "b6b9be89889d49897eff1779b3e22dae1b202d4bb04c9bdae3c2383f78362889",
+      "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+      "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+      "runtime/core/campaign-play.mjs": "ad71c48efe003c76c61327d2909eaabb85c841f0feca64c78b79277a7dca9122",
+      "runtime/core/campaign-limits.mjs": "c850c4d3e5578c37b7d97c4291ab51ac5c2c107a5bdcec635ca6d7bc0e490b86",
+      "runtime-playable-contract.mjs": "ed7e876f3dd4796bb9bab72c1740d1e729e32500af1408cfbf94d10b135fcef3",
+      "runtime/evaluation/npc-report-files.mjs": "4750b4be811166a675facaabfed552b79cbb3c1f0d042773c76f55a3c4c788bd",
+      "runtime/core/npc-negotiation.mjs": "1ba5027b90dd96b290d582c918e3c13f34c2c12718eda48f7939f132318d88da",
+      "runtime/core/npc-social.mjs": "7dc296035a5f6d2e6217f03e10b015439b248e40940585cfc42bdd78c49de2de",
+      "runtime/core/npc-memory.mjs": "d2aca016dde6bada9c6220f6c3eceab34c1e4e50c7830c07ada085d5960ed878",
+      "runtime/core/npc-life-context.mjs": "14b95f058cfcf88e3893d237e3087dc118876addf2c7fb1c0ba0747cf0f5dde0",
+      "runtime/core/npc-village-sites.mjs": "3af4d2ff4d7b7a15e7d136f5a5e1356f3857df73de4f7d1e2ced40371a3ef28f",
+      "runtime/core/campaign-npc-agency.mjs": "be74d384f287b221d12897c16db84fa8ffb44d1a00087d682c9b3ca5aee69016",
+      "runtime/core/campaign-map.mjs": "5a635b5aff39cb8e9e590ac442122f14e776fca687d3479b94cf86409ea39592",
+      "runtime-negotiation-contract.mjs": "528d6214a61140a78d988ff4af26c5429f1dea9ec1a9bab5e25bf21c6b58ea52",
+      "scripts/evaluate-npc-dialogue.mjs": "ef0cf36a0718936eec9084d7994eef34b9990e14c447c1085e2f557344167d53"
+    },
+    "node": "v24.22.1"
+  },
+  "cases": [
+    {
+      "id": "playable-life",
+      "worldReplayAudit": "passed",
+      "turns": [
+        {
+          "id": "before-wage",
+          "status": "not-run",
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": null,
+              "actual": null,
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": null,
+              "actual": null,
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": null,
+              "actual": null,
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "paid",
+          "status": "not-run",
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 20,
+              "actual": 20,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "WorkForPay",
+              "actual": "WorkForPay",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "FOOD_INCOME",
+              "actual": "FOOD_INCOME",
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "at-stall",
+          "status": "not-run",
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 20,
+              "actual": 20,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "WorkForPay",
+              "actual": "WorkForPay",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "FOOD_INCOME",
+              "actual": "FOOD_INCOME",
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "after-buy",
+          "status": "not-run",
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 10,
+              "actual": 10,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "BuyFood",
+              "actual": "BuyFood",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "BUY_FOOD",
+              "actual": "BUY_FOOD",
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "gifts",
+          "status": "not-run",
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 2,
+              "actual": 2,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 10,
+              "actual": 10,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "BuyFood",
+              "actual": "BuyFood",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "BUY_FOOD",
+              "actual": "BUY_FOOD",
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "wait",
+          "status": "not-run",
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 1,
+              "actual": 1,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 10,
+              "actual": 10,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "NoAction",
+              "actual": "NoAction",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "no-action",
+              "actual": "no-action",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "WAIT",
+              "actual": "WAIT",
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "later-buy",
+          "status": "not-run",
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 1,
+              "actual": 1,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "BuyFood",
+              "actual": "BuyFood",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "BUY_FOOD",
+              "actual": "BUY_FOOD",
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "work-again",
+          "status": "not-run",
+          "preconditions": [
+            {
+              "name": "selfFood",
+              "expected": 0,
+              "actual": 0,
+              "passed": true
+            },
+            {
+              "name": "selfWallet",
+              "expected": 20,
+              "actual": 20,
+              "passed": true
+            },
+            {
+              "name": "lifeResult",
+              "expected": "WorkForPay",
+              "actual": "WorkForPay",
+              "passed": true
+            },
+            {
+              "name": "lifeResultStatus",
+              "expected": "succeeded",
+              "actual": "succeeded",
+              "passed": true
+            },
+            {
+              "name": "lifeDecisionReason",
+              "expected": "FOOD_INCOME",
+              "actual": "FOOD_INCOME",
+              "passed": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

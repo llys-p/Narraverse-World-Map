@@ -1,0 +1,1 @@
+{"status":"verified","sourceFiles":50,"testedSourceFiles":417,"preservedEvidenceFiles":844,"evidenceFiles":81,"legacyCheckpoints":10,"sevenDaySeeds":3,"distinctTests":171,"modelAttempts":5,"browserVisual":"blocked","fps":"not-measured"}

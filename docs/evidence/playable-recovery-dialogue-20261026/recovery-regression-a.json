@@ -1,0 +1,31 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/campaign-batch-ticks.test.mjs",
+    "tests/simulation/npc-reference-options.test.mjs",
+    "tests/simulation/campaign-canonical-tick.test.mjs",
+    "tests/simulation/campaign-runtime.test.mjs",
+    "tests/simulation/campaign-live-derivation.test.mjs",
+    "tests/simulation/campaign-live-owner.test.mjs",
+    "tests/simulation/campaign-live-world-boundaries.test.mjs",
+    "tests/simulation/campaign-structure-proof.test.mjs",
+    "tests/simulation/campaign-service.test.mjs",
+    "tests/simulation/campaign-npc-service.test.mjs",
+    "tests/simulation/demo-worker.test.mjs",
+    "tests/simulation/scene-audit-immutability.test.mjs",
+    "tests/simulation/playable-boundaries.test.mjs",
+    "tests/simulation/playable-service.test.mjs",
+    "tests/simulation/playable-performance-boundaries.test.mjs"
+  ],
+  "pid": 8,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 151728.1,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
