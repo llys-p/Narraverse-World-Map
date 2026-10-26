@@ -1,0 +1,57 @@
+{
+  "order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2"
+  ],
+  "parent": "edd8624623bb985555920d36226e0b0b499c59f1",
+  "tick": 1008,
+  "seed": 42,
+  "statistic": "median of two observations per arm",
+  "measurements": {
+    "simulateMs": {
+      "A": 31962.303392499998,
+      "B": 27546.232816,
+      "reductionPercent": 13.81649664691011
+    },
+    "auditMs": {
+      "A": 30569.064013500003,
+      "B": 27188.3505785,
+      "reductionPercent": 11.059263814904508
+    },
+    "tenMapReadsMs": {
+      "A": 56.46077499999592,
+      "B": 50.139671500000986,
+      "reductionPercent": 11.195566302438092
+    }
+  },
+  "identicalBundleSha256": "c6b6d450bce6995d6f84c7f85550d70e3141981db264bb02d4f418d83f4174e5",
+  "scope": "single host and fixed world; not FPS, interactive latency or percentile claim",
+  "endToEndDiagnostic": {
+    "order": [
+      "B",
+      "A"
+    ],
+    "samplesPerArm": 1,
+    "parent": {
+      "measurement": "cached-HTTP-read-during-worker",
+      "initialOpenMs": 280.773472,
+      "submitAndSaveMs": 62645.065414000004,
+      "reopenMs": 90752.75024199998,
+      "samples": 30,
+      "maxMs": 5.702560000000005,
+      "medianMs": 2.1419779999999946
+    },
+    "candidate": {
+      "measurement": "cached-HTTP-read-during-worker",
+      "initialOpenMs": 293.74259800000004,
+      "submitAndSaveMs": 57322.636633,
+      "reopenMs": 94327.040424,
+      "samples": 30,
+      "maxMs": 6.0110729999999535,
+      "medianMs": 2.0690069999999423
+    },
+    "verdict": "cold reopen did not improve in this single pair; no whole-entry speedup claim"
+  }
+}

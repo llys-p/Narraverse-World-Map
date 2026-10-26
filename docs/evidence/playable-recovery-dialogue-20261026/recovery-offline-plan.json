@@ -1,0 +1,21 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-npc-dialogue.mjs",
+    "--suite",
+    "playable-v1",
+    "--mode",
+    "plan",
+    "--out",
+    "artifacts/recovery/dialogue-plan.json"
+  ],
+  "pid": 389,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 38703.076,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

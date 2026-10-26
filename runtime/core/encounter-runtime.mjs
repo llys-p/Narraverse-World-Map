@@ -46,7 +46,7 @@ import {
 import { TICKS_PER_DAY } from './simulation-clock.mjs';
 import { MAX_RESOURCE_DAYS } from './resource-ledger.mjs';
 import { createSurvivalWorld, survivalRuntimeHooks } from './motivation-runtime.mjs';
-import { performTick, performCampaignTick, canonicalSystems } from './command-engine.mjs';
+import { performTick, performCampaignTick, performCampaignTicks, canonicalSystems } from './command-engine.mjs';
 import { canPlayerIntent, playerIntentDuration } from './player-state.mjs';
 import { createRng } from './rng.mjs';
 
@@ -133,6 +133,11 @@ const SOURCE_SYSTEM = 'encounter';
 
 function performSceneTick(bundle, systems, profile) {
   return profile?.rules === 'd-campaign-v1' ? performCampaignTick(bundle) : performTick(bundle, systems, 'session');
+}
+function performSceneTicks(bundle,systems,profile,count){
+  if(profile?.rules==='d-campaign-v1')return performCampaignTicks(bundle,count);
+  for(let i=0;i<count;i++)bundle=performSceneTick(bundle,systems,profile);
+  return bundle;
 }
 
 const DTO_KEYS = Object.freeze([
@@ -767,7 +772,7 @@ function executeIntentFor(bundle,dto,profile=null) {
     // L91: the encounter effect lands at the completion tick *before* that tick's
     // settlement, so the world is advanced to completionTick-1 first, the action is
     // applied there, and the final tick settles the post-action world.
-    for (let t = fromTick; t < tick - 1; t += 1) working = performSceneTick(working, systems, profile);
+    working=performSceneTicks(working,systems,profile,tick-1-fromTick);
     if (playerIsAlive(working.snapshot.world)) {
       const actedWorld = cloneData(working.snapshot.world);
       const playerBefore=playerOf(actedWorld).health,wolfBefore=encounterOf(actedWorld)?.wolfHealth;
@@ -797,10 +802,10 @@ function executeIntentFor(bundle,dto,profile=null) {
       // L92: a settlement before completion killed the player — the action never lands,
       // but the clock still advances to the original target tick.
       midFlightDead = true;
-      for (let t = working.snapshot.tick; t < tick; t += 1) working = performSceneTick(working, systems, profile);
+      working=performSceneTicks(working,systems,profile,tick-working.snapshot.tick);
     }
   } else if (plan.outcome === 'succeeded' && !instantCommit) {
-    for (let t = fromTick; t < tick; t += 1) working = performSceneTick(working, systems, profile);
+    working=performSceneTicks(working,systems,profile,tick-fromTick);
   }
 
   const finalSnapshot = working.snapshot;

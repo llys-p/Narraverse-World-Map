@@ -1,0 +1,13 @@
+✔ four real quest states complete a village/forest chapter, survive replay, and cannot be rewarded twice (6407.679818ms)
+✔ oral claims do not complete tasks, abandonment resets progress, and the same request is idempotent (1578.146821ms)
+✔ seven days have recurring opportunities and recorded own life results, with resources and replay intact (91602.059675ms)
+✔ offscreen preparation uses fewer evaluations and reactivates on important changes (4423.63208ms)
+✔ a new offer does not erase the source of an already earned purchase step (38928.295081ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 143135.131636

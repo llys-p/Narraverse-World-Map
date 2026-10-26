@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "../Narraverse-Playable/scripts/check-playable-evidence.mjs"
+  ],
+  "pid": 407,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 314.842,
+  "cpuMs": null,
+  "hardLimitMs": 60000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

@@ -1,0 +1,20 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/simulation/campaign-canonical-tick.test.mjs",
+    "tests/simulation/npc-dialogue-diagnostics.test.mjs",
+    "tests/simulation/npc-dialogue-grounding.test.mjs",
+    "tests/simulation/playable-campaign.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 143063.207,
+  "cpuMs": null,
+  "hardLimitMs": 300000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

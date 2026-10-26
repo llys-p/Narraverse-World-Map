@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-recovery-core.mjs",
+    ".",
+    "artifacts/recovery/abba-B2.json"
+  ],
+  "pid": 341,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 55219.081,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

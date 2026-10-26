@@ -1,0 +1,32 @@
+✔ synchronous detached batches equal separate fixed ticks for all six fixtures and the daily boundary (11546.464483ms)
+✖ batch boundaries inspect old events, detach nested data, reject invalid counts, and expose no custom-system bypass (114.26481ms)
+✔ reference menu is rebuilt only from transmitted episodes and speech, is idempotent, and prompts keep the current topic (16.074655ms)
+✔ malformed references stay rejected without sorting or retries and diagnostics retain only bounded shape categories (9.826991ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11898.867533
+
+✖ failing tests:
+
+test at tests/simulation/campaign-batch-ticks.test.mjs:11:1
+✖ batch boundaries inspect old events, detach nested data, reject invalid counts, and expose no custom-system bypass (114.26481ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///workspace/scratch/e56afaffb4e3/Narraverse-Recovery/tests/simulation/campaign-batch-ticks.test.mjs:16:183)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }

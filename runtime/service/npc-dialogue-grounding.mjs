@@ -78,6 +78,9 @@ export function groundedProviderContext(context,text){
    actor:m.actorId==='actor-4'?'玩家':m.actorId===null?'未识别的行为人':'身份不详',minutesAgo:minutes(context.tick,m.tick)}}));
  out.agreement=context.agreement?{...pick(context.agreement,agreementFields),terms:pick(context.agreement.terms,['repairAmount','loanTicks'])}:null;
  out.conversation=context.conversation.slice(-8).map(t=>({...pick(t,['eventSeq','tick','utterance','reply','memoryRefs']),evidence:'仅为双方说过的话，不证明声称的事情发生；旧回复也可能有误'}));
+ // 只从本轮真正发送的两类资料重建目录，不接收外部传入的引用白名单。
+ out.referenceOptions={observationEventSeqs:out.observations.map(m=>m.eventSeq),conversationEventSeqs:out.conversation.map(m=>m.eventSeq),
+  format:'memoryRefs只能是上述编号中最多3个正整数的升序无重复JSON数组；可用[]。交谈编号只证明说过。lifeHistory、activity与knownFacts不新增编号。'};
  const holder=out.self.knownHolder;
  out.knownFacts={version:1,identity:{selfId:'actor-2',selfRole:'你是猎人',playerId:'actor-4',playerRole:'正在与你交谈的玩家'},tickMinutes:TICK_MINUTES,
   tool:{holder:holder==='actor-2'?'self':holder==='actor-4'?'player':'unknown',

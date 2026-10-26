@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/verify-npc-dialogue-report.mjs",
+    "--report",
+    "artifacts/recovery/dialogue-plan.json"
+  ],
+  "pid": 7,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 114.771,
+  "cpuMs": null,
+  "hardLimitMs": 60000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

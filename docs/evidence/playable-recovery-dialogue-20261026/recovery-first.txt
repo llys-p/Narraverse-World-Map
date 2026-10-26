@@ -1,0 +1,25 @@
+✔ campaign canonical ticks match the legacy registered-system oracle for six ticks (343.219009ms)
+✔ one synthetic day-boundary primitive preserves settlement facts and RNG (553.565731ms)
+✔ session mode rejects a structurally valid but non-canonical custom transition (82.957381ms)
+✔ campaign tick rejects accessor, wrong-profile, and invalid-data inputs (45.317857ms)
+✔ invalid outputs retain distinct safe categories, no raw content, and no automatic retries (25.013042ms)
+✔ unknown finish values and transport errors never become diagnostic text; successful outputs have no failure (1.935349ms)
+✔ real fixture identities explain holder relations and distinguish observation, discovery and attributed speech (9371.662005ms)
+✔ real agreement facts keep ready distinct from claimed and fix returned-late duration at twenty minutes (0.387329ms)
+✔ breach marker is not return time, on-time return stays zero after time advances, and unknown fields remain unknown (1986.125109ms)
+✔ context projection is idempotent, bounded and whitelisted, and ignores injected derived truth or other minds (69.601695ms)
+✔ whole-sentence hints distinguish existing terms and immediate repair without converting quotes, denial, history or conditional speech into actions (33.675623ms)
+✔ Provider sends the same prepared context as the evaluation, signs varied model wording unchanged, and never substitutes a stock reply or executes a hint (6.00543ms)
+✔ four real quest states complete a village/forest chapter, survive replay, and cannot be rewarded twice (5336.847337ms)
+✔ oral claims do not complete tasks, abandonment resets progress, and the same request is idempotent (1531.33319ms)
+✔ seven days have recurring opportunities and recorded own life results, with resources and replay intact (83502.381512ms)
+✔ offscreen preparation uses fewer evaluations and reactivates on important changes (3185.905857ms)
+✔ a new offer does not erase the source of an already earned purchase step (36343.650565ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 142925.214992

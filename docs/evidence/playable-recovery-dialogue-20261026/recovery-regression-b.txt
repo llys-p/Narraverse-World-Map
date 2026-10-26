@@ -1,0 +1,38 @@
+✔ official short replies explicitly disable thinking, generic providers omit it, and an explicit mode is sent without changing the signed dialogue contract (18.11472ms)
+✔ invalid thinking configuration is rejected before fetch; reasoning-only, empty or truncated final content cannot become a dialogue (3.674331ms)
+✔ provider usage preserves only consistent cache counts, never infers missing usage or exposes raw provider fields (3.669144ms)
+✔ loopback 401/403 failures are cached once and produce safe partial-coverage reports with later turns blocked and no upstream body or key (284.30731ms)
+✔ real loopback failure reaches fixture5 JSON/HTML with safe category, blocks dependent turns and preserves HTTP usage (222.238662ms)
+✔ invalid outputs retain distinct safe categories, no raw content, and no automatic retries (21.995074ms)
+✔ unknown finish values and transport errors never become diagnostic text; successful outputs have no failure (2.077674ms)
+✔ real fixture identities explain holder relations and distinguish observation, discovery and attributed speech (9647.163675ms)
+✔ real agreement facts keep ready distinct from claimed and fix returned-late duration at twenty minutes (0.512453ms)
+✔ breach marker is not return time, on-time return stays zero after time advances, and unknown fields remain unknown (1938.56744ms)
+✔ context projection is idempotent, bounded and whitelisted, and ignores injected derived truth or other minds (76.137366ms)
+✔ whole-sentence hints distinguish existing terms and immediate repair without converting quotes, denial, history or conditional speech into actions (36.102758ms)
+✔ Provider sends the same prepared context as the evaluation, signs varied model wording unchanged, and never substitutes a stock reply or executes a hint (6.953027ms)
+✔ provider is explicitly configured, read-only, bounded to known context, caches IDs and signs the whole draft (13.571612ms)
+✔ invalid JSON, extra fields, unknown references, unsupported actions, incomplete and excessive output fail closed (9.260948ms)
+✔ one in-flight request is shared, parallel IDs are rejected, and fetch/body timeouts are bounded without automatic retries (43.266515ms)
+✔ dialogue controller discards late replies on revision/person/world/edit changes and never auto-commits a proposal (3.817434ms)
+✔ HTTP/worker recovers a lost preview once, persists only confirmed speech and restores historical decision facts (33293.069814ms)
+✔ current life facts distinguish purchased delta from current food and unrefreshed intent (14707.528175ms)
+✔ gifts pause current preparation despite old ready plan, later low stock does not invent a cause (13075.102776ms)
+✔ old model claims and player assertions cannot become life facts or overwrite current resources (13317.54419ms)
+✔ food need uses inventory threshold independently of hunger and private facts are rebuilt at the boundary (91.562426ms)
+✔ controlled provider receives explicit facts and preserves raw model wording, signing and bounds (45.958884ms)
+✔ paired own decision reason remains historical when current preparation has moved on (7385.33465ms)
+✔ missing, unpaired, future or injected reasons are dropped instead of inventing an explanation (5478.647674ms)
+✔ a recorded need reason cannot override current resources or a current tool redirect (5431.77488ms)
+✔ new bounded schema accepts eight-turn histories and four settlements while old schemas keep their limits (4.653587ms)
+✔ controlled twenty-eight turns preserve exact state, paired historical reasons, source references and four replays (90061.720276ms)
+✔ playable schema keeps the eight turn and seven day bounds without widening old fixtures (2.567725ms)
+✔ controlled eight turn conversation consumes retained own history and never manufactures world experience (38061.725211ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 234670.099934

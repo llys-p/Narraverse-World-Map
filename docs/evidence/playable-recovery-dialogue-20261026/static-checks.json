@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "file": "runtime/core/command-engine.mjs",
+      "exitCode": 0,
+      "sha256": "f252049a674f1462e201ca96619309f945e7602539630dc83522673eb7e69e61"
+    },
+    {
+      "file": "runtime/core/encounter-runtime.mjs",
+      "exitCode": 0,
+      "sha256": "8db416e902ce3302081020e9a31618d3762a6a614a2480ae6767a42922b8925e"
+    },
+    {
+      "file": "runtime/service/npc-dialogue-grounding.mjs",
+      "exitCode": 0,
+      "sha256": "25d2e005aab0ebadd3827216c3a60221fe616adc4ee2cf01f628561bbb90be34"
+    },
+    {
+      "file": "runtime/service/npc-language-provider.mjs",
+      "exitCode": 0,
+      "sha256": "696918c312665a0d738ad266482efcd606cdb74a34c0bce031ec594ae12aea9a"
+    },
+    {
+      "file": "scripts/check-recovery-evidence.mjs",
+      "exitCode": 0,
+      "sha256": "027113efdc97a4cd12aa28dbb2bea472de5390c8cb7616303ce3634380b604e1"
+    },
+    {
+      "file": "scripts/check-recovery-worlds.mjs",
+      "exitCode": 0,
+      "sha256": "772634a8eb6dc740c7ac42193272cbb2e35d2435f44e964fe0b32f74eb8c32ae"
+    },
+    {
+      "file": "scripts/measure-recovery-core.mjs",
+      "exitCode": 0,
+      "sha256": "6c84752948b52acac275b273604f395129703c174bab93aa3922d7d83b1b6230"
+    },
+    {
+      "file": "tests/simulation/campaign-batch-ticks.test.mjs",
+      "exitCode": 0,
+      "sha256": "72ca4926076c0502a4912821d04cda718234578e39519f54a9b6ef8ab0ba7a17"
+    },
+    {
+      "file": "tests/simulation/npc-reference-options.test.mjs",
+      "exitCode": 0,
+      "sha256": "310c877b5bea0e083aa98e578172c6746aa0839f49785d4de1bd0a64e7d62745"
+    }
+  ]
+}
