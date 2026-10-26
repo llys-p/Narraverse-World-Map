@@ -1,0 +1,17 @@
+{
+  "parent": "b8f7b268cde63c0a0d12032f278b442933405839",
+  "date": "2026-10-27",
+  "timezone": "Asia/Shanghai",
+  "productionDiff": [],
+  "externalModelCalls": 0,
+  "visualFeedback": "not-measured",
+  "files": {
+    "PROJECT_CONTEXT.md": "a5f38cc6cb38444c27f487080053735ddc06c4766d200876906bd3620c2d6981",
+    "tasks/CONFIG-PROOF-MEASUREMENT-TASK.md": "0a1b3d45051bea5b554696643d2d237feed2251e3603a8b20ba00902107bca08",
+    "docs/runtime/CONFIG-PROOF-MEASUREMENT.md": "e0fab2a98a05cc2ff98cbac26cc4697d7c218a8cb49a1f30aa116c8d96c85bb2",
+    "scripts/measure-config-validation.mjs": "5ef3504b4485f7ff67ea59d3d4a74646a6e035095b91851d256ab8f2792a6c4d",
+    "scripts/check-config-proof-evidence.mjs": "0994fe9831a41992bedd7d21ae8d3a886a4c794532c3109c5e9f116b1e727a9a",
+    "tests/simulation/config-validation-boundaries.test.mjs": "57487d93c3281f0c2ae6c1413ccc569171b0a460996f7554d373d601580920bc",
+    "docs/evidence/config-proof-measurement-20261027/validation.json": "12cde1e76dbd5a0f2f2b01ea0ca41dfe650df10ad92c32386721bf8bf327c8c5"
+  }
+}
