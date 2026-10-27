@@ -1,0 +1,10 @@
+{"measurement":"quest-deadline-recovery","worldTick":2017,"deadline":4033,"progress":[0,0],"files":{"service-commit-r0.json":"9046aaed0a50dc08a2fa886320240755bb2a3740d582f1761ba1df2204433fae","service-commit-r1.json":"66494ee637815bd4dba952386072af62980e5d716b04e980164b8d8471212ffd","service-commit-r1478.json":"bbaaf53bc158ae392144dc7bab414e20106bbae3ff6212f35f593d10533233c5","service-commit-r2017.json":"6537b40e37531486aaf9e1b1548d6067d140adcb33343d0157d206106a002865","service-commit-r2018.json":"9280deb341e1a259cfb6db521ee5b6e4b3423130af8f95f5b270571639871d45","service-commit-r2019.json":"1a31773e50d8ee8f9542399e98a908c255f52b5a1e6c12b26e987f4b978ef391","service-commit-r37.json":"74fd4033998952024fb00e0a166fc8f6b6c2867e20c94fb8ed3eb9f37346bc43","service-commit-r38.json":"c7211bf57de448e78cb98627760e89c6513ad8721f01a050dafa190825b42391"},"externalModelCalls":0,"scope":"Synthetic worker/HTTP deadline, reaccept, durable reopen and retry; no browser rendering"}
+✔ real worker/HTTP reaches the deadline, fails on the following tick, accepts a fresh attempt and survives recovery (421390.450085ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 421646.113428

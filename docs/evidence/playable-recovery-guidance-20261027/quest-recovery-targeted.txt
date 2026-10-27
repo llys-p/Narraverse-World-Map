@@ -1,0 +1,22 @@
+✔ next steps explain first acceptance, concrete quest actions and optional chapter continuation using confirmed fields (218.528529ms)
+✔ guidance respects current work interval, death, battle, marching and the actual command budget (144.238188ms)
+✔ task deadlines are world time only and do not invent expiry or mutate the task (0.537243ms)
+✔ task DOM refreshes a moving visible hunter and locks approaches for combat, budget or unresolved writes (144.401264ms)
+✔ fresh projected actor objects reproduce the parent stale target while the new panel follows the latest visible position (415.1588ms)
+✔ task DOM names progress, shows deadlines, updates nearby controls and submits only existing quest actions (156.915898ms)
+✔ pre-existing repair counts, later damage revokes readiness, and a failed claim cannot unlock the next quest (3044.864595ms)
+✔ deadline and death fail active quests, while important and changed own facts wake the preparation cache (50.205717ms)
+✔ more than 129 durable files remain writable and reopen, and altered journal or terminal state is rejected (19252.983538ms)
+✔ last tick permits a ready village claim; advancing one tick fails it and a later acceptance resets progress (188.893625ms)
+✔ last tick warns during battle and ongoing march without promising an instant pause (125.572153ms)
+✔ failed and abandoned quests offer a reaccept without inventing rewards or world changes (123.980373ms)
+✔ a visibly dead hunter blocks misleading repair and gift guidance in a real audited world (5178.801399ms)
+✔ a ready quest stays claimable even if the hunter is visible dead; no approach button is offered for a dead hunter (160.426117ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 29796.305528
