@@ -1,0 +1,30 @@
+✔ configuration reuse accepts equivalent copies and switches valid configurations without changing world data (680.736861ms)
+✔ warmed configuration proofs never accept changed invalid config, forged fingerprints or mutated frozen copies (307.273996ms)
+✔ configuration proof hits do not skip current ledger, roster, estate configuration or player checks (162.802039ms)
+✔ getters stay unread and proxy-supplied invalid configurations cannot borrow a warmed proof (161.920695ms)
+✔ genesis journal, rejected and zero tick commands preserve parent audit and immutable result (1467.34148ms)
+✔ historical anchors and older fixture fall back and match the independent parent (2535.593642ms)
+✔ pre-certified incremental successor retains parent behavior (546.300999ms)
+✔ strict replay evidence is private and bound to a freshly audited object (326.624644ms)
+✔ missing, duplicate, reordered, modified and hidden commands cannot reuse a proof (5264.375924ms)
+✔ anchor, final facts and world tampering still match parent rejection (1001.436619ms)
+✔ an unjournalled time gap falls back and is rejected like the parent (468.397428ms)
+✔ raw accessors are rejected without being invoked on either audit (865.060864ms)
+✔ new observational helpers reject accessors without invoking them (1.174759ms)
+✔ proxy input uses the original replay path and matches parent behavior (842.559031ms)
+✔ raw negative zero retains the parent strict comparison behavior (1629.96566ms)
+{"measurement":"playable-guidance-consumer","assets":{"demo-runtime.html":"e6939eb81d4b3f576e4abb87a3de10981b05fd31d13dbb04c10c68a03bfcbe42","demo-runtime-prototype.mjs":"2cae7afdcc65469c4403f269885f5a86eea5ef31f43c2dae89c6eafd6e683955","demo-runtime-bridge.mjs":"40918ba8dc3a8df8b08d2efa68d8ce04133e208ad7eac738e738e56937d429a0","demo-operation-feedback.mjs":"f6c81536d142f99c9c3e3f2b66f655bc2ed74988dac98c9a73529b7d9d3e1140","demo-playable-goals.mjs":"6aa3ca72a7256836de8fefbe89cbbe7ec290bbe8fd70411f72db0a1ac3d47212","demo-runtime.css":"15bfb82dfc28f6c7c2a8fe62cf1d3ae264b181c6852689453d9b16a4cebf5c0f"},"worldTick":37,"rank":1,"requestPosts":4,"durableFiles":{"service-commit-r0.json":"c6bb18158ea5bc752092a9585e8f6f800d7b7f7a282ba41ed7754f8f8e326268","service-commit-r1.json":"d3c1018eebff85876725fb6ef09367816ae58c688a344fea7b46b99794ab7ec5","service-commit-r37.json":"f0b5c461c0d8f4a7d115b3139ab0047f4177e8bcf5c54737ede8c2c3e4013be9","service-commit-r38.json":"184ea90e89fd69e04a7b32226004bb8193a68c554d8b40aeebbfe48bed167760","service-commit-r39.json":"4796ce8310c4a9b122e427b74d9a53ffef8c68f94ceec9823766cdc1a2b56314"},"phases":["connect",null,"confirm","refresh","present"],"externalModelCalls":0,"rendering":"DOM contract mock; no browser layout or FPS acceptance"}
+✔ served guidance assets and real client quest actions preserve durable progress, recovery and idempotence (4885.69768ms)
+✔ one campaign candidate remains detached, rejects non-data before invoking accessors, and preserves full audit (234.649572ms)
+✔ cold replay equals the parent oracle for anchored history, rejected and zero-tick commands, then remains safely advanceable (17589.467318ms)
+✔ independent full audit and journal checks both reject plausible changes, sparse inputs, duplicate IDs and accessors without invoking them (31543.702835ms)
+✔ fixture5 keeps the original complete audit path and cannot acquire the new command budget (214.449913ms)
+✔ playable social memory, dialogue, real marching and combat survive the same complete cold audit as the parent (9010.201991ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 58742.69404
