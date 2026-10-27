@@ -1,0 +1,18 @@
+{
+  "command": [
+    "env",
+    "COLD_RUNTIME_ROOT=.",
+    "node",
+    "--test",
+    "tests/simulation/owned-batch-http.test.mjs"
+  ],
+  "pid": 106,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 90087.743,
+  "cpuMs": null,
+  "hardLimitMs": 300000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

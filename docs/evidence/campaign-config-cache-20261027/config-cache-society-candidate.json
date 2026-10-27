@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-config-cache-society.mjs",
+    ".",
+    "artifacts/config-cache/society-candidate.json"
+  ],
+  "pid": 19,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 1115.166,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

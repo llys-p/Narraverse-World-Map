@@ -1,0 +1,21 @@
+{
+  "cpu": {
+    "openMs": 111.728,
+    "simulateMs": 26735.465,
+    "auditMs": 25968.714
+  },
+  "maxRssKiB": 347968,
+  "node": "v24.22.1",
+  "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Batch",
+  "seed": 42,
+  "tick": 1008,
+  "commands": 1,
+  "openMs": 80.67093200000001,
+  "simulateMs": 25984.30211,
+  "auditMs": 25625.243472000002,
+  "tenMapReadsMs": 50.09698899999785,
+  "bundleSha256": "c6b6d450bce6995d6f84c7f85550d70e3141981db264bb02d4f418d83f4174e5",
+  "bytes": 296544,
+  "fullReplay": "passed",
+  "externalModelCalls": 0
+}

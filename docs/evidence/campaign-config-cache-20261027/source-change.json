@@ -1,0 +1,16 @@
+{
+  "reverse": [
+    {
+      "from": "// This proves only a detached configuration predicate, never the mutable world.\n// Exact validated bytes and derived strings are private; no caller trust marker.\nlet lastCampaignConfig = null;\nfunction validateWorldConfig(config){\n  if(config.version!=='society-config-v7'){validateConfig(config);return null;}\n  const detached=cloneData(config),key=canonicalJson(detached);\n  if(lastCampaignConfig?.key===key)return lastCampaignConfig;\n  validateConfig(detached);\n  const proof=Object.freeze({key,units:Object.freeze(detached.estates.map((_,i)=>canonicalJson(unitConfig(detached,i))))});\n  if(key.length<=32768)lastCampaignConfig=proof;\n  return proof;\n}\n\n",
+      "to": ""
+    },
+    {
+      "from": "const configProof=validateWorldConfig(m.config);",
+      "to": "validateConfig(m.config);"
+    },
+    {
+      "from": "(configProof?configProof.units[i]:canonicalJson(unitConfig(m.config,i)))",
+      "to": "canonicalJson(unitConfig(m.config,i))"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-owned-core.mjs",
+    ".",
+    "artifacts/config-cache/b2.json"
+  ],
+  "pid": 58,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 49363.756,
+  "cpuMs": null,
+  "hardLimitMs": 300000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

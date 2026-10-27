@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-owned-core.mjs",
+    "../Narraverse-Batch",
+    "artifacts/config-cache/a2.json"
+  ],
+  "pid": 71,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 54421.198,
+  "cpuMs": null,
+  "hardLimitMs": 300000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
