@@ -1,3 +1,14 @@
+# 当前候选：长档冷恢复重放复用（2026-10-27）
+
+父提交PR35 `f70e638ea4079f661855ff03713d1f267f0cf192`，分支 `codex/cold-replay-reuse-20261027`；任务 `tasks/COLD-REPLAY-REUSE-TASK.md`，交接 `docs/runtime/COLD-REPLAY-REUSE.md`。
+
+- 完整末态历史审计中记录私有严格重放证据；仅在新鲜审计、初始锚点、完整连续日记与原始数据严格相等时复用，否则回退。覆盖负零、代理、访问器、已有历史锚点与增量证明；不改规则/存档/运行中单写者。
+- 本机真实worker/HTTP：14天合成档父版一次226.320秒、候选两次118.915/116.159秒；7天单组81.756→42.102秒；文件、投影与重复请求一致。7天推进/短操作也有父候选单组记录，不据此推断稳定收益。14天合成档初始食物100，浏览器/FPS/Windows待验，模型0调用。
+- 组合回归21项及两项不同的实际HTTP检查通过，共23项不同检查；历史证据及代码冻结核验 `node scripts/check-cold-replay-reuse-evidence.mjs`。
+- 不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0；GitHub Projects待同步。下一步复测更长历史及历史锚点成本，评估进一步缩短完整末态审计，并从实际可玩体验验证进入、等待、目标与任务。
+
+以下为PR35及更早历史。
+
 # 当前候选：14天长档恢复分解（2026-10-27）
 
 父提交PR34 `543bf632ffc32e9496fd6bc6ebf191329b0ed39d`，分支 `codex/long-recovery-profile-20261027`；任务 `tasks/LONG-RECOVERY-PROFILE-TASK.md`，交接 `docs/runtime/LONG-RECOVERY-PROFILE.md`。

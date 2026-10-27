@@ -1,0 +1,10 @@
+{"measurement":"14-day-reopen-http","root":"/workspace/scratch/e56afaffb4e3/Narraverse-Long-Recovery","node":"v24.22.1","reopenMs":226320.312607,"retryMs":12.7086100000015,"fileSha256":"1a31773e50d8ee8f9542399e98a908c255f52b5a1e6c12b26e987f4b978ef391","projectionsSha256":"a2307a3dd5e40f05ca4b1174f557e982c1c0e16d13122dcbd8420e6d0e183aff","tick":2017,"commands":7,"externalModelCalls":0,"scope":"one synthetic saved state; HTTP startup and retry, not visual layout or FPS"}
+✔ synthetic 14-day HTTP reopen preserves projections and idempotent retry (226509.889007ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 226808.070242

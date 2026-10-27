@@ -49,6 +49,7 @@ import { createSurvivalWorld, survivalRuntimeHooks } from './motivation-runtime.
 import { performTick, performCampaignTick, performCampaignTicks, canonicalSystems } from './command-engine.mjs';
 import { canPlayerIntent, playerIntentDuration } from './player-state.mjs';
 import { createRng } from './rng.mjs';
+import { isDeepStrictEqual } from 'node:util';
 
 // ---------------------------------------------------------------------------
 // contract constants
@@ -1300,7 +1301,30 @@ function hooksSettleDay(world, sample, baseHooks=survivalRuntimeHooks) {
  * journal receipts. Structural facts (source system, entity ids, payload shape,
  * causation ordering) are checked directly so a tampered log cannot survive.
  */
-function hooksValidateHistory(snapshot, events, profile=null) {
+function replayOrigin(snapshot,profile=null){
+  const replayWorld = (profile?.createWorld??hooksCreateWorld)(
+    snapshot.world.memoryModel.config,
+    snapshot.world.mindModel.config,
+    snapshot.world.motivationModel.config,
+    snapshot.world.experienceModel.config,
+    snapshot.world.cognitionModel.config,
+    snapshot.simulationId,
+  );
+  const replaySnapshot = cloneSnapshotWith(snapshot, replayWorld);
+  replaySnapshot.tick = 0;
+  replaySnapshot.revision = 0;
+  replaySnapshot.instantCommits = 0;
+  replaySnapshot.nextEventSeq = 1;
+  replaySnapshot.rng = createRng(snapshot.rng.seed).getState();
+  replaySnapshot.commandReceipts = {};
+  replaySnapshot.pendingCommands = [];
+  replaySnapshot.nextInputSeq = 1;
+  if (snapshot.tick > 0) replaySnapshot.scheduledTasks = replaySnapshot.scheduledTasks.map((task) => ({
+    ...task,nextDueTick: task.taskId === 'survival-quote' ? 1 : task.intervalTicks,
+  }));
+  return {snapshot:replaySnapshot,eventLog:[]};
+}
+function hooksValidateHistory(snapshot, events, profile=null, collectStrictEvidence=false) {
   requireCondition(isPlainObject(snapshot), 'validateHistory expects a snapshot', 'INVALID_INPUT');
   requireCondition(isPlainObject(snapshot.world), 'validateHistory expects snapshot.world', 'INVALID_INPUT');
   requireCondition(Array.isArray(events), 'validateHistory expects the event log', 'INVALID_INPUT');
@@ -1351,37 +1375,13 @@ function hooksValidateHistory(snapshot, events, profile=null) {
   requireCondition(worldFacts.length + recorded.length === events.length,
     'the event log must contain only world and encounter facts', 'INVALID_INPUT');
 
-  const replayWorld = (profile?.createWorld??hooksCreateWorld)(
-    snapshot.world.memoryModel.config,
-    snapshot.world.mindModel.config,
-    snapshot.world.motivationModel.config,
-    snapshot.world.experienceModel.config,
-    snapshot.world.cognitionModel.config,
-    snapshot.simulationId,
-  );
-  const replaySnapshot = cloneSnapshotWith(snapshot, replayWorld);
-  replaySnapshot.tick = 0;
-  replaySnapshot.revision = 0;
-  replaySnapshot.instantCommits = 0;
-  replaySnapshot.nextEventSeq = 1;
   // The replay rebuilds the world from the initial seed: input queues, receipts and
   // counters start empty, and the scheduler starts from the *fresh* tick-0 schedule
   // (daily task 144, quote task 1). The committed snapshot carries the advanced
   // schedule, so the tasks are re-derived from their frozen intervals instead of being
   // copied from the terminal state.
-  replaySnapshot.rng = createRng(snapshot.rng.seed).getState();
-  replaySnapshot.commandReceipts = {};
-  replaySnapshot.pendingCommands = [];
-  replaySnapshot.nextInputSeq = 1;
-  if (snapshot.tick > 0) {
-    replaySnapshot.scheduledTasks = replaySnapshot.scheduledTasks.map((task) => ({
-      ...task,
-      nextDueTick: task.taskId === 'survival-quote' ? 1 : task.intervalTicks,
-    }));
-  }
-
   const systems = profile?.systems??encounterSystems();
-  let replay = { snapshot: replaySnapshot, eventLog: [] };
+  let replay = replayOrigin(snapshot,profile);
   if (history.length === 0) {
     // Engine-driven bundle: no encounter input was ever accepted, so every world fact was
     // produced by the registered main loop alone. The one full replay therefore advances the
@@ -1395,7 +1395,7 @@ function hooksValidateHistory(snapshot, events, profile=null) {
         `the replayed engine fact #${seq} does not match the committed fact`, 'INVALID_INPUT');
     }
   }
-  let comparedFactCount = 0;
+  let comparedFactCount = 0,strictReceipts=true;
   for (let index = 0; index < history.length; index += 1) {
     const entry = history[index];
     requireCondition(isPlainObject(entry) && isPlainObject(entry.dto) && isPlainObject(entry.receipt),
@@ -1436,6 +1436,7 @@ function hooksValidateHistory(snapshot, events, profile=null) {
       'the published fact for ' + entry.dto.commandId + ' sits outside the replayed log', 'INVALID_INPUT');
     requireCondition(canonicalJson(outcome.receipt) === canonicalJson(entry.receipt),
       'the replayed receipt for ' + entry.dto.commandId + ' does not match the journal', 'INVALID_INPUT');
+    if(collectStrictEvidence&&!isDeepStrictEqual(outcome.receipt,entry.receipt))strictReceipts=false;
 
     requireCondition(replay.eventLog.length <= events.length,
       'the replay produced more facts than the committed log', 'INVALID_INPUT');
@@ -1488,6 +1489,8 @@ function hooksValidateHistory(snapshot, events, profile=null) {
       'the replayed encounter input history does not match the committed counters', 'INVALID_INPUT');
   }
   if(profile)requireCondition(canonicalJson(replay.snapshot)===canonicalJson(snapshot),'Scene full snapshot/replay mismatch','INVALID_INPUT');
+  if(collectStrictEvidence)return {valid:true,errors:[],strictReplay:strictReceipts&&
+    isDeepStrictEqual(replay.snapshot,snapshot)&&isDeepStrictEqual(replay.eventLog,events)};
   return { valid: true, errors: [] };
 }
 
@@ -1506,7 +1509,11 @@ export function createSceneEncounterRuntimeHooks(baseHooks,scenePolicy){
   afterSystems:(snapshot,events,tick,append,context)=>{const result=hooksAfterSystems(snapshot,events,tick,append,context,baseHooks);scenePolicy.afterTick?.(snapshot.world,tick);return result;},
   applyAction:(input,payload,sample=null)=>hooksApplyAction(input,payload,sample,baseHooks),
   settleDay:(world,sample)=>hooksSettleDay(world,sample,baseHooks),
-  validateHistory:(snapshot,events)=>hooksValidateHistory(snapshot,events,profile())
+  validateHistory:(snapshot,events)=>hooksValidateHistory(snapshot,events,profile()),
+  // Evidence is observational only; it never changes history validation.
+  validateHistoryWithEvidence:(snapshot,events)=>hooksValidateHistory(snapshot,events,profile(),true),
+  // Pure reconstruction only; the caller must independently audit any snapshot.
+  replayOrigin:snapshot=>replayOrigin(snapshot,profile())
  };
  return Object.freeze(hooks);
 }

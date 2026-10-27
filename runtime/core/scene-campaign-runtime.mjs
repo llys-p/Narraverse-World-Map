@@ -69,7 +69,9 @@ export const campaignRuntimeHooks=Object.freeze({
  createWorld:(...a)=>hooks().createWorld(...a),
  beforeSystems:(s,...a)=>hooks(s.fixtureVersion).beforeSystems(s,...a),afterSystems:(s,...a)=>hooks(s.fixtureVersion).afterSystems(s,...a),
  applyAction:(...a)=>hooks().applyAction(...a),settleDay:(...a)=>hooks().settleDay(...a),
- validateHistory:(s,...a)=>hooks(s.fixtureVersion).validateHistory(s,...a)
+ validateHistory:(s,...a)=>hooks(s.fixtureVersion).validateHistory(s,...a),
+ validateHistoryWithEvidence:(s,...a)=>{inspectDescriptorTree({snapshot:s,events:a[0]});return hooks(s.fixtureVersion).validateHistoryWithEvidence(s,...a);},
+ replayOrigin:s=>{inspectDescriptorTree(s);return hooks(s.fixtureVersion).replayOrigin(s);}
 });
 export const createNpcCampaignWorld=(...args)=>hooks('2').createWorld(...args);
 export const createSocialCampaignWorld=(...args)=>hooks('3').createWorld(...args);

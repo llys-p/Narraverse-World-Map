@@ -1,7 +1,7 @@
 import { createRng, restoreRng } from './rng.mjs';
 import { restoreClock } from './simulation-clock.mjs';
 import { createScheduler, restoreScheduler } from './scheduler.mjs';
-import { validateEventLog,validateCampaignEventData } from './event-log.mjs';
+import { validateEventLog,validateCampaignEventData,validateCampaignEventLogWithEvidence } from './event-log.mjs';
 import { RESOURCE_RULES, MAX_RESOURCE_DAYS, validateResourceWorld } from './resource-ledger.mjs';
 import { ECOLOGY_RULES, validateEcologyWorld } from './ecology.mjs';
 import { MARKET_RULES, validateMarketWorld } from './market.mjs';
@@ -34,6 +34,9 @@ const SNAPSHOT_FIELDS = ['schemaVersion', 'rulesVersion', 'simulationId', 'fixtu
 // Only private, deeply frozen clones that completed the full scene audit are certified.
 // Mutable inputs and parsed checkpoints never acquire a certificate by object identity.
 const auditedSceneBundles = new WeakMap();
+// Identity probe only; it grants no proof and cannot certify caller data.
+export function hasAuditedBundleProof(bundle){return auditedSceneBundles.has(bundle);}
+export function hasStrictReplayEvidence(bundle){return auditedSceneBundles.get(bundle)?.strictReplay===true;}
 // 只复用私有、已完整审计且深冻结的数据树事实；不代替规则/系统验证或授予证书。
 export function inspectAuditedBundleData(bundle){
   if(!auditedSceneBundles.has(bundle))inspectDescriptorTree(bundle);
@@ -54,9 +57,9 @@ export function createAuditedBundle(bundle, options) {
   const cached = auditedSceneBundles.get(bundle);
   if (cached && cached.rulesVersion === options.rulesVersion && sameSystems(cached.systems, options.systems)) return bundle;
   const immutable = freezeData(cloneBundle(bundle));
-  validateBundle(immutable, options);
+  const strictReplay=validateBundleData(immutable, options,options.rulesVersion===CAMPAIGN_RULES);
   if ([SCENE_RULES,LIVELIHOOD_RULES,CAMPAIGN_RULES].includes(options.rulesVersion)) auditedSceneBundles.set(immutable,
-    {rulesVersion: options.rulesVersion, systems: Object.freeze({...options.systems})});
+    {rulesVersion: options.rulesVersion, systems: Object.freeze({...options.systems}),strictReplay:strictReplay===true});
   return immutable;
 }
 
@@ -143,6 +146,9 @@ function checkBudgets(snapshot, events) {
 }
 
 export function validateBundle(bundle, options) {
+  validateBundleData(bundle,options,false);
+}
+function validateBundleData(bundle, options,collectStrictEvidence) {
   const cached = auditedSceneBundles.get(bundle);
   if (!cached) preflightExperienceData(bundle, true);
   fields(options, ['rulesVersion', 'systems']); identifier(options.rulesVersion);
@@ -153,6 +159,7 @@ export function validateBundle(bundle, options) {
   checkBudgets(bundle.snapshot, bundle.eventLog);
   const { snapshot: s, eventLog } = cloneBundle(bundle);
   validateSnapshotStructure(s, options, eventLog.length);
+  if(collectStrictEvidence)return validateCampaignEventLogWithEvidence(eventLog,s,options.systems);
   validateEventLog(eventLog, s, options.systems);
 }
 

@@ -68,13 +68,19 @@ export function validateFact(raw, systemId, rulesVersion = 'a-smoke-v1') {
 export function validateEventLog(eventLog, snapshot, systems) {
   return validateEventLogData(eventLog,snapshot,systems,true);
 }
+// Performs the same full audit and additionally reports strict replay equality.
+export function validateCampaignEventLogWithEvidence(eventLog,snapshot,systems){
+  inspectDescriptorTree(snapshot);
+  requireCondition(snapshot.rulesVersion===CAMPAIGN_RULES,'Campaign event data required','UNSUPPORTED_VERSION');
+  return validateEventLogData(eventLog,snapshot,systems,true,true);
+}
 // Fact/causation/receipt checks only: no certificate is issued by this helper.
 // Public validateEventLog always performs its original complete history replay.
 export function validateCampaignEventData(eventLog,snapshot,systems){
   requireCondition(snapshot.rulesVersion===CAMPAIGN_RULES,'Campaign event data required','UNSUPPORTED_VERSION');
   return validateEventLogData(eventLog,snapshot,systems,false);
 }
-function validateEventLogData(eventLog, snapshot, systems, replay) {
+function validateEventLogData(eventLog, snapshot, systems, replay, collectStrictEvidence=false) {
   if (preflightExperienceData(snapshot)) inspectDescriptorTree(eventLog);
   normalizeSystems(systems); denseArray(eventLog, MAX_EVENTS);
   record(snapshot);
@@ -409,7 +415,10 @@ function validateEventLogData(eventLog, snapshot, systems, replay) {
   if(!replay)return;
   if (resourceProfile) validateResourceHistory(state.world, resourcePayloads);
   if (ecologyProfile) validateEcologyHistory(state, events);
-  if(campaignProfile)campaignRuntimeHooks.validateHistory(state,events);
+  if(campaignProfile){
+    const result=collectStrictEvidence?campaignRuntimeHooks.validateHistoryWithEvidence(state,events):campaignRuntimeHooks.validateHistory(state,events);
+    if(collectStrictEvidence)return result.strictReplay;
+  }
   else if(workProfile)livelihoodRuntimeHooks.validateHistory(state,events);
   else if(sceneProfile)sceneRuntimeHooks.validateHistory(state,events);
   else if(encounterProfile)encounterRuntimeHooks.validateHistory(state,events);
