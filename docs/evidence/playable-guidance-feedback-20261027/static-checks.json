@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "productionDiff": [
+    "demo-operation-feedback.mjs",
+    "demo-playable-goals.mjs",
+    "demo-runtime-bridge.mjs",
+    "demo-runtime-prototype.mjs",
+    "demo-runtime.css",
+    "demo-runtime.html",
+    "runtime-server.mjs"
+  ],
+  "domainDiff": [],
+  "syntaxFiles": [
+    "demo-operation-feedback.mjs",
+    "demo-playable-goals.mjs",
+    "demo-runtime-bridge.mjs",
+    "demo-runtime-prototype.mjs",
+    "runtime-server.mjs",
+    "scripts/check-guidance-feedback-evidence.mjs",
+    "tests/simulation/demo-operation-client.test.mjs",
+    "tests/simulation/demo-operation-feedback.test.mjs",
+    "tests/simulation/demo-playable-guidance.test.mjs",
+    "tests/simulation/playable-guidance-service.test.mjs"
+  ]
+}

@@ -1,3 +1,16 @@
+# 当前候选：任务引导与等待反馈（2026-10-27）
+
+父提交PR32 `3f65827a5ab7444fe78318e0a0e223e612861a2e`；独立树 `/workspace/scratch/e56afaffb4e3/Narraverse-Experience`，分支 `codex/playable-guidance-feedback-20261027`。任务 `tasks/PLAYABLE-GUIDANCE-FEEDBACK-TASK.md`，用户/AI交接 `docs/runtime/PLAYABLE-GUIDANCE-FEEDBACK.md`。
+
+- 已实现连接/命令确认/读取最新世界/展示已确认结果的阶段反馈，并在aria-live=off的独立文本中每秒显示已等待时间。计时器不提交请求、不推进世界；结束、异常、隐藏和离页清理，旧token回调不能覆盖新操作。SSE不提前清pending，重试保持原请求字节；回执收到后再读取相应修订。
+- 任务板从已确认公共投影派生下一步、具名步骤和世界时间期限，反映工作间隔、战斗/行军、死亡、口粮和额度；明确第一章后的可选挑战。人物/导航状态加入渲染依赖，只有当前可见猎人才提供前往，目标跟随新投影。旧面板在仅人物投影变化的受控输入下会保留旧目标，新版使用最新位置；不据此声称真实服务器必然出现过该问题。页面删除硬编码128条说明，沿用实际剩余额度。
+- 36项不同检查通过，14项新增；最终显示模块防护加严后7项及实际服务复跑通过，任务面板/真实对话可用性8项通过。原32项组合中的一条不存在对话文件路径未执行，已按实际文件补2项并以真实日志去重计数，旧命令/日志保留。
+- 最终实际客户端→worker/HTTP：6份公开页面/模块/样式响应字节与源码相同；接取→工作→买粮→领取恰好4笔POST，rank=1/tick=37；恢复后的五项投影、重复领取回执与5份存档文件同字节SHA。不是画面渲染/FPS验收，后端世界规则/DTO/奖励/Provider字节未改；服务器仅加一份demo静态模块白名单。
+- 浏览器执行文件不可用，无再次下载/安装尝试；DOM契约用最小文档替身，实际布局/键盘读屏/视觉反馈时间/FPS与Windows待验。本片不声称推进/重开继续提速。模型0调用，历史证据保留；核验 `node scripts/check-guidance-feedback-evidence.mjs`。
+- 停独立草稿，不合main、不部署、不迁移真实档、不启停日常实例、不导入2.0。GitHub Projects缺操作能力，待同步。下一步：浏览器可用后验移动端、键盘/读屏及长等待画面，并检查失败/死亡后的旅程引导和完整章节节奏。
+
+以下为PR32及更早历史。
+
 # 当前候选：配置验证复用实现（2026-10-27）
 
 父提交PR31 `2ae8c46094da9b12f14c58cd58468c0edd84b61d`；独立树 `/workspace/scratch/e56afaffb4e3/Narraverse-Config`，分支 `codex/campaign-config-cache-20261027`。合同 `tasks/CAMPAIGN-CONFIG-CACHE-TASK.md`；两类交接 `docs/runtime/CAMPAIGN-CONFIG-CACHE.md`。

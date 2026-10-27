@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/simulation/playable-guidance-service.test.mjs"
+  ],
+  "pid": 29,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 5721.63,
+  "cpuMs": null,
+  "hardLimitMs": 240000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

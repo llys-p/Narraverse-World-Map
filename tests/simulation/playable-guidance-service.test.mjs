@@ -1,0 +1,41 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {startRuntimeServer} from '../../runtime-server.mjs';
+import {createDemoClient,coherent} from '../../demo-runtime-bridge.mjs';
+import {createPlayableGoals,playableNextStep} from '../../demo-playable-goals.mjs';
+const hash=b=>createHash('sha256').update(b).digest('hex');
+const diskHashes=async dir=>Object.fromEntries(await Promise.all((await fs.readdir(dir)).filter(n=>n.endsWith('.json')).sort().map(async n=>[n,hash(await fs.readFile(path.join(dir,n)))])));
+test('served guidance assets and real client quest actions preserve durable progress, recovery and idempotence',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'guidance-service-')),nativeFetch=globalThis.fetch;
+ let server,source,latest;const options={directory,port:0,writable:true,continuousMarch:true};
+ const keys=['fetch','EventSource','document','window','sessionStorage'],prior=keys.map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]);
+ t.after(async()=>{if(server)await server.close();await fs.rm(directory,{recursive:true,force:true});for(const [k,d]of prior)if(d)Object.defineProperty(globalThis,k,d);else delete globalThis[k];});
+ server=await startRuntimeServer({...options,profile:'campaign-playable-village',seed:42});
+ const assets={};for(const file of ['demo-runtime.html','demo-runtime-prototype.mjs','demo-runtime-bridge.mjs','demo-operation-feedback.mjs','demo-playable-goals.mjs','demo-runtime.css']){
+  const r=await nativeFetch(server.url+'/'+file);assert.equal(r.status,200,file);const text=await r.text();assert.equal(text,await fs.readFile(new URL('../../'+file,import.meta.url),'utf8'));assets[file]=hash(text);
+ }
+ const html=await(await nativeFetch(server.url+'/demo-runtime.html')).text();assert.match(html,/id="operationElapsed"[^>]*aria-live="off"/);assert.match(html,/id="playableNext"/);assert.doesNotMatch(html,/每档128条命令/);
+ const nodes=new Map(),element=()=>({textContent:'',hidden:false,disabled:false,dataset:{},children:[],handlers:{},append(...v){this.children.push(...v);},replaceChildren(...v){this.children=v;},addEventListener(k,fn){this.handlers[k]=fn;},click(){if(!this.disabled)return this.handlers.click?.();}});
+ globalThis.document={hidden:false,getElementById(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);},createElement:element,addEventListener(){}};
+ globalThis.window={addEventListener(){}};const storage=new Map();globalThis.sessionStorage={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)};
+ globalThis.EventSource=class{constructor(){source=this;}close(){}};
+ const requests=[],phases=[];globalThis.fetch=async(url,opts={})=>{requests.push({url,method:opts.method??'GET',body:opts.body});return nativeFetch(server.url+url,opts);};
+ const ready=()=>{const s=client.state();return s.connected&&!s.busy&&!s.pending&&!s.blocked;};
+ const panel=createPlayableGoals({submit:(...a)=>client.submit(...a),approach(){throw Error('no navigation requested');}});
+ const client=createDemoClient({onState:g=>{assert.ok(coherent(g));latest=g;panel.paint(g,ready());},onBusy:()=>{if(latest)panel.paint(latest,ready());},onStatus(){},onProgress:p=>phases.push(p.phase),onReceipt(){}});
+ await client.start();source.onmessage({data:JSON.stringify(latest)});assert.match(nodes.get('playableNext').textContent,/接取/);assert.equal(latest.map.budget.remainingCommands,512);
+ const row=()=>nodes.get('playableQuestList').children.find(n=>n.dataset.quest==='livelihood');
+ await row().children.find(n=>n.dataset.questAction==='accept').click();assert.equal(latest.map.playable.quests[0].status,'active');assert.match(nodes.get('playableNext').textContent,/实际工作/);assert.ok(row().children.some(n=>n.className==='quest-deadline'));
+ await client.submit('PlayerWork');assert.match(nodes.get('playableNext').textContent,/购买.*口粮/);
+ await client.submit('PlayerBuy',{product:'food',quantity:1});assert.match(nodes.get('playableNext').textContent,/领取/);
+ const claimed=await row().children.find(n=>n.dataset.questAction==='claim').click();assert.equal(latest.map.playable.rank,1);assert.match(nodes.get('playableNext').textContent,/接取.*猎人/);
+ assert.equal(storage.size,0);assert.equal(requests.filter(r=>r.method==='POST').length,4);assert.equal(phases.at(-1),null);for(const phase of ['connect','confirm','refresh','present'])assert.ok(phases.includes(phase));
+ const before=await diskHashes(directory),snapshot=structuredClone(latest),last=requests.filter(r=>r.method==='POST').at(-1);await server.close();server=await startRuntimeServer(options);
+ const reopened=await(await nativeFetch(server.url+'/api/runtime/demo-state')).json();for(const k of ['snapshot','map','player','encounter','scene'])assert.deepEqual(reopened[k],snapshot[k]);
+ const retry=await nativeFetch(server.url+last.url,{method:'POST',headers:{'Content-Type':'application/json'},body:last.body});assert.equal(retry.status,200);assert.deepEqual(await retry.json(),claimed);assert.deepEqual(await diskHashes(directory),before);assert.match(playableNextStep(reopened),/接取.*猎人/);
+ console.log(JSON.stringify({measurement:'playable-guidance-consumer',assets,worldTick:reopened.snapshot.tick,rank:reopened.map.playable.rank,requestPosts:4,durableFiles:before,phases:[...new Set(phases)],externalModelCalls:0,rendering:'DOM contract mock; no browser layout or FPS acceptance'}));
+});

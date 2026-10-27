@@ -1,0 +1,20 @@
+{
+  "available": false,
+  "executables": {
+    "chromium": {
+      "path": "/root/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome",
+      "exists": false
+    },
+    "firefox": {
+      "path": "/root/.cache/ms-playwright/firefox-1538/firefox/firefox",
+      "exists": false
+    },
+    "webkit": {
+      "path": "/root/.cache/ms-playwright/webkit-2336/pw_run.sh",
+      "exists": false
+    }
+  },
+  "method": "executable availability only; no browser installation or launch attempted",
+  "layout": "not-measured",
+  "fps": "not-measured"
+}

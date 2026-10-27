@@ -1,0 +1,8 @@
+{
+  "notExecutedPath": [
+    "tests/simulation/demo-npc-dialogue-client.test.mjs"
+  ],
+  "correctedBy": "guidance-final-goals",
+  "actualFile": "tests/simulation/npc-dialogue-availability.test.mjs",
+  "counting": "Unique passing names in raw logs; no credit for the nonexistent argument"
+}

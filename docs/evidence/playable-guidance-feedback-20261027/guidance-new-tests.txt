@@ -1,0 +1,20 @@
+✔ delayed POST, refresh and presentation retain one request, show distinct phases, and never advance time from display ticks (328.813313ms)
+✔ lost responses clear display timers while retry reuses the exact durable intent and receipt (205.586533ms)
+✔ visibility and page exit release display intervals without clearing unresolved requests; startup failure also cleans up (99.294272ms)
+✔ feedback publishes immediately, separates phases and counts display seconds without another operation (1.606184ms)
+✔ hidden, resumed, disposed and stale timer callbacks cannot leak or replace a newer operation (0.305874ms)
+✔ network notices preserve request ambiguity and do not relabel a received receipt as unconfirmed (0.477068ms)
+✔ labels use the existing command grammar without treating user text or time as execution (0.589471ms)
+✔ next steps explain first acceptance, concrete quest actions and optional chapter continuation using confirmed fields (184.984265ms)
+✔ guidance respects current work interval, death, battle, marching and the actual command budget (107.500707ms)
+✔ task deadlines are world time only and do not invent expiry or mutate the task (0.471451ms)
+✔ task DOM refreshes a moving visible hunter and locks approaches for combat, budget or unresolved writes (111.226451ms)
+✔ task DOM names progress, shows deadlines, updates nearby controls and submits only existing quest actions (112.352796ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1883.180412

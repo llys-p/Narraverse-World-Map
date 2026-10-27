@@ -1,0 +1,15 @@
+✔ delayed POST, refresh and presentation retain one request, show distinct phases, and never advance time from display ticks (315.804692ms)
+✔ lost responses clear display timers while retry reuses the exact durable intent and receipt (213.586571ms)
+✔ visibility and page exit release display intervals without clearing unresolved requests; startup failure also cleans up (108.287263ms)
+✔ feedback publishes immediately, separates phases and counts display seconds without another operation (2.310385ms)
+✔ hidden, resumed, disposed and stale timer callbacks cannot leak or replace a newer operation (0.40902ms)
+✔ network notices preserve request ambiguity and do not relabel a received receipt as unconfirmed (0.983324ms)
+✔ labels use the existing command grammar without treating user text or time as execution (0.399881ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 961.084501

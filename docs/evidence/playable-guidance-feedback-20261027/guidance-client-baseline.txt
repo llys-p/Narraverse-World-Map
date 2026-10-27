@@ -1,0 +1,18 @@
+✔ real sale, purchase, work and rest receipts show actual deltas without mutating data (4.757248ms)
+✔ rejection has no claimed gains, malformed or unconfirmed input never becomes a result (0.33274ms)
+✔ history deduplicates receipt retries, keeps rejection, and stores only the latest eight (0.526543ms)
+✔ a 503 after a durable sale survives reload and full server reopen without a second sale (1446.596935ms)
+✔ uncertain order errors retain exact bytes and never enable another intent (191.53122ms)
+✔ a protocol-matching POST revision rejection clears only the rejected request (194.562309ms)
+✔ a confirmed receipt stays recoverable through refresh errors and stale views (291.306744ms)
+✔ SSE keeps an in-flight recovered request pending and retry confirms only on its POST receipt (503.275922ms)
+✔ world time and work cooldown are derived from committed ticks only (1.121215ms)
+✔ waiting is disabled during a march, combat, unresolved write or death; work keeps its health threshold (0.402734ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3303.739681

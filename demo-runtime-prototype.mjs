@@ -1674,7 +1674,11 @@ async function playReceipt(receipt,dto,confirmedGroup){
  }
  playbackBusy=false;wolfPose=group.encounter.encounter?.wolfHealth===0?'dead':'idle';battleStage?.setActor('actor-4',{action:group.player.self.identity.alive?'idle':'knockdown'});paintReadings();
 }
-const client=createDemoClient({onState:acceptState,onStatus:showStatus,onReceipt:playReceipt,onBusy:paintReadings});
+const client=createDemoClient({onState:acceptState,onStatus:showStatus,onReceipt:playReceipt,onBusy:paintReadings,onProgress(progress){
+ const elapsed=$('operationElapsed');elapsed.hidden=!progress.active;
+ elapsed.textContent=progress.active?'已等待 '+progress.elapsedSeconds+' 秒。正在处理，请保留页面；重复点击不会加快操作。':'';
+ document.body.dataset.operationPhase=progress.phase??'idle';
+}});
 const handle=run=>{Promise.resolve().then(run).catch(error=>showStatus(error.message,true));};
 const action=(id,type,payload=()=>({}))=>$(id).addEventListener('click',()=>handle(()=>client.submit(type,payload())));
 $('npcDialogueText').addEventListener('input',()=>{npcDialogue.edit($('npcDialogueText').value,group,selectedActorId);paintNpcNegotiation();});

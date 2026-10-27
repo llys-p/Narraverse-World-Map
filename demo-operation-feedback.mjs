@@ -1,0 +1,31 @@
+// Display time only: this module never submits requests or advances world ticks.
+const names={PlayerWork:'村庄工作',PlayerRest:'休整',PlayerBuy:'购买物品',PlayerSell:'出售物品',PlayerGiftFood:'赠送粮食',PlayerQuest:'任务操作',PlayerInteract:'人物互动',PlayerDialogue:'交谈',PlayerNegotiate:'协商',PlayerAgreement:'处理约定',MarchSet:'设置目的地',MarchPause:'暂停行军',MarchResume:'继续行军',EncounterBegin:'开始遭遇',EncounterAction:'战斗行动',EncounterCancel:'取消遭遇'};
+export function operationLabel(input){
+ if(input?.type==='AdvanceTime'){
+  const ticks=input.payload?.ticks;
+  return Number.isSafeInteger(ticks)&&ticks>0&&ticks<=144000?'等待'+ticks*10+'分钟（世界时间）':'等待';
+ }
+ return typeof input?.type==='string'&&Object.hasOwn(names,input.type)?names[input.type]:'本次操作';
+}
+const messages={connect:()=> '正在连接并读取世界…',confirm:label=>'正在确认：'+label+'…',refresh:()=> '已收到回执，正在读取最新世界…',present:()=> '正在展示已确认的行动结果…'};
+export function createOperationFeedback({onStatus,onProgress=()=>{},now=()=>performance.now(),schedule=fn=>setInterval(fn,1000),cancel=id=>clearInterval(id)}){
+ let active=null,timer=null,suspended=false;
+ const stopTimer=()=>{if(timer!==null){cancel(timer);timer=null;}};
+ const message=()=>active?messages[active.phase](active.label)+(active.connectionLost?(active.phase==='confirm'?' 实时连接已中断，原请求仍在确认。':' 实时连接已中断，请保留页面等待本次操作结束。'):''):null;
+ const tick=record=>{if(active!==record)return;onProgress({active:true,phase:record.phase,label:record.label,elapsedSeconds:Math.max(0,Math.floor((now()-record.started)/1000))});};
+ const startTimer=()=>{if(active&&!suspended&&timer===null){const record=active;timer=schedule(()=>tick(record));}};
+ const publish=()=>{onStatus(message(),active.connectionLost);tick(active);};
+ function finish(token){if(active?.token!==token)return false;stopTimer();active=null;onProgress({active:false,phase:null,label:'',elapsedSeconds:0});return true;}
+ return Object.freeze({
+  begin(label,phase='confirm'){
+   if(!Object.hasOwn(messages,phase))throw Error('Unknown display phase');
+   if(active)finish(active.token);const token=Object.freeze({});active={token,label,phase,started:now(),connectionLost:false};publish();startTimer();return token;
+  },
+  phase(token,phase){if(active?.token!==token)return false;if(!Object.hasOwn(messages,phase))throw Error('Unknown display phase');active.phase=phase;publish();return true;},
+  connectionLost(value){if(active&&active.connectionLost!==!!value){active.connectionLost=!!value;publish();}},
+  message,finish,
+  suspend(){suspended=true;stopTimer();},
+  resume(){suspended=false;if(active){tick(active);startTimer();}},
+  dispose(){if(active)finish(active.token);else stopTimer();}
+ });
+}

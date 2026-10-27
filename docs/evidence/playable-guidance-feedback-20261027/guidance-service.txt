@@ -1,0 +1,10 @@
+{"measurement":"playable-guidance-consumer","assets":{"demo-runtime.html":"e6939eb81d4b3f576e4abb87a3de10981b05fd31d13dbb04c10c68a03bfcbe42","demo-runtime-prototype.mjs":"2cae7afdcc65469c4403f269885f5a86eea5ef31f43c2dae89c6eafd6e683955","demo-runtime-bridge.mjs":"40918ba8dc3a8df8b08d2efa68d8ce04133e208ad7eac738e738e56937d429a0","demo-operation-feedback.mjs":"f8e2157dd4e63a5ad4849d99ec0198288a1964e6ffea2663db2870102c6e9fd0","demo-playable-goals.mjs":"d951413afcdfb0e66cac2b2dcfdc3b8212e42bd176a743bbf7b8842ec61f793a","demo-runtime.css":"15bfb82dfc28f6c7c2a8fe62cf1d3ae264b181c6852689453d9b16a4cebf5c0f"},"worldTick":37,"rank":1,"requestPosts":4,"durableFiles":{"service-commit-r0.json":"c6bb18158ea5bc752092a9585e8f6f800d7b7f7a282ba41ed7754f8f8e326268","service-commit-r1.json":"02f296ab07a7a414c5d9b7d97a25b567f9f140bcc1b660ac05494ed7c838026e","service-commit-r37.json":"7ceb49b58115c746f972111cb06b6406f6c39ce64455b347a8c4f7e5d696a2fb","service-commit-r38.json":"54a37b31f6957174d23469a4cf02d80b596f2b25940fc16aa35912457e66d798","service-commit-r39.json":"d621fc83a56635503c2b9511e266ba8b0c9802b3b6df99168399f2bb55de1953"},"phases":["connect",null,"confirm","refresh","present"],"externalModelCalls":0,"rendering":"DOM contract mock; no browser layout or FPS acceptance"}
+✔ served guidance assets and real client quest actions preserve durable progress, recovery and idempotence (4782.225511ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4962.509149
