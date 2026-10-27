@@ -1,0 +1,8 @@
+{"command":1,"type":"PlayerQuest","revision":1,"tick":0}
+{"command":2,"type":"PlayerWork","revision":37,"tick":36}
+{"command":3,"type":"PlayerBuy","revision":38,"tick":37}
+{"command":4,"type":"AdvanceTime","revision":1478,"tick":1477}
+{"command":5,"type":"AdvanceTime","revision":2017,"tick":2016}
+{"command":6,"type":"AdvanceTime","revision":2018,"tick":2017}
+{"command":7,"type":"PlayerQuest","revision":2019,"tick":2017}
+{"status":"prepared","tick":2017,"commands":7,"bytes":725959,"sha256":"0013bd4db5593d6e3a5790fe3151c8a6aa9d67c1101916789463aa01bfd83ea0","externalModelCalls":0,"scope":"synthetic; initial food 100"}
