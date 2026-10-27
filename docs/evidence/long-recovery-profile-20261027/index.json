@@ -1,0 +1,54 @@
+{
+  "parent": "543bf632ffc32e9496fd6bc6ebf191329b0ed39d",
+  "sourceSha256": {
+    "README.md": "97bf9b791b50d6cfaf8d2466ee0401a07e37252418b6893ed0ae81c136a9a134",
+    "PROJECT_CONTEXT.md": "c44d0321fc93816d523dd027ba6f8c36fdf30c9d12f90c1e43bed5a1d55d6a5e",
+    "docs/runtime/LONG-RECOVERY-PROFILE.md": "23c56b811e518b955935ea8737f7f6681d5707996b3ca6ce6f5e788a8f359be1",
+    "tasks/LONG-RECOVERY-PROFILE-TASK.md": "cd541b1c1fdbd026ca067c19552f1694636a1c2d491cc2e6e69b815a51622a78",
+    "scripts/prepare-long-recovery-profile.mjs": "e8c38fd922f71ef35a824831baac1b27ea8f9f883cf6f3e23a87b9ab4e248016",
+    "scripts/check-long-recovery-profile.mjs": "585123aa702806b607259306112a42da20f47c1018be77391e43138ec0786d1b",
+    "scripts/measure-cold-audit.mjs": "ef47530ee6c931b4807d14395779e3ced91b585413bb6a897f283ed0ebfa309d",
+    "runtime/service/service-commit.mjs": "bd3f2b05eee9f24ffaf5160de032f75800a42b6310a812f41865caf7011ee084",
+    "tests/simulation/service-cold-audit.test.mjs": "f79930dd861199baa8272bda3466b9121dc4ba6f8e139d2cf2605913b440138a"
+  },
+  "evidence": {
+    "cold-audit-tests.log": {
+      "bytes": 660,
+      "sha256": "30310050afd11f97f0253af6e050c8381be0ea1bd1d7c6e40869f02265c2eea9"
+    },
+    "fixture-match.json": {
+      "bytes": 120,
+      "sha256": "ada718b15a62bf66f182422869db952568c669541ff6b13fca9ad6daf3fe088c"
+    },
+    "fixture-shape.json": {
+      "bytes": 198,
+      "sha256": "2d8b0e74453bf693efc429f4f0596b53f3df42cd438ca510f13089fc3cec22df"
+    },
+    "prepare.log": {
+      "bytes": 623,
+      "sha256": "81fc360b0610eb5ada753e0201455d84edb44389290a0df50c9d24b27b8315b0"
+    },
+    "profile-1.json": {
+      "bytes": 734,
+      "sha256": "cd0f10dc2a11a5d7a4541d2698f805a56a33b9b80c4b5d224f1de777d7921709"
+    },
+    "profile-1.log": {
+      "bytes": 650,
+      "sha256": "6aa77b560719a85d25f278fd0caf74458ab522fee86d5b6d0a09370d50fb2282"
+    },
+    "profile-2.json": {
+      "bytes": 740,
+      "sha256": "e79af8eec8b1e0cf93cddb7bc81636c1be78ba1f99b039cc2e958b73873ff7bd"
+    },
+    "profile-2.log": {
+      "bytes": 656,
+      "sha256": "80d10735f7677e8916fce7c7eee651f6fea97e1eee2a010ccc9f29c5169c07a9"
+    },
+    "test-parent.json": {
+      "bytes": 240,
+      "sha256": "9f96b0ab7f7990e2155e4af527394a26abb276df0d1f895a291b41f9a1b4741b"
+    }
+  },
+  "productionChanges": [],
+  "note": "Synthetic fixture not included; regenerated from script. Initial food 100. Preparation hash assertion added after initial run; independently verified after generation."
+}

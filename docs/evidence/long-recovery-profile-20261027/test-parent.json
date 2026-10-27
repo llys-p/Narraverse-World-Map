@@ -1,0 +1,5 @@
+{
+  "commit": "0a74b7e6009055d492659d3b3b1038af7b9482f4",
+  "serviceCommitSha256": "c8c442fd4d24ec0833b3511a2d85f01784645074ef799311e2b2e0076ef53d71",
+  "scope": "existing local clean parent used as oracle by service-cold-audit.test.mjs"
+}

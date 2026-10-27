@@ -1,3 +1,13 @@
+# 当前候选：14天长档恢复分解（2026-10-27）
+
+父提交PR34 `543bf632ffc32e9496fd6bc6ebf191329b0ed39d`，分支 `codex/long-recovery-profile-20261027`；任务 `tasks/LONG-RECOVERY-PROFILE-TASK.md`，交接 `docs/runtime/LONG-RECOVERY-PROFILE.md`。
+
+- 重建PR34的14天合成档，持久化编码SHA与原HTTP末态相同。两次独立进程审计内部分别203.818/219.829秒；末态完整审计100.580/114.753秒，服务日记重建103.102/104.958秒。不是完整HTTP启动或FPS，不代表默认初始食物平衡。
+- 本片无生产逻辑修改，不以耗时推断可以省略任一校验；现有冷恢复4项测试本次复跑通过。提出受限的单次恢复重放复用研究方向，安全条件、回退和篡改边界待实现验证；核验 `node scripts/check-long-recovery-profile.mjs`，模型0调用。
+- 不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0；GitHub Projects待同步。下一步证明重放复用与现有完整审计等价，覆盖历史锚点/篡改，再实测三个性能门槛；浏览器、FPS和Windows待验。
+
+以下为PR34及更早历史。
+
 # 当前候选：任务失败与重接引导（2026-10-27）
 
 父提交PR33 `e55ecc39b289b65ad3958e3b6063de969a7ee2f5`，分支 `codex/playable-recovery-guidance-20261027`。任务和交接见 `tasks/PLAYABLE-RECOVERY-GUIDANCE-TASK.md`、`docs/runtime/PLAYABLE-RECOVERY-GUIDANCE.md`。
