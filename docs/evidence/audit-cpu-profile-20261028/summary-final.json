@@ -1,0 +1,488 @@
+{
+  "measurement": "v8-cpu-sample-entire-instrumented-audit-process",
+  "profileSha256": "ac0b587ea58b76a269f242d4f15f7460fbdb2a1a1ece4ddccd7fe9d87d3aa20b",
+  "profileBytes": 3523323,
+  "samples": 65996,
+  "profileDurationMs": 74304.821,
+  "self": [
+    {
+      "function": "requireCondition",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 10,
+      "selfSamples": 21506,
+      "inclusiveSamples": 21507
+    },
+    {
+      "function": "encodeCanonical",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 80,
+      "selfSamples": 13396,
+      "inclusiveSamples": 18616
+    },
+    {
+      "function": "visit",
+      "file": "runtime/core/experience-state.mjs",
+      "line": 30,
+      "selfSamples": 12580,
+      "inclusiveSamples": 27778
+    },
+    {
+      "function": "cloneData",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 49,
+      "selfSamples": 5870,
+      "inclusiveSamples": 10350
+    },
+    {
+      "function": "record",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 13,
+      "selfSamples": 3469,
+      "inclusiveSamples": 10442
+    },
+    {
+      "function": "(garbage collector)",
+      "file": "(native)",
+      "line": 0,
+      "selfSamples": 1596,
+      "inclusiveSamples": 1596
+    },
+    {
+      "function": "denseArray",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 36,
+      "selfSamples": 1101,
+      "inclusiveSamples": 1127
+    },
+    {
+      "function": "validateCampaignWorldState",
+      "file": "runtime/core/scene-campaign-runtime.mjs",
+      "line": 86,
+      "selfSamples": 1084,
+      "inclusiveSamples": 26095
+    },
+    {
+      "function": "own",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 5,
+      "selfSamples": 810,
+      "inclusiveSamples": 810
+    },
+    {
+      "function": "fields",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 25,
+      "selfSamples": 412,
+      "inclusiveSamples": 2025
+    },
+    {
+      "function": "encode",
+      "file": "node:internal/encoding",
+      "line": 355,
+      "selfSamples": 299,
+      "inclusiveSamples": 505
+    },
+    {
+      "function": "encodeUtf8String",
+      "file": "(native)",
+      "line": 0,
+      "selfSamples": 206,
+      "inclusiveSamples": 206
+    },
+    {
+      "function": "canonicalJson",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 125,
+      "selfSamples": 205,
+      "inclusiveSamples": 18820
+    },
+    {
+      "function": "validateActorWorld",
+      "file": "runtime/core/actors.mjs",
+      "line": 53,
+      "selfSamples": 205,
+      "inclusiveSamples": 9112
+    },
+    {
+      "function": "validateHunterWorld",
+      "file": "runtime/core/hunter.mjs",
+      "line": 41,
+      "selfSamples": 181,
+      "inclusiveSamples": 10922
+    },
+    {
+      "function": "validateSocietyWorld",
+      "file": "runtime/core/society.mjs",
+      "line": 76,
+      "selfSamples": 176,
+      "inclusiveSamples": 15143
+    },
+    {
+      "function": "validateEcologyWorld",
+      "file": "runtime/core/ecology.mjs",
+      "line": 63,
+      "selfSamples": 138,
+      "inclusiveSamples": 2154
+    },
+    {
+      "function": "(anonymous)",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 62,
+      "selfSamples": 128,
+      "inclusiveSamples": 5030
+    },
+    {
+      "function": "validateMemoryWorld",
+      "file": "runtime/core/memory-runtime.mjs",
+      "line": 58,
+      "selfSamples": 116,
+      "inclusiveSamples": 18962
+    },
+    {
+      "function": "totals",
+      "file": "runtime/core/resource-ledger.mjs",
+      "line": 10,
+      "selfSamples": 109,
+      "inclusiveSamples": 109
+    },
+    {
+      "function": "validateMarketWorld",
+      "file": "runtime/core/market.mjs",
+      "line": 81,
+      "selfSamples": 102,
+      "inclusiveSamples": 4774
+    },
+    {
+      "function": "validateConfig",
+      "file": "runtime/core/ecology.mjs",
+      "line": 36,
+      "selfSamples": 96,
+      "inclusiveSamples": 2320
+    },
+    {
+      "function": "(anonymous)",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 28,
+      "selfSamples": 89,
+      "inclusiveSamples": 197
+    },
+    {
+      "function": "validateSnapshotStructure",
+      "file": "runtime/core/world-state.mjs",
+      "line": 167,
+      "selfSamples": 84,
+      "inclusiveSamples": 31061
+    },
+    {
+      "function": "(anonymous)",
+      "file": "runtime/core/actors.mjs",
+      "line": 39,
+      "selfSamples": 70,
+      "inclusiveSamples": 70
+    },
+    {
+      "function": "validateResourceWorld",
+      "file": "runtime/core/resource-ledger.mjs",
+      "line": 67,
+      "selfSamples": 69,
+      "inclusiveSamples": 530
+    },
+    {
+      "function": "createResourceWorld",
+      "file": "runtime/core/resource-ledger.mjs",
+      "line": 59,
+      "selfSamples": 65,
+      "inclusiveSamples": 2142
+    },
+    {
+      "function": "runTick",
+      "file": "runtime/core/command-engine.mjs",
+      "line": 75,
+      "selfSamples": 63,
+      "inclusiveSamples": 63751
+    },
+    {
+      "function": "createEcologyWorld",
+      "file": "runtime/core/ecology.mjs",
+      "line": 53,
+      "selfSamples": 60,
+      "inclusiveSamples": 3484
+    },
+    {
+      "function": "(anonymous)",
+      "file": "runtime/core/ecology.mjs",
+      "line": 58,
+      "selfSamples": 52,
+      "inclusiveSamples": 52
+    }
+  ],
+  "inclusive": [
+    {
+      "function": "(root)",
+      "file": "(native)",
+      "line": 0,
+      "selfSamples": 0,
+      "inclusiveSamples": 65996
+    },
+    {
+      "function": "(anonymous)",
+      "file": "scripts/measure-cold-audit.mjs",
+      "line": 1,
+      "selfSamples": 0,
+      "inclusiveSamples": 64292
+    },
+    {
+      "function": "createAuditedServiceCommit",
+      "file": "(instrumented service copy)",
+      "line": 155,
+      "selfSamples": 0,
+      "inclusiveSamples": 64209
+    },
+    {
+      "function": "auditServiceCommit",
+      "file": "(instrumented service copy)",
+      "line": 112,
+      "selfSamples": 1,
+      "inclusiveSamples": 64208
+    },
+    {
+      "function": "createAuditedBundle",
+      "file": "runtime/core/world-state.mjs",
+      "line": 55,
+      "selfSamples": 0,
+      "inclusiveSamples": 64124
+    },
+    {
+      "function": "validateBundleData",
+      "file": "runtime/core/world-state.mjs",
+      "line": 151,
+      "selfSamples": 1,
+      "inclusiveSamples": 64095
+    },
+    {
+      "function": "validateCampaignEventLogWithEvidence",
+      "file": "runtime/core/event-log.mjs",
+      "line": 72,
+      "selfSamples": 1,
+      "inclusiveSamples": 63982
+    },
+    {
+      "function": "validateEventLogData",
+      "file": "runtime/core/event-log.mjs",
+      "line": 83,
+      "selfSamples": 4,
+      "inclusiveSamples": 63978
+    },
+    {
+      "function": "validateHistoryWithEvidence",
+      "file": "runtime/core/scene-campaign-runtime.mjs",
+      "line": 73,
+      "selfSamples": 0,
+      "inclusiveSamples": 63915
+    },
+    {
+      "function": "hooksValidateHistory",
+      "file": "runtime/core/encounter-runtime.mjs",
+      "line": 1327,
+      "selfSamples": 2,
+      "inclusiveSamples": 63903
+    },
+    {
+      "function": "validateHistoryWithEvidence",
+      "file": "runtime/core/encounter-runtime.mjs",
+      "line": 1514,
+      "selfSamples": 0,
+      "inclusiveSamples": 63903
+    },
+    {
+      "function": "executeIntentFor",
+      "file": "runtime/core/encounter-runtime.mjs",
+      "line": 705,
+      "selfSamples": 0,
+      "inclusiveSamples": 63851
+    },
+    {
+      "function": "executeIntent",
+      "file": "runtime/core/encounter-runtime.mjs",
+      "line": 1505,
+      "selfSamples": 0,
+      "inclusiveSamples": 63851
+    },
+    {
+      "function": "performSceneTicks",
+      "file": "runtime/core/encounter-runtime.mjs",
+      "line": 138,
+      "selfSamples": 1,
+      "inclusiveSamples": 63803
+    },
+    {
+      "function": "performCampaignTicks",
+      "file": "runtime/core/command-engine.mjs",
+      "line": 62,
+      "selfSamples": 16,
+      "inclusiveSamples": 63802
+    },
+    {
+      "function": "runTick",
+      "file": "runtime/core/command-engine.mjs",
+      "line": 75,
+      "selfSamples": 63,
+      "inclusiveSamples": 63751
+    },
+    {
+      "function": "validateSnapshotStructure",
+      "file": "runtime/core/world-state.mjs",
+      "line": 167,
+      "selfSamples": 84,
+      "inclusiveSamples": 31061
+    },
+    {
+      "function": "withEncounterDetached",
+      "file": "runtime/core/encounter-runtime.mjs",
+      "line": 1173,
+      "selfSamples": 2,
+      "inclusiveSamples": 29933
+    },
+    {
+      "function": "detached",
+      "file": "runtime/core/scene-campaign-runtime.mjs",
+      "line": 35,
+      "selfSamples": 5,
+      "inclusiveSamples": 29922
+    },
+    {
+      "function": "inspectDescriptorTree",
+      "file": "runtime/core/experience-state.mjs",
+      "line": 28,
+      "selfSamples": 4,
+      "inclusiveSamples": 27781
+    },
+    {
+      "function": "visit",
+      "file": "runtime/core/experience-state.mjs",
+      "line": 30,
+      "selfSamples": 12580,
+      "inclusiveSamples": 27778
+    },
+    {
+      "function": "validateCampaignWorldState",
+      "file": "runtime/core/scene-campaign-runtime.mjs",
+      "line": 86,
+      "selfSamples": 1084,
+      "inclusiveSamples": 26095
+    },
+    {
+      "function": "checkBudgets",
+      "file": "runtime/core/world-state.mjs",
+      "line": 106,
+      "selfSamples": 4,
+      "inclusiveSamples": 22412
+    },
+    {
+      "function": "requireCondition",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 10,
+      "selfSamples": 21506,
+      "inclusiveSamples": 21507
+    },
+    {
+      "function": "beforeSystems",
+      "file": "runtime/core/scene-campaign-runtime.mjs",
+      "line": 70,
+      "selfSamples": 3,
+      "inclusiveSamples": 20544
+    },
+    {
+      "function": "beforeSystems",
+      "file": "runtime/core/encounter-runtime.mjs",
+      "line": 1508,
+      "selfSamples": 5,
+      "inclusiveSamples": 20538
+    },
+    {
+      "function": "hooksBeforeSystems",
+      "file": "runtime/core/encounter-runtime.mjs",
+      "line": 1185,
+      "selfSamples": 0,
+      "inclusiveSamples": 19961
+    },
+    {
+      "function": "(anonymous)",
+      "file": "runtime/core/encounter-runtime.mjs",
+      "line": 1187,
+      "selfSamples": 1,
+      "inclusiveSamples": 19960
+    },
+    {
+      "function": "beforeSystems",
+      "file": "runtime/core/scene-campaign-runtime.mjs",
+      "line": 38,
+      "selfSamples": 3,
+      "inclusiveSamples": 19959
+    },
+    {
+      "function": "(anonymous)",
+      "file": "runtime/core/scene-campaign-runtime.mjs",
+      "line": 45,
+      "selfSamples": 4,
+      "inclusiveSamples": 19952
+    }
+  ],
+  "conditionCallers": [
+    {
+      "function": "visit",
+      "file": "runtime/core/experience-state.mjs",
+      "line": 30,
+      "samples": 15198
+    },
+    {
+      "function": "record",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 13,
+      "samples": 6298
+    },
+    {
+      "function": "visit",
+      "file": "runtime/core/work-experience.mjs",
+      "line": 27,
+      "samples": 4
+    },
+    {
+      "function": "validateConfig",
+      "file": "runtime/core/ecology.mjs",
+      "line": 36,
+      "samples": 1
+    },
+    {
+      "function": "validateSurvivalDecision",
+      "file": "runtime/core/survival-state.mjs",
+      "line": 412,
+      "samples": 1
+    },
+    {
+      "function": "validateEcologyWorld",
+      "file": "runtime/core/ecology.mjs",
+      "line": 63,
+      "samples": 1
+    },
+    {
+      "function": "validateMemoryState",
+      "file": "runtime/core/memory-observer.mjs",
+      "line": 125,
+      "samples": 1
+    },
+    {
+      "function": "integer",
+      "file": "runtime/core/data-contract.mjs",
+      "line": 33,
+      "samples": 1
+    },
+    {
+      "function": "(root)",
+      "file": "(native)",
+      "line": 0,
+      "samples": 1
+    }
+  ],
+  "scope": "Sampling includes startup, audit, comparisons and output; inclusive samples overlap. Counts are not end-to-end latency or FPS."
+}

@@ -1,0 +1,64 @@
+diff --git a/runtime/core/experience-state.mjs b/runtime/core/experience-state.mjs
+index 935ccaa..edbda4a 100644
+--- a/runtime/core/experience-state.mjs
++++ b/runtime/core/experience-state.mjs
+@@ -1,6 +1,6 @@
+ // M3-2A experience state: runtime model and configuration shapes for work experience.
+ // Strict descriptor validation precedes any property access or canonical serialization.
+-import { fields, record, integer, identifier, denseArray, cloneData, canonicalJson, requireCondition, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
++import { fields, record, integer, identifier, denseArray, cloneData, canonicalJson, requireCondition, fault, MAX_COLLECTION, MAX_EVENTS } from './data-contract.mjs';
+ import { createWorkExperienceState, validateWorkExperienceState } from './work-experience.mjs';
+ import { COGNITION_RULES } from './cognition-state.mjs';
+ // Kept as a literal: the survival state module imports this module, so a cycle would be created.
+@@ -28,39 +28,37 @@ function byteLength(value) {
+ export function inspectDescriptorTree(root) {
+   const ancestors = new Set();
+   const visit = (value, depth) => {
+-    requireCondition(depth <= 64, 'Data nesting budget exceeded', 'LIMIT_EXCEEDED');
++    if(!(depth <= 64))throw fault('LIMIT_EXCEEDED','Data nesting budget exceeded');
+     if (value === null || typeof value === 'string' || typeof value === 'boolean') return;
+     if (typeof value === 'number') {
+-      requireCondition(Number.isFinite(value), 'Non-finite number');
++      if(!Number.isFinite(value))throw fault('INVALID_INPUT','Non-finite number');
+       return;
+     }
+-    requireCondition(typeof value === 'object', 'Non-JSON data');
+-    requireCondition(!ancestors.has(value), 'Cyclic data');
++    if(typeof value !== 'object')throw fault('INVALID_INPUT','Non-JSON data');
++    if(ancestors.has(value))throw fault('INVALID_INPUT','Cyclic data');
+     ancestors.add(value);
+     const array = Array.isArray(value), prototype = Object.getPrototypeOf(value);
+     if (array) {
+-      requireCondition(prototype === Array.prototype, 'Unsupported array prototype');
++      if(prototype !== Array.prototype)throw fault('INVALID_INPUT','Unsupported array prototype');
+       const descriptors = Object.getOwnPropertyDescriptors(value);
+       const length = descriptors.length?.value;
+-      requireCondition(Number.isSafeInteger(length) && length >= 0, 'Invalid array length');
+-      requireCondition(length <= MAX_EVENTS, 'Array budget exceeded', 'LIMIT_EXCEEDED');
++      if(!(Number.isSafeInteger(length) && length >= 0))throw fault('INVALID_INPUT','Invalid array length');
++      if(!(length <= MAX_EVENTS))throw fault('LIMIT_EXCEEDED','Array budget exceeded');
+       const keys = Reflect.ownKeys(descriptors);
+-      requireCondition(keys.length === length + 1, 'Sparse array or extra array properties');
++      if(keys.length !== length + 1)throw fault('INVALID_INPUT','Sparse array or extra array properties');
+       for (let index = 0; index < length; index++) {
+         const descriptor = descriptors[String(index)];
+-        requireCondition(descriptor && descriptor.enumerable && Object.hasOwn(descriptor, 'value'),
+-          'Sparse array or accessor element');
++        if(!(descriptor && descriptor.enumerable && Object.hasOwn(descriptor, 'value')))throw fault('INVALID_INPUT','Sparse array or accessor element');
+         visit(descriptor.value, depth + 1);
+       }
+     } else {
+-      requireCondition(prototype === Object.prototype || prototype === null, 'Unsupported record prototype');
++      if(!(prototype === Object.prototype || prototype === null))throw fault('INVALID_INPUT','Unsupported record prototype');
+       const descriptors = Object.getOwnPropertyDescriptors(value);
+       const keys = Reflect.ownKeys(descriptors);
+-      requireCondition(keys.length <= MAX_COLLECTION, 'Record budget exceeded', 'LIMIT_EXCEEDED');
++      if(!(keys.length <= MAX_COLLECTION))throw fault('LIMIT_EXCEEDED','Record budget exceeded');
+       for (const key of keys) {
+         const descriptor = descriptors[key];
+-        requireCondition(typeof key === 'string' && descriptor.enumerable && Object.hasOwn(descriptor, 'value'),
+-          'Only enumerable data properties are supported');
++        if(!(typeof key === 'string' && descriptor.enumerable && Object.hasOwn(descriptor, 'value')))throw fault('INVALID_INPUT','Only enumerable data properties are supported');
+         visit(descriptor.value, depth + 1);
+       }
+     }

@@ -1,0 +1,21 @@
+{
+  "cpu": {
+    "openMs": 148.463,
+    "simulateMs": 26541.16,
+    "auditMs": 27077.874
+  },
+  "maxRssKiB": 346516,
+  "node": "v24.22.1",
+  "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Replay-Reuse",
+  "seed": 42,
+  "tick": 1008,
+  "commands": 1,
+  "openMs": 106.09372400000001,
+  "simulateMs": 25786.413174,
+  "auditMs": 26708.211635999996,
+  "tenMapReadsMs": 49.18637200000376,
+  "bundleSha256": "c6b6d450bce6995d6f84c7f85550d70e3141981db264bb02d4f418d83f4174e5",
+  "bytes": 296544,
+  "fullReplay": "passed",
+  "externalModelCalls": 0
+}
