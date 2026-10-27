@@ -1,0 +1,45 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createPlayableCampaignVillage} from '../../runtime/fixtures/campaign-village.mjs';
+import {projectMapSnapshot,projectPlayerSnapshot,projectEncounterSnapshot} from '../../runtime/service/http-contract.mjs';
+import {createPlayableGoals,playableNextStep,questDeadlineText} from '../../demo-playable-goals.mjs';
+function group(){const {bundle}=createPlayableCampaignVillage();return {map:projectMapSnapshot(bundle,512),player:projectPlayerSnapshot(bundle),encounter:projectEncounterSnapshot(bundle)};}
+function active(g,id){for(const q of g.map.playable.quests)q.status='locked';const q=g.map.playable.quests.find(q=>q.id===id);q.status='active';q.remainingTicks=144;return q;}
+test('next steps explain first acceptance, concrete quest actions and optional chapter continuation using confirmed fields',()=>{
+ const g=group(),before=structuredClone(g);assert.match(playableNextStep(g),/接取.*在村里/);assert.deepEqual(g,before);
+ let q=active(g,'livelihood');assert.match(playableNextStep(g),/实际工作/);q.progress[0]=1;assert.match(playableNextStep(g),/购买.*口粮/);q.status='ready';assert.match(playableNextStep(g),/领取/);
+ q=active(g,'hunter-aid');assert.match(playableNextStep(g),/修理.*80/);q.progress[0]=1;g.player.self.inventory.food=0;assert.match(playableNextStep(g),/先.*购买/);g.player.self.inventory.food=1;g.map.actors=[];assert.match(playableNextStep(g),/寻找猎人/);assert.doesNotMatch(playableNextStep(g),/\(\d/);
+ q=active(g,'forest-route');assert.match(playableNextStep(g),/可以避开战斗/);q.progress[0]=1;assert.match(playableNextStep(g),/返回村庄/);
+ g.map.playable.chapterComplete=true;g.map.playable.quests.forEach(q=>q.status='completed');g.map.playable.quests[3].status='available';assert.match(playableNextStep(g),/可选挑战/);
+});
+test('guidance respects current work interval, death, battle, marching and the actual command budget',()=>{
+ const g=group();active(g,'livelihood');g.player.actions.work.nextWorkTick=g.map.tick+6;assert.match(playableNextStep(g),/还需 1小时/);
+ g.encounter.encounter={status:'active'};assert.match(playableNextStep(g),/先完成当前战斗/);g.encounter.encounter=null;
+ g.map.order={status:'marching'};assert.match(playableNextStep(g),/抵达目的地/);g.map.order=null;
+ g.map.budget.remainingCommands=0;assert.match(playableNextStep(g),/额度已用完/);g.map.self.alive=false;assert.match(playableNextStep(g),/旅程已结束/);
+});
+test('task deadlines are world time only and do not invent expiry or mutate the task',()=>{
+ const q={status:'active',remainingTicks:7},before=structuredClone(q);assert.match(questDeadlineText(q),/1小时10分钟.*世界时间/);assert.match(questDeadlineText(q),/现实等待不会消耗/);assert.deepEqual(q,before);
+ q.remainingTicks=0;assert.match(questDeadlineText(q),/核对当前任务状态/);assert.equal(q.status,'active');q.status='completed';assert.equal(questDeadlineText(q),'');
+});
+function dom(t){
+ const prior=Object.getOwnPropertyDescriptor(globalThis,'document'),nodes=new Map();
+ const element=tag=>({tag,textContent:'',hidden:false,disabled:false,dataset:{},children:[],handlers:{},append(...v){this.children.push(...v);},replaceChildren(...v){this.children=v;},addEventListener(k,fn){this.handlers[k]=fn;},click(){if(!this.disabled)this.handlers.click?.();}});
+ globalThis.document={getElementById(id){if(!nodes.has(id))nodes.set(id,element('div'));return nodes.get(id);},createElement:element};
+ t.after(()=>{if(prior)Object.defineProperty(globalThis,'document',prior);else delete globalThis.document;});return nodes;
+}
+test('task DOM refreshes a moving visible hunter and locks approaches for combat, budget or unresolved writes',t=>{
+ const nodes=dom(t),g=group(),seen=[];active(g,'hunter-aid');g.map.actors=[{actorId:'actor-2',alive:true,x:8,y:7,canInteract:false}];
+ const panel=createPlayableGoals({submit(){},approach:n=>seen.push({x:n.x,y:n.y})}),button=()=>nodes.get('playableQuestList').children.find(n=>n.dataset.quest==='hunter-aid').children.find(n=>n.textContent==='走近猎人');
+ panel.paint(g,true);button().click();assert.deepEqual(seen.at(-1),{x:8,y:7});g.map.actors[0].x=9;panel.paint(g,true);button().click();assert.deepEqual(seen.at(-1),{x:9,y:7});
+ g.map.budget.remainingCommands=2;panel.paint(g,true);assert.equal(button().disabled,true);g.map.budget.remainingCommands=512;g.encounter.encounter={status:'active'};panel.paint(g,true);assert.equal(button().disabled,true);
+ g.encounter.encounter=null;panel.paint(g,false);assert.equal(button().disabled,true);g.map.actors=[];panel.paint(g,true);assert.equal(button(),undefined);
+});
+test('task DOM names progress, shows deadlines, updates nearby controls and submits only existing quest actions',t=>{
+ const nodes=dom(t),g=group(),commands=[];const panel=createPlayableGoals({submit:(...v)=>commands.push(v),approach(){}});panel.paint(g,true);
+ const list=nodes.get('playableQuestList'),first=list.children[0];assert.match(first.children[2].textContent,/实际工作一次 0\/1.*购买一份口粮/);
+ const accept=first.children.find(n=>n.dataset.questAction==='accept');accept.click();assert.deepEqual(commands,[['PlayerQuest',{questId:'livelihood',action:'accept'}]]);
+ const q=g.map.playable.quests[0];q.status='active';q.remainingTicks=7;panel.paint(g,true);assert.match(list.children[0].children.find(n=>n.className==='quest-deadline').textContent,/1小时10分钟/);
+ const current=list.children;panel.paint(g,true);assert.equal(list.children,current,'unchanged confirmed inputs reuse the existing rows');
+ g.map.self.location='forest';panel.paint(g,true);assert.equal(list.children[0].children.find(n=>n.dataset.questAction==='abandon').disabled,true);
+});

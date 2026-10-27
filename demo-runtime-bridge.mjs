@@ -1,4 +1,5 @@
 import {validPlayableView} from './runtime-playable-contract.mjs';
+import {createOperationFeedback,operationLabel} from './demo-operation-feedback.mjs';
 import {validSocialMapView} from './runtime-social-contract.mjs';
 import {validNegotiationView} from './runtime-negotiation-contract.mjs';
 // Same DTO5 projection contract used by the campaign consumer.
@@ -71,9 +72,10 @@ export function coherent(group){
 }
 
 // One pending intent is retained across a lost response; retry uses identical bytes/ID.
-export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
+export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{},onProgress=()=>{}}){
  let group=null,source=null,connected=false,blocked=false,busy=false,pending=null,key=null,highest=-1;
  const status=(text,error=false)=>onStatus(text,error);
+ const feedback=createOperationFeedback({onStatus:status,onProgress});
  async function json(url,options={}){
   const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(120000),...options});
   const body=await response.json();if(!response.ok)throw Object.assign(new Error(body?.error?.code??`HTTP ${response.status}`),{definitiveRejection:definitiveRejection(response,body)});return body;
@@ -90,7 +92,7 @@ export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
  }
  function clear(){sessionStorage.removeItem(key);pending=null;}
  async function perform(item){
-  busy=true;onBusy(true);status('指令已发送，正在确认…');
+  busy=true;onBusy(true);const ticket=feedback.begin(operationLabel(JSON.parse(item.body)));
   try{
    let response;
    try{response=await json(item.endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:item.body});}
@@ -100,13 +102,14 @@ export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
    if(order&&(!dto||dto.commandId!==input.requestId||dto.type!==input.type||JSON.stringify(dto.payload)!==JSON.stringify(input.payload)))throw Error('订单确认与输入不一致');
    if(!validateCampaignReceipt(receipt,dto,order?receipt?.fromTick:item.fromTick))throw Error('命令回执无效，已保留待确认请求');
    const view=describeActionReceipt(receipt,dto);
+   feedback.phase(ticket,'refresh');
    await refresh();
    if(group.snapshot.revision<receipt.toRevision||group.snapshot.tick<receipt.tick)throw Error('世界状态尚未更新到本次回执，请重试原请求。');
-   await onReceipt(receipt,dto,group);clear();
+   feedback.phase(ticket,'present');await onReceipt(receipt,dto,group);clear();
    status(view.summary+(view.reason?'：'+view.reason:''),receipt.outcome==='rejected');
    return receipt;
   }catch(error){status(pending?'确认中断：请重试原请求，避免重复操作。':error.message,true);throw error;}
-  finally{busy=false;onBusy(false);}
+  finally{feedback.finish(ticket);busy=false;onBusy(false);}
  }
  async function submit(type,payload={}){
   if(!connected||blocked||busy||pending||!group?.capabilities.writes)throw Error('当前无法提交：请检查连接或待确认请求。');
@@ -126,8 +129,8 @@ export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
  function connect(){
   if(document.hidden||source)return;
   source=new EventSource('/api/runtime/demo-events');
-  source.onmessage=event=>{try{apply(JSON.parse(event.data));connected=true;status(busy?'指令已发送，正在确认…':pending?'请求中断：结果待确认，可重试原请求。':'世界已连接 · 行军由运行时执行');onBusy(busy);}catch(error){disconnect();blocked=true;status(error.message,true);onBusy(false);}};
-  source.onerror=()=>{connected=false;status('世界连接中断，连续行军将停止；重连后请明确继续。',true);onBusy(busy);};
+  source.onmessage=event=>{try{apply(JSON.parse(event.data));connected=true;feedback.connectionLost(false);status(feedback.message()??(busy?'指令已发送，正在确认…':pending?'请求中断：结果待确认，可重试原请求。':'世界已连接 · 行军由运行时执行'));onBusy(busy);}catch(error){disconnect();blocked=true;status(error.message,true);onBusy(false);}};
+  source.onerror=()=>{connected=false;feedback.connectionLost(true);status(feedback.message()??'世界连接中断，连续行军将停止；重连后请明确继续。',true);onBusy(busy);};
  }
  async function stop(){
   const response=await json('/api/runtime/demo-stop',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"apiVersion":1}'});await refresh();return response;
@@ -136,22 +139,28 @@ export function createDemoClient({onState,onStatus,onReceipt,onBusy=()=>{}}){
   if(busy||pending){await stop();status('已停止后续行军；请先完成待确认请求。');return;}
   // Keep other writes locked through both the drain and the persisted pause.
   busy=true;onBusy(true);
-  try{await stop();}catch(error){busy=false;onBusy(false);throw error;}
+  const ticket=feedback.begin('停止后续行军');
+  try{await stop();}catch(error){busy=false;onBusy(false);throw error;}finally{feedback.finish(ticket);}
   busy=false;
   if(group?.map.order?.status==='marching'||group?.map.contact)return submit('MarchPause');
   onBusy(false);
  }
  function hidden(){
-  if(!document.hidden){connect();return;}
+  if(!document.hidden){feedback.resume();connect();return;}
+  feedback.suspend();
   disconnect();navigator.sendBeacon('/api/runtime/demo-stop',new Blob(['{"apiVersion":1}'],{type:'application/json'}));
  }
  async function start(){
+  if(document.hidden)feedback.suspend();
+  const ticket=feedback.begin('世界','connect');
+  try{
   await refresh();key='narraverse.demo.pending.v1:'+group.snapshot.simulationId;
   try{const raw=sessionStorage.getItem(key);if(raw!==null){const value=JSON.parse(raw);
    if(!exact(value,['simulationId','endpoint','body','fromTick'])||value.simulationId!==group.snapshot.simulationId||!['/api/runtime/demo-order','/api/runtime/commands'].includes(value.endpoint)||typeof value.body!=='string'||!safeInt(value.fromTick))throw Error('待确认记录无效');
    const body=JSON.parse(value.body);if(body.type==='MarchStep'||typeof(body.requestId??body.commandId)!=='string')throw Error('待确认输入无效');pending=value;
   }}catch{blocked=true;status('待确认记录无法读取，已禁止写入。',true);}
-  connect();document.addEventListener('visibilitychange',hidden);window.addEventListener('pagehide',()=>{disconnect();navigator.sendBeacon('/api/runtime/demo-stop',new Blob(['{"apiVersion":1}'],{type:'application/json'}));});
+  connect();document.addEventListener('visibilitychange',hidden);window.addEventListener('pagehide',()=>{feedback.dispose();disconnect();navigator.sendBeacon('/api/runtime/demo-stop',new Blob(['{"apiVersion":1}'],{type:'application/json'}));});
+  }finally{feedback.finish(ticket);}
  }
  return Object.freeze({start,submit,pause,stop,refresh,retry(){if(!pending||busy||blocked||!connected)throw Error('没有可重试的请求');return perform(pending);},
   state:()=>({connected,blocked,busy,pending:pending!==null,canRetry:pending!==null&&!busy&&!blocked&&connected}),getGroup:()=>group});

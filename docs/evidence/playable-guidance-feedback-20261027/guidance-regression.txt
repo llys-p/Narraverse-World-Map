@@ -1,0 +1,40 @@
+✔ real sale, purchase, work and rest receipts show actual deltas without mutating data (4.212696ms)
+✔ rejection has no claimed gains, malformed or unconfirmed input never becomes a result (0.327617ms)
+✔ history deduplicates receipt retries, keeps rejection, and stores only the latest eight (0.878497ms)
+✔ a 503 after a durable sale survives reload and full server reopen without a second sale (1290.788959ms)
+✔ uncertain order errors retain exact bytes and never enable another intent (253.78092ms)
+✔ a protocol-matching POST revision rejection clears only the rejected request (180.742803ms)
+✔ a confirmed receipt stays recoverable through refresh errors and stale views (249.306774ms)
+✔ existing jobs, gift and merchant trade follow the real actor and committed projection (2.494378ms)
+✔ distance, cooldown, battle, pending or invalid quantity cannot enable actions (0.534049ms)
+✔ marching, dead or missing actors and bag rest expose only supported capabilities (0.199692ms)
+✔ runner owns bounded steps, reserves pause and ignores offline wall time (129.650879ms)
+✔ HTTP orders persist ordinary DTO5 commands and disconnect stops further marching (3164.572955ms)
+✔ delayed POST, refresh and presentation retain one request, show distinct phases, and never advance time from display ticks (274.52762ms)
+✔ lost responses clear display timers while retry reuses the exact durable intent and receipt (197.704286ms)
+✔ visibility and page exit release display intervals without clearing unresolved requests; startup failure also cleans up (90.570062ms)
+✔ feedback publishes immediately, separates phases and counts display seconds without another operation (1.959394ms)
+✔ hidden, resumed, disposed and stale timer callbacks cannot leak or replace a newer operation (0.303006ms)
+✔ network notices preserve request ambiguity and do not relabel a received receipt as unconfirmed (0.300622ms)
+✔ labels use the existing command grammar without treating user text or time as execution (0.176699ms)
+✔ campaign owner publishes all projections together only after durable save (424.085492ms)
+✔ SSE keeps an in-flight recovered request pending and retry confirms only on its POST receipt (527.140003ms)
+✔ navigation uses only the current visible projection and returns detached coordinates (2.08361ms)
+✔ dead, nearby, pending, active combat, invalid cells and reserved budget disable approach (0.268452ms)
+✔ next steps explain first acceptance, concrete quest actions and optional chapter continuation using confirmed fields (226.177876ms)
+✔ guidance respects current work interval, death, battle, marching and the actual command budget (113.419285ms)
+✔ task deadlines are world time only and do not invent expiry or mutate the task (0.508804ms)
+✔ task DOM refreshes a moving visible hunter and locks approaches for combat, budget or unresolved writes (116.336827ms)
+✔ task DOM names progress, shows deadlines, updates nearby controls and submits only existing quest actions (114.75727ms)
+✔ live immutable service prefix equals independent full replay and rejects external forgeries (5864.330396ms)
+✔ worker preserves committed views, exact retries, full restore and tamper refusal (2234.664607ms)
+✔ world time and work cooldown are derived from committed ticks only (1.657982ms)
+✔ waiting is disabled during a march, combat, unresolved write or death; work keeps its health threshold (0.300485ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17802.478054

@@ -1,0 +1,16 @@
+✔ next steps explain first acceptance, concrete quest actions and optional chapter continuation using confirmed fields (277.073449ms)
+✔ guidance respects current work interval, death, battle, marching and the actual command budget (134.438848ms)
+✔ task deadlines are world time only and do not invent expiry or mutate the task (0.522142ms)
+✔ task DOM refreshes a moving visible hunter and locks approaches for combat, budget or unresolved writes (135.42243ms)
+✔ fresh projected actor objects reproduce the parent stale target while the new panel follows the latest visible position (359.623533ms)
+✔ task DOM names progress, shows deadlines, updates nearby controls and submits only existing quest actions (172.285116ms)
+✔ preview from an enabled session cannot be committed after the server reports language disabled (10.607487ms)
+✔ late response after a world change or closing the card cannot revive a preview (1.498435ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1922.815592
