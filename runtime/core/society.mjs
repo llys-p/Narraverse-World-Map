@@ -54,6 +54,19 @@ export function createSocietyWorld(config=defaultSocietyConfig()){
   return {...world,societyModel:{config:copy,configFingerprint:canonicalJson(copy),day:0,agents},...(copy.player?{playerModel:(['society-config-v5','society-config-v6','society-config-v7'].includes(copy.version)?['society-config-v6','society-config-v7'].includes(copy.version)?createPlayerV4State:createPlayerV3State:['society-config-v3','society-config-v4'].includes(copy.version)?createPlayerPlayState:createPlayerState)(copy.player)}:{})};
 }
 
+// This proves only a detached configuration predicate, never the mutable world.
+// Exact validated bytes and derived strings are private; no caller trust marker.
+let lastCampaignConfig = null;
+function validateWorldConfig(config){
+  if(config.version!=='society-config-v7'){validateConfig(config);return null;}
+  const detached=cloneData(config),key=canonicalJson(detached);
+  if(lastCampaignConfig?.key===key)return lastCampaignConfig;
+  validateConfig(detached);
+  const proof=Object.freeze({key,units:Object.freeze(detached.estates.map((_,i)=>canonicalJson(unitConfig(detached,i))))});
+  if(key.length<=32768)lastCampaignConfig=proof;
+  return proof;
+}
+
 function ownership(w,id){const a=agent(w,id),others=w.societyModel.agents.filter(a=>a.state.actorId!==id);
   const base={actorId:id,foreignWallets:add(sum(others,a=>a.state.wallet),w.playerModel?.wallet??0),foreignFoodUsed:add(sum(others,a=>a.state.ledger.foodUsed),w.playerModel?.ledger.foodUsed??0),
     saleRevenue:a.trade.revenue,herbsSold:a.trade.herbsSold,herbsReceived:a.trade.herbsReceived};
@@ -64,12 +77,12 @@ export function validateSocietyWorld(w){
   record(w);record(w.societyModel);record(w.societyModel.config);
   fields(w,['resources','resourceModel','ecologyModel','marketModel','actorModel','societyModel',...(w.societyModel.config.version!=='society-config-v1'?['playerModel']:[])]);const m=w.societyModel;
   fields(m,['config','configFingerprint','day','agents']);denseArray(m.agents,3);requireCondition(m.agents.length===3,'Invalid Society estate count');
-  validateConfig(m.config);requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.actors)===canonicalJson(w.actorModel.config),'Society/Actor configuration mismatch');
+  const configProof=validateWorldConfig(m.config);requireCondition(m.configFingerprint===canonicalJson(m.config) && canonicalJson(m.config.actors)===canonicalJson(w.actorModel.config),'Society/Actor configuration mismatch');
   integer(m.day);requireCondition(m.day===w.actorModel.day,'Society day mismatch');
   for(const [i,a] of m.agents.entries()){
     fields(a,['state','trade']);fields(a.trade,['society-config-v5','society-config-v6','society-config-v7'].includes(m.config.version)?[...TRADE_FIELDS,'foodReceived']:TRADE_FIELDS);for(const n of Object.values(a.trade))integer(n);
     if(['society-config-v5','society-config-v6','society-config-v7'].includes(m.config.version))requireCondition(a.state.actorId==='actor-2' || a.trade.foodReceived===0,'Gift recipient must be actor-2');
-    requireCondition(a.state.actorId===m.config.estates[i].actorId && canonicalJson(a.state.config)===canonicalJson(unitConfig(m.config,i)),'Society estate identity/config mismatch');
+    requireCondition(a.state.actorId===m.config.estates[i].actorId && canonicalJson(a.state.config)===(configProof?configProof.units[i]:canonicalJson(unitConfig(m.config,i))),'Society estate identity/config mismatch');
   }
   if(m.config.version!=='society-config-v1')validatePlayerState(w);
   validateActorWorld(actorPart(w),add(sum(m.agents,a=>a.state.ledger.foodUsed),w.playerModel?.ledger.foodUsed??0));

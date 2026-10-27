@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/measure-config-cache-society.mjs",
+    "../Narraverse-Batch",
+    "artifacts/config-cache/society-parent.json"
+  ],
+  "pid": 6,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 1602.016,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

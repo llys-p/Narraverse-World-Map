@@ -1,0 +1,18 @@
+✔ synchronous detached batches equal separate fixed ticks for all six fixtures and the daily boundary (9031.729205ms)
+✔ batch boundaries inspect old events, detach nested data, reject invalid counts, and expose no custom-system bypass (134.174631ms)
+✔ identical campaign structures return detached validation results and cannot poison the cache (77.642895ms)
+✔ mutated actor, numeric config, map, tick, and forged trust data are revalidated (74.458109ms)
+✔ descriptor inspection rejects accessors before and after a successful cached proof (19.011125ms)
+✔ proof keys use detached data even when a Proxy supplies different property values (29.62991ms)
+✔ a warmed structural proof cannot certify a forged historical fact (100.749662ms)
+✔ repeated validation stays correct for raw and audited values (229.602122ms)
+✔ a changed configuration is rejected after a valid configuration was checked (68.228257ms)
+✔ accessors and forged trust fields remain rejected before configuration validation (34.444283ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10231.168119

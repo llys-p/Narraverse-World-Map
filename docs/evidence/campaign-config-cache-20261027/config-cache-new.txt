@@ -1,0 +1,24 @@
+✔ configuration reuse accepts equivalent copies and switches valid configurations without changing world data (206.916454ms)
+✔ warmed configuration proofs never accept changed invalid config, forged fingerprints or mutated frozen copies (86.605501ms)
+✔ configuration proof hits do not skip current ledger, roster, estate configuration or player checks (53.404183ms)
+✔ getters stay unread and proxy-supplied invalid configurations cannot borrow a warmed proof (59.631044ms)
+✔ C3 real engine plans simultaneous medicine buyers, then commits one with normal rejected receipts (458.523505ms)
+✔ C3 peer sale has one receipt, both entity references and later use, and the same snapshot repeats (9563.375066ms)
+✔ C3 all three commands, peer trade and planning rewind on system failure; forged provenance/history cannot load (762.162059ms)
+✔ C3 actual registered chief public-food goal commits paid production and ends or changes after progress (1166.008873ms)
+✔ C3 three private estates are transferred without minting goods or coins, and all living people consume once (112.315536ms)
+✔ C3 same-snapshot plans for the last public medicine only commit once; losers keep funds and failed goals (46.511853ms)
+✔ C3 two injured poor residents competing for the last wage cannot overspend common currency (43.890221ms)
+✔ C3 merchant sale moves real medicine and cash together, then buyer continues the same health goal next day (127.366205ms)
+✔ C3 chief public-food and merchant stock goals are real role-specific work and inventory (72.437359ms)
+✔ C3 dead or already supplied buyer rejects peer sale; invalid rosters and double private balances fail (22.369817ms)
+✔ C3 public fact validation must reject getters before consulting action type (0.434597ms)
+✔ C3 batch management rejects null/alien policies and accessors without invoking them (0.591054ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13148.973169

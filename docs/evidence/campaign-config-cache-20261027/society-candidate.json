@@ -1,0 +1,26 @@
+{
+  "root": "/workspace/scratch/e56afaffb4e3/Narraverse-Config",
+  "node": "v24.22.1",
+  "validations": 300,
+  "samples": [
+    {
+      "round": 0,
+      "wallMs": 320.92987600000004,
+      "cpuMs": 367.122
+    },
+    {
+      "round": 1,
+      "wallMs": 322.8374830000001,
+      "cpuMs": 349.135
+    },
+    {
+      "round": 2,
+      "wallMs": 308.2051009999999,
+      "cpuMs": 321.39
+    }
+  ],
+  "worldSha256": "08507a034104f970425afa311883aa9fb2c780fcd624202eed4ec30f8abb3f64",
+  "sourceSha256": "d6c291cbc6923efeba34abc3f7f881a811a8c2fef667abc913acfd03f7810fa0",
+  "externalModelCalls": 0,
+  "scope": "isolated society predicate, excluding full world replay and HTTP; not an overall game latency result"
+}

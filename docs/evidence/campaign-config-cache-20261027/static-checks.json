@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "productionDiff": [
+    "runtime/core/society.mjs"
+  ],
+  "syntaxFiles": [
+    "runtime/core/society.mjs",
+    "scripts/check-campaign-config-cache-evidence.mjs",
+    "scripts/measure-config-cache-society.mjs",
+    "tests/simulation/campaign-config-cache.test.mjs"
+  ],
+  "fixtureProviderPageDiff": []
+}

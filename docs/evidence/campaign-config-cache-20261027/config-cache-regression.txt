@@ -1,0 +1,34 @@
+✔ fixed successors equal the unchanged complete oracle, including rejected and zero-tick commands (1394.746347ms)
+✔ copies, arbitrary candidates, unknown profiles and getters cannot acquire a successor proof (95.973917ms)
+✔ real synthetic history crosses day/RNG boundary with identical whole successor (8916.498454ms)
+✔ map contact, pause/resume and both JRPG rounds equal full replay (5273.18115ms)
+✔ C5 real engine: only persistent preferences change the new goal and actual cash/goods in identical circumstances (1273.219366ms)
+✔ C5 real replay/knowledge: original personality, scores and rule/config pairing are authenticated; only own preferences are readable (2029.973237ms)
+✔ C5 engine: handler rewriting preference cannot evade canonical proof; committed first-day state survives failure (1078.84885ms)
+✔ C5 persistent goal survives changing need priorities; dead or satisfied actors do not invent personality needs (2775.870663ms)
+✔ C5 knowledge dispatch rejects accessor records before reading rule or snapshot getters (0.32437ms)
+✔ pre-existing repair counts, later damage revokes readiness, and a failed claim cannot unlock the next quest (1831.89231ms)
+✔ deadline and death fail active quests, while important and changed own facts wake the preparation cache (23.677988ms)
+✔ more than 129 durable files remain writable and reopen, and altered journal or terminal state is rejected (9090.362238ms)
+✔ four real quest states complete a village/forest chapter, survive replay, and cannot be rewarded twice (4343.405873ms)
+✔ oral claims do not complete tasks, abandonment resets progress, and the same request is idempotent (1162.038561ms)
+✔ seven days have recurring opportunities and recorded own life results, with resources and replay intact (67102.83068ms)
+✔ offscreen preparation uses fewer evaluations and reactivates on important changes (2634.883301ms)
+✔ a new offer does not erase the source of an already earned purchase step (29299.770098ms)
+✔ own retained life results reach the private provider without becoming current inventory or public facts (15644.914598ms)
+✔ playable sessions accept 129 real entries while old sessions retain the 128 command limit (1512.13057ms)
+✔ cold replay equals the parent oracle for anchored history, rejected and zero-tick commands, then remains safely advanceable (6337.213068ms)
+✔ independent full audit and journal checks both reject plausible changes, sparse inputs, duplicate IDs and accessors without invoking them (13613.485934ms)
+✔ fixture5 keeps the original complete audit path and cannot acquire the new command budget (104.264516ms)
+✔ playable social memory, dialogue, real marching and combat survive the same complete cold audit as the parent (3771.373441ms)
+✔ certified campaign sessions retain detached public results and equal the parent across real ticks and stats (14634.328758ms)
+✔ mutable or fake-frozen inputs are audited, getters stay unread, and custom systems still cannot bypass the canonical transition (110.380932ms)
+✔ inherited handlers cannot impersonate the canonical registry or invoke a getter while selecting session reuse (49.403754ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 195142.826228
