@@ -1,3 +1,13 @@
+# 当前候选：完整历史审计CPU采样（2026-10-28）
+
+父提交PR36 `97383aae7b3ec3db805c7f4fbbe17cf5a2f88157`；分支 `codex/audit-cpu-profile-20261028`，合同 `tasks/AUDIT-CPU-PROFILE-TASK.md`，交接 `docs/runtime/AUDIT-CPU-PROFILE.md`。
+
+- 与PR34末态SHA相同的14天合成档完整审计CPU采样定位描述符检查/规范编码热点。采样覆盖整个插桩进程，不能作为无插桩HTTP耗时或FPS。
+- 仅独立试验描述符判断内联；2天审计均值5.683→5.161秒，但7天25.822→25.781秒、CPU26.185→26.159秒，收益不足，未改生产。7天完整世界哈希一致；试验候选的HTTP、篡改回归未执行，不计通过。一次受分析任务干扰的七天测量中止，不纳入结果。
+- 核验 `node scripts/check-audit-cpu-evidence.mjs`；不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0，模型0调用。下一步寻找每刻结构检查的可证明重复工作，浏览器/FPS/Windows待验，Projects待同步。
+
+以下为PR36及更早历史。
+
 # 当前候选：长档冷恢复重放复用（2026-10-27）
 
 父提交PR35 `f70e638ea4079f661855ff03713d1f267f0cf192`，分支 `codex/cold-replay-reuse-20261027`；任务 `tasks/COLD-REPLAY-REUSE-TASK.md`，交接 `docs/runtime/COLD-REPLAY-REUSE.md`。
