@@ -1,3 +1,13 @@
+# 当前候选：任务失败与重接引导（2026-10-27）
+
+父提交PR33 `e55ecc39b289b65ad3958e3b6063de969a7ee2f5`，分支 `codex/playable-recovery-guidance-20261027`。任务和交接见 `tasks/PLAYABLE-RECOVERY-GUIDANCE-TASK.md`、`docs/runtime/PLAYABLE-RECOVERY-GUIDANCE.md`。
+
+- 公共投影只读提示期限、重接、当前可见的猎人死亡、玩家死亡和最后一次命令；不改世界规则、存档、NPC或自动行动。
+- 最终源码35项不同检查通过；另有1项14天合成长档HTTP测试在最后一次命令提示加入前通过。到期当刻的实际领取由规则函数测试，长测验证下一刻失败、重接、恢复及幂等；初始食物100为合成测试配置。重开观察下限181.880秒，实际总时长未精确计时。浏览器布局、FPS及Windows待验，模型0调用。
+- 证据核验 `node scripts/check-playable-recovery-evidence.mjs`。不合main、不部署、不迁移真实存档、不启停日常实例、不导入2.0；GitHub Projects待同步。下一步优先分析长档冷恢复，保留完整审计，再实测页面和游戏完整体验。
+
+以下为PR33及更早历史。
+
 # 当前候选：任务引导与等待反馈（2026-10-27）
 
 父提交PR32 `3f65827a5ab7444fe78318e0a0e223e612861a2e`；独立树 `/workspace/scratch/e56afaffb4e3/Narraverse-Experience`，分支 `codex/playable-guidance-feedback-20261027`。任务 `tasks/PLAYABLE-GUIDANCE-FEEDBACK-TASK.md`，用户/AI交接 `docs/runtime/PLAYABLE-GUIDANCE-FEEDBACK.md`。

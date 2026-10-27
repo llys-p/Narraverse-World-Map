@@ -1,0 +1,27 @@
+✔ real sale, purchase, work and rest receipts show actual deltas without mutating data (5.428941ms)
+✔ rejection has no claimed gains, malformed or unconfirmed input never becomes a result (0.334163ms)
+✔ history deduplicates receipt retries, keeps rejection, and stores only the latest eight (0.711852ms)
+✔ a 503 after a durable sale survives reload and full server reopen without a second sale (1425.330852ms)
+✔ uncertain order errors retain exact bytes and never enable another intent (203.608511ms)
+✔ a protocol-matching POST revision rejection clears only the rejected request (170.80816ms)
+✔ a confirmed receipt stays recoverable through refresh errors and stale views (256.542631ms)
+✔ delayed POST, refresh and presentation retain one request, show distinct phases, and never advance time from display ticks (305.494914ms)
+✔ lost responses clear display timers while retry reuses the exact durable intent and receipt (187.426279ms)
+✔ visibility and page exit release display intervals without clearing unresolved requests; startup failure also cleans up (110.349857ms)
+✔ feedback publishes immediately, separates phases and counts display seconds without another operation (1.903817ms)
+✔ hidden, resumed, disposed and stale timer callbacks cannot leak or replace a newer operation (0.409269ms)
+✔ network notices preserve request ambiguity and do not relabel a received receipt as unconfirmed (0.259168ms)
+✔ labels use the existing command grammar without treating user text or time as execution (0.274039ms)
+✔ SSE keeps an in-flight recovered request pending and retry confirms only on its POST receipt (645.400938ms)
+✔ navigation uses only the current visible projection and returns detached coordinates (5.111863ms)
+✔ dead, nearby, pending, active combat, invalid cells and reserved budget disable approach (0.383178ms)
+✔ world time and work cooldown are derived from committed ticks only (1.354081ms)
+✔ waiting is disabled during a march, combat, unresolved write or death; work keeps its health threshold (0.596643ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4440.708545

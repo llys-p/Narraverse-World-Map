@@ -1,0 +1,10 @@
+[
+  {
+    "from": " if(group.map.budget.remainingCommands===1&&!(q.status==='ready'&&village))return '本档只剩1次新操作，无法完成并领取当前任务。请保留原存档，另开新旅程。';\n",
+    "to": ""
+  },
+  {
+    "from": " if(q.id==='hunter-aid'&&q.status!=='ready'&&hunter?.alive===false)return '当前可见的猎人已倒下，无法帮他修理或向他赠粮。'+(q.status==='active'?(village?'可在任务板放弃任务。':'可在村庄放弃任务；返程会推进世界时间，任务可能先到期。'):'该任务暂时无法完成。')+'原存档会保留，也可以另开新旅程。';",
+    "to": " if(q.id==='hunter-aid'&&q.status!=='ready'&&hunter?.alive===false)return '当前可见的猎人已倒下，无法帮他修理或向他赠粮。'+(q.status==='active'?(village?'可在任务板放弃任务。':'可返回村庄放弃任务。'):'该任务暂时无法完成。')+'原存档会保留，也可以另开新旅程。';"
+  }
+]
