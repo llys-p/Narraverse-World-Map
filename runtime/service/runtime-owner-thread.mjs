@@ -181,7 +181,7 @@ function validatePublication(message) {
   const group = cloneData(message.group);
   requireCondition(group && typeof group === 'object' && group.snapshot, 'Worker omitted runtime projection group', 'INVALID_WORKER_MESSAGE');
   const commands = cloneData(message.commands);
-  requireCondition(Array.isArray(commands) && commands.length <= (group.map?.mapViewVersion===4?512:128), 'Worker omitted committed commands', 'INVALID_WORKER_MESSAGE');
+  requireCondition(Array.isArray(commands) && commands.length <= ([4,5].includes(group.map?.mapViewVersion)?512:128), 'Worker omitted committed commands', 'INVALID_WORKER_MESSAGE');
   for (const projection of Object.values(group)) {
     if (projection !== null) requireCondition(projection.simulationId === group.snapshot.simulationId &&
       projection.revision === group.snapshot.revision && projection.tick === group.snapshot.tick,

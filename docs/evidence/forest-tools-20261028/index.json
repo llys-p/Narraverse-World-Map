@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "parentCommit": "931ff94b7580c190bd9a0def4b36b0c7f26d8ee9",
+  "branch": "codex/forest-tools-encounters-20261028",
+  "uniquePassedTests": 58,
+  "countedLogs": [
+    "parent-regression-initial.txt",
+    "adjacent-initial.txt",
+    "core-final.txt",
+    "service-release.txt"
+  ],
+  "finalAfterExitBudgetGuard": [
+    "core-final.txt",
+    "service-release.txt"
+  ],
+  "sources": {
+    "Start-Forest-Journey-New.cmd": "e538af5c159cecdd08f83b5564451377f5287fa50083f9abbfd8601547e717f9",
+    "Start-Forest-Journey.cmd": "d969a70ba95641d6448ba2a891872595bdfd8bc4a962fb60bbdd867bf8376b3f",
+    "demo-forest.mjs": "8d00376120732376e7da20177a250096884beff52bb5cfa47f36531ef9d47d5f",
+    "demo-runtime-bridge.mjs": "2edde7173a33611b5c19cc9b699e6c36aae8b7b105a3ebb3b4e8b76ea431eefd",
+    "demo-runtime-interactions.mjs": "4a441480287892c1664076292ac0f9787e4abbc753018bd092bd797e59119385",
+    "demo-runtime-prototype.mjs": "174833c4cb763d36bb94ceaa951f791837d35f8a8a72154a7e290a7bbf88b984",
+    "demo-runtime.html": "96dad45c6c759a50f7ac28dbec25756659edb644503b497bf277e0a5e6f7e330",
+    "runtime-campaign-contract.mjs": "8fdaa0b2e07255b3d6b26228525b1ed57854de8a17862dfb98149798aab2649f",
+    "runtime-forest-contract.mjs": "c9fe641e952b23895cfa87c1d5f88a1a35934fa0b90287a8b3c773fcbf07ffcd",
+    "runtime-server.mjs": "02d5016b63592f6a1bc1ad33a2386b8743f9c51698ca1cd53f52a9c7bd1abe6c",
+    "runtime/core/campaign-forest.mjs": "5bc5bf83232f0fe191c2998a0d49c23bad54fbf9da33c09f42b9fec5135a0dcf",
+    "runtime/core/campaign-limits.mjs": "f2aa36aabc71d4354760db62b67fd3e58a8253bddcf0c57a4b69368a824598e6",
+    "runtime/core/campaign-map.mjs": "9e6bfde60c8684f7a3f35c3daac34e0121f999bda475a240a167aa50be39e988",
+    "runtime/core/event-log.mjs": "2ad5eb192ee078c74f2f5ea282eceab13c4839bd77ac586c21a132898711dd3e",
+    "runtime/core/scene-campaign-runtime.mjs": "728618a18293b6d28edaf32a333ad9cca8e64f7efad90c4176036e846294b225",
+    "runtime/core/world-state.mjs": "a705538791b8750d5dce16ad2fe82dab6aa9990bdec401e8af066e9b45ca9d54",
+    "runtime/fixtures/campaign-village.mjs": "14afd4c55db69a6305073a2d620dad2865c8ec37276fedc3451da5383c4e6ddb",
+    "runtime/service/http-contract.mjs": "2b051338981bebc2bb79d9ab1cd097f26596dbbc070c2dcd2c6de37d2868afe9",
+    "runtime/service/runtime-owner-thread.mjs": "8c9d280a3c51717d5d9e7f16c30f65b05eec1216b22e6dc099edc8baf1da5f49",
+    "runtime/service/runtime-owner.mjs": "b30fa29c73e3a463906d58e1a65a42004f51357f08beca633dbedb1e1ff74657",
+    "scripts/check-forest-legacy.mjs": "8e509b4c84cd587e13cff6dba4cec73db67213cb0ab6e2dbee2f13764889b5d6",
+    "tests/simulation/forest-panel.test.mjs": "0940c66c0244753529eeb912993e3562d84753cf92c50f3a038978d4b3406297",
+    "tests/simulation/forest-service.test.mjs": "cbb9bdddcb166a8fba7e4a59cac668fe7596142528ea1693f94fd0599e7b68d7",
+    "tests/simulation/forest-tools.test.mjs": "224a55957d84e2abdea65c7f833e5fc5b2da79d8fa47e35f3fede491a21538d9"
+  },
+  "evidence": {
+    "adjacent-initial.txt": "2114d89b275d5bdfa6b30a328f0f6a35e3e25c1c267391cdbfe0000877ba6ae9",
+    "browser-attempt.json": "79e9aef0e45bb552d15e29faea40911aebb2f9b2e7150da540e5145b9e7ce03a",
+    "consumer-final.txt": "cbe26d4da7ec29bd292d2324f8ea23769dee7f4ac1b067fa878ef39a16014164",
+    "core-final.txt": "2f117b43aa77e72231ec784713f317abf530856c0d8938562213e1c9e11913c4",
+    "core-initial.txt": "d6d2950ea0951039b1218d9354d856234be2bc764b673a696e6bffba771ff2e7",
+    "core-panel-final.txt": "397903418de6a51f20b90fc36db400af7b8bd06b3e45f23c9ff2a893b13e10de",
+    "development-notes.txt": "41b7c54bc2f548ac34465aca22d88a7dcccb811b0140a8d039683d469a04507d",
+    "legacy-final.json": "6ee69e7f9ac598b34dc429ed853bbece44afd26a9a8c166af9d7d30cd0459f5e",
+    "panel-initial.txt": "39685e3066f45c6e23a559d837cf791cd1b6adeca869ef48760f71dd5de03ae8",
+    "parent-regression-initial.txt": "3458a6f9789f455d91bb4ad9b1126fc954870faf20421ecbd2f1f5bb6ba34267",
+    "service-final.txt": "19f3cc1eb3ecae7b28dfbab95d10e6362b5be6dbd23fbb785ef7290f4e5e275e",
+    "service-initial.txt": "5127edef1d9bc6d745fe1b00889cd72d966866a46a8e68f971c0b22d454c2115",
+    "service-release.txt": "1a6a2ce29086c68c9fbf37c7f7c8f23a54d77cb1ee8c60a728bdd1b7577fb9f4"
+  },
+  "externalModelCalls": 0,
+  "scope": "Synthetic new worlds, bounded regression and actual worker HTTP; rendered browser and Windows unverified"
+}

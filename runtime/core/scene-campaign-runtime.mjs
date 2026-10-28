@@ -15,12 +15,16 @@ import {preflightNegotiation,auditNegotiation,commitNegotiation,observeAgreement
 import {createPlayModel,auditQuest,commitQuest,observePlayCommand,observePlayTick} from './campaign-play.mjs';
 import {PLAY_QUEST_COMMAND,validQuestPayload} from '../../runtime-playable-contract.mjs';
 import {NPC_MEMORY_MAP_VERSION,updateNpcMemory} from './npc-memory.mjs';
+import {campaignInputLimit} from './campaign-limits.mjs';
+import {FOREST_COMMAND,validForestPayload} from '../../runtime-forest-contract.mjs';
+import {createForestModel,auditForest,commitForest,forestCanBegin,observeForestCommand,finishForestTick,requireForestBudget} from './campaign-forest.mjs';
 export const CAMPAIGN_RULES='d-campaign-v1',CAMPAIGN_PROFILE='campaign-village';
 export function preflightCampaignIntent(dto){
  inspectDescriptorTree(dto);fields(dto,['version','commandId','expectedRevision','type','payload']);
  requireCondition(dto.version===5,'Campaign requires command DTO5','UNSUPPORTED_VERSION');
  requireCondition(dto.type!=='PlayerTravel','Campaign travel requires a march order','COMMAND_UNSUPPORTED');
- if(dto.type===PLAY_QUEST_COMMAND){preflightSceneIntent({...dto,type:'PlayerRest',payload:{}},5);requireCondition(validQuestPayload(dto.payload),'Invalid quest payload');
+ if(dto.type===FOREST_COMMAND){preflightSceneIntent({...dto,type:'PlayerRest',payload:{}},5);requireCondition(validForestPayload(dto.payload),'Invalid forest payload');
+ }else if(dto.type===PLAY_QUEST_COMMAND){preflightSceneIntent({...dto,type:'PlayerRest',payload:{}},5);requireCondition(validQuestPayload(dto.payload),'Invalid quest payload');
  }else if(NEGOTIATION_COMMANDS.includes(dto.type)){
   preflightSceneIntent({...dto,type:'PlayerRest',payload:{}},5);preflightNegotiation(dto);
  }else if(dto.type===SOCIAL_COMMAND){
@@ -52,17 +56,17 @@ function campaignGift(world){const plan=auditGift(world),n=world.mapModel.npcs.f
  return plan.outcome==='succeeded'&&mapDistance(world.mapModel.position,n)>1?{...plan,outcome:'rejected',reasonCode:'NOT_COLOCATED'}:plan;}
 const cached=new Map();
 function hooks(version='1'){
- requireCondition(['1','2','3','4','5','6','7'].includes(version),'Unsupported campaign fixture','UNSUPPORTED_VERSION');
+ requireCondition(['1','2','3','4','5','6','7','8'].includes(version),'Unsupported campaign fixture','UNSUPPORTED_VERSION');
  if(cached.has(version))return cached.get(version);
- const npcAgency=version!=='1',social=['3','4','5','6','7'].includes(version),negotiation=['4','5','6','7'].includes(version);
+ const npcAgency=version!=='1',social=['3','4','5','6','7','8'].includes(version),negotiation=['4','5','6','7','8'].includes(version);
  const result=createSceneEncounterRuntimeHooks(base,{rules:CAMPAIGN_RULES,fixture:CAMPAIGN_PROFILE,fixtureVersion:version,campaign:true,
- preflight:preflightCampaignIntent,auditGift:campaignGift,commitGift:(world,...args)=>{const fact=commitGift(world,...args);if(social)observeSocialGift(world,fact);updateNpcMemory(world);return fact;},auditWork:auditPlayerWork,observe:(w,e,t)=>{observeSceneCommand(w,e,t);if(['6','7'].includes(version))observePlayCommand(w,e,t);},
- extendWorld:world=>({...world,mapModel:{...createCampaignMap(npcAgency,social,negotiation,['5','6','7'].includes(version)),...(['6','7'].includes(version)?{playModel:createPlayModel(version==='7'?'playable-v2':'playable-v1')}:{})}}),validateWorld:validateCampaignWorldState,
+ preflight:preflightCampaignIntent,auditGift:campaignGift,commitGift:(world,...args)=>{const fact=commitGift(world,...args);if(social)observeSocialGift(world,fact);updateNpcMemory(world);return fact;},auditWork:auditPlayerWork,observe:(w,e,t)=>{observeForestCommand(w,e);observeSceneCommand(w,e,t);if(['6','7','8'].includes(version))observePlayCommand(w,e,t);},
+ extendWorld:world=>({...world,mapModel:{...createCampaignMap(npcAgency,social,negotiation,['5','6','7','8'].includes(version)),...(['6','7','8'].includes(version)?{playModel:createPlayModel(['7','8'].includes(version)?'playable-v2':'playable-v1')}:{}),...(version==='8'?{forestModel:createForestModel()}:{})}}),validateWorld:validateCampaignWorldState,
  beforeTick:(world,tick,append,events,id)=>{if(social)observeSocialTick(world,tick,append);if(negotiation)observeAgreementTick(world,tick,append);updateNpcMemory(world);if(npcAgency)prepareHunterTravel(world,events,tick,id);advanceMapTick(world,tick,append);},
- auditDirect:(world,dto)=>auditQuest(world,dto)??auditNegotiation(world,dto)??auditSocial(world,dto),
- commitDirect:(world,dto,tick,seq)=>{const result=dto.type===PLAY_QUEST_COMMAND?commitQuest(world,dto,tick):NEGOTIATION_COMMANDS.includes(dto.type)?commitNegotiation(world,dto,tick,seq):observeAgreementAction(world,dto,commitSocial(world,dto,tick,seq),tick,seq);updateNpcMemory(world,result);return result;},
- afterTick:(w,t)=>{finishMapTick(w);if(['6','7'].includes(version))observePlayTick(w,t);},auditMap:auditMarch,commitMap:commitMarch,mapResult:marchResult,requireBudget:requireMarchBudget,
- adjustPlan:(dto,world,plan)=>world.mapModel.order?.status==='marching'&&!MARCH_TYPES.includes(dto.type)?{...plan,outcome:'rejected',reasonCode:'RULE_REJECTED',durationTicks:0}:plan});
+ auditDirect:(world,dto)=>auditForest(world,dto)??auditQuest(world,dto)??auditNegotiation(world,dto)??auditSocial(world,dto),
+ commitDirect:(world,dto,tick,seq)=>{const result=dto.type===FOREST_COMMAND?commitForest(world,dto):dto.type===PLAY_QUEST_COMMAND?commitQuest(world,dto,tick):NEGOTIATION_COMMANDS.includes(dto.type)?commitNegotiation(world,dto,tick,seq):observeAgreementAction(world,dto,commitSocial(world,dto,tick,seq),tick,seq);updateNpcMemory(world,result);return result;},
+ afterTick:(w,t)=>{finishMapTick(w);finishForestTick(w);if(['6','7','8'].includes(version))observePlayTick(w,t);},auditMap:auditMarch,commitMap:commitMarch,mapResult:marchResult,requireBudget:(type,remaining,world)=>{requireMarchBudget(type,remaining,world);requireForestBudget(type,remaining,world);},
+ adjustPlan:(dto,world,plan)=>dto.type==='EncounterBegin'&&!forestCanBegin(world)?{...plan,outcome:'rejected',reasonCode:'RULE_REJECTED',durationTicks:0}:world.mapModel.order?.status==='marching'&&!MARCH_TYPES.includes(dto.type)?{...plan,outcome:'rejected',reasonCode:'RULE_REJECTED',durationTicks:0}:plan});
  cached.set(version,result);return result;
 }
 export const campaignRuntimeHooks=Object.freeze({
@@ -78,6 +82,7 @@ export const createSocialCampaignWorld=(...args)=>hooks('3').createWorld(...args
 export const createNegotiationCampaignWorld=(...args)=>hooks('4').createWorld(...args);
 export const createMemoryCampaignWorld=(...args)=>hooks('5').createWorld(...args);
 export const createPlayableCampaignWorld=(...args)=>hooks('6').createWorld(...args);
+export const createForestCampaignWorld=(...args)=>hooks('8').createWorld(...args);
 export const createTrustCampaignWorld=(...args)=>hooks('7').createWorld(...args);
 // A single bounded proof of this pure structural predicate, keyed by exact JSON
 // bytes and tick, never by mutable identity or a caller-provided trust flag.
@@ -94,7 +99,7 @@ export function validateCampaignWorldState(world,options={}){
  return result;
 }
 export function describeCampaignEncounterActions(bundle){validateBundle(bundle,{rulesVersion:CAMPAIGN_RULES,systems:canonicalSystems(CAMPAIGN_RULES)});
- const result=hooks(bundle.snapshot.fixtureVersion).describeActions(bundle);if(bundle.snapshot.world.mapModel.order?.status==='marching')result.canBegin=false;return cloneData(result);}
+ const result=hooks(bundle.snapshot.fixtureVersion).describeActions(bundle);if(bundle.snapshot.world.mapModel.forestModel&&campaignInputLimit(bundle.snapshot.world)-bundle.snapshot.world.encounterModel.inputHistory.length<2){result.canBegin=false;result.canAct=false;}if(!forestCanBegin(bundle.snapshot.world)||bundle.snapshot.world.mapModel.order?.status==='marching')result.canBegin=false;return cloneData(result);}
 export function describeCampaignGiftAvailability(bundle){validateBundle(bundle,{rulesVersion:CAMPAIGN_RULES,systems:canonicalSystems(CAMPAIGN_RULES)});const {outcome,reasonCode}=campaignGift(bundle.snapshot.world);return {available:outcome==='succeeded'&&bundle.snapshot.world.mapModel.order?.status!=='marching',reasonCode};}
 export function executeAuditedCampaignIntent(bundle,dto){inspectDescriptorTree({bundle,dto});preflightCampaignIntent(dto);const systems=canonicalSystems(CAMPAIGN_RULES);
  validateBundle(bundle,{rulesVersion:CAMPAIGN_RULES,systems});const result=hooks(bundle.snapshot.fixtureVersion).executeIntent(bundle,dto);

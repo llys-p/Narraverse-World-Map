@@ -1,0 +1,18 @@
+✔ optional card shows three real steps, loan timing, explicit actions, and visible hunter only (436.177024ms)
+✔ deadline guidance distinguishes a ten-minute return from zero-time quest claiming (310.581279ms)
+✔ new optional loan journey joins real forest travel, keeps main chapter independent, and rewards once (14602.555543ms)
+✔ repair-for-loan is a second playable path with its actual negotiated deadline (5997.264432ms)
+✔ loans before acceptance, talk, refusals, and early returns cannot supply missing steps (9662.444573ms)
+✔ actual robbery and forest travel do not become a consensual loan (4014.458365ms)
+✔ completion at the loan deadline succeeds; completing one tick later fails and retains relationship consequences (28424.123794ms)
+✔ abandon and reaccept keep the actual loan and cannot re-count that old loan (7229.253178ms)
+✔ forged deadlines, progress and model versions fail replay; legacy fixture retains four tasks (4853.235367ms)
+✔ playable fixtures accept genuine overdue and agreement-closure events but reject forged sources (13439.857703ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88556.730614

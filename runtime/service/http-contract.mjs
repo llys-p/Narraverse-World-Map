@@ -252,7 +252,7 @@ export function validateTimeCommandDto(dto){
 }
 export function runtimeProfile(bundle){
   fields(bundle,['snapshot','eventLog']);record(bundle.snapshot);const s=bundle.snapshot;
-  requireCondition(s.fixtureVersion==='1'||(s.rulesVersion===CAMPAIGN_RULES&&s.fixtureId===CAMPAIGN_PROFILE&&['2','3','4','5','6','7'].includes(s.fixtureVersion)),'Unknown service fixture version','UNSUPPORTED_VERSION');
+  requireCondition(s.fixtureVersion==='1'||(s.rulesVersion===CAMPAIGN_RULES&&s.fixtureId===CAMPAIGN_PROFILE&&['2','3','4','5','6','7','8'].includes(s.fixtureVersion)),'Unknown service fixture version','UNSUPPORTED_VERSION');
   if(s.rulesVersion===PERSONALITY_RULES && s.fixtureId==='personality-neutral')return {serviceFormatVersion:1,rulesVersion:PERSONALITY_RULES,systems:memorySystems()};
   if(s.rulesVersion===PLAYER_RULES && s.fixtureId==='player-village')return {serviceFormatVersion:2,rulesVersion:PLAYER_RULES,systems:playerSystems()};
   if(s.rulesVersion===PLAY_RULES && s.fixtureId==='player-play-village')return {serviceFormatVersion:3,rulesVersion:PLAY_RULES,systems:playerPlaySystems()};

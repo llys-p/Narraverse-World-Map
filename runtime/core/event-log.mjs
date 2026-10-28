@@ -185,10 +185,10 @@ function validateEventLogData(eventLog, snapshot, systems, replay, collectStrict
       requireCondition(workProfile&&event.sourceSystem==='command-engine'&&event.entityIds.length===1&&event.entityIds[0]==='actor-4'&&event.causationEventSeqs.length===0,'Invalid work fact source');
       identifier(event.commandId);validatePlayerWorkResult(event.payload);requireCondition(event.tick===event.payload.endTick&&!commandEvents.has(event.commandId),'Invalid work fact clock/duplicate');commandEvents.set(event.commandId,event);
     }else if(event.type==='NpcPerceptionRecorded'){
-      requireCondition(campaignProfile&&['3','4','5','6','7'].includes(state.fixtureVersion)&&event.sourceSystem==='campaign'&&event.commandId===null&&event.entityIds.length===1&&event.entityIds[0]==='actor-2'&&event.causationEventSeqs.length===0,'Invalid perception source');
+      requireCondition(campaignProfile&&['3','4','5','6','7','8'].includes(state.fixtureVersion)&&event.sourceSystem==='campaign'&&event.commandId===null&&event.entityIds.length===1&&event.entityIds[0]==='actor-2'&&event.causationEventSeqs.length===0,'Invalid perception source');
       fields(event.payload,['actorId','kind','text']);requireCondition(event.payload.actorId==='actor-2'&&['missing','damage','overdue'].includes(event.payload.kind)&&typeof event.payload.text==='string'&&event.payload.text.length<=300,'Invalid perception payload');
     }else if(event.type==='NpcAgreementClosed'){
-      requireCondition(campaignProfile&&['4','5','6','7'].includes(state.fixtureVersion)&&event.sourceSystem==='campaign'&&event.commandId===null&&event.entityIds.join(',')==='actor-2,actor-4'&&event.causationEventSeqs.length===1,'Invalid agreement source');
+      requireCondition(campaignProfile&&['4','5','6','7','8'].includes(state.fixtureVersion)&&event.sourceSystem==='campaign'&&event.commandId===null&&event.entityIds.join(',')==='actor-2,actor-4'&&event.causationEventSeqs.length===1,'Invalid agreement source');
       fields(event.payload,['agreementId','status','text']);identifier(event.payload.agreementId);
       requireCondition(['invalidated','breached','expired'].includes(event.payload.status)&&typeof event.payload.text==='string'&&event.payload.text.length<=300,'Invalid agreement event');
     }else if(event.type==='CampaignRegionsChanged'){
