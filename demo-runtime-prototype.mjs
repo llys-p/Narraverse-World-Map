@@ -4,7 +4,9 @@ import {interactionActions,personNavigation,worldTimeView,describeActionReceipt,
 import {createSocialTextComposer} from './demo-social-composer.mjs';
 import {createPlayableGoals} from './demo-playable-goals.mjs';
 import {createNpcDialogue} from './demo-npc-dialogue.mjs';
-const playableGoals=createPlayableGoals({submit:(type,payload)=>handle(()=>client.submit(type,payload)),approach:n=>handle(()=>client.submit('MarchSet',{x:n.x,y:n.y}))});
+const playableGoals=createPlayableGoals({submit:(type,payload)=>handle(()=>client.submit(type,payload)),approach:n=>handle(()=>client.submit('MarchSet',{x:n.x,y:n.y})),openPerson:id=>{
+ showPerson(id);if(!$('personCard').hidden){$('personCard').scrollIntoView({block:'nearest'});$('personName').focus({preventScroll:true});}
+}});
 const npcDialogue=createNpcDialogue();
 const socialTextComposer=createSocialTextComposer();
 const $=id=>document.getElementById(id),K=window.SandboxDrawingKit;

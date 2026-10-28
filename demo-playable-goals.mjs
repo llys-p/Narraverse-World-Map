@@ -40,10 +40,10 @@ export function playableNextStep(group){
  if(q.id==='forest-route')return q.progress[0]?'下一步：活着返回村庄，完成森林往返。':'下一步：抵达森林，再活着返回村庄；这个任务可以避开战斗。';
  return q.progress[0]?'下一步：活着返回村庄，领取可选挑战进展。':'下一步：前往森林战胜一匹狼，再活着返回村庄；这是可选挑战。';
 }
-export function createPlayableGoals({submit,approach}){
- const panel=document.getElementById('playableGoals'),list=document.getElementById('playableQuestList');let key='';
+export function createPlayableGoals({submit,approach,openPerson}){
+ const panel=document.getElementById('playableGoals'),list=document.getElementById('playableQuestList');let key='',latest=null;
  function paint(group,writable){
-  const view=group?.map?.playable;panel.hidden=!view;if(!view)return;
+  latest=group;const view=group?.map?.playable;panel.hidden=!view;if(!view)return;
   const hunter=group.map.actors.find(a=>a.actorId==='actor-2'),navigation=personNavigation(group,writable,'actor-2'),next=playableNextStep(group);
   const value=JSON.stringify([view,writable,group.map.self.location,group.map.self.alive,group.map.order?.status,group.encounter.encounter?.status,navigation,hunter,next]);if(value===key)return;key=value;
   document.getElementById('playableTitle').textContent=view.chapterComplete?'第一章完成：你已在村庄站稳脚跟':view.title;
@@ -60,6 +60,13 @@ export function createPlayableGoals({submit,approach}){
    const deadline=questDeadlineText(q);if(deadline){const text=document.createElement('p');text.className='quest-deadline';text.textContent=deadline;row.append(text);}
    const actions=['available','abandoned','failed'].includes(q.status)?[['accept','接取任务']]:q.status==='ready'?[['claim','领取进展'],['abandon','放弃任务']]:q.status==='active'?[['abandon','放弃任务']]:[];
    for(const [action,text] of actions){const button=document.createElement('button');button.type='button';button.textContent=text;button.dataset.questAction=action;button.disabled=!free;button.addEventListener('click',()=>submit('PlayerQuest',{questId:q.id,action}));row.append(button);}
+   if(q.status==='active'&&q.id==='hunter-aid'&&hunter?.alive&&typeof openPerson==='function'){
+    const b=document.createElement('button');b.type='button';b.textContent='查看猎人';b.addEventListener('click',()=>{
+     const actor=latest?.map?.actors?.find(a=>a.actorId==='actor-2');
+     const quest=latest?.map?.playable?.quests?.find(item=>item.id==='hunter-aid');
+     if(actor?.alive&&quest?.status==='active')openPerson('actor-2');
+    });row.append(b);
+   }
    if(q.status==='active'&&q.id==='hunter-aid'&&hunter?.alive&&!hunter.canInteract){const b=document.createElement('button');b.textContent='走近猎人';b.disabled=!navigation.canApproach;b.addEventListener('click',()=>approach(hunter));row.append(b);}
    if(actions.length&&!inVillage){const hint=document.createElement('small');hint.textContent='接取、领取和放弃请返回村庄任务板。';row.append(hint);}
    list.append(row);

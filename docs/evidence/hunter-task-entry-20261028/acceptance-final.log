@@ -1,0 +1,28 @@
+✔ next steps explain first acceptance, concrete quest actions and optional chapter continuation using confirmed fields (254.966899ms)
+✔ guidance respects current work interval, death, battle, marching and the actual command budget (137.138182ms)
+✔ task deadlines are world time only and do not invent expiry or mutate the task (0.623255ms)
+✔ task DOM refreshes a moving visible hunter and locks approaches for combat, budget or unresolved writes (103.349171ms)
+✔ fresh projected actor objects reproduce the parent stale target while the new panel follows the latest visible position (246.848348ms)
+✔ task DOM names progress, shows deadlines, updates nearby controls and submits only existing quest actions (95.400773ms)
+✔ chapter recap appears only when completed and reflects optional challenge and death (226.637524ms)
+✔ repair guidance uses only currently visible hunter and explains the interaction and tool location (110.348124ms)
+✔ ready quest label distinguishes claiming here from returning to the village (131.665631ms)
+{"measurement":"first-chapter-http-walkthrough","tick":66,"rank":3,"chapterComplete":true,"questStatuses":["completed","completed","completed","available"],"explicitRequests":16,"durableFiles":32,"filesSha256":"aae4be631b65596a02008cb83a9d231c0e98768119d68e2c94ce5461e0e76382","externalModelCalls":0,"scope":"default synthetic new journey; real worker HTTP, no browser rendering; automatic march steps are additional commands"}
+✔ default new journey completes three chapter quests through worker HTTP and survives reopen (14751.569228ms)
+{"measurement":"hunter-task-entry-http","tick":37,"revision":40,"explicitCommands":5,"files":6,"opened":"actor-2","assets":{"demo-runtime.html":"2c656b03a37b51ed7978dd8ba3d643f5be65a563599e3ba0311c8a67b4851316","demo-runtime-prototype.mjs":"4575660afedb7090fad407d171f3082f090763fb88b850a463cf2070ac56c7b3"},"externalModelCalls":0,"scope":"actual worker HTTP and DOM mock; browser rendering not tested"}
+✔ real hunter task exposes a read-only entry with no extra command or save (2415.813271ms)
+✔ active quest opens only the currently visible living hunter, including read-only mode (225.748805ms)
+✔ last tick permits a ready village claim; advancing one tick fails it and a later acceptance resets progress (237.470485ms)
+✔ last tick warns during battle and ongoing march without promising an instant pause (131.923949ms)
+✔ failed and abandoned quests offer a reaccept without inventing rewards or world changes (127.320747ms)
+✔ the last available command cannot lead to an unfinishable new attempt; a ready village claim remains available (136.232303ms)
+✔ a visibly dead hunter blocks misleading repair and gift guidance in a real audited world (3612.545405ms)
+✔ a ready quest stays claimable even if the hunter is visible dead; no approach button is offered for a dead hunter (93.711783ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14955.675442

@@ -1,3 +1,13 @@
+# 当前候选：猎人任务人物入口（2026-10-28）
+
+父提交PR38 `e398b5803dba66cb6f9ffbdaa42f2ea64807098f`，分支 `codex/hunter-task-entry-20261028`；任务 `tasks/HUNTER-TASK-ENTRY-TASK.md`，交接 `docs/runtime/HUNTER-TASK-ENTRY.md`。
+
+- 进行中的猎人任务在人物当前可见且存活时提供只读人物卡入口；复用现有卡片，显式点击后聚焦，不自动互动或移动，不读取视野外人物。消失、死亡和任务变化时旧按钮不能触发。
+- 18项不同检查通过，包括实际worker/HTTP打开入口不新增命令或保存、完整第一章重开；DOM替身不能代替真实浏览器、键盘/读屏与画面走查，模型0调用；证据核验 `node scripts/check-hunter-task-entry-evidence.mjs`。
+- 不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0；GitHub Projects待同步。下一步继续用户体验与新增可玩目标，保持暂停性能优化。
+
+以下为PR38及更早历史。
+
 # 当前候选：第一章体验走查（2026-10-28）
 
 父提交PR37 `365cc8b977299fe3dda3f91967d9e37a4eb3962f`，分支 `codex/first-chapter-experience-20261028`；任务 `tasks/FIRST-CHAPTER-EXPERIENCE-TASK.md`，交接 `docs/runtime/FIRST-CHAPTER-EXPERIENCE.md`。用户要求停止性能优化，优先推进游戏体验。
