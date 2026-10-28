@@ -1,0 +1,33 @@
+✔ new optional loan journey joins real forest travel, keeps main chapter independent, and rewards once (7948.081831ms)
+✔ repair-for-loan is a second playable path with its actual negotiated deadline (4216.038735ms)
+✔ loans before acceptance, talk, refusals, and early returns cannot supply missing steps (8598.065474ms)
+✔ actual robbery and forest travel do not become a consensual loan (4489.665111ms)
+✖ completion at the loan deadline succeeds; completing one tick later fails and retains relationship consequences (21026.407618ms)
+✔ abandon and reaccept keep the actual loan and cannot re-count that old loan (6420.418887ms)
+✔ forged deadlines, progress and model versions fail replay; legacy fixture retains four tasks (4530.10994ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 57476.81944
+
+✖ failing tests:
+
+test at tests/simulation/hunter-trust-journey.test.mjs:60:1
+✖ completion at the loan deadline succeeds; completing one tick later fails and retains relationship consequences (21026.407618ms)
+  Error: Invalid perception source
+      at fault (file://<candidate>/runtime/core/data-contract.mjs:8:24)
+      at requireCondition (file://<candidate>/runtime/core/data-contract.mjs:11:25)
+      at validateEventLogData (file://<candidate>/runtime/core/event-log.mjs:188:7)
+      at validateEventLog (file://<candidate>/runtime/core/event-log.mjs:69:10)
+      at validateBundleData (file://<candidate>/runtime/core/world-state.mjs:163:3)
+      at validateBundle (file://<candidate>/runtime/core/world-state.mjs:149:3)
+      at Object.audit (file://<candidate>/tests/simulation/hunter-trust-journey.test.mjs:16:11)
+      at TestContext.<anonymous> (file://<candidate>/tests/simulation/hunter-trust-journey.test.mjs:67:238)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25) {
+    code: 'INVALID_INPUT'
+  }

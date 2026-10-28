@@ -1,0 +1,57 @@
+✔ optional card shows three real steps, loan timing, explicit actions, and visible hunter only (180.230515ms)
+✔ deadline guidance distinguishes a ten-minute return from zero-time quest claiming (101.137404ms)
+✔ new optional loan journey joins real forest travel, keeps main chapter independent, and rewards once (6446.816994ms)
+✔ repair-for-loan is a second playable path with its actual negotiated deadline (3587.054721ms)
+✔ loans before acceptance, talk, refusals, and early returns cannot supply missing steps (7045.529122ms)
+✔ actual robbery and forest travel do not become a consensual loan (3100.99392ms)
+✔ completion at the loan deadline succeeds; completing one tick later fails and retains relationship consequences (29937.401368ms)
+✔ abandon and reaccept keep the actual loan and cannot re-count that old loan (6506.253009ms)
+✔ forged deadlines, progress and model versions fail replay; legacy fixture retains four tasks (3995.49772ms)
+✔ playable fixtures accept genuine overdue and agreement-closure events but reject forged sources (11427.77027ms)
+✖ new journey runs through real worker HTTP, reopens a borrowed tool, completes the side quest, and retries without a second reward (72472.541494ms)
+✖ actual overdue service events remain durable and re-openable in the new profile (315.53193ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 10
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 145659.593735
+
+✖ failing tests:
+
+test at tests/simulation/hunter-trust-service.test.mjs:8:1
+✖ new journey runs through real worker HTTP, reopens a borrowed tool, completes the side quest, and retries without a second reward (72472.541494ms)
+  AssertionError [ERR_ASSERTION]: route did not arrive
+      at march (file://<candidate>/tests/simulation/hunter-trust-service.test.mjs:32:118)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file://<candidate>/tests/simulation/hunter-trust-service.test.mjs:35:2)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/simulation/hunter-trust-service.test.mjs:43:1
+✖ actual overdue service events remain durable and re-openable in the new profile (315.53193ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  404 !== 200
+
+      at read (file://<candidate>/tests/simulation/hunter-trust-service.test.mjs:47:88)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file://<candidate>/tests/simulation/hunter-trust-service.test.mjs:47:171)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

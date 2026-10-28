@@ -1,0 +1,49 @@
+✔ campaign input and reserved pause budget reject without reading getters or changing old DTO gates (3.000919ms)
+✔ campaign cross-day attack separates real settlement from strike/counter and keeps local knowledge (15777.175812ms)
+✔ death before completion emits settlement/defeat, never a fictitious strike or further movement (15651.396241ms)
+✔ next steps explain first acceptance, concrete quest actions and optional chapter continuation using confirmed fields (178.793845ms)
+✔ guidance respects current work interval, death, battle, marching and the actual command budget (105.344447ms)
+✔ task deadlines are world time only and do not invent expiry or mutate the task (0.311735ms)
+✔ task DOM refreshes a moving visible hunter and locks approaches for combat, budget or unresolved writes (103.873388ms)
+✔ fresh projected actor objects reproduce the parent stale target while the new panel follows the latest visible position (244.269637ms)
+✔ task DOM names progress, shows deadlines, updates nearby controls and submits only existing quest actions (102.109995ms)
+✔ chapter recap appears only when completed and reflects optional challenge and death (179.734757ms)
+✔ repair guidance uses only currently visible hunter and explains the interaction and tool location (116.469346ms)
+✔ ready quest label distinguishes claiming here from returning to the village (105.242855ms)
+{"measurement":"first-chapter-http-walkthrough","tick":66,"rank":3,"chapterComplete":true,"questStatuses":["completed","completed","completed","available"],"explicitRequests":16,"durableFiles":32,"filesSha256":"d155d7d913271ed62043184c25ab75b9cee3a8129ae0d902eec46701956fad29","externalModelCalls":0,"scope":"default synthetic new journey; real worker HTTP, no browser rendering; automatic march steps are additional commands"}
+✔ default new journey completes three chapter quests through worker HTTP and survives reopen (16916.115588ms)
+✔ active quest opens only the currently visible living hunter, including read-only mode (258.43632ms)
+✔ hunter counters duration/repair terms; accepted promise requires real work before a unique loan and timely return (857.316121ms)
+✔ overdue loan records breach once, retains harm after late return, and replays exactly (3975.886286ms)
+✔ stale offer, duplicate acceptance, expiry, changed tool condition and unaffordable repair claims do not grant a loan (9029.82779ms)
+✔ dialogue is attributed speech, proposals never execute, private context excludes other actors and fabricated references are refused (142.351809ms)
+✔ legacy social fixture refuses new commands and its original repair/loan behavior remains available (296.966646ms)
+✔ agreement knowledge waits for discovery of unseen theft; unavailable and dying parties cannot complete a deal (19942.39113ms)
+✔ actual repairs build trust, borrowing and returning conserve one owned tool; refusal is not a transfer (683.919323ms)
+✔ seen theft is caught; robbery meets resistance or yields under an actual imbalance (1696.021254ms)
+✔ unseen theft is later discovered without inventing a culprit; lost tools block wages (6588.217129ms)
+✔ unseen damage is discovered without blame, and death during an interaction prevents its effect (7357.667007ms)
+✔ damage disables work, repair is real, and helpful acts do not erase witnessed harm (364.100262ms)
+✔ threat changes travel, action completion rechecks distance, waiting away calms fear without repairing trust (2195.275789ms)
+✔ a known broken promise is recorded once, while repeated recollection never reapplies relationship damage (9977.021608ms)
+✔ new history equals full replay; plausible relation, asset, reply, event and fixture forgeries fail audit (1164.232066ms)
+✔ strict browser consumption binds results to action and actual deltas; UI permissions use only visible affordances (132.58269ms)
+✔ four real quest states complete a village/forest chapter, survive replay, and cannot be rewarded twice (5637.487413ms)
+✔ oral claims do not complete tasks, abandonment resets progress, and the same request is idempotent (1685.07147ms)
+✔ seven days have recurring opportunities and recorded own life results, with resources and replay intact (92620.957844ms)
+✔ offscreen preparation uses fewer evaluations and reactivates on important changes (3777.676917ms)
+✔ a new offer does not erase the source of an already earned purchase step (54049.933655ms)
+✔ last tick permits a ready village claim; advancing one tick fails it and a later acceptance resets progress (202.977116ms)
+✔ last tick warns during battle and ongoing march without promising an instant pause (125.226175ms)
+✔ failed and abandoned quests offer a reaccept without inventing rewards or world changes (109.951632ms)
+✔ the last available command cannot lead to an unfinishable new attempt; a ready village claim remains available (104.62055ms)
+✔ a visibly dead hunter blocks misleading repair and gift guidance in a real audited world (4510.19442ms)
+✔ a ready quest stays claimable even if the hunter is visible dead; no approach button is offered for a dead hunter (133.303537ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 278844.811377

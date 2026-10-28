@@ -1,3 +1,14 @@
+# 当前候选：借工具探路支线（2026-10-28）
+
+父提交 PR39 `c5df3c8d69951545fa33e59707766c2295d3b9ed`，分支 `codex/hunter-trust-journey-20261028`；合同 `tasks/HUNTER-TRUST-JOURNEY-TASK.md`，交接 `docs/runtime/HUNTER-TRUST-JOURNEY.md`。继续按用户要求推进游戏体验，暂停性能优化。
+
+- 独立新入口 `Start-Trust-Journey.cmd`，profile `campaign-trust-village` / fixture7 / playable-v2。帮助猎人后可选借工具探路，支持凭信任或修理换借用、携带到森林、借期内实际归还；与主线独立，可同时推进。偷抢、旧借用、口头声称不计进度，放弃不免旧债，远处 NPC 沿用较低准备频率。
+- 发现并修复 fixture6 逾期/协议关闭事件的版本白名单遗漏，保留完整重放和伪造事件拒绝。52 项不同最终检查通过：新增12项、相邻40项；默认新旅程真实 worker/HTTP 重开借用、完成支线与第一章、再次重开、重复领取无重复写入，逾期后的服务恢复通过。原第一章、七天NPC生活、社交/协商等复验通过；旧1–6六种 fixture 的代表历史、回执、五投影与 PR39 逐字一致。
+- 真实浏览器外观、键盘/读屏、Windows启动器和新版本长档性能未验；工具尚无玩家采集或战斗用途，模型0调用。初次失败与后续通过记录均保留，核验 `node scripts/check-hunter-trust-evidence.mjs`。
+- 停在独立草稿PR；不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0，GitHub Projects待同步。下一重点为森林中的实际工具用途与可选择遭遇，先定义资源来源、风险、退出和失败恢复，保持新规则版本边界；尚未实施。
+
+以下为PR39及更早历史。
+
 # 当前候选：猎人任务人物入口（2026-10-28）
 
 父提交PR38 `e398b5803dba66cb6f9ffbdaa42f2ea64807098f`，分支 `codex/hunter-task-entry-20261028`；任务 `tasks/HUNTER-TASK-ENTRY-TASK.md`，交接 `docs/runtime/HUNTER-TASK-ENTRY.md`。

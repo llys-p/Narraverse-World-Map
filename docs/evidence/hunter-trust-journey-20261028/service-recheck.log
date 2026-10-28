@@ -1,0 +1,12 @@
+{"measurement":"hunter-trust-http","tick":70,"rank":4,"chapterComplete":true,"quests":[{"id":"livelihood","status":"completed"},{"id":"hunter-aid","status":"completed"},{"id":"forest-route","status":"completed"},{"id":"forest-win","status":"available"},{"id":"hunter-trust","status":"completed"}],"loanDueTick":78,"explicitRequests":23,"assets":{"demo-runtime.html":"2c656b03a37b51ed7978dd8ba3d643f5be65a563599e3ba0311c8a67b4851316","demo-runtime-prototype.mjs":"4575660afedb7090fad407d171f3082f090763fb88b850a463cf2070ac56c7b3","demo-playable-goals.mjs":"aee9ea3306dde4d57291394b020f86925c02ea8cccfeb94cb2207da8714a1737","runtime-playable-contract.mjs":"1a6c92650075c11d0d685d2e8e370e391c632cc1e7403aa39ba6483b6779b1e7"},"reopenedBorrowedLoan":true,"reopenedComplete":true,"retryFilesUnchanged":true,"externalModelCalls":0,"browser":"DOM callbacks only; real HTTP, worker and saves; no browser rendering"}
+✔ new journey runs through real worker HTTP, reopens a borrowed tool, completes the side quest, and retries without a second reward (20751.480722ms)
+{"measurement":"hunter-trust-overdue-http","reopened":true,"agreement":"returned-late","externalModelCalls":0}
+✔ actual overdue service events remain durable and re-openable in the new profile (5102.319495ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26204.212065

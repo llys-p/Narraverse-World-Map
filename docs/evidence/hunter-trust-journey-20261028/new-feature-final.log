@@ -1,0 +1,22 @@
+✔ optional card shows three real steps, loan timing, explicit actions, and visible hunter only (195.894208ms)
+✔ deadline guidance distinguishes a ten-minute return from zero-time quest claiming (128.995274ms)
+✔ new optional loan journey joins real forest travel, keeps main chapter independent, and rewards once (11548.229987ms)
+✔ repair-for-loan is a second playable path with its actual negotiated deadline (4214.848347ms)
+✔ loans before acceptance, talk, refusals, and early returns cannot supply missing steps (8329.772013ms)
+✔ actual robbery and forest travel do not become a consensual loan (3780.548985ms)
+✔ completion at the loan deadline succeeds; completing one tick later fails and retains relationship consequences (25019.479917ms)
+✔ abandon and reaccept keep the actual loan and cannot re-count that old loan (8833.096252ms)
+✔ forged deadlines, progress and model versions fail replay; legacy fixture retains four tasks (4147.982855ms)
+✔ playable fixtures accept genuine overdue and agreement-closure events but reject forged sources (11242.224978ms)
+{"measurement":"hunter-trust-http","tick":70,"rank":4,"chapterComplete":true,"quests":[{"id":"livelihood","status":"completed"},{"id":"hunter-aid","status":"completed"},{"id":"forest-route","status":"completed"},{"id":"forest-win","status":"available"},{"id":"hunter-trust","status":"completed"}],"loanDueTick":78,"explicitRequests":23,"assets":{"demo-runtime.html":"2c656b03a37b51ed7978dd8ba3d643f5be65a563599e3ba0311c8a67b4851316","demo-runtime-prototype.mjs":"4575660afedb7090fad407d171f3082f090763fb88b850a463cf2070ac56c7b3","demo-playable-goals.mjs":"aee9ea3306dde4d57291394b020f86925c02ea8cccfeb94cb2207da8714a1737","runtime-playable-contract.mjs":"1a6c92650075c11d0d685d2e8e370e391c632cc1e7403aa39ba6483b6779b1e7"},"reopenedBorrowedLoan":true,"reopenedComplete":true,"retryFilesUnchanged":true,"externalModelCalls":0,"browser":"DOM callbacks only; real HTTP, worker and saves; no browser rendering"}
+✔ new journey runs through real worker HTTP, reopens a borrowed tool, completes the side quest, and retries without a second reward (19528.915525ms)
+{"measurement":"hunter-trust-overdue-http","reopened":true,"agreement":"returned-late","externalModelCalls":0}
+✔ actual overdue service events remain durable and re-openable in the new profile (4585.473451ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 102581.984255
