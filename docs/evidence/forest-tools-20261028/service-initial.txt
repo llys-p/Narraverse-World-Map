@@ -1,0 +1,31 @@
+✖ real worker HTTP saves finite wood, reopens active combat, exits and returns a worn loan; retry and >128 commands remain durable (4508.960531ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4783.424536
+
+✖ failing tests:
+
+test at tests/simulation/forest-service.test.mjs:6:1
+✖ real worker HTTP saves finite wood, reopens active combat, exits and returns a worn loan; retry and >128 commands remain durable (4508.960531ms)
+  AssertionError [ERR_ASSERTION]: MarchSet
+  
+  400 !== 200
+  
+      at act (file:///workspace/scratch/deac123f5d47/Narraverse-Forest/tests/simulation/forest-service.test.mjs:12:151)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async march (file:///workspace/scratch/deac123f5d47/Narraverse-Forest/tests/simulation/forest-service.test.mjs:15:29)
+      at async TestContext.<anonymous> (file:///workspace/scratch/deac123f5d47/Narraverse-Forest/tests/simulation/forest-service.test.mjs:17:387)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 400,
+    expected: 200,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

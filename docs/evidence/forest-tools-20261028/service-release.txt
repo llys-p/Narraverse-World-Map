@@ -1,0 +1,10 @@
+{"measurement":"forest-worker-http","explicitRequests":117,"committedCommands":130,"tick":72,"rank":4,"chapterComplete":true,"reopenedWithWood":true,"reopenedActiveEncounter":true,"reopenedAfter130Commands":true,"retryFilesUnchanged":true,"returnedToolCondition":70,"assets":{"demo-runtime.html":"96dad45c6c759a50f7ac28dbec25756659edb644503b497bf277e0a5e6f7e330","demo-runtime-prototype.mjs":"174833c4cb763d36bb94ceaa951f791837d35f8a8a72154a7e290a7bbf88b984","demo-forest.mjs":"8d00376120732376e7da20177a250096884beff52bb5cfa47f36531ef9d47d5f","runtime-forest-contract.mjs":"c9fe641e952b23895cfa87c1d5f88a1a35934fa0b90287a8b3c773fcbf07ffcd"},"externalModelCalls":0,"browser":"HTTP/worker only; no rendered browser"}
+✔ real worker HTTP saves finite wood, reopens active combat, exits and returns a worn loan; retry and >128 commands remain durable (54788.79103ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 55153.883464

@@ -8,6 +8,7 @@ import {SOCIAL_MAP_VERSION,isSocialMapVersion,createSocialModel,validateSocialMo
 import {NEGOTIATION_MAP_VERSION,isNegotiationMapVersion} from '../../runtime-negotiation-contract.mjs';
 import {createNegotiationModel,validateNegotiationModel,negotiationView} from './npc-negotiation.mjs';
 import {NPC_MEMORY_MAP_VERSION,createNpcMemoryModel,validateNpcMemoryModel} from './npc-memory.mjs';
+import {validateForestModel,forestView} from './campaign-forest.mjs';
 export const CAMPAIGN_MAP_ID='village-forest-v1',MAP_WIDTH=20,MAP_HEIGHT=12,MAX_ROUTE_STEPS=48;
 export const MARCH_TYPES=Object.freeze(['MarchSet','MarchPause','MarchResume','MarchStep']);
 export function requireMarchBudget(type,remaining,world){integer(remaining);if(world?.mapModel?.order?.status==='marching'&&type!=='MarchPause')requireCondition(remaining>=2,'Last command is reserved for pause','LIMIT_EXCEEDED');if(['MarchSet','MarchResume'].includes(type))requireCondition(remaining>=3,'March requires a reserved pause command','LIMIT_EXCEEDED');if(type==='MarchStep')requireCondition(remaining>=2,'Last command is reserved for pause','LIMIT_EXCEEDED');}
@@ -38,9 +39,10 @@ export function mapRoute(from,to){
 export function createCampaignMap(npcAgency=false,social=false,negotiation=false,memory=false){return {version:memory?NPC_MEMORY_MAP_VERSION:negotiation?NEGOTIATION_MAP_VERSION:social?SOCIAL_MAP_VERSION:npcAgency?NPC_MAP_VERSION:'campaign-map-v1',mapId:CAMPAIGN_MAP_ID,position:{x:4,y:7},travelledSteps:0,
  npcs:NPC_IDS.map((actorId,i)=>({actorId,...ROUTES[i][0],routeIndex:0})),order:null,contact:null,...(npcAgency?{hunterIntent:initialHunterIntent()}:{}),...(social?{socialModel:createSocialModel()}:{}),...(negotiation?{negotiationModel:createNegotiationModel()}:{}),...(memory?{memoryModel:createNpcMemoryModel()}:{})};}
 export function validateCampaignMap(world,tick){
- const m=world.mapModel,negotiation=isNegotiationMapVersion(m.version),social=isSocialMapVersion(m.version),npcAgency=m.version===NPC_MAP_VERSION||social;fields(m,['version','mapId','position','travelledSteps','npcs','order','contact',...(npcAgency?['hunterIntent']:[]),...(social?['socialModel']:[]),...(negotiation?['negotiationModel']:[]),...(m.version===NPC_MEMORY_MAP_VERSION?['memoryModel']:[]),...(Object.hasOwn(m,'playModel')?['playModel']:[])]);
+ const m=world.mapModel,negotiation=isNegotiationMapVersion(m.version),social=isSocialMapVersion(m.version),npcAgency=m.version===NPC_MAP_VERSION||social;fields(m,['version','mapId','position','travelledSteps','npcs','order','contact',...(npcAgency?['hunterIntent']:[]),...(social?['socialModel']:[]),...(negotiation?['negotiationModel']:[]),...(m.version===NPC_MEMORY_MAP_VERSION?['memoryModel']:[]),...(Object.hasOwn(m,'playModel')?['playModel']:[]),...(Object.hasOwn(m,'forestModel')?['forestModel']:[])]);
  requireCondition((m.version==='campaign-map-v1'||npcAgency)&&m.mapId===CAMPAIGN_MAP_ID,'Unsupported campaign map','UNSUPPORTED_VERSION');
  if(Object.hasOwn(m,'playModel')){requireCondition(m.version===NPC_MEMORY_MAP_VERSION,'Playable map requires memory');validatePlayModel(m.playModel,tick);}
+ if(Object.hasOwn(m,'forestModel')){requireCondition(m.playModel?.version==='playable-v2','Forest requires trust journey');validateForestModel(m.forestModel);}
  if(npcAgency)validateHunterIntent(m.hunterIntent,tick);
  if(social)validateSocialModel(m.socialModel,tick,negotiation);
  if(negotiation)validateNegotiationModel(m.negotiationModel,tick);
@@ -113,11 +115,11 @@ export function marchResult(before,after,dto,plan){return plan.outcome!=='succee
 export function mapView(bundle,remainingCommands){
  inspectDescriptorTree(bundle);const s=bundle.snapshot,w=s.world,m=w.mapModel,p=w.actorModel.actors[3];validateCampaignMap(w,s.tick);
  const blocked=Array.from({length:MAP_HEIGHT},(_,y)=>({x:10,y})).filter(p=>p.y!==7);
- return cloneData({apiVersion:1,mapViewVersion:m.playModel?4:isNegotiationMapVersion(m.version)?3:m.version===SOCIAL_MAP_VERSION?2:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,mapId:m.mapId,width:MAP_WIDTH,height:MAP_HEIGHT,blocked,landmarks:[NPC_MAP_VERSION,SOCIAL_MAP_VERSION,NEGOTIATION_MAP_VERSION,NPC_MEMORY_MAP_VERSION].includes(m.version)?NPC_LANDMARKS:LANDMARKS,
+ return cloneData({apiVersion:1,mapViewVersion:m.forestModel?5:m.playModel?4:isNegotiationMapVersion(m.version)?3:m.version===SOCIAL_MAP_VERSION?2:1,simulationId:s.simulationId,revision:s.revision,tick:s.tick,mapId:m.mapId,width:MAP_WIDTH,height:MAP_HEIGHT,blocked,landmarks:[NPC_MAP_VERSION,SOCIAL_MAP_VERSION,NEGOTIATION_MAP_VERSION,NPC_MEMORY_MAP_VERSION].includes(m.version)?NPC_LANDMARKS:LANDMARKS,
   self:{actorId:p.actorId,...m.position,location:p.location,alive:p.alive},order:m.order,contact:m.contact,
   actors:m.npcs.filter(n=>mapDistance(m.position,n)<=4).map(n=>{const a=w.actorModel.actors.find(a=>a.actorId===n.actorId),near=mapDistance(m.position,n)<=1;
    const observer=w.memoryModel.observer.actors.find(o=>o.actorId===a.actorId);
    return {actorId:a.actorId,name:a.name,occupation:a.occupation,location:a.location,alive:a.alive,condition:!a.alive?'dead':a.health===1000?'healthy':'wounded',x:n.x,y:n.y,canInteract:near&&a.alive,
     receivedGifts:near?observer.memories.filter(mem=>mem.observable.type==='food-gift'&&mem.observable.donorId==='actor-4'&&mem.observable.direction==='received'):[]};}),
-  ...(m.playModel?{playable:playableView(w,s.tick)}:{}),movement:{maxSteps:MAX_ROUTE_STEPS,ticksPerStep:1,batchTicks:2},budget:{remainingCommands},...(isSocialMapVersion(m.version)?{social:socialView(w)}:{}),...(isNegotiationMapVersion(m.version)?{negotiation:negotiationView(w)}:{})});
+  ...(m.forestModel?{forest:forestView(w)}:{}),...(m.playModel?{playable:playableView(w,s.tick)}:{}),movement:{maxSteps:MAX_ROUTE_STEPS,ticksPerStep:1,batchTicks:2},budget:{remainingCommands},...(isSocialMapVersion(m.version)?{social:socialView(w)}:{}),...(isNegotiationMapVersion(m.version)?{negotiation:negotiationView(w)}:{})});
 }

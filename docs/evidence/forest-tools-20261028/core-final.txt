@@ -1,0 +1,22 @@
+✔ existing jobs, gift and merchant trade follow the real actor and committed projection (3.571954ms)
+✔ distance, cooldown, battle, pending or invalid quantity cannot enable actions (0.892172ms)
+✔ marching, dead or missing actors and bag rest expose only supported capabilities (0.566712ms)
+✔ forest projection joins a coherent group and rejects forged view/state shapes (9192.473816ms)
+✔ forest panel shows costs, opt-in choices, accessible status, and fresh disabled/exit controls without automatic writes (8.464341ms)
+✔ borrowed tools gather finite branches, camp recovers fatigue, and a peaceful return completes both journeys (6473.804774ms)
+✔ forest supplies exhaust, retries never duplicate wood or wear, and ordinary rest stays available (9273.504695ms)
+✔ location, held tool, low durability, marching, and active battle gates fail without receiving supplies (2165.592252ms)
+✔ observing is optional and does not reserve wolves; cancellation, escape, and victory all release the existing reservation (6850.575937ms)
+✔ leaving the clearing and returning does not force or reopen a skipped encounter (5563.164767ms)
+✔ collecting through the loan deadline still wears the tool and preserves overdue consequences (14299.891069ms)
+✔ death during a timed harvest consumes time but grants no wood or durability changes (9105.521294ms)
+✔ forged supplies, wear, decisions, receipts, and fixture/model mismatches fail full replay (10032.967963ms)
+✔ the forest command budget preserves a free exit, including after a nonlethal attack (1474.00578ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 65552.932977

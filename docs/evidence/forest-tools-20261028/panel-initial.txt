@@ -1,0 +1,10 @@
+✔ forest projection joins a coherent group and rejects forged view/state shapes (4389.83382ms)
+✔ forest panel shows costs, opt-in choices, accessible status, and fresh disabled/exit controls without automatic writes (2.904801ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4708.30147

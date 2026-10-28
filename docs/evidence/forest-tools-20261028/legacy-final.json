@@ -1,0 +1,50 @@
+{
+  "status": "identical",
+  "baseline": "931ff94b7580c190bd9a0def4b36b0c7f26d8ee9",
+  "fixtures": [
+    {
+      "fixture": 1,
+      "commands": 3,
+      "bytes": 56686,
+      "sha256": "06d0edb3e494c4382ed6a4f78e7c2b52938bd7c56bf35cb8c4c5d35f640a3296"
+    },
+    {
+      "fixture": 2,
+      "commands": 3,
+      "bytes": 57063,
+      "sha256": "77365594948a5bbc4551d534369572036a5adf8cd18cbee297e3064953ea368c"
+    },
+    {
+      "fixture": 3,
+      "commands": 5,
+      "bytes": 63759,
+      "sha256": "d70612ce9fa78fdc9e2a2b9ede0b6ce7eee687ab3df146329a3cfa15d85c4b02"
+    },
+    {
+      "fixture": 4,
+      "commands": 10,
+      "bytes": 77720,
+      "sha256": "de5cde783b18f3d5482382013587a03bfa85e0b7b3038513bcc441bd3bc5b5c4"
+    },
+    {
+      "fixture": 5,
+      "commands": 10,
+      "bytes": 80480,
+      "sha256": "55ec4a6422bd18479ffde094a6225ab9e189f7ab4d8493f94c68f115a87ca643"
+    },
+    {
+      "fixture": 6,
+      "commands": 12,
+      "bytes": 87104,
+      "sha256": "003d6ab003fbb636522f2147a30d78fa86d9e0790a4ce09e0fd44220b5e81e3c"
+    },
+    {
+      "fixture": 7,
+      "commands": 12,
+      "bytes": 87707,
+      "sha256": "d39172ee4dc7a05a3f5a689df6fadd8d853992cb2395d2fc95ee48f3e35c9d37"
+    }
+  ],
+  "scope": "representative histories, receipts and five projections; no real saves; fixtures1–7 retain their PR41 rules",
+  "externalModelCalls": 0
+}

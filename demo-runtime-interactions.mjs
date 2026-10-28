@@ -45,10 +45,10 @@ export function personNavigation(group,writable,actorId){
   group.encounter.encounter?.status!=='active'&&group.map.budget.remainingCommands>=3),target:{x:actor.x,y:actor.y}};
 }
 
-const actionNames={PlayerQuest:'任务进度',PlayerNegotiate:'提出修理换借用',PlayerAgreement:'处理约定',PlayerDialogue:'与猎人交谈',PlayerWork:'村庄工作',PlayerRest:'休整',PlayerGiftFood:'赠送粮食',AdvanceTime:'等待',
+const actionNames={PlayerForest:'森林行动',PlayerQuest:'任务进度',PlayerNegotiate:'提出修理换借用',PlayerAgreement:'处理约定',PlayerDialogue:'与猎人交谈',PlayerWork:'村庄工作',PlayerRest:'休整',PlayerGiftFood:'赠送粮食',AdvanceTime:'等待',
  MarchSet:'下达行军目的地',MarchPause:'暂停行军',MarchResume:'继续行军',MarchStep:'行军',
  EncounterBegin:'开始遭遇',EncounterAction:'战斗回合',EncounterCancel:'取消遭遇'};
-const reasons={RULE_REJECTED:'当前条件不满足；请检查所在地点、疲劳、工作间隔或可用资产。',
+const reasons={FOREST_DEPLETED:'此处枯枝已采尽，不会刷新。',NO_FIREWOOD:'需要先采集1捆枯枝。',NOT_TIRED:'目前无需恢复疲劳。',RULE_REJECTED:'当前条件不满足；请检查所在地点、疲劳、工作间隔或可用资产。',
  PLAYER_DEAD:'玩家已死亡，操作无法完成。',ENCOUNTER_BUSY:'战斗尚未结束，请先完成当前遭遇。',
  ENCOUNTER_UNAVAILABLE:'当前没有可操作的遭遇。',ENCOUNTER_CLOSED:'这次遭遇已经结束。',ENCOUNTER_ID_MISMATCH:'遭遇已发生变化，请查看当前战斗。',
  NOT_COLOCATED:'与人物或工具距离太远；互动期间对方也可能移动，请重新走近。',RECIPIENT_DEAD:'对方已死亡，无法交互。',NO_FOOD:'行囊里没有可赠送的粮食。',RECIPIENT_FULL:'对方暂时无法再收取粮食。',
@@ -69,6 +69,7 @@ export function describeActionReceipt(receipt,dto){
    if(result.asset){delta('工具耐久',result.asset.before.condition,result.asset.after.condition);
     if(result.asset.before.holderId!==result.asset.after.holderId)changes.push(result.asset.after.holderId==='actor-4'?'工具由你持有；所有者仍为猎人。':'工具已交还猎人。');}
   }
+  if(dto.type==='PlayerForest'){delta('工具耐久',result.before.condition,result.after.condition);delta('随身枯枝',result.before.forest.firewood,result.after.forest.firewood);changes.push(({collect:'采集了林间有限的枯枝',camp:'已消耗枯枝歇脚；不治疗、不补粮',observe:'已观察狼迹，仍可绕开或返村',avoid:'已绕开狼迹，不会自动迎战'})[dto.payload.action]);}
   if(dto.type==='PlayerQuest')changes.push(({accept:'已接取任务',claim:'已领取任务进展与解锁',abandon:'已放弃任务，可重新接取'})[dto.payload.action]);
   if(dto.type==='MarchSet')changes.push('目的地 ('+dto.payload.x+', '+dto.payload.y+')');
   if(result?.after?.resolution)changes.push('战斗结果：'+({win:'胜利',lose:'败北',flee:'逃离',cancel:'已取消','player-died':'玩家死亡'}[result.after.resolution]??'已结束'));

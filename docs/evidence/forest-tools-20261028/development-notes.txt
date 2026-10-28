@@ -1,0 +1,9 @@
+Development and validation notes, 2026-10-28
+- A first projection smoke call omitted the required remaining-command argument and received INVALID_INPUT/Non-JSON data; rerun with budget 512 returned fixture8/mapView5. This was invocation misuse, not a runtime change.
+- core-initial.txt: 6/8 passed. The fuel exhaustion test incorrectly expected wood consumption after fatigue reached zero; legacy audit helper incorrectly required a forest field on fixture7. Corrected test scenarios, kept NOT_TIRED and old fixture shape.
+- service-initial.txt: MarchSet sent to /commands was rejected 400. Changed test to actual /demo-order + consumed SSE flow, preserving service endpoint restrictions.
+- adjacent-initial invocation contained nonexistent tests/simulation/demo-runtime-interactions.test.mjs. Node ran the 33 tests in the other six files; actual consumer path tests/simulation/demo-interaction-actions.test.mjs was run separately and again in core-final.txt. The nonexistent path counts as no test.
+- parent-regression-initial.txt and adjacent-initial.txt ran before the final forest-only exit budget guard; core-final.txt and service-release.txt ran after it. Legacy comparison's candidate import ran after the guard. No performance optimization or model calls.
+- service-final.txt precedes the final exit-budget guard. service-release.txt is the release rerun. Both real worker/HTTP runs passed; only the latter counts as one distinct test.
+- core-panel-final.txt precedes the final exit budget test. core-final.txt contains the final 14 core/panel/consumer checks. Repeated names count once.
+- Browser executable was absent from checked standard locations; cloud CUA tab could not open the ready isolated loopback server (ERR_CONNECTION_REFUSED). Server received quit and returned stopped; no install, tunnel, deployment, old-instance action or visual acceptance.

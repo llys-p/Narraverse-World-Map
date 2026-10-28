@@ -1,0 +1,9 @@
+{
+  "renderedBrowserValidated": false,
+  "localExecutableAvailable": false,
+  "cloudBrowserAttempt": "http://127.0.0.1:38781/demo-runtime.html",
+  "cloudResult": "net::ERR_CONNECTION_REFUSED",
+  "isolatedServerReady": true,
+  "isolatedServerStoppedNormally": true,
+  "notes": "Cloud browser could not reach this workspace loopback server. No tunnel, deployment, browser install, or old instance changes. Keyboard, screen reader, mobile layout and rendered visuals remain unverified."
+}

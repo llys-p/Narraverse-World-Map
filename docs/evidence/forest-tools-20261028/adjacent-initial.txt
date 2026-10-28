@@ -1,0 +1,41 @@
+✔ bounded route uses the bridge and authority derives region (4.408818ms)
+✔ pause and replan retain actual position and cumulative fatigue (11.867616ms)
+✔ newly met NPC pauses a real order; no duplicate encounter while adjacent (3.366689ms)
+✔ campaign input and reserved pause budget reject without reading getters or changing old DTO gates (11.838003ms)
+✔ campaign cross-day attack separates real settlement from strike/counter and keeps local knowledge (46386.443986ms)
+✔ death before completion emits settlement/defeat, never a fictitious strike or further movement (19771.855798ms)
+✔ confirmed damage, actual repair and repeated apology update understanding without rewriting the injury (1608.600871ms)
+✔ unseen theft remains unknown after discovery and later return identifies a returner, not a thief (20053.819032ms)
+✔ late return records a follow-up while the breach and fixed twenty-minute duration remain (4501.047141ms)
+✔ preview and confirmed false speech never manufacture observations; accepted speech stays private and survives the eight-turn working window (595.207321ms)
+✔ bounded memory protects topic follow-ups, exposes forgetting, and does not invent an evicted source (62.39513ms)
+✔ full replay rejects forged memory, ownership, outcomes and fixture splicing (712.42732ms)
+✔ a newly committed repair reaches the archive even when the 32-entry observation window is full of important harms (118.16956ms)
+✔ hunter counters duration/repair terms; accepted promise requires real work before a unique loan and timely return (1613.836609ms)
+✔ overdue loan records breach once, retains harm after late return, and replays exactly (6342.166046ms)
+✔ stale offer, duplicate acceptance, expiry, changed tool condition and unaffordable repair claims do not grant a loan (13741.994655ms)
+✔ dialogue is attributed speech, proposals never execute, private context excludes other actors and fabricated references are refused (163.000766ms)
+✔ legacy social fixture refuses new commands and its original repair/loan behavior remains available (355.248404ms)
+✔ agreement knowledge waits for discovery of unseen theft; unavailable and dying parties cannot complete a deal (18131.503723ms)
+✔ actual repairs build trust, borrowing and returning conserve one owned tool; refusal is not a transfer (1540.436548ms)
+✔ seen theft is caught; robbery meets resistance or yields under an actual imbalance (1853.455805ms)
+✔ unseen theft is later discovered without inventing a culprit; lost tools block wages (17983.019582ms)
+✔ unseen damage is discovered without blame, and death during an interaction prevents its effect (21885.56963ms)
+✔ damage disables work, repair is real, and helpful acts do not erase witnessed harm (631.859204ms)
+✔ threat changes travel, action completion rechecks distance, waiting away calms fear without repairing trust (4487.708176ms)
+✔ a known broken promise is recorded once, while repeated recollection never reapplies relationship damage (16578.117151ms)
+✔ new history equals full replay; plausible relation, asset, reply, event and fixture forgeries fail audit (2565.12439ms)
+✔ strict browser consumption binds results to action and actual deltas; UI permissions use only visible affordances (627.456026ms)
+✔ four real quest states complete a village/forest chapter, survive replay, and cannot be rewarded twice (20166.924549ms)
+✔ oral claims do not complete tasks, abandonment resets progress, and the same request is idempotent (2647.355884ms)
+✔ seven days have recurring opportunities and recorded own life results, with resources and replay intact (133767.020814ms)
+✔ offscreen preparation uses fewer evaluations and reactivates on important changes (4855.08142ms)
+✔ a new offer does not erase the source of an already earned purchase step (52977.146069ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 214937.877233

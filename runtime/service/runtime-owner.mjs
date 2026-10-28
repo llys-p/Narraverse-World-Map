@@ -7,7 +7,7 @@ import { createPlayerVillage } from '../fixtures/player-village.mjs';
 import { createPlayerPlayVillage } from '../fixtures/player-play-village.mjs';
 import { createEncounterVillage } from '../fixtures/encounter-survival-village.mjs';
 import {createLivelihoodVillage} from '../fixtures/scene-livelihood-village.mjs';
-import {createCampaignVillage,createNpcCampaignVillage,createSocialCampaignVillage,createNegotiationCampaignVillage,createMemoryCampaignVillage,createPlayableCampaignVillage,createTrustCampaignVillage} from '../fixtures/campaign-village.mjs';
+import {createCampaignVillage,createNpcCampaignVillage,createSocialCampaignVillage,createNegotiationCampaignVillage,createMemoryCampaignVillage,createPlayableCampaignVillage,createTrustCampaignVillage,createForestCampaignVillage} from '../fixtures/campaign-village.mjs';
 import {npcDialogueContext} from '../core/npc-negotiation.mjs';
 import {requireMarchBudget} from '../core/campaign-map.mjs';
 import { createSceneVillage } from '../fixtures/scene-survival-village.mjs';
@@ -85,7 +85,7 @@ export async function createRuntimeOwner(options,io=fs){
   requireCondition(typeof options.directory==='string' && options.directory.length>0,'Explicit runtime directory required');
   const writable=options.writable??false;requireCondition(typeof writable==='boolean','Invalid write mode');
   const inspectActivity=options.inspectActivity??false;requireCondition(typeof inspectActivity==='boolean','Invalid activity inspector mode');
-  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village','encounter-survival-village','scene-survival-village','scene-livelihood-village','campaign-village','campaign-npc-village','campaign-social-village','campaign-negotiation-village','campaign-memory-village','campaign-playable-village','campaign-trust-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
+  if(options.profile!==undefined)requireCondition(['personality-neutral','player-village','player-play-village','mind-village','motivation-village','cognition-village','survival-village','encounter-survival-village','scene-survival-village','scene-livelihood-village','campaign-village','campaign-npc-village','campaign-social-village','campaign-negotiation-village','campaign-memory-village','campaign-playable-village','campaign-trust-village','campaign-forest-village'].includes(options.profile),'Unknown runtime profile','UNSUPPORTED_VERSION');
   requireCondition(options.profile===undefined || options.checkpoint===undefined,'Profile and checkpoint are mutually exclusive');
   if(options.seed!==undefined){integer(options.seed);requireCondition(options.seed<=0xffffffff,'Invalid runtime seed');}
   if(options.checkpoint!==undefined)requireCondition(typeof options.checkpoint==='string' && options.checkpoint.length>0 && options.seed===undefined,'Checkpoint cannot reset seed');
@@ -121,6 +121,7 @@ export async function createRuntimeOwner(options,io=fs){
         options.profile==='campaign-npc-village'?createNpcCampaignVillage:
         options.profile==='campaign-social-village'?createSocialCampaignVillage:
         options.profile==='campaign-negotiation-village'?createNegotiationCampaignVillage:
+        options.profile==='campaign-forest-village'?createForestCampaignVillage:
         options.profile==='campaign-trust-village'?createTrustCampaignVillage:
         options.profile==='campaign-playable-village'?createPlayableCampaignVillage:
         options.profile==='campaign-memory-village'?createMemoryCampaignVillage:

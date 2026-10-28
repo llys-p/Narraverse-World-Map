@@ -1,0 +1,64 @@
+✔ borrowed tools gather finite branches, camp recovers fatigue, and a peaceful return completes both journeys (5437.73855ms)
+✖ forest supplies exhaust, retries never duplicate wood or wear, and ordinary rest stays available (2318.589707ms)
+✔ location, held tool, low durability, marching, and active battle gates fail without receiving supplies (2364.206139ms)
+✔ observing is optional and does not reserve wolves; cancellation, escape, and victory all release the existing reservation (6931.614735ms)
+✔ leaving the clearing and returning does not force or reopen a skipped encounter (7843.39133ms)
+✔ collecting through the loan deadline still wears the tool and preserves overdue consequences (15131.843287ms)
+✔ death during a timed harvest consumes time but grants no wood or durability changes (9514.011382ms)
+✖ forged supplies, wear, decisions, receipts, and fixture/model mismatches fail full replay (10713.277029ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 6
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 60718.165205
+
+✖ failing tests:
+
+test at tests/simulation/forest-tools.test.mjs:31:1
+✖ forest supplies exhaust, retries never duplicate wood or wear, and ordinary rest stays available (2318.589707ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'NOT_TIRED'
+  - 'NO_FIREWOOD'
+       ^
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/deac123f5d47/Narraverse-Forest/tests/simulation/forest-tools.test.mjs:35:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'NOT_TIRED',
+    expected: 'NO_FIREWOOD',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/simulation/forest-tools.test.mjs:68:1
+✖ forged supplies, wear, decisions, receipts, and fixture/model mismatches fail full replay (10713.277029ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(validForestView(mapView(b,400).forest))
+  
+      at Object.audit (file:///workspace/scratch/deac123f5d47/Narraverse-Forest/tests/simulation/forest-tools.test.mjs:13:43)
+      at TestContext.<anonymous> (file:///workspace/scratch/deac123f5d47/Narraverse-Forest/tests/simulation/forest-tools.test.mjs:72:256)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
