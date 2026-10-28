@@ -1,0 +1,131 @@
+{
+  "parent": "c5df3c8d69951545fa33e59707766c2295d3b9ed",
+  "branch": "codex/hunter-trust-journey-20261028",
+  "date": "2026-10-28 Asia/Shanghai",
+  "runtime": {
+    "node": "v24.22.1",
+    "os": "Linux",
+    "arch": "x64"
+  },
+  "sources": {
+    "PROJECT_CONTEXT.md": "6f87c66f39f5b2140ac85ff189a6ee23b4c3d14580557cb7477d6dbb8d312a36",
+    "README.md": "335054262c07a85c5c59bd2d4149bf15ee3b16cf35ad3235ae1233e0931bbb18",
+    "Start-Trust-Journey-New.cmd": "a68630616f8d8369bdec48162b17c64af759104032422a87a8639744ee39972e",
+    "Start-Trust-Journey.cmd": "e7d6ce8ccfc2ddb2d59f8fbecea6fbc9493e0575f868359477ba537c4e34f4c4",
+    "demo-playable-goals.mjs": "aee9ea3306dde4d57291394b020f86925c02ea8cccfeb94cb2207da8714a1737",
+    "docs/runtime/HUNTER-TRUST-JOURNEY.md": "d2aa72baaac9f0585eed6d7c6a8d05094a2db2ca6720d8098d5b9edf8db4b318",
+    "runtime-playable-contract.mjs": "1a6c92650075c11d0d685d2e8e370e391c632cc1e7403aa39ba6483b6779b1e7",
+    "runtime/core/campaign-limits.mjs": "4facd2f54ade9db9790a8a10bd456846c56e8d72e0acdd076189069f44bcaf7e",
+    "runtime/core/campaign-play.mjs": "a7480b8080471fe2f544c979254e54af8b2f4aa101078bd96a2ce31b709c5c89",
+    "runtime/core/event-log.mjs": "3f51f42355ca70d3fe45ca43bd195d93dfeeb45e9b18802cd7efa4be08a03b97",
+    "runtime/core/scene-campaign-runtime.mjs": "d04ffe1614ccd8ac86ac1c6e2d2e58447b61799ade87a69cc97968da88081dd7",
+    "runtime/core/world-state.mjs": "2679db7e7280ad9836534fe274f0fd3df42b7b4de160a605755c0cced1560b8f",
+    "runtime/fixtures/campaign-village.mjs": "b66f49c03ce29432cd279e33e56168c9f7dfe4223fa27d0d9d806951c94fb9ce",
+    "runtime/service/http-contract.mjs": "fec39060ef738d802429f7427aad299fce00cf7247a9888d4ef2ec8c6b0ffe84",
+    "runtime/service/runtime-owner.mjs": "1d639ff349a1afdf646c3cb5894dfa7a3816565a0401a06e04e5d056aa0abe21",
+    "scripts/check-hunter-trust-evidence.mjs": "ea9de61151e3b45ed37c106d14ee5af9b3f478eb561f2284392f3f824287316f",
+    "scripts/check-trust-legacy.mjs": "65e852fc7470369f84c50b1cd12d5da388c4f3fcbeb88b55cacf5b67e3ad3395",
+    "tasks/HUNTER-TRUST-JOURNEY-TASK.md": "8a5d5b8c82b3c9a12ad8238367f2b9b0400e62115ec2804e54cb66eca7ed7423",
+    "tests/simulation/hunter-trust-guidance.test.mjs": "3ec2d1cdc7ca07a3d6161bb8f0970e5186f9cf6c1b4b8659744c031018a5e136",
+    "tests/simulation/hunter-trust-journey.test.mjs": "2b7f8964716639a27ecc2660df806e921ee6109dc381df77f4b18f0b73bac942",
+    "tests/simulation/hunter-trust-service.test.mjs": "c17bfd3ac0ad90630dc5c59eae3ecab3ffad1375d9f1f1f6ea633f2a40505c8e"
+  },
+  "evidence": {
+    "core-initial.log": {
+      "bytes": 1952,
+      "sha256": "e0a07f327ad3583d771d51f3521a0f15a255e04dad8e965b0f450dfb163a8e58",
+      "rawSha256": "7aad49639fa9d7f31f7ff7df558ca4814bd6c741df1c01968afc7e623f4f377f"
+    },
+    "new-feature.log": {
+      "bytes": 3135,
+      "sha256": "931eeb89e514d1d8ca37b1aa8f66f41340b9f184ee71fc7e5cf68f40708bc79c",
+      "rawSha256": "8c0a31069bf1db60abd336df66cdef5d0b584a1e16a664ec638f70b6fae5022e"
+    },
+    "service-recheck.log": {
+      "bytes": 1386,
+      "sha256": "2374fecf514d647afa8a26cbe12421b3d40d142e1226b0a416747824a2280266",
+      "rawSha256": "2374fecf514d647afa8a26cbe12421b3d40d142e1226b0a416747824a2280266"
+    },
+    "new-feature-final.log": {
+      "bytes": 2473,
+      "sha256": "b82bcf98855502988949c1ba3c99d3e207a7a6efe7bdc624d90983e3bef85353",
+      "rawSha256": "b82bcf98855502988949c1ba3c99d3e207a7a6efe7bdc624d90983e3bef85353"
+    },
+    "regression-final.log": {
+      "bytes": 5261,
+      "sha256": "73d741001c16945e9df55ea2ef8eb9baa520d3e7e3a1ce449cf164bb63c83466",
+      "rawSha256": "73d741001c16945e9df55ea2ef8eb9baa520d3e7e3a1ce449cf164bb63c83466"
+    },
+    "legacy-comparison.json": {
+      "bytes": 1198,
+      "sha256": "0d5be62b689880cb6d6373a3d41fbb2c32d7fdbdd49f79fc73db0170a8da432b",
+      "rawSha256": "0d5be62b689880cb6d6373a3d41fbb2c32d7fdbdd49f79fc73db0170a8da432b"
+    }
+  },
+  "inheritedEvidenceFiles": 1233,
+  "inheritedSourceFiles": 524,
+  "finalRuns": [
+    {
+      "log": "new-feature-final.log",
+      "tests": 12,
+      "exitCode": 0,
+      "command": "timeout 240 node --test --test-concurrency=1 tests/simulation/hunter-trust-journey.test.mjs tests/simulation/hunter-trust-guidance.test.mjs tests/simulation/hunter-trust-service.test.mjs"
+    },
+    {
+      "log": "regression-final.log",
+      "tests": 40,
+      "exitCode": 0,
+      "command": "timeout 300 node --test --test-concurrency=1 tests/simulation/campaign-runtime.test.mjs tests/simulation/npc-negotiation.test.mjs tests/simulation/npc-social.test.mjs tests/simulation/playable-campaign.test.mjs tests/simulation/demo-playable-guidance.test.mjs tests/simulation/playable-recovery-guidance.test.mjs tests/simulation/first-chapter-experience-guidance.test.mjs tests/simulation/hunter-task-entry.test.mjs tests/simulation/first-chapter-experience-service.test.mjs"
+    }
+  ],
+  "distinctTests": 52,
+  "legacyComparison": {
+    "command": "timeout 120 node scripts/check-trust-legacy.mjs ../Narraverse-Hunter-Entry",
+    "exitCode": 0,
+    "fixtures": 6,
+    "representativeCommands": 43
+  },
+  "earlierRuns": [
+    {
+      "log": "core-initial.log",
+      "tests": 7,
+      "pass": 6,
+      "fail": 1,
+      "exitCode": 1,
+      "reason": "genuine perception event rejected by inherited fixture whitelist; production whitelist corrected with replay kept"
+    },
+    {
+      "log": "new-feature.log",
+      "tests": 12,
+      "pass": 10,
+      "fail": 2,
+      "exitCode": 1,
+      "reason": "HTTP route timeout without captured stop reason, and test omitted continuousMarch; do not claim a proven cause for timeout"
+    },
+    {
+      "log": "service-recheck.log",
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "exitCode": 0,
+      "note": "before explicit SSE body consumption; counted only in final run"
+    }
+  ],
+  "browser": "not-tested",
+  "windowsLauncher": "not-tested",
+  "newFixtureLongHistoryPerformance": "not-measured",
+  "externalModelCalls": 0,
+  "scope": [
+    "isolated synthetic worlds",
+    "no merge main",
+    "no deployment",
+    "no real save migration",
+    "no existing instance start or stop",
+    "no Narraverse2.0 import"
+  ],
+  "notes": [
+    "Initial failure logs retained; workspace paths and trailing whitespace normalized. Raw SHA256 retained.",
+    "DOM callbacks do not constitute browser rendering verification.",
+    "No source or parent evidence replaced except listed sources."
+  ]
+}
