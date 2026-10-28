@@ -1,0 +1,1 @@
+{"status":"verified","tests":18,"firstChapterComplete":true,"opened":"actor-2","servedAssets":2,"preservedEvidenceFiles":1231,"externalModelCalls":0,"browserLayout":"not-measured"}

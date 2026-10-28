@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/simulation/trust-journey.test.mjs",
+    "tests/simulation/trust-journey-guidance.test.mjs",
+    "tests/simulation/trust-journey-legacy-events.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 41904.62,
+  "cpuMs": null,
+  "hardLimitMs": 240000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

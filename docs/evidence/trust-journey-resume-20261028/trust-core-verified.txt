@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: trust journey card is discoverable and can open a visible living hunter read-only; stale handlers cannot open hidden or completed targets
+ok 1 - trust journey card is discoverable and can open a visible living hunter read-only; stale handlers cannot open hidden or completed targets
+  ---
+  duration_ms: 168.432704
+  type: 'test'
+  ...
+# Subtest: guidance distinguishes requesting, carrying, returning and overdue debt; reaccept stays disabled while the tool is held
+ok 2 - guidance distinguishes requesting, carrying, returning and overdue debt; reaccept stays disabled while the tool is held
+  ---
+  duration_ms: 128.04206
+  type: 'test'
+  ...
+# Subtest: version2 public contract rejects invented readiness, future return, and new fields spliced into the old view
+ok 3 - version2 public contract rejects invented readiness, future return, and new fields spliced into the old view
+  ---
+  duration_ms: 58.177844
+  type: 'test'
+  ...
+# Subtest: existing playable fixture can fully audit a real overdue negotiated loan and its return
+ok 4 - existing playable fixture can fully audit a real overdue negotiated loan and its return
+  ---
+  duration_ms: 1875.48732
+  type: 'test'
+  ...
+# Subtest: fixture7 unlocks a separate optional trust journey after the chapter; original fixtures keep their grammar and budgets
+ok 5 - fixture7 unlocks a separate optional trust journey after the chapter; original fixtures keep their grammar and budgets
+  ---
+  duration_ms: 3046.442206
+  type: 'test'
+  ...
+# Subtest: real borrowing, forest visit and on-time return complete once; claiming adds no resources or relationship points
+ok 6 - real borrowing, forest visit and on-time return complete once; claiming adds no resources or relationship points
+  ---
+  duration_ms: 4314.770673
+  type: 'test'
+  ...
+# Subtest: a negotiated repair loan also counts only after actual claim; ready repair is not a loan
+ok 7 - a negotiated repair loan also counts only after actual claim; ready repair is not a loan
+  ---
+  duration_ms: 2746.475439
+  type: 'test'
+  ...
+# Subtest: overdue borrowing fails the task; actual late return still clears the held tool and keeps the breach
+ok 8 - overdue borrowing fails the task; actual late return still clears the held tool and keeps the breach
+  ---
+  duration_ms: 9596.319623
+  type: 'test'
+  ...
+# Subtest: abandoning does not return a loan; return before exploration fails, and an earlier loan cannot be adopted by reaccepting
+ok 9 - abandoning does not return a loan; return before exploration fails, and an earlier loan cannot be adopted by reaccepting
+  ---
+  duration_ms: 2574.133752
+  type: 'test'
+  ...
+# Subtest: past travel, a refused theft and oral claims do not invent a borrowing source; malformed loans and fixture splicing fail replay
+ok 10 - past travel, a refused theft and oral claims do not invent a borrowing source; malformed loans and fixture splicing fail replay
+  ---
+  duration_ms: 7136.19565
+  type: 'test'
+  ...
+# Subtest: an actually successful unseen theft and forest trip are not a trusted borrowing
+ok 11 - an actually successful unseen theft and forest trip are not a trusted borrowing
+  ---
+  duration_ms: 7934.735579
+  type: 'test'
+  ...
+# Subtest: return finishing on the exact due tick succeeds; waiting after that real return does not create a late failure
+ok 12 - return finishing on the exact due tick succeeds; waiting after that real return does not create a late failure
+  ---
+  duration_ms: 11602.142939
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 49144.585884

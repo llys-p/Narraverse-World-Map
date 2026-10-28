@@ -1,0 +1,1 @@
+{"status":"verified","fixtures":6,"fullBundleCheckpoints":15,"playableDays":7,"matches":true,"externalModelCalls":0}

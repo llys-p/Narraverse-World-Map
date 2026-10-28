@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/simulation/trust-journey-service.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 70124.049,
+  "cpuMs": null,
+  "hardLimitMs": 360000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

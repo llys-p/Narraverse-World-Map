@@ -1,3 +1,15 @@
+# 当前候选：借工具探路支线（2026-10-28）
+
+父提交PR39 `c5df3c8d69951545fa33e59707766c2295d3b9ed`，独立分支 `codex/trust-journey-resume-20261028`；任务 `tasks/TRUST-JOURNEY-RESUME-TASK.md`，用户/AI交接 `docs/runtime/TRUST-JOURNEY-RESUME.md`。用户要求继续截图任务；未取得截图对应源码和日志，本轮以PR39独立实现与复验，截图12项不计入本轮。
+
+- 新入口 `Start-Trust-Journey.cmd`，18354，独立档 `artifacts/trust-journey/world`；fixture7 / playable-v2，不迁移旧fixture1–6。第一章后可接取“借工具探路”：实际借到工具、持有到森林、按期实际归还，再领守约伙伴称号。偷抢、口头声称和旧旅行不算，放弃/失败不自动归还；直接借用与协商领取均沿用原世界规则。
+- 私有记录借还事件来源与时间，公共投影只给相应时间；进度不额外结算钱粮和关系。补齐fixture6原本会产生的逾期感知/协商结束事件审计白名单，避免真实历史被误拒。保留原失败日志，修复不是放弃完整审计。
+- 最终73项不同检查通过（12项核心/DOM/旧逾期修复 + 61项组合回归，后者含2项新增真实worker/HTTP路线）；另有旧fixture1–6共15个完整bundle检查点与PR39一致，fixture6走完第一章后跨七天。实际服务验证按时/逾期、借出与归还后重开、同DTO重试、保存SHA/投影、借还与失约记忆；原第一章及人物卡HTTP也复跑。证据核验 `node scripts/check-trust-journey-evidence.mjs`。
+- 浏览器画面、移动端/键盘读屏、Windows双击入口与真人体验待验；模型0调用，不导入2.0。本轮没有另做记忆更新算法。保持暂停性能优化；不合main、不部署、不启停旧实例、不迁移真实档。GitHub Projects无可用写入工具，待同步。
+- 下一步：有环境后实际玩新入口与失败恢复，收集操作阻碍；新的记忆算法或交互目标另开有界任务，不能把截图、DOM替身或合成服务当成真人体验验收。
+
+以下为PR39及更早历史。
+
 # 当前候选：猎人任务人物入口（2026-10-28）
 
 父提交PR38 `e398b5803dba66cb6f9ffbdaa42f2ea64807098f`，分支 `codex/hunter-task-entry-20261028`；任务 `tasks/HUNTER-TASK-ENTRY-TASK.md`，交接 `docs/runtime/HUNTER-TASK-ENTRY.md`。

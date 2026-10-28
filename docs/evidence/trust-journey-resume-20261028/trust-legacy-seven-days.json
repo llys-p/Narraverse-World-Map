@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "scripts/check-trust-legacy.mjs",
+    "../Narraverse-Trust-Parent",
+    "artifacts/d4e12/trust-legacy-report.json"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 136538.605,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

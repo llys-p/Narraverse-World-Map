@@ -92,7 +92,7 @@ function containsProxy(root){
 }
 function canReuseGenesisReplay(anchor,final,commands,rawFinal){
   const s=final.snapshot;
-  if(s.rulesVersion!==CAMPAIGN_RULES||s.fixtureVersion!=='6'||anchor.snapshot.tick!==0||commands.length===0)return false;
+  if(s.rulesVersion!==CAMPAIGN_RULES||!['6','7'].includes(s.fixtureVersion)||anchor.snapshot.tick!==0||commands.length===0)return false;
   // History uses canonical data; the original journal audit also compares raw
   // objects strictly. Guard normalization differences and reject descriptors
   // before any deep comparison can invoke a caller-controlled getter.
