@@ -1,0 +1,27 @@
+✔ next steps explain first acceptance, concrete quest actions and optional chapter continuation using confirmed fields (184.571029ms)
+✔ guidance respects current work interval, death, battle, marching and the actual command budget (120.213782ms)
+✔ task deadlines are world time only and do not invent expiry or mutate the task (0.525342ms)
+✔ task DOM refreshes a moving visible hunter and locks approaches for combat, budget or unresolved writes (130.638392ms)
+✔ fresh projected actor objects reproduce the parent stale target while the new panel follows the latest visible position (232.398972ms)
+✔ task DOM names progress, shows deadlines, updates nearby controls and submits only existing quest actions (75.277798ms)
+✔ chapter recap appears only when completed and reflects optional challenge and death (183.264729ms)
+✔ repair guidance uses only currently visible hunter and explains the interaction and tool location (104.297575ms)
+✔ ready quest label distinguishes claiming here from returning to the village (109.312544ms)
+{"measurement":"first-chapter-http-walkthrough","tick":66,"rank":3,"chapterComplete":true,"questStatuses":["completed","completed","completed","available"],"explicitRequests":16,"durableFiles":32,"filesSha256":"35efa4608d4e6f9946679341309c42db193f83c3e1cd507bb3382cc55de5b49b","externalModelCalls":0,"scope":"default synthetic new journey; real worker HTTP, no browser rendering; automatic march steps are additional commands"}
+✔ default new journey completes three chapter quests through worker HTTP and survives reopen (14276.717011ms)
+{"measurement":"playable-guidance-consumer","assets":{"demo-runtime.html":"8eedf12891b0c38d3726459491e3d6aac5c07dfbc35e35085fc313d4e9aaa29c","demo-runtime-prototype.mjs":"2cae7afdcc65469c4403f269885f5a86eea5ef31f43c2dae89c6eafd6e683955","demo-runtime-bridge.mjs":"40918ba8dc3a8df8b08d2efa68d8ce04133e208ad7eac738e738e56937d429a0","demo-operation-feedback.mjs":"f6c81536d142f99c9c3e3f2b66f655bc2ed74988dac98c9a73529b7d9d3e1140","demo-playable-goals.mjs":"811276a8624eb88b7ce50ebcffd1d3eaadf80e174aed0c4e107ce24283d4301f","demo-runtime.css":"15bfb82dfc28f6c7c2a8fe62cf1d3ae264b181c6852689453d9b16a4cebf5c0f"},"worldTick":37,"rank":1,"requestPosts":4,"durableFiles":{"service-commit-r0.json":"c6bb18158ea5bc752092a9585e8f6f800d7b7f7a282ba41ed7754f8f8e326268","service-commit-r1.json":"57ee62426b64879497d4cfb624979623a2acd8368b4601440153679ced0aa44f","service-commit-r37.json":"f5b86058a412cd0860d62e85e37b76f6890bade21f0a7251e1f5e5176c91a526","service-commit-r38.json":"6a0dafdf5d9a37e53de8053df3b59b3edecb490561a2eb4680105e23e37f5b58","service-commit-r39.json":"f7f6a0c8cf8eab5dc116c778431b35eb1ccd78538229be358d73dace0929ae8e"},"phases":["connect",null,"confirm","refresh","present"],"externalModelCalls":0,"rendering":"DOM contract mock; no browser layout or FPS acceptance"}
+✔ served guidance assets and real client quest actions preserve durable progress, recovery and idempotence (2967.961911ms)
+✔ last tick permits a ready village claim; advancing one tick fails it and a later acceptance resets progress (161.418111ms)
+✔ last tick warns during battle and ongoing march without promising an instant pause (103.832093ms)
+✔ failed and abandoned quests offer a reaccept without inventing rewards or world changes (130.378311ms)
+✔ the last available command cannot lead to an unfinishable new attempt; a ready village claim remains available (128.543485ms)
+✔ a visibly dead hunter blocks misleading repair and gift guidance in a real audited world (3265.554496ms)
+✔ a ready quest stays claimable even if the hunter is visible dead; no approach button is offered for a dead hunter (95.522717ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14441.767876
