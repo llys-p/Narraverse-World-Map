@@ -33,7 +33,7 @@ export function playableNextStep(group){
   return '下一步：在村庄商人处实际购买一份口粮。';
  }
  if(q.id==='hunter-aid'){
-  if(!q.progress[0])return '下一步：帮助修理，并让工具归猎人持有且耐久至少80。';
+  if(!q.progress[0])return '下一步：'+(hunter?(hunter.canInteract?'打开猎人人物卡':'先走近当前可见的猎人，再打开人物卡'):'在附近寻找猎人，见面后打开人物卡')+'，在歇脚处工具附近选择“帮助修理”，并让工具归猎人持有且耐久至少80。';
   if(group.player.self.inventory.food<1)return '下一步：先在村庄商人处购买口粮，再实际送一份给猎人。';
   return hunter?'下一步：'+(hunter.canInteract?'实际送一份口粮给猎人。':'先走近当前可见的猎人，再送一份口粮。'):'下一步：在附近寻找猎人，见面后实际送一份口粮。';
  }
@@ -47,12 +47,14 @@ export function createPlayableGoals({submit,approach}){
   const hunter=group.map.actors.find(a=>a.actorId==='actor-2'),navigation=personNavigation(group,writable,'actor-2'),next=playableNextStep(group);
   const value=JSON.stringify([view,writable,group.map.self.location,group.map.self.alive,group.map.order?.status,group.encounter.encounter?.status,navigation,hunter,next]);if(value===key)return;key=value;
   document.getElementById('playableTitle').textContent=view.chapterComplete?'第一章完成：你已在村庄站稳脚跟':view.title;
+  const summary=document.getElementById('playableChapterSummary');summary.hidden=!view.chapterComplete;
+  summary.textContent=view.chapterComplete?'你已经在村庄工作、购买口粮，帮助猎人，并完成森林往返。第一章主线到这里告一段落。'+(!group.map.self.alive?'本次旅程已结束，可以回顾这段经历。':group.map.budget.remainingCommands===0?'本档操作额度已用完，可以回顾这段经历。':view.quests.find(q=>q.id==='forest-win')?.status==='completed'?'你也完成了可选的猎狼挑战。':'可以继续探索，或在任务板查看可选的猎狼挑战。'):'';
   document.getElementById('playableNext').textContent=next;
   document.getElementById('playableHelp').textContent=group.map.self.alive?view.help+(view.activity?'　'+view.activity.label+'。':''):'本次旅程已结束，原存档会保留。可关闭入口后使用新旅程脚本建立另一个存档。';list.replaceChildren();
   const inVillage=group.map.self.location==='village',free=writable&&group.map.self.alive&&group.map.budget.remainingCommands>0&&inVillage&&group.map.order?.status!=='marching'&&group.encounter.encounter?.status!=='active';
   for(const q of view.quests){
    const row=document.createElement('article');row.className='quest-card';row.dataset.quest=q.id;
-   const title=document.createElement('h3');title.textContent=q.title+' · '+labels[q.status];const detail=document.createElement('p');detail.textContent=q.description;
+   const title=document.createElement('h3');title.textContent=q.title+' · '+(q.status==='ready'&&inVillage?'已达成，可以领取':labels[q.status]);const detail=document.createElement('p');detail.textContent=q.description;
    const progress=document.createElement('p');progress.textContent=q.progress.map((v,i)=>steps[q.id][i]+' '+v+'/'+q.targets[i]).join(' · ')+'　奖励：'+q.reward;
    row.append(title,detail,progress);
    const deadline=questDeadlineText(q);if(deadline){const text=document.createElement('p');text.className='quest-deadline';text.textContent=deadline;row.append(text);}

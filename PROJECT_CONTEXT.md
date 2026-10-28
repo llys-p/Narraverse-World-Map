@@ -1,3 +1,13 @@
+# 当前候选：第一章体验走查（2026-10-28）
+
+父提交PR37 `365cc8b977299fe3dda3f91967d9e37a4eb3962f`，分支 `codex/first-chapter-experience-20261028`；任务 `tasks/FIRST-CHAPTER-EXPERIENCE-TASK.md`，交接 `docs/runtime/FIRST-CHAPTER-EXPERIENCE.md`。用户要求停止性能优化，优先推进游戏体验。
+
+- 默认合成新旅程真实worker/HTTP走完生计、帮助猎人和森林往返，关闭重开投影一致、重复领取返回原回执。完成后任务区回顾实际旅程和可选猎狼，补充猎人修理位置和村庄内领取状态；不自动操作、不改规则和存档。
+- 最终17项不同检查通过，覆盖任务DOM、截止失败、实际客户端首任务和完整主线服务走查；模拟DOM不等于浏览器实机验收。浏览器布局、键盘/读屏与真人体验待验，模型0调用；证据核验 `node scripts/check-first-chapter-experience-evidence.mjs`。
+- 不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0；GitHub Projects待同步。后续关注新旅程首屏、人物卡发现、中途失败及后续游戏目标，停止当前性能优化工作。
+
+以下为PR37及更早历史。
+
 # 当前候选：完整历史审计CPU采样（2026-10-28）
 
 父提交PR36 `97383aae7b3ec3db805c7f4fbbe17cf5a2f88157`；分支 `codex/audit-cpu-profile-20261028`，合同 `tasks/AUDIT-CPU-PROFILE-TASK.md`，交接 `docs/runtime/AUDIT-CPU-PROFILE.md`。

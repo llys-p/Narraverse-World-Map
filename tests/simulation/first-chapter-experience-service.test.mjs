@@ -1,0 +1,40 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {startRuntimeServer} from '../../runtime-server.mjs';
+import {coherent} from '../../demo-runtime-bridge.mjs';
+import {createPlayableGoals,playableNextStep} from '../../demo-playable-goals.mjs';
+const sha=b=>createHash('sha256').update(b).digest('hex');
+const files=async d=>Object.fromEntries(await Promise.all((await fs.readdir(d)).filter(x=>x.endsWith('.json')).sort().map(async n=>[n,sha(await fs.readFile(path.join(d,n)))])));
+test('default new journey completes three chapter quests through worker HTTP and survives reopen',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'first-chapter-'));let server;const streamAbort=new AbortController();
+ const prior=Object.getOwnPropertyDescriptor(globalThis,'document'),nodes=new Map(),element=()=>({textContent:'',hidden:false,disabled:false,dataset:{},children:[],append(...v){this.children.push(...v);},replaceChildren(...v){this.children=v;},addEventListener(){}});
+ globalThis.document={getElementById(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);},createElement:element};
+ const panel=createPlayableGoals({submit(){throw Error('unexpected action');},approach(){throw Error('unexpected movement');}});
+ t.after(async()=>{streamAbort.abort();if(server)await server.close();await fs.rm(directory,{recursive:true,force:true});if(prior)Object.defineProperty(globalThis,'document',prior);else delete globalThis.document;});
+ const options={directory,port:0,writable:true,continuousMarch:true};
+ server=await startRuntimeServer({...options,profile:'campaign-playable-village',seed:42});
+ const read=async()=>{const r=await fetch(server.url+'/api/runtime/demo-state');assert.equal(r.status,200);const g=await r.json();assert.ok(coherent(g));return g;};
+ const stream=await fetch(server.url+'/api/runtime/demo-events',{signal:streamAbort.signal});assert.equal(stream.status,200);
+ let g=await read(),n=0;const action=async(type,payload={})=>{
+  const dto={version:5,commandId:'chapter-walkthrough-'+(++n),expectedRevision:g.snapshot.revision,type,payload};
+  const r=await fetch(server.url+'/api/runtime/commands',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dto)});assert.equal(r.status,200,type);const receipt=await r.json();assert.equal(receipt.outcome,'succeeded',type+' '+JSON.stringify(receipt.result));g=await read();return {dto,receipt};
+ };
+ const quest=async(id,actionName)=>action('PlayerQuest',{questId:id,action:actionName});
+ const order=async(type,payload)=>{const body={apiVersion:1,requestId:'chapter-order-'+(++n),type,payload};const r=await fetch(server.url+'/api/runtime/demo-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});assert.equal(r.status,200);const data=await r.json();assert.equal(data.receipt.outcome,'succeeded');g=await read();};
+ const march=async target=>{await order('MarchSet',target);let count=0;while(g.map.order?.status!=='arrived'){
+  assert.ok(count++<300,'route did not arrive');await new Promise(resolve=>setTimeout(resolve,200));g=await read();
+  if(g.map.order?.status==='paused'&&!g.runner.active)await order('MarchResume',{});
+ }};
+ panel.paint(g,true);assert.equal(nodes.get('playableChapterSummary').hidden,true);assert.match(playableNextStep(g),/接取/);await quest('livelihood','accept');await action('PlayerWork');await action('PlayerBuy',{product:'food',quantity:1});await quest('livelihood','claim');
+ assert.equal(g.map.playable.rank,1);await quest('hunter-aid','accept');await action('PlayerInteract',{targetId:'actor-2',action:'help'});await action('PlayerGiftFood',{recipientId:'actor-2'});await quest('hunter-aid','claim');
+ assert.equal(g.map.playable.rank,2);await quest('forest-route','accept');await march({x:16,y:7});await march({x:4,y:7});const last=await quest('forest-route','claim');
+ assert.equal(g.map.playable.chapterComplete,true);assert.equal(g.map.playable.rank,3);assert.equal(g.map.playable.quests[3].status,'available');panel.paint(g,true);assert.equal(nodes.get('playableChapterSummary').hidden,false);assert.match(nodes.get('playableChapterSummary').textContent,/森林往返.*可选.*猎狼/);
+ const before=await files(directory),snapshot=structuredClone(g);streamAbort.abort();await server.close();server=await startRuntimeServer(options);g=await read();
+ for(const k of ['snapshot','map','player','encounter','scene'])assert.deepEqual(g[k],snapshot[k]);panel.paint(g,true);assert.match(nodes.get('playableChapterSummary').textContent,/森林往返.*可选.*猎狼/);
+ const retry=await fetch(server.url+'/api/runtime/commands',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(last.dto)});assert.equal(retry.status,200);assert.deepEqual(await retry.json(),last.receipt);assert.deepEqual(await files(directory),before);
+ console.log(JSON.stringify({measurement:'first-chapter-http-walkthrough',tick:g.map.tick,rank:g.map.playable.rank,chapterComplete:g.map.playable.chapterComplete,questStatuses:g.map.playable.quests.map(q=>q.status),explicitRequests:n,durableFiles:Object.keys(before).length,filesSha256:sha(JSON.stringify(before)),externalModelCalls:0,scope:'default synthetic new journey; real worker HTTP, no browser rendering; automatic march steps are additional commands'}));
+});
