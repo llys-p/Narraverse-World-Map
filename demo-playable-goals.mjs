@@ -1,7 +1,8 @@
 // Presentation consumes the same confirmed world; never keeps a second quest ledger.
 import {personNavigation,worldTimeView} from './demo-runtime-interactions.mjs';
 const labels={locked:'尚未解锁',available:'可接取',active:'进行中',ready:'已达成，返回村庄领取',completed:'已完成',abandoned:'已放弃，可重接',failed:'未完成，可重接'};
-const steps={livelihood:['实际工作一次','购买一份口粮'],'hunter-aid':['工具归猎人且耐久至少80','实际赠送一份口粮'],'forest-route':['抵达森林','活着返回村庄'],'forest-win':['战胜一匹狼','活着返回村庄']};
+const steps={livelihood:['实际工作一次','购买一份口粮'],'hunter-aid':['工具归猎人且耐久至少80','实际赠送一份口粮'],'forest-route':['抵达森林','活着返回村庄'],'forest-win':['战胜一匹狼','活着返回村庄'],'hunter-trust':['带本次借用的工具抵达森林','按期实际归还工具']};
+const hunterTask=q=>q?.id==='hunter-aid'&&q.status==='active'||q?.id==='hunter-trust'&&(q.status==='active'||['failed','abandoned'].includes(q.status)&&q.loan&&q.loan.returnedTick===null);
 export function questDeadlineText(q){
  if(!['active','ready'].includes(q.status)||q.remainingTicks===null)return '';
  if(q.remainingTicks===0)return '已到任务期限的最后一刻；推进世界时间会使任务失败，请核对当前任务状态。';
@@ -15,6 +16,8 @@ export function playableNextStep(group){
  const expiring=view.quests.find(q=>['active','ready'].includes(q.status)&&q.remainingTicks===0);
  if(group.encounter.encounter?.status==='active')return expiring?'当前战斗尚未结束；推进世界时间会使「'+expiring.title+'」失败。请先处理战斗，再查看任务状态。':'下一步：先完成当前战斗，再继续任务。';
  if(group.map.order?.status==='marching')return expiring?'「'+expiring.title+'」已到期限最后一刻；继续行军会使任务失败。可请求暂停，已进行的步进仍可能完成。':'下一步：抵达目的地后继续任务；也可先暂停行军查看周围。';
+ const trust=view.quests.find(q=>q.id==='hunter-trust');
+ if(trust&&['failed','abandoned'].includes(trust.status)&&trust.loan&&trust.loan.returnedTick===null&&group.map.social?.asset?.holderId==='actor-4')return '这次探路委托已'+(trust.status==='failed'?'失败':'放弃')+'，借来的工具仍在你手里。先到歇脚处走近猎人，实际归还工具，再重新接取；失约经历会保留。';
  const q=view.quests.find(q=>q.status==='ready')??view.quests.find(q=>q.status==='active')??view.quests.find(q=>['available','abandoned','failed'].includes(q.status));
  if(!q)return view.chapterComplete?'第一章目标已完成，可以回顾本次旅程。':'查看任务条件，继续探索当前世界。';
  const village=group.map.self.location==='village';
@@ -27,6 +30,7 @@ export function playableNextStep(group){
   return '「'+q.title+'」已到期限最后一刻；推进世界时间会使任务失败。可在任务板放弃后重新接取，或先查看不推进时间的可用行动。';
  }
  if(q.status==='ready')return '下一步：'+(village?'在任务板领取':'活着返回村庄领取')+'「'+q.title+'」的进展。';
+ if(q.id==='hunter-trust'&&q.status!=='active'&&group.map.social?.asset?.holderId==='actor-4')return '接取借工具探路前，请先把手里的猎人工具实际归还；已有借用或偷抢不会作为这次委托的借用。';
  if(q.status!=='active')return (q.status==='failed'?'「'+q.title+'」未在期限内完成。':q.status==='abandoned'?'「'+q.title+'」已放弃。':'')+(view.chapterComplete?'第一章已完成。可选挑战：':'下一步：')+(village?'在任务板'+(q.status==='available'?'接取':'重新接取'):'返回村庄'+(q.status==='available'?'接取':'重新接取'))+'「'+q.title+'」。';
  if(q.id==='livelihood'){
   if(!q.progress[0]){const timing=worldTimeView(group,true);return timing.workReady?'下一步：在村庄完成一次实际工作。':'下一步：完成一次实际工作。'+timing.workHint;}
@@ -38,6 +42,11 @@ export function playableNextStep(group){
   return hunter?'下一步：'+(hunter.canInteract?'实际送一份口粮给猎人。':'先走近当前可见的猎人，再送一份口粮。'):'下一步：在附近寻找猎人，见面后实际送一份口粮。';
  }
  if(q.id==='forest-route')return q.progress[0]?'下一步：活着返回村庄，完成森林往返。':'下一步：抵达森林，再活着返回村庄；这个任务可以避开战斗。';
+ if(q.id==='hunter-trust'){
+  if(hunter?.alive===false)return '当前可见的猎人已倒下，无法继续借还；原存档保留，可另开新旅程。';
+  if(!q.loan)return group.map.social?.asset?.holderId==='actor-4'?'这件工具没有记为本次正式借用。先实际归还，再向猎人请求借用；偷抢和口头声称不算完成。':'下一步：打开当前可见的猎人人物卡，走近他并在工具附近选择“请求借工具”借用；也可协商修理换借用。是否借出由猎人的实际状态决定。';
+  return q.progress[0]?'下一步：带工具返回歇脚处，走近猎人并选择“归还工具”。归还也会推进时间，要在借用期限内完成。':'下一步：带着本次借到的工具抵达森林，再按期实际归还；可以避开战斗。';
+ }
  return q.progress[0]?'下一步：活着返回村庄，领取可选挑战进展。':'下一步：前往森林战胜一匹狼，再活着返回村庄；这是可选挑战。';
 }
 export function createPlayableGoals({submit,approach,openPerson}){
@@ -49,6 +58,7 @@ export function createPlayableGoals({submit,approach,openPerson}){
   document.getElementById('playableTitle').textContent=view.chapterComplete?'第一章完成：你已在村庄站稳脚跟':view.title;
   const summary=document.getElementById('playableChapterSummary');summary.hidden=!view.chapterComplete;
   summary.textContent=view.chapterComplete?'你已经在村庄工作、购买口粮，帮助猎人，并完成森林往返。第一章主线到这里告一段落。'+(!group.map.self.alive?'本次旅程已结束，可以回顾这段经历。':group.map.budget.remainingCommands===0?'本档操作额度已用完，可以回顾这段经历。':view.quests.find(q=>q.id==='forest-win')?.status==='completed'?'你也完成了可选的猎狼挑战。':'可以继续探索，或在任务板查看可选的猎狼挑战。'):'';
+  if(view.chapterComplete&&view.version===2)summary.textContent+=view.quests.find(q=>q.id==='hunter-trust')?.status==='completed'?'你也按约带回了借用的工具，获得守约伙伴称号。':'任务板另有可选的“借工具探路”，让这趟旅程成为一次守约的经历。';
   document.getElementById('playableNext').textContent=next;
   document.getElementById('playableHelp').textContent=group.map.self.alive?view.help+(view.activity?'　'+view.activity.label+'。':''):'本次旅程已结束，原存档会保留。可关闭入口后使用新旅程脚本建立另一个存档。';list.replaceChildren();
   const inVillage=group.map.self.location==='village',free=writable&&group.map.self.alive&&group.map.budget.remainingCommands>0&&inVillage&&group.map.order?.status!=='marching'&&group.encounter.encounter?.status!=='active';
@@ -59,15 +69,16 @@ export function createPlayableGoals({submit,approach,openPerson}){
    row.append(title,detail,progress);
    const deadline=questDeadlineText(q);if(deadline){const text=document.createElement('p');text.className='quest-deadline';text.textContent=deadline;row.append(text);}
    const actions=['available','abandoned','failed'].includes(q.status)?[['accept','接取任务']]:q.status==='ready'?[['claim','领取进展'],['abandon','放弃任务']]:q.status==='active'?[['abandon','放弃任务']]:[];
-   for(const [action,text] of actions){const button=document.createElement('button');button.type='button';button.textContent=text;button.dataset.questAction=action;button.disabled=!free;button.addEventListener('click',()=>submit('PlayerQuest',{questId:q.id,action}));row.append(button);}
-   if(q.status==='active'&&q.id==='hunter-aid'&&hunter?.alive&&typeof openPerson==='function'){
+   for(const [action,text] of actions){const button=document.createElement('button');button.type='button';button.textContent=text;button.dataset.questAction=action;button.disabled=!free||(q.id==='hunter-trust'&&action==='accept'&&group.map.social?.asset?.holderId==='actor-4');button.addEventListener('click',()=>submit('PlayerQuest',{questId:q.id,action}));row.append(button);}
+   if(q.id==='hunter-trust'&&q.loan&&q.loan.returnedTick===null){const note=document.createElement('p');note.textContent='借用期限也约束这项委托；放弃或失败不会自动归还工具。';row.append(note);}
+   if(hunterTask(q)&&hunter?.alive&&typeof openPerson==='function'){
     const b=document.createElement('button');b.type='button';b.textContent='查看猎人';b.addEventListener('click',()=>{
      const actor=latest?.map?.actors?.find(a=>a.actorId==='actor-2');
-     const quest=latest?.map?.playable?.quests?.find(item=>item.id==='hunter-aid');
-     if(actor?.alive&&quest?.status==='active')openPerson('actor-2');
+     const quest=latest?.map?.playable?.quests?.find(item=>item.id===q.id);
+     if(actor?.alive&&hunterTask(quest))openPerson('actor-2');
     });row.append(b);
    }
-   if(q.status==='active'&&q.id==='hunter-aid'&&hunter?.alive&&!hunter.canInteract){const b=document.createElement('button');b.textContent='走近猎人';b.disabled=!navigation.canApproach;b.addEventListener('click',()=>approach(hunter));row.append(b);}
+   if(hunterTask(q)&&hunter?.alive&&!hunter.canInteract){const b=document.createElement('button');b.textContent='走近猎人';b.disabled=!navigation.canApproach;b.addEventListener('click',()=>approach(hunter));row.append(b);}
    if(actions.length&&!inVillage){const hint=document.createElement('small');hint.textContent='接取、领取和放弃请返回村庄任务板。';row.append(hint);}
    list.append(row);
   }

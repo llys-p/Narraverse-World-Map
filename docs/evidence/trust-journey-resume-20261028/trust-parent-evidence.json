@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "../Narraverse-Trust-Parent/scripts/check-hunter-task-entry-evidence.mjs"
+  ],
+  "pid": 6,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 364.637,
+  "cpuMs": null,
+  "hardLimitMs": 60000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

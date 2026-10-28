@@ -1,0 +1,24 @@
+TAP version 13
+# {"measurement":"trust-journey-http","route":"on-time","fixture":"7","status":"completed","borrowedSaveReopened":true,"returnSaveReopened":true,"retriesPreservedFiles":true,"durableFiles":55,"externalModelCalls":0,"browserRendering":false}
+# Subtest: fixture7 real worker/HTTP: on-time journey earns one title, borrowed save reopens and retries once
+ok 1 - fixture7 real worker/HTTP: on-time journey earns one title, borrowed save reopens and retries once
+  ---
+  duration_ms: 28764.310663
+  type: 'test'
+  ...
+# {"measurement":"trust-journey-http","route":"late","fixture":"7","status":"failed","borrowedSaveReopened":true,"returnSaveReopened":true,"retriesPreservedFiles":true,"durableFiles":57,"externalModelCalls":0,"browserRendering":false}
+# Subtest: fixture7 real worker/HTTP: late return fails but repays the loan, borrowed save reopens and retries once
+ok 2 - fixture7 real worker/HTTP: late return fails but repays the loan, borrowed save reopens and retries once
+  ---
+  duration_ms: 41125.339643
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 70052.927573

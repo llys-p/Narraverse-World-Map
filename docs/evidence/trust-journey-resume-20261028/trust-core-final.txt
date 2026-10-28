@@ -1,0 +1,102 @@
+TAP version 13
+# Subtest: trust journey card is discoverable and can open a visible living hunter read-only; stale handlers cannot open hidden or completed targets
+ok 1 - trust journey card is discoverable and can open a visible living hunter read-only; stale handlers cannot open hidden or completed targets
+  ---
+  duration_ms: 149.41491
+  type: 'test'
+  ...
+# Subtest: guidance distinguishes requesting, carrying, returning and overdue debt; reaccept stays disabled while the tool is held
+ok 2 - guidance distinguishes requesting, carrying, returning and overdue debt; reaccept stays disabled while the tool is held
+  ---
+  duration_ms: 90.230319
+  type: 'test'
+  ...
+# Subtest: version2 public contract rejects invented readiness, future return, and new fields spliced into the old view
+ok 3 - version2 public contract rejects invented readiness, future return, and new fields spliced into the old view
+  ---
+  duration_ms: 36.030871
+  type: 'test'
+  ...
+# Subtest: existing playable fixture can fully audit a real overdue negotiated loan and its return
+ok 4 - existing playable fixture can fully audit a real overdue negotiated loan and its return
+  ---
+  duration_ms: 1950.927131
+  type: 'test'
+  ...
+# Subtest: fixture7 unlocks a separate optional trust journey after the chapter; original fixtures keep their grammar and budgets
+ok 5 - fixture7 unlocks a separate optional trust journey after the chapter; original fixtures keep their grammar and budgets
+  ---
+  duration_ms: 2926.486316
+  type: 'test'
+  ...
+# Subtest: real borrowing, forest visit and on-time return complete once; claiming adds no resources or relationship points
+ok 6 - real borrowing, forest visit and on-time return complete once; claiming adds no resources or relationship points
+  ---
+  duration_ms: 4154.367696
+  type: 'test'
+  ...
+# Subtest: a negotiated repair loan also counts only after actual claim; ready repair is not a loan
+ok 7 - a negotiated repair loan also counts only after actual claim; ready repair is not a loan
+  ---
+  duration_ms: 2709.301759
+  type: 'test'
+  ...
+# Subtest: overdue borrowing fails the task; actual late return still clears the held tool and keeps the breach
+ok 8 - overdue borrowing fails the task; actual late return still clears the held tool and keeps the breach
+  ---
+  duration_ms: 9945.783842
+  type: 'test'
+  ...
+# Subtest: abandoning does not return a loan; return before exploration fails, and an earlier loan cannot be adopted by reaccepting
+ok 9 - abandoning does not return a loan; return before exploration fails, and an earlier loan cannot be adopted by reaccepting
+  ---
+  duration_ms: 3224.721897
+  type: 'test'
+  ...
+# Subtest: past travel, a refused theft and oral claims do not invent a borrowing source; malformed loans and fixture splicing fail replay
+ok 10 - past travel, a refused theft and oral claims do not invent a borrowing source; malformed loans and fixture splicing fail replay
+  ---
+  duration_ms: 7052.950737
+  type: 'test'
+  ...
+# Subtest: an actually successful unseen theft and forest trip are not a trusted borrowing
+not ok 11 - an actually successful unseen theft and forest trip are not a trusted borrowing
+  ---
+  duration_ms: 2243.232854
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-Trust-Journey/tests/simulation/trust-journey.test.mjs:70:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    'caught' !== 'taken'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'taken'
+  actual: 'caught'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-Trust-Journey/tests/simulation/trust-journey.test.mjs:72:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: return finishing on the exact due tick succeeds; waiting after that real return does not create a late failure
+ok 12 - return finishing on the exact due tick succeeds; waiting after that real return does not create a late failure
+  ---
+  duration_ms: 9406.361899
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 11
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 41813.537572

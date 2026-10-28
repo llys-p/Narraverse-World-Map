@@ -1,0 +1,30 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "tests/simulation/playable-campaign.test.mjs",
+    "tests/simulation/playable-boundaries.test.mjs",
+    "tests/simulation/npc-social.test.mjs",
+    "tests/simulation/npc-negotiation.test.mjs",
+    "tests/simulation/npc-memory.test.mjs",
+    "tests/simulation/demo-playable-guidance.test.mjs",
+    "tests/simulation/playable-recovery-guidance.test.mjs",
+    "tests/simulation/first-chapter-experience-guidance.test.mjs",
+    "tests/simulation/hunter-task-entry.test.mjs",
+    "tests/simulation/cold-replay-reuse.test.mjs",
+    "tests/simulation/first-chapter-experience-service.test.mjs",
+    "tests/simulation/hunter-task-entry-service.test.mjs",
+    "tests/simulation/trust-journey-service.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 282686.562,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

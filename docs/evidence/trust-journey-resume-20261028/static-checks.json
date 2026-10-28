@@ -1,0 +1,43 @@
+{
+  "node": "v24.22.1",
+  "diffCheck": true,
+  "syntaxChecked": [
+    "demo-playable-goals.mjs",
+    "runtime-playable-contract.mjs",
+    "runtime/core/campaign-limits.mjs",
+    "runtime/core/campaign-play.mjs",
+    "runtime/core/campaign-trust.mjs",
+    "runtime/core/event-log.mjs",
+    "runtime/core/scene-campaign-runtime.mjs",
+    "runtime/core/world-state.mjs",
+    "runtime/fixtures/campaign-village.mjs",
+    "runtime/service/http-contract.mjs",
+    "runtime/service/runtime-owner.mjs",
+    "runtime/service/service-commit.mjs",
+    "scripts/check-trust-journey-evidence.mjs",
+    "scripts/check-trust-legacy.mjs",
+    "tests/simulation/trust-journey-guidance.test.mjs",
+    "tests/simulation/trust-journey-legacy-events.test.mjs",
+    "tests/simulation/trust-journey-service.test.mjs",
+    "tests/simulation/trust-journey.test.mjs"
+  ],
+  "credentialsFound": false,
+  "oldStagedTree": "659c71ca8fb7d3d2e33a382aff5a20932c1bbb37",
+  "otherTaskTreesUnchanged": true,
+  "parentClean": true,
+  "regressionEnvironment": {
+    "REPLAY_PARENT_ROOT": "../Narraverse-Trust-Parent"
+  },
+  "browserLayout": "not-measured",
+  "windowsLauncher": "not-run",
+  "diffCheckExcludes": [
+    "docs/evidence/trust-journey-resume-20261028/trust-core-final.txt"
+  ],
+  "rawLogWhitespace": {
+    "reason": "Preserve the byte-exact TAP assertion output; source and other delivery files pass diff --check.",
+    "lines": [
+      71,
+      73
+    ]
+  }
+}
