@@ -1,0 +1,21 @@
+{
+  "node": "v24.22.1",
+  "sourceDiffCheck": true,
+  "syntaxChecked": [
+    "demo-forest.mjs",
+    "scripts/check-forest-guidance-evidence.mjs",
+    "tests/simulation/forest-guidance-service.test.mjs",
+    "tests/simulation/forest-guidance.test.mjs",
+    "tests/simulation/forest-panel.test.mjs"
+  ],
+  "credentialsFound": false,
+  "html": {
+    "uniqueIds": true,
+    "describedButtons": 9,
+    "renderedBrowser": false
+  },
+  "protectedWorktreesUnchanged": true,
+  "oldStagedTree": "659c71ca8fb7d3d2e33a382aff5a20932c1bbb37",
+  "rawLogsKeptByteExact": true,
+  "diffCheckExcludes": "docs/evidence/forest-guidance-20261029/*.txt (raw assertion indentation)"
+}

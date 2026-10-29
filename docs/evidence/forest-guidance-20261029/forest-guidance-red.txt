@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: fatigue rejection explains recovery instead of incorrectly asking a stopped player to pause marching
+not ok 1 - fatigue rejection explains recovery instead of incorrectly asking a stopped player to pause marching
+  ---
+  duration_ms: 4.953527
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Guidance/tests/simulation/forest-guidance.test.mjs:12:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /疲劳过高/. Input:
+    
+    '用工具采枯枝：先暂停行军，或选择其他行动；生火歇脚：需要1捆枯枝'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '用工具采枯枝：先暂停行军，或选择其他行动；生火歇脚：需要1捆枯枝'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Guidance/tests/simulation/forest-guidance.test.mjs:15:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.start (node:internal/test_runner/test:1262:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+  ...
+# Subtest: a failed old loan does not claim its deadline is the current held tool loan
+not ok 2 - a failed old loan does not claim its deadline is the current held tool loan
+  ---
+  duration_ms: 1.971199
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Guidance/tests/simulation/forest-guidance.test.mjs:17:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input was expected to not match the regular expression /借期剩余 0 分钟/. Input:
+    
+    '采集：取1捆枯枝，耐久−10，疲劳+25。生火：消耗1捆，疲劳最多−200；不回血、不补粮。两者各推进30分钟，借期与世界活动照常推进。 借期剩余 0 分钟；归还还需10分钟。'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: '采集：取1捆枯枝，耐久−10，疲劳+25。生火：消耗1捆，疲劳最多−200；不回血、不补粮。两者各推进30分钟，借期与世界活动照常推进。 借期剩余 0 分钟；归还还需10分钟。'
+  operator: 'doesNotMatch'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Guidance/tests/simulation/forest-guidance.test.mjs:20:9)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1402:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+    Test.postRun (node:internal/test_runner/test:1542:19)
+    Test.run (node:internal/test_runner/test:1467:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 285.712914

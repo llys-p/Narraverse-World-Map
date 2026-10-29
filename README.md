@@ -5,6 +5,8 @@
 
 ## 独立项目入口
 
+- **森林行动引导与返程反馈（2026-10-29）**：沿用 `Start-Forest-Journey.cmd`，增加歇脚处定位/普通休整入口，修正疲劳与旧借期提示，暂停返村可继续；35项不同检查通过，含新面板真实服务和原130条命令恢复，浏览器实机待验。见[玩法与AI交接](docs/runtime/FOREST-GUIDANCE.md)。
+
 - **森林工具与可选狼迹（2026-10-28）**：`Start-Forest-Journey.cmd` 新旅程可用实际借到的工具采有限枯枝、消耗燃料歇脚；狼迹可观察、绕开、主动迎战并退出，不增加主线门槛。见[玩法与交接](docs/runtime/FOREST-TOOLS-ENCOUNTERS.md)。
 
 - **借工具探路支线（2026-10-28）**：`Start-Trust-Journey.cmd` 独立新旅程中，帮助猎人后可实际借工具、带往森林、按期归还。可凭信任借用或修理换借用，逾期影响任务与关系；旧入口保留。见[玩法与交接](docs/runtime/HUNTER-TRUST-JOURNEY.md)。

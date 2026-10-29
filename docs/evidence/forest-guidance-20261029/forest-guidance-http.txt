@@ -1,0 +1,33 @@
+TAP version 13
+# Subtest: real forest panel clicks navigate, rest without fuel and exit a reopened encounter; old abandoned loan stays explicitly unknown
+not ok 1 - real forest panel clicks navigate, rest without fuel and exit a reopened encounter; old abandoned loan stays explicitly unknown
+  ---
+  duration_ms: 3621.016327
+  type: 'test'
+  location: '/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Guidance/tests/simulation/forest-guidance-service.test.mjs:12:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(newLoan.receipt.toTick+144>oldDeadline)
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Guidance/tests/simulation/forest-guidance-service.test.mjs:33:105)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3855.188815
