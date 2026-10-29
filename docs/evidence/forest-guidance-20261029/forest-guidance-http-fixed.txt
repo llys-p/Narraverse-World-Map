@@ -1,0 +1,17 @@
+TAP version 13
+# {"measurement":"forest-guidance-http","readOnlyPaintPreservedFiles":true,"oldLoanNotPresentedAsCurrent":true,"siteClick":true,"restUsedNoFuel":true,"reopenedActiveEncounter":true,"explicitExit":true,"returnClick":true,"retryPreservedFiles":true,"returnedToolCondition":70,"panelRequests":7,"assets":{"demo-forest.mjs":"501b2649538c5ad55b4b4baee8590da36988ab16a382469a6716231cdecced2c","demo-runtime.html":"565d2931309ae9912d563a4c0e69bebe7f75750fec80d2412c7108075d4cef19","demo-runtime.css":"b1973ab566c5d853999e2ad69a5af5bf24133412aab020cd9fe14fc8e2a8669a"},"externalModelCalls":0,"renderedBrowser":false}
+# Subtest: real forest panel clicks navigate, rest without fuel and exit a reopened encounter; old abandoned loan stays explicitly unknown
+ok 1 - real forest panel clicks navigate, rest without fuel and exit a reopened encounter; old abandoned loan stays explicitly unknown
+  ---
+  duration_ms: 36952.27208
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 37602.370112

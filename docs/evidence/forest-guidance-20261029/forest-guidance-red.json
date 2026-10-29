@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "tests/simulation/forest-guidance.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 395.396,
+  "cpuMs": null,
+  "hardLimitMs": 60000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

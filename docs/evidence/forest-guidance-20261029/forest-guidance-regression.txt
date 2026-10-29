@@ -1,0 +1,143 @@
+TAP version 13
+# Subtest: forest projection joins a coherent group and rejects forged view/state shapes
+ok 1 - forest projection joins a coherent group and rejects forged view/state shapes
+  ---
+  duration_ms: 4444.740951
+  type: 'test'
+  ...
+# Subtest: forest panel shows costs, opt-in choices, accessible status, and fresh disabled/exit controls without automatic writes
+ok 2 - forest panel shows costs, opt-in choices, accessible status, and fresh disabled/exit controls without automatic writes
+  ---
+  duration_ms: 6.153979
+  type: 'test'
+  ...
+# {"measurement":"forest-worker-http","explicitRequests":117,"committedCommands":130,"tick":72,"rank":4,"chapterComplete":true,"reopenedWithWood":true,"reopenedActiveEncounter":true,"reopenedAfter130Commands":true,"retryFilesUnchanged":true,"returnedToolCondition":70,"assets":{"demo-runtime.html":"565d2931309ae9912d563a4c0e69bebe7f75750fec80d2412c7108075d4cef19","demo-runtime-prototype.mjs":"174833c4cb763d36bb94ceaa951f791837d35f8a8a72154a7e290a7bbf88b984","demo-forest.mjs":"501b2649538c5ad55b4b4baee8590da36988ab16a382469a6716231cdecced2c","runtime-forest-contract.mjs":"c9fe641e952b23895cfa87c1d5f88a1a35934fa0b90287a8b3c773fcbf07ffcd"},"externalModelCalls":0,"browser":"HTTP/worker only; no rendered browser"}
+# Subtest: real worker HTTP saves finite wood, reopens active combat, exits and returns a worn loan; retry and >128 commands remain durable
+ok 3 - real worker HTTP saves finite wood, reopens active combat, exits and returns a worn loan; retry and >128 commands remain durable
+  ---
+  duration_ms: 65007.350032
+  type: 'test'
+  ...
+# Subtest: borrowed tools gather finite branches, camp recovers fatigue, and a peaceful return completes both journeys
+ok 4 - borrowed tools gather finite branches, camp recovers fatigue, and a peaceful return completes both journeys
+  ---
+  duration_ms: 4443.927401
+  type: 'test'
+  ...
+# Subtest: forest supplies exhaust, retries never duplicate wood or wear, and ordinary rest stays available
+ok 5 - forest supplies exhaust, retries never duplicate wood or wear, and ordinary rest stays available
+  ---
+  duration_ms: 7633.848133
+  type: 'test'
+  ...
+# Subtest: location, held tool, low durability, marching, and active battle gates fail without receiving supplies
+ok 6 - location, held tool, low durability, marching, and active battle gates fail without receiving supplies
+  ---
+  duration_ms: 2213.531247
+  type: 'test'
+  ...
+# Subtest: observing is optional and does not reserve wolves; cancellation, escape, and victory all release the existing reservation
+ok 7 - observing is optional and does not reserve wolves; cancellation, escape, and victory all release the existing reservation
+  ---
+  duration_ms: 5506.871126
+  type: 'test'
+  ...
+# Subtest: leaving the clearing and returning does not force or reopen a skipped encounter
+ok 8 - leaving the clearing and returning does not force or reopen a skipped encounter
+  ---
+  duration_ms: 5046.623793
+  type: 'test'
+  ...
+# Subtest: collecting through the loan deadline still wears the tool and preserves overdue consequences
+ok 9 - collecting through the loan deadline still wears the tool and preserves overdue consequences
+  ---
+  duration_ms: 12585.968817
+  type: 'test'
+  ...
+# Subtest: death during a timed harvest consumes time but grants no wood or durability changes
+ok 10 - death during a timed harvest consumes time but grants no wood or durability changes
+  ---
+  duration_ms: 10736.648569
+  type: 'test'
+  ...
+# Subtest: forged supplies, wear, decisions, receipts, and fixture/model mismatches fail full replay
+ok 11 - forged supplies, wear, decisions, receipts, and fixture/model mismatches fail full replay
+  ---
+  duration_ms: 11867.16501
+  type: 'test'
+  ...
+# Subtest: the forest command budget preserves a free exit, including after a nonlethal attack
+ok 12 - the forest command budget preserves a free exit, including after a nonlethal attack
+  ---
+  duration_ms: 1377.687689
+  type: 'test'
+  ...
+# Subtest: optional card shows three real steps, loan timing, explicit actions, and visible hunter only
+ok 13 - optional card shows three real steps, loan timing, explicit actions, and visible hunter only
+  ---
+  duration_ms: 426.172588
+  type: 'test'
+  ...
+# Subtest: deadline guidance distinguishes a ten-minute return from zero-time quest claiming
+ok 14 - deadline guidance distinguishes a ten-minute return from zero-time quest claiming
+  ---
+  duration_ms: 237.552608
+  type: 'test'
+  ...
+# Subtest: new optional loan journey joins real forest travel, keeps main chapter independent, and rewards once
+ok 15 - new optional loan journey joins real forest travel, keeps main chapter independent, and rewards once
+  ---
+  duration_ms: 10004.602397
+  type: 'test'
+  ...
+# Subtest: repair-for-loan is a second playable path with its actual negotiated deadline
+ok 16 - repair-for-loan is a second playable path with its actual negotiated deadline
+  ---
+  duration_ms: 4229.635802
+  type: 'test'
+  ...
+# Subtest: loans before acceptance, talk, refusals, and early returns cannot supply missing steps
+ok 17 - loans before acceptance, talk, refusals, and early returns cannot supply missing steps
+  ---
+  duration_ms: 9209.227086
+  type: 'test'
+  ...
+# Subtest: actual robbery and forest travel do not become a consensual loan
+ok 18 - actual robbery and forest travel do not become a consensual loan
+  ---
+  duration_ms: 4141.778528
+  type: 'test'
+  ...
+# Subtest: completion at the loan deadline succeeds; completing one tick later fails and retains relationship consequences
+ok 19 - completion at the loan deadline succeeds; completing one tick later fails and retains relationship consequences
+  ---
+  duration_ms: 27032.167608
+  type: 'test'
+  ...
+# Subtest: abandon and reaccept keep the actual loan and cannot re-count that old loan
+ok 20 - abandon and reaccept keep the actual loan and cannot re-count that old loan
+  ---
+  duration_ms: 6166.372255
+  type: 'test'
+  ...
+# Subtest: forged deadlines, progress and model versions fail replay; legacy fixture retains four tasks
+ok 21 - forged deadlines, progress and model versions fail replay; legacy fixture retains four tasks
+  ---
+  duration_ms: 4447.726925
+  type: 'test'
+  ...
+# Subtest: playable fixtures accept genuine overdue and agreement-closure events but reject forged sources
+ok 22 - playable fixtures accept genuine overdue and agreement-closure events but reject forged sources
+  ---
+  duration_ms: 11790.759751
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 210149.46757

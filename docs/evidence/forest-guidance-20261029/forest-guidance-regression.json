@@ -1,0 +1,23 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "tests/simulation/forest-tools.test.mjs",
+    "tests/simulation/forest-panel.test.mjs",
+    "tests/simulation/hunter-trust-journey.test.mjs",
+    "tests/simulation/hunter-trust-guidance.test.mjs",
+    "tests/simulation/forest-service.test.mjs",
+    "tests/simulation/demo-runtime-interactions.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 210318.106,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
