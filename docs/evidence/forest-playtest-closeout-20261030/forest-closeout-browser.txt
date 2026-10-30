@@ -1,0 +1,1 @@
+{"verdict":"BLOCKED","report":"/workspace/scratch/d4eebd62b5b0/Narraverse-Playtest-Closeout/artifacts/forest-closeout-browser-final/result.json","browserExecuted":false,"startedService":false,"externalModelCalls":0}

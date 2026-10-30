@@ -1,0 +1,18 @@
+{
+  "verdict": "BLOCKED",
+  "candidate": "forest-playtest-candidate-1",
+  "contentBase": "acdc4afac35c2db99a7eacb7cc035d442657de66",
+  "browserExecuted": false,
+  "steps": [],
+  "errors": [],
+  "requests": [],
+  "screenshots": [],
+  "error": {
+    "code": "BROWSER_UNAVAILABLE",
+    "message": "No local Edge/Chromium executable. Set DEMO_BROWSER_EXECUTABLE to an installed browser, then rerun into a new output folder."
+  },
+  "externalModelCalls": 0,
+  "startedService": false,
+  "remainingLocks": [],
+  "cleanupErrors": []
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "scripts/verify-forest-playtest.mjs",
+    "artifacts/forest-closeout-browser-final"
+  ],
+  "pid": 6,
+  "exitCode": 2,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 165.128,
+  "cpuMs": null,
+  "hardLimitMs": 30000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
