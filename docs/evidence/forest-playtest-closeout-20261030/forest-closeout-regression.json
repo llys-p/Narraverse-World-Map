@@ -1,0 +1,21 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "--test-concurrency=1",
+    "tests/simulation/demo-command-recovery.test.mjs",
+    "tests/simulation/demo-march-runner.test.mjs",
+    "tests/simulation/forest-guidance.test.mjs",
+    "tests/simulation/forest-guidance-service.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 23887.398,
+  "cpuMs": null,
+  "hardLimitMs": 300000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

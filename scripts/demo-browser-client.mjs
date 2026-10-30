@@ -4,19 +4,26 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {setTimeout as delay} from 'node:timers/promises';
 import {once} from 'node:events';
-export async function openDemoBrowser({directory,url,onEvent=()=>{}}){
+export const demoBrowserExecutable=()=>process.env.DEMO_BROWSER_EXECUTABLE??'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+export async function openDemoBrowser({directory,url,onEvent=()=>{},executable=demoBrowserExecutable()}){
+ await fs.access(executable).catch(()=>{throw Object.assign(Error('Local browser executable is unavailable. Set DEMO_BROWSER_EXECUTABLE to an installed Edge/Chromium binary.'),{code:'BROWSER_UNAVAILABLE'});});
  const profile=path.join(directory,'edge-profile');await fs.mkdir(profile,{recursive:true});
  const log=await fs.open(path.join(directory,'edge.txt'),'wx');
- const edge=spawn('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',[
+ const edge=spawn(executable,[
   '--headless=new','--no-first-run','--disable-extensions','--disable-background-networking','--remote-debugging-port=0',
   '--window-size=1460,1000','--user-data-dir='+profile,'about:blank'],{windowsHide:true,stdio:['ignore',log.fd,log.fd]});
- let socket,id=0;const pending=new Map();let closed=false;
+ let socket,id=0,spawnFailure=null;const pending=new Map();let closed=false;
+ edge.once('error',error=>{spawnFailure=error;});
  async function close(){
   if(closed)return;closed=true;
   if(socket?.readyState===1)try{await call('Browser.close',{},2000);}catch{}
   socket?.close();
-  if(edge.exitCode===null)await Promise.race([once(edge,'exit'),delay(2500)]);
-  if(edge.exitCode===null){const kill=spawn('taskkill',['/PID',String(edge.pid),'/T','/F'],{windowsHide:true,stdio:'ignore'});await once(kill,'exit');await Promise.race([once(edge,'exit'),delay(2500)]);}
+  if(edge.pid&&edge.exitCode===null&&edge.signalCode===null)await Promise.race([once(edge,'exit'),delay(2500)]);
+  if(edge.pid&&edge.exitCode===null&&edge.signalCode===null){
+   if(process.platform==='win32'){const kill=spawn('taskkill',['/PID',String(edge.pid),'/T','/F'],{windowsHide:true,stdio:'ignore'});await once(kill,'exit');}
+   else edge.kill('SIGTERM');
+   await Promise.race([once(edge,'exit'),delay(2500)]);
+  }
   await log.close();for(const item of pending.values())item.reject(Error('Browser closed'));pending.clear();
  }
  function call(method,params={},timeout=10000){return new Promise((resolve,reject)=>{
@@ -27,6 +34,7 @@ export async function openDemoBrowser({directory,url,onEvent=()=>{}}){
  try{
   const start=performance.now();let port;
   while(performance.now()-start<30000){
+   if(spawnFailure)throw Object.assign(Error('Cannot start the dedicated browser: '+spawnFailure.code),{code:'BROWSER_UNAVAILABLE'});
    if(edge.exitCode!==null)throw Error('Isolated Edge exited before CDP: '+edge.exitCode);
    try{port=Number((await fs.readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);break;}catch{await delay(100);}
   }

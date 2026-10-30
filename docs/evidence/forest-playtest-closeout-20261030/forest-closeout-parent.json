@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "../Narraverse-Playtest-Parent/scripts/check-forest-guidance-evidence.mjs"
+  ],
+  "pid": 8,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 164.575,
+  "cpuMs": null,
+  "hardLimitMs": 60000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

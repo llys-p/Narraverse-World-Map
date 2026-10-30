@@ -1,0 +1,19 @@
+{
+  "node": "v24.22.1",
+  "diffCheck": true,
+  "syntaxChecked": [
+    "scripts/check-forest-playtest-evidence.mjs",
+    "scripts/demo-browser-client.mjs",
+    "scripts/forest-playtest-candidate.mjs",
+    "scripts/verify-forest-playtest.mjs",
+    "tests/simulation/forest-playtest-preflight.test.mjs",
+    "tests/simulation/forest-playtest-recovery.test.mjs"
+  ],
+  "credentialsFound": false,
+  "protectedWorktreesUnchanged": true,
+  "oldStagedTree": "659c71ca8fb7d3d2e33a382aff5a20932c1bbb37",
+  "gameplayFilesChanged": 0,
+  "browserExecuted": false,
+  "windowsLauncherExecuted": false,
+  "externalModelCalls": 0
+}

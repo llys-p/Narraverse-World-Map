@@ -1,3 +1,16 @@
+# 当前候选：固定森林试玩与异常恢复收口（2026-10-30）
+
+父提交PR43 `acdc4afac35c2db99a7eacb7cc035d442657de66`，分支 `codex/forest-playtest-closeout-20261030`；任务 `tasks/FOREST-PLAYTEST-CLOSEOUT-TASK.md`，玩家/AI交接 `docs/runtime/FOREST-PLAYTEST.md`，候选清单 `docs/runtime/forest-playtest-candidate.json`。用户要求进入收口，冻结新增内容，继续暂停性能优化。
+
+- 候选 `forest-playtest-candidate-1` 的192份游戏内容/入口与PR43逐字一致；统一游戏入口仍Start-Forest-Journey.cmd，不新增玩法、UI、公共契约、存档或模型算法。既有浏览器辅助器仅加显式执行路径、缺文件检查与spawn失败清理，原调用兼容。
+- 当前fixture8三条真实worker/HTTP恢复通过：采集已落盘回执丢失后，页面客户端/服务重开用同字节重试，只收一捆并扣一次耐久；真实SSE断线停止返村，现实等待/重开/重连不追赶，显式继续后完成；逾期后重开与实际晚归还保留一次失约记忆/关系和失败状态。
+- 本轮22项不同检查通过，无跳过（3项当前森林恢复、3项预检、16项相邻回归）。PR43原35项历史证据在干净父树核验，不重复计为本轮。证据 `node scripts/check-forest-playtest-evidence.mjs`，模型0调用。
+- Verify-Forest-Playtest.cmd是桌面验收工具而非另一游戏入口；只新建合成world/浏览器profile和临时端口，不读.env/真实档，不调用模型。先验候选文件、后找执行文件；本环境最终实际结果BLOCKED/退出2，浏览器与服务均未启动、无锁或模型请求。浏览器完整按钮旅程、390px模拟、键盘退出/截图脚本已准备，实际浏览器部分尚未执行验证。
+- 当前门槛：当前范围服务恢复已验证；浏览器受环境阻塞；Windows双击、真手机/读屏和修正后真实模型语言待验。不可声称整体智能NPC闭环已通过，不用受控回复或脚本存在代替实测。上次8次模型授权已用完，本轮不复用旧密钥或追加费用。
+- 停独立草稿，不合main、不部署、不启停旧实例、不迁移真实档、不导入2.0；GitHub Projects缺写入能力待同步。下一步先在可用桌面运行验收入口，按失败阶段集中修正；真实模型另做有明确新预算的语义复测，继续冻结新支线。
+
+以下为PR43及更早历史。
+
 # 当前候选：森林行动引导与返程反馈（2026-10-29）
 
 续接用户指定PR42 `6697559eb631955125bb143ff239da83acbd94a8`，分支 `codex/forest-journey-guidance-20261029`；任务 `tasks/FOREST-GUIDANCE-TASK.md`，玩家/AI交接 `docs/runtime/FOREST-GUIDANCE.md`。遵循PR42→PR41路线，未混入另一路PR40，继续暂停性能优化。

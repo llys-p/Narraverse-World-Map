@@ -5,6 +5,8 @@
 
 ## 独立项目入口
 
+- **森林试玩候选1收口（2026-10-30）**：游戏入口固定为 `Start-Forest-Journey.cmd`，192份游戏文件与PR43一致；采集回执丢失、断线续行及逾期记忆的当前森林真实服务验证通过，本轮22项不同检查通过。`Verify-Forest-Playtest.cmd` 准备桌面验收，当前缺浏览器而BLOCKED，Windows/真实模型仍待验。见[试玩与AI交接](docs/runtime/FOREST-PLAYTEST.md)。
+
 - **森林行动引导与返程反馈（2026-10-29）**：沿用 `Start-Forest-Journey.cmd`，增加歇脚处定位/普通休整入口，修正疲劳与旧借期提示，暂停返村可继续；35项不同检查通过，含新面板真实服务和原130条命令恢复，浏览器实机待验。见[玩法与AI交接](docs/runtime/FOREST-GUIDANCE.md)。
 
 - **森林工具与可选狼迹（2026-10-28）**：`Start-Forest-Journey.cmd` 新旅程可用实际借到的工具采有限枯枝、消耗燃料歇脚；狼迹可观察、绕开、主动迎战并退出，不增加主线门槛。见[玩法与交接](docs/runtime/FOREST-TOOLS-ENCOUNTERS.md)。
