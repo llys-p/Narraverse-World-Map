@@ -1,3 +1,17 @@
+# 当前候选：森林浏览器与低成本对话实测收口（2026-10-31）
+
+续接PR44 `8fa8179a99ddf85ac142df30956ad8d4ee049527`，独立草稿PR45，分支 `codex/forest-browser-ci-20261031`。实际被测修复提交 `17b9dad051231f79f7504a1fd021d57022e8b568`；任务 `tasks/FOREST-BROWSER-CI-TASK.md`，唯一玩家/AI交接仍为 `docs/runtime/FOREST-PLAYTEST.md`。保持冻结新玩法与性能优化，不混入PR40。
+
+- 候选2仍固定192份游戏文件、fixture8与Start-Forest-Journey.cmd。必要修复仅涉及窄屏布局/头像尺寸、已知记忆引用的排序去重、SSE正常写缓冲等待；没有修改世界规则、存档格式、命令权限或记忆更新算法。
+- GitHub Actions实际运行 `41106777480`：Ubuntu24.04与Windows2022均通过真实Chrome六阶段按钮旅程，包括借工具、采集/生火、主动遭遇/攻击/Tab+Enter退出、伤害不回滚、归还磨损工具、完成第一章、关闭重开相同世界且无新增提交。390px布局与44px森林按钮通过；另本机真实Chrome复跑通过并检查私有截图。截图不上传，文本证据只保留文件哈希。
+- Windows上一轮返村发生ERR_INCOMPLETE_CHUNKED_ENCODING；真实低缓冲HTTP复现旧实现断流，修复后可收到已提交新revision。SSE只保留一个待发送标记，drain后发送最新投影，持续阻塞到心跳仍会断开；实际断线仍停止行进。首次CI、引用格式及本机验收脚本失败均保留，不覆盖为通过。
+- 49项不同检查通过（31项Provider/事实/记忆检索回归、15项最终森林/预检/恢复、3项事件流/行进）；重复执行不重复计数。证据与当前源码绑定，核验 `node scripts/check-forest-browser-evidence.mjs`。浏览器执行单列，不与49项相加。
+- 真实模型使用deepseek-flash、thinking关闭，共10请求：首场景4/4；第二场景初次2请求含1次格式拒绝，修复后4/4。后者完整依赖源码SHA与当前一致，前者属于修复前基线；均fixture5专项，不等于fixture8整合或life-v3长对话验收。助手逐句核查关键库存/钱包与准备/执行区别，仍有地点措辞及饥饿程度疑点，真人语义保持pending。
+- 更正旧记录的预算前提：用户授权低成本DeepSeek，历史单轮8次由助手设置，不能当成用户永久上限；本轮10次也是助手投入上限，已结束且不追加。密钥只经进程内配置，未落盘/入库。
+- 当前小型玩法与浏览器流程已打通；Windows游戏cmd双击、真手机/读屏、当前森林自然对话及长场景真实记忆语义仍待验。不合main、不部署、不迁移真实档、不启停旧实例或导入2.0；GitHub Projects缺写能力待同步。
+
+以下为PR44及更早历史；其中“8次授权已用完、须新预算”的表述已由上文原始授权核对更正，不作为当前永久限制。
+
 # 当前候选：固定森林试玩与异常恢复收口（2026-10-30）
 
 父提交PR43 `acdc4afac35c2db99a7eacb7cc035d442657de66`，分支 `codex/forest-playtest-closeout-20261030`；任务 `tasks/FOREST-PLAYTEST-CLOSEOUT-TASK.md`，玩家/AI交接 `docs/runtime/FOREST-PLAYTEST.md`，候选清单 `docs/runtime/forest-playtest-candidate.json`。用户要求进入收口，冻结新增内容，继续暂停性能优化。

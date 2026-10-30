@@ -1,0 +1,26 @@
+✔ fatigue rejection explains recovery instead of incorrectly asking a stopped player to pause marching (3.299032ms)
+✔ a failed old loan does not claim its deadline is the current held tool loan (0.838278ms)
+✔ observed and avoided choices explain their actual state and stale clicks never resubmit them (2.213739ms)
+✔ site and return buttons use explicit current destinations and resume an existing return instead of replacing it (1.257176ms)
+✔ no fuel or exhausted branches still leave ordinary rest available without manufacturing fuel or actions (2.260418ms)
+✔ the last combat command remains an explicit exit, while exhausted, dead, locked and hidden states block all stale handlers (0.998174ms)
+✔ loan advice includes time for actual handover and never promises that an activity leaves enough time for the trip (0.75841ms)
+✔ abandoned or completed task history and a missing held tool cannot become a current borrowing countdown (0.646054ms)
+✔ low noncombat budgets explain why travel or challenge is unavailable without silently reserving or spending commands (0.734775ms)
+✔ missing browser fails before creating a browser profile or starting a process (8.837468ms)
+✔ an existing unusable executable reports its spawn error without an unhandled error or a lingering browser (108.840214ms)
+✔ browser acceptance CLI records BLOCKED with no service, save directory or model call when no browser exists (200.16775ms)
+{"measurement":"forest-closeout-lost-response","fixture":8,"identicalRetryBytes":true,"blockedSecondIntent":true,"reopenedWorker":true,"harvestCommits":1,"receiptDeliveries":1,"filesPreserved":true,"externalModelCalls":0,"browserRendered":false}
+✔ fixture8 lost harvest response survives page-client reload and worker reopen with exactly one wood and wear delta (12844.240797ms)
+{"measurement":"forest-closeout-disconnect","fixture":8,"actualSse":true,"noOfflineTicks":true,"noReconnectCatchup":true,"explicitResume":true,"returnedLoan":true,"chapterComplete":true,"reopenedCompletedWorld":true,"externalModelCalls":0,"browserRendered":false}
+✔ fixture8 actual stream loss stops a return journey; reopen and reconnect do not catch up until an explicit resume (22465.862402ms)
+{"measurement":"forest-closeout-overdue","fixture":8,"reopenedOverdueLoan":true,"lateReturn":true,"overdueMemories":1,"returnMemories":1,"taskStillFailed":true,"relationshipBreachPreserved":true,"externalModelCalls":0,"browserRendered":false}
+✔ fixture8 overdue failure and remembered breach survive worker reopen and real late handover without erasing history (47681.610602ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 83209.88285

@@ -1,0 +1,33 @@
+✖ a draining SSE connection survives a full write buffer and delivers the committed forest revision (536.391421ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 754.470451
+
+✖ failing tests:
+
+test at tests/simulation/demo-event-backpressure.test.mjs:9:1
+✖ a draining SSE connection survives a full write buffer and delivers the committed forest revision (536.391421ms)
+  TypeError [Error]: terminated
+      at Fetch.onAborted (node:internal/deps/undici/undici:13933:53)
+      at Fetch.emit (node:events:514:28)
+      at Fetch.terminate (node:internal/deps/undici/undici:13063:14)
+      at Object.onError (node:internal/deps/undici/undici:14067:38)
+      at Request.onError (node:internal/deps/undici/undici:3150:31)
+      at Object.errorRequest (node:internal/deps/undici/undici:1943:17)
+      at Socket.onHttpSocketClose (node:internal/deps/undici/undici:7905:14)
+      at Socket.emit (node:events:526:24)
+      at TCP.<anonymous> (node:net:362:12) {
+    [cause]: Error [SocketError]: other side closed
+        at Socket.onHttpSocketEnd (node:internal/deps/undici/undici:7878:26)
+        at Socket.emit (node:events:526:24)
+        at endReadableNT (node:internal/streams/readable:1783:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+      code: 'UND_ERR_SOCKET',
+      socket: { localAddress: '127.0.0.1', localPort: 53916, remoteAddress: '127.0.0.1', remotePort: 37629, remoteFamily: 'IPv4', timeout: undefined, bytesWritten: 193, bytesRead: 7809 }
+    }
+  }

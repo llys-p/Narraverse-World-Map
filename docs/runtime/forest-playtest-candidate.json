@@ -10,14 +10,14 @@
   "fixtureVersion": "8",
   "gamePort": 18356,
   "browserVerificationUsesIsolatedNewWorld": true,
-  "externalModelCalls": 0,
+  "externalModelCalls": 10,
   "gates": {
     "serviceRecovery": "verified",
-    "browser": "in-verification",
+    "browser": "verified-linux-and-windows-ci",
     "windowsLauncher": "not-run",
     "physicalMobile": "not-run",
     "screenReader": "not-run",
-    "realModelLanguage": "partial-live-retest"
+    "realModelLanguage": "sampled-fixture5-human-review-pending"
   },
   "gameSha256": {
     "Start-Forest-Journey-New.cmd": "e538af5c159cecdd08f83b5564451377f5287fa50083f9abbfd8601547e717f9",
@@ -212,5 +212,6 @@
     "wolf-diag.mjs": "1278b9010333f8b2503e8047bd5dac54d45f7b1e09550490cf7a4f6139502243",
     "world-combat-fx.js": "0324c994016606716b3c2122809f30556c56284c7e450310c79a59045cc1c2af",
     "world-e2e.mjs": "905f802dcdd4d5843d6b302779c1b5f641e6531aaebac404d2010450660fc303"
-  }
+  },
+  "browserExternalModelCalls": 0
 }

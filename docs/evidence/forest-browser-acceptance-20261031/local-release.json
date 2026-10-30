@@ -1,0 +1,231 @@
+{
+  "verdict": "PASS",
+  "candidate": "forest-playtest-candidate-2",
+  "contentBase": "8fa8179a99ddf85ac142df30956ad8d4ee049527",
+  "browserExecuted": true,
+  "browserVersion": "HeadlessChrome/151.0.7922.34",
+  "desktop": true,
+  "narrowViewportEmulated": true,
+  "keyboardExit": true,
+  "mobileLayout": {
+    "viewport": 390,
+    "documentWidth": 390,
+    "buttons": [
+      {
+        "id": "collect",
+        "width": 298,
+        "height": 44,
+        "described": true
+      },
+      {
+        "id": "camp",
+        "width": 298,
+        "height": 44,
+        "described": true
+      },
+      {
+        "id": "observe",
+        "width": 298,
+        "height": 44,
+        "described": true
+      },
+      {
+        "id": "avoid",
+        "width": 298,
+        "height": 44,
+        "described": true
+      },
+      {
+        "id": "site",
+        "width": 298,
+        "height": 44,
+        "described": true
+      },
+      {
+        "id": "rest",
+        "width": 298,
+        "height": 44,
+        "described": true
+      },
+      {
+        "id": "challenge",
+        "width": 298,
+        "height": 44,
+        "described": true
+      },
+      {
+        "id": "exit",
+        "width": 298,
+        "height": 44,
+        "described": true
+      },
+      {
+        "id": "return",
+        "width": 298,
+        "height": 44,
+        "described": true
+      }
+    ]
+  },
+  "requests": [
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"1c0c6f3a-7b06-4d65-a358-00782010b85d\",\"expectedRevision\":0,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"livelihood\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"7fe61ba4-e39a-48e1-a110-d8fea5bedb28\",\"expectedRevision\":1,\"type\":\"PlayerWork\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"0b431654-84dd-4b09-a36a-470e61fa2fad\",\"expectedRevision\":37,\"type\":\"PlayerBuy\",\"payload\":{\"product\":\"food\",\"quantity\":1}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"0fcc162b-af3b-43b6-a722-3d8eae89c355\",\"expectedRevision\":38,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"livelihood\",\"action\":\"claim\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"55e56fce-dba9-4169-92e8-75c43077fe16\",\"expectedRevision\":39,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-aid\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"18e7a212-8a3b-4339-b75c-809276f41ac8\",\"expectedRevision\":40,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"help\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"dfed4305-fca6-4d42-bb0e-bac06b8bf4b8\",\"expectedRevision\":41,\"type\":\"PlayerGiftFood\",\"payload\":{\"recipientId\":\"actor-2\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"b25df7be-8bc5-483a-8585-59133397c6db\",\"expectedRevision\":42,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-aid\",\"action\":\"claim\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"9ce56d90-f6de-4754-9847-ded61a119cda\",\"expectedRevision\":43,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-trust\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"3f76f545-b9c2-4ea9-9606-e774f510cf2b\",\"expectedRevision\":44,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"forest-route\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"e88e9dd6-a684-495e-9a0f-4532742266ee\",\"expectedRevision\":45,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"ask-help\"}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"df30629c-d139-4960-ba36-2ee6f1cd7343\",\"type\":\"MarchSet\",\"payload\":{\"x\":16,\"y\":7}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"1d07febf-0488-4c55-bacc-74af90b736b2\",\"type\":\"MarchResume\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"5e7d1c9b-78f2-44ec-a943-a3be7fbc9ab6\",\"expectedRevision\":60,\"type\":\"PlayerForest\",\"payload\":{\"action\":\"collect\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"b2e4943c-67d7-4c8b-8c4f-33bbdbceed47\",\"expectedRevision\":63,\"type\":\"PlayerForest\",\"payload\":{\"action\":\"camp\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"bfae1455-5e9e-4973-9a1b-ad35ab07e45f\",\"expectedRevision\":66,\"type\":\"PlayerForest\",\"payload\":{\"action\":\"observe\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"a650b43b-4909-4e69-89cc-55cef25ff207\",\"expectedRevision\":67,\"type\":\"EncounterBegin\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"24854b8a-45e4-45e2-aa0e-49e1d09f4ebd\",\"expectedRevision\":68,\"type\":\"EncounterAction\",\"payload\":{\"encounterId\":\"encounter-1\",\"action\":\"attack\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"6afb9ab3-72a3-4520-8a20-96a7c4516329\",\"expectedRevision\":74,\"type\":\"EncounterCancel\",\"payload\":{\"encounterId\":\"encounter-1\"}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"40a29d5f-5737-48af-a9ad-a133735c3caa\",\"type\":\"MarchSet\",\"payload\":{\"x\":4,\"y\":7}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"fb73c02c-2a8c-4a30-91ef-9d38b898f482\",\"type\":\"MarchResume\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"e9e90f1c-afd3-4a59-8c15-690400ebaf6a\",\"type\":\"MarchResume\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"99c8551e-0956-4cd6-801c-f3778abb9cb7\",\"expectedRevision\":91,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"return\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"4dabf0bd-cda0-4b92-bbb6-b81e097ef919\",\"expectedRevision\":92,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-trust\",\"action\":\"claim\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"52f5e2e7-465e-4c83-9d04-c67d9eac4b64\",\"expectedRevision\":93,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"forest-route\",\"action\":\"claim\"}}"
+    }
+  ],
+  "steps": [
+    {
+      "name": "new-isolated-world",
+      "wallMs": 863
+    },
+    {
+      "name": "village-and-real-loan-through-buttons",
+      "wallMs": 2916
+    },
+    {
+      "name": "desktop-and-narrow-screen-forest-controls",
+      "wallMs": 4940
+    },
+    {
+      "name": "explicit-encounter-and-keyboard-exit",
+      "wallMs": 1792
+    },
+    {
+      "name": "return-worn-tool-and-complete",
+      "wallMs": 10050
+    },
+    {
+      "name": "reopen-same-world-with-no-extra-commit",
+      "wallMs": 7462
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "forest-desktop.png",
+      "sha256": "7eba64478aa0d4d9808e068b85d4e8b6ee965a5569489e794e83ee1dafa2c7aa"
+    },
+    {
+      "file": "forest-narrow.png",
+      "sha256": "ab2fc88b34e801a13a27b74f7c1840fcea9f58dd654e29f40bb7d133967ed4f4"
+    },
+    {
+      "file": "hunter-narrow.png",
+      "sha256": "cb9c22c62af950752f9811764b68ee0a9a1626b55830cf8fccbec985196e2a8a"
+    },
+    {
+      "file": "reopened-chapter.png",
+      "sha256": "f18e5ecf8ea36c7437028523b2c0f5312a418fc748f4c5e8e5a707849e6412e7"
+    }
+  ],
+  "final": {
+    "tick": 78,
+    "rank": 4,
+    "toolCondition": 70
+  },
+  "externalModelCalls": 0,
+  "windowsLauncherExecuted": false,
+  "physicalMobileTested": false,
+  "screenReaderTested": false,
+  "realModelLanguageTested": false,
+  "startedService": true,
+  "remainingLocks": [],
+  "candidateVerified": true,
+  "candidateGameFiles": 192,
+  "cleanupErrors": []
+}

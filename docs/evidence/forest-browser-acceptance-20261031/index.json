@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "candidate": "forest-playtest-candidate-2",
+  "parent": "8fa8179a99ddf85ac142df30956ad8d4ee049527",
+  "testedCommit": "17b9dad051231f79f7504a1fd021d57022e8b568",
+  "ciRunId": 41106777480,
+  "uniqueTests": 49,
+  "externalModelRequests": 10,
+  "browserExternalModelCalls": 0,
+  "productionDiff": [
+    "demo-runtime.css",
+    "runtime-server.mjs",
+    "runtime/service/npc-language-provider.mjs"
+  ],
+  "protectedWorktreesUnchanged": true,
+  "screenshotsPublished": false,
+  "sourceSha256": {
+    ".github/workflows/forest-browser-acceptance.yml": "c9075b5af0804df816f74d3119b7733f0e9c5fa070ca3165f91539f24c5c7ad0",
+    "demo-runtime.css": "bc9bfae3cc94b5e0a7701530c588f1b6020516c8f4fa30dff13443edca7f5bdb",
+    "docs/runtime/forest-playtest-candidate.json": "e0fd10a9f2300fcb4fe1522367978ddd239077737420ac40f919951f1ba298cf",
+    "runtime-server.mjs": "94d29e81e67061f3b2dec57e1854b2c96d29a31a7e7432bdcf01da1477d484ab",
+    "runtime/service/npc-language-provider.mjs": "a48a76653b1984a200070edb84ad707c33a4e9915421155b09f8fbefd23a2909",
+    "scripts/check-forest-browser-evidence.mjs": "e20ecd42195138bef8e57ecf120b88e12bc38d31ea2871718e6220454989bdd5",
+    "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+    "scripts/forest-browser-ci.mjs": "e734265ae33c1207894e279e5d98004868632e839e8247dffea4dc8bc6fa03d5",
+    "scripts/forest-playtest-candidate.mjs": "d65132c93f45aadb55a643384950040676af7a45e502db644712ce98e5007d47",
+    "scripts/verify-forest-playtest.mjs": "60dac21607cac6014ed2aef4f3524f7607136d64f341b2becad8914eab2485d1",
+    "tests/simulation/demo-event-backpressure.test.mjs": "747cd752702fffaae412764c7ad3b9efce5e773bec0b822004fc49035195b043",
+    "tests/simulation/demo-march-runner.test.mjs": "f12a9def18be690e7cc7b128d1badb3c0dfb7dd99647b7f6b5209db7ae57ea7d",
+    "tests/simulation/forest-guidance.test.mjs": "778a4835f71ff2d63532ae3195190c8ce41810ebe992e475c78457d395ed5350",
+    "tests/simulation/forest-playtest-preflight.test.mjs": "2a80482e5cc9531c3670519813ba907394ec5d00805ea99dc63171e23382502e",
+    "tests/simulation/forest-playtest-recovery.test.mjs": "923d03e60528b8ad2ecc757b57c1d3921fb234a2b61e1527b04da5197e3f5db7",
+    "tests/simulation/npc-citation-canonicalization.test.mjs": "67d2636b9476c408a32ea6527e8c9b106436bfaae2345f5f7a62969b713f43d4",
+    "tests/simulation/npc-deepseek-provider.test.mjs": "01bd31cc81dadc57f450a56f682700717d5b1ecd7993cdacc1c6a37ad911ac98",
+    "tests/simulation/npc-dialogue-diagnostics.test.mjs": "59c14a9ccaabe15edffaa27c735f6ab9a2b232f1ef5aeb9210f4b5f10c5be2ab",
+    "tests/simulation/npc-dialogue-grounding.test.mjs": "62d4df315ad2cd349160f034bba820fd53a91319f305db99d1041f39c17fc7d8",
+    "tests/simulation/npc-language-provider.test.mjs": "5b205342b8da478ee8774c357d1581c015c0c29b037c58255c6c52f35cfbb0c5",
+    "tests/simulation/npc-life-context.test.mjs": "b81cfefca771f4b98eec70b0e40bceda01a1d3fd2cca4792ac42f45bbf694323",
+    "tests/simulation/npc-life-facts.test.mjs": "f1a7f8ad49b5d3743e04470c5a9720c44dd292479b87545f44755c9ec8f1e597",
+    "tests/simulation/npc-memory-dialogue-capacity.test.mjs": "a2ed1b841d14cc14362f742597e7d1b560c7e539bf0a65a7d374465804cb4f0a",
+    "tests/simulation/npc-memory-dialogue-evaluation.test.mjs": "9c1a25459f8e87cf878b24335367baf1ffebc8bddb8f098a7843eb9f55f04ad3"
+  },
+  "evidence": {
+    "browser-event-buffer-final.json": {
+      "bytes": 344,
+      "sha256": "4b8fb8d87bfa4327cd8863f2182756d47cef2e057db85a8e76f0abde79dd9991"
+    },
+    "browser-event-buffer-final.txt": {
+      "bytes": 422,
+      "sha256": "13ca7b6768c1f5dd8fbc7e4dfc2a61b18cf0a19bab1ffa48f3205e1bce4cf2d2"
+    },
+    "browser-event-buffer-green.json": {
+      "bytes": 344,
+      "sha256": "cf13854c6e2d5dee217fd1029bb05bbaa62a6455c3abf5e248783d1e9c5e112d"
+    },
+    "browser-event-buffer-green.txt": {
+      "bytes": 1256,
+      "sha256": "b340c5f579d570c39209016a3e8bed8c4ea862f015e11c4cab2b5e67b672e3bb"
+    },
+    "browser-event-buffer-red.json": {
+      "bytes": 291,
+      "sha256": "594f6010e1a979b1a045391c564515bad66d5e955a821f3da62f574db480bfe4"
+    },
+    "browser-event-buffer-red.txt": {
+      "bytes": 1570,
+      "sha256": "2723be544ed33099ca1b4a741f3837571830153ab8063401222120b80a8f8e83"
+    },
+    "browser-forest-regression.json": {
+      "bytes": 403,
+      "sha256": "642fb9bef142543970875f87447b58e8885b969121fd845884d783a49bd11e27"
+    },
+    "browser-forest-regression.txt": {
+      "bytes": 2720,
+      "sha256": "071d2f797a562eb92e8285e9de909c6a23fb3d4a93d7223de5dfb0bb03f04e46"
+    },
+    "browser-forest-release.json": {
+      "bytes": 403,
+      "sha256": "0f2d679e7fdba194d0cac36e681923e4facdcad4ad9e86a6255bdd773f9fc649"
+    },
+    "browser-forest-release.txt": {
+      "bytes": 2720,
+      "sha256": "28d3fa8844978ac0810bc0014fbc8d9c3ac8aa712b485ba85ecaf8336253f0d3"
+    },
+    "browser-provider-regression.json": {
+      "bytes": 775,
+      "sha256": "054c0a3f25960b0bb665118e41a7c81ca53fe6b488e0e4c96cff561c50c4ee6b"
+    },
+    "browser-provider-regression.txt": {
+      "bytes": 9308,
+      "sha256": "88280e38d11fd9e3b8529a1bfee88ca8b79635d86b9b3b2170dc975148540cb9"
+    },
+    "ci-initial-linux.json": {
+      "bytes": 24685,
+      "sha256": "25f6880c4d1acb44b64f9e086bc98f62cfbea76ca44cbd3ad9dde6daef6f3cd8"
+    },
+    "ci-initial-win32.json": {
+      "bytes": 21085,
+      "sha256": "6bd9106cb32099df0ae9bec7a20c09ea74761ab87f7e9beafc90546caa4d9866"
+    },
+    "ci-linux.json": {
+      "bytes": 29627,
+      "sha256": "8eb3f3de9d8bc09c7e5e50c8dbbc95d97048d5f767d79b12b630d1daa34a7ec7"
+    },
+    "ci-second-linux.json": {
+      "bytes": 29627,
+      "sha256": "276db863e0759c6d1a5a21f6e4775d849d3ad5e283c20ac6ba15816e79fdec4c"
+    },
+    "ci-second-win32.json": {
+      "bytes": 28573,
+      "sha256": "a9f009d21b55311b89ee2d034b1a27aa6180d0ff6873225a3d9f60b49d37f477"
+    },
+    "ci-win32.json": {
+      "bytes": 29628,
+      "sha256": "0f95fff408e768ae23d1cd6995489cb076dd4146d0958fd3f54b11f22deec218"
+    },
+    "language-review.json": {
+      "bytes": 3169,
+      "sha256": "1ea6217924ecaa23b1fe475557781a4bb417a6e23807545550a48274dad213d4"
+    },
+    "live-gifts-01.complete.json": {
+      "bytes": 305,
+      "sha256": "8c89660b6002e5d998d337e231ebb1d97e863508b0d2fd2d3555a5af9a53b624"
+    },
+    "live-gifts-01.html": {
+      "bytes": 25789,
+      "sha256": "2617866bad185009e2ce0f93d7ca7c5cb05f87b3f6ea9739a7310d6dc3e49355"
+    },
+    "live-gifts-01.json": {
+      "bytes": 26025,
+      "sha256": "0c80b21b2c6e59947018066729036b6788e5125d045453ace9e82dbed0db495a"
+    },
+    "live-gifts-02.complete.json": {
+      "bytes": 305,
+      "sha256": "fdff23f1524d73bc2ff5f367491f86f51ffeee111a663d92dce04512227b6e2f"
+    },
+    "live-gifts-02.html": {
+      "bytes": 51368,
+      "sha256": "a3e59bd2796e09332c2e5a875bd9ec90f334263426796f9ff45e44b27afe361f"
+    },
+    "live-gifts-02.json": {
+      "bytes": 51056,
+      "sha256": "d572fde595c15b2fedeb2256cf4b7ffd38a88086950cbacfc914cb5f68a1abdf"
+    },
+    "live-work-01.complete.json": {
+      "bytes": 305,
+      "sha256": "e3213c12f05869338cc6d1aa7b0c149778aec613180461f4920335d917134eca"
+    },
+    "live-work-01.html": {
+      "bytes": 43284,
+      "sha256": "0f04a30c0f433bc19fc1f745f76aad5e1e2610b49eb61d4de9b301bd524598d6"
+    },
+    "live-work-01.json": {
+      "bytes": 43214,
+      "sha256": "6a3eb8f49c61d42bdfc996f569d96e81b21eaab948a78c286fe7fff687949663"
+    },
+    "local-audit-order.json": {
+      "bytes": 11316,
+      "sha256": "bbf49499c4c232994bbc55dcca0274caed07fe552dcf75b06ca6ce8d32749258"
+    },
+    "local-initial.json": {
+      "bytes": 3957,
+      "sha256": "f4aba0073fae24a1f5e767f8356089b69fba17f9ba2fe90dd0064220315d84f6"
+    },
+    "local-release.json": {
+      "bytes": 8628,
+      "sha256": "d2ea6834638c11c8e3630c683eb0d02fe5f6e29de3011d75e7f6e822fb8c7afb"
+    }
+  }
+}

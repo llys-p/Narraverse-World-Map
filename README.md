@@ -5,7 +5,9 @@
 
 ## 独立项目入口
 
-- **森林试玩候选1收口（2026-10-30）**：游戏入口固定为 `Start-Forest-Journey.cmd`，192份游戏文件与PR43一致；采集回执丢失、断线续行及逾期记忆的当前森林真实服务验证通过，本轮22项不同检查通过。`Verify-Forest-Playtest.cmd` 准备桌面验收，当前缺浏览器而BLOCKED，Windows/真实模型仍待验。见[试玩与AI交接](docs/runtime/FOREST-PLAYTEST.md)。
+- **森林试玩候选2实机收口（2026-10-31）**：同一入口 `Start-Forest-Journey.cmd`；Linux与Windows真实无头浏览器已完成第一章、工具磨损/燃料消耗、键盘退出和同档重开。修正窄屏溢出、头像拉长和事件流写缓冲误断线；49项不同检查通过。低成本DeepSeek共10请求，保留一次引用格式失败，修复后4轮通过；广泛语义、Windows双击和真手机仍待验。见[玩家与AI交接](docs/runtime/FOREST-PLAYTEST.md)。
+
+- **历史：森林试玩候选1收口（2026-10-30）**：游戏入口固定为 `Start-Forest-Journey.cmd`，192份游戏文件与PR43一致；采集回执丢失、断线续行及逾期记忆的当前森林真实服务验证通过，本轮22项不同检查通过。`Verify-Forest-Playtest.cmd` 准备桌面验收，当前缺浏览器而BLOCKED，Windows/真实模型仍待验。见[试玩与AI交接](docs/runtime/FOREST-PLAYTEST.md)。
 
 - **森林行动引导与返程反馈（2026-10-29）**：沿用 `Start-Forest-Journey.cmd`，增加歇脚处定位/普通休整入口，修正疲劳与旧借期提示，暂停返村可继续；35项不同检查通过，含新面板真实服务和原130条命令恢复，浏览器实机待验。见[玩法与AI交接](docs/runtime/FOREST-GUIDANCE.md)。
 
