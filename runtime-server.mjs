@@ -84,9 +84,16 @@ export async function startRuntimeServer(options){
     ...(owner.encounterAvailable?{encounterAvailable:true}:{}),...(owner.sceneAvailable?{sceneAvailable:true}:{}),
     ...(owner.activityAvailable?{activityAvailable:true}:{}),...(owner.mapAvailable?{mapAvailable:true}:{}),
     ...(owner.playerWorkAvailable===true?{playerWorkAvailable:true}:{}),...(continuousMarch?{continuousMarch:true,npcLanguage:{enabled:language.enabled}}:{})});
-  const streams=new Set();let runner;
+  const streams=new Map();let runner;
   const demoState=()=>({apiVersion:1,capabilities,snapshot:owner.getSnapshot(),map:owner.getMap(),player:owner.getPlayer(),encounter:owner.getEncounter(),scene:owner.getScene(),runner:runner.status()});
-  function broadcast(){if(!streams.size)return;const bytes='data: '+JSON.stringify(demoState())+'\n\n';for(const res of streams){if(res.destroyed||res.writableEnded)continue;if(!res.write(bytes))res.destroy();}}
+  function writeLatestEvent(res,flow){
+    if(res.destroyed||res.writableEnded)return;
+    // false means this frame was queued, not that the client disconnected.
+    // While it drains, retain only a dirty flag and later send the latest view.
+    if(flow.waiting){flow.dirty=true;return;}
+    flow.dirty=false;flow.waiting=!res.write('data: '+JSON.stringify(demoState())+'\n\n');
+  }
+  function broadcast(){for(const [res,flow]of streams)writeLatestEvent(res,flow);}
   if(continuousMarch)runner=createMarchRunner(owner,{onChange:broadcast});
   const server=http.createServer({maxHeaderSize:8192,requestTimeout:5000,headersTimeout:5000},async(req,res)=>{
     const send=(status,data,type='application/json; charset=utf-8',extra={})=>{
@@ -130,8 +137,10 @@ export async function startRuntimeServer(options){
           requireCondition(req.method==='GET','Event stream requires GET');
           const detach=runner.attach();
           res.writeHead(200,{'Content-Type':'text/event-stream; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
-          streams.add(res);res.write('data: '+JSON.stringify(demoState())+'\n\n');
-          const heartbeat=setInterval(()=>{if(!res.write(': keepalive\n\n'))res.destroy();},15000);heartbeat.unref();
+          const flow={waiting:false,dirty:false};streams.set(res,flow);
+          res.on('drain',()=>{flow.waiting=false;if(flow.dirty)writeLatestEvent(res,flow);});writeLatestEvent(res,flow);
+          // A connection still stalled at the heartbeat remains bounded and is detached.
+          const heartbeat=setInterval(()=>{if(flow.waiting){res.destroy();return;}flow.waiting=!res.write(': keepalive\n\n');},15000);heartbeat.unref();
           res.once('close',()=>{clearInterval(heartbeat);streams.delete(res);detach();});return;
         }
         const asset=demoAssets.get(route);if(asset){send(200,asset.bytes,asset.type);return;}
@@ -222,7 +231,7 @@ export async function startRuntimeServer(options){
   });
   try{await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});actualPort=server.address().port;}
   catch(cause){await owner.close();throw Object.assign(fault(cause.code==='EADDRINUSE'?'PORT_IN_USE':'SERVER_START_FAILED','Runtime service could not listen'),{cause});}
-  return Object.freeze({url:`http://127.0.0.1:${actualPort}`,async close(){if(closed)return;closed=true;language.close();if(runner)await runner.close();for(const res of streams)res.end();await new Promise((resolve,reject)=>server.close(e=>e?reject(e):resolve()));await owner.close();}});
+  return Object.freeze({url:`http://127.0.0.1:${actualPort}`,async close(){if(closed)return;closed=true;language.close();if(runner)await runner.close();for(const res of streams.keys())res.end();await new Promise((resolve,reject)=>server.close(e=>e?reject(e):resolve()));await owner.close();}});
 }
 if(process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   try{
