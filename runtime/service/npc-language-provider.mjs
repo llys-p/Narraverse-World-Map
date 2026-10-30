@@ -116,9 +116,13 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
     check(measurement.contentBytes<=8192,'content','content-too-large');
     let output;try{output=parseStrictJson(Buffer.from(choice.message.content),8192);}catch{check(false,'content','content-json');}
     check(output&&typeof output==='object'&&!Array.isArray(output)&&Object.keys(output).length===3&&['reply','memoryRefs','proposal'].every(k=>Object.hasOwn(output,k)),'schema','output-fields');
-    check(dialogueText(output.reply),'schema','reply-field');measurement.memoryRefsIssue=memoryRefsIssue(output.memoryRefs);check(validMemoryRefs(output.memoryRefs),'schema','memory-refs-field');check(validProposal(output.proposal),'schema','proposal-field');
-    check(validModelReply(output),'schema','output-contract');
     const known=new Set([...contextForModel.observations,...contextForModel.conversation].map(m=>m.eventSeq));
+    check(dialogueText(output.reply),'schema','reply-field');measurement.memoryRefsIssue=memoryRefsIssue(output.memoryRefs);
+    // Canonicalize only a bounded set of already-known citations. Keep the raw
+    // format issue in diagnostics; reply text and action proposals are unchanged.
+    if(measurement.memoryRefsIssue==='not-strictly-increasing'&&output.memoryRefs.every(ref=>known.has(ref)))output.memoryRefs=[...new Set(output.memoryRefs)].sort((a,b)=>a-b);
+    check(validMemoryRefs(output.memoryRefs),'schema','memory-refs-field');check(validProposal(output.proposal),'schema','proposal-field');
+    check(validModelReply(output),'schema','output-contract');
     check(output.memoryRefs.every(ref=>known.has(ref)),'grounding','unknown-reference');
     const hint=contextForModel.intentHint,proposal=output.proposal,offers=contextForModel.negotiationOptions;
     if(proposal?.type==='PlayerNegotiate')check(offers.status==='available'&&offers.options.some(t=>t.repairAmount===proposal.payload.terms.repairAmount&&t.loanTicks===proposal.payload.terms.loanTicks),'proposal','terms-outside-known-options');

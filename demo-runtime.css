@@ -13,7 +13,9 @@
   }
 
 /* Live adapter, using the demo's frame, palette and canvas layers. */
-body#demo-runtime-root{min-width:1000px}
+body#demo-runtime-root{min-width:0}
+#demo-runtime-root .app-container{width:100%;min-width:0}
+#demo-runtime-root .tab-buttons,#demo-runtime-root .viewport-header{flex-wrap:wrap}
 #demo-runtime-root [hidden]{display:none!important}
 #demo-runtime-root button{cursor:pointer}
 #demo-runtime-root button:disabled{opacity:.45;cursor:not-allowed}
@@ -45,7 +47,10 @@ body#demo-runtime-root{min-width:1000px}
 .live-person h2{font-size:17px}
 #demo-runtime-root #personNavigationHint{font-size:12px;color:var(--text-secondary)}
 #demo-runtime-root .live-person button{margin:4px 6px 4px 0}
-#demo-runtime-root .live-person>canvas{flex-shrink:0}
+#demo-runtime-root .live-person{align-items:flex-start}
+#demo-runtime-root .live-person>canvas{flex-shrink:0;width:140px;height:140px}
+#demo-runtime-root .live-person>div{min-width:0}
+@media(max-width:600px){#demo-runtime-root #personCard{flex-direction:column}#demo-runtime-root #personCard>div{width:100%}}
 #demo-runtime-root .social-interactions{max-width:780px;padding:12px;border:1px solid #627660;border-radius:6px;margin:12px 0}
 #demo-runtime-root .social-interactions blockquote{padding:10px 14px;border-left:3px solid var(--accent-gold);background:#141d18;line-height:1.6;white-space:pre-wrap}
 #demo-runtime-root .social-interactions select{padding:7px;background:var(--bg-main);color:var(--text-primary);border:1px solid var(--border);border-radius:4px}

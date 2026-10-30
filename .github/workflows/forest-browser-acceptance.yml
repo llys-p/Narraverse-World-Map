@@ -24,6 +24,8 @@ jobs:
       NPC_LLM_ENABLED: 'false'
       FOREST_TEST_HEAD: ${{ github.event.pull_request.head.sha }}
     steps:
+      - name: Preserve repository bytes on both operating systems
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
