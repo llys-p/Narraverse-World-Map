@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/simulation/demo-event-backpressure.test.mjs",
+    "tests/simulation/demo-march-runner.test.mjs"
+  ],
+  "pid": 6,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 3406.858,
+  "cpuMs": null,
+  "hardLimitMs": 120000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

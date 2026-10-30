@@ -1,0 +1,313 @@
+{
+  "verdict": "FAIL",
+  "candidate": "forest-playtest-candidate-2",
+  "contentBase": "8fa8179a99ddf85ac142df30956ad8d4ee049527",
+  "browserExecuted": true,
+  "steps": [
+    {
+      "name": "new-isolated-world",
+      "wallMs": 834
+    },
+    {
+      "name": "village-and-real-loan-through-buttons",
+      "wallMs": 3129
+    },
+    {
+      "name": "desktop-and-narrow-screen-forest-controls",
+      "wallMs": 5189
+    },
+    {
+      "name": "explicit-encounter-and-keyboard-exit",
+      "wallMs": 1826
+    },
+    {
+      "name": "return-worn-tool-and-complete",
+      "wallMs": 10270
+    },
+    {
+      "name": "reopen-same-world-with-no-extra-commit",
+      "wallMs": 144
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"1766cc28-6eed-4437-b66f-07842e37aea7\",\"expectedRevision\":0,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"livelihood\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"650e4663-019f-4f87-a3df-07dd8e681b6e\",\"expectedRevision\":1,\"type\":\"PlayerWork\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"9dada8f1-e4df-4d41-87e5-dcbfa5c8f793\",\"expectedRevision\":37,\"type\":\"PlayerBuy\",\"payload\":{\"product\":\"food\",\"quantity\":1}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"6adc4524-bd00-4c0f-982e-dbe6f833e77c\",\"expectedRevision\":38,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"livelihood\",\"action\":\"claim\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"6720c1d3-99c1-487a-96f1-b7b5536154d5\",\"expectedRevision\":39,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-aid\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"9f1afb63-826d-48bb-94f0-efc7859add54\",\"expectedRevision\":40,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"help\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"4ee36d8a-3e33-4572-9860-7e0a686cc074\",\"expectedRevision\":41,\"type\":\"PlayerGiftFood\",\"payload\":{\"recipientId\":\"actor-2\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"5fce5d9f-35ed-48f3-bacb-9a42d4e6abd0\",\"expectedRevision\":42,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-aid\",\"action\":\"claim\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"d5150de6-a0a0-469d-a1f1-47165a7704b8\",\"expectedRevision\":43,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-trust\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"e5160060-c3f6-4079-a6ef-d59dfe8151b2\",\"expectedRevision\":44,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"forest-route\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"eca1b575-e8b7-417b-bd5f-500f779e2718\",\"expectedRevision\":45,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"ask-help\"}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"24854343-0f29-443a-b50e-c8968278cfee\",\"type\":\"MarchSet\",\"payload\":{\"x\":16,\"y\":7}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"feea02c8-4a79-4a0d-a492-1291d977cb9f\",\"type\":\"MarchResume\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"9de30a34-d771-46fc-b5e9-c86d3d27be5f\",\"expectedRevision\":60,\"type\":\"PlayerForest\",\"payload\":{\"action\":\"collect\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"d8bc3153-5cd5-40d9-a57e-eb34dbd17fc1\",\"expectedRevision\":63,\"type\":\"PlayerForest\",\"payload\":{\"action\":\"camp\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"4bad536d-f556-4135-a82a-9d95ae8064d0\",\"expectedRevision\":66,\"type\":\"PlayerForest\",\"payload\":{\"action\":\"observe\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"4e5303d1-80e7-4872-8dc0-894ef212fdba\",\"expectedRevision\":67,\"type\":\"EncounterBegin\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"dd66d9cc-640e-4829-9514-8b9b5ca77fc5\",\"expectedRevision\":68,\"type\":\"EncounterAction\",\"payload\":{\"encounterId\":\"encounter-1\",\"action\":\"attack\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"4b11ce82-e346-49e5-80e1-b9eb254c39b8\",\"expectedRevision\":74,\"type\":\"EncounterCancel\",\"payload\":{\"encounterId\":\"encounter-1\"}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"edaae231-ead0-44cd-b53f-3a9096ead45b\",\"type\":\"MarchSet\",\"payload\":{\"x\":4,\"y\":7}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"433ddd0c-8219-4ea9-b44a-4df2cf20c4c4\",\"type\":\"MarchResume\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"ddcc4a02-d048-4ac4-abd7-5aa72721270e\",\"type\":\"MarchResume\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"51384fab-37ce-43e8-a957-b021ed2b0a82\",\"expectedRevision\":91,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"return\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"3f2ea0c3-252c-46a8-be66-ec2677d7b797\",\"expectedRevision\":92,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-trust\",\"action\":\"claim\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"ee84e589-e2b0-4c17-be18-2f6bc6540d7f\",\"expectedRevision\":93,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"forest-route\",\"action\":\"claim\"}}"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "forest-desktop.png",
+      "sha256": "3b7ba87d49dd1f9f21f03875f8feebf069e5b70b6c49bbe1f4302ab3d5dc5ee2"
+    },
+    {
+      "file": "forest-narrow.png",
+      "sha256": "ab2fc88b34e801a13a27b74f7c1840fcea9f58dd654e29f40bb7d133967ed4f4"
+    },
+    {
+      "file": "hunter-narrow.png",
+      "sha256": "41d197d7607ed0d76900bbae1ee20e48359e7b7f7829d09659a3aaed415c6324"
+    }
+  ],
+  "diagnostics": {
+    "awaiting": null,
+    "mobileLayout": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "buttons": [
+        {
+          "id": "collect",
+          "width": 298,
+          "height": 44,
+          "described": true
+        },
+        {
+          "id": "camp",
+          "width": 298,
+          "height": 44,
+          "described": true
+        },
+        {
+          "id": "observe",
+          "width": 298,
+          "height": 44,
+          "described": true
+        },
+        {
+          "id": "avoid",
+          "width": 298,
+          "height": 44,
+          "described": true
+        },
+        {
+          "id": "site",
+          "width": 298,
+          "height": 44,
+          "described": true
+        },
+        {
+          "id": "rest",
+          "width": 298,
+          "height": 44,
+          "described": true
+        },
+        {
+          "id": "challenge",
+          "width": 298,
+          "height": 44,
+          "described": true
+        },
+        {
+          "id": "exit",
+          "width": 298,
+          "height": 44,
+          "described": true
+        },
+        {
+          "id": "return",
+          "width": 298,
+          "height": 44,
+          "described": true
+        }
+      ]
+    },
+    "overflow": [],
+    "personLayout": {
+      "viewport": 390,
+      "documentWidth": 390
+    },
+    "lockBeforeClose": "{\"ownerId\":\"cf1e5de1-b33b-4701-958c-2262978775fb\",\"pid\":6}",
+    "filesAfterClose": [
+      "service-commit-r0.json",
+      "service-commit-r1.json",
+      "service-commit-r37.json",
+      "service-commit-r38.json",
+      "service-commit-r39.json",
+      "service-commit-r40.json",
+      "service-commit-r41.json",
+      "service-commit-r42.json",
+      "service-commit-r43.json",
+      "service-commit-r44.json",
+      "service-commit-r45.json",
+      "service-commit-r46.json",
+      "service-commit-r47.json",
+      "service-commit-r49.json",
+      "service-commit-r51.json",
+      "service-commit-r52.json",
+      "service-commit-r54.json",
+      "service-commit-r56.json",
+      "service-commit-r58.json",
+      "service-commit-r60.json",
+      "service-commit-r63.json",
+      "service-commit-r66.json",
+      "service-commit-r67.json",
+      "service-commit-r68.json",
+      "service-commit-r74.json",
+      "service-commit-r75.json",
+      "service-commit-r76.json",
+      "service-commit-r78.json",
+      "service-commit-r80.json",
+      "service-commit-r82.json",
+      "service-commit-r84.json",
+      "service-commit-r86.json",
+      "service-commit-r87.json",
+      "service-commit-r89.json",
+      "service-commit-r90.json",
+      "service-commit-r91.json",
+      "service-commit-r92.json",
+      "service-commit-r93.json",
+      "service-commit-r94.json"
+    ],
+    "filesAfterAudit": [
+      ".runtime-owner.lock",
+      "service-commit-r0.json",
+      "service-commit-r1.json",
+      "service-commit-r37.json",
+      "service-commit-r38.json",
+      "service-commit-r39.json",
+      "service-commit-r40.json",
+      "service-commit-r41.json",
+      "service-commit-r42.json",
+      "service-commit-r43.json",
+      "service-commit-r44.json",
+      "service-commit-r45.json",
+      "service-commit-r46.json",
+      "service-commit-r47.json",
+      "service-commit-r49.json",
+      "service-commit-r51.json",
+      "service-commit-r52.json",
+      "service-commit-r54.json",
+      "service-commit-r56.json",
+      "service-commit-r58.json",
+      "service-commit-r60.json",
+      "service-commit-r63.json",
+      "service-commit-r66.json",
+      "service-commit-r67.json",
+      "service-commit-r68.json",
+      "service-commit-r74.json",
+      "service-commit-r75.json",
+      "service-commit-r76.json",
+      "service-commit-r78.json",
+      "service-commit-r80.json",
+      "service-commit-r82.json",
+      "service-commit-r84.json",
+      "service-commit-r86.json",
+      "service-commit-r87.json",
+      "service-commit-r89.json",
+      "service-commit-r90.json",
+      "service-commit-r91.json",
+      "service-commit-r92.json",
+      "service-commit-r93.json",
+      "service-commit-r94.json"
+    ]
+  },
+  "error": {
+    "code": "OWNER_BUSY",
+    "message": "Runtime directory already has an owner"
+  },
+  "externalModelCalls": 0,
+  "startedService": true,
+  "remainingLocks": [
+    ".runtime-owner.lock"
+  ],
+  "candidateVerified": true,
+  "candidateGameFiles": 192,
+  "cleanupErrors": []
+}

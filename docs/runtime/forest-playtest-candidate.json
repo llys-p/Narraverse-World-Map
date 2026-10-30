@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "forest-playtest-candidate-1",
-  "date": "2026-10-30",
-  "contentBase": "acdc4afac35c2db99a7eacb7cc035d442657de66",
+  "id": "forest-playtest-candidate-2",
+  "date": "2026-10-31",
+  "contentBase": "8fa8179a99ddf85ac142df30956ad8d4ee049527",
   "gameEntry": "Start-Forest-Journey.cmd",
   "newJourneyEntry": "Start-Forest-Journey-New.cmd",
   "verificationEntry": "Verify-Forest-Playtest.cmd",
@@ -10,14 +10,14 @@
   "fixtureVersion": "8",
   "gamePort": 18356,
   "browserVerificationUsesIsolatedNewWorld": true,
-  "externalModelCalls": 0,
+  "externalModelCalls": 10,
   "gates": {
     "serviceRecovery": "verified",
-    "browser": "blocked-missing-executable",
+    "browser": "verified-linux-and-windows-ci",
     "windowsLauncher": "not-run",
     "physicalMobile": "not-run",
     "screenReader": "not-run",
-    "realModelLanguage": "not-run"
+    "realModelLanguage": "sampled-fixture5-human-review-pending"
   },
   "gameSha256": {
     "Start-Forest-Journey-New.cmd": "e538af5c159cecdd08f83b5564451377f5287fa50083f9abbfd8601547e717f9",
@@ -34,7 +34,7 @@
     "demo-runtime-bridge.mjs": "2edde7173a33611b5c19cc9b699e6c36aae8b7b105a3ebb3b4e8b76ea431eefd",
     "demo-runtime-interactions.mjs": "4a441480287892c1664076292ac0f9787e4abbc753018bd092bd797e59119385",
     "demo-runtime-prototype.mjs": "174833c4cb763d36bb94ceaa951f791837d35f8a8a72154a7e290a7bbf88b984",
-    "demo-runtime.css": "b1973ab566c5d853999e2ad69a5af5bf24133412aab020cd9fe14fc8e2a8669a",
+    "demo-runtime.css": "bc9bfae3cc94b5e0a7701530c588f1b6020516c8f4fa30dff13443edca7f5bdb",
     "demo-runtime.html": "565d2931309ae9912d563a4c0e69bebe7f75750fec80d2412c7108075d4cef19",
     "demo-social-composer.mjs": "59afa1dff60f271f235613170d25596ec5daff599c9f1e767b359678ea61803c",
     "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
@@ -87,7 +87,7 @@
     "runtime-playback-state.mjs": "c672dc7d7125b40631a0f03552719250e998a12db13d085e85e1233a4a409dc2",
     "runtime-presentation.css": "4384e83355e0c1c062298d8700be26c3c3011eb1d853bf124dfe432c60f7a8a9",
     "runtime-presentation.mjs": "4e7506f093bdf5535b779d11d597b6c688363ca9aa8890ac950d20a4c11f37d1",
-    "runtime-server.mjs": "02d5016b63592f6a1bc1ad33a2386b8743f9c51698ca1cd53f52a9c7bd1abe6c",
+    "runtime-server.mjs": "94d29e81e67061f3b2dec57e1854b2c96d29a31a7e7432bdcf01da1477d484ab",
     "runtime-social-contract.mjs": "f88ac21c6fdbf8dd188f9f0bf9b2895550d80623faa5830dd2d5e2b0bbff9d38",
     "runtime-village.css": "0696d8bcdaccdc0fe9977a2b3b6839882619d7ba87fb54007713a1ece8942954",
     "runtime-village.html": "a20970674baa6144febfa6ac1c5cdf28802ec807e575f515692fffd05321b33b",
@@ -188,7 +188,7 @@
     "runtime/service/http-contract.mjs": "2b051338981bebc2bb79d9ab1cd097f26596dbbc070c2dcd2c6de37d2868afe9",
     "runtime/service/march-runner.mjs": "e71e3609d97eae2e7e42a5ff1047a47fcaee43459bbb1d4f74f78fd39587a19a",
     "runtime/service/npc-dialogue-grounding.mjs": "25d2e005aab0ebadd3827216c3a60221fe616adc4ee2cf01f628561bbb90be34",
-    "runtime/service/npc-language-provider.mjs": "696918c312665a0d738ad266482efcd606cdb74a34c0bce031ec594ae12aea9a",
+    "runtime/service/npc-language-provider.mjs": "a48a76653b1984a200070edb84ad707c33a4e9915421155b09f8fbefd23a2909",
     "runtime/service/npc-life-facts.mjs": "0309ba301126b72aa9bd3c070abc341bcf8fd99002cb742b5941f80c310b6e2a",
     "runtime/service/npc-recall-focus.mjs": "b6b9be89889d49897eff1779b3e22dae1b202d4bb04c9bdae3c2383f78362889",
     "runtime/service/runtime-owner-thread.mjs": "8c9d280a3c51717d5d9e7f16c30f65b05eec1216b22e6dc099edc8baf1da5f49",
@@ -212,5 +212,6 @@
     "wolf-diag.mjs": "1278b9010333f8b2503e8047bd5dac54d45f7b1e09550490cf7a4f6139502243",
     "world-combat-fx.js": "0324c994016606716b3c2122809f30556c56284c7e450310c79a59045cc1c2af",
     "world-e2e.mjs": "905f802dcdd4d5843d6b302779c1b5f641e6531aaebac404d2010450660fc303"
-  }
+  },
+  "browserExternalModelCalls": 0
 }

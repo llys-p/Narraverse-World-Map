@@ -1,0 +1,196 @@
+TAP version 13
+# Subtest: reversed and repeated known citations become the same signed set without changing speech, context or making retries
+ok 1 - reversed and repeated known citations become the same signed set without changing speech, context or making retries
+  ---
+  duration_ms: 23.00014
+  type: 'test'
+  ...
+# Subtest: unknown, malformed and excessive citation input is still rejected and never silently dropped
+ok 2 - unknown, malformed and excessive citation input is still rejected and never silently dropped
+  ---
+  duration_ms: 8.894107
+  type: 'test'
+  ...
+# Subtest: official short replies explicitly disable thinking, generic providers omit it, and an explicit mode is sent without changing the signed dialogue contract
+ok 3 - official short replies explicitly disable thinking, generic providers omit it, and an explicit mode is sent without changing the signed dialogue contract
+  ---
+  duration_ms: 34.860592
+  type: 'test'
+  ...
+# Subtest: invalid thinking configuration is rejected before fetch; reasoning-only, empty or truncated final content cannot become a dialogue
+ok 4 - invalid thinking configuration is rejected before fetch; reasoning-only, empty or truncated final content cannot become a dialogue
+  ---
+  duration_ms: 7.618446
+  type: 'test'
+  ...
+# Subtest: provider usage preserves only consistent cache counts, never infers missing usage or exposes raw provider fields
+ok 5 - provider usage preserves only consistent cache counts, never infers missing usage or exposes raw provider fields
+  ---
+  duration_ms: 4.863042
+  type: 'test'
+  ...
+# Subtest: loopback 401/403 failures are cached once and produce safe partial-coverage reports with later turns blocked and no upstream body or key
+ok 6 - loopback 401/403 failures are cached once and produce safe partial-coverage reports with later turns blocked and no upstream body or key
+  ---
+  duration_ms: 419.937744
+  type: 'test'
+  ...
+# Subtest: invalid outputs retain distinct safe categories, no raw content, and no automatic retries
+ok 7 - invalid outputs retain distinct safe categories, no raw content, and no automatic retries
+  ---
+  duration_ms: 37.41937
+  type: 'test'
+  ...
+# Subtest: unknown finish values and transport errors never become diagnostic text; successful outputs have no failure
+ok 8 - unknown finish values and transport errors never become diagnostic text; successful outputs have no failure
+  ---
+  duration_ms: 2.3934
+  type: 'test'
+  ...
+# Subtest: real fixture identities explain holder relations and distinguish observation, discovery and attributed speech
+ok 9 - real fixture identities explain holder relations and distinguish observation, discovery and attributed speech
+  ---
+  duration_ms: 11676.750626
+  type: 'test'
+  ...
+# Subtest: real agreement facts keep ready distinct from claimed and fix returned-late duration at twenty minutes
+ok 10 - real agreement facts keep ready distinct from claimed and fix returned-late duration at twenty minutes
+  ---
+  duration_ms: 0.550522
+  type: 'test'
+  ...
+# Subtest: breach marker is not return time, on-time return stays zero after time advances, and unknown fields remain unknown
+ok 11 - breach marker is not return time, on-time return stays zero after time advances, and unknown fields remain unknown
+  ---
+  duration_ms: 2619.393511
+  type: 'test'
+  ...
+# Subtest: context projection is idempotent, bounded and whitelisted, and ignores injected derived truth or other minds
+ok 12 - context projection is idempotent, bounded and whitelisted, and ignores injected derived truth or other minds
+  ---
+  duration_ms: 110.892097
+  type: 'test'
+  ...
+# Subtest: whole-sentence hints distinguish existing terms and immediate repair without converting quotes, denial, history or conditional speech into actions
+ok 13 - whole-sentence hints distinguish existing terms and immediate repair without converting quotes, denial, history or conditional speech into actions
+  ---
+  duration_ms: 51.384453
+  type: 'test'
+  ...
+# Subtest: Provider sends the same prepared context as the evaluation, signs varied model wording unchanged, and never substitutes a stock reply or executes a hint
+ok 14 - Provider sends the same prepared context as the evaluation, signs varied model wording unchanged, and never substitutes a stock reply or executes a hint
+  ---
+  duration_ms: 7.716851
+  type: 'test'
+  ...
+# Subtest: provider is explicitly configured, read-only, bounded to known context, caches IDs and signs the whole draft
+ok 15 - provider is explicitly configured, read-only, bounded to known context, caches IDs and signs the whole draft
+  ---
+  duration_ms: 15.600187
+  type: 'test'
+  ...
+# Subtest: invalid JSON, extra fields, unknown references, unsupported actions, incomplete and excessive output fail closed
+ok 16 - invalid JSON, extra fields, unknown references, unsupported actions, incomplete and excessive output fail closed
+  ---
+  duration_ms: 24.239838
+  type: 'test'
+  ...
+# Subtest: one in-flight request is shared, parallel IDs are rejected, and fetch/body timeouts are bounded without automatic retries
+ok 17 - one in-flight request is shared, parallel IDs are rejected, and fetch/body timeouts are bounded without automatic retries
+  ---
+  duration_ms: 46.498204
+  type: 'test'
+  ...
+# Subtest: dialogue controller discards late replies on revision/person/world/edit changes and never auto-commits a proposal
+ok 18 - dialogue controller discards late replies on revision/person/world/edit changes and never auto-commits a proposal
+  ---
+  duration_ms: 4.42793
+  type: 'test'
+  ...
+# Subtest: initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+ok 19 - initial private dialogue carries the hunter own recorded activity without inventing a decision or outcome
+  ---
+  duration_ms: 159.335887
+  type: 'test'
+  ...
+# Subtest: buying intent differs from purchased food, and gifts pause travel without manufacturing another wage
+ok 20 - buying intent differs from purchased food, and gifts pause travel without manufacturing another wage
+  ---
+  duration_ms: 17517.014607
+  type: 'test'
+  ...
+# Subtest: own failed result and movement overrides use known facts without hidden balances or tool ownership
+ok 21 - own failed result and movement overrides use known facts without hidden balances or tool ownership
+  ---
+  duration_ms: 11829.117746
+  type: 'test'
+  ...
+# Subtest: private projection strips internal inputs, rejects future or unpaired results and preserves old fixture context
+ok 22 - private projection strips internal inputs, rejects future or unpaired results and preserves old fixture context
+  ---
+  duration_ms: 6756.521587
+  type: 'test'
+  ...
+# Subtest: preparing to work is not a paid result and a newly completed action makes its older intent await review
+ok 23 - preparing to work is not a paid result and a newly completed action makes its older intent await review
+  ---
+  duration_ms: 7100.293486
+  type: 'test'
+  ...
+# Subtest: current life facts distinguish purchased delta from current food and unrefreshed intent
+ok 24 - current life facts distinguish purchased delta from current food and unrefreshed intent
+  ---
+  duration_ms: 16320.373844
+  type: 'test'
+  ...
+# Subtest: gifts pause current preparation despite old ready plan, later low stock does not invent a cause
+ok 25 - gifts pause current preparation despite old ready plan, later low stock does not invent a cause
+  ---
+  duration_ms: 14977.460909
+  type: 'test'
+  ...
+# Subtest: old model claims and player assertions cannot become life facts or overwrite current resources
+ok 26 - old model claims and player assertions cannot become life facts or overwrite current resources
+  ---
+  duration_ms: 14801.719562
+  type: 'test'
+  ...
+# Subtest: food need uses inventory threshold independently of hunger and private facts are rebuilt at the boundary
+ok 27 - food need uses inventory threshold independently of hunger and private facts are rebuilt at the boundary
+  ---
+  duration_ms: 71.004581
+  type: 'test'
+  ...
+# Subtest: controlled provider receives explicit facts and preserves raw model wording, signing and bounds
+ok 28 - controlled provider receives explicit facts and preserves raw model wording, signing and bounds
+  ---
+  duration_ms: 53.546729
+  type: 'test'
+  ...
+# Subtest: synthetic full history still sends recent repair and forgetting counts, while evicted detail cannot be cited
+ok 29 - synthetic full history still sends recent repair and forgetting counts, while evicted detail cannot be cited
+  ---
+  duration_ms: 166.8605
+  type: 'test'
+  ...
+# Subtest: memory CLI explicitly creates fixture5, preserves zero-call planning and rejects unsupported suite versions
+ok 30 - memory CLI explicitly creates fixture5, preserves zero-call planning and rejects unsupported suite versions
+  ---
+  duration_ms: 13540.615021
+  type: 'test'
+  ...
+# Subtest: fixture5 controlled dialogue consumes actual personal updates, retains prior speech, and never writes factual episodes from words
+ok 31 - fixture5 controlled dialogue consumes actual personal updates, retains prior speech, and never writes factual episodes from words
+  ---
+  duration_ms: 12617.365666
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 46479.919188

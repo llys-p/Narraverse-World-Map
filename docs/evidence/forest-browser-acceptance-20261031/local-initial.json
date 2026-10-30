@@ -1,0 +1,91 @@
+{
+  "verdict": "FAIL",
+  "candidate": "forest-playtest-candidate-1",
+  "contentBase": "acdc4afac35c2db99a7eacb7cc035d442657de66",
+  "browserExecuted": true,
+  "steps": [
+    {
+      "name": "new-isolated-world",
+      "wallMs": 886
+    },
+    {
+      "name": "village-and-real-loan-through-buttons",
+      "wallMs": 2657
+    },
+    {
+      "name": "desktop-and-narrow-screen-forest-controls",
+      "wallMs": 4202
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"0bbe87b9-6f1e-44e8-bf1f-e59b4d0622e9\",\"expectedRevision\":0,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"livelihood\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"6733bd03-cf31-409d-a0e7-89e6346a1d3a\",\"expectedRevision\":1,\"type\":\"PlayerWork\",\"payload\":{}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"6ac46e27-28a0-4d00-8db1-7aec6800f9e5\",\"expectedRevision\":37,\"type\":\"PlayerBuy\",\"payload\":{\"product\":\"food\",\"quantity\":1}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"595c3109-4afd-4f5f-8408-75cda511d48c\",\"expectedRevision\":38,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"livelihood\",\"action\":\"claim\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"dffd1653-f098-4d72-ab6c-010967cf5955\",\"expectedRevision\":39,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-aid\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"b183a125-5678-41fb-95a8-27d6b64325d4\",\"expectedRevision\":40,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"help\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"898d5a11-adb9-4b72-845d-a699c0287c81\",\"expectedRevision\":41,\"type\":\"PlayerGiftFood\",\"payload\":{\"recipientId\":\"actor-2\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"1bd3a21f-6a90-4ee6-810e-270f58470d44\",\"expectedRevision\":42,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-aid\",\"action\":\"claim\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"58c796ff-ccea-4a0b-af52-c4f58314eb07\",\"expectedRevision\":43,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-trust\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"39266d70-305b-4dde-99f2-d376527fbe10\",\"expectedRevision\":44,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"forest-route\",\"action\":\"accept\"}}"
+    },
+    {
+      "route": "/api/runtime/commands",
+      "body": "{\"version\":5,\"commandId\":\"aec210aa-a130-49a2-9be6-52572f10bf48\",\"expectedRevision\":45,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"ask-help\"}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"8ce513b6-e811-47b5-8b66-5585a58d8f1e\",\"type\":\"MarchSet\",\"payload\":{\"x\":16,\"y\":7}}"
+    },
+    {
+      "route": "/api/runtime/demo-order",
+      "body": "{\"apiVersion\":1,\"requestId\":\"e73be9d2-1598-4d36-af2a-afd1d036a565\",\"type\":\"MarchResume\",\"payload\":{}}"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "forest-desktop.png",
+      "sha256": "8c86681a6f8d7543b13c9ecb7164e0cc21d51a7355648aa096553174eef43a58"
+    }
+  ],
+  "error": {
+    "code": "ERR_ASSERTION",
+    "message": "Horizontal overflow on the narrow viewport"
+  },
+  "externalModelCalls": 0,
+  "startedService": true,
+  "remainingLocks": [],
+  "candidateVerified": true,
+  "candidateGameFiles": 192,
+  "cleanupErrors": []
+}

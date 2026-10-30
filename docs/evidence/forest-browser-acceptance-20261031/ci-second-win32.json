@@ -1,0 +1,411 @@
+{
+  "schemaVersion": 1,
+  "platform": "win32",
+  "head": "c4d16328c779825bac00c673476badaf92dc1b5b",
+  "runId": "41106181036",
+  "sourceSha256": {
+    ".github/workflows/forest-browser-acceptance.yml": "c9075b5af0804df816f74d3119b7733f0e9c5fa070ca3165f91539f24c5c7ad0",
+    "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+    "scripts/verify-forest-playtest.mjs": "60dac21607cac6014ed2aef4f3524f7607136d64f341b2becad8914eab2485d1",
+    "scripts/forest-playtest-candidate.mjs": "d65132c93f45aadb55a643384950040676af7a45e502db644712ce98e5007d47",
+    "scripts/forest-browser-ci.mjs": "e734265ae33c1207894e279e5d98004868632e839e8247dffea4dc8bc6fa03d5"
+  },
+  "gameSha256": {
+    "Start-Forest-Journey-New.cmd": "e538af5c159cecdd08f83b5564451377f5287fa50083f9abbfd8601547e717f9",
+    "Start-Forest-Journey.cmd": "d969a70ba95641d6448ba2a891872595bdfd8bc4a962fb60bbdd867bf8376b3f",
+    "_verify-issues.mjs": "b4da4d663a0707d9f0f353ee0016f5f17d2d9861552f7597c8d2b31be59709fc",
+    "battle-shot.mjs": "5ff9acc40425a4ca5f81995432af5f0fdecc8af0011394d83cb04726ee62abf2",
+    "battle.html": "4895f59dc0b26992da2e87a767fcb822b21bc54a5a45e827f8ebfe05c19dc70d",
+    "character.html": "91a3c16bd3f0356816c2d72bc8daff159566fe6f362e9cf4b8182930e0bd690f",
+    "ctx-e2e.mjs": "d497c7687aff630185a47b44ab3913538ffa98fd590df243ba34224bfc9cea0a",
+    "demo-forest.mjs": "501b2649538c5ad55b4b4baee8590da36988ab16a382469a6716231cdecced2c",
+    "demo-npc-dialogue.mjs": "e0e92fce9c98ab47d50e538d0d7cd85e12293b7d8dd2d596ccfca17be9276473",
+    "demo-operation-feedback.mjs": "f6c81536d142f99c9c3e3f2b66f655bc2ed74988dac98c9a73529b7d9d3e1140",
+    "demo-playable-goals.mjs": "aee9ea3306dde4d57291394b020f86925c02ea8cccfeb94cb2207da8714a1737",
+    "demo-runtime-bridge.mjs": "2edde7173a33611b5c19cc9b699e6c36aae8b7b105a3ebb3b4e8b76ea431eefd",
+    "demo-runtime-interactions.mjs": "4a441480287892c1664076292ac0f9787e4abbc753018bd092bd797e59119385",
+    "demo-runtime-prototype.mjs": "174833c4cb763d36bb94ceaa951f791837d35f8a8a72154a7e290a7bbf88b984",
+    "demo-runtime.css": "bc9bfae3cc94b5e0a7701530c588f1b6020516c8f4fa30dff13443edca7f5bdb",
+    "demo-runtime.html": "565d2931309ae9912d563a4c0e69bebe7f75750fec80d2412c7108075d4cef19",
+    "demo-social-composer.mjs": "59afa1dff60f271f235613170d25596ec5daff599c9f1e767b359678ea61803c",
+    "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
+    "fallback-e2e.mjs": "85695d66fe463a74b242b87092ac028560b1b87fcb1dac8daad68a314dd19bfd",
+    "fix3-e2e.mjs": "f13c8dde286ab3146174e5567ce6033486922e2f17d394c15eabd16875e5d2b2",
+    "fix4-e2e.mjs": "ae5813fea904a5f10f228268910512fc9ae5381156eb91f602245bc2c3e286d1",
+    "fx-diag.mjs": "3639c28ee5756943e27f724b4946eadadc1202022c1f4b6c50fc6131d2a641ba",
+    "fx-shot.mjs": "8b05053f133f16243de6d35091c19d53ca231bb26da0c2564598bb06efe087e2",
+    "game-e2e.mjs": "1f19545960d8fff168215aa8fabf77d19b0fdcbbf82f20e1c2208c87b8d94bc1",
+    "index.html": "0c57d66bec90a847da6f39a254312903991170722b9f539b3d8ca57e57bdc734",
+    "inv-e2e.mjs": "35828f24dbb8c41f8862bef3c4a0005edca6363d328965462586542566589b68",
+    "kit/accessories.js": "3e2292545aafed129573f3a741997da8dce41060d21aef16d53986361fa21e04",
+    "kit/appearance-modern.js": "a01b82c814983252d8545cd7ee0e302e6e9424ed35020e333eccf5cbbbea5ecd",
+    "kit/core.js": "8b7ef52e6a01ca2d73275d9e0696e2c266b519f5fdbb07c7ffb680faf2349f00",
+    "kit/creatures.js": "d8d019f4bacb42d75337c858f3c81819de7dcca43da0393288c50b25daed2adc",
+    "kit/effects.js": "558c85cd65c22352da17b9aff8aa8a5a53517e6949d133791b7b54f57a9478ff",
+    "kit/fantastic.js": "a615e4683c5b095c16121e278cc77da3973c03adcd0ec9857aa1ccc39d4426f6",
+    "kit/fixtures.js": "ed573aa782dc5bf754c0293fa8c3e212551539c50d07f5870ddddfafc5de2bd4",
+    "kit/furniture-lib.js": "71170a329d3db4db17a6d56743e4502c3e786a92443c05ea172b70a67b2f4a63",
+    "kit/humanoid.js": "4b6aab11fbbe6e819f973ded8555bc45d804aa25f75711fdb8d78c22bb4a9e98",
+    "kit/items-lib.js": "ad4b502e9fee914d7dc3607430e819e037bd117e59da9e1fafd742322cac4a64",
+    "kit/items.js": "f22f4892888db4a228ab296f910fcddff6e2fc45cb156b2786a081529f5c59b6",
+    "kit/quad-lib.js": "df9547af89a2febabe8dea7fbbacd027833b0370c4ba38935e2d29667a403a03",
+    "kit/scenes.js": "e42509f05e123c70511ef0cdc738d964ca9d4bcd6fe551316a7325b25d4db11a",
+    "kit/special-animals.js": "08073fddce1d5c2a3adfb99fe95b7017ebc4d6edadb3ef737c18bd5db689d98f",
+    "kit/states.js": "11acc37ce4591f74546fad4843c39b75b956593b0e6f91a22ffa1d294e05a378",
+    "kit/structures-lib.js": "3667e339fa877b6e9da09794fce83439bc127ae1f975d027e968083a12f27085",
+    "map-diag.mjs": "fa32939e879411bf1f1a9d0be83bfeaf06528583f8a75a9ab0870d76e2df0f65",
+    "map-shot.mjs": "5d8c69174c08a9c2eebf7d48a5023685979e2f71e67836a92f528a1ee270d258",
+    "rpg-e2e.mjs": "08dc04480e23a98814ffe9811b6aed4b1fd53e68fa2690cde24bcdf47eacc274",
+    "runtime-activity.mjs": "27c8aa7e51a8227fea62846a1e003f87ed2c37937d6179ca43983198b2d56407",
+    "runtime-campaign-battle.css": "4e4fb6f6d35397b5011c3507d23ffd9788acb6743ee572ca4a9f3eaac28d047e",
+    "runtime-campaign-battle.mjs": "6a8fdd5bb1ffb1a306253734b6cfb94384992dbff9775c549c2b2ac26761ec16",
+    "runtime-campaign-contract.mjs": "8fdaa0b2e07255b3d6b26228525b1ed57854de8a17862dfb98149798aab2649f",
+    "runtime-campaign.css": "c1261d72210b71608c1584b661d195cbefcbe46c288d3c6da21c675a36b614d3",
+    "runtime-campaign.html": "dae079a6522bffa06a653469ae878a493a19bce87062b4858ab5f71e53b237f6",
+    "runtime-campaign.mjs": "015a54c5f7e8796302248cef37ad5ab8b8dfaff0596dcfa798a95f8c78cc6b11",
+    "runtime-encounter.css": "c693e1009d3901ca3a84fd799438e744ee606f5106236e0d77545de5648b86c7",
+    "runtime-encounter.html": "6bba9988cee1aed84e9d0dedc0c758374337d0b284b9b468873d38152cc866c7",
+    "runtime-encounter.mjs": "d07e71d01f42b9e62b22bbdbdd861bcafff444fd3d4f231283ae24348f47286f",
+    "runtime-forest-contract.mjs": "c9fe641e952b23895cfa87c1d5f88a1a35934fa0b90287a8b3c773fcbf07ffcd",
+    "runtime-map.css": "17707ae39819152f16df8d36649835b179d705f7540fa6e2cdbdb1ca8601f841",
+    "runtime-map.html": "cd20785785f1ddd6de07906841e96e18714fecc55e059113eca91df88b308830",
+    "runtime-map.mjs": "21f3c3adae0bab3579bd2bbbd985eae3fc6aa7c0bf525110a8633b1e4de1bd75",
+    "runtime-mind.css": "9570d2b5c4077ab09746bb727462810064aade0b2a4157b2e02fd4e003c4b6eb",
+    "runtime-mind.html": "ab7a26666dab240a5030b8345c937e399763993045d3430e2123c1dc41d6c0fd",
+    "runtime-mind.mjs": "9e177758d35e1607c5724c96304fe597d6074a9f151b0a02272785baa24c3206",
+    "runtime-negotiation-contract.mjs": "528d6214a61140a78d988ff4af26c5429f1dea9ec1a9bab5e25bf21c6b58ea52",
+    "runtime-playable-contract.mjs": "1a6c92650075c11d0d685d2e8e370e391c632cc1e7403aa39ba6483b6779b1e7",
+    "runtime-playback-state.mjs": "c672dc7d7125b40631a0f03552719250e998a12db13d085e85e1233a4a409dc2",
+    "runtime-presentation.css": "4384e83355e0c1c062298d8700be26c3c3011eb1d853bf124dfe432c60f7a8a9",
+    "runtime-presentation.mjs": "4e7506f093bdf5535b779d11d597b6c688363ca9aa8890ac950d20a4c11f37d1",
+    "runtime-server.mjs": "02d5016b63592f6a1bc1ad33a2386b8743f9c51698ca1cd53f52a9c7bd1abe6c",
+    "runtime-social-contract.mjs": "f88ac21c6fdbf8dd188f9f0bf9b2895550d80623faa5830dd2d5e2b0bbff9d38",
+    "runtime-village.css": "0696d8bcdaccdc0fe9977a2b3b6839882619d7ba87fb54007713a1ece8942954",
+    "runtime-village.html": "a20970674baa6144febfa6ac1c5cdf28802ec807e575f515692fffd05321b33b",
+    "runtime-village.mjs": "65258ff9c2b70b805039c3b19c860be9ea891f4988e1bfd37a4f30c348ced075",
+    "runtime/core/actors.mjs": "408ad1c2d820a11fced5616f56f97d0d83600d3e216e1390fe2871aa262b6158",
+    "runtime/core/campaign-forest.mjs": "5bc5bf83232f0fe191c2998a0d49c23bad54fbf9da33c09f42b9fec5135a0dcf",
+    "runtime/core/campaign-limits.mjs": "f2aa36aabc71d4354760db62b67fd3e58a8253bddcf0c57a4b69368a824598e6",
+    "runtime/core/campaign-map.mjs": "9e6bfde60c8684f7a3f35c3daac34e0121f999bda475a240a167aa50be39e988",
+    "runtime/core/campaign-npc-agency.mjs": "be74d384f287b221d12897c16db84fa8ffb44d1a00087d682c9b3ca5aee69016",
+    "runtime/core/campaign-play.mjs": "a7480b8080471fe2f544c979254e54af8b2f4aa101078bd96a2ce31b709c5c89",
+    "runtime/core/cognition-signals.mjs": "62dea68a97ddd752b45de94754054ad891bdca9d04fd96f1364a615b7a938941",
+    "runtime/core/cognition-state.mjs": "df728ea114755cd7212913b4b9db4036618073b834fbf03cd6b049598c133dfb",
+    "runtime/core/cognitive-review.mjs": "be3b1d6b489b5ace02fa315a489fed83dc09a871d687463eb34b9e27aa7994cf",
+    "runtime/core/command-engine.mjs": "7bd1612a03b3b65f4dc63cf67022e420c197c3a7aa84878cc0f78f6dfcf9f7f9",
+    "runtime/core/data-contract.mjs": "1efa69bda22c2d16dda2865c3bfec58cf94d7fdf55b574df4054d0195091ed83",
+    "runtime/core/ecology.mjs": "5bb1a9817759ce0d6dec49af92ce53438f0f327f2ab11926e1cd60d8f449dbd0",
+    "runtime/core/encounter-combat.mjs": "df6df166e992a812b070ece0d893ab63e0af4cdff0ed32a9e1d2cac4944d4aa2",
+    "runtime/core/encounter-reservation.mjs": "bab57af91e7bed7ea16ee1c65ba798939f188de8288e94bcdced5adafa37ec29",
+    "runtime/core/encounter-runtime.mjs": "e01240ed71808bd81e3be17c226b834ed75636897a0473462b35cb8804d816f6",
+    "runtime/core/encounter-session.mjs": "1f5283c27f0f9213060a52aa1aa77dc1bced965cd3ccc3f8969d253ccad2c33f",
+    "runtime/core/encounter-world.mjs": "476140ff1660950f6e124ce4b69899704a185d35904af5bfe30cfad5e13ee527",
+    "runtime/core/event-log.mjs": "2ad5eb192ee078c74f2f5ea282eceab13c4839bd77ac586c21a132898711dd3e",
+    "runtime/core/experience-state.mjs": "784b70d2ed142e7ba97c797cd9174ecc4a3acdad9458e52477f6cb03bd76d2b0",
+    "runtime/core/hunter.mjs": "267fc46ddaea12eb1d481976b3710cd58ac05aea4919d66d8c27f82a54c4d9cc",
+    "runtime/core/market.mjs": "7df1d7c729d7d5a693574a49af7864cdca0b67c5cd30e9ba5faca833c06bfd2b",
+    "runtime/core/memory-observer.mjs": "6105840651b530c49c05fc6c3ef2eb023aee7b09534c31262604ef5727144a63",
+    "runtime/core/memory-runtime.mjs": "3a12842b02c6eef7b06a42d919aa160815615487e0e587461d8bd1a26edfd0b3",
+    "runtime/core/mind-planner.mjs": "b2807a30a3b54b84547609dc86bcc1244b82037727895d235249e5c40f0238f8",
+    "runtime/core/mind-runtime.mjs": "0bca41facec2c2a0126dce9b1ad39dfbaf60baf5c327dd7483a724e7639456c0",
+    "runtime/core/mind-state.mjs": "7e28172f9a45f5b3c16c55ff373816b956b5121f9022d75e0b5c60d9fa8eb58f",
+    "runtime/core/motivation-planner.mjs": "3a4fdb48f4e297fb6ab101f361b269e4672ee36e1e442f1dceb0f774929d6f9b",
+    "runtime/core/motivation-runtime.mjs": "7fc31d864242d976be4b7ca0ea9dadd1b796238b57448206f9de6f687a40002e",
+    "runtime/core/motivation-state.mjs": "5700122c56b1538b706ce3e3a066a7e712a60e157213cdec3e29911f2783708d",
+    "runtime/core/npc-life-context.mjs": "14b95f058cfcf88e3893d237e3087dc118876addf2c7fb1c0ba0747cf0f5dde0",
+    "runtime/core/npc-memory.mjs": "d2aca016dde6bada9c6220f6c3eceab34c1e4e50c7830c07ada085d5960ed878",
+    "runtime/core/npc-negotiation-terms.mjs": "5f80bc3e4d9a4941bb4fb1f09020d29f0bda2a2733e6f382cae5e368ef52d50f",
+    "runtime/core/npc-negotiation.mjs": "1ba5027b90dd96b290d582c918e3c13f34c2c12718eda48f7939f132318d88da",
+    "runtime/core/npc-social.mjs": "7dc296035a5f6d2e6217f03e10b015439b248e40940585cfc42bdd78c49de2de",
+    "runtime/core/npc-village-sites.mjs": "3af4d2ff4d7b7a15e7d136f5a5e1356f3857df73de4f7d1e2ced40371a3ef28f",
+    "runtime/core/personality.mjs": "fb2b684a6e4077ed3758bd30e8a43ac54aa2dde8ff2c14a028843c56a1d84972",
+    "runtime/core/player-intents.mjs": "088b6c3e1fdeeaa2e3367d3ae64cb51b8d4a9d9d8221c433e9f2f445f4bd291f",
+    "runtime/core/player-runtime.mjs": "ada4aeb6ec76e888f4ce425b7deb37f307dac224c872c8ee1028c8c35b57aa91",
+    "runtime/core/player-state.mjs": "ce7e0827038d239d3f2d771abb16e008d377c246f7c6d6b022133476e0fd3bf7",
+    "runtime/core/player-work.mjs": "9554461f792c00efe920d045eadd05e833ba21187f8a95f860a4e3ca576a872c",
+    "runtime/core/public-medicine.mjs": "527244f09283286ec34964b026618347bfee9bedb52d1c994edc9646dbe29f99",
+    "runtime/core/resource-ledger.mjs": "81883469ea5647ca5e743278fe55f130a87fd332dffbf04a1b8a0b05e6918dbb",
+    "runtime/core/rng.mjs": "8836d42ec224f1d5d45cc9012e48ab3ce42423e53db47f1201d2fcfc6aaef2c0",
+    "runtime/core/scene-campaign-runtime.mjs": "728618a18293b6d28edaf32a333ad9cca8e64f7efad90c4176036e846294b225",
+    "runtime/core/scene-livelihood-runtime.mjs": "121dbf3d5d684e9adf053c01a66c421315f75f6119eb63a873dc85e2f13e535f",
+    "runtime/core/scene-runtime.mjs": "156cf34a52ff54fc66aca9133455986f200ee47e832383e77bc17fffc034bd70",
+    "runtime/core/scheduler.mjs": "3339371f9471c708a1db71c4721f2d936e22b1a3fad47cadda749c58b6e62d79",
+    "runtime/core/simulation-clock.mjs": "34c61a43f57b2c13e5dba35114ad041063bf8f572ac4fc3b55f3b5dee687128e",
+    "runtime/core/society.mjs": "d6c291cbc6923efeba34abc3f7f881a811a8c2fef667abc913acfd03f7810fa0",
+    "runtime/core/survival-planner.mjs": "180423eceee89165fc4b911091cae4ff593512a6d2cfe4af2d273bdad251f54f",
+    "runtime/core/survival-signals.mjs": "a2912a5b0a4ed3e205a77489f79ad5c98bdff69cac46e1eb60fd314e0e00c2b3",
+    "runtime/core/survival-state.mjs": "06c5373679f5146ae67435f4458af8aa9401fafc19b9394c126198b5d0edcd7a",
+    "runtime/core/work-experience-adapter.mjs": "4acb999f4146fad85b2bfa5ae6303a9b8b6ac7743b2243ce5d120de26eba460b",
+    "runtime/core/work-experience.mjs": "99f1df33a5cef74a660172bdac3280261fbfc4a1538d4b512e459c7b6fda10a2",
+    "runtime/core/world-state.mjs": "a705538791b8750d5dce16ad2fe82dab6aa9990bdec401e8af066e9b45ca9d54",
+    "runtime/evaluation/npc-dialogue-eval.mjs": "2591bc65babb4431d25d90946a1af296f458ae68d1f1fb8a73d3b8e7c4284806",
+    "runtime/evaluation/npc-dialogue-review.mjs": "029d79d49d3a2faea462317d34cdbb687d5672dc300aef1682b893ebb61eca0d",
+    "runtime/evaluation/npc-fact-audit.mjs": "9353792b80c2ff5384b66ba473f7914f1041986ce364d723f30a6a233cd4b34c",
+    "runtime/evaluation/npc-report-files.mjs": "4750b4be811166a675facaabfed552b79cbb3c1f0d042773c76f55a3c4c788bd",
+    "runtime/experiments/b4-experiments.mjs": "40f52aae2431854358ce03554c54c16e82e75ba5f4fa2a0cad64d41caef97723",
+    "runtime/experiments/b4-report.mjs": "6b3f5e5f95625b1a4dabd3b6abde6bc1651785e81341289bd3f61cebd24e1ed5",
+    "runtime/experiments/m3-closeout-scenario.mjs": "4147be851b71e92a37e7344460ddfd7bb826b3ef6f50c48ecd80db647bd386f2",
+    "runtime/fixtures/actor-village.mjs": "9ca4261affb8665e3115ed304c56ce86aec462d92523b563670da29aaa7ff63c",
+    "runtime/fixtures/b4-calibrated.mjs": "898c6723f3409c199096f66b55dd9fe1c9a70ddde66cc17364f00a9f48f093d7",
+    "runtime/fixtures/campaign-village.mjs": "14afd4c55db69a6305073a2d620dad2865c8ec37276fedc3451da5383c4e6ddb",
+    "runtime/fixtures/clock-smoke.mjs": "22f9dcd2541191e9e05ecccb84558a4bd5a0aa163f60fce4797f635317b33d27",
+    "runtime/fixtures/cognition-village.mjs": "6337d6481c1deac12faa8184d2c4383d405661b303e7de8903ce98be553559db",
+    "runtime/fixtures/ecology-village.mjs": "3a0d7030f5f8e063a51691458690f5c3f871e6acc545c31c82d855a3376714ca",
+    "runtime/fixtures/encounter-survival-village.mjs": "e672b563f7d27aaad96f5db62039e106ba732520b64fd231bfcf1e3173f85287",
+    "runtime/fixtures/experience-village.mjs": "54e3d78b4acfff97a2d7bb367a22611abad9f4edd6f4ac49509e6a030ccb2437",
+    "runtime/fixtures/hunter-village.mjs": "666dce6b2f76138b09b6a4086974a7202091be2b742cd890d745a45debce2667",
+    "runtime/fixtures/market-village.mjs": "34e6c4c0f80473a6d4184889483ace59611f31416c6bcbec5ae6265b689d143a",
+    "runtime/fixtures/memory-village.mjs": "21b50785bdf959679c85988b8573c91eb0b31597ab640032e89234d7db5201f8",
+    "runtime/fixtures/mind-village.mjs": "adaace75451462fc298c4ecabb82601e1654f8ebb9b3b683df74ec70747d97b6",
+    "runtime/fixtures/motivation-village.mjs": "8cd22e38530632ccd1c272fd5a57bdd423f7f695fba9832c4be8beb6c1ad5fac",
+    "runtime/fixtures/personality-village.mjs": "17420ae32394553912a2e8be4e24aa21a73802daecdc5234775ca8444303282a",
+    "runtime/fixtures/player-play-village.mjs": "ccae797e2a117460e53a7b744581be6a4f7133ef8351667c5b1407c963a9593d",
+    "runtime/fixtures/player-village.mjs": "461d7aede976db01931a62494b98e26d877f9b419f4c17a27b78cb63c776cbdb",
+    "runtime/fixtures/resource-village.mjs": "224f6a4f3b780f30bfa73e377e67d81b87779d704745cf9d5a5e79ee986147c9",
+    "runtime/fixtures/scene-livelihood-village.mjs": "587cc9a342d70b0c1a72d645ad68e2c748160644e2365c490380e676ce001b17",
+    "runtime/fixtures/scene-survival-village.mjs": "226525234d45c6eeafa5e875223f1a322208c80f7010546c66a602094bf76523",
+    "runtime/fixtures/society-village.mjs": "7220c9d37adb70effce35fa154c866c457d2f7091c0dd11187fa58cb91e2ed57",
+    "runtime/fixtures/survival-village.mjs": "c0aad63872528567bdd80f00fb4935127925bfd7e1ed5826a2394e88b9d5b30e",
+    "runtime/knowledge/actor-knowledge.mjs": "8a5c93a50037f8a4e03a7b864d77097f126d44a9ba5c6f5731a5e199949aed5c",
+    "runtime/knowledge/cognition-knowledge.mjs": "6bea830b7114cfe9139042c5aad9b00f0789be1b0a1de7a9e843c20163af2822",
+    "runtime/knowledge/encounter-knowledge.mjs": "8d3b988f450d90539748b093ae84e42c1d6ea5476a23d1fee127a74ea2c61d2e",
+    "runtime/knowledge/mind-knowledge.mjs": "217fd2ea539bcdf77d303afe8f1e3279b952b58ff7d85ec9886c71d629a6c204",
+    "runtime/knowledge/motivation-knowledge.mjs": "6b472ab4284c036bdd8c3ec2cfd591e3ed73f40ca9ad22d4b80295f7305d6a76",
+    "runtime/knowledge/player-knowledge.mjs": "195870c5d47ade410295495f02fdd4632e33579a66281e9651bcb1f170abefe5",
+    "runtime/knowledge/scene-knowledge.mjs": "e9f92a068c5efc0e60934980905f69afc08c1a0d3124f59a3edb51126dc3bdd5",
+    "runtime/knowledge/survival-knowledge.mjs": "5c65f7b8012d4b0901db1edbdb2abe03c63f5388ba3ff397da3f83f89daaa4cd",
+    "runtime/persistence/bounded-json-file.mjs": "dfa268f720d80110f618355eafb6bb1e41cbac7e0f040405a063e160e1c988b5",
+    "runtime/persistence/checkpoint-store.mjs": "e63fc61acafe62dc57102ade35f2a39ec2e6a7a2d00437a47a60eb1fb6956743",
+    "runtime/service/http-contract.mjs": "2b051338981bebc2bb79d9ab1cd097f26596dbbc070c2dcd2c6de37d2868afe9",
+    "runtime/service/march-runner.mjs": "e71e3609d97eae2e7e42a5ff1047a47fcaee43459bbb1d4f74f78fd39587a19a",
+    "runtime/service/npc-dialogue-grounding.mjs": "25d2e005aab0ebadd3827216c3a60221fe616adc4ee2cf01f628561bbb90be34",
+    "runtime/service/npc-language-provider.mjs": "a48a76653b1984a200070edb84ad707c33a4e9915421155b09f8fbefd23a2909",
+    "runtime/service/npc-life-facts.mjs": "0309ba301126b72aa9bd3c070abc341bcf8fd99002cb742b5941f80c310b6e2a",
+    "runtime/service/npc-recall-focus.mjs": "b6b9be89889d49897eff1779b3e22dae1b202d4bb04c9bdae3c2383f78362889",
+    "runtime/service/runtime-owner-thread.mjs": "8c9d280a3c51717d5d9e7f16c30f65b05eec1216b22e6dc099edc8baf1da5f49",
+    "runtime/service/runtime-owner-worker.mjs": "2bff457263c4298b950aef23be3eb8e71de28fcf8a72a388f55373b510e58f24",
+    "runtime/service/runtime-owner.mjs": "b30fa29c73e3a463906d58e1a65a42004f51357f08beca633dbedb1e1ff74657",
+    "runtime/service/service-commit.mjs": "ea3e632df658a5c26111cb2aaff192550f7a074ae6553de777f76f5e5a490da7",
+    "runtime/service/strict-json.mjs": "f239dfc71aba939203c666c60292829b1b897b676426a9cd33edbde595c3ad40",
+    "runtime/service/world-activity.mjs": "28be2fe93598b86646889e681a3fd5c90bea95f67bc56cfb26d26f1f4abedb82",
+    "scene.html": "56379c3de012039b8e61ced333c7dd6245bd75b1a34559facd969d703863d571",
+    "shop.html": "7c6dfd233651bd8d0b793638f3755092a9365f9b936c2e2e1ae9c82a492ed95f",
+    "simulation-runner.mjs": "8edc6ada7ef36dcf55cb80c1a21d30254f8c2b020c979225a609348f47a65f37",
+    "skill-e2e.mjs": "78edee77aa9d26710a3add31be8705a267fe12298e46dd924acbecf2e9fe9464",
+    "stickart/beasts/deep.js": "01b77ed4c1b642baa59e6290363c7345651afb21b194be0ea20f73d59b2d69a3",
+    "stickart/beasts/mountain.js": "9144dcda376310e9557d4675ffee0e70f183f3d5e7cd0b8487e5aad11cae5279",
+    "stickart/beasts/quad.js": "77048272acd9bbc579c1ee4ec24b8650a82672f515bb502e56802c59506e6463",
+    "stickart/beasts/serpent.js": "05e4bd963ba418d3226cab0cee54e47482cb3fb88ba212c4dffcb0a6ed267a04",
+    "stickart/beasts/village.js": "5a00ded3f073d7d55a7b2759705305f582063c47d9eccebffb7d2a12c5c960ea",
+    "stickart/stickart-core.js": "87be3901ffcdc2aa21d9b2d45200e0518e443bfbd0fc0fa6d4f53e96b84e751e",
+    "stickman-engine.js": "c66264bf352b7b49e2bba7fa3c518f45a1166e2c133fa03868156861537eb35f",
+    "win-path.mjs": "0968e213e1b8deb489b53f39e8ff5ebcfeddc3310f62eb785724eb06177be18a",
+    "wolf-diag.mjs": "1278b9010333f8b2503e8047bd5dac54d45f7b1e09550490cf7a4f6139502243",
+    "world-combat-fx.js": "0324c994016606716b3c2122809f30556c56284c7e450310c79a59045cc1c2af",
+    "world-e2e.mjs": "905f802dcdd4d5843d6b302779c1b5f641e6531aaebac404d2010450660fc303"
+  },
+  "result": {
+    "verdict": "FAIL",
+    "candidate": "forest-playtest-candidate-2",
+    "contentBase": "8fa8179a99ddf85ac142df30956ad8d4ee049527",
+    "browserExecuted": true,
+    "steps": [
+      {
+        "name": "new-isolated-world",
+        "wallMs": 8660
+      },
+      {
+        "name": "village-and-real-loan-through-buttons",
+        "wallMs": 2357
+      },
+      {
+        "name": "desktop-and-narrow-screen-forest-controls",
+        "wallMs": 4421
+      },
+      {
+        "name": "explicit-encounter-and-keyboard-exit",
+        "wallMs": 626
+      },
+      {
+        "name": "return-worn-tool-and-complete",
+        "wallMs": 3508
+      }
+    ],
+    "errors": [
+      {
+        "source": "network",
+        "level": "error",
+        "text": "Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING",
+        "timestamp": 1793384504698.62,
+        "url": "http://127.0.0.1:63486/api/runtime/demo-events",
+        "networkRequestId": "3240.52"
+      }
+    ],
+    "requests": [
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"4b0d0f67-31ec-45b6-b70d-9b8f37a59213\",\"expectedRevision\":0,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"livelihood\",\"action\":\"accept\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"10fc6e78-4db2-4f6b-a036-ed2682bce4d7\",\"expectedRevision\":1,\"type\":\"PlayerWork\",\"payload\":{}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"76605047-806d-43ea-92fc-9a9c7fa2d329\",\"expectedRevision\":37,\"type\":\"PlayerBuy\",\"payload\":{\"product\":\"food\",\"quantity\":1}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"36c77bd5-7d60-48a6-a415-379312a7fe55\",\"expectedRevision\":38,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"livelihood\",\"action\":\"claim\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"26b458ca-68a4-43e1-aaeb-71aa6324fba2\",\"expectedRevision\":39,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-aid\",\"action\":\"accept\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"7d57472b-50da-43ed-9fca-162aaf50e756\",\"expectedRevision\":40,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"help\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"2790773b-4adf-46af-8e5b-217efac1ab05\",\"expectedRevision\":41,\"type\":\"PlayerGiftFood\",\"payload\":{\"recipientId\":\"actor-2\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"b07e3305-4a22-447f-833f-8c547f40a452\",\"expectedRevision\":42,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-aid\",\"action\":\"claim\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"90b2400f-62ab-49ab-b684-5d1f68729a3f\",\"expectedRevision\":43,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"hunter-trust\",\"action\":\"accept\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"32a6b4e4-9a44-4d5e-aa2f-37a4e9bca57f\",\"expectedRevision\":44,\"type\":\"PlayerQuest\",\"payload\":{\"questId\":\"forest-route\",\"action\":\"accept\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"6363c7af-0353-47f8-b12b-535d9594574a\",\"expectedRevision\":45,\"type\":\"PlayerInteract\",\"payload\":{\"targetId\":\"actor-2\",\"action\":\"ask-help\"}}"
+      },
+      {
+        "route": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"381e5d5b-0ab3-4715-ac38-3c57ea9f6d9c\",\"type\":\"MarchSet\",\"payload\":{\"x\":16,\"y\":7}}"
+      },
+      {
+        "route": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"538f2596-61a0-4948-adba-aaae5691acfb\",\"type\":\"MarchResume\",\"payload\":{}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"847e6913-f191-41c9-8b7a-71c9d9e58109\",\"expectedRevision\":60,\"type\":\"PlayerForest\",\"payload\":{\"action\":\"collect\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"0cb4c91a-724f-45ca-8dd7-4bc9787ab436\",\"expectedRevision\":63,\"type\":\"PlayerForest\",\"payload\":{\"action\":\"camp\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"34090a1b-bb94-4bed-a57c-fc0cf98c9159\",\"expectedRevision\":66,\"type\":\"PlayerForest\",\"payload\":{\"action\":\"observe\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"be6c08cf-95be-425c-9e92-ce52f10631cc\",\"expectedRevision\":67,\"type\":\"EncounterBegin\",\"payload\":{}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"cd822568-bf9b-454a-991e-deb978e0e9fd\",\"expectedRevision\":68,\"type\":\"EncounterAction\",\"payload\":{\"encounterId\":\"encounter-1\",\"action\":\"attack\"}}"
+      },
+      {
+        "route": "/api/runtime/commands",
+        "body": "{\"version\":5,\"commandId\":\"a5023f02-4b4f-4939-9fde-9d1b27f40a36\",\"expectedRevision\":74,\"type\":\"EncounterCancel\",\"payload\":{\"encounterId\":\"encounter-1\"}}"
+      },
+      {
+        "route": "/api/runtime/demo-order",
+        "body": "{\"apiVersion\":1,\"requestId\":\"cec73beb-2849-40be-ae3d-cc1804b7f124\",\"type\":\"MarchSet\",\"payload\":{\"x\":4,\"y\":7}}"
+      }
+    ],
+    "screenshots": [
+      {
+        "file": "forest-desktop.png",
+        "sha256": "40adcd8dfca7c4bda9029efc5f14f93dc308fd9dc3d769d142c029a015b0c35b"
+      },
+      {
+        "file": "forest-narrow.png",
+        "sha256": "d2e037ca85f98e9cae4393b07236d63b467dabd1bab2164a5a685d170e84783c"
+      }
+    ],
+    "diagnostics": {
+      "awaiting": "#resumeMarch:MarchResume",
+      "mobileLayout": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "buttons": [
+          {
+            "id": "collect",
+            "width": 298,
+            "height": 44,
+            "described": true
+          },
+          {
+            "id": "camp",
+            "width": 298,
+            "height": 44,
+            "described": true
+          },
+          {
+            "id": "observe",
+            "width": 298,
+            "height": 44,
+            "described": true
+          },
+          {
+            "id": "avoid",
+            "width": 298,
+            "height": 44,
+            "described": true
+          },
+          {
+            "id": "site",
+            "width": 298,
+            "height": 44,
+            "described": true
+          },
+          {
+            "id": "rest",
+            "width": 298,
+            "height": 44,
+            "described": true
+          },
+          {
+            "id": "challenge",
+            "width": 298,
+            "height": 44,
+            "described": true
+          },
+          {
+            "id": "exit",
+            "width": 298,
+            "height": 44,
+            "described": true
+          },
+          {
+            "id": "return",
+            "width": 298,
+            "height": 44,
+            "described": true
+          }
+        ]
+      },
+      "overflow": []
+    },
+    "error": {
+      "code": null,
+      "message": "Browser error: {\"source\":\"network\",\"level\":\"error\",\"text\":\"Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING\",\"timestamp\":1793384504698.62,\"url\":\"http://127.0.0.1:63486/api/runtime/demo-events\",\"networkRequestId\":\"3240.52\"}"
+    },
+    "externalModelCalls": 0,
+    "startedService": true,
+    "remainingLocks": [],
+    "candidateVerified": true,
+    "candidateGameFiles": 192,
+    "cleanupErrors": []
+  }
+}

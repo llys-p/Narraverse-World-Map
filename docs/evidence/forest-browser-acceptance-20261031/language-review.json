@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "assistant",
+  "humanReview": "pending",
+  "verdict": "sampled-facts-supported-with-language-concerns",
+  "scope": "fixture5 life-v1; not fixture8 browser/model integration; not life-v3 long dialogue",
+  "externalRequests": 10,
+  "inputTokens": 29867,
+  "outputTokens": 647,
+  "cases": [
+    {
+      "report": "live-work-01.json",
+      "reportSha256": "6a3eb8f49c61d42bdfc996f569d96e81b21eaab948a78c286fe7fff687949663",
+      "sourcePhase": "baseline-before-citation-fix",
+      "turns": [
+        {
+          "id": "work-preparation",
+          "assistantAssessment": "key-facts-supported",
+          "note": "区分到工作点、准备工作与已领工资；当前粮0钱0。",
+          "humanReview": "pending"
+        },
+        {
+          "id": "wage-received",
+          "assistantAssessment": "key-facts-supported",
+          "note": "正确承接已领20工钱、粮0。",
+          "humanReview": "pending"
+        },
+        {
+          "id": "food-preparation",
+          "assistantAssessment": "key-facts-supported",
+          "note": "区分到粮摊/准备买与实际买到；粮0钱20。",
+          "humanReview": "pending"
+        },
+        {
+          "id": "food-consumed",
+          "assistantAssessment": "key-facts-supported",
+          "note": "正确区分曾买1份和当前已消耗为0；钱包10。",
+          "humanReview": "pending"
+        }
+      ]
+    },
+    {
+      "report": "live-gifts-02.json",
+      "reportSha256": "d572fde595c15b2fedeb2256cf4b7ffd38a88086950cbacfc914cb5f68a1abdf",
+      "sourcePhase": "after-citation-fix",
+      "turns": [
+        {
+          "id": "buy-intent",
+          "assistantAssessment": "key-facts-supported",
+          "note": "承接工作领薪20、粮0及准备买；“家里”和饥饿程度表述仍需复核。",
+          "humanReview": "pending"
+        },
+        {
+          "id": "two-gifts",
+          "assistantAssessment": "key-facts-supported",
+          "note": "承认实际两次赠粮和现有存粮，未机械转向修工具；原始引用次序错误被保留在诊断，输出只整理已知编号。",
+          "humanReview": "pending"
+        },
+        {
+          "id": "wait-result",
+          "assistantAssessment": "key-facts-supported",
+          "note": "明确没有记录后来再次买粮；当前粮1钱20，与上下文一致。",
+          "humanReview": "pending"
+        },
+        {
+          "id": "followup",
+          "assistantAssessment": "key-facts-supported",
+          "note": "短追问延续当前粮1钱20，未编造预留钱或新工作原因。",
+          "humanReview": "pending"
+        }
+      ]
+    }
+  ],
+  "concerns": [
+    "本轮未测试旧目击被否认、时间换算、偷抢威胁等广泛场景。",
+    "回复出现“家里”这种未被上下文明确定位的说法；“饿得厉害”等程度表述仍需真人判断。",
+    "自动事实扫描多轮为unassessed，不把automatic-pass当语义通过。"
+  ],
+  "authorizationNote": "沿用用户选择低成本DeepSeek的授权；本轮10请求为助手设置的投入上限，旧轮8次不是永久用户限额。"
+}
