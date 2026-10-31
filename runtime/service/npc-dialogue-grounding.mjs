@@ -6,6 +6,7 @@ import {knownNegotiationOptions,repairLoanTerms} from '../core/npc-negotiation-t
 import {npcRecallFocus} from './npc-recall-focus.mjs';
 import {sanitizeNpcLifeContext} from '../core/npc-life-context.mjs';
 import {npcLifeFacts,sanitizeLifeHistory} from './npc-life-facts.mjs';
+import {SOCIAL_LOAN_TICKS} from '../core/npc-social.mjs';
 
 const pick=(value,names)=>Object.fromEntries(names.filter(k=>value&&Object.hasOwn(value,k)).map(k=>[k,cloneData(value[k])]));
 const nat=n=>Number.isSafeInteger(n)&&n>=0;
@@ -29,6 +30,24 @@ function agreementFacts(a,tick){
   loanMinutes:minutes(a.terms?.loanTicks,0),overdueMinutes:returned||ongoing?elapsed:null,
   overdueBasis:returned?'实际归还时间减截止时间，归还后不再增长':ongoing?'当前时间减截止时间；逾期标记时间不是归还时间':'不适用',
   expiresInMinutes:['offered','accepted','ready'].includes(a.status)?minutes(a.expiresTick,tick):null};
+}
+
+// Ordinary ask-help loans have no formal agreement object. Derive their terms
+// only from retained typed personal experience, never from attributed speech.
+function simpleLoanFacts(context,selected){
+ const episodes=context.observations,loan=episodes.filter(m=>m.kind==='ask-help'&&m.channel==='self'&&m.actorId==='actor-4'&&m.observedState?.effect==='lent'&&m.observedState.holder==='actor-4').at(-1);
+ if(!loan||!nat(loan.tick)||!selected.some(m=>m.eventSeq===loan.eventSeq))return null;
+ if(nat(context.agreement?.claimTick)&&context.agreement.claimTick>=loan.tick)return null;
+ const returned=episodes.filter(m=>m.eventSeq>loan.eventSeq&&m.kind==='return'&&m.channel==='self'&&m.actorId==='actor-4'&&m.observedState?.effect==='returned'&&m.observedState.holder==='actor-2').at(-1);
+ if(returned&&!selected.some(m=>m.eventSeq===returned.eventSeq))return null;
+ const dueTick=loan.tick+SOCIAL_LOAN_TICKS,comparison=returned?.tick??context.tick;
+ if(!Number.isSafeInteger(dueTick)||!nat(comparison)||comparison<loan.tick)return null;
+ if(!returned&&context.self?.knownHolder!=='actor-4')return null;
+ const overdue=minutes(Math.max(comparison,dueTick),dueTick);
+ return {sourceEventSeq:loan.eventSeq,returnEventSeq:returned?.eventSeq??null,status:returned?overdue>0?'returned-late':'returned-on-time':overdue>0?'overdue':'borrowed',
+  wasReturned:!!returned,loanMinutes:minutes(SOCIAL_LOAN_TICKS,0),dueInMinutes:returned?null:Math.max(0,minutes(dueTick,Math.min(context.tick,dueTick))),overdueMinutes:overdue,
+  overdueBasis:returned?'实际归还时间减到期时间；归还后固定，不随聊天增长':'当前时间减到期时间；不是借出至今，也不是发现逾期以来',
+  meaning:'这是最近一次本人实际普通借用的派生说明，不是新的正式协商；来源只在本轮已提供的亲历记录中。归还和道歉不抹去逾期，旧回复不改变到期时间。'};
 }
 
 // Narrow complete-sentence hints, not a general intent classifier or an action executor.
@@ -95,6 +114,7 @@ export function groundedProviderContext(context,text){
   out.memoryMode=NPC_MEMORY_VERSION;out.memoryCoverage=pick(coverage,['forgottenEpisodes','forgottenSpeech']);
   out.recallFocus=recall.focus;
   out.memoryUpdates=npcMemoryUpdates(out.observations,out.self);
+  out.knownFacts.simpleLoan=simpleLoanFacts(context,out.observations);
   if(out.activity){out.knownFacts.life=npcLifeFacts(out.self,out.activity,out.tick);if(out.lifeHistoryVersion)out.knownFacts.life.recentHistory=out.lifeHistory;}
  }
  return out;
