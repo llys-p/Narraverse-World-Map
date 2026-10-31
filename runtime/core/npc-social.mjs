@@ -6,6 +6,7 @@ import {isNegotiationMapVersion} from '../../runtime-negotiation-contract.mjs';
 export const SOCIAL_MAP_VERSION='campaign-map-v3';
 export const isSocialMapVersion=version=>version===SOCIAL_MAP_VERSION||isNegotiationMapVersion(version);
 export const SOCIAL_COMMAND='PlayerInteract';
+export const SOCIAL_LOAN_TICKS=144;
 const IDS=['actor-1','actor-2','actor-3'],STASH={x:5,y:8};
 const VILLAGE_SPOTS=Array.from({length:9},(_,i)=>({x:3+i%3,y:6+Math.floor(i/3)}));
 const dist=(a,b)=>Math.max(Math.abs(a.x-b.x),Math.abs(a.y-b.y));
@@ -129,7 +130,7 @@ export function commitSocial(world,dto,tick,eventSeq){
   else{effect='refused';speech='你已经说过了，先看实际行动吧。';}
  }
  if(action==='ask-help'){
-  if(a.trust>=65&&a.fear<20&&a.grievance<15&&s.asset.condition>=40){s.asset.holderId='actor-4';s.asset.loanDueTick=tick+144;changedAsset=true;effect='lent';importance=2;speech='工具可以借你。请在一天内带回这里还给我。';}
+  if(a.trust>=65&&a.fear<20&&a.grievance<15&&s.asset.condition>=40){s.asset.holderId='actor-4';s.asset.loanDueTick=tick+SOCIAL_LOAN_TICKS;changedAsset=true;effect='lent';importance=2;speech='工具可以借你。请在一天内带回这里还给我。';}
   else{effect='refused';speech=a.fear>=20||a.grievance>=15?'我现在不愿把自己的东西交给你。':'我们还不够熟悉，我暂时不能借你工具。';}
  }
  const descriptions={talk:'玩家与我谈过'+({needs:'近况',past:'往事',relationship:'彼此关系'}[topic]??'话')+'。',threaten:'玩家当面威胁了我。',
