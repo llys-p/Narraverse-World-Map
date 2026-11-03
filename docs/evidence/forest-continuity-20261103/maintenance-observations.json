@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "kind": "conversation-visible-observations-after-workspace-maintenance",
+  "notOriginalReport": true,
+  "missing": [
+    "20轮原始JSON/HTML报告与完成回执",
+    "维护前本轮合成档",
+    "维护前回归本地日志",
+    "维护前完整usage总数"
+  ],
+  "codePreserved": [
+    "642dc5a2db74bbb80a513abda75bdee943ed4dde",
+    "a60d2f7c6313f43c30def8730af932bd9090c64b",
+    "eab73a6318d047de95f4792a7fc71ee1f952d6b7"
+  ],
+  "modelRequestsObservedBeforeMaintenance": 20,
+  "acceptedSpeechObservedBeforeMaintenance": 20,
+  "evidenceBasis": "本次对话中已显示的工具输出与助手逐句检查；不是从丢失原报告重建的完整证据，不伪造哈希或完成回执。",
+  "retainedFailureExamples": [
+    {
+      "phase": "initial-correction",
+      "replyExcerpt": "借出是第39刻，约定一天内还；你第186刻才把工具交回来。",
+      "issue": "纠错数值30正确但暴露内部刻数。"
+    },
+    {
+      "phase": "initial-life",
+      "replyExcerpt": "眼下我手里粮食是0份，饿得厉害，正打算弄点吃的。",
+      "issue": "可见上下文饥饿200、preparation awaiting-review；回复夸大饥饿并推断当前准备。"
+    },
+    {
+      "phase": "style-retest-next-day",
+      "replyExcerpt": "迟还是30分钟，从借出到归还是1440分钟，你晚还了30分钟。",
+      "issue": "约定借期1440被错称实际借用总时长；真实总时长1470。"
+    }
+  ],
+  "finalObservedReplyBeforeMaintenance": "借期是1440分钟，你从我借出到还回来前后共1470分钟，真迟了30分钟。先前1460那个数是我算错，后来已核对改正。工具现在在我手里，你确实还了；逾期和归还两码事，我都记着。",
+  "limits": "原始20轮没有作为完整报告交付；恢复后新12轮单独记录，不能覆盖上述失败或冒充原报告。",
+  "originalPR46Evidence": "docs/evidence/forest-dialogue-20261101仍完整存在于GitHub，未被维护事件影响。",
+  "humanReview": "pending"
+}
