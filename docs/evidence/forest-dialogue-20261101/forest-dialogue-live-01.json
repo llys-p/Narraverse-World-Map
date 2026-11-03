@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "artifacts/forest-dialogue/run-live.mjs"
+  ],
+  "pid": 6,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 131246.93,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

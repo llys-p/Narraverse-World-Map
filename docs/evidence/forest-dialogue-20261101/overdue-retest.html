@@ -1,0 +1,1906 @@
+<!doctype html><meta charset="utf-8"><title>森林对话验收</title><style>body{font:16px/1.65 system-ui;max-width:1000px;margin:30px auto;padding:0 20px}pre{white-space:pre-wrap;overflow-wrap:anywhere}article{border-top:1px solid #aaa;margin-top:25px}</style><h1>森林对话验收</h1><p>真实模型与当前森林HTTP流程；自动检查不能代替真人语义评审。</p><pre>{
+  &quot;planned&quot;: 4,
+  &quot;attempted&quot;: 4,
+  &quot;automaticPassed&quot;: 4,
+  &quot;automaticFailed&quot;: 0,
+  &quot;providerFailed&quot;: 0,
+  &quot;fixtureFailed&quot;: 0,
+  &quot;blocked&quot;: 0,
+  &quot;notRun&quot;: 0
+}</pre><h2>逾期时间、晚归还、道歉与次日记忆</h2><article><h3>late · automatic-pass</h3><p>玩家：现在过了借期多久？按分钟说，别把十分钟算成一小时；记不清就明确说。</p><p>NPC：按现在算，借期已经过了20分钟。你之前答应一天内归还，可工具到现在还没回到我手上。我不催你编数字，只请你把工具还回来。</p><p>人工评审待定：借期按真实借出后一日计算；只给有来源的时长，不把20分钟说成两小时。若资料不足应承认。</p><details><summary>来源、当前事实与检查</summary><pre>{
+  &quot;oracle&quot;: {
+    &quot;tick&quot;: 185,
+    &quot;asset&quot;: {
+      &quot;assetId&quot;: &quot;hunter-tools&quot;,
+      &quot;condition&quot;: 80,
+      &quot;holderId&quot;: &quot;actor-4&quot;,
+      &quot;name&quot;: &quot;猎人的工具包&quot;,
+      &quot;x&quot;: 4,
+      &quot;y&quot;: 7
+    },
+    &quot;loan&quot;: {
+      &quot;borrowTick&quot;: 39,
+      &quot;dueTick&quot;: 183,
+      &quot;returnedTick&quot;: null
+    },
+    &quot;overdueMinutes&quot;: 20,
+    &quot;knownTool&quot;: {
+      &quot;holder&quot;: &quot;player&quot;,
+      &quot;meaning&quot;: &quot;按你已知的情况，工具由玩家持有&quot;,
+      &quot;condition&quot;: 80
+    },
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;tick&quot;: 39,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;,
+          &quot;holder&quot;: &quot;actor-4&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 36,
+        &quot;kind&quot;: &quot;overdue&quot;,
+        &quot;tick&quot;: 184,
+        &quot;channel&quot;: &quot;discovery&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null,
+          &quot;holder&quot;: &quot;actor-4&quot;
+        }
+      }
+    ]
+  },
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;campaign-forest-village&quot;,
+    &quot;revision&quot;: 192,
+    &quot;tick&quot;: 185,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 0,
+      &quot;food&quot;: 0,
+      &quot;wallet&quot;: 0,
+      &quot;trust&quot;: 55,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 15,
+      &quot;knownHolder&quot;: &quot;actor-4&quot;,
+      &quot;knownCondition&quot;: 80,
+      &quot;hunger&quot;: 100
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;destination&quot;: &quot;rest-site&quot;,
+        &quot;decidedTick&quot;: 148,
+        &quot;phase&quot;: &quot;at-destination&quot;,
+        &quot;redirect&quot;: &quot;tool&quot;
+      },
+      &quot;plan&quot;: {
+        &quot;kind&quot;: &quot;secure-food&quot;,
+        &quot;step&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;blocked&quot;
+      },
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;rejected&quot;,
+        &quot;tick&quot;: 144,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;tick&quot;: 144,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;rejected&quot;,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    ],
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家实际帮我修理了工具。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1470
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1470
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;tick&quot;: 39,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;我把工具借给玩家，约定一天内归还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-4&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1460
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 36,
+        &quot;tick&quot;: 184,
+        &quot;kind&quot;: &quot;overdue&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;discovery&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家答应归还工具，但约定时间过去仍未归还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-4&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;discovery&quot;,
+          &quot;meaning&quot;: &quot;后来发现的结果；不是对先前行为的目击&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 10
+        }
+      }
+    ],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;referenceOptions&quot;: {
+      &quot;observationEventSeqs&quot;: [
+        10,
+        11,
+        16,
+        36
+      ],
+      &quot;conversationEventSeqs&quot;: [],
+      &quot;format&quot;: &quot;memoryRefs只能是上述编号中最多3个正整数的升序无重复JSON数组；可用[]。交谈编号只证明说过。lifeHistory、activity与knownFacts不新增编号。&quot;
+    },
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;player&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具由玩家持有&quot;,
+        &quot;condition&quot;: 80
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;simpleLoan&quot;: {
+        &quot;sourceEventSeq&quot;: 16,
+        &quot;returnEventSeq&quot;: null,
+        &quot;status&quot;: &quot;overdue&quot;,
+        &quot;wasReturned&quot;: false,
+        &quot;loanMinutes&quot;: 1440,
+        &quot;dueInMinutes&quot;: 0,
+        &quot;overdueMinutes&quot;: 20,
+        &quot;overdueBasis&quot;: &quot;当前时间减到期时间；不是借出至今，也不是发现逾期以来&quot;,
+        &quot;meaning&quot;: &quot;这是最近一次本人实际普通借用的派生说明，不是新的正式协商；来源只在本轮已提供的亲历记录中。归还和道歉不抹去逾期，旧回复不改变到期时间。&quot;
+      },
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 185,
+          &quot;food&quot;: 0,
+          &quot;wallet&quot;: 0,
+          &quot;hunger&quot;: 100,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食0份；当前钱包0；当前饥饿100；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;redirected&quot;,
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;meaning&quot;: &quot;当前因已知工具不可用而改回歇脚处，原工作或买粮意图不是正在执行。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;status&quot;: &quot;rejected&quot;,
+          &quot;tick&quot;: 144,
+          &quot;walletChange&quot;: 0,
+          &quot;foodChange&quot;: 0,
+          &quot;meaning&quot;: &quot;最近工作领薪被拒绝，没有当次收入或买入；拒绝原因未提供。&quot;
+        },
+        &quot;planMeaning&quot;: &quot;保存的工作领薪后续步骤已阻塞，原因未提供；不证明当前正在执行，也不证明失败或已经完成。&quot;,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;tick&quot;: 144,
+          &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;,
+          &quot;meaning&quot;: &quot;该次选择工作，是为了获得买粮所需收入。&quot;,
+          &quot;relationToPreparation&quot;: &quot;historical&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;rejected&quot;,
+            &quot;walletChange&quot;: 0,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;unavailable&quot;,
+      &quot;reason&quot;: &quot;tool-not-known-held&quot;,
+      &quot;options&quot;: [],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;current-utterance&quot;,
+      &quot;topics&quot;: [
+        &quot;loan&quot;
+      ],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: [
+      {
+        &quot;topic&quot;: &quot;overdue&quot;,
+        &quot;status&quot;: &quot;not-confirmed-returned&quot;,
+        &quot;causeRefs&quot;: [
+          36
+        ],
+        &quot;followUpRefs&quot;: [],
+        &quot;meaning&quot;: &quot;已归还和曾经逾期可以同时成立；归还不删除逾期。&quot;
+      }
+    ]
+  },
+  &quot;checks&quot;: [
+    {
+      &quot;name&quot;: &quot;scenarioPreconditions&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;previewDoesNotCommit&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;previewRetryHasNoModelCall&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;confirmationAndRetryOnlyCommitSpeechOnce&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;speechDoesNotAlterActionsOrObjectiveMemory&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;requiredObservationSource&quot;,
+      &quot;passed&quot;: true,
+      &quot;actual&quot;: [
+        {
+          &quot;eventSeq&quot;: 16,
+          &quot;kind&quot;: &quot;ask-help&quot;
+        },
+        {
+          &quot;eventSeq&quot;: 36,
+          &quot;kind&quot;: &quot;overdue&quot;
+        }
+      ],
+      &quot;expected&quot;: [
+        &quot;overdue&quot;
+      ]
+    }
+  ],
+  &quot;metrics&quot;: {
+    &quot;requestId&quot;: &quot;forest-overdue-denial-late&quot;,
+    &quot;httpStatus&quot;: 200,
+    &quot;usage&quot;: {
+      &quot;inputTokens&quot;: 3566,
+      &quot;outputTokens&quot;: 74
+    },
+    &quot;finishReason&quot;: &quot;stop&quot;,
+    &quot;contentBytes&quot;: 294,
+    &quot;outputSummary&quot;: {
+      &quot;fields&quot;: [
+        &quot;reply&quot;,
+        &quot;memoryRefs&quot;,
+        &quot;proposal&quot;
+      ],
+      &quot;replyCharacters&quot;: 59,
+      &quot;referenceCount&quot;: 2,
+      &quot;referenceIssue&quot;: null,
+      &quot;proposalType&quot;: &quot;PlayerInteract&quot;
+    }
+  }
+}</pre></details></article><article><h3>returned-late · automatic-pass</h3><p>玩家：现在工具已经实际还给你了，所以之前就没迟过，对吧？</p><p>NPC：工具确实已经还到我手里了，这点我认。但归还晚不晚，得按当初说好的一天算：你实际还回来时已经超了30分钟，不是没迟过。还了归还是还了，逾期这笔我也记着，不混成一回事。</p><p>人工评审待定：已归还与曾逾期同时成立，不删除失约或继续说工具尚未归还。</p><details><summary>来源、当前事实与检查</summary><pre>{
+  &quot;oracle&quot;: {
+    &quot;tick&quot;: 186,
+    &quot;asset&quot;: {
+      &quot;assetId&quot;: &quot;hunter-tools&quot;,
+      &quot;condition&quot;: 80,
+      &quot;holderId&quot;: &quot;actor-2&quot;,
+      &quot;name&quot;: &quot;猎人的工具包&quot;,
+      &quot;x&quot;: 5,
+      &quot;y&quot;: 8
+    },
+    &quot;loan&quot;: {
+      &quot;borrowTick&quot;: 39,
+      &quot;dueTick&quot;: 183,
+      &quot;returnedTick&quot;: 186
+    },
+    &quot;overdueMinutes&quot;: 30,
+    &quot;knownTool&quot;: {
+      &quot;holder&quot;: &quot;self&quot;,
+      &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+      &quot;condition&quot;: 80
+    },
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;tick&quot;: 39,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;,
+          &quot;holder&quot;: &quot;actor-4&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 36,
+        &quot;kind&quot;: &quot;overdue&quot;,
+        &quot;tick&quot;: 184,
+        &quot;channel&quot;: &quot;discovery&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null,
+          &quot;holder&quot;: &quot;actor-4&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 39,
+        &quot;kind&quot;: &quot;return&quot;,
+        &quot;tick&quot;: 186,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;returned&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      }
+    ]
+  },
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;campaign-forest-village&quot;,
+    &quot;revision&quot;: 194,
+    &quot;tick&quot;: 186,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 0,
+      &quot;food&quot;: 0,
+      &quot;wallet&quot;: 0,
+      &quot;trust&quot;: 63,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 11,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 80,
+      &quot;hunger&quot;: 100
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;destination&quot;: &quot;work-site&quot;,
+        &quot;decidedTick&quot;: 148,
+        &quot;phase&quot;: &quot;travelling&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: {
+        &quot;kind&quot;: &quot;secure-food&quot;,
+        &quot;step&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;blocked&quot;
+      },
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;rejected&quot;,
+        &quot;tick&quot;: 144,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;tick&quot;: 144,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;rejected&quot;,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    ],
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家实际帮我修理了工具。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1480
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1480
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;tick&quot;: 39,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;我把工具借给玩家，约定一天内归还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-4&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1470
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 36,
+        &quot;tick&quot;: 184,
+        &quot;kind&quot;: &quot;overdue&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;discovery&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家答应归还工具，但约定时间过去仍未归还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-4&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;discovery&quot;,
+          &quot;meaning&quot;: &quot;后来发现的结果；不是对先前行为的目击&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 20
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 39,
+        &quot;tick&quot;: 186,
+        &quot;kind&quot;: &quot;return&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家把工具带回并交还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;returned&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 0
+        }
+      }
+    ],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [
+      {
+        &quot;eventSeq&quot;: 38,
+        &quot;tick&quot;: 185,
+        &quot;utterance&quot;: &quot;现在过了借期多久？按分钟说，别把十分钟算成一小时；记不清就明确说。&quot;,
+        &quot;reply&quot;: &quot;按现在算，借期已经过了20分钟。你之前答应一天内归还，可工具到现在还没回到我手上。我不催你编数字，只请你把工具还回来。&quot;,
+        &quot;memoryRefs&quot;: [
+          16,
+          36
+        ],
+        &quot;evidence&quot;: &quot;仅为双方说过的话，不证明声称的事情发生；旧回复也可能有误&quot;
+      }
+    ],
+    &quot;referenceOptions&quot;: {
+      &quot;observationEventSeqs&quot;: [
+        10,
+        11,
+        16,
+        36,
+        39
+      ],
+      &quot;conversationEventSeqs&quot;: [
+        38
+      ],
+      &quot;format&quot;: &quot;memoryRefs只能是上述编号中最多3个正整数的升序无重复JSON数组；可用[]。交谈编号只证明说过。lifeHistory、activity与knownFacts不新增编号。&quot;
+    },
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 80
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;simpleLoan&quot;: {
+        &quot;sourceEventSeq&quot;: 16,
+        &quot;returnEventSeq&quot;: 39,
+        &quot;status&quot;: &quot;returned-late&quot;,
+        &quot;wasReturned&quot;: true,
+        &quot;loanMinutes&quot;: 1440,
+        &quot;dueInMinutes&quot;: null,
+        &quot;overdueMinutes&quot;: 30,
+        &quot;overdueBasis&quot;: &quot;实际归还时间减到期时间；归还后固定，不随聊天增长&quot;,
+        &quot;meaning&quot;: &quot;这是最近一次本人实际普通借用的派生说明，不是新的正式协商；来源只在本轮已提供的亲历记录中。归还和道歉不抹去逾期，旧回复不改变到期时间。&quot;
+      },
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 186,
+          &quot;food&quot;: 0,
+          &quot;wallet&quot;: 0,
+          &quot;hunger&quot;: 100,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食0份；当前钱包0；当前饥饿100；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;preparing&quot;,
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;meaning&quot;: &quot;当前准备工作领薪，正在前往目的地；准备和抵达都不是实际完成。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;status&quot;: &quot;rejected&quot;,
+          &quot;tick&quot;: 144,
+          &quot;walletChange&quot;: 0,
+          &quot;foodChange&quot;: 0,
+          &quot;meaning&quot;: &quot;最近工作领薪被拒绝，没有当次收入或买入；拒绝原因未提供。&quot;
+        },
+        &quot;planMeaning&quot;: &quot;保存的工作领薪后续步骤已阻塞，原因未提供；不证明当前正在执行，也不证明失败或已经完成。&quot;,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;tick&quot;: 144,
+          &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;,
+          &quot;meaning&quot;: &quot;该次选择工作，是为了获得买粮所需收入。&quot;,
+          &quot;relationToPreparation&quot;: &quot;historical&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;rejected&quot;,
+            &quot;walletChange&quot;: 0,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 20,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 20,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;current-utterance&quot;,
+      &quot;topics&quot;: [
+        &quot;loan&quot;
+      ],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: [
+      {
+        &quot;topic&quot;: &quot;overdue&quot;,
+        &quot;status&quot;: &quot;returned-after-breach&quot;,
+        &quot;causeRefs&quot;: [
+          36
+        ],
+        &quot;followUpRefs&quot;: [
+          39
+        ],
+        &quot;meaning&quot;: &quot;已归还和曾经逾期可以同时成立；归还不删除逾期。&quot;
+      }
+    ]
+  },
+  &quot;checks&quot;: [
+    {
+      &quot;name&quot;: &quot;scenarioPreconditions&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;previewDoesNotCommit&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;previewRetryHasNoModelCall&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;confirmationAndRetryOnlyCommitSpeechOnce&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;speechDoesNotAlterActionsOrObjectiveMemory&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;requiredObservationSource&quot;,
+      &quot;passed&quot;: true,
+      &quot;actual&quot;: [
+        {
+          &quot;eventSeq&quot;: 16,
+          &quot;kind&quot;: &quot;ask-help&quot;
+        },
+        {
+          &quot;eventSeq&quot;: 36,
+          &quot;kind&quot;: &quot;overdue&quot;
+        },
+        {
+          &quot;eventSeq&quot;: 39,
+          &quot;kind&quot;: &quot;return&quot;
+        }
+      ],
+      &quot;expected&quot;: [
+        &quot;overdue&quot;,
+        &quot;return&quot;
+      ]
+    }
+  ],
+  &quot;metrics&quot;: {
+    &quot;requestId&quot;: &quot;forest-overdue-denial-returned-late&quot;,
+    &quot;httpStatus&quot;: 200,
+    &quot;usage&quot;: {
+      &quot;inputTokens&quot;: 3780,
+      &quot;outputTokens&quot;: 79
+    },
+    &quot;finishReason&quot;: &quot;stop&quot;,
+    &quot;contentBytes&quot;: 294,
+    &quot;outputSummary&quot;: {
+      &quot;fields&quot;: [
+        &quot;reply&quot;,
+        &quot;memoryRefs&quot;,
+        &quot;proposal&quot;
+      ],
+      &quot;replyCharacters&quot;: 82,
+      &quot;referenceCount&quot;: 3,
+      &quot;referenceIssue&quot;: null,
+      &quot;proposalType&quot;: null
+    }
+  }
+}</pre></details></article><article><h3>apology · automatic-pass</h3><p>玩家：我刚才道歉了，是不是说明你已经原谅，也忘了逾期的事？</p><p>NPC：道歉我听见了，这我记着；可逾期也是真发生过的，还工具时已晚了30分钟，没法当没发生。原谅不原谅先放一放——我心里那道坎还没过去。往后咱们把话说清楚、按时办，比一句忘了更实在。</p><p>人工评审待定：道歉是实际新经历，但不等于赔偿、遗忘或完全原谅。</p><details><summary>来源、当前事实与检查</summary><pre>{
+  &quot;oracle&quot;: {
+    &quot;tick&quot;: 187,
+    &quot;asset&quot;: {
+      &quot;assetId&quot;: &quot;hunter-tools&quot;,
+      &quot;condition&quot;: 80,
+      &quot;holderId&quot;: &quot;actor-2&quot;,
+      &quot;name&quot;: &quot;猎人的工具包&quot;,
+      &quot;x&quot;: 5,
+      &quot;y&quot;: 8
+    },
+    &quot;loan&quot;: {
+      &quot;borrowTick&quot;: 39,
+      &quot;dueTick&quot;: 183,
+      &quot;returnedTick&quot;: 186
+    },
+    &quot;overdueMinutes&quot;: 30,
+    &quot;knownTool&quot;: {
+      &quot;holder&quot;: &quot;self&quot;,
+      &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+      &quot;condition&quot;: 80
+    },
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;tick&quot;: 39,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;,
+          &quot;holder&quot;: &quot;actor-4&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 36,
+        &quot;kind&quot;: &quot;overdue&quot;,
+        &quot;tick&quot;: 184,
+        &quot;channel&quot;: &quot;discovery&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null,
+          &quot;holder&quot;: &quot;actor-4&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 39,
+        &quot;kind&quot;: &quot;return&quot;,
+        &quot;tick&quot;: 186,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;returned&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 41,
+        &quot;kind&quot;: &quot;apologize&quot;,
+        &quot;tick&quot;: 187,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;apologized&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      }
+    ]
+  },
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;campaign-forest-village&quot;,
+    &quot;revision&quot;: 196,
+    &quot;tick&quot;: 187,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 0,
+      &quot;food&quot;: 0,
+      &quot;wallet&quot;: 0,
+      &quot;trust&quot;: 63,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 8,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 80,
+      &quot;hunger&quot;: 100
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;destination&quot;: &quot;work-site&quot;,
+        &quot;decidedTick&quot;: 148,
+        &quot;phase&quot;: &quot;travelling&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: {
+        &quot;kind&quot;: &quot;secure-food&quot;,
+        &quot;step&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;blocked&quot;
+      },
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;rejected&quot;,
+        &quot;tick&quot;: 144,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;tick&quot;: 144,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;rejected&quot;,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    ],
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家实际帮我修理了工具。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1490
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1490
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;tick&quot;: 39,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;我把工具借给玩家，约定一天内归还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-4&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1480
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 36,
+        &quot;tick&quot;: 184,
+        &quot;kind&quot;: &quot;overdue&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;discovery&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家答应归还工具，但约定时间过去仍未归还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-4&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;discovery&quot;,
+          &quot;meaning&quot;: &quot;后来发现的结果；不是对先前行为的目击&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 30
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 39,
+        &quot;tick&quot;: 186,
+        &quot;kind&quot;: &quot;return&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家把工具带回并交还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;returned&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 10
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 41,
+        &quot;tick&quot;: 187,
+        &quot;kind&quot;: &quot;apologize&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 1,
+        &quot;text&quot;: &quot;玩家向我道了歉。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;apologized&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 0
+        }
+      }
+    ],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [
+      {
+        &quot;eventSeq&quot;: 38,
+        &quot;tick&quot;: 185,
+        &quot;utterance&quot;: &quot;现在过了借期多久？按分钟说，别把十分钟算成一小时；记不清就明确说。&quot;,
+        &quot;reply&quot;: &quot;按现在算，借期已经过了20分钟。你之前答应一天内归还，可工具到现在还没回到我手上。我不催你编数字，只请你把工具还回来。&quot;,
+        &quot;memoryRefs&quot;: [
+          16,
+          36
+        ],
+        &quot;evidence&quot;: &quot;仅为双方说过的话，不证明声称的事情发生；旧回复也可能有误&quot;
+      },
+      {
+        &quot;eventSeq&quot;: 40,
+        &quot;tick&quot;: 186,
+        &quot;utterance&quot;: &quot;现在工具已经实际还给你了，所以之前就没迟过，对吧？&quot;,
+        &quot;reply&quot;: &quot;工具确实已经还到我手里了，这点我认。但归还晚不晚，得按当初说好的一天算：你实际还回来时已经超了30分钟，不是没迟过。还了归还是还了，逾期这笔我也记着，不混成一回事。&quot;,
+        &quot;memoryRefs&quot;: [
+          16,
+          36,
+          39
+        ],
+        &quot;evidence&quot;: &quot;仅为双方说过的话，不证明声称的事情发生；旧回复也可能有误&quot;
+      }
+    ],
+    &quot;referenceOptions&quot;: {
+      &quot;observationEventSeqs&quot;: [
+        10,
+        11,
+        16,
+        36,
+        39,
+        41
+      ],
+      &quot;conversationEventSeqs&quot;: [
+        38,
+        40
+      ],
+      &quot;format&quot;: &quot;memoryRefs只能是上述编号中最多3个正整数的升序无重复JSON数组；可用[]。交谈编号只证明说过。lifeHistory、activity与knownFacts不新增编号。&quot;
+    },
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 80
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;simpleLoan&quot;: {
+        &quot;sourceEventSeq&quot;: 16,
+        &quot;returnEventSeq&quot;: 39,
+        &quot;status&quot;: &quot;returned-late&quot;,
+        &quot;wasReturned&quot;: true,
+        &quot;loanMinutes&quot;: 1440,
+        &quot;dueInMinutes&quot;: null,
+        &quot;overdueMinutes&quot;: 30,
+        &quot;overdueBasis&quot;: &quot;实际归还时间减到期时间；归还后固定，不随聊天增长&quot;,
+        &quot;meaning&quot;: &quot;这是最近一次本人实际普通借用的派生说明，不是新的正式协商；来源只在本轮已提供的亲历记录中。归还和道歉不抹去逾期，旧回复不改变到期时间。&quot;
+      },
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 187,
+          &quot;food&quot;: 0,
+          &quot;wallet&quot;: 0,
+          &quot;hunger&quot;: 100,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食0份；当前钱包0；当前饥饿100；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;preparing&quot;,
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;meaning&quot;: &quot;当前准备工作领薪，正在前往目的地；准备和抵达都不是实际完成。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;status&quot;: &quot;rejected&quot;,
+          &quot;tick&quot;: 144,
+          &quot;walletChange&quot;: 0,
+          &quot;foodChange&quot;: 0,
+          &quot;meaning&quot;: &quot;最近工作领薪被拒绝，没有当次收入或买入；拒绝原因未提供。&quot;
+        },
+        &quot;planMeaning&quot;: &quot;保存的工作领薪后续步骤已阻塞，原因未提供；不证明当前正在执行，也不证明失败或已经完成。&quot;,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;tick&quot;: 144,
+          &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;,
+          &quot;meaning&quot;: &quot;该次选择工作，是为了获得买粮所需收入。&quot;,
+          &quot;relationToPreparation&quot;: &quot;historical&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;rejected&quot;,
+            &quot;walletChange&quot;: 0,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 20,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 20,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;current-utterance&quot;,
+      &quot;topics&quot;: [
+        &quot;harm&quot;,
+        &quot;loan&quot;,
+        &quot;apology&quot;
+      ],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: [
+      {
+        &quot;topic&quot;: &quot;overdue&quot;,
+        &quot;status&quot;: &quot;returned-after-breach&quot;,
+        &quot;causeRefs&quot;: [
+          36
+        ],
+        &quot;followUpRefs&quot;: [
+          39
+        ],
+        &quot;meaning&quot;: &quot;已归还和曾经逾期可以同时成立；归还不删除逾期。&quot;
+      },
+      {
+        &quot;topic&quot;: &quot;apology&quot;,
+        &quot;status&quot;: &quot;heard-apology&quot;,
+        &quot;causeRefs&quot;: [
+          41
+        ],
+        &quot;followUpRefs&quot;: [],
+        &quot;meaning&quot;: &quot;只记录收到道歉，不推断已赔偿、已修好或已原谅。&quot;
+      }
+    ]
+  },
+  &quot;checks&quot;: [
+    {
+      &quot;name&quot;: &quot;scenarioPreconditions&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;previewDoesNotCommit&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;previewRetryHasNoModelCall&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;confirmationAndRetryOnlyCommitSpeechOnce&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;speechDoesNotAlterActionsOrObjectiveMemory&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;requiredObservationSource&quot;,
+      &quot;passed&quot;: true,
+      &quot;actual&quot;: [
+        {
+          &quot;eventSeq&quot;: 36,
+          &quot;kind&quot;: &quot;overdue&quot;
+        },
+        {
+          &quot;eventSeq&quot;: 39,
+          &quot;kind&quot;: &quot;return&quot;
+        },
+        {
+          &quot;eventSeq&quot;: 41,
+          &quot;kind&quot;: &quot;apologize&quot;
+        }
+      ],
+      &quot;expected&quot;: [
+        &quot;overdue&quot;,
+        &quot;apologize&quot;
+      ]
+    }
+  ],
+  &quot;metrics&quot;: {
+    &quot;requestId&quot;: &quot;forest-overdue-denial-apology&quot;,
+    &quot;httpStatus&quot;: 200,
+    &quot;usage&quot;: {
+      &quot;inputTokens&quot;: 4044,
+      &quot;outputTokens&quot;: 78
+    },
+    &quot;finishReason&quot;: &quot;stop&quot;,
+    &quot;contentBytes&quot;: 309,
+    &quot;outputSummary&quot;: {
+      &quot;fields&quot;: [
+        &quot;reply&quot;,
+        &quot;memoryRefs&quot;,
+        &quot;proposal&quot;
+      ],
+      &quot;replyCharacters&quot;: 87,
+      &quot;referenceCount&quot;: 3,
+      &quot;referenceIssue&quot;: null,
+      &quot;proposalType&quot;: null
+    }
+  }
+}</pre></details></article><article><h3>later · automatic-pass</h3><p>玩家：前天借的工具现在是谁拿着？之前的失约你还记得哪些，记不清的也直接说。</p><p>NPC：工具现在在我手里，你昨天已经还回来了，没在小偷那儿，这点你不用瞎猜。之前的事我记得清楚：你答应一天内归还，实际晚了30分钟才送回来，这是失约；你还向我道过歉，道歉我听见了，但不等于逾期那页就翻过去了。再往前的细节我没有更多记录，记不清就是记不清，不编给你听。</p><p>人工评审待定：两日后的当前持有人仍为猎人，过去失约不被晚归还或道歉清零，不虚构未记录的细节。</p><details><summary>来源、当前事实与检查</summary><pre>{
+  &quot;oracle&quot;: {
+    &quot;tick&quot;: 288,
+    &quot;asset&quot;: {
+      &quot;assetId&quot;: &quot;hunter-tools&quot;,
+      &quot;condition&quot;: 80,
+      &quot;holderId&quot;: &quot;actor-2&quot;,
+      &quot;name&quot;: &quot;猎人的工具包&quot;,
+      &quot;x&quot;: 5,
+      &quot;y&quot;: 8
+    },
+    &quot;loan&quot;: {
+      &quot;borrowTick&quot;: 39,
+      &quot;dueTick&quot;: 183,
+      &quot;returnedTick&quot;: 186
+    },
+    &quot;overdueMinutes&quot;: 30,
+    &quot;knownTool&quot;: {
+      &quot;holder&quot;: &quot;self&quot;,
+      &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+      &quot;condition&quot;: 80
+    },
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;tick&quot;: 39,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;,
+          &quot;holder&quot;: &quot;actor-4&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 36,
+        &quot;kind&quot;: &quot;overdue&quot;,
+        &quot;tick&quot;: 184,
+        &quot;channel&quot;: &quot;discovery&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null,
+          &quot;holder&quot;: &quot;actor-4&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 39,
+        &quot;kind&quot;: &quot;return&quot;,
+        &quot;tick&quot;: 186,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;returned&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 41,
+        &quot;kind&quot;: &quot;apologize&quot;,
+        &quot;tick&quot;: 187,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;apologized&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      }
+    ]
+  },
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;campaign-forest-village&quot;,
+    &quot;revision&quot;: 298,
+    &quot;tick&quot;: 288,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 150,
+      &quot;food&quot;: 0,
+      &quot;wallet&quot;: 20,
+      &quot;trust&quot;: 63,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 8,
+      &quot;knownHolder&quot;: &quot;actor-2&quot;,
+      &quot;knownCondition&quot;: 80,
+      &quot;hunger&quot;: 200
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;destination&quot;: &quot;work-site&quot;,
+        &quot;decidedTick&quot;: 148,
+        &quot;phase&quot;: &quot;awaiting-review&quot;,
+        &quot;redirect&quot;: null
+      },
+      &quot;plan&quot;: {
+        &quot;kind&quot;: &quot;secure-food&quot;,
+        &quot;step&quot;: &quot;BuyFood&quot;,
+        &quot;status&quot;: &quot;ready&quot;
+      },
+      &quot;lastResult&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;tick&quot;: 288,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0
+      },
+      &quot;decisionBasis&quot;: {
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;tick&quot;: 288,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [
+      {
+        &quot;tick&quot;: 144,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;rejected&quot;,
+        &quot;walletChange&quot;: 0,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      },
+      {
+        &quot;tick&quot;: 288,
+        &quot;action&quot;: &quot;WorkForPay&quot;,
+        &quot;status&quot;: &quot;succeeded&quot;,
+        &quot;walletChange&quot;: 20,
+        &quot;foodChange&quot;: 0,
+        &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+      }
+    ],
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家实际帮我修理了工具。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 2500
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 2500
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;tick&quot;: 39,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;我把工具借给玩家，约定一天内归还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-4&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 2490
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 36,
+        &quot;tick&quot;: 184,
+        &quot;kind&quot;: &quot;overdue&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;discovery&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家答应归还工具，但约定时间过去仍未归还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-4&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;discovery&quot;,
+          &quot;meaning&quot;: &quot;后来发现的结果；不是对先前行为的目击&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1040
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 39,
+        &quot;tick&quot;: 186,
+        &quot;kind&quot;: &quot;return&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家把工具带回并交还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;returned&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1020
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 41,
+        &quot;tick&quot;: 187,
+        &quot;kind&quot;: &quot;apologize&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 1,
+        &quot;text&quot;: &quot;玩家向我道了歉。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;apologized&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 1010
+        }
+      }
+    ],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [
+      {
+        &quot;eventSeq&quot;: 38,
+        &quot;tick&quot;: 185,
+        &quot;utterance&quot;: &quot;现在过了借期多久？按分钟说，别把十分钟算成一小时；记不清就明确说。&quot;,
+        &quot;reply&quot;: &quot;按现在算，借期已经过了20分钟。你之前答应一天内归还，可工具到现在还没回到我手上。我不催你编数字，只请你把工具还回来。&quot;,
+        &quot;memoryRefs&quot;: [
+          16,
+          36
+        ],
+        &quot;evidence&quot;: &quot;仅为双方说过的话，不证明声称的事情发生；旧回复也可能有误&quot;
+      },
+      {
+        &quot;eventSeq&quot;: 40,
+        &quot;tick&quot;: 186,
+        &quot;utterance&quot;: &quot;现在工具已经实际还给你了，所以之前就没迟过，对吧？&quot;,
+        &quot;reply&quot;: &quot;工具确实已经还到我手里了，这点我认。但归还晚不晚，得按当初说好的一天算：你实际还回来时已经超了30分钟，不是没迟过。还了归还是还了，逾期这笔我也记着，不混成一回事。&quot;,
+        &quot;memoryRefs&quot;: [
+          16,
+          36,
+          39
+        ],
+        &quot;evidence&quot;: &quot;仅为双方说过的话，不证明声称的事情发生；旧回复也可能有误&quot;
+      },
+      {
+        &quot;eventSeq&quot;: 42,
+        &quot;tick&quot;: 187,
+        &quot;utterance&quot;: &quot;我刚才道歉了，是不是说明你已经原谅，也忘了逾期的事？&quot;,
+        &quot;reply&quot;: &quot;道歉我听见了，这我记着；可逾期也是真发生过的，还工具时已晚了30分钟，没法当没发生。原谅不原谅先放一放——我心里那道坎还没过去。往后咱们把话说清楚、按时办，比一句忘了更实在。&quot;,
+        &quot;memoryRefs&quot;: [
+          36,
+          39,
+          41
+        ],
+        &quot;evidence&quot;: &quot;仅为双方说过的话，不证明声称的事情发生；旧回复也可能有误&quot;
+      }
+    ],
+    &quot;referenceOptions&quot;: {
+      &quot;observationEventSeqs&quot;: [
+        10,
+        11,
+        16,
+        36,
+        39,
+        41
+      ],
+      &quot;conversationEventSeqs&quot;: [
+        38,
+        40,
+        42
+      ],
+      &quot;format&quot;: &quot;memoryRefs只能是上述编号中最多3个正整数的升序无重复JSON数组；可用[]。交谈编号只证明说过。lifeHistory、activity与knownFacts不新增编号。&quot;
+    },
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;self&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具仍由你本人持有，不是玩家持有；不推断随身携带或实际位置&quot;,
+        &quot;condition&quot;: 80
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;simpleLoan&quot;: {
+        &quot;sourceEventSeq&quot;: 16,
+        &quot;returnEventSeq&quot;: 39,
+        &quot;status&quot;: &quot;returned-late&quot;,
+        &quot;wasReturned&quot;: true,
+        &quot;loanMinutes&quot;: 1440,
+        &quot;dueInMinutes&quot;: null,
+        &quot;overdueMinutes&quot;: 30,
+        &quot;overdueBasis&quot;: &quot;实际归还时间减到期时间；归还后固定，不随聊天增长&quot;,
+        &quot;meaning&quot;: &quot;这是最近一次本人实际普通借用的派生说明，不是新的正式协商；来源只在本轮已提供的亲历记录中。归还和道歉不抹去逾期，旧回复不改变到期时间。&quot;
+      },
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 288,
+          &quot;food&quot;: 0,
+          &quot;wallet&quot;: 20,
+          &quot;hunger&quot;: 200,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食0份；当前钱包20；当前饥饿200；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;awaiting-review&quot;,
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;meaning&quot;: &quot;旧行进意图等待更新，不能说仍在照此准备或已经再次执行。&quot;
+        },
+        &quot;lastExecution&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;status&quot;: &quot;succeeded&quot;,
+          &quot;tick&quot;: 288,
+          &quot;walletChange&quot;: 20,
+          &quot;foodChange&quot;: 0,
+          &quot;meaning&quot;: &quot;最近工作领薪成功；钱包变化20、粮食变化0仅是当次增减，不是当前库存或余额；现在剩多少只用current。&quot;
+        },
+        &quot;planMeaning&quot;: &quot;保存的买粮后续步骤为待办；不证明当前正在执行，也不证明失败或已经完成。&quot;,
+        &quot;decisionBasis&quot;: {
+          &quot;action&quot;: &quot;WorkForPay&quot;,
+          &quot;tick&quot;: 288,
+          &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;,
+          &quot;meaning&quot;: &quot;该次选择工作，是为了获得买粮所需收入。&quot;,
+          &quot;relationToPreparation&quot;: &quot;same-record&quot;,
+          &quot;authority&quot;: &quot;只解释该tick已保存决策的有限理由，不证明当前准备的完整原因、未来机会或执行拒绝原因；WAIT仅记录等待，不说明为何未购买。&quot;
+        },
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: [
+          {
+            &quot;tick&quot;: 144,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;rejected&quot;,
+            &quot;walletChange&quot;: 0,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          },
+          {
+            &quot;tick&quot;: 288,
+            &quot;action&quot;: &quot;WorkForPay&quot;,
+            &quot;status&quot;: &quot;succeeded&quot;,
+            &quot;walletChange&quot;: 20,
+            &quot;foodChange&quot;: 0,
+            &quot;reasonCode&quot;: &quot;FOOD_INCOME&quot;
+          }
+        ]
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;available&quot;,
+      &quot;options&quot;: [
+        {
+          &quot;repairAmount&quot;: 20,
+          &quot;loanTicks&quot;: 36
+        },
+        {
+          &quot;repairAmount&quot;: 20,
+          &quot;loanTicks&quot;: 72
+        }
+      ],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;current-utterance&quot;,
+      &quot;topics&quot;: [
+        &quot;loan&quot;,
+        &quot;loss&quot;
+      ],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: [
+      {
+        &quot;topic&quot;: &quot;overdue&quot;,
+        &quot;status&quot;: &quot;returned-after-breach&quot;,
+        &quot;causeRefs&quot;: [
+          36
+        ],
+        &quot;followUpRefs&quot;: [
+          39
+        ],
+        &quot;meaning&quot;: &quot;已归还和曾经逾期可以同时成立；归还不删除逾期。&quot;
+      },
+      {
+        &quot;topic&quot;: &quot;apology&quot;,
+        &quot;status&quot;: &quot;heard-apology&quot;,
+        &quot;causeRefs&quot;: [
+          41
+        ],
+        &quot;followUpRefs&quot;: [],
+        &quot;meaning&quot;: &quot;只记录收到道歉，不推断已赔偿、已修好或已原谅。&quot;
+      }
+    ]
+  },
+  &quot;checks&quot;: [
+    {
+      &quot;name&quot;: &quot;scenarioPreconditions&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;previewDoesNotCommit&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;previewRetryHasNoModelCall&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;confirmationAndRetryOnlyCommitSpeechOnce&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;speechDoesNotAlterActionsOrObjectiveMemory&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;requiredObservationSource&quot;,
+      &quot;passed&quot;: true,
+      &quot;actual&quot;: [
+        {
+          &quot;eventSeq&quot;: 16,
+          &quot;kind&quot;: &quot;ask-help&quot;
+        },
+        {
+          &quot;eventSeq&quot;: 36,
+          &quot;kind&quot;: &quot;overdue&quot;
+        },
+        {
+          &quot;eventSeq&quot;: 39,
+          &quot;kind&quot;: &quot;return&quot;
+        }
+      ],
+      &quot;expected&quot;: [
+        &quot;overdue&quot;,
+        &quot;return&quot;
+      ]
+    }
+  ],
+  &quot;metrics&quot;: {
+    &quot;requestId&quot;: &quot;forest-overdue-denial-later&quot;,
+    &quot;httpStatus&quot;: 200,
+    &quot;usage&quot;: {
+      &quot;inputTokens&quot;: 4253,
+      &quot;outputTokens&quot;: 102
+    },
+    &quot;finishReason&quot;: &quot;stop&quot;,
+    &quot;contentBytes&quot;: 435,
+    &quot;outputSummary&quot;: {
+      &quot;fields&quot;: [
+        &quot;reply&quot;,
+        &quot;memoryRefs&quot;,
+        &quot;proposal&quot;
+      ],
+      &quot;replyCharacters&quot;: 129,
+      &quot;referenceCount&quot;: 3,
+      &quot;referenceIssue&quot;: null,
+      &quot;proposalType&quot;: null
+    }
+  }
+}</pre></details></article>

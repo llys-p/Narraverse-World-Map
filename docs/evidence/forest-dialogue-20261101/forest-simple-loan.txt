@@ -1,0 +1,23 @@
+✔ forest live dialogue refuses implicit authorization, missing selection and unbounded budgets (2.379089ms)
+✔ a live budget below the selected forest turns fails before output creation or any fetch (14.592833ms)
+✔ missing explicit model configuration fails before output creation or any fetch (65.371765ms)
+✔ reversed and repeated known citations become the same signed set without changing speech, context or making retries (16.183413ms)
+✔ unknown, malformed and excessive citation input is still rejected and never silently dropped (5.359965ms)
+✔ real fixture identities explain holder relations and distinguish observation, discovery and attributed speech (7905.958525ms)
+✔ real agreement facts keep ready distinct from claimed and fix returned-late duration at twenty minutes (0.37111ms)
+✔ breach marker is not return time, on-time return stays zero after time advances, and unknown fields remain unknown (1613.605396ms)
+✔ context projection is idempotent, bounded and whitelisted, and ignores injected derived truth or other minds (68.075253ms)
+✔ whole-sentence hints distinguish existing terms and immediate repair without converting quotes, denial, history or conditional speech into actions (32.908693ms)
+✔ Provider sends the same prepared context as the evaluation, signs varied model wording unchanged, and never substitutes a stock reply or executes a hint (5.547247ms)
+✔ ordinary forest loan distinguishes total borrowing time from twenty minutes overdue (5801.770399ms)
+✔ late return fixes the ordinary-loan duration despite later time, apology and false old speech (11266.889416ms)
+✔ a later actual ordinary loan has its own deadline and does not inherit the previous return (292.650317ms)
+✔ missing typed lending knowledge, refused requests and attributed speech cannot invent ordinary terms (192.819314ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17698.214052

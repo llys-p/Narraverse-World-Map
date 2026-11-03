@@ -1,0 +1,23 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-forest-dialogue.mjs",
+    "--mode",
+    "plan",
+    "--case",
+    "borrow-return",
+    "--resume-failed",
+    "artifacts/forest-dialogue/live-01/report.json",
+    "--out",
+    "artifacts/forest-dialogue/resume-plan"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 8977.162,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}

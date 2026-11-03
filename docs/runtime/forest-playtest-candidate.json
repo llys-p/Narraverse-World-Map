@@ -10,14 +10,14 @@
   "fixtureVersion": "8",
   "gamePort": 18356,
   "browserVerificationUsesIsolatedNewWorld": true,
-  "externalModelCalls": 11,
+  "externalModelCalls": 16,
   "gates": {
     "serviceRecovery": "verified",
-    "browser": "in-verification",
+    "browser": "verified-linux-and-windows-ci",
     "windowsLauncher": "not-run",
     "physicalMobile": "not-run",
     "screenReader": "not-run",
-    "realModelLanguage": "forest-live-retest-in-progress"
+    "realModelLanguage": "sampled-forest-human-review-pending"
   },
   "gameSha256": {
     "Start-Forest-Journey-New.cmd": "e538af5c159cecdd08f83b5564451377f5287fa50083f9abbfd8601547e717f9",

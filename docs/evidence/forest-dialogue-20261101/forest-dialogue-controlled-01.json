@@ -1,0 +1,21 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-forest-dialogue.mjs",
+    "--mode",
+    "controlled-test",
+    "--case",
+    "all",
+    "--out",
+    "artifacts/forest-dialogue/controlled-01"
+  ],
+  "pid": 5,
+  "exitCode": 1,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 76938.092,
+  "cpuMs": null,
+  "hardLimitMs": 600000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
