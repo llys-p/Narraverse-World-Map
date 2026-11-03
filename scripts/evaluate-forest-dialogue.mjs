@@ -13,30 +13,37 @@ import {providerContext,npcLanguageConfig} from '../runtime/service/npc-language
 import {loadServiceCommit} from '../runtime/service/service-commit.mjs';
 import {createDialogueReportWriter,verifyDialogueReportFiles} from '../runtime/evaluation/npc-report-files.mjs';
 import {verifyForestCandidate} from './forest-playtest-candidate.mjs';
+import {inspectForestContinuation,copyForestContinuation,verifyForestContinuationSource} from './forest-dialogue-continuation.mjs';
 
-const root=fileURLToPath(new URL('../',import.meta.url)),suiteFile='benchmarks/npc-forest-v1/cases.json';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const suites={'forest-v1':'benchmarks/npc-forest-v1/cases.json','continuity-v2':'benchmarks/npc-forest-v2/cases.json'};
 const hash=b=>createHash('sha256').update(b).digest('hex'),clone=v=>structuredClone(v);
 const five=g=>Object.fromEntries(['snapshot','map','player','encounter','scene'].map(k=>[k,g[k]]));
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function parseForestDialogueArgs(args){
- const s={mode:'plan',selection:'all',out:null,maxRequests:0,allow:false,resumeFailed:null},seen=new Set();
+ const s={mode:'plan',selection:'all',out:null,maxRequests:0,allow:false,resumeFailed:null,suite:'forest-v1',continueFrom:null},seen=new Set();
  for(let i=0;i<args.length;i++){const f=args[i];assert.ok(!seen.has(f),'Duplicate option');seen.add(f);if(f==='--allow-model-calls'){s.allow=true;continue;}
-  assert.ok(['--mode','--case','--out','--max-requests','--resume-failed'].includes(f),'Unknown option');const v=args[++i];assert.ok(v&&!v.startsWith('--'),'Missing option value');
-  if(f==='--mode'){assert.ok(['plan','controlled-test','live'].includes(v));s.mode=v;}if(f==='--case')s.selection=v;if(f==='--out')s.out=v;if(f==='--resume-failed')s.resumeFailed=v;
+  assert.ok(['--mode','--case','--out','--max-requests','--resume-failed','--suite','--continue-from'].includes(f),'Unknown option');const v=args[++i];assert.ok(v&&!v.startsWith('--'),'Missing option value');
+  if(f==='--mode'){assert.ok(['plan','controlled-test','live'].includes(v));s.mode=v;}if(f==='--case')s.selection=v;if(f==='--out')s.out=v;if(f==='--resume-failed')s.resumeFailed=v;if(f==='--suite'){assert.ok(Object.hasOwn(suites,v),'Unknown suite');s.suite=v;}if(f==='--continue-from')s.continueFrom=v;
   if(f==='--max-requests'){assert.match(v,/^(?:[1-9]|1[0-6])$/);s.maxRequests=Number(v);}
  }
  assert.ok(s.out,'Explicit fresh output directory required');
  if(s.mode==='live')assert.ok(s.allow&&seen.has('--case')&&s.maxRequests>0,'Live needs explicit case, call flag and bounded budget');else assert.ok(!s.allow&&s.maxRequests===0,'Offline modes do not accept live budget flags');
+ assert.ok(!(s.resumeFailed&&s.continueFrom),'Cannot resume and continue simultaneously');
+ if(s.continueFrom)assert.ok(s.suite==='continuity-v2'&&s.selection==='overdue-denial','Continue only the explicit overdue correction case');
  return s;
 }
 function render(r){return '<!doctype html><meta charset="utf-8"><title>森林对话验收</title><style>body{font:16px/1.65 system-ui;max-width:1000px;margin:30px auto;padding:0 20px}pre{white-space:pre-wrap;overflow-wrap:anywhere}article{border-top:1px solid #aaa;margin-top:25px}</style><h1>森林对话验收</h1><p>'+escape(r.notice)+'</p><pre>'+escape(JSON.stringify(r.counts,null,2))+'</pre>'+r.cases.map(c=>'<h2>'+escape(c.title)+'</h2>'+c.turns.map(t=>'<article><h3>'+escape(t.id+' · '+t.status)+'</h3><p>玩家：'+escape(t.text)+'</p><p>NPC：'+escape(t.response?.reply??'未生成')+'</p><p>人工评审待定：'+escape(t.review)+'</p><details><summary>来源、当前事实与检查</summary><pre>'+escape(JSON.stringify({oracle:t.oracle,context:t.context,checks:t.checks,metrics:t.metrics},null,2))+'</pre></details></article>').join('')).join('');}
-async function sources(){
+async function sources(suiteFile){
  const manifest=JSON.parse(await fs.readFile(path.join(root,'docs/runtime/forest-playtest-candidate.json'),'utf8')),sha256={...manifest.gameSha256};
- for(const f of [suiteFile,'scripts/evaluate-forest-dialogue.mjs','scripts/forest-playtest-candidate.mjs'])sha256[f]=hash(await fs.readFile(path.join(root,f)));
+ for(const f of [suiteFile,'scripts/evaluate-forest-dialogue.mjs','scripts/forest-dialogue-continuation.mjs','scripts/forest-playtest-candidate.mjs'])sha256[f]=hash(await fs.readFile(path.join(root,f)));
  return {baseCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),workingTreeDirty:!!execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).trim(),sha256,node:process.version};
 }
 const counts=r=>{const ts=r.cases.flatMap(c=>c.turns);return {planned:r.plannedRequests,attempted:ts.filter(t=>t.attempted).length,automaticPassed:ts.filter(t=>t.status==='automatic-pass').length,automaticFailed:ts.filter(t=>t.status==='automatic-fail').length,providerFailed:ts.filter(t=>t.status==='provider-failed').length,fixtureFailed:ts.filter(t=>t.status==='fixture-failed').length,blocked:ts.filter(t=>t.status==='blocked').length,notRun:ts.filter(t=>t.status==='plan-only').length};};
 export async function runForestDialogueEvaluation(settings,{env=process.env,fetchImpl=globalThis.fetch,log=console.log}={}){
+ const suiteFile=suites[settings.suite??'forest-v1'];assert.ok(suiteFile,'Unknown suite');
+ assert.ok(!(settings.resumeFailed&&settings.continueFrom),'Cannot resume and continue simultaneously');
+ if(settings.continueFrom)assert.ok(settings.suite==='continuity-v2'&&settings.selection==='overdue-denial','Continue only the explicit overdue correction case');
  const suite=JSON.parse(await fs.readFile(path.join(root,suiteFile),'utf8'));let selected=suite.cases.filter(c=>settings.selection==='all'||c.id===settings.selection),resume=null;assert.ok(selected.length,'Unknown case');
  if(settings.resumeFailed){
   assert.equal(selected.length,1,'Resume requires one explicit case');const sourcePath=await fs.realpath(path.resolve(root,settings.resumeFailed)),prefix=path.join(root,'artifacts','forest-dialogue')+path.sep;assert.ok(sourcePath.startsWith(prefix)&&path.basename(sourcePath)==='report.json','Resume only accepts this tool synthetic reports');await verifyDialogueReportFiles(sourcePath);
@@ -44,19 +51,21 @@ export async function runForestDialogueEvaluation(settings,{env=process.env,fetc
   const directory=await fs.realpath(path.join(path.dirname(sourcePath),c.id,'world'));assert.ok(directory.startsWith(prefix));const saved=JSON.parse(await fs.readFile(path.join(directory,`service-commit-r${c.finalRevision}.json`),'utf8'));assert.equal(hash(JSON.stringify(saved.bundle)),c.finalBundleSha256,'Source synthetic world no longer matches its report');
   const current=selected[0].turns.find(x=>x.id===t.id);assert.equal(current.text,t.text);selected=[{...selected[0],turns:[{...current,before:[]}]}];resume={sourceReportSha256:hash(bytes),caseId:c.id,turnId:t.id,originalRevision:c.finalRevision,directory,loan:t.oracle.loan};
  }
+ assert.ok(!selected.some(c=>c.setup==='continued-overdue')||settings.continueFrom,'Correction case needs its original completed live report');
+ const continuation=settings.continueFrom?await inspectForestContinuation(root,settings.continueFrom,settings.selection):null;
  const planned=selected.reduce((n,c)=>n+c.turns.length,0);assert.ok(planned<=12);if(settings.mode==='live')assert.ok(settings.maxRequests>=planned&&settings.maxRequests<=16,'Insufficient request budget');
  await verifyForestCandidate();const out=path.resolve(root,settings.out),nativeFetch=globalThis.fetch,attempts=[];let server,stream,n=0,g,directory,lastDialogue=null,currentRow=null,returnedTick=null;
  const real=settings.mode==='live',controlled=settings.mode==='controlled-test',enabled=real||controlled;
  const config=real?npcLanguageConfig(env):controlled?{enabled:true,baseURL:'http://127.0.0.1:1',model:'controlled-protocol',apiKey:'controlled-not-a-credential'}:{enabled:false};
  if(real){assert.equal(config.enabled,true);assert.equal(config.baseURL,'https://api.deepseek.com');assert.equal(config.model,'deepseek-flash');assert.equal(config.thinking??'disabled','disabled');assert.ok(config.apiKey);}
  await fs.mkdir(path.dirname(out),{recursive:true});await fs.mkdir(out);const writer=await createDialogueReportWriter(path.join(out,'report.json'));
- const report={schemaVersion:1,suiteId:suite.suiteId,fixtureVersion:'8',mode:settings.mode,completionProtocol:1,completed:false,semanticVerdict:real?'needs-human-review':'not-evaluated',notice:real?'真实模型与当前森林HTTP流程；自动检查不能代替真人语义评审。':controlled?'受控协议测试，回复由测试代码提供，不代表真实模型能力。':'零模型计划，只验证当前森林动作、状态与保存恢复。',plannedRequests:planned,requestLimit:real?settings.maxRequests:0,externalModelCalls:0,source:await sources(),provider:real?{model:config.model,thinking:config.thinking??'disabled'}:null,resume:resume?{sourceReportSha256:resume.sourceReportSha256,caseId:resume.caseId,turnId:resume.turnId,originalRevision:resume.originalRevision}:null,cases:[],createdAt:new Date().toISOString()};
+ const report={schemaVersion:1,suiteId:suite.suiteId,fixtureVersion:'8',mode:settings.mode,completionProtocol:1,completed:false,semanticVerdict:real?'needs-human-review':'not-evaluated',notice:real?'真实模型与当前森林HTTP流程；自动检查不能代替真人语义评审。':controlled?'受控协议测试，回复由测试代码提供，不代表真实模型能力。':'零模型计划，只验证当前森林动作、状态与保存恢复。',plannedRequests:planned,requestLimit:real?settings.maxRequests:0,externalModelCalls:0,source:await sources(suiteFile),provider:real?{model:config.model,thinking:config.thinking??'disabled'}:null,resume:resume?{sourceReportSha256:resume.sourceReportSha256,caseId:resume.caseId,turnId:resume.turnId,originalRevision:resume.originalRevision}:null,continuation:continuation?{sourceReportSha256:continuation.sourceReportSha256,caseId:continuation.caseId,originalRevision:continuation.originalRevision,originalBundleSha256:continuation.originalBundleSha256,originalReplies:continuation.originalReplies,copiedToFreshWorld:true,sourceUnchanged:null}:null,cases:[],createdAt:new Date().toISOString()};
  const save=async()=>{report.counts=counts(report);report.externalModelCalls=real?attempts.length:0;await writer.save(JSON.stringify(report,null,2)+'\n',render(report));};
  const fileHashes=async()=>Object.fromEntries(await Promise.all((await fs.readdir(directory)).filter(f=>f.endsWith('.json')).sort().map(async f=>[f,hash(await fs.readFile(path.join(directory,f)))])));
  const read=async()=>{const r=await nativeFetch(server.url+'/api/runtime/demo-state');assert.equal(r.status,200);g=await r.json();return g;};
  const bundle=async()=>JSON.parse(await fs.readFile(path.join(directory,`service-commit-r${g.snapshot.revision}.json`),'utf8')).bundle;
  const post=async(route,body)=>{const r=await nativeFetch(server.url+'/api/runtime/'+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(60000)});const b=await r.json();return {status:r.status,body:b};};
- const act=async(type,payload={})=>{const order=type.startsWith('March'),dto=order?{apiVersion:1,requestId:'forest-eval-order-'+(++n),type,payload}:{version:5,commandId:'forest-eval-'+(++n),expectedRevision:g.snapshot.revision,type,payload};const r=await post(order?'demo-order':'commands',dto);assert.equal(r.status,200,type+' HTTP '+JSON.stringify(r.body));const receipt=order?r.body.receipt:r.body;assert.equal(receipt.outcome,'succeeded',type+' '+JSON.stringify(receipt));await read();return {dto,receipt};};
+ const act=async(type,payload={})=>{const order=type.startsWith('March'),dto=order?{apiVersion:1,requestId:(settings.suite==='continuity-v2'?'forest2-eval-order-':'forest-eval-order-')+(++n),type,payload}:{version:5,commandId:(settings.suite==='continuity-v2'?'forest2-eval-':'forest-eval-')+(++n),expectedRevision:g.snapshot.revision,type,payload};const r=await post(order?'demo-order':'commands',dto);assert.equal(r.status,200,type+' HTTP '+JSON.stringify(r.body));const receipt=order?r.body.receipt:r.body;assert.equal(receipt.outcome,'succeeded',type+' '+JSON.stringify(receipt));await read();return {dto,receipt};};
  const social=async action=>{const r=await act('PlayerInteract',{targetId:'actor-2',action});if(action==='return')returnedTick=g.map.tick;return r;},quest=(questId,action)=>act('PlayerQuest',{questId,action});
  const disconnect=async()=>{if(stream){const old=stream;stream=null;old.abort.abort();await old.pump;}};
  const close=async()=>{await disconnect();if(server){const old=server;server=null;await old.close();}};
@@ -81,8 +90,8 @@ export async function runForestDialogueEvaluation(settings,{env=process.env,fetc
   return response;
  };
  try{
-  await save();for(const c of selected){directory=resume?.directory??path.join(out,c.id,'world');n=0;lastDialogue=null;returnedTick=resume?.loan?.returnedTick??null;const entry={id:c.id,title:c.title,turns:[],reopens:[]};report.cases.push(entry);const reopenStart=reopening.length;let blocked=false,loan=resume?.loan??null;
-   try{await open(!resume);if(resume){assert.equal(g.snapshot.revision,resume.originalRevision);}else if(c.setup==='damage')await social('smash');else{await prepare();loan={borrowTick:g.map.tick,dueTick:(await bundle()).snapshot.world.mapModel.socialModel.asset.loanDueTick};assert.ok(Number.isSafeInteger(loan.dueTick));if(c.setup==='overdue'){await act('AdvanceTime',{ticks:loan.dueTick+2-g.map.tick});await approach();}}}
+  await save();for(const c of selected){directory=resume?.directory??path.join(out,c.id,'world');n=0;lastDialogue=null;returnedTick=(resume?.loan??continuation?.loan)?.returnedTick??null;const entry={id:c.id,title:c.title,turns:[],reopens:[]};report.cases.push(entry);const reopenStart=reopening.length;let blocked=false,loan=resume?.loan??continuation?.loan??null;
+   try{if(continuation)await copyForestContinuation(continuation,directory);await open(!resume&&!continuation);if(resume||continuation){assert.equal(g.snapshot.revision,(resume??continuation).originalRevision);}else if(c.setup==='damage')await social('smash');else{await prepare();loan={borrowTick:g.map.tick,dueTick:(await bundle()).snapshot.world.mapModel.socialModel.asset.loanDueTick};assert.ok(Number.isSafeInteger(loan.dueTick));if(c.setup==='overdue'){await act('AdvanceTime',{ticks:loan.dueTick+2-g.map.tick});await approach();}}}
    catch(e){blocked=true;entry.setupError={message:e.message};}
    for(const t of c.turns){const row={...clone(t),status:'not-run',attempted:false,context:null,oracle:null,response:null,checks:[],metrics:null,humanReview:'pending'};entry.turns.push(row);currentRow=row;await fs.writeFile(path.join(out,'phase.json'),JSON.stringify({phase:c.id+'/'+t.id,startedAt:Date.now()}));
     if(blocked){row.status='blocked';continue;}
@@ -90,7 +99,7 @@ export async function runForestDialogueEvaluation(settings,{env=process.env,fetc
      await steps(t.before);await approach();const b=await bundle(),context=npcDialogueContext(b);assert.equal(context.canTalk,true);row.context=providerContext(context,t.text);row.oracle={tick:g.map.tick,asset:clone(g.map.social.asset),loan:loan?{...loan,returnedTick}:null,overdueMinutes:loan?Math.max(0,(returnedTick??g.map.tick)-loan.dueTick)*10:null,knownTool:clone(row.context.knownFacts.tool),observations:context.observations.map(m=>({eventSeq:m.eventSeq,kind:m.kind,tick:m.tick,channel:m.channel,actorId:m.actorId,observedState:m.observedState}))};
      const own=row.context.knownFacts.tool;if(c.id==='borrow-return'){const returned=['handed-back','next-day'].includes(t.id);assert.equal(own.holder,returned?'self':'player');assert.equal(row.oracle.asset.condition,t.id==='borrowed'?80:70);assert.equal(own.condition,returned?70:80);}if(c.id==='witness-denial'){assert.ok(context.observations.some(m=>m.kind==='smash'&&['self','witness'].includes(m.channel)&&m.actorId==='actor-4'));assert.equal(own.condition,['repaired','remembered'].includes(t.id)?40:20);}if(c.id==='overdue-denial'){assert.ok(context.observations.some(m=>m.kind==='overdue'));assert.equal(own.holder,t.id==='late'?'player':'self');}row.checks.push({name:'scenarioPreconditions',passed:true});
      if(!enabled){row.status='plan-only';await save();continue;}
-     const before=five(g),hashes=await fileHashes(),facts=clone(worldFacts(b));row.requestId='forest-'+c.id+'-'+t.id;const request={apiVersion:1,requestId:row.requestId,simulationId:g.snapshot.simulationId,expectedRevision:g.snapshot.revision,targetId:'actor-2',text:t.text};row.attempted=true;
+     const before=five(g),hashes=await fileHashes(),facts=clone(worldFacts(b));row.requestId=(settings.suite==='continuity-v2'?'forest2-':'forest-')+c.id+'-'+t.id;const request={apiVersion:1,requestId:row.requestId,simulationId:g.snapshot.simulationId,expectedRevision:g.snapshot.revision,targetId:'actor-2',text:t.text};row.attempted=true;
      const generated=await post('demo-npc-compose',request);row.metrics=clone(attempts.at(-1));if(row.metrics)delete row.metrics.context;
      await read();assert.deepEqual(five(g),before);assert.deepEqual(await fileHashes(),hashes);row.checks.push({name:'previewDoesNotCommit',passed:true});
      if(generated.status!==200){row.status='provider-failed';row.error=generated.body;blocked=true;await save();continue;}
@@ -100,10 +109,11 @@ export async function runForestDialogueEvaluation(settings,{env=process.env,fetc
      const refs=new Set(draft.payload.memoryRefs),referenced=row.context.observations.filter(m=>refs.has(m.eventSeq));row.checks.push({name:'requiredObservationSource',passed:t.referenceKinds.length===0||referenced.some(m=>t.referenceKinds.includes(m.kind)),actual:referenced.map(m=>({eventSeq:m.eventSeq,kind:m.kind})),expected:t.referenceKinds});row.status=row.checks.every(c=>c.passed)?'automatic-pass':'automatic-fail';
     }catch(e){row.status='fixture-failed';row.error={message:e.message};blocked=true;}await save();
    }
-   if(server&&resume)await reopen();
+   if(server&&(resume||continuation))await reopen();
    if(server){const loaded=await loadServiceCommit(path.join(directory,`service-commit-r${g.snapshot.revision}.json`));entry.worldReplayAudit='passed';entry.finalBundleSha256=hash(JSON.stringify(loaded.bundle));entry.finalRevision=g.snapshot.revision;entry.finalTick=g.map.tick;}
    entry.reopens=reopening.slice(reopenStart);await close();entry.remainingLocks=(await fs.readdir(directory).catch(()=>[])).filter(f=>f.endsWith('.lock'));if(entry.remainingLocks.length)entry.cleanupIssue='Ownership lock remains; no lock was deleted';await save();
   }
+  if(continuation){await verifyForestContinuationSource(continuation);report.continuation.sourceUnchanged=true;}
   report.completed=true;await fs.writeFile(path.join(out,'phase.json'),'{"phase":null}');await save();const integrity=await writer.finish();const c=report.counts;const exitCode=c.automaticFailed+c.providerFailed+c.fixtureFailed+c.blocked+report.cases.filter(c=>c.worldReplayAudit!=='passed'||c.remainingLocks.length).length>0?1:0;log(JSON.stringify({status:exitCode?'checks-failed':real?'human-review-required':controlled?'controlled-protocol-only':'plan-ready',mode:settings.mode,counts:c,externalModelCalls:report.externalModelCalls,output:path.join(out,'report.json'),integrity}));return {exitCode,report};
  }finally{try{await close();}finally{globalThis.fetch=nativeFetch;await writer.close();}}
 }
