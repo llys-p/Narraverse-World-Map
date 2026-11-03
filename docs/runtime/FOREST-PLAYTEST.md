@@ -1,58 +1,48 @@
-# 森林试玩候选3：真实对话与跨日记忆（2026-11-01）
+# 森林试玩候选4：记忆续聊与借期表达（2026-11-03）
 
 ## 给玩家
 
-**这轮把当前森林的自由对话接到了真实经历上，并修正了一个实际算错时间的问题。** 游戏入口仍是 `Start-Forest-Journey.cmd`；另开新局用 `Start-Forest-Journey-New.cmd`，不增加支线。
+入口仍是 `Start-Forest-Journey.cmd`，另开新局用 `Start-Forest-Journey-New.cmd`。这轮没有增加支线，集中修正NPC如何谈论已经发生的事：部分修理不能笼统说全修好；纠正旧话时不用内部刻数；约定借期、实际持有时长、逾期分别计算。
 
-本轮真实对话中，猎人能区分“说带回来了”和“真正交还工具”，也没有凭空知道玩家在森林里造成的磨损；实际收回后才知道耐久70。玩家否认亲手砸坏工具时，他仍坚持亲历记录，之后实际修理也不会把旧事抹去。
+本次可核对的示例是：约定借一天为1440分钟，实际借出到归还1470分钟，晚还30分钟。归还后再聊天、跨日、重开，都不应把30分钟继续增加。说话仍由模型自由生成，世界物品、行动和客观记忆不由语言直接改写。
 
-发现的主要错误是：猎人把“借出以来1460分钟”当成逾期，实际只晚20分钟。现在给普通借用补上程序核对过的时间说明，修复后的真实回复依次为：到期后20分钟；实际归还时晚30分钟；道歉后仍记得30分钟；跨日、重开后仍是30分钟。语言由模型生成，物品、修理、记忆和关系仍由世界规则决定。
+**代码已保存，真实语言验收仍有证据缺口。** 环境维护前实际做过20次请求，工具输出中可见次日归还、部分修理与旧错纠正结果；尚未上传的原始报告和合成档被环境维护回退，未能找回。已保留可从本次对话核对的失败摘录，明确标为观察记录，不能当原报告。
 
-| 当前门槛 | 本轮结果 |
-| --- | --- |
-| 森林真实模型HTTP流程 | 16次请求，15条协议接受并保存；失败也保留 |
-| 普通借期理解 | 原1460错误保留；修复后4轮20/30/30/30 |
-| 亲历、否认、修理与跨日 | 4轮真实对话保持经历与后续修理并存 |
-| 客观状态边界 | 核对15条实际交谈落盘前后，未把说话变成行动或客观记忆 |
-| 定向回归 | 70项不同检查通过，无跳过 |
-| Linux/Windows浏览器完整玩法旅程 | 两端通过；本组关闭模型 |
-| 真实语义、真人体验 | 仍待人工评审 |
+恢复最终代码后，74项回归再次通过；源码eab73a6的Linux/Windows真实Chrome完整玩法旅程通过。受控服务流程另作12轮验证，用来检查输入事实、确认、保存和重开，不能当模型语言能力。两次真实模型恢复请求均返回503，没有生成或保存回复，已停止追加。
 
-预定12个不同问法，实际11个得到过可接受回复；“归还后次日追问”因前轮失败阻塞，本轮没有调用模型。另有“修好了”用于部分修理、提到“系统里确认”、无必要提“小偷/别瞎猜”等措辞问题。它们没有改变世界，但还需要改善，不能把协议通过说成NPC已经完全智能。
-
-下一步应补这个未测问法、检查旧错误话术能否在更长对话中纠正，再做真实浏览器自然对话与真人试玩；Windows游戏入口双击、真手机和读屏仍待验。继续冻结新内容。
+仍有表达问题：有时主动补充“修理换借用”、聊钱粮时多说工具，部分措辞生硬。真人语义评审、真实模型与浏览器表单连起来的完整测试、Windows双击启动、真手机及读屏仍待验。
 
 ## 给接手AI
 
-### 分支与实现
+### 当前代码与目录
 
-- 仓库llys-p/Narraverse-World-Map，草稿[PR46](https://github.com/llys-p/Narraverse-World-Map/pull/46)，父PR45 a272484c0e74f4079bb11259e721b57abc4b89fd。分支codex/forest-dialogue-acceptance-20261101，工作树/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Dialogue。
-- 修复代码66eb0a21a710988b4e50b518906dfd5fff23e5f8，后续提交只收证据/交接/核验工具。候选清单docs/runtime/forest-playtest-candidate.json，候选3，192份游戏文件，fixture8与18356端口不变。
-- 生产仅修改runtime/core/npc-social.mjs、runtime/service/npc-dialogue-grounding.mjs、runtime/service/npc-language-provider.mjs。前者只把既有144刻借期提成共享常量；普通借用规则、世界状态和存档格式没有变化。
-- knownFacts.simpleLoan只从NPC仍保留的typed lent/returned亲历派生，且来源必须在本轮给模型的资料中。没有有效借出来源、来源未选中、只剩旧交谈、拒绝借用或不明持有人时不编造。正式协议较新时不拿旧普通借期冒充。计算到期后分钟，实际归还后固定，旧回复不能覆盖。
-- Provider只新增准确时间与引用优先级说明，没改写模型回复、没有截断引用或自动重试；超过3引用和未知引用仍拒绝。原记忆更新算法/公共契约/存档格式不变，未复制或导入2.0。
+- 仓库llys-p/Narraverse-World-Map，独立草稿[PR47](https://github.com/llys-p/Narraverse-World-Map/pull/47)，续接PR46 `433fc5248197b9012620d08a36c412f9c177f99d`。
+- 分支 `codex/forest-dialogue-continuity-20261103`；维护后工作树 `/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Continuity`。最终游戏源码提交 `eab73a6318d047de95f4792a7fc71ee1f952d6b7`；后续提交收证据/交接。
+- 旧 `/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Dialogue` 被恢复为早期本地状态，仍有PR46暂存内容，index树为 `7ee38e9ccc26df5c29721621df972572f06b9f44`。不要重置或覆盖它；该内容已在远端PR46完整保存。
+- 生产修改仅 `runtime/service/npc-language-provider.mjs` 和 `runtime/service/npc-dialogue-grounding.mjs`。新增 `knownFacts.simpleLoan.borrowedMinutes` 由原本可见的typed借出/归还经历计算；约定借期loanMinutes、实际持有borrowedMinutes、逾期overdueMinutes分别说明。无可靠来源时仍为空，不从旧回复补造事实。
+- Provider收紧部分修理、人物口吻、当前库存与准备状态的说明；不替换回复、不截断引用、不自动重试。未更改世界规则、记忆更新算法、命令权限或存档格式。候选4仍192份游戏文件、fixture8、18356端口。
 
-### 验收与复跑
+### 验证、维护事件与费用记录
+
+- `node scripts/check-forest-continuity-evidence.mjs` 核对当前证据；输出明确保留语言门槛未闭合。证据目录 `docs/evidence/forest-continuity-20261103`。
+- 维护后实际重跑74项不同回归，无跳过。历史/重复执行次数不累加。最终代码[浏览器CI41587465354](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41587465354)的Linux/Windows均通过，关闭模型，不等于自然对话表单真实模型端到端。
+- `controlled-*` 为维护后12轮实际worker/HTTP受控协议报告，绑定最终源码，具有JSON/HTML完成回执；不是模型答案。普通归还次日、40耐久部分修理、旧错历史中的1440/1470/30分别核对。
+- 维护前20请求：初轮12、表达复测4、总时长修复复测4。源码642dc5a→a60d2f7→eab73a6已先行推送而保住；原始报告丢失。`maintenance-observations.json`仅从本次对话可见输出整理，标明notOriginalReport，不伪造源文件哈希、usage或完成回执。PR46已有原始1460错误记录仍完整。
+- 维护后2次live请求均HTTP503，分别保存 `recovery-unavailable` 与 `recovery-unavailable-retry`；未生成回复、预览未改世界、合成世界重放通过。此后停止模型调用。合计观察到22次外部请求，后两次服务未返回token用量；不能猜费用，也不能称已取得22条回复。
+- 两次503之后未换用受控回复冒充模型；humanReview持续pending。原20轮目前不能独立复核，因此不声称语言已全面通过。
+
+### 如何继续
+
+1. 模型服务恢复后，按新有界安排重跑continuity-v2的三个4轮用例；原20轮不能重建成相同报告。使用新的输出目录，每组完成立即保存证据。沿用用户授权的低成本DeepSeek、thinking关闭，凭据只进入进程。
+2. 关注“归还次日追问”、部分修理、原错误历史持续纠正。逾期末问现明确区分约定1440、实际1470和迟还30；不能只看协议接受，逐句检查。
+3. 随后完成真实模型浏览器表单全流程，并处理不必要的修理邀约/工具话题；暂不扩大支线或重做记忆系统。
 
 ```sh
-node scripts/check-forest-dialogue-evidence.mjs
-node scripts/evaluate-forest-dialogue.mjs --mode plan --case all --out artifacts/forest-dialogue/my-new-plan
-node scripts/evaluate-forest-dialogue.mjs --mode controlled-test --case all --out artifacts/forest-dialogue/my-new-protocol
+node scripts/evaluate-forest-dialogue.mjs --suite continuity-v2 --case borrow-return --mode controlled-test --out artifacts/forest-dialogue/my-new-borrow
+node scripts/evaluate-forest-dialogue.mjs --suite continuity-v2 --case witness-denial --mode controlled-test --out artifacts/forest-dialogue/my-new-repair
+node scripts/evaluate-forest-dialogue.mjs --suite continuity-v2 --case overdue-denial --mode controlled-test --continue-from artifacts/forest-dialogue/live-01/report.json --out artifacts/forest-dialogue/my-new-correction
 ```
 
-新工具只创建隔离合成档与临时端口，不读取.env/真实档。plan零模型调用；controlled-test用测试回复核对协议，不代表模型语言质量。实际模型必须显式配置本项目进程环境与live标志/足额预算，默认不调用模型。每场景独立world，普通动作经现有DTO，预览不写文件/投影，确认只保存一次交谈；同ID预览不重复调用模型，关服重开后已提交交谈的原DTO可重试。
+第三项需要旧工具生成的私有合成档，公开仓库不含存档。维护后已从旧工作树只读复制PR46原始overdue-denial合成档到当前工作树；源报告/末态须核验。工具只继续隔离副本，源档不变；不适用于真实玩家档。若以后该合成档丢失，只能重新建立相应实测，不能伪造原错误对话作为同一真实历史。
 
-`--resume-failed`只接受本工具artifacts/forest-dialogue内、带完成回执的fixture8真实失败报告；合成档必须仍停在那一轮，完整bundle哈希须相同。它不用于真实档迁移。原报告不改，在新输出目录记录重取；本轮同档重取保留了此前两轮真实交谈。
-
-- 基准benchmarks/npc-forest-v1/cases.json为自写公开开发例，3场景12轮，不是盲测或独立金标。
-- 70项不同测试包含Provider、事实边界、旧社交/协商、森林/信任支线、普通借期与费用入口保护；不与重复15项或历史49项相加。
-- 当前候选实际[CI41226497989](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41226497989)的Ubuntu24.04/Windows2022真实Chrome六阶段均通过。截图/存档不上传，仅日志文本/文件哈希；自然对话真实模型走HTTP专项，浏览器旅程模型关闭，不混成一个端到端结论。
-- scripts/audit-forest-dialogue-saves.mjs对本轮合成档15条实际已确认交谈逐条比较落盘前后物品/关系/生命钱粮/任务/客观记忆，只读生成证据，不上传存档。这与完整世界重放审计分别记录。
-
-### 模型结果、限制与接续
-
-本轮deepseek-flash，thinking关闭，实际16请求（54686输入、1140输出token，按服务回报，不猜账单）。初测11，因一轮4引用被拒而阻塞1问法；未使用初测额度1用于原失败轮重新生成，另外4用于逾期修复。无自动重试，本轮已结束；这是助手投入安排，不是用户永久调用上限，后续仍按用户低成本授权与有界任务推进。密钥未写入文件/日志/提交。
-
-证据docs/evidence/forest-dialogue-20261101：live-01保留原始错误与拒绝，borrow-retest为原失败档的1次重取，overdue-retest为修复后4轮，JSON/HTML/完成回执与源码绑定。baseline-evaluator.mjs与初测脚本原SHA完全一致，parent-candidate/helper来自PR45；旧候选核验在干净父树运行。assistant-review.json是助手意见，原humanReview与semanticVerdict始终pending。不要写成12个真实问法全部通过，也不能说15条接受的回复都没有事实错误，初测有三轮沿用1460。
-
-下一项集中补borrow-return/next-day，旧错误对话的持续纠正，以及角色口吻中“系统/小偷”等无根据话题；再做真实浏览器自然对话和真人体验。不要把待验当完成，不扩支线/重做整套记忆或回到性能优化。保持独立草稿，不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0；GitHub Projects缺写入能力待同步。
+维持草稿，不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0；GitHub Projects缺写入能力待同步。用户“继续”授权在此范围内自主修复与验证，不需要反复询问既有授权。

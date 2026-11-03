@@ -1,3 +1,17 @@
+# 当前候选：森林记忆续聊与借期表达（2026-11-03）
+
+独立草稿PR47续接PR46，分支codex/forest-dialogue-continuity-20261103。最终游戏源码eab73a6318d047de95f4792a7fc71ee1f952d6b7，任务tasks/FOREST-DIALOGUE-CONTINUITY-TASK.md，唯一玩家/AI交接docs/runtime/FOREST-PLAYTEST.md。维护后工作树Narraverse-Forest-Continuity；旧Dialogue暂存状态保留。
+
+- Provider明确部分修理不等于完全完好、纠错不复述内部刻数、没存粮不等于严重饥饿或当前购买准备；自然生成和原引用/行动边界不变。
+- 实测曾把约定1440分钟说成实际借到归还总时长。新增private simpleLoan.borrowedMinutes，由本轮可见typed经历计算实际1470，与约定1440/逾期30分开；归还后总时长与逾期固定。未改世界规则、记忆更新或存档。
+- 维护前实际20请求及反馈触发两轮必要修正，但原始报告/合成档在环境维护回退中丢失。只保留本次对话可核对的观察与失败摘录，明确notOriginalReport，不能当完整证据。代码已先行推送而保住；PR46历史证据仍完整。
+- 恢复最终源码后74项不同回归再次通过；维护后12轮受控HTTP验证另列，不代表模型语言。源码eab73a6的CI41587465354，Linux/Windows真实Chrome六阶段通过，模型关闭。
+- 两次恢复live请求均HTTP503，零回复、预览零提交；原始失败报告和重放结果保存，已停止追加。当前工作共观察22次外部请求（前20+503两次），后两次usage未知，不猜账单。
+- 当前证据核验node scripts/check-forest-continuity-evidence.mjs；语义门槛开放、humanReview pending。仍有不必要的修理邀约/工具话题；最终真实模型可复核报告、真实模型浏览器表单、Windows双击/真手机/读屏与真人试玩待验。
+- 冻结新玩法/性能优化，不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0。下一步服务恢复后重跑有界12轮并逐组保存，再接真实浏览器对话；Projects待同步。
+
+以下为PR46及更早历史。
+
 # 当前候选：森林自由对话与跨日记忆实测（2026-11-01）
 
 续接PR45 `a272484c0e74f4079bb11259e721b57abc4b89fd`，独立草稿PR46，分支 `codex/forest-dialogue-acceptance-20261101`，修复代码提交 `66eb0a21a710988b4e50b518906dfd5fff23e5f8`。任务 `tasks/FOREST-DIALOGUE-ACCEPTANCE-TASK.md`，玩家/AI交接仍 `docs/runtime/FOREST-PLAYTEST.md`，候选3仍192份游戏文件和同一Start-Forest-Journey.cmd入口。
