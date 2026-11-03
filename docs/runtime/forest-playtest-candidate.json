@@ -188,7 +188,7 @@
     "runtime/service/http-contract.mjs": "2b051338981bebc2bb79d9ab1cd097f26596dbbc070c2dcd2c6de37d2868afe9",
     "runtime/service/march-runner.mjs": "e71e3609d97eae2e7e42a5ff1047a47fcaee43459bbb1d4f74f78fd39587a19a",
     "runtime/service/npc-dialogue-grounding.mjs": "6c1d436e33fea7936931453d7f1f24c74ef602a0c8fbed4cfa1074c7c60d4482",
-    "runtime/service/npc-language-provider.mjs": "72f51fdde228ac93edfac7d71d780a5d3b7acd16ea4542ae2d5cc7e751e16ccf",
+    "runtime/service/npc-language-provider.mjs": "63a4929e65c655c3d178f819f1614958193b92dcd015de40eb69c95c38578aef",
     "runtime/service/npc-life-facts.mjs": "0309ba301126b72aa9bd3c070abc341bcf8fd99002cb742b5941f80c310b6e2a",
     "runtime/service/npc-recall-focus.mjs": "b6b9be89889d49897eff1779b3e22dae1b202d4bb04c9bdae3c2383f78362889",
     "runtime/service/runtime-owner-thread.mjs": "8c9d280a3c51717d5d9e7f16c30f65b05eec1216b22e6dc099edc8baf1da5f49",
