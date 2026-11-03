@@ -16,14 +16,14 @@ test('ordinary forest loan distinguishes total borrowing time from twenty minute
  const f=fixture(),due=f.bundle.snapshot.world.mapModel.socialModel.asset.loanDueTick;
  assert.equal(view(f).knownFacts.simpleLoan.loanMinutes,1440);assert.equal(view(f).knownFacts.simpleLoan.overdueMinutes,0);
  f.act('AdvanceTime',{ticks:due+2-f.bundle.snapshot.tick});const raw=f.raw,before=JSON.stringify(raw),v=groundedProviderContext(raw,'现在逾期多久？');
- assert.equal(v.agreement,null);assert.equal(v.knownFacts.simpleLoan.overdueMinutes,20);assert.equal(v.knownFacts.simpleLoan.status,'overdue');assert.equal(v.knownFacts.simpleLoan.dueInMinutes,0);assert.equal(JSON.stringify(raw),before);
+ assert.equal(v.agreement,null);assert.equal(v.knownFacts.simpleLoan.overdueMinutes,20);assert.equal(v.knownFacts.simpleLoan.loanMinutes,1440);assert.equal(v.knownFacts.simpleLoan.borrowedMinutes,1460);assert.equal(v.knownFacts.simpleLoan.status,'overdue');assert.equal(v.knownFacts.simpleLoan.dueInMinutes,0);assert.equal(JSON.stringify(raw),before);
  assert.ok(v.observations.some(m=>m.eventSeq===v.knownFacts.simpleLoan.sourceEventSeq&&m.observedState.effect==='lent'));
 });
 
 test('late return fixes the ordinary-loan duration despite later time, apology and false old speech',()=>{
  const f=fixture(),due=f.bundle.snapshot.world.mapModel.socialModel.asset.loanDueTick;f.act('AdvanceTime',{ticks:due+2-f.bundle.snapshot.tick});f.social('return');
- const raw=f.raw,v=view(f);assert.equal(v.knownFacts.simpleLoan.overdueMinutes,30);assert.equal(v.knownFacts.simpleLoan.status,'returned-late');assert.equal(v.knownFacts.simpleLoan.wasReturned,true);
- f.social('apologize');f.act('AdvanceTime',{ticks:144});assert.equal(view(f).knownFacts.simpleLoan.overdueMinutes,30);
+ const raw=f.raw,v=view(f);assert.equal(v.knownFacts.simpleLoan.overdueMinutes,30);assert.equal(v.knownFacts.simpleLoan.borrowedMinutes,1470);assert.equal(v.knownFacts.simpleLoan.loanMinutes,1440);assert.equal(v.knownFacts.simpleLoan.status,'returned-late');assert.equal(v.knownFacts.simpleLoan.wasReturned,true);
+ f.social('apologize');f.act('AdvanceTime',{ticks:144});assert.equal(view(f).knownFacts.simpleLoan.overdueMinutes,30);assert.equal(view(f).knownFacts.simpleLoan.borrowedMinutes,1470);
  raw.tick+=144;raw.conversation.push({eventSeq:999999,tick:raw.tick,utterance:'你逾期多久？',reply:'已经逾期1460分钟。',memoryRefs:[]});assert.equal(groundedProviderContext(raw,'你之前算错了吗？逾期多久？').knownFacts.simpleLoan.overdueMinutes,30);
 });
 
