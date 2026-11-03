@@ -1,0 +1,20 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-forest-dialogue.mjs",
+    "--suite",
+    "continuity-v2",
+    "--case",
+    "borrow-return",
+    "--mode",
+    "live",
+    "--allow-model-calls",
+    "--max-requests",
+    "4",
+    "--out",
+    "artifacts/forest-dialogue/recovery-20261103/live-borrow-return"
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "wallMs": 10700
+}
