@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "assistant",
+  "humanReview": "pending",
+  "externalGenerationRequests": 16,
+  "protocolAcceptedRequests": 15,
+  "distinctQuestionsWithAcceptedReplies": 11,
+  "plannedDistinctQuestions": 12,
+  "inputTokens": 54686,
+  "outputTokens": 1140,
+  "missingLiveTurns": [
+    "borrow-return/next-day"
+  ],
+  "summary": "实际逾期时间已由误报1460修复为20；归还时晚30，之后跨日/重开/道歉仍固定30。不是整体语言验收。",
+  "reports": [
+    {
+      "file": "live-01.json",
+      "sha256": "a9a6c0ad39897bd4088406f14c162b2ff83d4dd352a213aa6bae2f6de7ee2834",
+      "phase": "before-fix",
+      "turns": [
+        {
+          "case": "borrow-return",
+          "turn": "borrowed",
+          "replySha256": "910609be6a819e7ffc85d23fddba8f8e943cda5365236ec7e6cfad81ef9bcc72",
+          "assistantNote": "正确区分所有者与持有人；工具已借给玩家。“修好了”一词在80耐久下仍有歧义。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "borrow-return",
+          "turn": "claimed-return",
+          "replySha256": "da733cab3283ef955bd14bbf88b1236a888734fc2b3d91748fb1009550650967",
+          "assistantNote": "没有把“带回来”当成实际交还，也未泄露未目击的70耐久；但“系统里确认”出戏。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "borrow-return",
+          "turn": "handed-back",
+          "replySha256": null,
+          "assistantNote": "协议失败：4个引用超过上限，未提交本轮交谈。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "witness-denial",
+          "turn": "witness",
+          "replySha256": "5016d365e4d1b0dd44d6e28a7ac330f4bd48c594556911a06be7f7dd3230bcfd",
+          "assistantNote": "坚持本人直接见到玩家砸坏工具，不把它降成未知发现。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "witness-denial",
+          "turn": "denial",
+          "replySha256": "32e17bb96cf7458b9c4c3f4d85765892427be66e5a84290aa2b3db7d6a485cff",
+          "assistantNote": "没有随否认改口；区分原来并非满耐久和新增破坏。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "witness-denial",
+          "turn": "repaired",
+          "replySha256": "8d73080476775410d8cdaf7ead65c64a8bfbcd7c6cbfa8b069689dfa3d5d051a",
+          "assistantNote": "实际修理与过去破坏并存；“修好”措辞仍待真人审看。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "witness-denial",
+          "turn": "remembered",
+          "replySha256": "08f59e01ea1a63cc56b451ea38a024220d1df9d1003dddd50ef7f4fc87f8ba02",
+          "assistantNote": "跨日重开后仍保留破坏与后续修理，未被口述覆盖。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "overdue-denial",
+          "turn": "late",
+          "replySha256": "a772971fc3a85869c3689be7bd6d5f17d1b036d6005a74606e8cbc845899d509",
+          "assistantNote": "事实错误：把借出至今1460分钟当逾期，实际只晚20分钟。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "overdue-denial",
+          "turn": "returned-late",
+          "replySha256": "c9a0bbe179d075f828a4c403e6edac2232a40189acbfa26a8cac9ef629781607",
+          "assistantNote": "承认实际归还，但继续引用错误1460分钟并出现内部刻数/问号。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "overdue-denial",
+          "turn": "apology",
+          "replySha256": "716a30806af7edce72e8d32113ae4aba84192df49eb29b4311df6aad7edd7c91",
+          "assistantNote": "区分道歉与遗忘/完全原谅；本轮未重复错误分钟数。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "overdue-denial",
+          "turn": "later",
+          "replySha256": "ca22f9b7c07ec1a5e5e86eb39f6b6702abf85c4e21a659115a25cf7667f2311f",
+          "assistantNote": "正确知道已归还，但错误延续1460分钟。",
+          "humanReview": "pending"
+        }
+      ]
+    },
+    {
+      "file": "borrow-retest.json",
+      "sha256": "21ef3920a696ca23c9c447f8be65dde815cd45e1cb6557be013accce8f52308a",
+      "phase": "after-fix",
+      "turns": [
+        {
+          "case": "borrow-return",
+          "turn": "handed-back",
+          "replySha256": "7b9daaf1d5a38edd7ffd7fab8764304b7e3b1e4790307066244678e541d5dd0b",
+          "assistantNote": "同一原失败合成档继续，保留此前两轮真实交谈；本次接受合法引用，正确说由猎人持有、约70耐久。",
+          "humanReview": "pending"
+        }
+      ]
+    },
+    {
+      "file": "overdue-retest.json",
+      "sha256": "d2573f5e7a8bdc8756d440beba64bbf475a05669e4f0bc564123910f7e2c229b",
+      "phase": "after-fix",
+      "turns": [
+        {
+          "case": "overdue-denial",
+          "turn": "late",
+          "replySha256": "74e28e4b63e98b40e96a76d256e219810185152b65dd5b7028527c37a893a545",
+          "assistantNote": "正确说明只逾期20分钟，没有把1460分钟借用总时长当逾期。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "overdue-denial",
+          "turn": "returned-late",
+          "replySha256": "c3e7ca9f3d9bd9b3a1a08eb43e3d365836edda38b567e749b12435475458a506",
+          "assistantNote": "正确承认归还，并固定归还时实际晚30分钟。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "overdue-denial",
+          "turn": "apology",
+          "replySha256": "221e08343513c315a69f6f3d5b133d4b629014a4e57e8fc9c92f86e6abc66ef4",
+          "assistantNote": "道歉后仍记得实际晚30分钟，不自动原谅或忘记。",
+          "humanReview": "pending"
+        },
+        {
+          "case": "overdue-denial",
+          "turn": "later",
+          "replySha256": "c6c5acfe4e741bfc2b3da7d38bf2b69455d11d8863f69ad24a040d79fc22254c",
+          "assistantNote": "跨日重开仍由猎人持有，保留30分钟失约；额外“小偷/别瞎猜”的话题和语气需改善。",
+          "humanReview": "pending"
+        }
+      ]
+    }
+  ],
+  "concerns": [
+    "初测和修复后仍有“修好了”用来指一次部分修理的措辞，未明确声称耐久100，但表达可更精确。",
+    "初测回复提到“系统里确认”，破坏角色口吻；未在本轮额外扩展风格修复。",
+    "修复后末轮加入未被询问的“小偷”和“别瞎猜”，没有对应盗窃经历，应作为无根据话题/语气问题继续评审。",
+    "当前森林已做两条跨日语言路径，不等于长时遗忘、所有偷抢威胁或真人体验验收。"
+  ]
+}

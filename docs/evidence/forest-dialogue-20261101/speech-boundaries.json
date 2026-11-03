@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "scope": "actual-synthetic-committed-speech-boundaries",
+  "sourceReports": [
+    {
+      "name": "live-01",
+      "sha256": "a9a6c0ad39897bd4088406f14c162b2ff83d4dd352a213aa6bae2f6de7ee2834"
+    },
+    {
+      "name": "borrow-retest",
+      "sha256": "21ef3920a696ca23c9c447f8be65dde815cd45e1cb6557be013accce8f52308a"
+    },
+    {
+      "name": "overdue-retest",
+      "sha256": "d2573f5e7a8bdc8756d440beba64bbf475a05669e4f0bc564123910f7e2c229b"
+    }
+  ],
+  "externalModelCalls": 16,
+  "groups": [
+    {
+      "id": "initial/borrow-return",
+      "latestRevision": 86,
+      "latestFileSha256": "d3b6e16adf0e450f1e627fb29eef39d0527b89b12e0b2690fd47a71e92362946",
+      "remainingLocks": [],
+      "entries": [
+        {
+          "commandId": "speech-forest-borrow-return-borrowed",
+          "fromRevision": 46,
+          "toRevision": 47,
+          "tick": 39,
+          "beforeFileSha256": "81141e586596972247ae1dfeb693a31d6829a79ce8284953a8b3766db3b6122a",
+          "afterFileSha256": "ac6133d72d2cd8441ad2d2762d1c54ed837fbe2b96b037c42362ff67c90287ea",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-borrow-return-claimed-return",
+          "fromRevision": 83,
+          "toRevision": 84,
+          "tick": 70,
+          "beforeFileSha256": "1b22f3f5ed5eeffb27dd0dbce6194c5feb1111b6a9b0ed128060e1977c4d62b1",
+          "afterFileSha256": "52e695b379691449b44815135e839efc31a73617a5f40f64861941da3dfaed39",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-borrow-return-handed-back",
+          "fromRevision": 85,
+          "toRevision": 86,
+          "tick": 71,
+          "beforeFileSha256": "006f5cf4bfd2d7b8f656363fbed7494191eba12c6484069fa7b4204822267352",
+          "afterFileSha256": "d3b6e16adf0e450f1e627fb29eef39d0527b89b12e0b2690fd47a71e92362946",
+          "noPhysicalOrObjectiveMemoryChange": true
+        }
+      ]
+    },
+    {
+      "id": "initial/witness-denial",
+      "latestRevision": 148,
+      "latestFileSha256": "03fd7d02b5c761786711ad9d5c87c6fc3593e2862a692caf060d72d3f76149e9",
+      "remainingLocks": [],
+      "entries": [
+        {
+          "commandId": "speech-forest-witness-denial-witness",
+          "fromRevision": 1,
+          "toRevision": 2,
+          "tick": 1,
+          "beforeFileSha256": "9020ff5bbf1730b5d0b3efc23ad64ab2dfa26ef726ed18678fc99baf8d4422f5",
+          "afterFileSha256": "16b0a141a12eb40e619060a57bcce77142cf70254c38eb55b3f82642eb8c50f4",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-witness-denial-denial",
+          "fromRevision": 2,
+          "toRevision": 3,
+          "tick": 1,
+          "beforeFileSha256": "16b0a141a12eb40e619060a57bcce77142cf70254c38eb55b3f82642eb8c50f4",
+          "afterFileSha256": "ace161f261104abfa3233e969f0d3f3f07295f860bdda19e2c24df440eb62096",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-witness-denial-repaired",
+          "fromRevision": 4,
+          "toRevision": 5,
+          "tick": 2,
+          "beforeFileSha256": "5c2e3521827934cad4e9f7f2c4127918cd798365d33d67d8ec9c8df3c8a78fcf",
+          "afterFileSha256": "35a809ac8812d7f2fb85764949ae889c5008528ac2c815139ab55f1373f4c1d0",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-witness-denial-remembered",
+          "fromRevision": 147,
+          "toRevision": 148,
+          "tick": 144,
+          "beforeFileSha256": "ab8042015a550f6369303b59b54b376cac47211ee64307c8d1b82b7e16c62726",
+          "afterFileSha256": "03fd7d02b5c761786711ad9d5c87c6fc3593e2862a692caf060d72d3f76149e9",
+          "noPhysicalOrObjectiveMemoryChange": true
+        }
+      ]
+    },
+    {
+      "id": "initial/overdue-denial",
+      "latestRevision": 299,
+      "latestFileSha256": "02da634b9eed2ee1be1a5f0056a640bf93e395044b7f460763616cd5209ba287",
+      "remainingLocks": [],
+      "entries": [
+        {
+          "commandId": "speech-forest-overdue-denial-late",
+          "fromRevision": 192,
+          "toRevision": 193,
+          "tick": 185,
+          "beforeFileSha256": "3ae3af65d6cddeace7d8411ca4b36abb20ad4f9ce532d87e278ee9d0bb987c8b",
+          "afterFileSha256": "0ccf6f6b369d5282823c4d0a0052255c7b97c865e8ea73c667d71326bffce314",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-overdue-denial-returned-late",
+          "fromRevision": 194,
+          "toRevision": 195,
+          "tick": 186,
+          "beforeFileSha256": "747e750fce3afe3c7dab88a0a5181eac30b040037f46dd70f38781f307ec6020",
+          "afterFileSha256": "4f152f8458fcb610df6e50a31635811b53486ca623eade3bdc381af13da4548e",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-overdue-denial-apology",
+          "fromRevision": 196,
+          "toRevision": 197,
+          "tick": 187,
+          "beforeFileSha256": "69857bf1e6defde4f8c30f9c71aa63e343ba665f6b1fea8c4bc4d9af630e5daa",
+          "afterFileSha256": "1214b78a306d87181949b098de99fd7be1a7828ecea44ab4afa90aab27c8ad4e",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-overdue-denial-later",
+          "fromRevision": 298,
+          "toRevision": 299,
+          "tick": 288,
+          "beforeFileSha256": "b51f8ca14235bcf0fff00296dd5b9ffc85777e81db8104aea1bbef559cf1bdbf",
+          "afterFileSha256": "02da634b9eed2ee1be1a5f0056a640bf93e395044b7f460763616cd5209ba287",
+          "noPhysicalOrObjectiveMemoryChange": true
+        }
+      ]
+    },
+    {
+      "id": "retest/overdue-denial",
+      "latestRevision": 299,
+      "latestFileSha256": "2b4d57a20e815771ccd7bfb27112b0e67290fe6ec138a4a49061e9a535e8b2fb",
+      "remainingLocks": [],
+      "entries": [
+        {
+          "commandId": "speech-forest-overdue-denial-late",
+          "fromRevision": 192,
+          "toRevision": 193,
+          "tick": 185,
+          "beforeFileSha256": "3ae3af65d6cddeace7d8411ca4b36abb20ad4f9ce532d87e278ee9d0bb987c8b",
+          "afterFileSha256": "bf4913a3c0e5382b011433d130f92d3a22dcefba02c84aa678cb6508bc36c2e2",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-overdue-denial-returned-late",
+          "fromRevision": 194,
+          "toRevision": 195,
+          "tick": 186,
+          "beforeFileSha256": "cdc6c937de1d2a23db3ceac4fe081b9bb41af2cca089ce44d205f5af078228af",
+          "afterFileSha256": "2578581254ecc73e3d6ef0ffa0763407f1af5b07cab8cf54d8117fadd4becec8",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-overdue-denial-apology",
+          "fromRevision": 196,
+          "toRevision": 197,
+          "tick": 187,
+          "beforeFileSha256": "6c3256e70c7c48e7fff8933a1ef266508217f8e9730c5c9a96b279e47cea4c4f",
+          "afterFileSha256": "49e1e24108b5e9eb3e37d3b12caed19b3a11d13992c0c6684fcaa897aeb4e3f7",
+          "noPhysicalOrObjectiveMemoryChange": true
+        },
+        {
+          "commandId": "speech-forest-overdue-denial-later",
+          "fromRevision": 298,
+          "toRevision": 299,
+          "tick": 288,
+          "beforeFileSha256": "e5179c63ab241a346f1e0c93ef8b0f458aef49b7da9e8729967bf1239d10f4aa",
+          "afterFileSha256": "2b4d57a20e815771ccd7bfb27112b0e67290fe6ec138a4a49061e9a535e8b2fb",
+          "noPhysicalOrObjectiveMemoryChange": true
+        }
+      ]
+    }
+  ],
+  "confirmedSpeechCommands": 15,
+  "semanticVerdict": "needs-human-review"
+}

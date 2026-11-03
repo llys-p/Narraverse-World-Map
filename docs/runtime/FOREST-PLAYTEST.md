@@ -1,61 +1,58 @@
-# 森林试玩候选2：实测与交接（2026-10-31）
+# 森林试玩候选3：真实对话与跨日记忆（2026-11-01）
 
 ## 给玩家
 
-**村庄→借工具→林地采集/歇脚→遭遇与退出→返村归还→保存重开，这个小闭环已通过实际浏览器测试。** 统一入口仍是 `Start-Forest-Journey.cmd`；保留原档另开一局用 `Start-Forest-Journey-New.cmd`。本轮不增加支线，继续修现有体验。
+**这轮把当前森林的自由对话接到了真实经历上，并修正了一个实际算错时间的问题。** 游戏入口仍是 `Start-Forest-Journey.cmd`；另开新局用 `Start-Forest-Journey-New.cmd`，不增加支线。
 
-这次修好了三处实际问题：手机宽度横向溢出、猎人头像被拉长，以及Windows返村时连接因一次写缓冲繁忙被错误切断。完整旅程已在Linux、Windows的真实Chrome里重跑通过，390px模拟下森林按钮和人物卡正常，工具磨损与生火消耗实际落盘，退出不回滚伤害，关服重开保留进度。
+本轮真实对话中，猎人能区分“说带回来了”和“真正交还工具”，也没有凭空知道玩家在森林里造成的磨损；实际收回后才知道耐久70。玩家否认亲手砸坏工具时，他仍坚持亲历记录，之后实际修理也不会把旧事抹去。
 
-自然对话也用了低成本DeepSeek实测：两场景共10次请求（包含失败及重测），不是固定回复。工作/领薪/买粮/吃粮场景4轮通过；赠粮场景初次遇到合法记忆编号次序错误被拒绝，整理已知编号后重测4轮通过。未知编号仍会拒绝，不会替模型编事实或让一句话直接修改世界。
+发现的主要错误是：猎人把“借出以来1460分钟”当成逾期，实际只晚20分钟。现在给普通借用补上程序核对过的时间说明，修复后的真实回复依次为：到期后20分钟；实际归还时晚30分钟；道歉后仍记得30分钟；跨日、重开后仍是30分钟。语言由模型生成，物品、修理、记忆和关系仍由世界规则决定。
 
-这还不表示所有“智能NPC”都验收了：这批对话是fixture5专项，未覆盖当前森林整合、长时间记忆及偷抢威胁等所有交互。助手检查了关键事实，但地点措辞和饥饿程度等语言仍有待真人评判，原始报告保持人工待审。
-
-| 门槛 | 结果 |
+| 当前门槛 | 本轮结果 |
 | --- | --- |
-| 现有森林规则、保存/恢复与断线重试 | 通过相关真实服务回归 |
-| Linux与Windows实际无头Chrome完整按钮旅程 | 两端通过，六阶段均实际执行 |
-| 390px模拟、森林按钮44px、Tab/Enter退出 | 通过；本机截图也已检查 |
-| 定向检查 | 49项不同检查通过，失败历史单独保留 |
-| 修正后低成本模型 | fixture5赠粮4轮通过；另4轮工作场景是修正前基线 |
-| 当前森林自然对话、长场景真实记忆语义 | 待验 |
-| Windows游戏cmd双击、真手机与读屏 | 待验 |
+| 森林真实模型HTTP流程 | 16次请求，15条协议接受并保存；失败也保留 |
+| 普通借期理解 | 原1460错误保留；修复后4轮20/30/30/30 |
+| 亲历、否认、修理与跨日 | 4轮真实对话保持经历与后续修理并存 |
+| 客观状态边界 | 核对15条实际交谈落盘前后，未把说话变成行动或客观记忆 |
+| 定向回归 | 70项不同检查通过，无跳过 |
+| Linux/Windows浏览器完整玩法旅程 | 两端通过；本组关闭模型 |
+| 真实语义、真人体验 | 仍待人工评审 |
 
-距离“可演示的小闭环”已到实测通过这一层；距离你期望的长期智能NPC，接下来应集中验当前森林的自由对话和跨日记忆，再补真人试玩，不继续堆新支线。
+预定12个不同问法，实际11个得到过可接受回复；“归还后次日追问”因前轮失败阻塞，本轮没有调用模型。另有“修好了”用于部分修理、提到“系统里确认”、无必要提“小偷/别瞎猜”等措辞问题。它们没有改变世界，但还需要改善，不能把协议通过说成NPC已经完全智能。
+
+下一步应补这个未测问法、检查旧错误话术能否在更长对话中纠正，再做真实浏览器自然对话与真人试玩；Windows游戏入口双击、真手机和读屏仍待验。继续冻结新内容。
 
 ## 给接手AI
 
-### 仓库、版本与停止点
+### 分支与实现
 
-- 仓库 `llys-p/Narraverse-World-Map`，草稿 [PR45](https://github.com/llys-p/Narraverse-World-Map/pull/45)，父PR44 `8fa8179a99ddf85ac142df30956ad8d4ee049527`。分支 `codex/forest-browser-ci-20261031`，工作树 `/workspace/scratch/d4eebd62b5b0/Narraverse-Browser-CI`。
-- 被测修复提交 `17b9dad051231f79f7504a1fd021d57022e8b568`；证据/交接提交在其后，按游戏与验收工具SHA绑定。候选清单 `docs/runtime/forest-playtest-candidate.json`，候选2，192份游戏源码/入口。
-- 入口、fixture8、18356端口不变。不合main、不部署、不迁移真实档、不启停旧实例、不导入Narraverse2.0，不混入PR40。维持冻结新玩法、停止性能优化。GitHub Projects缺写入能力，待同步。
+- 仓库llys-p/Narraverse-World-Map，草稿[PR46](https://github.com/llys-p/Narraverse-World-Map/pull/46)，父PR45 a272484c0e74f4079bb11259e721b57abc4b89fd。分支codex/forest-dialogue-acceptance-20261101，工作树/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Dialogue。
+- 修复代码66eb0a21a710988b4e50b518906dfd5fff23e5f8，后续提交只收证据/交接/核验工具。候选清单docs/runtime/forest-playtest-candidate.json，候选3，192份游戏文件，fixture8与18356端口不变。
+- 生产仅修改runtime/core/npc-social.mjs、runtime/service/npc-dialogue-grounding.mjs、runtime/service/npc-language-provider.mjs。前者只把既有144刻借期提成共享常量；普通借用规则、世界状态和存档格式没有变化。
+- knownFacts.simpleLoan只从NPC仍保留的typed lent/returned亲历派生，且来源必须在本轮给模型的资料中。没有有效借出来源、来源未选中、只剩旧交谈、拒绝借用或不明持有人时不编造。正式协议较新时不拿旧普通借期冒充。计算到期后分钟，实际归还后固定，旧回复不能覆盖。
+- Provider只新增准确时间与引用优先级说明，没改写模型回复、没有截断引用或自动重试；超过3引用和未知引用仍拒绝。原记忆更新算法/公共契约/存档格式不变，未复制或导入2.0。
 
-### 实现与失败
-
-- `demo-runtime.css`：移除1000px最小宽度，容器可缩小、导航可换行；头像固定140px且顶对齐，600px以下人物卡纵排。不用隐藏横向溢出掩盖问题。
-- `runtime/service/npc-language-provider.mjs`：仅当原始数组有最多3个合法正整数且全部来自本轮已知记忆，允许排序/去重成协议要求的升序；保留原格式问题诊断。未知、过量、非数字或非法值拒绝，回复/建议不改，不追加模型请求。
-- `runtime-server.mjs`：SSE写入false代表已排队，等待drain期间只记dirty，不积累中间投影；drain后补最新状态。持续阻塞至15秒心跳仍断开，正常断线依旧detach并停止行进。低缓冲真实HTTP在旧实现失败、修复后通过，Windows实际浏览器也由失败转通过。世界规则/命令和存档格式未改。
-- 验收脚本修正Enter缺少字符输入、隐藏世界页中的继续按钮、失败时browserExecuted误判；完整存档审计放在干净关服前，随后核对锁释放再重开。本机先前在关服后额外公共审计时观察到旧锁重现，未证明生产锁逻辑有错，未删锁或修改锁恢复代码；保留失败报告。
-
-### 验证入口与证据
+### 验收与复跑
 
 ```sh
-node scripts/check-forest-browser-evidence.mjs
-node scripts/verify-forest-playtest.mjs artifacts/forest-playtest/my-new-run
+node scripts/check-forest-dialogue-evidence.mjs
+node scripts/evaluate-forest-dialogue.mjs --mode plan --case all --out artifacts/forest-dialogue/my-new-plan
+node scripts/evaluate-forest-dialogue.mjs --mode controlled-test --case all --out artifacts/forest-dialogue/my-new-protocol
 ```
 
-第二条也由 `Verify-Forest-Playtest.cmd` 包装，是验收工具而非游戏入口。只接受尚不存在的输出目录，自建合成world、浏览器profile和临时端口，显式关闭模型，不读.env或真实档。默认Windows常见Edge路径，其他已安装Chromium用 `DEMO_BROWSER_EXECUTABLE` 指定；工具本身不下载浏览器。
+新工具只创建隔离合成档与临时端口，不读取.env/真实档。plan零模型调用；controlled-test用测试回复核对协议，不代表模型语言质量。实际模型必须显式配置本项目进程环境与live标志/足额预算，默认不调用模型。每场景独立world，普通动作经现有DTO，预览不写文件/投影，确认只保存一次交谈；同ID预览不重复调用模型，关服重开后已提交交谈的原DTO可重试。
 
-- CI [运行41106777480](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41106777480)：Ubuntu24.04 Chrome156.0.8078.47、Windows2022 Chrome156.0.8078.48均通过。六阶段结束tick78、rank4、工具70，无残留锁；真实调用由CDP正常按钮/Tab/Enter产生，无DOM代执行。两端是无头模式，不当作双击游戏cmd或真人验收。
-- `.github/workflows/forest-browser-acceptance.yml`仅同仓公开PR触发，标准测试机、contents:read、固定Actions SHA、不保留checkout凭据、不读取Secrets/调用模型。保持原仓库字节避免Windows换行转换破坏指纹。不使用artifact/cache上传，不发布截图或存档。
-- `docs/evidence/forest-browser-acceptance-20261031/`保存首次CI、Windows中间失败、最终两端结果、实际本机结果、红绿回归、三份真实模型JSON/HTML及完成回执、助手评审。模型报告原humanReview/semanticVerdict不改。截图只留私有测试目录，公共证据只保留名称与SHA。
-- 本轮49项不同检查：31项Provider/事实/对话记忆回归；最终15项森林引导/预检/丢回执/断线/逾期；3项低缓冲HTTP与行进。首次失败、重复回归及真实浏览器执行单列，不重复加进49。新增SSE修复后重跑最终15项及完整本机、两端CI。
-- 旧PR44/PR43证据属于历史冻结源码，旧核验器在干净对应父树运行；不能拿旧候选1核验器强验已经明确修改过的候选2。
+`--resume-failed`只接受本工具artifacts/forest-dialogue内、带完成回执的fixture8真实失败报告；合成档必须仍停在那一轮，完整bundle哈希须相同。它不用于真实档迁移。原报告不改，在新输出目录记录重取；本轮同档重取保留了此前两轮真实交谈。
 
-### 真实对话与接续范围
+- 基准benchmarks/npc-forest-v1/cases.json为自写公开开发例，3场景12轮，不是盲测或独立金标。
+- 70项不同测试包含Provider、事实边界、旧社交/协商、森林/信任支线、普通借期与费用入口保护；不与重复15项或历史49项相加。
+- 当前候选实际[CI41226497989](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41226497989)的Ubuntu24.04/Windows2022真实Chrome六阶段均通过。截图/存档不上传，仅日志文本/文件哈希；自然对话真实模型走HTTP专项，浏览器旅程模型关闭，不混成一个端到端结论。
+- scripts/audit-forest-dialogue-saves.mjs对本轮合成档15条实际已确认交谈逐条比较落盘前后物品/关系/生命钱粮/任务/客观记忆，只读生成证据，不上传存档。这与完整世界重放审计分别记录。
 
-模型 `deepseek-flash`，thinking关闭，10请求共29867输入/647输出token（服务回报，不猜最终账单）。用户此前明确选择低成本DeepSeek，历史8次只是助手单轮投入安排；本轮10次同样不是永久用户限制。凭据仅进程内使用，不写入文件/日志/提交；本轮已停止追加。
+### 模型结果、限制与接续
 
-`live-work-01`：修复前4/4；`live-gifts-01`：2请求、1格式拒绝、后两轮blocked；`live-gifts-02`：修复后4/4，全部对话专项源码SHA与当前一致。三份世界重放都通过。不得说最终源码8/8语言验收：首场景属于基线，自动事实扫描覆盖有限，助手评审不能代替真人。
+本轮deepseek-flash，thinking关闭，实际16请求（54686输入、1140输出token，按服务回报，不猜账单）。初测11，因一轮4引用被拒而阻塞1问法；未使用初测额度1用于原失败轮重新生成，另外4用于逾期修复。无自动重试，本轮已结束；这是助手投入安排，不是用户永久调用上限，后续仍按用户低成本授权与有界任务推进。密钥未写入文件/日志/提交。
 
-下一项保持有界：先让当前fixture8里的自然对话核对真实工具持有人、磨损、借期、遭遇和归还记忆，并用小批低成本请求检验跨日/否认旧目击/短追问。若发现问题集中修正并保留失败。再补Windows游戏启动、真手机和真人可玩体验。不要把待验项当完成，也不要回到扩支线或重做整套记忆系统。
+证据docs/evidence/forest-dialogue-20261101：live-01保留原始错误与拒绝，borrow-retest为原失败档的1次重取，overdue-retest为修复后4轮，JSON/HTML/完成回执与源码绑定。baseline-evaluator.mjs与初测脚本原SHA完全一致，parent-candidate/helper来自PR45；旧候选核验在干净父树运行。assistant-review.json是助手意见，原humanReview与semanticVerdict始终pending。不要写成12个真实问法全部通过，也不能说15条接受的回复都没有事实错误，初测有三轮沿用1460。
+
+下一项集中补borrow-return/next-day，旧错误对话的持续纠正，以及角色口吻中“系统/小偷”等无根据话题；再做真实浏览器自然对话和真人体验。不要把待验当完成，不扩支线/重做整套记忆或回到性能优化。保持独立草稿，不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0；GitHub Projects缺写入能力待同步。

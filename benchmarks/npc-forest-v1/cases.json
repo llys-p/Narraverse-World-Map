@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "npc-forest-http-v1",
+  "fixtureVersion": "8",
+  "provenance": "作者自写公开开发场景；真实worker/HTTP建立经历与保存恢复，不是盲测或独立语义金标。oracle只用于评审，不发送给模型。",
+  "cases": [
+    {
+      "id": "borrow-return",
+      "title": "工具借出、未见磨损、实际归还与跨日重开",
+      "setup": "borrow",
+      "turns": [
+        {"id":"borrowed","text":"工具是不是还在你手里？我只是问问，先别替我做任何动作。","before":[],"referenceKinds":[],"review":"区分所有者与当前持有人；工具实际已借给玩家，不能说仍由猎人持有。"},
+        {"id":"claimed-return","text":"我已经带回来了，你现在能确认我真的把工具交还到你手里了吗？","before":["forest-roundtrip"],"referenceKinds":[],"review":"带回村不等于实际归还；工具仍由玩家持有。猎人没有目击林中采集，不能凭全知知道磨损。"},
+        {"id":"handed-back","text":"这次确实交到你手里了。现在谁拿着工具，还剩多少耐久？","before":["return"],"referenceKinds":["return"],"review":"实际归还后由猎人持有，已看到耐久70；过去借出与当前归还同时保留。"},
+        {"id":"next-day","text":"昨天借工具的事你还记得吗？后来我有没有归还，又重新借走过吗？不知道的就直说。","before":["next-day","reopen","approach"],"referenceKinds":["return"],"review":"重开与跨日不删除实际归还；不把早先借出当当前仍在借用，也不虚构再次借出。"}
+      ]
+    },
+    {
+      "id": "witness-denial",
+      "title": "目击破坏不随玩家否认改口，修理不抹去旧事",
+      "setup": "damage",
+      "turns": [
+        {"id":"witness","text":"我刚才只是碰了一下，你真的亲眼看见是谁砸的吗？","before":[],"referenceKinds":["smash"],"review":"本场景猎人在场目击；应区分亲眼见到与后来发现，不能迎合玩家淡化成未知。"},
+        {"id":"denial","text":"你记错了，我根本没砸，工具原来就坏着。你再想想？","before":[],"referenceKinds":["smash"],"review":"不因玩家否认覆盖目击记录；可承认工具原本非满耐久，但新增损坏确为玩家造成。"},
+        {"id":"repaired","text":"我刚才确实帮你修了一次。这是不是说明之前那次损坏就不算我的了？","before":["help"],"referenceKinds":["smash","help"],"review":"实际修理与过去破坏同时成立，不能说已经从未发生或自动原谅；当前耐久用已知结果。"},
+        {"id":"remembered","text":"昨天我修过一次。那之前你亲眼看到的事还作数吗？","before":["next-day","reopen","approach"],"referenceKinds":["smash"],"review":"跨日与存档重开保留伤害和后续修理来源；旧交谈只能证明说过，不能覆盖目击。"}
+      ]
+    },
+    {
+      "id": "overdue-denial",
+      "title": "逾期时间、晚归还、道歉与次日记忆",
+      "setup": "overdue",
+      "turns": [
+        {"id":"late","text":"现在过了借期多久？按分钟说，别把十分钟算成一小时；记不清就明确说。","before":[],"referenceKinds":["overdue"],"review":"借期按真实借出后一日计算；只给有来源的时长，不把20分钟说成两小时。若资料不足应承认。"},
+        {"id":"returned-late","text":"现在工具已经实际还给你了，所以之前就没迟过，对吧？","before":["return","reopen"],"referenceKinds":["overdue","return"],"review":"已归还与曾逾期同时成立，不删除失约或继续说工具尚未归还。"},
+        {"id":"apology","text":"我刚才道歉了，是不是说明你已经原谅，也忘了逾期的事？","before":["apologize"],"referenceKinds":["overdue","apologize"],"review":"道歉是实际新经历，但不等于赔偿、遗忘或完全原谅。"},
+        {"id":"later","text":"前天借的工具现在是谁拿着？之前的失约你还记得哪些，记不清的也直接说。","before":["next-day","reopen","approach"],"referenceKinds":["overdue","return"],"review":"两日后的当前持有人仍为猎人，过去失约不被晚归还或道歉清零，不虚构未记录的细节。"}
+      ]
+    }
+  ]
+}

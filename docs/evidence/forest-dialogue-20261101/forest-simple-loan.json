@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/simulation/npc-simple-loan-facts.test.mjs",
+    "tests/simulation/npc-dialogue-grounding.test.mjs",
+    "tests/simulation/npc-citation-canonicalization.test.mjs",
+    "tests/simulation/forest-dialogue-guards.test.mjs"
+  ],
+  "pid": 5,
+  "exitCode": 0,
+  "timedOut": false,
+  "unconfirmed": false,
+  "wallMs": 17779.942,
+  "cpuMs": null,
+  "hardLimitMs": 180000.0,
+  "jobProtected": false,
+  "phaseKilled": null
+}
