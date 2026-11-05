@@ -1,0 +1,20 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-forest-dialogue.mjs",
+    "--suite",
+    "continuity-v2",
+    "--case",
+    "witness-denial",
+    "--mode",
+    "live",
+    "--allow-model-calls",
+    "--max-requests",
+    "4",
+    "--out",
+    "artifacts/forest-dialogue/recovery-20261105/live-witness-denial"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "wallMs": 34984
+}

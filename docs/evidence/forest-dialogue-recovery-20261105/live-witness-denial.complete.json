@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "npc-dialogue-report-completion",
+  "json": {
+    "bytes": 69133,
+    "sha256": "95bfe2453742c59649adcd434fb7841547235b41754f7801f1f83f93425aac9e"
+  },
+  "html": {
+    "bytes": 48583,
+    "sha256": "aa285fbab9d74daa6283e7330326a01fe3859b08d43c9d1d4629ba6b003a3a16"
+  }
+}

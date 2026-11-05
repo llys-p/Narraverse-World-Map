@@ -1,58 +1,31 @@
-# 森林试玩候选3：真实对话与跨日记忆（2026-11-01）
+# 森林试玩候选4：真实归还与自然对话复验（2026-11-05）
 
 ## 给玩家
 
-**这轮把当前森林的自由对话接到了真实经历上，并修正了一个实际算错时间的问题。** 游戏入口仍是 `Start-Forest-Journey.cmd`；另开新局用 `Start-Forest-Journey-New.cmd`，不增加支线。
+入口是 `Start-Forest-Journey.cmd`，另开新局用 `Start-Forest-Journey-New.cmd`。这轮重点是让猎人分清你说了什么和实际发生了什么。玩家只说“带回来了”时，实测猎人回答工具仍由玩家持有；实际交还后，它才确认接回并看到耐久。隔天重开，它仍记得已归还。另一场景里，玩家否认破坏、随后帮忙修理，猎人仍记得原先目击的破坏，也知道只修了一部分。
 
-本轮真实对话中，猎人能区分“说带回来了”和“真正交还工具”，也没有凭空知道玩家在森林里造成的磨损；实际收回后才知道耐久70。玩家否认亲手砸坏工具时，他仍坚持亲历记录，之后实际修理也不会把旧事抹去。
+逾期回归保留了真实的旧错误回复。猎人这次主动纠正：约定借一天（1440 分钟），实际借到归还 1470 分钟，迟还 30 分钟。跨日重开后这些时长不再变化。
 
-发现的主要错误是：猎人把“借出以来1460分钟”当成逾期，实际只晚20分钟。现在给普通借用补上程序核对过的时间说明，修复后的真实回复依次为：到期后20分钟；实际归还时晚30分钟；道歉后仍记得30分钟；跨日、重开后仍是30分钟。语言由模型生成，物品、修理、记忆和关系仍由世界规则决定。
+**自然对话的操作流程已用真实模型跑通。** 在 Chrome 输入“我现在要帮你修理这个工具”，生成预览不写档；确认交谈只保存双方说的话，耐久仍是 60；另点行动确认后才修到 80。重开时保留原对话和修理结果。
 
-| 当前门槛 | 本轮结果 |
-| --- | --- |
-| 森林真实模型HTTP流程 | 16次请求，15条协议接受并保存；失败也保留 |
-| 普通借期理解 | 原1460错误保留；修复后4轮20/30/30/30 |
-| 亲历、否认、修理与跨日 | 4轮真实对话保持经历与后续修理并存 |
-| 客观状态边界 | 核对15条实际交谈落盘前后，未把说话变成行动或客观记忆 |
-| 定向回归 | 70项不同检查通过，无跳过 |
-| Linux/Windows浏览器完整玩法旅程 | 两端通过；本组关闭模型 |
-| 真实语义、真人体验 | 仍待人工评审 |
+目前仍需真人试玩。最后的浏览器回复会多说没有发生过的旧修理，又把帮忙拐到借用，个别回复也有归还人称错误或没有直接回答是谁砸的。Windows 双击启动、真手机与读屏未验。Linux/Windows 的自动浏览器玩法验收不等于这些实机体验。
 
-预定12个不同问法，实际11个得到过可接受回复；“归还后次日追问”因前轮失败阻塞，本轮没有调用模型。另有“修好了”用于部分修理、提到“系统里确认”、无必要提“小偷/别瞎猜”等措辞问题。它们没有改变世界，但还需要改善，不能把协议通过说成NPC已经完全智能。
+## 给接手 AI
 
-下一步应补这个未测问法、检查旧错误话术能否在更长对话中纠正，再做真实浏览器自然对话与真人试玩；Windows游戏入口双击、真手机和读屏仍待验。继续冻结新内容。
-
-## 给接手AI
-
-### 分支与实现
-
-- 仓库llys-p/Narraverse-World-Map，草稿[PR46](https://github.com/llys-p/Narraverse-World-Map/pull/46)，父PR45 a272484c0e74f4079bb11259e721b57abc4b89fd。分支codex/forest-dialogue-acceptance-20261101，工作树/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Dialogue。
-- 修复代码66eb0a21a710988b4e50b518906dfd5fff23e5f8，后续提交只收证据/交接/核验工具。候选清单docs/runtime/forest-playtest-candidate.json，候选3，192份游戏文件，fixture8与18356端口不变。
-- 生产仅修改runtime/core/npc-social.mjs、runtime/service/npc-dialogue-grounding.mjs、runtime/service/npc-language-provider.mjs。前者只把既有144刻借期提成共享常量；普通借用规则、世界状态和存档格式没有变化。
-- knownFacts.simpleLoan只从NPC仍保留的typed lent/returned亲历派生，且来源必须在本轮给模型的资料中。没有有效借出来源、来源未选中、只剩旧交谈、拒绝借用或不明持有人时不编造。正式协议较新时不拿旧普通借期冒充。计算到期后分钟，实际归还后固定，旧回复不能覆盖。
-- Provider只新增准确时间与引用优先级说明，没改写模型回复、没有截断引用或自动重试；超过3引用和未知引用仍拒绝。原记忆更新算法/公共契约/存档格式不变，未复制或导入2.0。
-
-### 验收与复跑
+- 仓库 `llys-p/Narraverse-World-Map`，独立草稿 [PR47](https://github.com/llys-p/Narraverse-World-Map/pull/47)，续接 PR46 `433fc5248197b9012620d08a36c412f9c177f99d`。远端分支 `codex/forest-dialogue-continuity-20261103`。实际被测源码 `9daf36a609530bd0d314d6788de0afc2c7ab1359`。
+- 当前隔离工作树 `/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Recovery`，本地分支 `codex/forest-dialogue-recovery-local-20261105`。如工作区清理，从远端恢复；不要复位旧 `Narraverse-Forest-Dialogue` 的 PR46 暂存内容（index 树 `7ee38e9ccc26df5c29721621df972572f06b9f44`）。
+- 本次生产改动只有 `runtime/service/npc-language-provider.mjs`：向现有 system 说明补充程序派生的本轮可知持有人、耐久、普通借用三个时长；不传入玩家原话、旧 NPC 回复或隐藏世界事实。继续自由生成，不替换台词。客观记忆、世界规则、动作确认和存档格式不变。候选仍为 fixture8、192 份游戏文件、端口 18356。
+- [本次证据索引](../evidence/forest-dialogue-recovery-20261105/index.json)：77 项不同回归；三组各 4 轮 live HTTP（借还、目击破坏、旧错纠正）均通过自动协议、确认幂等、世界重放与保存恢复检查；三份原始 JSON/HTML 与完成回执可复核。程序在干净源码 `9daf36a` 上实测。公开证据不包含合成存档。
+- [双平台 CI 41963305835](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41963305835) 是实际 Linux/Windows Chrome 六阶段玩法，模型关闭。另一个浏览器脚本在本地 Linux Chrome 上有一条受控对照和一条真实模型记录。真实模型仅 1 次，不把受控回合计入。相同结论只计一次。
+- 本轮 13 次 DeepSeek Flash 生成，thinking 关闭，无自动重试。HTTP 12 轮报告用量合计 50,381 输入、892 输出 token；浏览器那一轮未采集用量，不能用这两个数估全轮账单。原 4 轮错误基线见 [baseline-borrow.json](../evidence/forest-language-recovery-20261103/baseline-borrow.json)。更早维护前 20 次原报告丢失和恢复后两次 503 的历史在 `docs/evidence/forest-continuity-20261103`，旧核验脚本用当时源码，不适用于当前候选。
+- [助手逐句检查](../evidence/forest-dialogue-recovery-20261105/assistant-review.json) 与自动协议结论分开，真人评审保持 pending。特别不要把浏览器的操作 PASS 当作回复无事实错误。
 
 ```sh
-node scripts/check-forest-dialogue-evidence.mjs
-node scripts/evaluate-forest-dialogue.mjs --mode plan --case all --out artifacts/forest-dialogue/my-new-plan
-node scripts/evaluate-forest-dialogue.mjs --mode controlled-test --case all --out artifacts/forest-dialogue/my-new-protocol
+node scripts/check-forest-dialogue-recovery-evidence.mjs
+node scripts/verify-forest-dialogue-browser.mjs controlled-test artifacts/forest-dialogue/my-new-browser-test
+node scripts/evaluate-forest-dialogue.mjs --suite continuity-v2 --case borrow-return --mode controlled-test --out artifacts/forest-dialogue/my-new-borrow-test
 ```
 
-新工具只创建隔离合成档与临时端口，不读取.env/真实档。plan零模型调用；controlled-test用测试回复核对协议，不代表模型语言质量。实际模型必须显式配置本项目进程环境与live标志/足额预算，默认不调用模型。每场景独立world，普通动作经现有DTO，预览不写文件/投影，确认只保存一次交谈；同ID预览不重复调用模型，关服重开后已提交交谈的原DTO可重试。
+浏览器测试需将 `DEMO_BROWSER_EXECUTABLE` 指向可运行的本机 Chromium/Edge。真实生成需要显式 live 和预算开关，凭据只进进程。逾期纠错必须继续原 `artifacts/forest-dialogue/live-01/report.json` 的合成档副本；先核验完成回执、原末态与历史，不编辑原档。若以后原合成档不在，不能伪造为同一段真实错误历史。
 
-`--resume-failed`只接受本工具artifacts/forest-dialogue内、带完成回执的fixture8真实失败报告；合成档必须仍停在那一轮，完整bundle哈希须相同。它不用于真实档迁移。原报告不改，在新输出目录记录重取；本轮同档重取保留了此前两轮真实交谈。
-
-- 基准benchmarks/npc-forest-v1/cases.json为自写公开开发例，3场景12轮，不是盲测或独立金标。
-- 70项不同测试包含Provider、事实边界、旧社交/协商、森林/信任支线、普通借期与费用入口保护；不与重复15项或历史49项相加。
-- 当前候选实际[CI41226497989](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41226497989)的Ubuntu24.04/Windows2022真实Chrome六阶段均通过。截图/存档不上传，仅日志文本/文件哈希；自然对话真实模型走HTTP专项，浏览器旅程模型关闭，不混成一个端到端结论。
-- scripts/audit-forest-dialogue-saves.mjs对本轮合成档15条实际已确认交谈逐条比较落盘前后物品/关系/生命钱粮/任务/客观记忆，只读生成证据，不上传存档。这与完整世界重放审计分别记录。
-
-### 模型结果、限制与接续
-
-本轮deepseek-flash，thinking关闭，实际16请求（54686输入、1140输出token，按服务回报，不猜账单）。初测11，因一轮4引用被拒而阻塞1问法；未使用初测额度1用于原失败轮重新生成，另外4用于逾期修复。无自动重试，本轮已结束；这是助手投入安排，不是用户永久调用上限，后续仍按用户低成本授权与有界任务推进。密钥未写入文件/日志/提交。
-
-证据docs/evidence/forest-dialogue-20261101：live-01保留原始错误与拒绝，borrow-retest为原失败档的1次重取，overdue-retest为修复后4轮，JSON/HTML/完成回执与源码绑定。baseline-evaluator.mjs与初测脚本原SHA完全一致，parent-candidate/helper来自PR45；旧候选核验在干净父树运行。assistant-review.json是助手意见，原humanReview与semanticVerdict始终pending。不要写成12个真实问法全部通过，也不能说15条接受的回复都没有事实错误，初测有三轮沿用1460。
-
-下一项集中补borrow-return/next-day，旧错误对话的持续纠正，以及角色口吻中“系统/小偷”等无根据话题；再做真实浏览器自然对话和真人体验。不要把待验当完成，不扩支线/重做整套记忆或回到性能优化。保持独立草稿，不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0；GitHub Projects缺写入能力待同步。
+下一步集中在已观察的问题：没有实际修理来源时不要从低耐久推断修过；玩家只要帮忙时不要引到借用；被问“亲眼看到谁”时说出已知行为人。先验证最小事实和提议边界，再做真人试玩及 Windows 双击。保持草稿，GitHub Projects 待同步。未合 main、部署、迁移真实档、启停旧实例或引入 2.0。

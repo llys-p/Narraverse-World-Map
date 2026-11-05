@@ -1,0 +1,283 @@
+<!doctype html><meta charset="utf-8"><title>森林对话验收</title><style>body{font:16px/1.65 system-ui;max-width:1000px;margin:30px auto;padding:0 20px}pre{white-space:pre-wrap;overflow-wrap:anywhere}article{border-top:1px solid #aaa;margin-top:25px}</style><h1>森林对话验收</h1><p>真实模型与当前森林HTTP流程；自动检查不能代替真人语义评审。</p><pre>{
+  &quot;planned&quot;: 4,
+  &quot;attempted&quot;: 1,
+  &quot;automaticPassed&quot;: 0,
+  &quot;automaticFailed&quot;: 0,
+  &quot;providerFailed&quot;: 1,
+  &quot;fixtureFailed&quot;: 0,
+  &quot;blocked&quot;: 3,
+  &quot;notRun&quot;: 0
+}</pre><h2>工具借出、未见磨损、实际归还与跨日重开</h2><article><h3>borrowed · provider-failed</h3><p>玩家：工具是不是还在你手里？我只是问问，先别替我做任何动作。</p><p>NPC：未生成</p><p>人工评审待定：区分所有者与当前持有人；工具实际已借给玩家，不能说仍由猎人持有。</p><details><summary>来源、当前事实与检查</summary><pre>{
+  &quot;oracle&quot;: {
+    &quot;tick&quot;: 39,
+    &quot;asset&quot;: {
+      &quot;assetId&quot;: &quot;hunter-tools&quot;,
+      &quot;condition&quot;: 80,
+      &quot;holderId&quot;: &quot;actor-4&quot;,
+      &quot;name&quot;: &quot;猎人的工具包&quot;,
+      &quot;x&quot;: 4,
+      &quot;y&quot;: 7
+    },
+    &quot;loan&quot;: {
+      &quot;borrowTick&quot;: 39,
+      &quot;dueTick&quot;: 183,
+      &quot;returnedTick&quot;: null
+    },
+    &quot;overdueMinutes&quot;: 0,
+    &quot;knownTool&quot;: {
+      &quot;holder&quot;: &quot;player&quot;,
+      &quot;meaning&quot;: &quot;按你已知的情况，工具由玩家持有&quot;,
+      &quot;condition&quot;: 80
+    },
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;tick&quot;: 38,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null,
+          &quot;holder&quot;: &quot;actor-2&quot;
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;tick&quot;: 39,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;observedState&quot;: {
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;,
+          &quot;holder&quot;: &quot;actor-4&quot;
+        }
+      }
+    ]
+  },
+  &quot;context&quot;: {
+    &quot;simulationId&quot;: &quot;campaign-forest-village&quot;,
+    &quot;revision&quot;: 46,
+    &quot;tick&quot;: 39,
+    &quot;targetId&quot;: &quot;actor-2&quot;,
+    &quot;persona&quot;: &quot;村里的猎人，靠工具谋生，珍惜实际帮助；受伤害后不会因为一句好话就忘记。&quot;,
+    &quot;canTalk&quot;: true,
+    &quot;self&quot;: {
+      &quot;alive&quot;: true,
+      &quot;health&quot;: 1000,
+      &quot;fatigue&quot;: 0,
+      &quot;food&quot;: 1,
+      &quot;wallet&quot;: 0,
+      &quot;trust&quot;: 65,
+      &quot;fear&quot;: 0,
+      &quot;grievance&quot;: 0,
+      &quot;knownHolder&quot;: &quot;actor-4&quot;,
+      &quot;knownCondition&quot;: 80,
+      &quot;hunger&quot;: 200
+    },
+    &quot;activity&quot;: {
+      &quot;version&quot;: 1,
+      &quot;intent&quot;: {
+        &quot;action&quot;: &quot;NoAction&quot;,
+        &quot;destination&quot;: &quot;rest-site&quot;,
+        &quot;decidedTick&quot;: 0,
+        &quot;phase&quot;: &quot;at-destination&quot;,
+        &quot;redirect&quot;: &quot;tool&quot;
+      },
+      &quot;plan&quot;: null,
+      &quot;lastResult&quot;: null
+    },
+    &quot;lifeHistoryVersion&quot;: &quot;play-life-v1&quot;,
+    &quot;lifeHistory&quot;: [],
+    &quot;observations&quot;: [
+      {
+        &quot;eventSeq&quot;: 10,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家实际帮我修理了工具。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;repaired&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 10
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 11,
+        &quot;tick&quot;: 38,
+        &quot;kind&quot;: &quot;gift&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;玩家给了我一份粮食。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-2&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: null
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 10
+        }
+      },
+      {
+        &quot;eventSeq&quot;: 16,
+        &quot;tick&quot;: 39,
+        &quot;kind&quot;: &quot;ask-help&quot;,
+        &quot;actorId&quot;: &quot;actor-4&quot;,
+        &quot;channel&quot;: &quot;self&quot;,
+        &quot;importance&quot;: 2,
+        &quot;text&quot;: &quot;我把工具借给玩家，约定一天内归还。&quot;,
+        &quot;observedState&quot;: {
+          &quot;holder&quot;: &quot;actor-4&quot;,
+          &quot;condition&quot;: 80,
+          &quot;effect&quot;: &quot;lent&quot;
+        },
+        &quot;evidence&quot;: {
+          &quot;basis&quot;: &quot;self&quot;,
+          &quot;meaning&quot;: &quot;本人直接经历的事件，不是玩家单方面声称&quot;,
+          &quot;actor&quot;: &quot;玩家&quot;,
+          &quot;minutesAgo&quot;: 0
+        }
+      }
+    ],
+    &quot;agreement&quot;: null,
+    &quot;conversation&quot;: [],
+    &quot;referenceOptions&quot;: {
+      &quot;observationEventSeqs&quot;: [
+        10,
+        11,
+        16
+      ],
+      &quot;conversationEventSeqs&quot;: [],
+      &quot;format&quot;: &quot;memoryRefs只能是上述编号中最多3个正整数的升序无重复JSON数组；可用[]。交谈编号只证明说过。lifeHistory、activity与knownFacts不新增编号。&quot;
+    },
+    &quot;knownFacts&quot;: {
+      &quot;version&quot;: 1,
+      &quot;identity&quot;: {
+        &quot;selfId&quot;: &quot;actor-2&quot;,
+        &quot;selfRole&quot;: &quot;你是猎人&quot;,
+        &quot;playerId&quot;: &quot;actor-4&quot;,
+        &quot;playerRole&quot;: &quot;正在与你交谈的玩家&quot;
+      },
+      &quot;tickMinutes&quot;: 10,
+      &quot;tool&quot;: {
+        &quot;holder&quot;: &quot;player&quot;,
+        &quot;meaning&quot;: &quot;按你已知的情况，工具由玩家持有&quot;,
+        &quot;condition&quot;: 80
+      },
+      &quot;agreement&quot;: null,
+      &quot;authority&quot;: &quot;这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。&quot;,
+      &quot;simpleLoan&quot;: {
+        &quot;sourceEventSeq&quot;: 16,
+        &quot;returnEventSeq&quot;: null,
+        &quot;status&quot;: &quot;borrowed&quot;,
+        &quot;wasReturned&quot;: false,
+        &quot;loanMinutes&quot;: 1440,
+        &quot;borrowedMinutes&quot;: 0,
+        &quot;dueInMinutes&quot;: 1440,
+        &quot;overdueMinutes&quot;: 0,
+        &quot;durationMeaning&quot;: &quot;loanMinutes是约定借期；borrowedMinutes是实际从借出到归还（未还时到当前）的总时长；overdueMinutes才是超过借期的部分。这三个数不能互相代称，归还后实际总时长和逾期都固定。&quot;,
+        &quot;overdueBasis&quot;: &quot;当前时间减到期时间；不是借出至今，也不是发现逾期以来&quot;,
+        &quot;meaning&quot;: &quot;这是最近一次本人实际普通借用的派生说明，不是新的正式协商；来源只在本轮已提供的亲历记录中。归还和道歉不抹去逾期，旧回复不改变到期时间。&quot;
+      },
+      &quot;life&quot;: {
+        &quot;current&quot;: {
+          &quot;tick&quot;: 39,
+          &quot;food&quot;: 1,
+          &quot;wallet&quot;: 0,
+          &quot;hunger&quot;: 200,
+          &quot;foodNeed&quot;: &quot;needed&quot;
+        },
+        &quot;currentMeaning&quot;: &quot;当前粮食1份；当前钱包0；当前饥饿200；当前存粮已达到补粮需求阈值，但不证明马上会购买&quot;,
+        &quot;preparation&quot;: {
+          &quot;status&quot;: &quot;redirected&quot;,
+          &quot;action&quot;: &quot;NoAction&quot;,
+          &quot;meaning&quot;: &quot;当前因已知工具不可用而改回歇脚处，原工作或买粮意图不是正在执行。&quot;
+        },
+        &quot;lastExecution&quot;: null,
+        &quot;planMeaning&quot;: null,
+        &quot;decisionBasis&quot;: null,
+        &quot;authority&quot;: &quot;当前资源用current；当次增量不能当余量，曾买粮不保证现在还有。食物需求按本人存粮阈值判断，与饥饿数值不同；单凭当前需求不能推断暂停的完整原因或预测下一步。旧ready/blocked步骤不覆盖当前准备记录。旧回复和玩家口述不证明生活经历，冲突时纠正；不得从中补造后来去粮摊、预留应急钱、等新工作等原因。不知道原因就承认没有记录，不用“还没买成”暗示未记录的购买失败。这些说明不新增事实引用或动作权限。&quot;,
+        &quot;recentHistory&quot;: []
+      }
+    },
+    &quot;intentHint&quot;: {
+      &quot;kind&quot;: &quot;model-interpretation&quot;,
+      &quot;recommendation&quot;: &quot;answer-current-topic&quot;,
+      &quot;proposalHint&quot;: null,
+      &quot;note&quot;: &quot;本句未由有界规则判定动作；根据原话理解或追问。不要将否定、引语、转述或过去自述当现在行动，也不要机械转回修理换借用。&quot;
+    },
+    &quot;negotiationOptions&quot;: {
+      &quot;status&quot;: &quot;unavailable&quot;,
+      &quot;reason&quot;: &quot;tool-not-known-held&quot;,
+      &quot;options&quot;: [],
+      &quot;authority&quot;: &quot;仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。&quot;
+    },
+    &quot;memoryMode&quot;: &quot;npc-memory-v1&quot;,
+    &quot;memoryCoverage&quot;: {
+      &quot;forgottenEpisodes&quot;: 0,
+      &quot;forgottenSpeech&quot;: 0
+    },
+    &quot;recallFocus&quot;: {
+      &quot;source&quot;: &quot;none&quot;,
+      &quot;topics&quot;: [],
+      &quot;anchorEventSeq&quot;: null
+    },
+    &quot;memoryUpdates&quot;: []
+  },
+  &quot;checks&quot;: [
+    {
+      &quot;name&quot;: &quot;scenarioPreconditions&quot;,
+      &quot;passed&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;previewDoesNotCommit&quot;,
+      &quot;passed&quot;: true
+    }
+  ],
+  &quot;metrics&quot;: {
+    &quot;requestId&quot;: &quot;forest2-borrow-return-borrowed&quot;,
+    &quot;httpStatus&quot;: 503,
+    &quot;usage&quot;: null,
+    &quot;finishReason&quot;: null
+  }
+}</pre></details></article><article><h3>claimed-return · blocked</h3><p>玩家：我已经带回来了，你现在能确认我真的把工具交还到你手里了吗？</p><p>NPC：未生成</p><p>人工评审待定：带回村不等于实际归还；工具仍由玩家持有。猎人没有目击林中采集，不能凭全知知道磨损。</p><details><summary>来源、当前事实与检查</summary><pre>{
+  &quot;oracle&quot;: null,
+  &quot;context&quot;: null,
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details></article><article><h3>handed-back · blocked</h3><p>玩家：这次确实交到你手里了。现在谁拿着工具，还剩多少耐久？</p><p>NPC：未生成</p><p>人工评审待定：实际归还后由猎人持有，已看到耐久70；过去借出与当前归还同时保留。</p><details><summary>来源、当前事实与检查</summary><pre>{
+  &quot;oracle&quot;: null,
+  &quot;context&quot;: null,
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details></article><article><h3>next-day · blocked</h3><p>玩家：昨天借工具的事你还记得吗？后来我有没有归还，又重新借走过吗？不知道的就直说。</p><p>NPC：未生成</p><p>人工评审待定：重开与跨日不删除实际归还；不把早先借出当当前仍在借用，也不虚构再次借出。</p><details><summary>来源、当前事实与检查</summary><pre>{
+  &quot;oracle&quot;: null,
+  &quot;context&quot;: null,
+  &quot;checks&quot;: [],
+  &quot;metrics&quot;: null
+}</pre></details></article>

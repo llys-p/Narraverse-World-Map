@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "forest-playtest-candidate-3",
-  "date": "2026-11-01",
-  "contentBase": "a272484c0e74f4079bb11259e721b57abc4b89fd",
+  "id": "forest-playtest-candidate-4",
+  "date": "2026-11-05",
+  "contentBase": "433fc5248197b9012620d08a36c412f9c177f99d",
   "gameEntry": "Start-Forest-Journey.cmd",
   "newJourneyEntry": "Start-Forest-Journey-New.cmd",
   "verificationEntry": "Verify-Forest-Playtest.cmd",
@@ -10,14 +10,15 @@
   "fixtureVersion": "8",
   "gamePort": 18356,
   "browserVerificationUsesIsolatedNewWorld": true,
-  "externalModelCalls": 16,
+  "externalModelCalls": 39,
   "gates": {
     "serviceRecovery": "verified",
     "browser": "verified-linux-and-windows-ci",
     "windowsLauncher": "not-run",
     "physicalMobile": "not-run",
     "screenReader": "not-run",
-    "realModelLanguage": "sampled-forest-human-review-pending"
+    "realModelLanguage": "targeted-retest-completed-human-review-pending",
+    "realModelBrowser": "verified-linux-chrome-one-turn"
   },
   "gameSha256": {
     "Start-Forest-Journey-New.cmd": "e538af5c159cecdd08f83b5564451377f5287fa50083f9abbfd8601547e717f9",
@@ -187,8 +188,8 @@
     "runtime/persistence/checkpoint-store.mjs": "e63fc61acafe62dc57102ade35f2a39ec2e6a7a2d00437a47a60eb1fb6956743",
     "runtime/service/http-contract.mjs": "2b051338981bebc2bb79d9ab1cd097f26596dbbc070c2dcd2c6de37d2868afe9",
     "runtime/service/march-runner.mjs": "e71e3609d97eae2e7e42a5ff1047a47fcaee43459bbb1d4f74f78fd39587a19a",
-    "runtime/service/npc-dialogue-grounding.mjs": "6c1d436e33fea7936931453d7f1f24c74ef602a0c8fbed4cfa1074c7c60d4482",
-    "runtime/service/npc-language-provider.mjs": "d8aec310dde42fa129501e50918640a2dac534e963dcdbb8fe209e07413abcfb",
+    "runtime/service/npc-dialogue-grounding.mjs": "64a513ccc94657faeb8d3a3657c7e46573084de9f2f201257753a91967e38f49",
+    "runtime/service/npc-language-provider.mjs": "7e0436aa5063692b94ce94837d4753ba01e3cab6c2dc47673f64abf099c08548",
     "runtime/service/npc-life-facts.mjs": "0309ba301126b72aa9bd3c070abc341bcf8fd99002cb742b5941f80c310b6e2a",
     "runtime/service/npc-recall-focus.mjs": "b6b9be89889d49897eff1779b3e22dae1b202d4bb04c9bdae3c2383f78362889",
     "runtime/service/runtime-owner-thread.mjs": "8c9d280a3c51717d5d9e7f16c30f65b05eec1216b22e6dc099edc8baf1da5f49",
@@ -213,5 +214,12 @@
     "world-combat-fx.js": "0324c994016606716b3c2122809f30556c56284c7e450310c79a59045cc1c2af",
     "world-e2e.mjs": "905f802dcdd4d5843d6b302779c1b5f641e6531aaebac404d2010450660fc303"
   },
-  "browserExternalModelCalls": 0
+  "browserExternalModelCalls": 0,
+  "modelEvidence": {
+    "beforeMaintenanceObservedRequests": 20,
+    "beforeMaintenanceOriginalReportsAvailable": false,
+    "recoveryAttempts": 2,
+    "recoveryReplies": 0,
+    "recoveryHttpStatus": 503
+  }
 }

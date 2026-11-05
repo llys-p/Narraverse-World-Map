@@ -45,7 +45,8 @@ function simpleLoanFacts(context,selected){
  if(!returned&&context.self?.knownHolder!=='actor-4')return null;
  const overdue=minutes(Math.max(comparison,dueTick),dueTick);
  return {sourceEventSeq:loan.eventSeq,returnEventSeq:returned?.eventSeq??null,status:returned?overdue>0?'returned-late':'returned-on-time':overdue>0?'overdue':'borrowed',
-  wasReturned:!!returned,loanMinutes:minutes(SOCIAL_LOAN_TICKS,0),dueInMinutes:returned?null:Math.max(0,minutes(dueTick,Math.min(context.tick,dueTick))),overdueMinutes:overdue,
+  wasReturned:!!returned,loanMinutes:minutes(SOCIAL_LOAN_TICKS,0),borrowedMinutes:minutes(comparison,loan.tick),dueInMinutes:returned?null:Math.max(0,minutes(dueTick,Math.min(context.tick,dueTick))),overdueMinutes:overdue,
+  durationMeaning:'loanMinutes是约定借期；borrowedMinutes是实际从借出到归还（未还时到当前）的总时长；overdueMinutes才是超过借期的部分。这三个数不能互相代称，归还后实际总时长和逾期都固定。',
   overdueBasis:returned?'实际归还时间减到期时间；归还后固定，不随聊天增长':'当前时间减到期时间；不是借出至今，也不是发现逾期以来',
   meaning:'这是最近一次本人实际普通借用的派生说明，不是新的正式协商；来源只在本轮已提供的亲历记录中。归还和道歉不抹去逾期，旧回复不改变到期时间。'};
 }
