@@ -1,14 +1,12 @@
-# 当前候选：森林记忆续聊与借期表达（2026-11-03）
+# 当前候选：森林真实归还与自然对话复验（2026-11-05）
 
-独立草稿PR47续接PR46，分支codex/forest-dialogue-continuity-20261103。最终游戏源码eab73a6318d047de95f4792a7fc71ee1f952d6b7，任务tasks/FOREST-DIALOGUE-CONTINUITY-TASK.md，唯一玩家/AI交接docs/runtime/FOREST-PLAYTEST.md。维护后工作树Narraverse-Forest-Continuity；旧Dialogue暂存状态保留。
+独立草稿 PR47 续接 PR46，远端分支 `codex/forest-dialogue-continuity-20261103`。本次被测游戏源码 `9daf36a609530bd0d314d6788de0afc2c7ab1359`，玩家和 AI 统一交接见 [FOREST-PLAYTEST.md](docs/runtime/FOREST-PLAYTEST.md)，任务见 [FOREST-DIALOGUE-CONTINUITY-TASK.md](tasks/FOREST-DIALOGUE-CONTINUITY-TASK.md)。
 
-- Provider明确部分修理不等于完全完好、纠错不复述内部刻数、没存粮不等于严重饥饿或当前购买准备；自然生成和原引用/行动边界不变。
-- 实测曾把约定1440分钟说成实际借到归还总时长。新增private simpleLoan.borrowedMinutes，由本轮可见typed经历计算实际1470，与约定1440/逾期30分开；归还后总时长与逾期固定。未改世界规则、记忆更新或存档。
-- 维护前实际20请求及反馈触发两轮必要修正，但原始报告/合成档在环境维护回退中丢失。只保留本次对话可核对的观察与失败摘录，明确notOriginalReport，不能当完整证据。代码已先行推送而保住；PR46历史证据仍完整。
-- 恢复最终源码后74项不同回归再次通过；维护后12轮受控HTTP验证另列，不代表模型语言。源码eab73a6的CI41587465354，Linux/Windows真实Chrome六阶段通过，模型关闭。
-- 两次恢复live请求均HTTP503，零回复、预览零提交；原始失败报告和重放结果保存，已停止追加。当前工作共观察22次外部请求（前20+503两次），后两次usage未知，不猜账单。
-- 当前证据核验node scripts/check-forest-continuity-evidence.mjs；语义门槛开放、humanReview pending。仍有不必要的修理邀约/工具话题；最终真实模型可复核报告、真实模型浏览器表单、Windows双击/真手机/读屏与真人试玩待验。
-- 冻结新玩法/性能优化，不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0。下一步服务恢复后重跑有界12轮并逐组保存，再接真实浏览器对话；Projects待同步。
+- 服务恢复后的原 4 轮实测（9bf2e5d）发现玩家口头说带回来，猎人却说已经接回。保留原报告；新 Provider 只将本轮已知持有人、耐久与普通借用时长置于系统说明末尾。旧话、隐蔽磨损与玩家自述不能改写事实；保持自由生成和原行动确认、记忆更新、世界规则及存档。
+- 本轮 77 项不同回归通过。12 次 DeepSeek Flash HTTP 生成全部取得回复并通过协议检查；实际归还、隔日重开、目击破坏和部分修理都已覆盖。在保留真实错误历史的隔离副本中明确纠正 1460 分钟旧错，复核约定1440、实际1470、迟还30。旧 4 轮对照与更早的 503、丢失报告观察记录分别保留。
+- [CI 41963305835](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41963305835) 的 Linux、Windows Chrome 六阶段玩法通过（模型关闭）。另以本地 Linux Chrome 和真实模型做 1 轮实际表单：预览不提交，确认交谈只存对话，另确认修理使耐久60→80，重开原对话保留。另有受控回复的同流程检查，单列为零付费。
+- 本轮共 13 次生成，未自动重试。真实语言仅开发样本，真人评审待验。浏览器样本仍凭空补旧修理并转题推销借用；另有归还人称和直接回答目击者的表达问题。见 [逐句复核](docs/evidence/forest-dialogue-recovery-20261105/assistant-review.json) 与 `node scripts/check-forest-dialogue-recovery-evidence.mjs`。
+- 下一步只处理已观测的语言偏差及真人试玩；Windows 双击入口、真手机、读屏单列待验。维持草稿与现有玩法，未合并、部署、迁移真实档或引入 2.0；GitHub Projects 待同步。
 
 以下为PR46及更早历史。
 

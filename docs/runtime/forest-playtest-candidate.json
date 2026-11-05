@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "forest-playtest-candidate-4",
-  "date": "2026-11-03",
+  "date": "2026-11-05",
   "contentBase": "433fc5248197b9012620d08a36c412f9c177f99d",
   "gameEntry": "Start-Forest-Journey.cmd",
   "newJourneyEntry": "Start-Forest-Journey-New.cmd",
@@ -10,14 +10,15 @@
   "fixtureVersion": "8",
   "gamePort": 18356,
   "browserVerificationUsesIsolatedNewWorld": true,
-  "externalModelCalls": 26,
+  "externalModelCalls": 39,
   "gates": {
     "serviceRecovery": "verified",
-    "browser": "current-source-ci-pending",
+    "browser": "verified-linux-and-windows-ci",
     "windowsLauncher": "not-run",
     "physicalMobile": "not-run",
     "screenReader": "not-run",
-    "realModelLanguage": "service-restored-false-handover-fix-retesting"
+    "realModelLanguage": "targeted-retest-completed-human-review-pending",
+    "realModelBrowser": "verified-linux-chrome-one-turn"
   },
   "gameSha256": {
     "Start-Forest-Journey-New.cmd": "e538af5c159cecdd08f83b5564451377f5287fa50083f9abbfd8601547e717f9",

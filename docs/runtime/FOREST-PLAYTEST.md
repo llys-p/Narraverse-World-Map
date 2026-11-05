@@ -1,48 +1,31 @@
-# 森林试玩候选4：记忆续聊与借期表达（2026-11-03）
+# 森林试玩候选4：真实归还与自然对话复验（2026-11-05）
 
 ## 给玩家
 
-入口仍是 `Start-Forest-Journey.cmd`，另开新局用 `Start-Forest-Journey-New.cmd`。这轮没有增加支线，集中修正NPC如何谈论已经发生的事：部分修理不能笼统说全修好；纠正旧话时不用内部刻数；约定借期、实际持有时长、逾期分别计算。
+入口是 `Start-Forest-Journey.cmd`，另开新局用 `Start-Forest-Journey-New.cmd`。这轮重点是让猎人分清你说了什么和实际发生了什么。玩家只说“带回来了”时，实测猎人回答工具仍由玩家持有；实际交还后，它才确认接回并看到耐久。隔天重开，它仍记得已归还。另一场景里，玩家否认破坏、随后帮忙修理，猎人仍记得原先目击的破坏，也知道只修了一部分。
 
-本次可核对的示例是：约定借一天为1440分钟，实际借出到归还1470分钟，晚还30分钟。归还后再聊天、跨日、重开，都不应把30分钟继续增加。说话仍由模型自由生成，世界物品、行动和客观记忆不由语言直接改写。
+逾期回归保留了真实的旧错误回复。猎人这次主动纠正：约定借一天（1440 分钟），实际借到归还 1470 分钟，迟还 30 分钟。跨日重开后这些时长不再变化。
 
-**代码已保存，真实语言验收仍有证据缺口。** 环境维护前实际做过20次请求，工具输出中可见次日归还、部分修理与旧错纠正结果；尚未上传的原始报告和合成档被环境维护回退，未能找回。已保留可从本次对话核对的失败摘录，明确标为观察记录，不能当原报告。
+**自然对话的操作流程已用真实模型跑通。** 在 Chrome 输入“我现在要帮你修理这个工具”，生成预览不写档；确认交谈只保存双方说的话，耐久仍是 60；另点行动确认后才修到 80。重开时保留原对话和修理结果。
 
-恢复最终代码后，74项回归再次通过；源码eab73a6的Linux/Windows真实Chrome完整玩法旅程通过。受控服务流程另作12轮验证，用来检查输入事实、确认、保存和重开，不能当模型语言能力。两次真实模型恢复请求均返回503，没有生成或保存回复，已停止追加。
+目前仍需真人试玩。最后的浏览器回复会多说没有发生过的旧修理，又把帮忙拐到借用，个别回复也有归还人称错误或没有直接回答是谁砸的。Windows 双击启动、真手机与读屏未验。Linux/Windows 的自动浏览器玩法验收不等于这些实机体验。
 
-仍有表达问题：有时主动补充“修理换借用”、聊钱粮时多说工具，部分措辞生硬。真人语义评审、真实模型与浏览器表单连起来的完整测试、Windows双击启动、真手机及读屏仍待验。
+## 给接手 AI
 
-## 给接手AI
-
-### 当前代码与目录
-
-- 仓库llys-p/Narraverse-World-Map，独立草稿[PR47](https://github.com/llys-p/Narraverse-World-Map/pull/47)，续接PR46 `433fc5248197b9012620d08a36c412f9c177f99d`。
-- 分支 `codex/forest-dialogue-continuity-20261103`；维护后工作树 `/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Continuity`。最终游戏源码提交 `eab73a6318d047de95f4792a7fc71ee1f952d6b7`；后续提交收证据/交接。
-- 旧 `/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Dialogue` 被恢复为早期本地状态，仍有PR46暂存内容，index树为 `7ee38e9ccc26df5c29721621df972572f06b9f44`。不要重置或覆盖它；该内容已在远端PR46完整保存。
-- 生产修改仅 `runtime/service/npc-language-provider.mjs` 和 `runtime/service/npc-dialogue-grounding.mjs`。新增 `knownFacts.simpleLoan.borrowedMinutes` 由原本可见的typed借出/归还经历计算；约定借期loanMinutes、实际持有borrowedMinutes、逾期overdueMinutes分别说明。无可靠来源时仍为空，不从旧回复补造事实。
-- Provider收紧部分修理、人物口吻、当前库存与准备状态的说明；不替换回复、不截断引用、不自动重试。未更改世界规则、记忆更新算法、命令权限或存档格式。候选4仍192份游戏文件、fixture8、18356端口。
-
-### 验证、维护事件与费用记录
-
-- `node scripts/check-forest-continuity-evidence.mjs` 核对当前证据；输出明确保留语言门槛未闭合。证据目录 `docs/evidence/forest-continuity-20261103`。
-- 维护后实际重跑74项不同回归，无跳过。历史/重复执行次数不累加。最终代码[浏览器CI41587465354](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41587465354)的Linux/Windows均通过，关闭模型，不等于自然对话表单真实模型端到端。
-- `controlled-*` 为维护后12轮实际worker/HTTP受控协议报告，绑定最终源码，具有JSON/HTML完成回执；不是模型答案。普通归还次日、40耐久部分修理、旧错历史中的1440/1470/30分别核对。
-- 维护前20请求：初轮12、表达复测4、总时长修复复测4。源码642dc5a→a60d2f7→eab73a6已先行推送而保住；原始报告丢失。`maintenance-observations.json`仅从本次对话可见输出整理，标明notOriginalReport，不伪造源文件哈希、usage或完成回执。PR46已有原始1460错误记录仍完整。
-- 维护后2次live请求均HTTP503，分别保存 `recovery-unavailable` 与 `recovery-unavailable-retry`；未生成回复、预览未改世界、合成世界重放通过。此后停止模型调用。合计观察到22次外部请求，后两次服务未返回token用量；不能猜费用，也不能称已取得22条回复。
-- 两次503之后未换用受控回复冒充模型；humanReview持续pending。原20轮目前不能独立复核，因此不声称语言已全面通过。
-
-### 如何继续
-
-1. 模型服务恢复后，按新有界安排重跑continuity-v2的三个4轮用例；原20轮不能重建成相同报告。使用新的输出目录，每组完成立即保存证据。沿用用户授权的低成本DeepSeek、thinking关闭，凭据只进入进程。
-2. 关注“归还次日追问”、部分修理、原错误历史持续纠正。逾期末问现明确区分约定1440、实际1470和迟还30；不能只看协议接受，逐句检查。
-3. 随后完成真实模型浏览器表单全流程，并处理不必要的修理邀约/工具话题；暂不扩大支线或重做记忆系统。
+- 仓库 `llys-p/Narraverse-World-Map`，独立草稿 [PR47](https://github.com/llys-p/Narraverse-World-Map/pull/47)，续接 PR46 `433fc5248197b9012620d08a36c412f9c177f99d`。远端分支 `codex/forest-dialogue-continuity-20261103`。实际被测源码 `9daf36a609530bd0d314d6788de0afc2c7ab1359`。
+- 当前隔离工作树 `/workspace/scratch/d4eebd62b5b0/Narraverse-Forest-Recovery`，本地分支 `codex/forest-dialogue-recovery-local-20261105`。如工作区清理，从远端恢复；不要复位旧 `Narraverse-Forest-Dialogue` 的 PR46 暂存内容（index 树 `7ee38e9ccc26df5c29721621df972572f06b9f44`）。
+- 本次生产改动只有 `runtime/service/npc-language-provider.mjs`：向现有 system 说明补充程序派生的本轮可知持有人、耐久、普通借用三个时长；不传入玩家原话、旧 NPC 回复或隐藏世界事实。继续自由生成，不替换台词。客观记忆、世界规则、动作确认和存档格式不变。候选仍为 fixture8、192 份游戏文件、端口 18356。
+- [本次证据索引](../evidence/forest-dialogue-recovery-20261105/index.json)：77 项不同回归；三组各 4 轮 live HTTP（借还、目击破坏、旧错纠正）均通过自动协议、确认幂等、世界重放与保存恢复检查；三份原始 JSON/HTML 与完成回执可复核。程序在干净源码 `9daf36a` 上实测。公开证据不包含合成存档。
+- [双平台 CI 41963305835](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41963305835) 是实际 Linux/Windows Chrome 六阶段玩法，模型关闭。另一个浏览器脚本在本地 Linux Chrome 上有一条受控对照和一条真实模型记录。真实模型仅 1 次，不把受控回合计入。相同结论只计一次。
+- 本轮 13 次 DeepSeek Flash 生成，thinking 关闭，无自动重试。HTTP 12 轮报告用量合计 50,381 输入、892 输出 token；浏览器那一轮未采集用量，不能用这两个数估全轮账单。原 4 轮错误基线见 [baseline-borrow.json](../evidence/forest-language-recovery-20261103/baseline-borrow.json)。更早维护前 20 次原报告丢失和恢复后两次 503 的历史在 `docs/evidence/forest-continuity-20261103`，旧核验脚本用当时源码，不适用于当前候选。
+- [助手逐句检查](../evidence/forest-dialogue-recovery-20261105/assistant-review.json) 与自动协议结论分开，真人评审保持 pending。特别不要把浏览器的操作 PASS 当作回复无事实错误。
 
 ```sh
-node scripts/evaluate-forest-dialogue.mjs --suite continuity-v2 --case borrow-return --mode controlled-test --out artifacts/forest-dialogue/my-new-borrow
-node scripts/evaluate-forest-dialogue.mjs --suite continuity-v2 --case witness-denial --mode controlled-test --out artifacts/forest-dialogue/my-new-repair
-node scripts/evaluate-forest-dialogue.mjs --suite continuity-v2 --case overdue-denial --mode controlled-test --continue-from artifacts/forest-dialogue/live-01/report.json --out artifacts/forest-dialogue/my-new-correction
+node scripts/check-forest-dialogue-recovery-evidence.mjs
+node scripts/verify-forest-dialogue-browser.mjs controlled-test artifacts/forest-dialogue/my-new-browser-test
+node scripts/evaluate-forest-dialogue.mjs --suite continuity-v2 --case borrow-return --mode controlled-test --out artifacts/forest-dialogue/my-new-borrow-test
 ```
 
-第三项需要旧工具生成的私有合成档，公开仓库不含存档。维护后已从旧工作树只读复制PR46原始overdue-denial合成档到当前工作树；源报告/末态须核验。工具只继续隔离副本，源档不变；不适用于真实玩家档。若以后该合成档丢失，只能重新建立相应实测，不能伪造原错误对话作为同一真实历史。
+浏览器测试需将 `DEMO_BROWSER_EXECUTABLE` 指向可运行的本机 Chromium/Edge。真实生成需要显式 live 和预算开关，凭据只进进程。逾期纠错必须继续原 `artifacts/forest-dialogue/live-01/report.json` 的合成档副本；先核验完成回执、原末态与历史，不编辑原档。若以后原合成档不在，不能伪造为同一段真实错误历史。
 
-维持草稿，不合main、不部署、不迁移真实档、不启停旧实例、不导入2.0；GitHub Projects缺写入能力待同步。用户“继续”授权在此范围内自主修复与验证，不需要反复询问既有授权。
+下一步集中在已观察的问题：没有实际修理来源时不要从低耐久推断修过；玩家只要帮忙时不要引到借用；被问“亲眼看到谁”时说出已知行为人。先验证最小事实和提议边界，再做真人试玩及 Windows 双击。保持草稿，GitHub Projects 待同步。未合 main、部署、迁移真实档、启停旧实例或引入 2.0。
