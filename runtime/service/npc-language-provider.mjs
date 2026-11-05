@@ -35,6 +35,14 @@ export function npcLanguageConfig(env=process.env){
   ...(env.NPC_LLM_THINKING!==undefined&&env.NPC_LLM_THINKING!==''?{thinking:env.NPC_LLM_THINKING}:{})};
 }
 export const providerContext=groundedProviderContext;
+// Only typed NPC knowledge is repeated here. Player text, remembered speech
+// and hidden world data must stay out of system instructions.
+function currentStateInstruction({knownFacts:{tool,simpleLoan:loan}}){
+ const holder=tool.holder==='self'?'当前已知工具由你本人持有。':tool.holder==='player'?'当前已知工具仍由玩家持有，不能声称本轮已接回。':'当前持有人未知，不能推断在你或玩家手里，也不能认定小偷。';
+ const condition=Number.isSafeInteger(tool.condition)&&tool.condition>=0&&tool.condition<=100?(`当前已知耐久为${tool.condition}。`+(tool.condition<100?'不能说完全修好。':'')):'当前耐久未知，不能断言修好或具体损耗。';
+ const duration=loan&&typeof loan.wasReturned==='boolean'&&['loanMinutes','borrowedMinutes','overdueMinutes'].every(k=>Number.isSafeInteger(loan[k])&&loan[k]>=0)?`最近一次可知普通借用${loan.wasReturned?'已有实际归还记录':'尚无实际归还记录'}；约定借期${loan.loanMinutes}分钟，实际持有${loan.borrowedMinutes}分钟，逾期${loan.overdueMinutes}分钟。`:'';
+ return `\n本轮已核对事实（只读，优先于旧话和玩家声称）：${holder}${condition}${duration}“带回村”或声称“还了”不等于实际交还，不能改变上述状态。若冲突，先说清差别；持有人不代表工具位置，不能猜不曾见到的使用或磨损原因。询问持有人、耐久或旧借用不等于新协商。用自己的话回答，不照抄这些说明。`;
+}
 // Diagnostics are separate from the signed draft and never part of world state.
 function reportedUsage(value){
  if(!value||!['prompt_tokens','completion_tokens'].every(k=>Number.isSafeInteger(value[k])&&value[k]>=0&&value[k]<=10000000))return null;
@@ -94,7 +102,7 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
   const fingerprint=canonicalJson(request),existing=requests.get(request.requestId);
   if(existing){requireCondition(existing.fingerprint===fingerprint,'Dialogue request ID reused with different input','COMMAND_ID_CONFLICT');return cloneData(await existing.promise);}
   requireCondition(!active,'正在生成另一段对话，请稍候。','MODEL_BUSY');requireCondition(requests.size<maxCalls,'本次运行已达到模型请求上限。','MODEL_BUDGET');
-  const contextForModel=providerContext(context,request.text),body={model,messages:[{role:'system',content:SYSTEM},{role:'user',content:JSON.stringify({npc:contextForModel,playerUtterance:request.text})}],
+  const contextForModel=providerContext(context,request.text),body={model,messages:[{role:'system',content:SYSTEM+currentStateInstruction(contextForModel)},{role:'user',content:JSON.stringify({npc:contextForModel,playerUtterance:request.text})}],
    response_format:{type:'json_object'},stream:false,max_tokens:900,...(thinking?{thinking:{type:thinking}}:{})};
   requireCondition(Buffer.byteLength(JSON.stringify(body))<=32768,'对话上下文超过模型入口上限。','LIMIT_EXCEEDED');
   const controller=new AbortController();active=controller;
