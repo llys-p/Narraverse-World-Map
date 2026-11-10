@@ -8,6 +8,18 @@
 
 接手时从 [草稿 PR #47](https://github.com/llys-p/Narraverse-World-Map/pull/47) 的 `codex/forest-dialogue-continuity-20261103` 继续。改动集中在私有对话投影、Provider 提示与输出校验。真实模型复验按[任务合同](../../tasks/FOREST-DIALOGUE-CONTINUITY-TASK.md)中的剩余范围，使用独立合成档和本项目进程内的模型配置。
 
+### 对话中断和恢复
+
+Linux Chromium 的 5 项故障演练已通过。模型在单独的耐久问句里附带修理时，页面拒收预览。世界状态变化会让旧预览和旧建议失效。确认时双击只发送一笔写入。模拟回执丢失后，重启服务并刷新同一页面，原请求按相同字节重试，存档仍只有一条交谈，耐久保持 60。[浏览器记录和源码指纹](../evidence/forest-repair-language-20261110/browser-recovery.json)
+
+将 `DEMO_BROWSER_EXECUTABLE` 指向本机 Chromium 或 Edge 后，可以用新的合成档重跑。此演练的回复来自本机受控服务，外部模型调用为 0。
+
+```sh
+node scripts/verify-forest-dialogue-recovery-browser.mjs artifacts/forest-dialogue/my-recovery-test
+```
+
+待本项目进程配置模型后，剩余真实复验限三轮 HTTP 和一次浏览器生成。三轮已用计划模式检查过，真实回复和人工语义评审仍待完成。
+
 ## 前次验收（2026-11-05）
 
 ### 给玩家

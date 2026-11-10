@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "candidate": "forest-playtest-candidate-4",
+  "head": "7cecc08b7159b34bc8255e16f6fef57889a9b4f0",
+  "workingTreeDirty": false,
+  "externalModelCalls": 0,
+  "controlledCalls": 3,
+  "steps": [
+    "reject-action-on-durability-question",
+    "discard-unconfirmed-preview-after-world-change",
+    "double-click-saves-speech-once-without-action",
+    "same-bytes-retry-after-service-restart-and-browser-reload",
+    "discard-action-suggestion-after-world-change"
+  ],
+  "verdict": "PASS",
+  "sourceSha256": {
+    "scripts/verify-forest-dialogue-recovery-browser.mjs": "fee69f81910dfca910627c90c506f67fab681362eb5f7ff1f2360e60eaa7c716",
+    "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+    "docs/runtime/forest-playtest-candidate.json": "d5533405fd3d1bbf965fc3be4d0ed20472a4e1e4d59ce520ee3df27a736f8ad7"
+  },
+  "browser": "HeadlessChrome/151.0.7922.34",
+  "final": {
+    "revision": 3,
+    "durabilityBefore": 60,
+    "durabilityAfter": 60,
+    "savedSpeechCount": 1,
+    "browserWriteRequests": 2,
+    "distinctBrowserWrites": 1,
+    "retrySameBytes": true,
+    "composeStatuses": [
+      502,
+      200,
+      200
+    ]
+  },
+  "remainingLocks": []
+}
