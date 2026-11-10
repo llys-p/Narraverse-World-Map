@@ -18,6 +18,10 @@ test('known options reflect condition and trust, never infer unknown holder or b
  assert.equal(knownNegotiationOptions({},null).status,'unknown');
  for(const status of ['accepted','ready','borrowed'])assert.equal(knownNegotiationOptions(self,{status}).status,'unavailable');
  const ctx=npcDialogueContext(initial());
+ const help=providerContext(ctx,'我现在要帮你修理这个工具。');
+ assert.equal(help.intentHint.proposalHint.payload.action,'help');
+ assert.deepEqual(help.negotiationOptions.options,[]);
+ assert.equal(providerContext(ctx,trade).negotiationOptions.status,'available');
  for(const text of ['我不会替你修理工具，借我半天可以吗？','“'+trade+'”','他说'+trade,'如果'+trade,trade+'然后抢走它','我昨天替你修理工具，借我半天可以吗？'])assert.notEqual(providerContext(ctx,text).intentHint.kind,'negotiate-repair-loan');
  assert.equal(providerContext(ctx,trade).intentHint.kind,'negotiate-repair-loan');
 });
@@ -29,7 +33,9 @@ test('missing or impossible trade proposals and actions on terms questions fail 
   [raw,trade,null,'explicit-intent-missing-proposal'],[raw,trade,proposal(20,36),'terms-outside-known-options'],[raw,trade,proposal(40,144),'terms-outside-known-options'],
   [{...raw,self:{}},'聊聊借用吧',proposal(),'terms-outside-known-options'],
   [npcDialogueContext(offered),'请再说一遍这份约定。',proposal(),'question-has-action'],
-  [raw,'我现在要帮你修理这个工具。',null,'explicit-intent-missing-proposal']
+  [raw,'我现在要帮你修理这个工具。',null,'explicit-intent-missing-proposal'],
+  [raw,'我现在要帮你修理这个工具。',proposal(),'terms-outside-known-options'],
+  [{...raw,self:{...raw.self,knownCondition:100}},'我现在要帮你修理这个工具。',{type:'PlayerInteract',payload:{targetId:'actor-2',action:'help'}},'repair-not-actionable']
  ];
  for(const [ctx,text,suggestion,reason] of cases){
   const p=createNpcLanguageProvider({enabled:true,baseURL:'http://127.0.0.1:19980',model:'controlled-options',apiKey:''},{fetchImpl:async()=>Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify({reply:'受控错误建议',memoryRefs:[],proposal:suggestion})}}]})});
@@ -37,6 +43,25 @@ test('missing or impossible trade proposals and actions on terms questions fail 
   finally{p.close();}
  }
  assert.equal(JSON.stringify(bundle),before);validateBundle(offered,options);
+});
+
+test('low durability and remembered speech are not completed repair, while an audited repair is',async()=>{
+ const b=initial(),raw=npcDialogueContext(b);
+ raw.conversation=[{eventSeq:999,tick:0,utterance:'我说已经修过了',reply:'旧话：之前你修过工具。',memoryRefs:[]}];
+ raw.knownFacts={repair:{observed:true}};
+ const actual=deriveCampaignBundle(b,{version:5,commandId:'real-help',expectedRevision:0,type:'PlayerInteract',payload:{targetId:'actor-2',action:'help'}});
+ assert.equal(actual.receipt.result.effect,'repaired');
+ const sent=[];
+ const p=createNpcLanguageProvider({enabled:true,baseURL:'http://127.0.0.1:19980',model:'controlled-repair',apiKey:''},{fetchImpl:async(_url,o)=>{
+  const body=JSON.parse(o.body);sent.push(body.messages[0].content.split('\n本轮已核对事实')[1]);
+  return Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify({reply:'先看看现在的情况。',memoryRefs:[],proposal:null})}}]});
+ }});
+ try{
+  for(const [i,c] of [raw,npcDialogueContext(actual.bundle)].entries())await p.compose({apiVersion:1,requestId:'repair-'+i,simulationId:c.simulationId,expectedRevision:c.revision,targetId:'actor-2',text:'你记得工具之前修过吗？'},c);
+  assert.match(sent[0],/耐久为60.*无实际修理依据/);
+  assert.doesNotMatch(sent[0],/旧话：|我说已经修过了/);
+  assert.match(sent[1],/耐久为80.*有实际修理依据/);
+ }finally{p.close();}
 });
 
 test('a supported model proposal remains a preview; only explicit action produces exactly the shared terms',async()=>{

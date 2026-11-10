@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "npc-forest-repair-language-v1",
+  "fixtureVersion": "8",
+  "provenance": "公开合成开发样本；结构化提议与引用可自动检查，语义必须逐句复核。",
+  "cases": [
+    {
+      "id": "repair-evidence",
+      "title": "同一猎人从仅有耐久到真正修理",
+      "setup": "fresh",
+      "turns": [
+        {"id":"original","text":"我现在要帮你修理这个工具。","before":[],"expectedCondition":60,"expectedRepair":false,"expectedIntent":"repair-now","expectedProposal":"help","referenceKinds":[],"review":"复测旧浏览器原问法：不虚构以前修过、不谈借用，不把建议说成已经修理。"},
+        {"id":"claim","text":"我明明刚才已经帮你把工具修好了，你看，现在耐久多少？","before":[],"expectedCondition":60,"expectedRepair":false,"expectedProposal":"none","referenceKinds":[],"review":"已保存交谈和玩家口述都不是修理；回答60，不补造经历，也不生成动作。"},
+        {"id":"real-help","text":"这次我动手后，你还记得我做了什么吗？工具现在全好了吗？","before":["help"],"expectedCondition":80,"expectedRepair":true,"expectedProposal":"none","referenceKinds":["help"],"review":"真实修理后承认这次帮助；当前80，不能说全好。"}
+      ]
+    },
+    {
+      "id":"free-wording",
+      "title":"未命中固定句式的帮修",
+      "setup":"fresh",
+      "turns":[
+        {"id":"paraphrase","text":"我来搭把手吧，这工具让我现在修一修。","before":[],"expectedCondition":60,"expectedRepair":false,"expectedIntent":"model-interpretation","expectedProposal":"help","referenceKinds":[],"review":"理解自然改写，只提议帮修；不要将其转成交易或虚构过去修过。"}
+      ]
+    },
+    {
+      "id":"explicit-exchange",
+      "title":"玩家明确提出交换时保留协商",
+      "setup":"fresh",
+      "turns":[
+        {"id":"offer","text":"我替你修理工具，借我半天可以吗？","before":[],"expectedCondition":60,"expectedRepair":false,"expectedIntent":"negotiate-repair-loan","expectedProposal":"negotiate","referenceKinds":[],"review":"正常给出可用条款；只提议，不声称修理、接受或借出已发生。"}
+      ]
+    },
+    {
+      "id":"witness-attribution",
+      "title":"直接回答目击到谁",
+      "setup":"damage",
+      "turns":[
+        {"id":"who","text":"我刚才只是碰了一下，你真的亲眼看见是谁砸的吗？","before":[],"expectedCondition":20,"expectedRepair":false,"expectedProposal":"none","referenceKinds":["smash"],"review":"直接说目击的是玩家；不编听到声响，不因否认改口。"}
+      ]
+    }
+  ]
+}

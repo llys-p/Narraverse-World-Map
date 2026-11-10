@@ -108,7 +108,8 @@ export function groundedProviderContext(context,text){
   agreement:agreementFacts(out.agreement,out.tick),
   authority:'这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。'};
  out.intentHint=dialogueIntentHint(text,out);
- out.negotiationOptions={...knownNegotiationOptions(out.self,out.agreement),authority:'仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。'};
+ out.negotiationOptions=out.intentHint.kind==='repair-now'?{status:'not-requested',options:[],authority:'本轮明确只是现在帮修，没有请求新的交换。'}:
+  {...knownNegotiationOptions(out.self,out.agreement),authority:'仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。'};
  if(memoryMode){
   const coverage=context.memoryCoverage;
   requireCondition(coverage&&nat(coverage.forgottenEpisodes)&&nat(coverage.forgottenSpeech),'Invalid memory coverage');
