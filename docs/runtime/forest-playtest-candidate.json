@@ -14,7 +14,7 @@
   "gates": {
     "serviceRecovery": "verified",
     "browser": "current-source-ci-pending",
-    "windowsLauncher": "not-run",
+    "windowsLauncher": "verified-windows-actions-cmd",
     "physicalMobile": "not-run",
     "screenReader": "not-run",
     "realModelLanguage": "repair-language-retest-pending",

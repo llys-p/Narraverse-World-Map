@@ -4,9 +4,13 @@
 
 首轮 6 次真实生成中，猎人对原帮修问法没有提借用，也直接答出了目击到的行为人。有一条耐久问句却附带了修理建议，另有交换回复把 40 点说成「四成」。[真实原报告](../evidence/forest-repair-language-20261110/initial-live.html) 保留这些原话。
 
-修正后，82 项回归和 6 轮受控 HTTP 通过。本机 Chromium 用受控回复验证了预览、单独保存交谈、另行确认修理和同档重开，也在关闭模型的情况下完成六阶段森林旅程。[复验证据及源码指纹](../evidence/forest-repair-language-20261110/verification.json) 记录了本次结果。修正后真实模型回归、真实模型表单、真人试玩、Windows 双击、真手机和读屏仍待验。
+修正后，82 项回归和 6 轮受控 HTTP 通过。本机 Chromium 用受控回复验证了预览、单独保存交谈、另行确认修理和同档重开，也在关闭模型的情况下完成六阶段森林旅程。[复验证据及源码指纹](../evidence/forest-repair-language-20261110/verification.json) 记录了本次结果。修正后真实模型回归、真实模型表单、真人试玩、资源管理器双击、真手机和读屏仍待验。
 
 接手时从 [草稿 PR #47](https://github.com/llys-p/Narraverse-World-Map/pull/47) 的 `codex/forest-dialogue-continuity-20261103` 继续。改动集中在私有对话投影、Provider 提示与输出校验。真实模型复验按[任务合同](../../tasks/FOREST-DIALOGUE-CONTINUITY-TASK.md)中的剩余范围，使用独立合成档和本项目进程内的模型配置。
+
+### Windows 启动与重开
+
+Windows Actions 通过 `cmd.exe` 执行 `Start-Forest-Journey.cmd`。验收使用带空格的合成存档路径，确认首次启动后浏览器可玩、输入 `quit` 后正常退出，再次启动恢复同一存档，重开前后的存档文件校验一致。两次退出均清理锁，外部模型调用为 0。资源管理器双击与 `Start-Forest-Journey-New.cmd` 另开档待单独实机核验。[运行记录](https://github.com/llys-p/Narraverse-World-Map/actions/runs/42806161990) · [结构化证据](../evidence/forest-repair-language-20261110/windows-launcher.json)
 
 ### 对话中断和恢复
 

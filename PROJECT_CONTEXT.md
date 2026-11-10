@@ -3,7 +3,8 @@
 - 草稿 PR #47 的语言修补已完成离线和受控复验。新档的 60 点耐久与实际修理经历分开；单纯帮修不提供借用条款。独立耐久问句只读，玩家同句明确请求修理或借用时仍可生成建议。
 - 82 项回归、6 轮受控 HTTP、本机 Linux Chromium 对话流程与六阶段森林旅程通过。首轮真实模型 6 次中有 1 次给只读问句附带修理建议，原报告保留。本轮续接外部模型调用为 0，修正后真实语言、真实模型表单和真人评审待验。
 - Linux Chromium 新增 5 项对话故障验收。回执丢失后重启服务并刷新页面，原请求按相同字节重取，存档只有一条交谈，耐久保持 60。世界状态变化会清除旧预览和旧建议。见[故障验收记录](docs/evidence/forest-repair-language-20261110/browser-recovery.json)。
-- 接手入口仍为 [森林试玩与交接](docs/runtime/FOREST-PLAYTEST.md)，[复验证据](docs/evidence/forest-repair-language-20261110/verification.json)。Windows 双击、真手机、读屏和 GitHub Projects 同步待办。
+- Windows Actions 已通过 `cmd.exe` 实跑 `Start-Forest-Journey.cmd`。带空格的合成存档路径可首次启动，完成六阶段森林旅程，正常退出并按原档重开。[启动验收记录](docs/evidence/forest-repair-language-20261110/windows-launcher.json)
+- 接手入口仍为 [森林试玩与交接](docs/runtime/FOREST-PLAYTEST.md)，[复验证据](docs/evidence/forest-repair-language-20261110/verification.json)。资源管理器双击、另开档入口、真手机、读屏和 GitHub Projects 同步待办。
 
 # 前次验收：森林真实归还与自然对话复验（2026-11-05）
 
