@@ -8,9 +8,13 @@ import {startRuntimeServer} from '../runtime-server.mjs';
 import {openDemoBrowser,demoBrowserExecutable} from './demo-browser-client.mjs';
 import {loadServiceCommit} from '../runtime/service/service-commit.mjs';
 import {verifyForestCandidate} from './forest-playtest-candidate.mjs';
+import {startForestWindowsLauncher} from './forest-windows-launcher.mjs';
 const out=path.resolve(process.argv[2]??'artifacts/forest-playtest/run-'+new Date().toISOString().replace(/[:.]/g,'-'));
 await fs.mkdir(path.dirname(out),{recursive:true});await fs.mkdir(out); // Never overwrite a previous run.
-const directory=path.join(out,'world'),steps=[],errors=[],requests=[],screenshots=[],diagnostics={},sha=b=>createHash('sha256').update(b).digest('hex');
+const windowsLauncher=process.platform==='win32'&&process.env.GITHUB_ACTIONS==='true';
+const directory=path.join(out,windowsLauncher?'isolated world':'world'),steps=[],errors=[],requests=[],screenshots=[],diagnostics={},sha=b=>createHash('sha256').update(b).digest('hex');
+const start=fresh=>windowsLauncher?startForestWindowsLauncher(directory):startRuntimeServer({directory,
+ ...(fresh?{profile:'campaign-forest-village',seed:42}:{}),port:0,writable:true,continuousMarch:true,npcLanguage:{enabled:false}});
 let server,browser,report,candidate,startedService=false,everOpenedBrowser=false;
 const five=g=>Object.fromEntries(['snapshot','map','player','encounter','scene'].map(k=>[k,g[k]]));
 const files=async()=>Object.fromEntries(await Promise.all((await fs.readdir(directory)).filter(f=>f.endsWith('.json')).sort().map(async f=>[f,sha(await fs.readFile(path.join(directory,f)))])));
@@ -44,7 +48,7 @@ async function focusSection(selector){const d=await browser.call('DOM.getDocumen
 try{
  candidate=await verifyForestCandidate();
  await fs.access(demoBrowserExecutable()).catch(()=>{throw Object.assign(Error('No local Edge/Chromium executable. Set DEMO_BROWSER_EXECUTABLE to an installed browser, then rerun into a new output folder.'),{code:'BROWSER_UNAVAILABLE'});});
- await phase('new-isolated-world',async()=>{server=await startRuntimeServer({directory,profile:'campaign-forest-village',seed:42,port:0,writable:true,continuousMarch:true,npcLanguage:{enabled:false}});startedService=true;await open('desktop-browser');assert.equal((await get()).capabilities.npcLanguage.enabled,false);});
+ await phase('new-isolated-world',async()=>{server=await start(true);startedService=true;await open('desktop-browser');assert.equal((await get()).capabilities.npcLanguage.enabled,false);});
  const version=await browser.call('Browser.getVersion');
  await phase('village-and-real-loan-through-buttons',async()=>{
   await quest('livelihood','accept');await command('#work','PlayerWork');await command('#buyFood','PlayerBuy');await quest('livelihood','claim');await quest('hunter-aid','accept');
@@ -79,10 +83,10 @@ try{
   await browser.close();browser=null;await server.close();server=null;assert.ok(!(await fs.readdir(directory)).includes('.runtime-owner.lock'),'Clean shutdown must release ownership before reopening');
  });
  await phase('reopen-same-world-with-no-extra-commit',async()=>{
-  server=await startRuntimeServer({directory,port:0,writable:true,continuousMarch:true,npcLanguage:{enabled:false}});assert.deepEqual(five(await get()),five(final));await open('reopen-browser');await focusSection('#playableGoals');await capture('reopened-chapter.png');
+  server=await start(false);const reopened=await get();assert.equal(reopened.capabilities.npcLanguage.enabled,false);assert.deepEqual(five(reopened),five(final));await open('reopen-browser');await focusSection('#playableGoals');await capture('reopened-chapter.png');
   assert.match(await read(`document.querySelector('#playableTitle').textContent`),/第一章完成/);assert.deepEqual(await files(),hashes);await browser.close();browser=null;await server.close();server=null;
  });
- assert.deepEqual(errors,[]);report={verdict:'PASS',candidate:'forest-playtest-candidate-4',contentBase:'433fc5248197b9012620d08a36c412f9c177f99d',browserExecuted:true,browserVersion:version.product,desktop:true,narrowViewportEmulated:true,keyboardExit:true,mobileLayout,requests,steps,screenshots,final:{tick:final.map.tick,rank:4,toolCondition:70},externalModelCalls:0,windowsLauncherExecuted:false,physicalMobileTested:false,screenReaderTested:false,realModelLanguageTested:false};
+ assert.deepEqual(errors,[]);report={verdict:'PASS',candidate:'forest-playtest-candidate-4',contentBase:'433fc5248197b9012620d08a36c412f9c177f99d',browserExecuted:true,browserVersion:version.product,desktop:true,narrowViewportEmulated:true,keyboardExit:true,mobileLayout,requests,steps,screenshots,final:{tick:final.map.tick,rank:4,toolCondition:70},externalModelCalls:0,windowsLauncherExecuted:windowsLauncher,physicalMobileTested:false,screenReaderTested:false,realModelLanguageTested:false};
 }catch(error){report={verdict:error.code==='BROWSER_UNAVAILABLE'?'BLOCKED':'FAIL',candidate:'forest-playtest-candidate-4',contentBase:'433fc5248197b9012620d08a36c412f9c177f99d',browserExecuted:everOpenedBrowser,steps,errors,requests,screenshots,diagnostics,error:{code:error.code??null,message:error.message},externalModelCalls:0};process.exitCode=report.verdict==='BLOCKED'?2:1;}
 finally{
  const cleanupErrors=[];for(const [name,instance]of [['browser',browser],['server',server]])if(instance)try{await instance.close();}catch(error){cleanupErrors.push({name,message:error.message});}
