@@ -10,7 +10,7 @@
       "setup": "fresh",
       "turns": [
         {"id":"original","text":"我现在要帮你修理这个工具。","before":[],"expectedCondition":60,"expectedRepair":false,"expectedIntent":"repair-now","expectedProposal":"help","referenceKinds":[],"review":"复测旧浏览器原问法：不虚构以前修过、不谈借用，不把建议说成已经修理。"},
-        {"id":"claim","text":"我明明刚才已经帮你把工具修好了，你看，现在耐久多少？","before":[],"expectedCondition":60,"expectedRepair":false,"expectedProposal":"none","referenceKinds":[],"review":"已保存交谈和玩家口述都不是修理；回答60，不补造经历，也不生成动作。"},
+        {"id":"claim","text":"我明明刚才已经帮你把工具修好了，你看，现在耐久多少？","before":[],"expectedCondition":60,"expectedRepair":false,"expectedIntent":"tool-condition-question","expectedProposal":"none","referenceKinds":[],"review":"已保存交谈和玩家口述都不是修理；回答60，不补造经历，也不生成动作。"},
         {"id":"real-help","text":"这次我动手后，你还记得我做了什么吗？工具现在全好了吗？","before":["help"],"expectedCondition":80,"expectedRepair":true,"expectedProposal":"none","referenceKinds":["help"],"review":"真实修理后承认这次帮助；当前80，不能说全好。"}
       ]
     },

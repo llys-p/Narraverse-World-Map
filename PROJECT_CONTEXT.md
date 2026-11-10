@@ -1,4 +1,10 @@
-# 当前候选：森林真实归还与自然对话复验（2026-11-05）
+# 当前候选：猎人帮修与耐久问句（2026-11-10）
+
+- 草稿 PR #47 的语言修补已完成离线和受控复验。新档的 60 点耐久与实际修理经历分开；单纯帮修不提供借用条款。独立耐久问句只读，玩家同句明确请求修理或借用时仍可生成建议。
+- 82 项回归、6 轮受控 HTTP、本机 Linux Chromium 对话流程与六阶段森林旅程通过。首轮真实模型 6 次中有 1 次给只读问句附带修理建议，原报告保留。本轮续接外部模型调用为 0，修正后真实语言、真实模型表单和真人评审待验。
+- 接手入口仍为 [森林试玩与交接](docs/runtime/FOREST-PLAYTEST.md)，[复验证据](docs/evidence/forest-repair-language-20261110/verification.json)。Windows 双击、真手机、读屏和 GitHub Projects 同步待办。
+
+# 前次验收：森林真实归还与自然对话复验（2026-11-05）
 
 独立草稿 PR47 续接 PR46，远端分支 `codex/forest-dialogue-continuity-20261103`。本次被测游戏源码 `9daf36a609530bd0d314d6788de0afc2c7ab1359`，玩家和 AI 统一交接见 [FOREST-PLAYTEST.md](docs/runtime/FOREST-PLAYTEST.md)，任务见 [FOREST-DIALOGUE-CONTINUITY-TASK.md](tasks/FOREST-DIALOGUE-CONTINUITY-TASK.md)。
 

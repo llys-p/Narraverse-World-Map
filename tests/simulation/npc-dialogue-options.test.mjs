@@ -22,6 +22,10 @@ test('known options reflect condition and trust, never infer unknown holder or b
  assert.equal(help.intentHint.proposalHint.payload.action,'help');
  assert.deepEqual(help.negotiationOptions.options,[]);
  assert.equal(providerContext(ctx,trade).negotiationOptions.status,'available');
+ for(const question of ['现在耐久多少？','我明明刚才已经帮你把工具修好了，你看，现在耐久多少？','我早就把你的工具修好了。现在工具还剩多少耐久？','请告诉我目前工具包的耐久是多少？','你的工具还剩多少耐久？','工具现在还有多少耐久？']){
+  const projected=providerContext(ctx,question);assert.equal(projected.intentHint.kind,'tool-condition-question',question);assert.deepEqual(projected.negotiationOptions.options,[]);
+ }
+ for(const mixed of ['我想帮你修工具，现在耐久多少？','现在耐久多少？我现在要帮你修理这个工具。','“现在耐久多少？”','现在耐久多少，修好后能借我吗？'])assert.notEqual(providerContext(ctx,mixed).intentHint.kind,'tool-condition-question',mixed);
  for(const text of ['我不会替你修理工具，借我半天可以吗？','“'+trade+'”','他说'+trade,'如果'+trade,trade+'然后抢走它','我昨天替你修理工具，借我半天可以吗？'])assert.notEqual(providerContext(ctx,text).intentHint.kind,'negotiate-repair-loan');
  assert.equal(providerContext(ctx,trade).intentHint.kind,'negotiate-repair-loan');
 });
@@ -35,6 +39,7 @@ test('missing or impossible trade proposals and actions on terms questions fail 
   [npcDialogueContext(offered),'请再说一遍这份约定。',proposal(),'question-has-action'],
   [raw,'我现在要帮你修理这个工具。',null,'explicit-intent-missing-proposal'],
   [raw,'我现在要帮你修理这个工具。',proposal(),'terms-outside-known-options'],
+  [raw,'我明明刚才已经帮你把工具修好了，你看，现在耐久多少？',{type:'PlayerInteract',payload:{targetId:'actor-2',action:'help'}},'question-has-action'],
   [{...raw,self:{...raw.self,knownCondition:100}},'我现在要帮你修理这个工具。',{type:'PlayerInteract',payload:{targetId:'actor-2',action:'help'}},'repair-not-actionable']
  ];
  for(const [ctx,text,suggestion,reason] of cases){
@@ -62,6 +67,23 @@ test('low durability and remembered speech are not completed repair, while an au
   assert.doesNotMatch(sent[0],/旧话：|我说已经修过了/);
   assert.match(sent[1],/耐久为80.*有实际修理依据/);
  }finally{p.close();}
+});
+
+test('a durability question preserves an action explicitly requested in the same turn',async()=>{
+ const ctx=npcDialogueContext(initial());
+ const help={type:'PlayerInteract',payload:{targetId:'actor-2',action:'help'}};
+ const cases=[
+  ['工具现在还有多少耐久？',null],
+  ['工具现在还有多少耐久？我现在要帮你修理这个工具。',help],
+  ['工具现在还有多少耐久？我替你修理工具，借我半天可以吗？',proposal()]
+ ];
+ for(const [index,[text,suggestion]] of cases.entries()){
+  const provider=createNpcLanguageProvider({enabled:true,baseURL:'http://127.0.0.1:19980',model:'controlled-options',apiKey:''},{fetchImpl:async()=>Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify({reply:'我看看工具。',memoryRefs:[],proposal:suggestion})}}]})});
+  try{
+   const draft=await provider.compose({apiVersion:1,requestId:'condition-'+index,simulationId:ctx.simulationId,expectedRevision:ctx.revision,targetId:'actor-2',text},ctx);
+   assert.deepEqual(draft.payload.proposal,suggestion);
+  }finally{provider.close();}
+ }
 });
 
 test('a supported model proposal remains a preview; only explicit action produces exactly the shared terms',async()=>{

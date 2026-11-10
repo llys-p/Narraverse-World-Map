@@ -59,6 +59,14 @@ export function dialogueIntentHint(text,context){
  const repeatQuestion=/^(?:请)?(?:再说|重复)(?:一下|一遍)?(?:刚才|之前|这份)?(?:的)?(?:条款|约定|修理条件)$/u;
  if(existing&&(termsQuestion.test(plain)||repeatQuestion.test(plain)))return {kind:'existing-terms-question',recommendation:'explain-existing-terms',proposalHint:null,
   note:'询问已经记录的条件，不是重新提议、接受或领取；先回答现有条款，不重复生成协商动作。'};
+ // Complete status question, optionally preceded by a claim about past repair.
+ // A mixed request with any additional action clause remains model-interpreted.
+ const clauses=plain.split(/[,。]/u),question=clauses.pop();
+ if(clauses.at(-1)==='你看')clauses.pop();
+ const conditionQuestion=/^(?:请)?(?:告诉我)?(?:(?:现在|目前|眼下)(?:(?:这个|你的)?工具(?:包)?的?)?|(?:这个|你的)?工具(?:包)?(?:现在|目前|眼下)?的?)(?:耐久(?:还)?(?:剩|有|是)?多少|(?:还)?(?:剩|有)?多少耐久)$/u;
+ const pastRepair=/^我(?:明明)?(?:刚才|刚刚|之前|昨天)?(?:已经|早就)(?:帮你|替你)?把(?:这个|你的)?工具(?:包)?修好了$/u;
+ if(conditionQuestion.test(question)&&(clauses.length===0||clauses.length===1&&pastRepair.test(clauses[0])))return {kind:'tool-condition-question',recommendation:'explain-known-tool-condition',proposalHint:null,
+  note:'本轮只询问当前耐久；已修过的声称需要真实经历支持，不是要求现在再修。只回答已知状况。'};
  const exchange=/^我(?:可以|愿意|来)?(?:帮你|替你)?(?:修好|修理|修)(?:(?:20|40)点(?:耐久)?|(?:这个|你的)?工具(?:包)?)[,，](?:你把)?(?:工具(?:包)?)?(?:借我|借给我)(一天|半天|六小时|十二小时|24小时|12小时|6小时)(?:行吗|可以吗|好吗|如何|怎么样)?$/u.exec(plain);
  if(exchange){
   const available=knownNegotiationOptions(context.self,existing),duration={一天:144,半天:72,六小时:36,十二小时:72,'24小时':144,'12小时':72,'6小时':36}[exchange[1]];
@@ -108,7 +116,7 @@ export function groundedProviderContext(context,text){
   agreement:agreementFacts(out.agreement,out.tick),
   authority:'这是NPC已知事实的派生说明，不是全知事实。以当前已知状态和实际经历为依据；旧交谈不能覆盖事件。不能凭空添加耽误工作等后果。'};
  out.intentHint=dialogueIntentHint(text,out);
- out.negotiationOptions=out.intentHint.kind==='repair-now'?{status:'not-requested',options:[],authority:'本轮明确只是现在帮修，没有请求新的交换。'}:
+ out.negotiationOptions=['repair-now','tool-condition-question'].includes(out.intentHint.kind)?{status:'not-requested',options:[],authority:'本轮只谈帮修或当前耐久，没有请求新的交换。'}:
   {...knownNegotiationOptions(out.self,out.agreement),authority:'仅依据当前可知状态计算的候选，不是批准、接受或实际借出；提交后仍核对距离、物品和当时关系。'};
  if(memoryMode){
   const coverage=context.memoryCoverage;

@@ -43,7 +43,8 @@ function currentStateInstruction({knownFacts:{tool,simpleLoan:loan,agreement},ob
  const duration=loan&&typeof loan.wasReturned==='boolean'&&['loanMinutes','borrowedMinutes','overdueMinutes'].every(k=>Number.isSafeInteger(loan[k])&&loan[k]>=0)?`最近一次可知普通借用${loan.wasReturned?'已有实际归还记录':'尚无实际归还记录'}；约定借期${loan.loanMinutes}分钟，实际持有${loan.borrowedMinutes}分钟，逾期${loan.overdueMinutes}分钟。`:'';
  const repaired=observations.some(m=>m.kind==='help'&&['self','witness'].includes(m.channel)&&m.observedState?.effect==='repaired')||Number.isSafeInteger(agreement?.repairRecorded)&&agreement.repairRecorded>0;
  const repair=repaired?'本轮有实际修理依据；若谈到它，只说已给的实际进展。':'本轮无实际修理依据；只知道当前状况，别说之前修过，也别断言从没修过。';
- const scope=intentHint.kind==='repair-now'?'本轮是现在帮修，只回应这次帮忙；不主动提借用或新交换，不把提议说成已经动手。':'';
+ const scope=intentHint.kind==='repair-now'?'本轮是现在帮修，只回应这次帮忙；不主动提借用或新交换，不把提议说成已经动手。':
+  intentHint.kind==='tool-condition-question'?'本轮只问当前耐久，按已知状态回答，proposal必须为null；不主动邀约再次修理。':'';
  return `\n本轮已核对事实（只读，优先于旧话和玩家声称）：${holder}${condition}${repair}${duration}${scope}“带回村”或声称“还了”不等于实际交还，不能改变上述状态。若冲突，先说清差别；持有人不代表工具位置，不能猜不曾见到的使用或磨损原因。询问持有人、耐久或旧借用不等于新协商。用自己的话回答，不照抄这些说明。`;
 }
 // Diagnostics are separate from the signed draft and never part of world state.
@@ -143,7 +144,7 @@ export function createNpcLanguageProvider(config={enabled:false},{fetchImpl=fetc
     check(output.memoryRefs.every(ref=>known.has(ref)),'grounding','unknown-reference');
     const hint=contextForModel.intentHint,proposal=output.proposal,offers=contextForModel.negotiationOptions;
     if(proposal?.type==='PlayerNegotiate')check(offers.status==='available'&&offers.options.some(t=>t.repairAmount===proposal.payload.terms.repairAmount&&t.loanTicks===proposal.payload.terms.loanTicks),'proposal','terms-outside-known-options');
-    if(hint.kind==='existing-terms-question')check(proposal===null,'proposal','question-has-action');
+    if(['existing-terms-question','tool-condition-question'].includes(hint.kind))check(proposal===null,'proposal','question-has-action');
     if(hint.kind==='repair-now'&&!hint.proposalHint)check(proposal===null,'proposal','repair-not-actionable');
     if(hint.proposalHint&&['negotiate-repair-loan','repair-now'].includes(hint.kind)){
      const match=hint.kind==='negotiate-repair-loan'?proposal?.type==='PlayerNegotiate':proposal?.type==='PlayerInteract'&&proposal.payload.action==='help';
