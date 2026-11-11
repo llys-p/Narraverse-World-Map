@@ -14,7 +14,7 @@ if(mode==='select'){
  console.log(JSON.stringify({browserSelected:true,platform:process.platform,executable:selected}));
 }else if(mode==='report'){
  let result;try{result=JSON.parse(await fs.readFile(path.join(out,'result.json'),'utf8'));}catch{result={verdict:'MISSING',error:{message:'Acceptance did not produce result.json'}};}
- const sources=['.github/workflows/forest-browser-acceptance.yml','scripts/demo-browser-client.mjs','scripts/verify-forest-playtest.mjs','scripts/forest-playtest-candidate.mjs','scripts/forest-browser-ci.mjs','scripts/forest-windows-launcher.mjs'],sourceSha256={};
+ const sources=['.github/workflows/forest-browser-acceptance.yml','scripts/demo-browser-client.mjs','scripts/verify-forest-playtest.mjs','scripts/forest-playtest-candidate.mjs','scripts/forest-browser-ci.mjs','scripts/forest-windows-launcher.mjs','scripts/verify-forest-dialogue-keyboard.mjs'],sourceSha256={};
  for(const file of sources)sourceSha256[file]=createHash('sha256').update(await fs.readFile(file)).digest('hex');
  const candidate=JSON.parse(await fs.readFile('docs/runtime/forest-playtest-candidate.json','utf8'));
  // Text evidence only: no screenshot bytes, world saves, artifact upload or cache.

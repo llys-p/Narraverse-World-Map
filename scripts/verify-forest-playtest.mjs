@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 import {createHash} from 'node:crypto';
 import {setTimeout as delay} from 'node:timers/promises';
 import {startRuntimeServer} from '../runtime-server.mjs';
@@ -19,6 +21,7 @@ const start=fresh=>windowsLauncher?startForestWindowsLauncher(directory):startRu
 let server,browser,report,candidate,startedService=false,everOpenedBrowser=false;
 const checkedDirectories=new Set([directory]);
 let windowsNewJourney={executed:false};
+let dialogueKeyboard={executed:false};
 const five=g=>Object.fromEntries(['snapshot','map','player','encounter','scene'].map(k=>[k,g[k]]));
 const files=async(dir=directory)=>Object.fromEntries(await Promise.all((await fs.readdir(dir)).filter(f=>f.endsWith('.json')).sort().map(async f=>[f,sha(await fs.readFile(path.join(dir,f)))])));
 const get=async()=>{const r=await fetch(server.url+'/api/runtime/demo-state');assert.equal(r.status,200);return r.json();};
@@ -57,7 +60,9 @@ try{
   await quest('livelihood','accept');await command('#work','PlayerWork');await command('#buyFood','PlayerBuy');await quest('livelihood','claim');await quest('hunter-aid','accept');
   const before=await files(),revision=(await get()).snapshot.revision;
   await browser.click('article[data-quest="hunter-aid"] button:not([data-quest-action])');assert.equal(await read('document.activeElement?.id'),'personName');assert.equal((await get()).snapshot.revision,revision);assert.deepEqual(await files(),before);
-  await command('#social-help','PlayerInteract');await browser.click('#closePerson');await command('#giftFood','PlayerGiftFood');await quest('hunter-aid','claim');
+  await command('#social-help','PlayerInteract');await browser.click('#closePerson');
+  assert.equal(await read('document.activeElement?.matches(\'article[data-quest="hunter-aid"] [data-person-id]\')'),true,'Closing a repainted quest card must return focus to its current entry');
+  await command('#giftFood','PlayerGiftFood');await quest('hunter-aid','claim');
   await quest('hunter-trust','accept');await quest('forest-route','accept');await browser.click('article[data-quest="hunter-trust"] button:not([data-quest-action])');
   const borrowed=await command('#social-ask-help','PlayerInteract');assert.equal(borrowed.map.social.asset.holderId,'actor-4');await browser.click('#closePerson');
  });
@@ -116,7 +121,14 @@ try{
   assert.deepEqual(await files(firstDirectory),firstHashes);assert.deepEqual(await files(secondDirectory),secondHashes);await preserveOld();
   windowsNewJourney={executed:true,newSlots:2,defaultWorldPreserved:true,inheritedSaveDirectoryOverridden:true,firstSlotAdvancedThroughBrowser:true,reopenedFirstSlot:true,projectionMatch:true,saveBytesMatch:true,initialTick:fresh.map.tick,advancedTick:advanced.map.tick,secondSlotTick:second.map.tick,cleanQuitCount:3,archiveSha256:{defaultWorld:sha(JSON.stringify(hashes)),firstSlot:sha(JSON.stringify(firstHashes)),secondSlot:sha(JSON.stringify(secondHashes))}};
  });
- assert.deepEqual(errors,[]);report={verdict:'PASS',candidate:'forest-playtest-candidate-4',contentBase:'433fc5248197b9012620d08a36c412f9c177f99d',browserExecuted:true,browserVersion:version.product,desktop:true,narrowViewportEmulated:true,keyboardExit:true,mobileLayout,requests,steps,screenshots,final:{tick:final.map.tick,rank:4,toolCondition:70},externalModelCalls:0,windowsLauncherExecuted:windowsLauncher,windowsNewJourney,physicalMobileTested:false,screenReaderTested:false,realModelLanguageTested:false};
+ if(process.env.GITHUB_ACTIONS==='true')await phase('controlled-dialogue-keyboard',async()=>{
+  const keyboardOut=path.resolve('artifacts/forest-dialogue/keyboard-ci');
+  try{await promisify(execFile)(process.execPath,['scripts/verify-forest-dialogue-keyboard.mjs',keyboardOut],{timeout:120000,maxBuffer:1024*1024});}
+  catch(error){try{diagnostics.dialogueKeyboard=JSON.parse(await fs.readFile(path.join(keyboardOut,'result.json'),'utf8'));}catch{}throw Error('Keyboard browser verification failed: '+(diagnostics.dialogueKeyboard?.error?.message??error.message));}
+  const result=JSON.parse(await fs.readFile(path.join(keyboardOut,'result.json'),'utf8'));assert.equal(result.verdict,'PASS');
+  dialogueKeyboard={executed:true,...result};
+ });
+ assert.deepEqual(errors,[]);report={verdict:'PASS',candidate:'forest-playtest-candidate-4',contentBase:'433fc5248197b9012620d08a36c412f9c177f99d',browserExecuted:true,browserVersion:version.product,desktop:true,narrowViewportEmulated:true,keyboardExit:true,mobileLayout,requests,steps,screenshots,final:{tick:final.map.tick,rank:4,toolCondition:70},externalModelCalls:0,windowsLauncherExecuted:windowsLauncher,windowsNewJourney,dialogueKeyboard,physicalMobileTested:false,screenReaderTested:false,realModelLanguageTested:false};
 }catch(error){report={verdict:error.code==='BROWSER_UNAVAILABLE'?'BLOCKED':'FAIL',candidate:'forest-playtest-candidate-4',contentBase:'433fc5248197b9012620d08a36c412f9c177f99d',browserExecuted:everOpenedBrowser,steps,errors,requests,screenshots,diagnostics,error:{code:error.code??null,message:error.message},externalModelCalls:0};process.exitCode=report.verdict==='BLOCKED'?2:1;}
 finally{
  const cleanupErrors=[];for(const [name,instance]of [['browser',browser],['server',server]])if(instance)try{await instance.close();}catch(error){cleanupErrors.push({name,message:error.message});}
