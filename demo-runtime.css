@@ -20,6 +20,7 @@ body#demo-runtime-root{min-width:0}
 #demo-runtime-root button{cursor:pointer}
 #demo-runtime-root button:disabled{opacity:.45;cursor:not-allowed}
 #demo-runtime-root button:focus-visible,#demo-runtime-root input:focus-visible,#demo-runtime-root textarea:focus-visible,#demo-runtime-root select:focus-visible{outline:2px solid #ffd26a;outline-offset:3px}
+#personName:focus-visible,#npcDialogueStatus:focus-visible{outline:2px solid #ffd26a;outline-offset:3px}
 #demo-runtime-root .stage-wrap{height:520px;background:#101711}
 #demo-runtime-root .fullscreen-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #demo-runtime-root #worldMapCanvas{pointer-events:auto;cursor:crosshair}

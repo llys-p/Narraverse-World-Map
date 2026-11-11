@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "forest-playtest-candidate-3",
-  "date": "2026-11-01",
-  "contentBase": "a272484c0e74f4079bb11259e721b57abc4b89fd",
+  "id": "forest-playtest-candidate-4",
+  "date": "2026-11-10",
+  "contentBase": "433fc5248197b9012620d08a36c412f9c177f99d",
   "gameEntry": "Start-Forest-Journey.cmd",
   "newJourneyEntry": "Start-Forest-Journey-New.cmd",
   "verificationEntry": "Verify-Forest-Playtest.cmd",
@@ -10,14 +10,17 @@
   "fixtureVersion": "8",
   "gamePort": 18356,
   "browserVerificationUsesIsolatedNewWorld": true,
-  "externalModelCalls": 16,
+  "externalModelCalls": 45,
   "gates": {
     "serviceRecovery": "verified",
     "browser": "verified-linux-and-windows-ci",
-    "windowsLauncher": "not-run",
+    "dialogueKeyboard": "verified-linux-and-windows-ci",
+    "windowsLauncher": "verified-windows-actions-cmd",
+    "windowsNewJourney": "verified-windows-actions-cmd-isolation-and-reopen",
     "physicalMobile": "not-run",
     "screenReader": "not-run",
-    "realModelLanguage": "sampled-forest-human-review-pending"
+    "realModelLanguage": "repair-language-retest-pending",
+    "realModelBrowser": "current-source-retest-pending"
   },
   "gameSha256": {
     "Start-Forest-Journey-New.cmd": "e538af5c159cecdd08f83b5564451377f5287fa50083f9abbfd8601547e717f9",
@@ -30,12 +33,12 @@
     "demo-forest.mjs": "501b2649538c5ad55b4b4baee8590da36988ab16a382469a6716231cdecced2c",
     "demo-npc-dialogue.mjs": "e0e92fce9c98ab47d50e538d0d7cd85e12293b7d8dd2d596ccfca17be9276473",
     "demo-operation-feedback.mjs": "f6c81536d142f99c9c3e3f2b66f655bc2ed74988dac98c9a73529b7d9d3e1140",
-    "demo-playable-goals.mjs": "aee9ea3306dde4d57291394b020f86925c02ea8cccfeb94cb2207da8714a1737",
+    "demo-playable-goals.mjs": "69f97b0c02cd1608afe830632ce003827c8dd39505286828d4823c0377c4ed5d",
     "demo-runtime-bridge.mjs": "2edde7173a33611b5c19cc9b699e6c36aae8b7b105a3ebb3b4e8b76ea431eefd",
     "demo-runtime-interactions.mjs": "4a441480287892c1664076292ac0f9787e4abbc753018bd092bd797e59119385",
-    "demo-runtime-prototype.mjs": "174833c4cb763d36bb94ceaa951f791837d35f8a8a72154a7e290a7bbf88b984",
-    "demo-runtime.css": "bc9bfae3cc94b5e0a7701530c588f1b6020516c8f4fa30dff13443edca7f5bdb",
-    "demo-runtime.html": "565d2931309ae9912d563a4c0e69bebe7f75750fec80d2412c7108075d4cef19",
+    "demo-runtime-prototype.mjs": "09c7c5b633f893f15b4f093c6c2ab5bcf38e97cfe62afd9d43155df51caf8b49",
+    "demo-runtime.css": "c214dc15c1ce9968d31f62807c8b430efae04f897e9afb165362e31f9ff8720c",
+    "demo-runtime.html": "7d413e08cf63839ab63358fbad1bdfe27b0d6f9fb1d99944178930734155381d",
     "demo-social-composer.mjs": "59afa1dff60f271f235613170d25596ec5daff599c9f1e767b359678ea61803c",
     "demo-social-language.mjs": "fe47def464b9cb0731a971f7ca90f30c3853ce9c9693b1c61e22dc1087b1cc87",
     "fallback-e2e.mjs": "85695d66fe463a74b242b87092ac028560b1b87fcb1dac8daad68a314dd19bfd",
@@ -187,8 +190,8 @@
     "runtime/persistence/checkpoint-store.mjs": "e63fc61acafe62dc57102ade35f2a39ec2e6a7a2d00437a47a60eb1fb6956743",
     "runtime/service/http-contract.mjs": "2b051338981bebc2bb79d9ab1cd097f26596dbbc070c2dcd2c6de37d2868afe9",
     "runtime/service/march-runner.mjs": "e71e3609d97eae2e7e42a5ff1047a47fcaee43459bbb1d4f74f78fd39587a19a",
-    "runtime/service/npc-dialogue-grounding.mjs": "6c1d436e33fea7936931453d7f1f24c74ef602a0c8fbed4cfa1074c7c60d4482",
-    "runtime/service/npc-language-provider.mjs": "d8aec310dde42fa129501e50918640a2dac534e963dcdbb8fe209e07413abcfb",
+    "runtime/service/npc-dialogue-grounding.mjs": "30de077023c1a5703e19e8154fe7eea453b7a4e46b983eb94d6c412833f328b7",
+    "runtime/service/npc-language-provider.mjs": "7b8a416b9a7c7f57423b9c745d35810d017461da5dd620a052220adca3b56aab",
     "runtime/service/npc-life-facts.mjs": "0309ba301126b72aa9bd3c070abc341bcf8fd99002cb742b5941f80c310b6e2a",
     "runtime/service/npc-recall-focus.mjs": "b6b9be89889d49897eff1779b3e22dae1b202d4bb04c9bdae3c2383f78362889",
     "runtime/service/runtime-owner-thread.mjs": "8c9d280a3c51717d5d9e7f16c30f65b05eec1216b22e6dc099edc8baf1da5f49",
@@ -213,5 +216,12 @@
     "world-combat-fx.js": "0324c994016606716b3c2122809f30556c56284c7e450310c79a59045cc1c2af",
     "world-e2e.mjs": "905f802dcdd4d5843d6b302779c1b5f641e6531aaebac404d2010450660fc303"
   },
-  "browserExternalModelCalls": 0
+  "browserExternalModelCalls": 0,
+  "modelEvidence": {
+    "beforeMaintenanceObservedRequests": 20,
+    "beforeMaintenanceOriginalReportsAvailable": false,
+    "recoveryAttempts": 2,
+    "recoveryReplies": 0,
+    "recoveryHttpStatus": 503
+  }
 }

@@ -1,3 +1,26 @@
+# 当前候选：猎人帮修与耐久问句（2026-11-12 更新）
+
+- 草稿 PR #47 的语言修补已完成离线和受控复验。新档的 60 点耐久与实际修理经历分开；单纯帮修不提供借用条款。独立耐久问句只读，玩家同句明确请求修理或借用时仍可生成建议。
+- 82 项回归、6 轮受控 HTTP、本机 Linux Chromium 对话流程与六阶段森林旅程通过。首轮真实模型 6 次中有 1 次给只读问句附带修理建议，原报告保留。本轮续接外部模型调用为 0，修正后真实语言、真实模型表单和真人评审待验。
+- Linux Chromium 新增 5 项对话故障验收。回执丢失后重启服务并刷新页面，原请求按相同字节重取，存档只有一条交谈，耐久保持 60。世界状态变化会清除旧预览和旧建议。见[故障验收记录](docs/evidence/forest-repair-language-20261110/browser-recovery.json)。
+- Windows Actions 已通过 `cmd.exe` 实跑 `Start-Forest-Journey.cmd`。带空格的合成存档路径可首次启动，完成六阶段森林旅程，正常退出并按原档重开。[启动验收记录](docs/evidence/forest-repair-language-20261110/windows-launcher.json)
+- 2026-11-12 续验：`f893ddd` 的 [CI 43067199614](https://github.com/llys-p/Narraverse-World-Map/actions/runs/43067199614) 两端通过。Windows 连续运行两次 `Start-Forest-Journey-New.cmd` 得到独立新档；第一局通过浏览器等待 1 小时后，用普通入口显式指定该档重开，五投影与存档文件校验一致，默认旧档和第二局不变。共检查 4 个合成档，5 次正常退出，无锁遗留、外部模型 0 调用。仅增加验收脚本，192 份游戏文件不变；本地 3 项预检及 Linux 六阶段试玩通过。见[新档验收证据](docs/evidence/forest-repair-language-20261110/windows-new-slots.json)。
+- 接手入口仍为 [森林试玩与交接](docs/runtime/FOREST-PLAYTEST.md)，[复验证据](docs/evidence/forest-repair-language-20261110/verification.json)。资源管理器双击、真手机、读屏和 GitHub Projects 同步待办。真实模型复测继续等待本项目模型配置。
+
+- 键盘交谈修复 `c7f0b99`：从场景/任务入口打开人物卡聚焦标题，输入框/按钮上的 Esc 可关闭并返回有效入口，生成/保存禁用原按钮前把焦点保留在状态提示；确认按钮关联未保存预览。仅调整 4 份界面文件，候选仍 192 份，世界和存档规则不变。[CI 43073634951](https://github.com/llys-p/Narraverse-World-Map/actions/runs/43073634951) 的 Linux/Windows 各 12 项键盘检查通过，原六阶段玩法和 Windows 新档隔离同时通过。本地 9 项相关回归与 5 项对话故障恢复通过。修复前 10 项失败原样保留；受控回复不计真实模型或真人读屏验收。见[键盘证据](docs/evidence/forest-repair-language-20261110/keyboard-verification.json)。本轮外部模型 0 调用。
+
+# 前次验收：森林真实归还与自然对话复验（2026-11-05）
+
+独立草稿 PR47 续接 PR46，远端分支 `codex/forest-dialogue-continuity-20261103`。本次被测游戏源码 `9daf36a609530bd0d314d6788de0afc2c7ab1359`，玩家和 AI 统一交接见 [FOREST-PLAYTEST.md](docs/runtime/FOREST-PLAYTEST.md)，任务见 [FOREST-DIALOGUE-CONTINUITY-TASK.md](tasks/FOREST-DIALOGUE-CONTINUITY-TASK.md)。
+
+- 服务恢复后的原 4 轮实测（9bf2e5d）发现玩家口头说带回来，猎人却说已经接回。保留原报告；新 Provider 只将本轮已知持有人、耐久与普通借用时长置于系统说明末尾。旧话、隐蔽磨损与玩家自述不能改写事实；保持自由生成和原行动确认、记忆更新、世界规则及存档。
+- 本轮 77 项不同回归通过。12 次 DeepSeek Flash HTTP 生成全部取得回复并通过协议检查；实际归还、隔日重开、目击破坏和部分修理都已覆盖。在保留真实错误历史的隔离副本中明确纠正 1460 分钟旧错，复核约定1440、实际1470、迟还30。旧 4 轮对照与更早的 503、丢失报告观察记录分别保留。
+- [CI 41963305835](https://github.com/llys-p/Narraverse-World-Map/actions/runs/41963305835) 的 Linux、Windows Chrome 六阶段玩法通过（模型关闭）。另以本地 Linux Chrome 和真实模型做 1 轮实际表单：预览不提交，确认交谈只存对话，另确认修理使耐久60→80，重开原对话保留。另有受控回复的同流程检查，单列为零付费。
+- 本轮共 13 次生成，未自动重试。真实语言仅开发样本，真人评审待验。浏览器样本仍凭空补旧修理并转题推销借用；另有归还人称和直接回答目击者的表达问题。见 [逐句复核](docs/evidence/forest-dialogue-recovery-20261105/assistant-review.json) 与 `node scripts/check-forest-dialogue-recovery-evidence.mjs`。
+- 下一步只处理已观测的语言偏差及真人试玩；Windows 双击入口、真手机、读屏单列待验。维持草稿与现有玩法，未合并、部署、迁移真实档或引入 2.0；GitHub Projects 待同步。
+
+以下为PR46及更早历史。
+
 # 当前候选：森林自由对话与跨日记忆实测（2026-11-01）
 
 续接PR45 `a272484c0e74f4079bb11259e721b57abc4b89fd`，独立草稿PR46，分支 `codex/forest-dialogue-acceptance-20261101`，修复代码提交 `66eb0a21a710988b4e50b518906dfd5fff23e5f8`。任务 `tasks/FOREST-DIALOGUE-ACCEPTANCE-TASK.md`，玩家/AI交接仍 `docs/runtime/FOREST-PLAYTEST.md`，候选3仍192份游戏文件和同一Start-Forest-Journey.cmd入口。

@@ -44,17 +44,17 @@
 <section id="playableGoals" class="live-goals" hidden aria-labelledby="playableTitle"><h2 id="playableTitle"></h2><p id="playableChapterSummary" hidden></p><p id="playableNext" class="playable-next"></p><p id="playableHelp"></p><div id="playableQuestList"></div></section>
 <section id="actionResult" class="live-action-result" hidden aria-labelledby="actionTitle"><h2 id="actionTitle">行动结果</h2><p id="actionChanges"></p><p id="actionTime"></p></section>
 <details class="live-action-history"><summary>本次行动记录</summary><p id="actionHistoryHint">只记录本次打开后已确认的行动，最多8条；重新打开后重新开始。</p><p id="actionHistoryEmpty">还没有已确认的行动。</p><ol id="actionHistory"></ol></details>
-<aside id="personCard" class="live-person" hidden><canvas id="portraitCanvas" width="140" height="140" aria-hidden="true"></canvas><div><h2 id="personName" tabindex="-1"></h2><p id="personDetail"></p><p id="personMemory"></p><p id="personActionHint"></p>
+<aside id="personCard" class="live-person" hidden aria-labelledby="personName"><canvas id="portraitCanvas" width="140" height="140" aria-hidden="true"></canvas><div><h2 id="personName" tabindex="-1"></h2><p id="personDetail"></p><p id="personMemory"></p><p id="personActionHint"></p>
 <section id="personSocial" class="social-interactions" hidden aria-label="与猎人互动">
 <p id="socialStance"></p><blockquote id="socialSpeech" aria-live="polite"></blockquote><p id="socialAsset"></p>
 <section id="npcNegotiation" hidden aria-label="协商和自然对话">
 <form id="npcDialogueForm" class="social-text-form">
 <label for="npcDialogueText">与猎人自然交谈</label>
 <textarea id="npcDialogueText" rows="3" maxlength="240" placeholder="例如：我替你把工具修好，能借我半天吗？" aria-describedby="npcDialogueStatus"></textarea>
-<p id="npcDialogueStatus" role="status" aria-live="polite"></p>
+<p id="npcDialogueStatus" role="status" aria-live="polite" tabindex="-1"></p>
 <blockquote id="npcDialoguePreview" hidden></blockquote>
 <button id="npcDialogueGenerate" type="submit">生成对话预览</button>
-<button id="npcDialogueCommit" type="button" disabled>确认交谈并保存</button>
+<button id="npcDialogueCommit" type="button" aria-describedby="npcDialoguePreview npcDialogueStatus" disabled>确认交谈并保存</button>
 <button id="npcDialogueAct" type="button" hidden disabled>确认行动建议</button>
 </form>
 <p id="npcDialogueHistory" class="social-note"></p>
