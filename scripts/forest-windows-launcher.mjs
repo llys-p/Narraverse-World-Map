@@ -5,9 +5,9 @@ import {spawn,spawnSync} from 'node:child_process';
 import {setTimeout as delay} from 'node:timers/promises';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
-const entry='Start-Forest-Journey.cmd',url='http://127.0.0.1:18356';
+const url='http://127.0.0.1:18356';
 
-export async function startForestWindowsLauncher(directory){
+async function start(entry,directory){
  if(process.platform!=='win32'||process.env.GITHUB_ACTIONS!=='true')throw Error('Launcher verification requires an isolated Windows Actions runner');
  try{await fs.lstat(path.join(root,'.env'));throw Error('Launcher verification requires a checkout without a .env file');}
  catch(error){if(error.code!=='ENOENT')throw error;}
@@ -52,4 +52,20 @@ export async function startForestWindowsLauncher(directory){
   await waitFor(()=>stdout.includes(JSON.stringify({status:'ready',url,writes:true})),'Launcher did not report ready');
   return Object.freeze({url,close(){return closePromise??=stop();}});
  }catch(error){await terminate();throw error;}
+}
+
+export const startForestWindowsLauncher=directory=>start('Start-Forest-Journey.cmd',directory);
+
+// Only used after the acceptance runner exclusively creates this synthetic slot root.
+export async function startForestWindowsNewLauncher(previousDirectory){
+ const slots=path.join(root,'artifacts','forest-village');
+ const before=await fs.readdir(slots);
+ const server=await start('Start-Forest-Journey-New.cmd',previousDirectory);
+ try{
+  const added=(await fs.readdir(slots)).filter(name=>!before.includes(name));
+  if(added.length!==1||!/^slot-\d+-\d+$/u.test(added[0]))throw Error('New journey must create exactly one independent slot');
+  const directory=path.join(slots,added[0],'world');
+  if(!(await fs.stat(directory)).isDirectory())throw Error('New journey did not create a world directory');
+  return Object.freeze({...server,directory});
+ }catch(error){await server.close();throw error;}
 }
