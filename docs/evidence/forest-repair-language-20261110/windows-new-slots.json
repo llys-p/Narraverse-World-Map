@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-12",
+  "candidate": "forest-playtest-candidate-4",
+  "testedCommit": "f893ddd0ccd13b6fff1b54638804ff58f74b525d",
+  "workflowRunId": 43067199614,
+  "gameFiles": 192,
+  "sourceSha256": {
+    ".github/workflows/forest-browser-acceptance.yml": "c9075b5af0804df816f74d3119b7733f0e9c5fa070ca3165f91539f24c5c7ad0",
+    "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+    "scripts/verify-forest-playtest.mjs": "799b14661c4023bcadbabffe86b3828c53ef35fae4ed944feda9410c74dd8910",
+    "scripts/forest-playtest-candidate.mjs": "9dc8cff5208db8418c513812e925f4ee1321968b021054e4bd8e3a692c83cb1c",
+    "scripts/forest-browser-ci.mjs": "b93d48baf4020e25a2e8e0ac7a1cd19d29ffc73b3ebd4f4b035072365aa95870",
+    "scripts/forest-windows-launcher.mjs": "34b689464fd337daf4efba1b859656f0213e4b0744b1a724d600f3602689246d"
+  },
+  "launchers": {
+    "Start-Forest-Journey.cmd": "d969a70ba95641d6448ba2a891872595bdfd8bc4a962fb60bbdd867bf8376b3f",
+    "Start-Forest-Journey-New.cmd": "e538af5c159cecdd08f83b5564451377f5287fa50083f9abbfd8601547e717f9"
+  },
+  "invocation": "cmd.exe /d /c",
+  "scope": "GitHub-hosted Windows runner; fresh checkout and synthetic saves only",
+  "defaultWorldSetup": "Exclusive creation of artifacts/forest-village, followed by copying this run's completed chapter into world. Refuse an existing slot root.",
+  "reopenMethod": "Start-Forest-Journey.cmd with FOREST_SAVE_DIR explicitly set to the first new slot",
+  "hashMethod": "SHA-256 of JSON.stringify of the sorted filename-to-SHA-256 map for each world's JSON files",
+  "jobs": [
+    {
+      "jobId": 130685214820,
+      "platform": "win32",
+      "head": "f893ddd0ccd13b6fff1b54638804ff58f74b525d",
+      "verdict": "PASS",
+      "browserVersion": "Chrome/156.0.8078.80",
+      "windowsLauncherExecuted": true,
+      "windowsNewJourney": {
+        "executed": true,
+        "newSlots": 2,
+        "defaultWorldPreserved": true,
+        "inheritedSaveDirectoryOverridden": true,
+        "firstSlotAdvancedThroughBrowser": true,
+        "reopenedFirstSlot": true,
+        "projectionMatch": true,
+        "saveBytesMatch": true,
+        "initialTick": 0,
+        "advancedTick": 6,
+        "secondSlotTick": 0,
+        "cleanQuitCount": 3,
+        "archiveSha256": {
+          "defaultWorld": "b5ab6838d625083ab3945f18cca0a585f773ea8c1f2826915d14d8b1504184e3",
+          "firstSlot": "b38e186cbccc364b6b7b61b7746e6d33043decc1c1f543c6b8030ca876e1c2e0",
+          "secondSlot": "234f1919787976926bc5f1a6e2f9e124ed6a19ae07cb54811e55fc1768820791"
+        }
+      },
+      "steps": [
+        {
+          "name": "new-isolated-world",
+          "wallMs": 8821
+        },
+        {
+          "name": "village-and-real-loan-through-buttons",
+          "wallMs": 3296
+        },
+        {
+          "name": "desktop-and-narrow-screen-forest-controls",
+          "wallMs": 5119
+        },
+        {
+          "name": "explicit-encounter-and-keyboard-exit",
+          "wallMs": 1906
+        },
+        {
+          "name": "return-worn-tool-and-complete",
+          "wallMs": 11983
+        },
+        {
+          "name": "reopen-same-world-with-no-extra-commit",
+          "wallMs": 5907
+        },
+        {
+          "name": "windows-new-slots-preserve-default-and-reopen",
+          "wallMs": 6060
+        }
+      ],
+      "final": {
+        "tick": 78,
+        "rank": 4,
+        "toolCondition": 70
+      },
+      "checkedSaveDirectories": 4,
+      "remainingLocks": [],
+      "cleanupErrors": [],
+      "externalModelCalls": 0
+    },
+    {
+      "jobId": 130685215347,
+      "platform": "linux",
+      "head": "f893ddd0ccd13b6fff1b54638804ff58f74b525d",
+      "verdict": "PASS",
+      "browserVersion": "Chrome/156.0.8078.79",
+      "windowsLauncherExecuted": false,
+      "windowsNewJourney": {
+        "executed": false
+      },
+      "steps": [
+        {
+          "name": "new-isolated-world",
+          "wallMs": 1457
+        },
+        {
+          "name": "village-and-real-loan-through-buttons",
+          "wallMs": 2314
+        },
+        {
+          "name": "desktop-and-narrow-screen-forest-controls",
+          "wallMs": 4506
+        },
+        {
+          "name": "explicit-encounter-and-keyboard-exit",
+          "wallMs": 1416
+        },
+        {
+          "name": "return-worn-tool-and-complete",
+          "wallMs": 7613
+        },
+        {
+          "name": "reopen-same-world-with-no-extra-commit",
+          "wallMs": 3345
+        }
+      ],
+      "final": {
+        "tick": 78,
+        "rank": 4,
+        "toolCondition": 70
+      },
+      "checkedSaveDirectories": 1,
+      "remainingLocks": [],
+      "cleanupErrors": [],
+      "externalModelCalls": 0
+    }
+  ],
+  "localChecks": {
+    "preflightTestsPassed": 3,
+    "linuxBrowserJourney": "PASS",
+    "externalModelCalls": 0
+  },
+  "physicalExplorerDoubleClickTested": false,
+  "realModelLanguageTested": false
+}

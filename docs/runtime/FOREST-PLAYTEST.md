@@ -1,4 +1,4 @@
-# 森林试玩候选4（2026-11-10）
+# 森林试玩候选4（2026-11-12 更新）
 
 从 `Start-Forest-Journey.cmd` 进入，或用 `Start-Forest-Journey-New.cmd` 新开一局。猎人把眼下的工具耐久与真实发生的修理分开。问「工具现在还有多少耐久？」时，系统只接受无行动建议的对话预览。说「我现在要帮你修理这个工具」可以预览修理建议，另点确认才会动手。把耐久问题和明确的修理或借用请求说在一起时，仍可得到相应建议。
 
@@ -10,7 +10,11 @@
 
 ### Windows 启动与重开
 
-Windows Actions 通过 `cmd.exe` 执行 `Start-Forest-Journey.cmd`。验收使用带空格的合成存档路径，确认首次启动后浏览器可玩、输入 `quit` 后正常退出，再次启动恢复同一存档，重开前后的存档文件校验一致。两次退出均清理锁，外部模型调用为 0。资源管理器双击与 `Start-Forest-Journey-New.cmd` 另开档待单独实机核验。[运行记录](https://github.com/llys-p/Narraverse-World-Map/actions/runs/42806161990) · [结构化证据](../evidence/forest-repair-language-20261110/windows-launcher.json)
+Windows Actions 通过 `cmd.exe` 执行 `Start-Forest-Journey.cmd`。验收使用带空格的合成存档路径，确认首次启动后浏览器可玩、输入 `quit` 后正常退出，再次启动恢复同一存档，重开前后的存档文件校验一致。两次退出均清理锁，外部模型调用为 0。[运行记录](https://github.com/llys-p/Narraverse-World-Map/actions/runs/42806161990) · [结构化证据](../evidence/forest-repair-language-20261110/windows-launcher.json)
+
+11 月 12 日补验了 `Start-Forest-Journey-New.cmd`：在临时检出中放入本轮已完成第一章的合成旧档，连续另开两局。两局目录不同，均从初始状态开始；第一局在浏览器等待 1 小时，退出后用普通入口指定该档重开，进度仍为 1 小时，五投影和存档文件校验一致。默认旧档、原验收档及第二局均未改变。Windows 共 7 阶段、5 次正常退出、4 个合成档无锁遗留；Linux 6 阶段同时通过。本轮外部模型 0 调用。[CI 43067199614](https://github.com/llys-p/Narraverse-World-Map/actions/runs/43067199614) · [新档证据与源码指纹](../evidence/forest-repair-language-20261110/windows-new-slots.json)
+
+另开入口每次都会创建新局，目录在 `artifacts\forest-village\slot-数字-数字\world`。续玩其中一局时，在仓库目录的命令提示符中先把 `FOREST_SAVE_DIR` 设为该局的完整路径，再运行 `Start-Forest-Journey.cmd`；未指定时普通入口仍打开默认的 `artifacts\forest-village\world`。退出前输入 `quit` 并等待 `stopped`。以上验证覆盖 Windows 命令解释器，资源管理器双击仍待实机验证。
 
 ### 对话中断和恢复
 
