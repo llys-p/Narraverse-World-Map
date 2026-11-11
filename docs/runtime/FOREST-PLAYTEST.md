@@ -8,6 +8,14 @@
 
 接手时从 [草稿 PR #47](https://github.com/llys-p/Narraverse-World-Map/pull/47) 的 `codex/forest-dialogue-continuity-20261103` 继续。改动集中在私有对话投影、Provider 提示与输出校验。真实模型复验按[任务合同](../../tasks/FOREST-DIALOGUE-CONTINUITY-TASK.md)中的剩余范围，使用独立合成档和本项目进程内的模型配置。
 
+### 键盘交谈与焦点
+
+可以用 Tab 和 Enter 从“进入地点”打开猎人，焦点会落到人物标题；继续 Tab 可到自然交谈输入框和生成按钮。生成失败、预览完成或保存交谈时，焦点保留在状态提示，继续 Tab 可重试或确认。确认按钮的可访问描述包含当前未保存预览。输入框和人物卡按钮上按 Esc 可关闭，焦点返回打开它的入口；任务板刷新过也会查找当前有效入口。关闭会丢弃未确认预览，已保存交谈保留。
+
+`c7f0b99` 在 [CI 43073634951](https://github.com/llys-p/Narraverse-World-Map/actions/runs/43073634951) 上通过 Linux/Windows 各 12 项真实键盘检查，涵盖格式失败后重试、丢弃预览、单独确认交谈和刷新后的焦点返回。受控测试只保存 1 条交谈，世界时间不变，耐久保持 60；外部模型 0 调用。原森林旅程、Windows 新档隔离、本地 5 项对话恢复和 9 项相关回归也通过。[原始失败与复验证据](../evidence/forest-repair-language-20261110/keyboard-verification.json) 保留修复前 10 项失败。当前验证包含浏览器可访问树，真人读屏和真实模型语义仍待验收。
+
+设置 `DEMO_BROWSER_EXECUTABLE` 后，可运行 `node scripts/verify-forest-dialogue-keyboard.mjs artifacts/forest-dialogue/my-keyboard-test`，使用新的合成档复跑。GitHub Actions 已自动执行同一脚本，回复只来自本机受控服务。
+
 ### Windows 启动与重开
 
 Windows Actions 通过 `cmd.exe` 执行 `Start-Forest-Journey.cmd`。验收使用带空格的合成存档路径，确认首次启动后浏览器可玩、输入 `quit` 后正常退出，再次启动恢复同一存档，重开前后的存档文件校验一致。两次退出均清理锁，外部模型调用为 0。[运行记录](https://github.com/llys-p/Narraverse-World-Map/actions/runs/42806161990) · [结构化证据](../evidence/forest-repair-language-20261110/windows-launcher.json)

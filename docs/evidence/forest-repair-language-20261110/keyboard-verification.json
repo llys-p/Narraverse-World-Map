@@ -1,0 +1,642 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-12",
+  "testedCommit": "c7f0b990b997630e4d545c4ece487389f7854302",
+  "workflowRunId": 43073634951,
+  "candidate": "forest-playtest-candidate-4",
+  "gameFiles": 192,
+  "gameSourceChanges": {
+    "demo-playable-goals.mjs": {
+      "before": "aee9ea3306dde4d57291394b020f86925c02ea8cccfeb94cb2207da8714a1737",
+      "after": "69f97b0c02cd1608afe830632ce003827c8dd39505286828d4823c0377c4ed5d"
+    },
+    "demo-runtime-prototype.mjs": {
+      "before": "174833c4cb763d36bb94ceaa951f791837d35f8a8a72154a7e290a7bbf88b984",
+      "after": "09c7c5b633f893f15b4f093c6c2ab5bcf38e97cfe62afd9d43155df51caf8b49"
+    },
+    "demo-runtime.css": {
+      "before": "bc9bfae3cc94b5e0a7701530c588f1b6020516c8f4fa30dff13443edca7f5bdb",
+      "after": "c214dc15c1ce9968d31f62807c8b430efae04f897e9afb165362e31f9ff8720c"
+    },
+    "demo-runtime.html": {
+      "before": "565d2931309ae9912d563a4c0e69bebe7f75750fec80d2412c7108075d4cef19",
+      "after": "7d413e08cf63839ab63358fbad1bdfe27b0d6f9fb1d99944178930734155381d"
+    }
+  },
+  "sourceSha256": {
+    ".github/workflows/forest-browser-acceptance.yml": "c9075b5af0804df816f74d3119b7733f0e9c5fa070ca3165f91539f24c5c7ad0",
+    "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+    "scripts/verify-forest-playtest.mjs": "415e4c01c58b26f17cf644b2005f5debd0b9f0b1f0b19a5972ceb968a53845e9",
+    "scripts/forest-playtest-candidate.mjs": "9dc8cff5208db8418c513812e925f4ee1321968b021054e4bd8e3a692c83cb1c",
+    "scripts/forest-browser-ci.mjs": "bae923b0ee97ecefba2645e7d71bef97fcf0ee3210e471a952ae77282ca6ca88",
+    "scripts/forest-windows-launcher.mjs": "34b689464fd337daf4efba1b859656f0213e4b0744b1a724d600f3602689246d",
+    "scripts/verify-forest-dialogue-keyboard.mjs": "6120ca69e7a9efc52089807b40780ad972a66178e427e0d43fe4591592c0da4f"
+  },
+  "local": {
+    "baseline": {
+      "schemaVersion": 1,
+      "head": "d15b7e6013463bd9724bff1399323d67e372f862",
+      "workingTreeDirty": true,
+      "platform": "linux",
+      "externalModelCalls": 0,
+      "controlledCalls": 3,
+      "checks": [
+        {
+          "name": "scene-entry-focuses-person-heading",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "escape-from-textarea-closes-card",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "escape-from-textarea-closes-card-returns-to-entry",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "generation-error-retains-focus-at-status",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "preview-retains-focus-at-status",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "dialogue-textbox-has-accessible-name",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "status-has-polite-live-semantics",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "confirm-describes-unsaved-preview",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "escape-from-preview-button-closes-card",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "escape-from-preview-button-closes-card-returns-to-entry",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "save-retains-focus-at-status",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "close-button-returns-to-entry-after-state-refresh",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        }
+      ],
+      "verdict": "FAIL",
+      "physicalScreenReaderTested": false,
+      "sourceSha256": {
+        "scripts/verify-forest-dialogue-keyboard.mjs": "6120ca69e7a9efc52089807b40780ad972a66178e427e0d43fe4591592c0da4f",
+        "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+        "demo-runtime-prototype.mjs": "174833c4cb763d36bb94ceaa951f791837d35f8a8a72154a7e290a7bbf88b984",
+        "demo-runtime.html": "565d2931309ae9912d563a4c0e69bebe7f75750fec80d2412c7108075d4cef19",
+        "demo-playable-goals.mjs": "aee9ea3306dde4d57291394b020f86925c02ea8cccfeb94cb2207da8714a1737",
+        "demo-npc-dialogue.mjs": "e0e92fce9c98ab47d50e538d0d7cd85e12293b7d8dd2d596ccfca17be9276473"
+      },
+      "browser": "HeadlessChrome/151.0.7922.34",
+      "final": {
+        "savedSpeechCount": 1,
+        "tick": 0,
+        "toolCondition": 60,
+        "discardedPreviewPreservedSave": true
+      },
+      "remainingLocks": []
+    },
+    "keyboard": {
+      "schemaVersion": 1,
+      "head": "d15b7e6013463bd9724bff1399323d67e372f862",
+      "workingTreeDirty": true,
+      "platform": "linux",
+      "externalModelCalls": 0,
+      "controlledCalls": 3,
+      "checks": [
+        {
+          "name": "scene-entry-focuses-person-heading",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "escape-from-textarea-closes-card",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "escape-from-textarea-closes-card-returns-to-entry",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "generation-error-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "preview-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "dialogue-textbox-has-accessible-name",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "status-has-polite-live-semantics",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "confirm-describes-unsaved-preview",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "escape-from-preview-button-closes-card",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "escape-from-preview-button-closes-card-returns-to-entry",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "save-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "close-button-returns-to-entry-after-state-refresh",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        }
+      ],
+      "verdict": "PASS",
+      "physicalScreenReaderTested": false,
+      "sourceSha256": {
+        "scripts/verify-forest-dialogue-keyboard.mjs": "6120ca69e7a9efc52089807b40780ad972a66178e427e0d43fe4591592c0da4f",
+        "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+        "demo-runtime-prototype.mjs": "09c7c5b633f893f15b4f093c6c2ab5bcf38e97cfe62afd9d43155df51caf8b49",
+        "demo-runtime.html": "7d413e08cf63839ab63358fbad1bdfe27b0d6f9fb1d99944178930734155381d",
+        "demo-playable-goals.mjs": "69f97b0c02cd1608afe830632ce003827c8dd39505286828d4823c0377c4ed5d",
+        "demo-npc-dialogue.mjs": "e0e92fce9c98ab47d50e538d0d7cd85e12293b7d8dd2d596ccfca17be9276473"
+      },
+      "browser": "HeadlessChrome/151.0.7922.34",
+      "final": {
+        "savedSpeechCount": 1,
+        "tick": 0,
+        "toolCondition": 60,
+        "discardedPreviewPreservedSave": true
+      },
+      "remainingLocks": []
+    },
+    "recovery": {
+      "schemaVersion": 1,
+      "candidate": "forest-playtest-candidate-4",
+      "head": "d15b7e6013463bd9724bff1399323d67e372f862",
+      "workingTreeDirty": true,
+      "externalModelCalls": 0,
+      "controlledCalls": 3,
+      "steps": [
+        "reject-action-on-durability-question",
+        "discard-unconfirmed-preview-after-world-change",
+        "double-click-saves-speech-once-without-action",
+        "same-bytes-retry-after-service-restart-and-browser-reload",
+        "discard-action-suggestion-after-world-change"
+      ],
+      "verdict": "PASS",
+      "sourceSha256": {
+        "scripts/verify-forest-dialogue-recovery-browser.mjs": "fee69f81910dfca910627c90c506f67fab681362eb5f7ff1f2360e60eaa7c716",
+        "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+        "docs/runtime/forest-playtest-candidate.json": "9132a05c5a7d4ce7eb3d8c6bead93c249bd644619a7722753309336826913221"
+      },
+      "browser": "HeadlessChrome/151.0.7922.34",
+      "final": {
+        "revision": 3,
+        "durabilityBefore": 60,
+        "durabilityAfter": 60,
+        "savedSpeechCount": 1,
+        "browserWriteRequests": 2,
+        "distinctBrowserWrites": 1,
+        "retrySameBytes": true,
+        "composeStatuses": [
+          502,
+          200,
+          200
+        ]
+      },
+      "remainingLocks": []
+    },
+    "browser": {
+      "verdict": "PASS",
+      "steps": [
+        {
+          "name": "new-isolated-world",
+          "wallMs": 1385
+        },
+        {
+          "name": "village-and-real-loan-through-buttons",
+          "wallMs": 4890
+        },
+        {
+          "name": "desktop-and-narrow-screen-forest-controls",
+          "wallMs": 5955
+        },
+        {
+          "name": "explicit-encounter-and-keyboard-exit",
+          "wallMs": 2456
+        },
+        {
+          "name": "return-worn-tool-and-complete",
+          "wallMs": 12755
+        },
+        {
+          "name": "reopen-same-world-with-no-extra-commit",
+          "wallMs": 8857
+        }
+      ],
+      "final": {
+        "tick": 78,
+        "rank": 4,
+        "toolCondition": 70
+      },
+      "remainingLocks": [],
+      "cleanupErrors": [],
+      "externalModelCalls": 0
+    },
+    "unitTests": {
+      "command": "node --test tests/simulation/hunter-task-entry.test.mjs tests/simulation/npc-dialogue-retry.test.mjs tests/simulation/npc-dialogue-availability.test.mjs tests/simulation/forest-dialogue-guards.test.mjs",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "jobs": [
+    {
+      "jobId": 130707714657,
+      "platform": "win32",
+      "head": "c7f0b990b997630e4d545c4ece487389f7854302",
+      "verdict": "PASS",
+      "browserVersion": "Chrome/156.0.8078.80",
+      "steps": [
+        {
+          "name": "new-isolated-world",
+          "wallMs": 8137
+        },
+        {
+          "name": "village-and-real-loan-through-buttons",
+          "wallMs": 3561
+        },
+        {
+          "name": "desktop-and-narrow-screen-forest-controls",
+          "wallMs": 4982
+        },
+        {
+          "name": "explicit-encounter-and-keyboard-exit",
+          "wallMs": 1584
+        },
+        {
+          "name": "return-worn-tool-and-complete",
+          "wallMs": 12279
+        },
+        {
+          "name": "reopen-same-world-with-no-extra-commit",
+          "wallMs": 5760
+        },
+        {
+          "name": "windows-new-slots-preserve-default-and-reopen",
+          "wallMs": 5517
+        },
+        {
+          "name": "controlled-dialogue-keyboard",
+          "wallMs": 4854
+        }
+      ],
+      "keyboard": {
+        "executed": true,
+        "schemaVersion": 1,
+        "head": "c7f0b990b997630e4d545c4ece487389f7854302",
+        "workingTreeDirty": false,
+        "platform": "win32",
+        "externalModelCalls": 0,
+        "controlledCalls": 3,
+        "checks": [
+          {
+            "name": "scene-entry-focuses-person-heading",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "escape-from-textarea-closes-card",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "escape-from-textarea-closes-card-returns-to-entry",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "generation-error-retains-focus-at-status",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "preview-retains-focus-at-status",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "dialogue-textbox-has-accessible-name",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "status-has-polite-live-semantics",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "confirm-describes-unsaved-preview",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "escape-from-preview-button-closes-card",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "escape-from-preview-button-closes-card-returns-to-entry",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "save-retains-focus-at-status",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "close-button-returns-to-entry-after-state-refresh",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          }
+        ],
+        "verdict": "PASS",
+        "physicalScreenReaderTested": false,
+        "sourceSha256": {
+          "scripts/verify-forest-dialogue-keyboard.mjs": "6120ca69e7a9efc52089807b40780ad972a66178e427e0d43fe4591592c0da4f",
+          "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+          "demo-runtime-prototype.mjs": "09c7c5b633f893f15b4f093c6c2ab5bcf38e97cfe62afd9d43155df51caf8b49",
+          "demo-runtime.html": "7d413e08cf63839ab63358fbad1bdfe27b0d6f9fb1d99944178930734155381d",
+          "demo-playable-goals.mjs": "69f97b0c02cd1608afe830632ce003827c8dd39505286828d4823c0377c4ed5d",
+          "demo-npc-dialogue.mjs": "e0e92fce9c98ab47d50e538d0d7cd85e12293b7d8dd2d596ccfca17be9276473"
+        },
+        "browser": "Chrome/156.0.8078.80",
+        "final": {
+          "savedSpeechCount": 1,
+          "tick": 0,
+          "toolCondition": 60,
+          "discardedPreviewPreservedSave": true
+        },
+        "remainingLocks": []
+      },
+      "windowsNewJourney": {
+        "executed": true,
+        "newSlots": 2,
+        "defaultWorldPreserved": true,
+        "inheritedSaveDirectoryOverridden": true,
+        "firstSlotAdvancedThroughBrowser": true,
+        "reopenedFirstSlot": true,
+        "projectionMatch": true,
+        "saveBytesMatch": true,
+        "initialTick": 0,
+        "advancedTick": 6,
+        "secondSlotTick": 0,
+        "cleanQuitCount": 3,
+        "archiveSha256": {
+          "defaultWorld": "0f30e766e7fb56cf7f06b10723c439ec17732817fc5791ca8842e68c3b3c7f53",
+          "firstSlot": "22cad2af7f60477ee0207201cd89e1713e5da89f49b7585c5c54a930fad5d5b4",
+          "secondSlot": "234f1919787976926bc5f1a6e2f9e124ed6a19ae07cb54811e55fc1768820791"
+        }
+      },
+      "final": {
+        "tick": 78,
+        "rank": 4,
+        "toolCondition": 70
+      },
+      "remainingLocks": [],
+      "cleanupErrors": [],
+      "externalModelCalls": 0
+    },
+    {
+      "jobId": 130707715171,
+      "platform": "linux",
+      "head": "c7f0b990b997630e4d545c4ece487389f7854302",
+      "verdict": "PASS",
+      "browserVersion": "Chrome/156.0.8078.79",
+      "steps": [
+        {
+          "name": "new-isolated-world",
+          "wallMs": 1852
+        },
+        {
+          "name": "village-and-real-loan-through-buttons",
+          "wallMs": 2912
+        },
+        {
+          "name": "desktop-and-narrow-screen-forest-controls",
+          "wallMs": 4928
+        },
+        {
+          "name": "explicit-encounter-and-keyboard-exit",
+          "wallMs": 1579
+        },
+        {
+          "name": "return-worn-tool-and-complete",
+          "wallMs": 9521
+        },
+        {
+          "name": "reopen-same-world-with-no-extra-commit",
+          "wallMs": 4819
+        },
+        {
+          "name": "controlled-dialogue-keyboard",
+          "wallMs": 4767
+        }
+      ],
+      "keyboard": {
+        "executed": true,
+        "schemaVersion": 1,
+        "head": "c7f0b990b997630e4d545c4ece487389f7854302",
+        "workingTreeDirty": false,
+        "platform": "linux",
+        "externalModelCalls": 0,
+        "controlledCalls": 3,
+        "checks": [
+          {
+            "name": "scene-entry-focuses-person-heading",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "escape-from-textarea-closes-card",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "escape-from-textarea-closes-card-returns-to-entry",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "generation-error-retains-focus-at-status",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "preview-retains-focus-at-status",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "dialogue-textbox-has-accessible-name",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "status-has-polite-live-semantics",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "confirm-describes-unsaved-preview",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "escape-from-preview-button-closes-card",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "escape-from-preview-button-closes-card-returns-to-entry",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "save-retains-focus-at-status",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          },
+          {
+            "name": "close-button-returns-to-entry-after-state-refresh",
+            "actual": true,
+            "expected": true,
+            "pass": true
+          }
+        ],
+        "verdict": "PASS",
+        "physicalScreenReaderTested": false,
+        "sourceSha256": {
+          "scripts/verify-forest-dialogue-keyboard.mjs": "6120ca69e7a9efc52089807b40780ad972a66178e427e0d43fe4591592c0da4f",
+          "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+          "demo-runtime-prototype.mjs": "09c7c5b633f893f15b4f093c6c2ab5bcf38e97cfe62afd9d43155df51caf8b49",
+          "demo-runtime.html": "7d413e08cf63839ab63358fbad1bdfe27b0d6f9fb1d99944178930734155381d",
+          "demo-playable-goals.mjs": "69f97b0c02cd1608afe830632ce003827c8dd39505286828d4823c0377c4ed5d",
+          "demo-npc-dialogue.mjs": "e0e92fce9c98ab47d50e538d0d7cd85e12293b7d8dd2d596ccfca17be9276473"
+        },
+        "browser": "Chrome/156.0.8078.79",
+        "final": {
+          "savedSpeechCount": 1,
+          "tick": 0,
+          "toolCondition": 60,
+          "discardedPreviewPreservedSave": true
+        },
+        "remainingLocks": []
+      },
+      "windowsNewJourney": {
+        "executed": false
+      },
+      "final": {
+        "tick": 78,
+        "rank": 4,
+        "toolCondition": 70
+      },
+      "remainingLocks": [],
+      "cleanupErrors": [],
+      "externalModelCalls": 0
+    }
+  ],
+  "scope": "Keyboard input and Chromium accessibility tree. The same 12 checks run on each platform; not 24 distinct checks. Local reports retain their pre-commit dirty-tree metadata; CI used the clean tested commit.",
+  "physicalScreenReaderTested": false,
+  "physicalMobileTested": false,
+  "realModelLanguageTested": false,
+  "externalModelCalls": 0
+}

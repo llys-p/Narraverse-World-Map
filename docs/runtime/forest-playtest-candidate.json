@@ -13,7 +13,8 @@
   "externalModelCalls": 45,
   "gates": {
     "serviceRecovery": "verified",
-    "browser": "current-source-ci-pending",
+    "browser": "verified-linux-and-windows-ci",
+    "dialogueKeyboard": "verified-linux-and-windows-ci",
     "windowsLauncher": "verified-windows-actions-cmd",
     "windowsNewJourney": "verified-windows-actions-cmd-isolation-and-reopen",
     "physicalMobile": "not-run",

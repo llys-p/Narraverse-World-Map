@@ -7,6 +7,8 @@
 - 2026-11-12 续验：`f893ddd` 的 [CI 43067199614](https://github.com/llys-p/Narraverse-World-Map/actions/runs/43067199614) 两端通过。Windows 连续运行两次 `Start-Forest-Journey-New.cmd` 得到独立新档；第一局通过浏览器等待 1 小时后，用普通入口显式指定该档重开，五投影与存档文件校验一致，默认旧档和第二局不变。共检查 4 个合成档，5 次正常退出，无锁遗留、外部模型 0 调用。仅增加验收脚本，192 份游戏文件不变；本地 3 项预检及 Linux 六阶段试玩通过。见[新档验收证据](docs/evidence/forest-repair-language-20261110/windows-new-slots.json)。
 - 接手入口仍为 [森林试玩与交接](docs/runtime/FOREST-PLAYTEST.md)，[复验证据](docs/evidence/forest-repair-language-20261110/verification.json)。资源管理器双击、真手机、读屏和 GitHub Projects 同步待办。真实模型复测继续等待本项目模型配置。
 
+- 键盘交谈修复 `c7f0b99`：从场景/任务入口打开人物卡聚焦标题，输入框/按钮上的 Esc 可关闭并返回有效入口，生成/保存禁用原按钮前把焦点保留在状态提示；确认按钮关联未保存预览。仅调整 4 份界面文件，候选仍 192 份，世界和存档规则不变。[CI 43073634951](https://github.com/llys-p/Narraverse-World-Map/actions/runs/43073634951) 的 Linux/Windows 各 12 项键盘检查通过，原六阶段玩法和 Windows 新档隔离同时通过。本地 9 项相关回归与 5 项对话故障恢复通过。修复前 10 项失败原样保留；受控回复不计真实模型或真人读屏验收。见[键盘证据](docs/evidence/forest-repair-language-20261110/keyboard-verification.json)。本轮外部模型 0 调用。
+
 # 前次验收：森林真实归还与自然对话复验（2026-11-05）
 
 独立草稿 PR47 续接 PR46，远端分支 `codex/forest-dialogue-continuity-20261103`。本次被测游戏源码 `9daf36a609530bd0d314d6788de0afc2c7ab1359`，玩家和 AI 统一交接见 [FOREST-PLAYTEST.md](docs/runtime/FOREST-PLAYTEST.md)，任务见 [FOREST-DIALOGUE-CONTINUITY-TASK.md](tasks/FOREST-DIALOGUE-CONTINUITY-TASK.md)。
