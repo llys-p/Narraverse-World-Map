@@ -16,6 +16,12 @@
 
 设置 `DEMO_BROWSER_EXECUTABLE` 后，可运行 `node scripts/verify-forest-dialogue-keyboard.mjs artifacts/forest-dialogue/my-keyboard-test`，使用新的合成档复跑。GitHub Actions 已自动执行同一脚本，回复只来自本机受控服务。
 
+### 窄屏触控
+
+390 像素宽的 Chromium 模拟触屏上，可以点开猎人、输入、重试生成、关闭未保存预览，再重新生成并确认保存。进入地点、猎人入口、生成、确认和关闭按钮均至少为 44 × 44 CSS 像素，页面无横向溢出。验收用浏览器注入文字，真机软键盘、不同手机浏览器和真实模型回复仍待验。
+
+使用 `node scripts/verify-forest-dialogue-keyboard.mjs artifacts/forest-dialogue/my-touch-test --touch` 可重跑。请先设置 `DEMO_BROWSER_EXECUTABLE`，并选一个新的输出目录。此检查也随浏览器 CI 运行。[本地修复前后记录](../evidence/forest-repair-language-20261110/touch-verification.json)
+
 ### Windows 启动与重开
 
 Windows Actions 通过 `cmd.exe` 执行 `Start-Forest-Journey.cmd`。验收使用带空格的合成存档路径，确认首次启动后浏览器可玩、输入 `quit` 后正常退出，再次启动恢复同一存档，重开前后的存档文件校验一致。两次退出均清理锁，外部模型调用为 0。[运行记录](https://github.com/llys-p/Narraverse-World-Map/actions/runs/42806161990) · [结构化证据](../evidence/forest-repair-language-20261110/windows-launcher.json)

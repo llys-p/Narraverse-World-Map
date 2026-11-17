@@ -1,4 +1,4 @@
-// Real Chromium keyboard input with a loopback-only provider and a fresh fixture8 save.
+// Chromium keyboard or emulated touch input with a loopback provider and a fresh fixture8 save.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -12,16 +12,17 @@ import {loadServiceCommit} from '../runtime/service/service-commit.mjs';
 import {openDemoBrowser} from './demo-browser-client.mjs';
 import {verifyForestCandidate} from './forest-playtest-candidate.mjs';
 
-const [argument,...extra]=process.argv.slice(2),out=path.resolve(argument??'');
-assert.ok(argument&&!extra.length&&out.startsWith(path.resolve('artifacts/forest-dialogue')+path.sep),'Use a fresh artifacts/forest-dialogue output directory');
+const [argument,option,...extra]=process.argv.slice(2),out=path.resolve(argument??'');
+const touch=option==='--touch';
+assert.ok(argument&&(option===undefined||touch)&&!extra.length&&out.startsWith(path.resolve('artifacts/forest-dialogue')+path.sep),'Use a fresh artifacts/forest-dialogue output directory and optionally --touch');
 await verifyForestCandidate();delete process.env.NPC_LLM_API_KEY;
 await fs.mkdir(path.dirname(out),{recursive:true});await fs.mkdir(out);
 const directory=path.join(out,'world'),question='工具现在还有多少耐久？',reply='眼下工具耐久是六十。';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const report={schemaVersion:1,head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
  workingTreeDirty:!!execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim(),
- platform:process.platform,externalModelCalls:0,controlledCalls:0,checks:[],verdict:'FAIL',physicalScreenReaderTested:false};
-const sourceFiles=['scripts/verify-forest-dialogue-keyboard.mjs','scripts/demo-browser-client.mjs','demo-runtime-prototype.mjs','demo-runtime.html','demo-playable-goals.mjs','demo-npc-dialogue.mjs'];
+ platform:process.platform,input:touch?'emulated-touch':'keyboard',externalModelCalls:0,controlledCalls:0,checks:[],verdict:'FAIL',physicalScreenReaderTested:false,physicalMobileTested:false};
+const sourceFiles=['scripts/verify-forest-dialogue-keyboard.mjs','scripts/demo-browser-client.mjs','demo-runtime-prototype.mjs','demo-runtime.html','demo-runtime.css','demo-playable-goals.mjs','demo-npc-dialogue.mjs'];
 report.sourceSha256=Object.fromEntries(await Promise.all(sourceFiles.map(async f=>[f,sha(await fs.readFile(f))])));
 const writes=[],errors=[];
 let service,browser;
@@ -45,10 +46,20 @@ const check=(name,actual,expected=true)=>report.checks.push({name,actual,expecte
 async function wait(check,label){for(let n=0;n<400;n++){assert.equal(report.providerError,undefined);assert.deepEqual(errors,[]);if(await check())return;await delay(50);}throw Error(label+' timed out');}
 async function key(key,modifiers=0){const code={Tab:9,Enter:13,Escape:27}[key];for(const type of ['keyDown','keyUp'])await browser.call('Input.dispatchKeyEvent',{type,key,code:key,modifiers,windowsVirtualKeyCode:code,nativeVirtualKeyCode:code,...(key==='Enter'&&type==='keyDown'?{text:'\r',unmodifiedText:'\r'}:{})});}
 async function tabTo(selector){await wait(()=>enabled(selector),selector+' available');for(let n=0;n<180;n++){if(await focused(selector))return;await key('Tab');}throw Error('Tab cannot reach '+selector);}
-async function activate(selector){await tabTo(selector);await key('Enter');}
+async function tap(selector){
+ await wait(()=>enabled(selector),selector+' available');
+ const {root}=await browser.call('DOM.getDocument');
+ const {nodeId}=await browser.call('DOM.querySelector',{nodeId:root.nodeId,selector});
+ await browser.call('DOM.scrollIntoViewIfNeeded',{nodeId});
+ const center=await read(`(()=>{const n=document.querySelector(${JSON.stringify(selector)});const r=n.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;return n.contains(document.elementFromPoint(x,y))?{x,y}:null;})()`);
+ assert.ok(center,`${selector} is obscured or outside the viewport`);
+ await browser.call('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[center]});
+ await browser.call('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+}
+async function activate(selector){if(touch)await tap(selector);else{await tabTo(selector);await key('Enter');}}
 const hunter='#scenePeople button[data-actor-id="actor-2"]';
 async function openHunter(){await activate(hunter);await wait(()=>read('!document.querySelector("#personCard").hidden'),'hunter open');}
-async function enterQuestion(){await tabTo('#npcDialogueText');await browser.call('Input.insertText',{text:question});assert.equal(await read('document.querySelector("#npcDialogueText").value'),question);}
+async function enterQuestion(){if(touch)await tap('#npcDialogueText');else await tabTo('#npcDialogueText');await browser.call('Input.insertText',{text:question});assert.equal(await read('document.querySelector("#npcDialogueText").value'),question);}
 async function escapeAndRecover(name){
  await key('Escape');const closed=await read('document.querySelector("#personCard").hidden');check(name,closed);
  if(!closed)await activate('#closePerson'); // Continue collecting baseline failures using only keyboard input.
@@ -64,17 +75,30 @@ try{
   if(e.method==='Network.requestWillBeSent'&&e.params.request.method==='POST')writes.push({route:new URL(e.params.request.url).pathname,body:e.params.request.postData});
  }});
  report.browser=(await browser.call('Browser.getVersion')).product;
+ if(touch){
+  await browser.call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:2,mobile:true});
+  await browser.call('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+ }
  await wait(()=>read('document.body?.dataset.worldConnected==="true"'),'world connection');
  const initial=await state(),initialFiles=await files();
  await activate('#tabSceneBtn');await openHunter();
  check('scene-entry-focuses-person-heading',await focused('#personName'));
- await enterQuestion();await escapeAndRecover('escape-from-textarea-closes-card');
+ await enterQuestion();
+ if(touch){await tap('#closePerson');check('touch-close-with-text',await read('document.querySelector("#personCard").hidden'));}
+ else await escapeAndRecover('escape-from-textarea-closes-card');
  assert.deepEqual(await files(),initialFiles);
  await openHunter();await enterQuestion();await activate('#npcDialogueGenerate');
  await wait(()=>read('/回复格式或记忆引用不正确/.test(document.querySelector("#npcDialogueStatus").textContent)'),'controlled rejection');
  check('generation-error-retains-focus-at-status',await focused('#npcDialogueStatus'));
  assert.equal(await enabled('#npcDialogueCommit'),false);assert.deepEqual(await files(),initialFiles);
  await activate('#npcDialogueGenerate');await wait(()=>enabled('#npcDialogueCommit'),'valid preview');
+ if(touch){
+  const targets=['#tabSceneBtn',hunter,'#npcDialogueGenerate','#npcDialogueCommit','#closePerson'];
+  report.layout=await read(`(()=>({viewport:document.documentElement.clientWidth,pageWidth:document.documentElement.scrollWidth,touchPoints:navigator.maxTouchPoints,targets:${JSON.stringify(targets)}.map(selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {selector,width:r.width,height:r.height};})}))()`);
+  check('touch-enabled-at-390px',report.layout.viewport===390&&report.layout.touchPoints===1);
+  check('no-horizontal-overflow',report.layout.pageWidth<=report.layout.viewport);
+  for(const target of report.layout.targets)check(`44px target ${target.selector}`,target.width>=44&&target.height>=44);
+ }
  check('preview-retains-focus-at-status',await focused('#npcDialogueStatus'));
  const tree=await browser.call('Accessibility.getFullAXTree');
  const textbox=tree.nodes.find(n=>!n.ignored&&n.role?.value==='textbox'&&n.name?.value==='与猎人自然交谈');
@@ -82,7 +106,8 @@ try{
  const status=tree.nodes.find(n=>!n.ignored&&n.role?.value==='status'&&n.properties?.some(p=>p.name==='live'&&p.value.value==='polite'));
  check('dialogue-textbox-has-accessible-name',!!textbox);check('status-has-polite-live-semantics',!!status);
  check('confirm-describes-unsaved-preview',!!commit?.description?.value?.includes(reply));
- await tabTo('#npcDialogueCommit');await escapeAndRecover('escape-from-preview-button-closes-card');
+ if(touch){await tap('#closePerson');check('touch-close-with-preview',await read('document.querySelector("#personCard").hidden'));}
+ else{await tabTo('#npcDialogueCommit');await escapeAndRecover('escape-from-preview-button-closes-card');}
  assert.deepEqual(await files(),initialFiles);assert.equal(writes.filter(w=>w.route==='/api/runtime/commands').length,0);
  await openHunter();await enterQuestion();await activate('#npcDialogueGenerate');await wait(()=>enabled('#npcDialogueCommit'),'new preview');
  await activate('#npcDialogueCommit');await wait(async()=>(await state()).snapshot.revision===initial.snapshot.revision+1,'speech saved');

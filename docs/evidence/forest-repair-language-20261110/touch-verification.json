@@ -1,0 +1,438 @@
+{
+  "scope": "Local Chromium emulated touch at 390 CSS px. Text supplied using CDP; physical keyboard and phone not evaluated.",
+  "runs": {
+    "touch-before": {
+      "schemaVersion": 1,
+      "head": "b6d04b7fffc6b44c4640b1f387ca622954980d40",
+      "workingTreeDirty": true,
+      "platform": "linux",
+      "input": "emulated-touch",
+      "externalModelCalls": 0,
+      "controlledCalls": 3,
+      "checks": [
+        {
+          "name": "scene-entry-focuses-person-heading",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "touch-close-with-text",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "generation-error-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "touch-enabled-at-390px",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "no-horizontal-overflow",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "44px target #tabSceneBtn",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "44px target #scenePeople button[data-actor-id=\"actor-2\"]",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "44px target #npcDialogueGenerate",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "44px target #npcDialogueCommit",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "44px target #closePerson",
+          "actual": false,
+          "expected": true,
+          "pass": false
+        },
+        {
+          "name": "preview-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "dialogue-textbox-has-accessible-name",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "status-has-polite-live-semantics",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "confirm-describes-unsaved-preview",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "touch-close-with-preview",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "save-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "close-button-returns-to-entry-after-state-refresh",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        }
+      ],
+      "verdict": "FAIL",
+      "physicalScreenReaderTested": false,
+      "physicalMobileTested": false,
+      "sourceSha256": {
+        "scripts/verify-forest-dialogue-keyboard.mjs": "286abe92c8c0e16da3ecc4d4f5764d4a7dc5a454faa3235bd84a8fac0d63641a",
+        "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+        "demo-runtime-prototype.mjs": "09c7c5b633f893f15b4f093c6c2ab5bcf38e97cfe62afd9d43155df51caf8b49",
+        "demo-runtime.html": "7d413e08cf63839ab63358fbad1bdfe27b0d6f9fb1d99944178930734155381d",
+        "demo-runtime.css": "c214dc15c1ce9968d31f62807c8b430efae04f897e9afb165362e31f9ff8720c",
+        "demo-playable-goals.mjs": "69f97b0c02cd1608afe830632ce003827c8dd39505286828d4823c0377c4ed5d",
+        "demo-npc-dialogue.mjs": "e0e92fce9c98ab47d50e538d0d7cd85e12293b7d8dd2d596ccfca17be9276473"
+      },
+      "browser": "HeadlessChrome/151.0.7922.34",
+      "layout": {
+        "viewport": 390,
+        "pageWidth": 390,
+        "touchPoints": 1,
+        "targets": [
+          {
+            "selector": "#tabSceneBtn",
+            "width": 101.625,
+            "height": 33
+          },
+          {
+            "selector": "#scenePeople button[data-actor-id=\"actor-2\"]",
+            "width": 94.015625,
+            "height": 31
+          },
+          {
+            "selector": "#npcDialogueGenerate",
+            "width": 104,
+            "height": 37
+          },
+          {
+            "selector": "#npcDialogueCommit",
+            "width": 117,
+            "height": 37
+          },
+          {
+            "selector": "#closePerson",
+            "width": 52,
+            "height": 37
+          }
+        ]
+      },
+      "final": {
+        "savedSpeechCount": 1,
+        "tick": 0,
+        "toolCondition": 60,
+        "discardedPreviewPreservedSave": true
+      },
+      "remainingLocks": []
+    },
+    "touch-after": {
+      "schemaVersion": 1,
+      "head": "b6d04b7fffc6b44c4640b1f387ca622954980d40",
+      "workingTreeDirty": true,
+      "platform": "linux",
+      "input": "emulated-touch",
+      "externalModelCalls": 0,
+      "controlledCalls": 3,
+      "checks": [
+        {
+          "name": "scene-entry-focuses-person-heading",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "touch-close-with-text",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "generation-error-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "touch-enabled-at-390px",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "no-horizontal-overflow",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "44px target #tabSceneBtn",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "44px target #scenePeople button[data-actor-id=\"actor-2\"]",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "44px target #npcDialogueGenerate",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "44px target #npcDialogueCommit",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "44px target #closePerson",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "preview-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "dialogue-textbox-has-accessible-name",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "status-has-polite-live-semantics",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "confirm-describes-unsaved-preview",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "touch-close-with-preview",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "save-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "close-button-returns-to-entry-after-state-refresh",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        }
+      ],
+      "verdict": "PASS",
+      "physicalScreenReaderTested": false,
+      "physicalMobileTested": false,
+      "sourceSha256": {
+        "scripts/verify-forest-dialogue-keyboard.mjs": "286abe92c8c0e16da3ecc4d4f5764d4a7dc5a454faa3235bd84a8fac0d63641a",
+        "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+        "demo-runtime-prototype.mjs": "09c7c5b633f893f15b4f093c6c2ab5bcf38e97cfe62afd9d43155df51caf8b49",
+        "demo-runtime.html": "7d413e08cf63839ab63358fbad1bdfe27b0d6f9fb1d99944178930734155381d",
+        "demo-runtime.css": "80af80a5acada47aa46f5657eb85264e7d311fb86f547d7fe2c5394fbc3fd505",
+        "demo-playable-goals.mjs": "69f97b0c02cd1608afe830632ce003827c8dd39505286828d4823c0377c4ed5d",
+        "demo-npc-dialogue.mjs": "e0e92fce9c98ab47d50e538d0d7cd85e12293b7d8dd2d596ccfca17be9276473"
+      },
+      "browser": "HeadlessChrome/151.0.7922.34",
+      "layout": {
+        "viewport": 390,
+        "pageWidth": 390,
+        "touchPoints": 1,
+        "targets": [
+          {
+            "selector": "#tabSceneBtn",
+            "width": 101.625,
+            "height": 44
+          },
+          {
+            "selector": "#scenePeople button[data-actor-id=\"actor-2\"]",
+            "width": 94.015625,
+            "height": 44
+          },
+          {
+            "selector": "#npcDialogueGenerate",
+            "width": 104,
+            "height": 44
+          },
+          {
+            "selector": "#npcDialogueCommit",
+            "width": 117,
+            "height": 44
+          },
+          {
+            "selector": "#closePerson",
+            "width": 52,
+            "height": 44
+          }
+        ]
+      },
+      "final": {
+        "savedSpeechCount": 1,
+        "tick": 0,
+        "toolCondition": 60,
+        "discardedPreviewPreservedSave": true
+      },
+      "remainingLocks": []
+    },
+    "keyboard-after": {
+      "schemaVersion": 1,
+      "head": "b6d04b7fffc6b44c4640b1f387ca622954980d40",
+      "workingTreeDirty": true,
+      "platform": "linux",
+      "input": "keyboard",
+      "externalModelCalls": 0,
+      "controlledCalls": 3,
+      "checks": [
+        {
+          "name": "scene-entry-focuses-person-heading",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "escape-from-textarea-closes-card",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "escape-from-textarea-closes-card-returns-to-entry",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "generation-error-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "preview-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "dialogue-textbox-has-accessible-name",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "status-has-polite-live-semantics",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "confirm-describes-unsaved-preview",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "escape-from-preview-button-closes-card",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "escape-from-preview-button-closes-card-returns-to-entry",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "save-retains-focus-at-status",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        },
+        {
+          "name": "close-button-returns-to-entry-after-state-refresh",
+          "actual": true,
+          "expected": true,
+          "pass": true
+        }
+      ],
+      "verdict": "PASS",
+      "physicalScreenReaderTested": false,
+      "physicalMobileTested": false,
+      "sourceSha256": {
+        "scripts/verify-forest-dialogue-keyboard.mjs": "286abe92c8c0e16da3ecc4d4f5764d4a7dc5a454faa3235bd84a8fac0d63641a",
+        "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+        "demo-runtime-prototype.mjs": "09c7c5b633f893f15b4f093c6c2ab5bcf38e97cfe62afd9d43155df51caf8b49",
+        "demo-runtime.html": "7d413e08cf63839ab63358fbad1bdfe27b0d6f9fb1d99944178930734155381d",
+        "demo-runtime.css": "80af80a5acada47aa46f5657eb85264e7d311fb86f547d7fe2c5394fbc3fd505",
+        "demo-playable-goals.mjs": "69f97b0c02cd1608afe830632ce003827c8dd39505286828d4823c0377c4ed5d",
+        "demo-npc-dialogue.mjs": "e0e92fce9c98ab47d50e538d0d7cd85e12293b7d8dd2d596ccfca17be9276473"
+      },
+      "browser": "HeadlessChrome/151.0.7922.34",
+      "final": {
+        "savedSpeechCount": 1,
+        "tick": 0,
+        "toolCondition": 60,
+        "discardedPreviewPreservedSave": true
+      },
+      "remainingLocks": []
+    }
+  }
+}
