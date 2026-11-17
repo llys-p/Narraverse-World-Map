@@ -1,0 +1,20 @@
+{
+  "command": [
+    "node",
+    "scripts/evaluate-forest-dialogue.mjs",
+    "--suite",
+    "repair-language-v1",
+    "--case",
+    "all",
+    "--mode",
+    "live",
+    "--allow-model-calls",
+    "--max-requests",
+    "6",
+    "--out",
+    "artifacts/forest-dialogue/language-20261110/live"
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "wallMs": 23520
+}

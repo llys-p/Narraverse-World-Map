@@ -81,7 +81,7 @@ export function createPlayableGoals({submit,approach,openPerson}){
    const actions=['available','abandoned','failed'].includes(q.status)?[['accept','接取任务']]:q.status==='ready'?[['claim','领取进展'],['abandon','放弃任务']]:q.status==='active'?[['abandon','放弃任务']]:[];
    for(const [action,text] of actions){const button=document.createElement('button');button.type='button';button.textContent=text;button.dataset.questAction=action;button.disabled=!free;button.addEventListener('click',()=>submit('PlayerQuest',{questId:q.id,action}));row.append(button);}
    if(hunterQuest(q)&&hunter?.alive&&typeof openPerson==='function'){
-    const b=document.createElement('button');b.type='button';b.textContent='查看猎人';b.addEventListener('click',()=>{
+    const b=document.createElement('button');b.type='button';b.dataset.personId='actor-2';b.textContent='查看猎人';b.addEventListener('click',()=>{
      const actor=latest?.map?.actors?.find(a=>a.actorId==='actor-2');
      const quest=latest?.map?.playable?.quests?.find(item=>item.id===q.id);
      if(actor?.alive&&quest&&hunterQuest(quest))openPerson('actor-2');

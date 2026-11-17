@@ -1,0 +1,1 @@
+{"verdict":"PASS","mode":"live","steps":["preview-read-only","speech-only","separately-confirmed-repair","same-history-after-reopen"],"externalModelCalls":1}

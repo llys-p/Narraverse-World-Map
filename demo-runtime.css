@@ -20,6 +20,7 @@ body#demo-runtime-root{min-width:0}
 #demo-runtime-root button{cursor:pointer}
 #demo-runtime-root button:disabled{opacity:.45;cursor:not-allowed}
 #demo-runtime-root button:focus-visible,#demo-runtime-root input:focus-visible,#demo-runtime-root textarea:focus-visible,#demo-runtime-root select:focus-visible{outline:2px solid #ffd26a;outline-offset:3px}
+#personName:focus-visible,#npcDialogueStatus:focus-visible{outline:2px solid #ffd26a;outline-offset:3px}
 #demo-runtime-root .stage-wrap{height:520px;background:#101711}
 #demo-runtime-root .fullscreen-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #demo-runtime-root #worldMapCanvas{pointer-events:auto;cursor:crosshair}
@@ -58,6 +59,12 @@ body#demo-runtime-root{min-width:0}
 #demo-runtime-root .social-text-form{margin:14px 0;padding:12px 0;border-top:1px solid #627660;border-bottom:1px solid #627660}
 #demo-runtime-root .social-text-form label{display:block;margin-bottom:8px;font-weight:600}
 #demo-runtime-root .social-text-form textarea{display:block;resize:vertical;width:100%;min-height:80px;padding:10px;background:var(--bg-main);color:var(--text-primary);border:1px solid var(--border);border-radius:5px;font:inherit;line-height:1.6}
+@media (max-width: 600px) {
+  #demo-runtime-root :is(#tabSceneBtn, #scenePeople button, #npcDialogueForm button, #closePerson) {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
 #demo-runtime-root #socialTextStatus{line-height:1.6;color:var(--accent-gold)}
 #demo-runtime-root #socialTextChoices button[aria-pressed="true"]{border-color:var(--accent-gold);color:#ffd26a}
 #demo-runtime-root #socialTextExecute:not(:disabled){border-color:var(--accent-green)}

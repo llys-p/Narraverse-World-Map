@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "candidate": "forest-playtest-candidate-4",
+  "testedCommit": "9daf36a609530bd0d314d6788de0afc2c7ab1359",
+  "ciRun": "41963305835",
+  "baselineSha256": "6672a41bb8def295044d1ff5e011fbcdf346b0d0ae7047a2dc9b408ed526bd28",
+  "httpCases": [
+    "borrow-return",
+    "witness-denial",
+    "overdue-denial"
+  ],
+  "httpCounts": {
+    "externalCalls": 12,
+    "replies": 12,
+    "automaticPassed": 12
+  },
+  "httpReportedTokens": {
+    "inputTokens": 50381,
+    "outputTokens": 892
+  },
+  "liveBrowserVerdict": "PASS",
+  "liveBrowserCalls": 1,
+  "humanReview": "pending",
+  "regressionSourceSha256": {
+    "tests/simulation/npc-simple-loan-facts.test.mjs": "dfd82daeab5e187e40f3607e52233438494855aa07b05d5521348cffbbc60ae0",
+    "tests/simulation/forest-dialogue-guards.test.mjs": "452b2defdff670cff0bc4eafdbefcc0796d15930b2a0117413561fd04d692994",
+    "tests/simulation/npc-citation-canonicalization.test.mjs": "67d2636b9476c408a32ea6527e8c9b106436bfaae2345f5f7a62969b713f43d4",
+    "tests/simulation/npc-dialogue-diagnostics.test.mjs": "59c14a9ccaabe15edffaa27c735f6ab9a2b232f1ef5aeb9210f4b5f10c5be2ab",
+    "tests/simulation/npc-language-provider.test.mjs": "5b205342b8da478ee8774c357d1581c015c0c29b037c58255c6c52f35cfbb0c5",
+    "tests/simulation/npc-deepseek-provider.test.mjs": "01bd31cc81dadc57f450a56f682700717d5b1ecd7993cdacc1c6a37ad911ac98",
+    "tests/simulation/npc-memory-dialogue-capacity.test.mjs": "a2ed1b841d14cc14362f742597e7d1b560c7e539bf0a65a7d374465804cb4f0a",
+    "tests/simulation/npc-memory-dialogue-evaluation.test.mjs": "9c1a25459f8e87cf878b24335367baf1ffebc8bddb8f098a7843eb9f55f04ad3",
+    "tests/simulation/npc-dialogue-grounding.test.mjs": "62d4df315ad2cd349160f034bba820fd53a91319f305db99d1041f39c17fc7d8",
+    "tests/simulation/npc-life-facts.test.mjs": "f1a7f8ad49b5d3743e04470c5a9720c44dd292479b87545f44755c9ec8f1e597",
+    "tests/simulation/npc-life-context.test.mjs": "b81cfefca771f4b98eec70b0e40bceda01a1d3fd2cca4792ac42f45bbf694323",
+    "tests/simulation/npc-social.test.mjs": "90d7c2bb356af27475e10b4abe94a827e2c01d74402b2bdcba55533fcf1b3004",
+    "tests/simulation/npc-negotiation.test.mjs": "71ab1c5fa14d42a394851d97665aee0da1a2159eab0378322c9b7c137c5f6b3e",
+    "tests/simulation/forest-tools.test.mjs": "224a55957d84e2abdea65c7f833e5fc5b2da79d8fa47e35f3fede491a21538d9",
+    "tests/simulation/hunter-trust-journey.test.mjs": "2b7f8964716639a27ecc2660df806e921ee6109dc381df77f4b18f0b73bac942",
+    "tests/simulation/forest-dialogue-continuation.test.mjs": "ccc97043abf1e23ed75598797ef2a87bd999f57b69a1f3419d23837c1c5f434c"
+  },
+  "evidence": {
+    "assistant-review.json": {
+      "bytes": 4481,
+      "sha256": "78b6a45e5c4453bb52d5699063272883f123565c9677eb13ddd2507bfbabda3b"
+    },
+    "browser-controlled.json": {
+      "bytes": 21416,
+      "sha256": "ae45d118137ccf592c548ae30f6b8c17f79c1d14ca530c1ed7c6f74f1ff3e6d2"
+    },
+    "browser-live.json": {
+      "bytes": 21595,
+      "sha256": "9d1b4641e939553162ba452a771e84958cd910d0f77762769727d4ca53025815"
+    },
+    "browser-live.meta.json": {
+      "bytes": 247,
+      "sha256": "d8f623a68f8042cb3dbe100fa06d2be307a5fca63db464f21ae407c0c2761eba"
+    },
+    "browser-live.txt": {
+      "bytes": 158,
+      "sha256": "4daaa4ff79fa52107a5758b351588b721029f6e823f7d6878b6ae6e467c03f8c"
+    },
+    "ci-linux.json": {
+      "bytes": 29627,
+      "sha256": "1702fe35bae52d922051d7478012d1c8f0907f293ac2803635dca99ab6e9a691"
+    },
+    "ci-win32.json": {
+      "bytes": 29628,
+      "sha256": "fd8994851df5c37ba58fdd29be3cfbeaf9f149652b852ef4346bf66083717005"
+    },
+    "live-borrow-return.complete.json": {
+      "bytes": 305,
+      "sha256": "9f4e11b2259bebeb7a4a1e25a09c4dbdd54fa8c1250dbf3ea3e3ed90dfd60c68"
+    },
+    "live-borrow-return.html": {
+      "bytes": 61482,
+      "sha256": "860ed7b4707f63bb2f0683e7b518cff4fdf38cd7c86dbd7b58c90a64abe76461"
+    },
+    "live-borrow-return.json": {
+      "bytes": 80994,
+      "sha256": "0154e6c6e8bd7e3ee577557916368a35b5df879539223f54e0187a4a7ffb9906"
+    },
+    "live-borrow-return.meta.json": {
+      "bytes": 373,
+      "sha256": "2da7a2da9a231cb923136224520b51e51f9f382f937a5e01700625053452896d"
+    },
+    "live-borrow-return.txt": {
+      "bytes": 624,
+      "sha256": "1ac0441aa963c6cdff388f33ecf05b8df51a2dc706a10475304a3eed98796e84"
+    },
+    "live-overdue-denial.complete.json": {
+      "bytes": 306,
+      "sha256": "d351d848c69507ccde047131e275f62bcc90a84b019639c7a103be52db84ea01"
+    },
+    "live-overdue-denial.html": {
+      "bytes": 98347,
+      "sha256": "31f10b4a2f2258cf68d714c6c1252dfb5b1c189a422c0e2cf091e1da8fea3a49"
+    },
+    "live-overdue-denial.json": {
+      "bytes": 117251,
+      "sha256": "b61fb5cbcd900060e5165671a21ad6fd31683adfb42c14fac908ef4375711eb2"
+    },
+    "live-overdue-denial.meta.json": {
+      "bytes": 452,
+      "sha256": "571c6bfa6d9422c488d8688c53daf13b1881f3719382240325c0e51732662753"
+    },
+    "live-overdue-denial.txt": {
+      "bytes": 626,
+      "sha256": "f82a224ceb22f756934aaa1c56e9ef600a8093313fee6324fb5ec3e23542c5ab"
+    },
+    "live-witness-denial.complete.json": {
+      "bytes": 305,
+      "sha256": "232a30cbbc975f1504b6ae13e5063ad38e48b8095ba1ace746ba8f08a59f36cb"
+    },
+    "live-witness-denial.html": {
+      "bytes": 48583,
+      "sha256": "aa285fbab9d74daa6283e7330326a01fe3859b08d43c9d1d4629ba6b003a3a16"
+    },
+    "live-witness-denial.json": {
+      "bytes": 69133,
+      "sha256": "95bfe2453742c59649adcd434fb7841547235b41754f7801f1f83f93425aac9e"
+    },
+    "live-witness-denial.meta.json": {
+      "bytes": 375,
+      "sha256": "72d3e89220365d889cdd2e2f7ead4ef5cd985be0279497fb964397a19b83c419"
+    },
+    "live-witness-denial.txt": {
+      "bytes": 625,
+      "sha256": "18598237b837bae33a2e71e6ed268980b8483c9618e4eff3fa783512488a3a55"
+    },
+    "regression.meta.json": {
+      "bytes": 982,
+      "sha256": "60f9cc13844a93d97ed6a85d384ac0370a7bdd24cd41fe1044e30164c1b0a4c8"
+    },
+    "regression.txt": {
+      "bytes": 9433,
+      "sha256": "c138e5bdf49e70a35dd458551af10911c0f44e512e8c58a7e89385009049417e"
+    }
+  }
+}

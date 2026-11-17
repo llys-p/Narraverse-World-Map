@@ -1,0 +1,25 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/simulation/npc-simple-loan-facts.test.mjs",
+    "tests/simulation/forest-dialogue-guards.test.mjs",
+    "tests/simulation/npc-citation-canonicalization.test.mjs",
+    "tests/simulation/npc-dialogue-diagnostics.test.mjs",
+    "tests/simulation/npc-language-provider.test.mjs",
+    "tests/simulation/npc-deepseek-provider.test.mjs",
+    "tests/simulation/npc-memory-dialogue-capacity.test.mjs",
+    "tests/simulation/npc-memory-dialogue-evaluation.test.mjs",
+    "tests/simulation/npc-dialogue-grounding.test.mjs",
+    "tests/simulation/npc-life-facts.test.mjs",
+    "tests/simulation/npc-life-context.test.mjs",
+    "tests/simulation/npc-social.test.mjs",
+    "tests/simulation/npc-negotiation.test.mjs",
+    "tests/simulation/forest-tools.test.mjs",
+    "tests/simulation/hunter-trust-journey.test.mjs",
+    "tests/simulation/forest-dialogue-continuation.test.mjs",
+    "tests/simulation/npc-dialogue-options.test.mjs"
+  ],
+  "exitCode": 0,
+  "wallMs": 101151
+}

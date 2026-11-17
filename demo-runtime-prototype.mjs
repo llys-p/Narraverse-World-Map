@@ -5,9 +5,7 @@ import {createSocialTextComposer} from './demo-social-composer.mjs';
 import {createForestPanel} from './demo-forest.mjs';
 import {createPlayableGoals} from './demo-playable-goals.mjs';
 import {createNpcDialogue} from './demo-npc-dialogue.mjs';
-const playableGoals=createPlayableGoals({submit:(type,payload)=>handle(()=>client.submit(type,payload)),approach:n=>handle(()=>client.submit('MarchSet',{x:n.x,y:n.y})),openPerson:id=>{
- showPerson(id);if(!$('personCard').hidden){$('personCard').scrollIntoView({block:'nearest'});$('personName').focus({preventScroll:true});}
-}});
+const playableGoals=createPlayableGoals({submit:(type,payload)=>handle(()=>client.submit(type,payload)),approach:n=>handle(()=>client.submit('MarchSet',{x:n.x,y:n.y})),openPerson});
 const forestPanel=createForestPanel({submit:(type,payload)=>handle(()=>client.submit(type,payload))});
 const npcDialogue=createNpcDialogue();
 const socialTextComposer=createSocialTextComposer();
@@ -1500,12 +1498,23 @@ function syncScene(){
  const people=group.scene.actors.filter(a=>a.alive),positions=[.18,.62,.82];
  people.forEach((a,i)=>{const key=aliases[a.actorId],x=positions[i%3];NPCS[key]={name:a.name,role:role(a.occupation)};NPC_STATE[key]={x,state:'idle',activity:a.condition==='wounded'?'受伤':'在场'};
   LOCATION_DATA[currentLocationKey].npcs.push(key);list.push({id:key,x,scale:1.4,color:a.actorId==='actor-2'?'#566444':'#7a5a44',prop:a.actorId==='actor-2'?'bow':a.actorId==='actor-1'?'staff':null,action:'idle'});});
- villageStage.scene(list);$('scenePeople').replaceChildren();
- people.forEach((a,i)=>{const b=document.createElement('button');b.textContent=a.name+' · '+a.actorId;b.dataset.actorId=a.actorId;b.style.left=positions[i%3]*100+'%';b.addEventListener('click',()=>showPerson(a.actorId));$('scenePeople').append(b);});
+ villageStage.scene(list);
+ // A refresh of unchanged people must not remove the focused entry button.
+ const peopleKey=JSON.stringify(people.map(a=>[a.actorId,a.name]));
+ if($('scenePeople').dataset.people!==peopleKey){
+  $('scenePeople').dataset.people=peopleKey;$('scenePeople').replaceChildren();
+  people.forEach((a,i)=>{const b=document.createElement('button');b.textContent=a.name+' · '+a.actorId;b.dataset.actorId=a.actorId;b.style.left=positions[i%3]*100+'%';b.addEventListener('click',()=>openPerson(a.actorId));$('scenePeople').append(b);});
+ }
+}
+let personOpener=null;
+function openPerson(id,trigger=document.activeElement){
+ personOpener={element:trigger,sceneActorId:trigger?.dataset.actorId,questId:trigger?.closest('[data-quest]')?.dataset.quest};
+ showPerson(id);
+ if(!$('personCard').hidden){$('personCard').scrollIntoView({block:'nearest'});$('personName').focus({preventScroll:true});}
 }
 function showPerson(id){
  if(selectedActorId!==id){socialTextComposer.reset();npcDialogue.reset();}
- selectedActorId=id;const actor=group?.map.actors.find(a=>a.actorId===id);if(!actor){socialTextComposer.reset();npcDialogue.reset();$('personCard').hidden=true;return;}
+ selectedActorId=id;const actor=group?.map.actors.find(a=>a.actorId===id);if(!actor){closePerson();return;}
  socialTextComposer.observe(group,id);npcDialogue.observe(group,id);
  $('personCard').hidden=false;$('personName').textContent=actor.name+' · '+role(actor.occupation);
  $('personDetail').textContent=actor.actorId+' · '+place(actor.location)+' · '+(actor.condition==='wounded'?'受伤':actor.alive?'存活':'已逝')+'\n'+(actor.canInteract?'就在附近，可以交互。':'距离较远，先走到人物附近。');
@@ -1557,6 +1566,11 @@ function paintNpcNegotiation(){
  forestPanel.paint(group,canWrite()&&!playbackBusy);
  const n=group?.map.negotiation;$('npcNegotiation').hidden=!n;if(!n)return;
  const write=canWrite()&&!playbackBusy,state=npcDialogue.view(group,write,selectedActorId),pending=client.state().busy||client.state().pending;
+ const focused=document.activeElement;
+ // Keep the keyboard position at the result while its initiating control is disabled.
+ // Later paints update the live text without taking focus from another control.
+ if(focused===$('npcDialogueText')&&pending||focused===$('npcDialogueGenerate')&&!state.canGenerate||
+  focused===$('npcDialogueCommit')&&!state.canCommit||focused===$('npcDialogueAct')&&(!state.canAct||!state.proposal))$('npcDialogueStatus').focus({preventScroll:true});
  if($('npcDialogueText').value!==state.text)$('npcDialogueText').value=state.text;
  $('npcDialogueText').disabled=pending;$('npcDialogueStatus').textContent=state.message;
  $('npcDialogueGenerate').disabled=!state.canGenerate;$('npcDialogueGenerate').textContent=state.generateLabel;$('npcDialogueCommit').disabled=!state.canCommit;
@@ -1569,7 +1583,18 @@ function paintNpcNegotiation(){
  $('npcPropose').disabled=!(write&&n.canPropose);$('npcAccept').disabled=!(write&&n.canAccept);$('npcDecline').disabled=!(write&&n.canDecline);$('npcClaim').disabled=!(write&&n.canClaim);
  $('npcRepair').disabled=pending;$('npcLoan').disabled=pending;
 }
-function closePerson(){selectedActorId=null;socialTextComposer.reset();npcDialogue.reset();$('socialText').value='';$('personCard').hidden=true;}
+function closePerson(){
+ const restore=!$('personCard').hidden&&$('personCard').contains(document.activeElement),opener=personOpener;
+ selectedActorId=null;socialTextComposer.reset();npcDialogue.reset();$('socialText').value='';$('personCard').hidden=true;personOpener=null;
+ if(restore){
+  const visible=n=>n?.isConnected&&!n.disabled&&n.getClientRects().length>0;
+  let target=opener?.element;
+  if(!visible(target)&&opener?.sceneActorId)target=$('scenePeople').querySelector(`[data-actor-id="${CSS.escape(opener.sceneActorId)}"]`);
+  if(!visible(target)&&opener?.questId)target=$('playableQuestList').querySelector(`[data-quest="${CSS.escape(opener.questId)}"] [data-person-id]`);
+  if(!visible(target))target=$(currentMode==='scene'?'tabSceneBtn':'tabWorldBtn');
+  target.focus();
+ }
+}
 function canWrite(){const s=client.state();return !!(group&&s.connected&&!s.busy&&!s.pending&&!s.blocked&&group.player.self.identity.alive&&group.capabilities.writes&&group.map.budget.remainingCommands>0);}
 function setHealth(p,w){$('playerHpText').textContent=p+' / 1000';$('enemyHpText').textContent=(w??0)+' / 300';$('playerHpBar').style.width=p/10+'%';$('enemyHpBar').style.width=(w??0)/3+'%';}
 function paintTrade(){
@@ -1758,11 +1783,17 @@ $('skipPlayback').addEventListener('click',()=>{playbackEpoch++;playbackBusy=fal
 function mapClick(event,context=false){
  if(!group||currentMode!=='world')return;const rect=worldMapCanvas.getBoundingClientRect(),at={x:event.clientX-rect.left+worldCam.x,y:event.clientY-rect.top+worldCam.y};
  const person=worldRoamingNpcs.find(n=>Math.hypot(n.x-at.x,n.y-at.y)<28);
- if(person){showPerson(person.id);return;}if(context)return;
+ if(person){openPerson(person.id,$('tabWorldBtn'));return;}if(context)return;
  const target={x:Math.floor(at.x/80),y:Math.floor(at.y/(920/12))};$('targetX').value=target.x;$('targetY').value=target.y;handle(()=>client.submit('MarchSet',target));
 }
 worldMapCanvas.addEventListener('click',event=>mapClick(event));worldMapCanvas.addEventListener('contextmenu',event=>{event.preventDefault();mapClick(event,true);});
-window.addEventListener('keydown',event=>{if(event.target.matches('input,button,select,textarea')||event.repeat)return;const key=event.key.toLowerCase();if(key==='b'||key==='i')$('tabBagBtn').click();else if(key==='escape'){closePerson();$('bagPanel').hidden=true;$('tradePanel').hidden=true;}else if(key===' '&&currentMode==='world'){event.preventDefault();handle(()=>client.pause());}});
+window.addEventListener('keydown',event=>{
+ if(event.defaultPrevented||event.isComposing||event.repeat)return;
+ const key=event.key.toLowerCase();
+ if(key==='escape'&&!$('personCard').hidden&&$('personCard').contains(event.target)){event.preventDefault();closePerson();return;}
+ if(event.target.matches('input,button,select,textarea'))return;
+ if(key==='b'||key==='i')$('tabBagBtn').click();else if(key==='escape'){closePerson();$('bagPanel').hidden=true;$('tradePanel').hidden=true;}else if(key===' '&&currentMode==='world'){event.preventDefault();handle(()=>client.pause());}
+});
 new ResizeObserver(resizeLayers).observe(stageContainer);window.addEventListener('resize',resizeLayers);
 let lastFrame=performance.now(),fatalFrameError=false;
 function loop(now){

@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "testedCommit": "8fc49ed4f631e05370f7bbd767e0f14367f09870",
+  "testedGitTree": "cc3e9a71e10999589378c8875fe5e07c235a50e6",
+  "node": "v24.22.1",
+  "humanReview": "pending",
+  "externalModelCalls": 0,
+  "sourceSha256": {
+    "benchmarks/npc-forest-repair-language-v1/cases.json": "0e8efebb729ec8d4ee690a7abc9c50d1b7e837126b7e8aed522119d45e02864b",
+    "runtime/service/npc-dialogue-grounding.mjs": "30de077023c1a5703e19e8154fe7eea453b7a4e46b983eb94d6c412833f328b7",
+    "runtime/service/npc-language-provider.mjs": "7b8a416b9a7c7f57423b9c745d35810d017461da5dd620a052220adca3b56aab",
+    "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+    "scripts/evaluate-forest-dialogue.mjs": "902193cdc8d66563077bec3907049e43b21d2515aeca23b44e9c0bbf5605bed9",
+    "scripts/forest-playtest-candidate.mjs": "9dc8cff5208db8418c513812e925f4ee1321968b021054e4bd8e3a692c83cb1c",
+    "scripts/verify-forest-dialogue-browser.mjs": "a0d18e49bfe3a93fb66c7cbf350451b9752cda46215c26d4f5a83612ad84f5f0",
+    "scripts/verify-forest-playtest.mjs": "f12f924741ed35eda95a88c08dad9d2e58b39beecf49a86ed59108893a2089ff",
+    "tests/simulation/forest-dialogue-continuation.test.mjs": "ccc97043abf1e23ed75598797ef2a87bd999f57b69a1f3419d23837c1c5f434c",
+    "tests/simulation/forest-dialogue-guards.test.mjs": "452b2defdff670cff0bc4eafdbefcc0796d15930b2a0117413561fd04d692994",
+    "tests/simulation/forest-tools.test.mjs": "224a55957d84e2abdea65c7f833e5fc5b2da79d8fa47e35f3fede491a21538d9",
+    "tests/simulation/hunter-trust-journey.test.mjs": "2b7f8964716639a27ecc2660df806e921ee6109dc381df77f4b18f0b73bac942",
+    "tests/simulation/npc-citation-canonicalization.test.mjs": "67d2636b9476c408a32ea6527e8c9b106436bfaae2345f5f7a62969b713f43d4",
+    "tests/simulation/npc-deepseek-provider.test.mjs": "01bd31cc81dadc57f450a56f682700717d5b1ecd7993cdacc1c6a37ad911ac98",
+    "tests/simulation/npc-dialogue-diagnostics.test.mjs": "59c14a9ccaabe15edffaa27c735f6ab9a2b232f1ef5aeb9210f4b5f10c5be2ab",
+    "tests/simulation/npc-dialogue-grounding.test.mjs": "62d4df315ad2cd349160f034bba820fd53a91319f305db99d1041f39c17fc7d8",
+    "tests/simulation/npc-dialogue-options.test.mjs": "eb2bb5598752134942706e9da799cacf57ebc5e4b9b2d61084e601b419af82a5",
+    "tests/simulation/npc-language-provider.test.mjs": "5b205342b8da478ee8774c357d1581c015c0c29b037c58255c6c52f35cfbb0c5",
+    "tests/simulation/npc-life-context.test.mjs": "b81cfefca771f4b98eec70b0e40bceda01a1d3fd2cca4792ac42f45bbf694323",
+    "tests/simulation/npc-life-facts.test.mjs": "f1a7f8ad49b5d3743e04470c5a9720c44dd292479b87545f44755c9ec8f1e597",
+    "tests/simulation/npc-memory-dialogue-capacity.test.mjs": "a2ed1b841d14cc14362f742597e7d1b560c7e539bf0a65a7d374465804cb4f0a",
+    "tests/simulation/npc-memory-dialogue-evaluation.test.mjs": "9c1a25459f8e87cf878b24335367baf1ffebc8bddb8f098a7843eb9f55f04ad3",
+    "tests/simulation/npc-negotiation.test.mjs": "71ab1c5fa14d42a394851d97665aee0da1a2159eab0378322c9b7c137c5f6b3e",
+    "tests/simulation/npc-simple-loan-facts.test.mjs": "dfd82daeab5e187e40f3607e52233438494855aa07b05d5521348cffbbc60ae0",
+    "tests/simulation/npc-social.test.mjs": "90d7c2bb356af27475e10b4abe94a827e2c01d74402b2bdcba55533fcf1b3004"
+  },
+  "regression": {
+    "command": [
+      "node",
+      "--test",
+      "tests/simulation/npc-simple-loan-facts.test.mjs",
+      "tests/simulation/forest-dialogue-guards.test.mjs",
+      "tests/simulation/npc-citation-canonicalization.test.mjs",
+      "tests/simulation/npc-dialogue-diagnostics.test.mjs",
+      "tests/simulation/npc-language-provider.test.mjs",
+      "tests/simulation/npc-deepseek-provider.test.mjs",
+      "tests/simulation/npc-memory-dialogue-capacity.test.mjs",
+      "tests/simulation/npc-memory-dialogue-evaluation.test.mjs",
+      "tests/simulation/npc-dialogue-grounding.test.mjs",
+      "tests/simulation/npc-life-facts.test.mjs",
+      "tests/simulation/npc-life-context.test.mjs",
+      "tests/simulation/npc-social.test.mjs",
+      "tests/simulation/npc-negotiation.test.mjs",
+      "tests/simulation/forest-tools.test.mjs",
+      "tests/simulation/hunter-trust-journey.test.mjs",
+      "tests/simulation/forest-dialogue-continuation.test.mjs",
+      "tests/simulation/npc-dialogue-options.test.mjs"
+    ],
+    "passed": 82,
+    "log": "final-regression.txt",
+    "sha256": "9b11538afc85efb6bf6786616bfa8bfaa28142a684e6299937a951d3bf258241"
+  },
+  "priorLive": {
+    "report": "initial-live.json",
+    "sha256": "626852b42c69e1d6ee4b0f2bb946a66e4ccb6d3630ad236678e75f96ae6f4328",
+    "requests": 6,
+    "automaticPassed": 5,
+    "automaticFailed": 1,
+    "failedTurn": "repair-evidence/claim"
+  },
+  "controlledHttp": {
+    "counts": {
+      "planned": 6,
+      "attempted": 6,
+      "automaticPassed": 6,
+      "automaticFailed": 0,
+      "providerFailed": 0,
+      "fixtureFailed": 0,
+      "blocked": 0,
+      "notRun": 0
+    },
+    "cases": [
+      {
+        "id": "repair-evidence",
+        "replayAudit": "passed",
+        "turns": [
+          {
+            "id": "original",
+            "condition": 60,
+            "intent": "repair-now",
+            "proposal": "help",
+            "allChecksPassed": true
+          },
+          {
+            "id": "claim",
+            "condition": 60,
+            "intent": "tool-condition-question",
+            "proposal": null,
+            "allChecksPassed": true
+          },
+          {
+            "id": "real-help",
+            "condition": 80,
+            "intent": "model-interpretation",
+            "proposal": null,
+            "allChecksPassed": true
+          }
+        ]
+      },
+      {
+        "id": "free-wording",
+        "replayAudit": "passed",
+        "turns": [
+          {
+            "id": "paraphrase",
+            "condition": 60,
+            "intent": "model-interpretation",
+            "proposal": "help",
+            "allChecksPassed": true
+          }
+        ]
+      },
+      {
+        "id": "explicit-exchange",
+        "replayAudit": "passed",
+        "turns": [
+          {
+            "id": "offer",
+            "condition": 60,
+            "intent": "negotiate-repair-loan",
+            "proposal": "PlayerNegotiate",
+            "allChecksPassed": true
+          }
+        ]
+      },
+      {
+        "id": "witness-attribution",
+        "replayAudit": "passed",
+        "turns": [
+          {
+            "id": "who",
+            "condition": 20,
+            "intent": "model-interpretation",
+            "proposal": null,
+            "allChecksPassed": true
+          }
+        ]
+      }
+    ]
+  },
+  "controlledBrowser": {
+    "verdict": "PASS",
+    "version": "HeadlessChrome/151.0.7922.34",
+    "steps": [
+      "preview-read-only",
+      "speech-only",
+      "separately-confirmed-repair",
+      "same-history-after-reopen"
+    ],
+    "condition": {
+      "before": 60,
+      "after": 80
+    }
+  },
+  "modelDisabledBrowserJourney": {
+    "verdict": "PASS",
+    "version": "HeadlessChrome/151.0.7922.34",
+    "steps": [
+      "new-isolated-world",
+      "village-and-real-loan-through-buttons",
+      "desktop-and-narrow-screen-forest-controls",
+      "explicit-encounter-and-keyboard-exit",
+      "return-worn-tool-and-complete",
+      "reopen-same-world-with-no-extra-commit"
+    ],
+    "final": {
+      "tick": 78,
+      "rank": 4,
+      "toolCondition": 70
+    }
+  }
+}

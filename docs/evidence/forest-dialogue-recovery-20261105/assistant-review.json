@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "assistant",
+  "humanReview": "pending",
+  "basis": "逐句核对本次报告；覆盖开发样本，不是盲测、玩家口碑或语义自动判定。",
+  "baseline": {
+    "caseId": "borrow-return",
+    "turnId": "claimed-return",
+    "status": "fact-conflict",
+    "note": "世界状态仍是玩家持有，猎人错误宣称亲手接回。",
+    "replySha256": "20f856d2c8ffb527afbe96e0d9cd807453520637c7c17c7bce97298b0bcdda79"
+  },
+  "turns": [
+    {
+      "caseId": "borrow-return",
+      "turnId": "borrowed",
+      "status": "pass",
+      "note": "清楚说明玩家持有、约定一天、已知耐久约80，未提出动作。",
+      "replySha256": "bd5e65977f54fa4bfa302239b22149c9895064ec93d80e0a0e90683fa263e728"
+    },
+    {
+      "caseId": "borrow-return",
+      "turnId": "claimed-return",
+      "status": "wording",
+      "note": "明确未实际交还，玩家仍持有，没有冒用未见的70耐久；末句“才算我还回工具”人称写反，主要事实正确。",
+      "replySha256": "8cb2f3a5e98d41c14b9c5d7e684c44fa460fd8ce01cf992b9552f4d4c192dfe3"
+    },
+    {
+      "caseId": "borrow-return",
+      "turnId": "handed-back",
+      "status": "pass",
+      "note": "确认本人接回且耐久70；对损耗只描述前后差异。",
+      "replySha256": "3450bdbe2d937b66e7f872c5159b550af61d58a879cedeb23dff5a1ec1382f09"
+    },
+    {
+      "caseId": "borrow-return",
+      "turnId": "next-day",
+      "status": "pass",
+      "note": "隔日重开后确认实际归还和未再出借，320分钟与真实借还记录一致。",
+      "replySha256": "4ddf070d93b455753b66a4668fcf5f373fea7e8e8786ed1bbdec3bd90df6eecc"
+    },
+    {
+      "caseId": "witness-denial",
+      "turnId": "witness",
+      "status": "incomplete",
+      "note": "坚持亲眼见到砸坏，与道听途说区分，但没有直接点明是玩家；“亲耳听见”不是明确记录的事实。",
+      "replySha256": "601035752d38584201324565c97fc843dd7aed60c74b32c304c10b4bfdd22c1d"
+    },
+    {
+      "caseId": "witness-denial",
+      "turnId": "denial",
+      "status": "wording",
+      "note": "坚持本人目击的新增破坏，没有把它改写为原有损坏；仍补了未记录的声响。",
+      "replySha256": "df4f132e4ef57ab3187c6d03ea580c8560d8c0f0a13898702be2f2a4a241d445"
+    },
+    {
+      "caseId": "witness-denial",
+      "turnId": "repaired",
+      "status": "pass",
+      "note": "承认只部分修复，不删除原先破坏。",
+      "replySha256": "4e91aac73895a36c786d6e04d487977a339d215f5a95baf36c382ae664717903"
+    },
+    {
+      "caseId": "witness-denial",
+      "turnId": "remembered",
+      "status": "pass",
+      "note": "跨日重开仍说明没全好，记得亲历破坏。",
+      "replySha256": "440374958381af34519abcbe143efee5ec8783024ddd7e3739d206cf0c9492db"
+    },
+    {
+      "caseId": "overdue-denial",
+      "turnId": "correct-old",
+      "status": "pass",
+      "note": "在保留真实错误回复的副本中承认旧错，分清1440、1470、30，确认已归还。",
+      "replySha256": "9ab179f7353e4bde97bffecfb56716bd05485ed48b25e2d228070215e46285e8"
+    },
+    {
+      "caseId": "overdue-denial",
+      "turnId": "topic-switch",
+      "status": "wording",
+      "note": "当前0份粮、20钱正确，没有转回工具。最近工资20有记录；“没顾上买”语气略带未记录的原因。",
+      "replySha256": "c091182f5bc323b02c27540f4440d273bd61c65be5b4e87fc5e1d29ef9e12321"
+    },
+    {
+      "caseId": "overdue-denial",
+      "turnId": "resist-old",
+      "status": "pass",
+      "note": "重复旧错也不覆盖实际归还与30分钟逾期，未转向无据指责。",
+      "replySha256": "02caed761bdc8cba2d184bbda1215b3154ca2077271fe2cf14a89b3d304548c9"
+    },
+    {
+      "caseId": "overdue-denial",
+      "turnId": "next-day-correct",
+      "status": "pass",
+      "note": "跨日重开后按约定1440、实际1470、迟还30分别说明，工具仍由猎人持有。",
+      "replySha256": "fa65b58bbd307f29bb7066188a177da64091c6eac2dcaadfcb44ec851a1ead02"
+    }
+  ],
+  "browser": {
+    "status": "unsupported-history-and-topic-drift",
+    "note": "当前持有人和60耐久正确，且确认后实际修理成功；话里无依据说先前改善过，又提及本轮未谈的修理换借用。浏览器通过只说明操作、存档和建议确认。",
+    "replySha256": "c60d5ed1d2b684eb7fbc4cb82f32d6e05b8b892143239eedf7c63905706ae20c"
+  }
+}

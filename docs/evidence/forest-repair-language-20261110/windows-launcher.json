@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "candidate": "forest-playtest-candidate-4",
+  "testedCommit": "8dc9b35b8a3d08924829c9673eeb90cad3ccd35b",
+  "workflowRunId": 42806161990,
+  "gameFiles": 192,
+  "sourceSha256": {
+    ".github/workflows/forest-browser-acceptance.yml": "c9075b5af0804df816f74d3119b7733f0e9c5fa070ca3165f91539f24c5c7ad0",
+    "scripts/demo-browser-client.mjs": "d72cdc0840e20590b6e9ca558d6eb6bc499455b7187fc6c607f115d580cd98c1",
+    "scripts/verify-forest-playtest.mjs": "6f7fb7f5b20ccd3d06ade269c924ec3b5ea227d0566aa18c3677a313f31910f8",
+    "scripts/forest-playtest-candidate.mjs": "9dc8cff5208db8418c513812e925f4ee1321968b021054e4bd8e3a692c83cb1c",
+    "scripts/forest-browser-ci.mjs": "b93d48baf4020e25a2e8e0ac7a1cd19d29ffc73b3ebd4f4b035072365aa95870",
+    "scripts/forest-windows-launcher.mjs": "34e1124ef683149b400678fae3ba29807beca6526f15d563f8427b4efbee3cbf"
+  },
+  "launcher": {
+    "entry": "Start-Forest-Journey.cmd",
+    "sha256": "d969a70ba95641d6448ba2a891872595bdfd8bc4a962fb60bbdd867bf8376b3f",
+    "invocation": "cmd.exe",
+    "saveDirectoryContainsSpaces": true,
+    "cleanQuitCount": 2,
+    "scope": "windows-actions"
+  },
+  "jobs": [
+    {
+      "jobId": 129795711724,
+      "platform": "win32",
+      "verdict": "PASS",
+      "browserVersion": "Chrome/156.0.8078.80",
+      "windowsLauncherExecuted": true,
+      "steps": [
+        {
+          "name": "new-isolated-world",
+          "wallMs": 45340
+        },
+        {
+          "name": "village-and-real-loan-through-buttons",
+          "wallMs": 2967
+        },
+        {
+          "name": "desktop-and-narrow-screen-forest-controls",
+          "wallMs": 4623
+        },
+        {
+          "name": "explicit-encounter-and-keyboard-exit",
+          "wallMs": 913
+        },
+        {
+          "name": "return-worn-tool-and-complete",
+          "wallMs": 10863
+        },
+        {
+          "name": "reopen-same-world-with-no-extra-commit",
+          "wallMs": 5598
+        }
+      ],
+      "final": {
+        "tick": 78,
+        "rank": 4,
+        "toolCondition": 70
+      },
+      "remainingLocks": [],
+      "externalModelCalls": 0
+    },
+    {
+      "jobId": 129795712249,
+      "platform": "linux",
+      "verdict": "PASS",
+      "browserVersion": "Chrome/156.0.8078.79",
+      "windowsLauncherExecuted": false,
+      "steps": [
+        {
+          "name": "new-isolated-world",
+          "wallMs": 9977
+        },
+        {
+          "name": "village-and-real-loan-through-buttons",
+          "wallMs": 2045
+        },
+        {
+          "name": "desktop-and-narrow-screen-forest-controls",
+          "wallMs": 4041
+        },
+        {
+          "name": "explicit-encounter-and-keyboard-exit",
+          "wallMs": 1352
+        },
+        {
+          "name": "return-worn-tool-and-complete",
+          "wallMs": 7053
+        },
+        {
+          "name": "reopen-same-world-with-no-extra-commit",
+          "wallMs": 2836
+        }
+      ],
+      "final": {
+        "tick": 78,
+        "rank": 4,
+        "toolCondition": 70
+      },
+      "remainingLocks": [],
+      "externalModelCalls": 0
+    }
+  ]
+}
